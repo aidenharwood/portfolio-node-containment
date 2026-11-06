@@ -1,0 +1,30 @@
+:root {
+  --font-display: 'Chakra Petch', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  --color-void: #030608;
+  --color-surface: rgba(9, 16, 21, 0.92);
+  --color-surface-raised: rgba(16, 27, 34, 0.95);
+  --color-surface-inset: rgba(3, 8, 11, 0.75);
+  --color-line: rgba(79, 216, 255, 0.16);
+  --color-line-strong: rgba(79, 216, 255, 0.38);
+  --color-text: #d4e4ec;
+  --color-text-muted: #7f97a4;
+  --color-text-faint: #4e6370;
+  --color-accent: #4fd8ff;
+  --color-accent-dim: rgba(79, 216, 255, 0.22);
+  --color-warning: #ffb347;
+  --color-danger: #ff5e5e;
+  --color-success: #7cf29a;
+  --color-gold: #ffd23f;
+
+  --rarity-standard: #b8c4cb;
+  --rarity-issued: #4fd8ff;
+  --rarity-restricted: #7cf29a;
+  --rarity-classified: #c79bff;
+  --rarity-anomalous: #ffb347;
+
+  --radius: 3px;
+  --bevel: 10px;
+  --shadow-panel: 0 12px 40px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+}

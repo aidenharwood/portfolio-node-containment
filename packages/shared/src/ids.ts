@@ -1,0 +1,11 @@
+export type AccountId = string;
+export type CharacterId = string;
+export type EntityId = string;
+export type ItemId = string;
+export type QuestId = string;
+export type NpcId = string;
+export type WorldObjectId = string;
+export type DialogueId = string;
+export type ZoneId = string;
+export type AreaId = string;
+export type InstanceId = string;

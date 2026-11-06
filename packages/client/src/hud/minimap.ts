@@ -1,0 +1,152 @@
+import { TILE_KINDS, type Facing, type TilePoint } from '@containment/shared';
+import type { WorldState } from '../state/worldState.ts';
+import { h } from '../ui/dom.ts';
+
+const PIXELS_PER_TILE = 7;
+const MAP_SIZE = 220;
+const MAP_RADIUS = MAP_SIZE / 2 - 4;
+
+const TILE_COLORS: Partial<Record<string, string>> = {
+  wall: '#5d7180',
+  glass: '#7fe7ff',
+  coolant: '#2a8fb8',
+  hazard: '#a88417',
+  door: '#c9a227',
+  carpet: '#3a3150',
+};
+
+const FACING_ANGLE: Readonly<Record<Facing, number>> = { north: -Math.PI / 2, east: 0, south: Math.PI / 2, west: Math.PI };
+
+interface MapView {
+  readonly centerX: number;
+  readonly centerY: number;
+  readonly rotation: number;
+}
+
+export class Minimap {
+  readonly element: HTMLElement;
+  private readonly canvas = h('canvas', { className: 'minimap-canvas' });
+  private readonly title = h('div', { className: 'minimap-title' });
+  private readonly world: WorldState;
+  private base: HTMLCanvasElement | null = null;
+  private view: MapView = { centerX: 0, centerY: 0, rotation: 0 };
+
+  constructor(world: WorldState, onSelectTile: (tile: TilePoint) => void) {
+    this.world = world;
+    const ratio = Math.min(window.devicePixelRatio || 1, 2);
+    this.canvas.width = MAP_SIZE * ratio;
+    this.canvas.height = MAP_SIZE * ratio;
+    this.element = h('div', { className: 'hud-minimap panel' }, this.title, h('div', { className: 'minimap-frame' }, this.canvas));
+    this.canvas.onclick = (event) => {
+      const bounds = this.canvas.getBoundingClientRect();
+      const scale = MAP_SIZE / bounds.width;
+      const offsetX = (event.clientX - bounds.left) * scale - MAP_SIZE / 2;
+      const offsetY = (event.clientY - bounds.top) * scale - MAP_SIZE / 2;
+      if (Math.hypot(offsetX, offsetY) > MAP_RADIUS) return;
+      const cos = Math.cos(-this.view.rotation);
+      const sin = Math.sin(-this.view.rotation);
+      const mapX = (offsetX * cos - offsetY * sin) / PIXELS_PER_TILE + this.view.centerX;
+      const mapY = (offsetX * sin + offsetY * cos) / PIXELS_PER_TILE + this.view.centerY;
+      onSelectTile({ x: Math.round(mapX), y: Math.round(mapY) });
+    };
+  }
+
+  rebuild(): void {
+    const zone = this.world.zone;
+    if (!zone) return;
+    this.title.textContent = this.world.layer > 1 ? `${zone.definition.name} · L${this.world.layer}` : zone.definition.name;
+    const base = document.createElement('canvas');
+    base.width = zone.layout.width * PIXELS_PER_TILE;
+    base.height = zone.layout.height * PIXELS_PER_TILE;
+    const context = base.getContext('2d') as CanvasRenderingContext2D;
+    for (let y = 0; y < zone.layout.height; y++) {
+      for (let x = 0; x < zone.layout.width; x++) {
+        const kind = zone.layout.tileAt({ x, y });
+        if (kind === 'void') continue;
+        context.fillStyle = TILE_COLORS[kind] ?? (TILE_KINDS[kind].walkable ? '#1f2d36' : '#0b1014');
+        context.fillRect(x * PIXELS_PER_TILE, y * PIXELS_PER_TILE, PIXELS_PER_TILE, PIXELS_PER_TILE);
+      }
+    }
+    this.base = base;
+  }
+
+  render(now: number, cameraHeading: number): void {
+    const base = this.base;
+    const self = this.world.selfEntity;
+    if (!base || !self) return;
+    const context = this.canvas.getContext('2d') as CanvasRenderingContext2D;
+    const ratio = this.canvas.width / MAP_SIZE;
+    const position = this.world.renderPosition(self, now);
+    const forwardAngle = Math.atan2(-Math.cos(cameraHeading), -Math.sin(cameraHeading));
+    const rotation = -Math.PI / 2 - forwardAngle;
+    this.view = { centerX: position.x, centerY: position.y, rotation };
+
+    context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    context.clearRect(0, 0, MAP_SIZE, MAP_SIZE);
+    context.save();
+    context.beginPath();
+    context.arc(MAP_SIZE / 2, MAP_SIZE / 2, MAP_RADIUS, 0, Math.PI * 2);
+    context.clip();
+    context.fillStyle = '#020406';
+    context.fillRect(0, 0, MAP_SIZE, MAP_SIZE);
+
+    context.translate(MAP_SIZE / 2, MAP_SIZE / 2);
+    context.rotate(rotation);
+    context.translate(-(position.x + 0.5) * PIXELS_PER_TILE, -(position.y + 0.5) * PIXELS_PER_TILE);
+    context.drawImage(base, 0, 0);
+
+    for (const item of this.world.groundItems.values()) {
+      context.fillStyle = item.owned ? '#ffd23f' : '#ff5e3a';
+      context.fillRect(item.position.x * PIXELS_PER_TILE + 2, item.position.y * PIXELS_PER_TILE + 2, 3, 3);
+    }
+    for (const entity of this.world.entities.values()) {
+      if (entity.id === self.id || entity.dyingAt !== null) continue;
+      const point = this.world.renderPosition(entity, now);
+      context.fillStyle = entity.kind === 'creature' ? '#ff5e5e' : entity.kind === 'npc' ? '#ffd23f' : '#ffffff';
+      context.beginPath();
+      context.arc((point.x + 0.5) * PIXELS_PER_TILE, (point.y + 0.5) * PIXELS_PER_TILE, 2.6, 0, Math.PI * 2);
+      context.fill();
+    }
+    context.restore();
+
+    this.paintSelfArrow(context, rotation + FACING_ANGLE[self.facing]);
+    this.paintNorth(context, rotation);
+    context.strokeStyle = 'rgba(79, 216, 255, 0.45)';
+    context.lineWidth = 1.5;
+    context.beginPath();
+    context.arc(MAP_SIZE / 2, MAP_SIZE / 2, MAP_RADIUS, 0, Math.PI * 2);
+    context.stroke();
+  }
+
+  private paintSelfArrow(context: CanvasRenderingContext2D, angle: number): void {
+    context.save();
+    context.translate(MAP_SIZE / 2, MAP_SIZE / 2);
+    context.rotate(angle);
+    context.fillStyle = '#4fd8ff';
+    context.shadowColor = '#4fd8ff';
+    context.shadowBlur = 6;
+    context.beginPath();
+    context.moveTo(7, 0);
+    context.lineTo(-5, -5);
+    context.lineTo(-2, 0);
+    context.lineTo(-5, 5);
+    context.closePath();
+    context.fill();
+    context.restore();
+  }
+
+  private paintNorth(context: CanvasRenderingContext2D, rotation: number): void {
+    const angle = rotation - Math.PI / 2;
+    const x = MAP_SIZE / 2 + Math.cos(angle) * (MAP_RADIUS - 9);
+    const y = MAP_SIZE / 2 + Math.sin(angle) * (MAP_RADIUS - 9);
+    context.fillStyle = 'rgba(3, 8, 11, 0.85)';
+    context.beginPath();
+    context.arc(x, y, 8, 0, Math.PI * 2);
+    context.fill();
+    context.fillStyle = '#ff5e5e';
+    context.font = '700 10px "Chakra Petch", sans-serif';
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.fillText('N', x, y + 0.5);
+  }
+}

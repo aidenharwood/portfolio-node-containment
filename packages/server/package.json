@@ -1,0 +1,17 @@
+{
+  "name": "@containment/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch-path=src --watch-path=../shared/src --no-warnings=ExperimentalWarning src/main.ts",
+    "start": "node --no-warnings=ExperimentalWarning src/main.ts"
+  },
+  "dependencies": {
+    "@containment/shared": "*",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.12"
+  }
+}

@@ -1,0 +1,280 @@
+.panel {
+  position: relative;
+  background: linear-gradient(180deg, var(--color-surface-raised), var(--color-surface));
+  border: 1px solid var(--color-line);
+  box-shadow: var(--shadow-panel);
+  clip-path: polygon(var(--bevel) 0, 100% 0, 100% calc(100% - var(--bevel)), calc(100% - var(--bevel)) 100%, 0 100%, 0 var(--bevel));
+  backdrop-filter: blur(6px);
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--color-accent) 0 18px, transparent 18px) top left / 100% 1px no-repeat;
+  opacity: 0.8;
+}
+
+.panel-heading {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 12px;
+  color: var(--color-accent);
+  padding: 14px 20px 0;
+}
+
+.eyebrow {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 11px;
+  color: var(--color-accent);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid var(--color-line-strong);
+  background: transparent;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+}
+
+.button:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  background: var(--color-accent-dim);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.button.primary {
+  background: linear-gradient(180deg, #1aa9d6, #0c7ea3);
+  border-color: #6fe2ff;
+  color: #021017;
+  box-shadow: 0 0 18px rgba(79, 216, 255, 0.25);
+}
+
+.button.primary:hover:not(:disabled) {
+  background: linear-gradient(180deg, #34c2ef, #1696bf);
+  color: #021017;
+}
+
+.button.ghost {
+  color: var(--color-text-muted);
+}
+
+.button.small {
+  padding: 6px 12px;
+  font-size: 11px;
+}
+
+.button.wide {
+  width: 100%;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.field-label {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.field-input {
+  width: 100%;
+  background: var(--color-surface-inset);
+  border: 1px solid var(--color-line);
+  color: var(--color-text);
+  font: inherit;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.field-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-dim);
+}
+
+.field-input.dossier {
+  resize: vertical;
+  min-height: 84px;
+}
+
+.field-error,
+.form-error {
+  color: var(--color-danger);
+  font-size: 12px;
+  min-height: 1em;
+}
+
+.form-errors {
+  color: var(--color-danger);
+  font-size: 12px;
+  padding-left: 18px;
+  margin: 0 0 12px;
+}
+
+.field-hint,
+.form-hint {
+  color: var(--color-text-faint);
+  font-size: 11px;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.tab {
+  flex: 1;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.tab.active {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
+
+.segmented {
+  display: flex;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.segmented button {
+  flex: 1;
+  background: var(--color-surface-inset);
+  border: none;
+  border-right: 1px solid var(--color-line);
+  padding: 8px 6px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--color-text-muted);
+}
+
+.segmented button:last-child {
+  border-right: none;
+}
+
+.segmented button.selected {
+  background: var(--color-accent-dim);
+  color: var(--color-accent);
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  display: inline-block;
+  padding: 4px 9px;
+  font-size: 11px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  color: var(--color-text-muted);
+  background: var(--color-surface-inset);
+}
+
+.chip.accent {
+  color: var(--color-accent);
+  border-color: var(--color-line-strong);
+}
+
+.chip.selectable {
+  cursor: pointer;
+}
+
+.chip.selectable:hover {
+  border-color: var(--color-line-strong);
+  color: var(--color-text);
+}
+
+.chip.selected {
+  background: var(--color-accent-dim);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.swatch-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 0 1px var(--color-line);
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+
+.swatch:hover {
+  transform: scale(1.1);
+}
+
+.swatch.selected {
+  box-shadow: 0 0 0 2px var(--color-accent), 0 0 12px var(--color-accent);
+}
+
+.slider {
+  width: 100%;
+  accent-color: var(--color-accent);
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.toggle input {
+  accent-color: var(--color-accent);
+}

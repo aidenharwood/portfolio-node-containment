@@ -1,0 +1,40 @@
+import type { ZoneDefinition } from '../../world/zone.ts';
+
+export const SECTOR_THREE: ZoneDefinition = {
+  id: 'sector-three',
+  name: 'Sector 3',
+  subtitle: 'The Threshold',
+  tier: 4,
+  spawn: { x: 3, y: 6 },
+  capacity: 16,
+  ambience: { darkness: 0.55, tint: '#120a1c', fog: '#140c22', fixtures: 'failing' },
+  map: [
+    '####################',
+    '#,,,,,,,~~~~,,,,,,,#',
+    '#,,,,,,,~~~~,,,,,,,#',
+    '#,,W,__________,W,,#',
+    '#,,,,__________,,,,#',
+    '#,,,,__________,,,,#',
+    '#,,,,__________,,,,#',
+    '#,,,,__________,,,,#',
+    '#,,,,__________,,,,#',
+    '#,,,,__________,,,,#',
+    '#,,W,__________,W,,#',
+    '#,,,,,,,,,,,,,,,,,,#',
+    '#,,,,,,,,,,,,,,,,,,#',
+    '####################',
+  ],
+  areas: [{ id: 'threshold', name: 'The Threshold', rect: { x: 1, y: 1, width: 18, height: 12 } }],
+  npcs: [{ instanceId: 's3-halvorsen', npcId: 'dr-halvorsen', position: { x: 10, y: 7 } }],
+  objects: [
+    { instanceId: 's3-return-a', objectId: 'sector-three-return', position: { x: 1, y: 6 }, facing: 'east' },
+    { instanceId: 's3-return-b', objectId: 'sector-three-return', position: { x: 1, y: 7 }, facing: 'east' },
+    { instanceId: 's3-knock', objectId: 'the-knock', position: { x: 10, y: 4 } },
+    { instanceId: 's3-lantern-echo', objectId: 'lantern-echo', position: { x: 15, y: 11 } },
+  ],
+  lights: [
+    { position: { x: 10, y: 3 }, radius: 7, color: '#b57cff', intensity: 0.8 },
+    { position: { x: 4, y: 7 }, radius: 4, color: '#ffb347', intensity: 0.4 },
+    { position: { x: 15, y: 10 }, radius: 4, color: '#ffb347', intensity: 0.5 },
+  ],
+};
