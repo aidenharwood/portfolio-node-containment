@@ -340,7 +340,109 @@ class ForemanRig implements EntityRig {
   }
 }
 
+class ThornCrawlerRig implements EntityRig {
+  readonly root = new Group();
+  readonly height = 0.7;
+  private readonly body: Group;
+  private readonly legs: { group: Group; phase: number }[] = [];
+
+  constructor() {
+    this.body = createVoxelObject(cachedMesh('crawler-body', buildCrawlerBody));
+    this.root.add(this.body);
+    [[-4, 3, 0], [4, 3, Math.PI], [-4, -1, Math.PI], [4, -1, 0], [-4, -5, 0], [4, -5, Math.PI]].forEach(([x, z, phase]) => {
+      const leg = createVoxelObject(cachedMesh(`crawler-leg-${x! < 0 ? 'l' : 'r'}`, () => buildCrawlerLeg(x! < 0 ? -1 : 1), [0, 5, 0]));
+      leg.position.set(x! * VOXEL, 5 * VOXEL, z! * VOXEL);
+      this.body.add(leg);
+      this.legs.push({ group: leg, phase: phase! });
+    });
+  }
+
+  animate(pose: EntityPose): void {
+    const stride = pose.moving ? pose.walkPhase * 2 : pose.time * 0.6;
+    for (const leg of this.legs) leg.group.rotation.x = Math.sin(stride + leg.phase) * (pose.moving ? 0.55 : 0.08);
+    const lunge = swingCurve(pose.attackProgress);
+    const hurt = swingCurve(pose.hurtProgress);
+    this.body.position.set(Math.sin(pose.time * 30) * hurt * 0.03, Math.abs(Math.sin(stride)) * (pose.moving ? 0.02 : 0.005), lunge * 0.16);
+    this.body.rotation.x = -lunge * 0.35;
+  }
+}
+
+function buildCrawlerBody(): VoxelModel {
+  const model = new VoxelModel();
+  for (let x = -4; x <= 4; x++) {
+    for (let y = 4; y <= 10; y++) {
+      for (let z = -6; z <= 5; z++) {
+        if (Math.hypot(x / 4.3, (y - 7) / 3.2, z / 6.2) > 1) continue;
+        model.set(x, y, z, jitter(0x3f6a2a, 0.12, noise3(x, y, z, 17)));
+      }
+    }
+  }
+  for (let i = 0; i < 14; i++) {
+    const x = Math.round((noise3(i, 1, 4) - 0.5) * 8);
+    const z = Math.round((noise3(i, 2, 4) - 0.5) * 10);
+    model.fill(x, 10, z, x, 12 + (i % 3), z, i % 2 === 0 ? 0xb8c87a : 0x8aa05a);
+  }
+  model.set(-2, 8, 6, 0xff7a2a, VOXEL_EMISSIVE).set(2, 8, 6, 0xff7a2a, VOXEL_EMISSIVE);
+  model.fill(-1, 6, 6, 1, 6, 7, 0x2a1f18);
+  return model;
+}
+
+function buildCrawlerLeg(side: -1 | 1): VoxelModel {
+  return new VoxelModel().fill(0, 0, 0, side, 5, 0, (x, y) => (y <= 1 ? 0x2a3a1a : jitter(0x4f6a2a, 0.08, noise3(x, y, 0, 23))));
+}
+
+class SporeDrifterRig implements EntityRig {
+  readonly root = new Group();
+  readonly height = 1.5;
+  private readonly cap: Group;
+  private readonly tendrils: Group;
+
+  constructor() {
+    this.cap = createVoxelObject(cachedMesh('drifter-cap', buildDrifterCap));
+    this.tendrils = createVoxelObject(cachedMesh('drifter-tendrils', buildDrifterTendrils, [0, 20, 0]));
+    this.tendrils.position.y = 20 * VOXEL;
+    this.cap.add(this.tendrils);
+    this.root.add(this.cap);
+  }
+
+  animate(pose: EntityPose): void {
+    const puff = swingCurve(pose.attackProgress);
+    const hurt = swingCurve(pose.hurtProgress);
+    this.cap.position.y = 0.12 + Math.sin(pose.time * 1.6) * 0.06;
+    this.cap.rotation.y = pose.time * 0.4;
+    this.cap.scale.setScalar(1 + puff * 0.18 - hurt * 0.1);
+    this.tendrils.rotation.x = Math.sin(pose.time * 1.3) * 0.12;
+    this.tendrils.rotation.z = Math.cos(pose.time * 1.1) * 0.12;
+  }
+}
+
+function buildDrifterCap(): VoxelModel {
+  const model = new VoxelModel();
+  for (let x = -7; x <= 7; x++) {
+    for (let y = 20; y <= 32; y++) {
+      for (let z = -7; z <= 7; z++) {
+        const r = Math.hypot(x, (y - 25) * 1.1, z);
+        if (r > 7.2 || r < 5.8) continue;
+        const spot = noise3(x, y, z, 29) > 0.8;
+        model.set(x, y, z, spot ? 0xc8f6ff : jitter(0x6a8aa8, 0.08, noise3(x, y, z, 31)), spot ? VOXEL_EMISSIVE : undefined);
+      }
+    }
+  }
+  model.fill(-5, 20, -5, 5, 20, 5, (x, _y, z) => (Math.hypot(x, z) <= 5 ? 0x8ad8ff : null), VOXEL_EMISSIVE);
+  return model;
+}
+
+function buildDrifterTendrils(): VoxelModel {
+  const model = new VoxelModel();
+  for (const [x, z] of [[-3, -3], [3, -2], [0, 3], [-2, 1], [2, 2]] as const) {
+    for (let y = 8; y <= 19; y++) model.set(x + Math.round(Math.sin(y * 0.5 + x) * 0.8), y, z, y % 4 === 0 ? 0xc8f6ff : 0x4a6a8a, y % 4 === 0 ? VOXEL_EMISSIVE : undefined);
+  }
+  return model;
+}
+
 const FACTORIES: Readonly<Record<CreatureModel, () => EntityRig>> = {
+  thornCrawler: () => new ThornCrawlerRig(),
+  sporeDrifter: () => new SporeDrifterRig(),
   pipeLeech: () => new PipeLeechRig(),
   rustHound: () => new RustHoundRig(),
   foreman: () => new ForemanRig(),

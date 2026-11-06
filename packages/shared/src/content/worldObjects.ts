@@ -2,6 +2,60 @@ import type { WorldObjectDefinition } from '../world/entities.ts';
 
 export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
   {
+    id: 'med-bed',
+    name: 'Medbay Bed',
+    examine: 'A recovery bed with a humming diagnostic canopy. The sheets are crisp. The previous occupant was not.',
+    model: 'medBed',
+    blocksMovement: true,
+    light: { radius: 1.5, color: '#7cf29a', intensity: 0.35 },
+    interactions: [
+      {
+        verb: 'Rest',
+        effects: [
+          { type: 'restoreIntegrity' },
+          { type: 'notify', text: 'You lie down for a moment. The canopy hums and the aches fade.' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'atrium-hydroponics-tram',
+    name: 'Hydroponics Tram',
+    examine: 'A single-car tram to the Verdance hydroponics deck. The windows are fogged from the far side.',
+    model: 'transitLift',
+    blocksMovement: true,
+    light: { radius: 3, color: '#7cf29a', intensity: 0.7 },
+    interactions: [{ verb: 'Ride', effects: [{ type: 'teleport', zoneId: 'hydroponics', position: { x: 3, y: 12 } }] }],
+  },
+  {
+    id: 'hydroponics-tram',
+    name: 'Hydroponics Tram',
+    examine: 'The tram back up to the Meridian Atrium. Something has wound a tendril around the handrail.',
+    model: 'transitLift',
+    blocksMovement: true,
+    light: { radius: 3, color: '#ffcf4d', intensity: 0.7 },
+    interactions: [{ verb: 'Ride', effects: [{ type: 'teleport', zoneId: 'meridian-atrium', position: { x: 3, y: 26 } }] }],
+  },
+  {
+    id: 'seed-vault-console',
+    name: 'Seed Vault Console',
+    examine: 'The control console for the Verdance seed vault. Frost has crept over everything except the screen.',
+    model: 'seedVault',
+    blocksMovement: true,
+    light: { radius: 2.5, color: '#9fd8ff', intensity: 0.7 },
+    interactions: [
+      {
+        verb: 'Read',
+        conditions: [{ type: 'questActive', questId: 'overgrowth', stepId: 'vault' }],
+        failureText: 'The vault inventory scrolls past. Nothing you need right now.',
+        effects: [
+          { type: 'grantExperience', skill: 'research', amount: 120 },
+          { type: 'notify', text: 'Forty-one seed lines read as viable. The vault seals are holding, for now.' },
+        ],
+      },
+    ],
+  },
+  {
     id: 'issue-locker',
     name: 'Issue Locker',
     examine: 'A personal locker with your intake number stencilled on the door. It is already unlocked, which is unsettling.',
@@ -163,7 +217,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
         verb: 'Ride',
         conditions: [{ type: 'hasFlag', flag: 'clearance.atrium-transit' }],
         failureText: 'The lift panel reads: TRANSIT AUTHORISATION REQUIRED. Dr. Varga has not signed you off yet.',
-        effects: [{ type: 'teleport', zoneId: 'meridian-atrium', position: { x: 4, y: 18 } }],
+        effects: [{ type: 'teleport', zoneId: 'meridian-atrium', position: { x: 3, y: 30 } }],
       },
     ],
   },
@@ -250,7 +304,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     interactions: [
       {
         verb: 'Open',
-        effects: [{ type: 'teleport', zoneId: 'meridian-atrium', position: { x: 15, y: 2 } }],
+        effects: [{ type: 'teleport', zoneId: 'meridian-atrium', position: { x: 22, y: 3 } }],
       },
     ],
   },
@@ -331,7 +385,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     model: 'transitLift',
     blocksMovement: true,
     light: { radius: 3, color: '#ff9a4d', intensity: 0.6, flicker: true },
-    interactions: [{ verb: 'Ascend', effects: [{ type: 'teleport', zoneId: 'meridian-atrium', position: { x: 25, y: 17 } }] }],
+    interactions: [{ verb: 'Ascend', effects: [{ type: 'teleport', zoneId: 'meridian-atrium', position: { x: 42, y: 28 } }] }],
   },
   {
     id: 'junction-box',

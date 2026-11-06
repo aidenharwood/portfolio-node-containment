@@ -89,6 +89,15 @@ export const RESOURCE_NODES: readonly WorldObjectDefinition[] = [
     respawnTicks: 50,
     progressVerb: 'Harvesting',
   }),
+  resourceNode('strangler-vine', 'Strangler Vine', 'A thick vine wrapped around a planter frame, slowly tightening. It flinches when you look at it.', 'stranglerVine', 'Cut', {
+    level: 4,
+    itemId: 'vine-fibre',
+    experience: 22,
+    attemptTicks: 4,
+    charges: 5,
+    respawnTicks: 45,
+    progressVerb: 'Cutting',
+  }),
   resourceNode('slag-heap', 'Slag Heap', 'Cooled runoff from the old Undercroft smelters. Heavy, sharp and worth the effort.', 'slagHeap', 'Salvage', {
     level: 10,
     itemId: 'ferrous-slag',

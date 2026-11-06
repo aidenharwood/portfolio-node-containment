@@ -5,7 +5,7 @@ import { createHarness } from './support/testHarness.ts';
 
 const nearLocker = (record: CharacterRecord): CharacterRecord => ({
   ...record,
-  location: { zoneId: 'meridian-atrium', position: { x: 2, y: 6 } },
+  location: { zoneId: 'meridian-atrium', position: { x: 9, y: 2 } },
   inventory: [{ itemId: 'scrap-alloy', quantity: 30 }, { itemId: 'stun-baton', quantity: 1 }, { itemId: 'clearance-card-l1', quantity: 1 }, ...record.inventory.slice(3)],
 });
 

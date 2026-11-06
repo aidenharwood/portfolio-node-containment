@@ -97,6 +97,9 @@ Add a `ShopDefinition` to `content/shops.ts` (listings, which item categories it
 | Gloam Mites, straight after Live Fire | ≥ 95% |
 | Hollow Warden, without healing | ≥ 70% |
 | Static Wraiths, for a fresh operative | < 60% |
+| Thorn Crawlers, straight after Live Fire | 60–85% |
+| Thorn Crawlers, after Sector 2 | ≥ 90% |
+| Spore Drifters, after Sector 2 | 70–90% |
 | Pipe Leeches, straight after The Knocking | ≥ 95% |
 | Lone Rust Hounds, straight after The Knocking | ≥ 75% |
 | The Foreman, straight after The Knocking | < 10% |

@@ -29,6 +29,7 @@ export const REFINING_RECIPES: readonly RecipeDefinition[] = [
   recipe('refinery', 'synthweave-bolt', 1, { 'synthweave-offcut': 2 }, { experience: 12 }),
   recipe('refinery', 'gel-base', 1, { 'gloam-moss': 2 }, { experience: 12 }),
   recipe('refinery', 'polymer-sheet', 3, { 'polymer-resin': 2 }, { experience: 20 }),
+  recipe('refinery', 'braided-cord', 4, { 'vine-fibre': 2 }, { experience: 26 }),
   recipe('refinery', 'wiring-loom', 5, { 'conductive-filament': 2 }, { experience: 30 }),
   recipe('refinery', 'chitin-laminate', 6, { 'gloam-chitin': 2 }, { experience: 34 }),
   recipe('refinery', 'lumen-extract', 6, { 'lumen-spores': 2 }, { experience: 34 }),
@@ -39,6 +40,7 @@ export const REFINING_RECIPES: readonly RecipeDefinition[] = [
 
 export const MEDICAL_RECIPES: readonly RecipeDefinition[] = [
   recipe('synthesiser', 'medgel', 1, { 'gel-base': 1 }, { experience: 15 }),
+  recipe('synthesiser', 'sap-poultice', 5, { 'gel-base': 1, 'vine-fibre': 1 }, { experience: 28 }),
   recipe('synthesiser', 'trauma-foam', 6, { 'gel-base': 1, 'lumen-extract': 1 }, { experience: 40 }),
   recipe('synthesiser', 'clotting-shot', 10, { anticoagulant: 1, 'lumen-extract': 1 }, { experience: 70 }),
 ];
@@ -54,6 +56,7 @@ export const FABRICATION_RECIPES: readonly RecipeDefinition[] = [
   recipe('fabricator', 'containment-gloves', 3, { 'synthweave-bolt': 1, 'polymer-sheet': 1 }, { experience: 40, ticks: 5 }),
   recipe('fabricator', 'hazard-visor', 3, { 'polymer-sheet': 2 }, { experience: 40, ticks: 5 }),
   recipe('fabricator', 'field-vest-mk1', 4, { 'alloy-plate': 2, 'synthweave-bolt': 2 }, { experience: 50, ticks: 6 }),
+  recipe('fabricator', 'thornweave-gloves', 5, { 'braided-cord': 2, 'thorn-cluster': 2 }, { experience: 60, ticks: 6 }),
   recipe('fabricator', 'research-datapad', 5, { 'polymer-sheet': 1, 'wiring-loom': 1 }, { experience: 60, ticks: 6 }),
   recipe('fabricator', 'kestrel-sidearm', 5, { 'alloy-plate': 3, 'wiring-loom': 1 }, { experience: 70, ticks: 6 }),
   recipe('fabricator', 'field-scanner', 6, { 'polymer-sheet': 1, 'wiring-loom': 2 }, { experience: 80, ticks: 6 }),

@@ -7,7 +7,7 @@ export const SECTOR_TWO: ZoneDefinition = {
   tier: 2,
   spawn: { x: 4, y: 17 },
   capacity: 20,
-  recovery: { zoneId: 'meridian-atrium', position: { x: 4, y: 18 } },
+  recovery: { zoneId: 'meridian-atrium', position: { x: 20, y: 29 } },
   ambience: { darkness: 0.74, tint: '#160709', fog: '#12090b', fixtures: 'failing' },
   map: [
     '################################',

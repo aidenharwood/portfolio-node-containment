@@ -94,6 +94,19 @@ describe('difficulty curve', () => {
     assert.ok(duelWinRate(ready, outfitted, 'the-foreman') >= 0.6);
   });
 
+  test('Verdance Hydroponics suits operatives between Sector 2 and the Undercroft', () => {
+    const fresh = createStartingSkills({ closeQuarters: 150 + 3 * 34, fortitude: 100 + 33 });
+    const afterWarden = experienceAlongStoryline();
+    const rates = {
+      crawlerFresh: duelWinRate(fresh, issued, 'thorn-crawler'),
+      crawler: duelWinRate(afterWarden, issued, 'thorn-crawler'),
+      drifter: duelWinRate(afterWarden, issued, 'spore-drifter'),
+    };
+    assert.ok(rates.crawlerFresh >= 0.6 && rates.crawlerFresh < 0.85, JSON.stringify(rates));
+    assert.ok(rates.crawler >= 0.9, JSON.stringify(rates));
+    assert.ok(rates.drifter >= 0.7 && rates.drifter < 0.9, JSON.stringify(rates));
+  });
+
   test('static wraiths stay dangerous for a fresh operative', () => {
     assert.ok(duelWinRate(experienceAlongStoryline(), issued, 'static-wraith') < 0.6);
   });

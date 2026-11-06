@@ -20,6 +20,10 @@ const COLORS = {
   grateGlow: 0x0e4252,
   carpet: 0x2a2338,
   rust: 0x4a3122,
+  soil: 0x2e2418,
+  soilDark: 0x1f1810,
+  sprout: 0x4f8a3a,
+  sproutBright: 0x8ad05a,
   rustBright: 0x7a4a2a,
   rustSeam: 0x22160f,
   algae: 0x2f4a2a,
@@ -118,6 +122,12 @@ function floorVoxel(
       if (grain > 0.86) return solid(COLORS.rustBright);
       if (tileNoise > 0.7 && noise3(vx, 0, vz, 31) > 0.72) return solid(jitter(COLORS.algae, 0.05, grain));
       return solid(jitter(COLORS.rust, 0.07, grain));
+    }
+    case 'soil': {
+      if (grain > 0.9 && tileNoise > 0.35) return solid(jitter(COLORS.sproutBright, 0.08, grain));
+      if (grain > 0.78) return solid(jitter(COLORS.sprout, 0.1, grain));
+      if (edge && tileNoise > 0.6) return solid(COLORS.soilDark);
+      return solid(jitter(COLORS.soil, 0.09, grain));
     }
     case 'carpet': {
       if (Math.abs(lx - 3.5) + Math.abs(lz - 3.5) === 3) return solid(COLORS.carpetTrim);

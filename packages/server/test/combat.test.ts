@@ -11,8 +11,8 @@ import {
 } from '@containment/shared';
 import { createHarness, finishDialogue, type Harness } from './support/testHarness.ts';
 
-const ATRIUM_NEAR_KADE: ZoneLocation = { zoneId: 'meridian-atrium', position: { x: 21, y: 12 } };
-const ATRIUM_NEAR_SEL: ZoneLocation = { zoneId: 'meridian-atrium', position: { x: 24, y: 7 } };
+const ATRIUM_NEAR_KADE: ZoneLocation = { zoneId: 'meridian-atrium', position: { x: 36, y: 12 } };
+const ATRIUM_NEAR_SEL: ZoneLocation = { zoneId: 'meridian-atrium', position: { x: 39, y: 5 } };
 
 const activeAt = (questId: string, stepIndex = 0, objectiveCount = 1): QuestProgress => ({
   questId,
@@ -135,6 +135,7 @@ describe('combat', () => {
     });
     const { player } = harness;
     harness.ticksUntil(() => player.zoneId === 'meridian-atrium', 200);
+    assert.ok(harness.gameplay.world.zoneOf(player).areasAt(player.position).some((area) => area.id === 'medbay'), 'recovery wakes operatives in the medbay');
     assert.equal(player.integrity, player.maxIntegrity);
     assert.equal(player.combatTargetId, null);
     assert.match(harness.sink.last('notice')?.text ?? '', /incapacitated/);
@@ -176,7 +177,7 @@ describe('storyline continuity', () => {
 describe('economy', () => {
   test('requisitions sells medgel for scrip and buys back loot', () => {
     const harness = createHarness({
-      prepare: prepared({ zoneId: 'meridian-atrium', position: { x: 5, y: 5 } }, {}),
+      prepare: prepared({ zoneId: 'meridian-atrium', position: { x: 5, y: 4 } }, {}),
     });
     const { player } = harness;
     harness.gameplay.openShop(player, 'requisitions', 'atrium-okafor');
@@ -196,7 +197,7 @@ describe('economy', () => {
   });
 
   test('walking away closes the shop', () => {
-    const harness = createHarness({ prepare: prepared({ zoneId: 'meridian-atrium', position: { x: 5, y: 5 } }, {}) });
+    const harness = createHarness({ prepare: prepared({ zoneId: 'meridian-atrium', position: { x: 5, y: 4 } }, {}) });
     harness.gameplay.openShop(harness.player, 'requisitions', 'atrium-okafor');
     harness.send({ type: 'world.walk', target: { x: 12, y: 16 } });
     assert.equal(harness.player.shopSession, null);
@@ -243,7 +244,7 @@ describe('the far side', () => {
     assert.ok(player.hasFlag('clearance.undercroft'));
     assert.equal(stepOf(harness, 'the-far-side'), 1);
 
-    harness.gameplay.teleport(player, { zoneId: 'meridian-atrium', position: { x: 25, y: 17 } });
+    harness.gameplay.teleport(player, { zoneId: 'meridian-atrium', position: { x: 42, y: 28 } });
     harness.interactWithObject('atrium-service-lift');
     assert.equal(player.zoneId, 'undercroft');
     assert.equal(stepOf(harness, 'the-far-side'), 2);

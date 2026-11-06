@@ -4,6 +4,7 @@ import { darken, jitter, lighten, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE } from '../voxel/voxelKinds.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 import { CRAFTING_BUILDERS } from './craftingModels.ts';
+import { HUB_BUILDERS } from './hubModels.ts';
 
 export interface AnimatedPart {
   readonly model: VoxelModel;
@@ -327,6 +328,7 @@ const knockDoor: ObjectBuilder = () => {
 
 const BUILDERS: Readonly<Record<WorldObjectModel, ObjectBuilder>> = {
   ...CRAFTING_BUILDERS,
+  ...HUB_BUILDERS,
   junctionBox,
   pipeCluster,
   pumpHousing,

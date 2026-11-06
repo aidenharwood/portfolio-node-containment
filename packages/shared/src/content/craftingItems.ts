@@ -60,6 +60,12 @@ export const RAW_MATERIALS: readonly ItemDefinition[] = [
   ),
 ];
 
+export const HYDROPONICS_MATERIALS: readonly ItemDefinition[] = [
+  material('vine-fibre', 'Strangler Fibre', 'A coil of tough, faintly twitching vine fibre. It stops twitching eventually.', 'fibre', ['#5f9a4a', '#2a4a22'], 5),
+  material('thorn-cluster', 'Thorn Cluster', 'A knot of hooked thorns shed by a crawler. Hard as chitin, sharper than it looks.', 'shard', ['#8aa05a', '#3a4a22'], 10),
+  material('braided-cord', 'Braided Cord', 'Strangler fibre braided and cured into a cord that does not fray, snap or grow.', 'coil', ['#7aa05a', '#2a3a1a'], 14),
+];
+
 export const REFINED_PARTS: readonly ItemDefinition[] = [
   material('alloy-plate', 'Alloy Plate', 'A flat, clean plate of refined alloy. The foundation of most issued gear.', 'ingot', ['#b8c2ca', '#5d6b74'], 5),
   material('synthweave-bolt', 'Synthweave Bolt', 'A tight roll of rewoven synthweave, ready to be cut and stitched.', 'fibre', ['#8fb0c8', '#2a3f52'], 4),
@@ -74,6 +80,18 @@ export const REFINED_PARTS: readonly ItemDefinition[] = [
 ];
 
 export const CRAFTED_MEDICINE: readonly ItemDefinition[] = [
+  {
+    id: 'sap-poultice',
+    name: 'Sap Poultice',
+    examine: 'Gel base thickened with strangler sap. It grips the wound and does not let go, which is the point.',
+    category: 'consumable',
+    rarity: 'standard',
+    icon: 'vial',
+    iconColors: ['#b8e07a', '#3a5a22'],
+    maxStack: 20,
+    value: 14,
+    consumable: { verb: 'Apply', heal: 11 },
+  },
   {
     id: 'trauma-foam',
     name: 'Trauma Foam',
@@ -100,4 +118,24 @@ export const CRAFTED_MEDICINE: readonly ItemDefinition[] = [
   },
 ];
 
-export const CRAFTING_ITEMS: readonly ItemDefinition[] = [...RAW_MATERIALS, ...REFINED_PARTS, ...CRAFTED_MEDICINE];
+export const HYDROPONICS_GEAR: readonly ItemDefinition[] = [
+  {
+    id: 'thornweave-gloves',
+    name: 'Thornweave Gloves',
+    examine: 'Braided strangler cord woven over thorn plates. Thorns, teeth and door handles all bounce off.',
+    category: 'equipment',
+    rarity: 'issued',
+    icon: 'gloves',
+    iconColors: ['#6a8a3a', '#2a3a1a'],
+    maxStack: 1,
+    value: 70,
+    equipment: {
+      slot: 'hands',
+      stats: { armor: 3, hazardShielding: 2, power: 1 },
+      requirements: { skills: { fortitude: 4 } },
+      visual: { primary: '#6a8a3a', secondary: '#2a3a1a' },
+    },
+  },
+];
+
+export const CRAFTING_ITEMS: readonly ItemDefinition[] = [...RAW_MATERIALS, ...HYDROPONICS_MATERIALS, ...REFINED_PARTS, ...CRAFTED_MEDICINE, ...HYDROPONICS_GEAR];

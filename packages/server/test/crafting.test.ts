@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import { countItem, type CharacterRecord, type QuestProgress, type ZoneLocation } from '@containment/shared';
 import { createHarness, finishDialogue, type Harness } from './support/testHarness.ts';
 
-const WORKSHOP: ZoneLocation = { zoneId: 'meridian-atrium', position: { x: 3, y: 11 } };
+const WORKSHOP: ZoneLocation = { zoneId: 'meridian-atrium', position: { x: 3, y: 12 } };
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 
@@ -75,7 +75,7 @@ describe('gathering, refining and assembly', () => {
     const harness = createHarness({
       prepare: (record) => ({
         ...atWorkshop({ 'field-fabrication': completed('field-fabrication') })(record),
-        location: { zoneId: 'meridian-atrium', position: { x: 21, y: 12 } },
+        location: { zoneId: 'meridian-atrium', position: { x: 36, y: 12 } },
         inventory: [{ itemId: 'stun-baton', quantity: 1 }, ...record.inventory.slice(1)],
       }),
     });

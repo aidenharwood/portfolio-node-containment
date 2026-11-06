@@ -7,7 +7,7 @@ export const UNDERCROFT: ZoneDefinition = {
   tier: 3,
   spawn: { x: 5, y: 4 },
   capacity: 24,
-  recovery: { zoneId: 'meridian-atrium', position: { x: 4, y: 18 } },
+  recovery: { zoneId: 'meridian-atrium', position: { x: 20, y: 29 } },
   ambience: { darkness: 0.7, tint: '#10120c', fog: '#0d0f0a', fixtures: 'failing' },
   map: [
     '########################################',

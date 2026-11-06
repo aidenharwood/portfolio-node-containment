@@ -2,6 +2,18 @@ import type { ShopDefinition } from '../economy/shop.ts';
 
 export const SHOPS: readonly ShopDefinition[] = [
   {
+    id: 'medbay',
+    name: 'Atrium Medbay',
+    greeting: 'Prescriptions are for people with paperwork. Everyone else pays scrip.',
+    listings: [
+      { itemId: 'medgel', price: 6 },
+      { itemId: 'sap-poultice', price: 16 },
+      { itemId: 'trauma-foam', price: 26 },
+    ],
+    buysCategories: ['material', 'consumable'],
+    sellRate: 0.5,
+  },
+  {
     id: 'requisitions',
     name: 'Meridian Requisitions',
     greeting: 'Sign here, here and here. Scrip up front. No refunds on anything that has been inside a breach.',

@@ -64,6 +64,8 @@ export class EffectRunner {
         return this.host.openCrafting(player, effect.station);
       case 'openStorage':
         return this.host.openStorage(player);
+      case 'restoreIntegrity':
+        return player.setIntegrity(player.maxIntegrity);
     }
   }
 

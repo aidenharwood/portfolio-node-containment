@@ -14,6 +14,9 @@ import type { ZoneDefinition } from '../world/zone.ts';
 import { AMES_DIALOGUE, KADE_DIALOGUE, LUND_DIALOGUE, OKAFOR_DIALOGUE, SEL_DIALOGUE } from './dialogues/atriumDialogues.ts';
 import { OSEI_DIALOGUE, PELL_DIALOGUE, REYES_DIALOGUE, VARGA_DIALOGUE } from './dialogues/intakeDialogues.ts';
 import { HALVORSEN_DIALOGUE, MAGS_DIALOGUE } from './dialogues/undercroftDialogues.ts';
+import { ANAND_DIALOGUE, OYELARAN_DIALOGUE } from './dialogues/hubDialogues.ts';
+import { OVERGROWTH } from './quests/overgrowth.ts';
+import { HYDROPONICS } from './zones/hydroponics.ts';
 import { CRAFTING_ITEMS } from './craftingItems.ts';
 import { CRAFTING_OBJECTS } from './craftingObjects.ts';
 import { ITEMS } from './items.ts';
@@ -80,9 +83,11 @@ export const GAME_CONTENT: GameContent = {
     KADE_DIALOGUE,
     MAGS_DIALOGUE,
     HALVORSEN_DIALOGUE,
+    ANAND_DIALOGUE,
+    OYELARAN_DIALOGUE,
   ]),
-  quests: indexById([ORIENTATION_PROTOCOL, FIELD_FABRICATION, LIVE_FIRE, THE_KNOCKING, THE_FAR_SIDE, STATIC_IN_THE_VENTS, LEECH_SEASON]),
-  zones: indexById([INTAKE_WING, MERIDIAN_ATRIUM, SECTOR_TWO, UNDERCROFT, SECTOR_THREE]),
+  quests: indexById([ORIENTATION_PROTOCOL, FIELD_FABRICATION, LIVE_FIRE, THE_KNOCKING, THE_FAR_SIDE, STATIC_IN_THE_VENTS, LEECH_SEASON, OVERGROWTH]),
+  zones: indexById([INTAKE_WING, MERIDIAN_ATRIUM, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS]),
   creatures: indexById(CREATURES),
   shops: indexById(SHOPS),
   recipes: indexById(RECIPES),

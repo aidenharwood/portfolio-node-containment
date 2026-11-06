@@ -40,10 +40,10 @@ Environment variables for the server: `GAME_SERVER_PORT` (default 7420), `DATABA
   - Hit chance and max hit come from Close Quarters or Marksmanship plus weapon Power or Accuracy. Damage taken is reduced by Defence (Fortitude plus Armor).
   - Damage dealt trains the matching style skill and Fortitude.
   - Creatures have aggro and leash ranges, loot tables and respawn timers.
-  - When your character is incapacitated, medical recovers them to a safe zone at full integrity. Integrity also regenerates out of combat, and Medgel heals it.
+  - When your character is incapacitated, they wake in the Atrium Medbay at full integrity. Integrity also regenerates out of combat, and Medgel heals it.
   - The screen shows hit splats, overhead health bars, an integrity bar and a target panel.
 - **Economy:** Quartermaster Okafor runs Meridian Requisitions. Right-click and choose "Trade", or ask in dialogue, to buy Medgel and gear with scrip. You can sell creature materials and spare equipment back at half value. Right-click a listing or an item to buy or sell 1, 5, 10 or all of it.
-- **Personal storage:** storage lockers by Requisitions (Atrium) and in the Undercroft camp open onto the same storage, which has 200 slots and stacks everything. Click to move one, or right-click for 5, 10 or all. "Deposit pack" stores everything except quest items. Mites also drop Medgel occasionally.
+- **Personal storage:** storage lockers by Requisitions (Atrium) and in the Undercroft camp open onto the same storage, which has 200 slots and stacks everything. Click to move one, or right-click for 5, X (any amount) or all. "Deposit pack" stores everything except quest items. Lockers stand in the Commissary, the Fabrication Hall, the Undercroft camp and on the hydroponics platform.
 - **Built for crowds:**
   - **Layers:** each zone has a capacity. Once a zone is full, new arrivals go to an overflow copy of it (shown as "Layer 2" in the banner and minimap). Overflow layers that sit empty are retired.
   - **Single-way combat:** outside special areas, a creature fights one operative at a time and an operative is fought by one creature at a time. You can't attack something another operative is fighting, and you can't be piled on. Multi-combat areas, such as the Foreman's workshop with its leech adds, allow free-for-all fights.
@@ -64,9 +64,19 @@ Environment variables for the server: `GAME_SERVER_PORT` (default 7420), `DATABA
   4. *The Knocking*, the first main-story quest: through the quarantine bulkhead into **Sector 2**. You clear Gloam Mites, recover Dr. Halvorsen's expedition log and put down the Hollow Warden. It ends by revealing Sector 3.
   5. *The Far Side* (recommended rating 8): Varga gives you a Lantern Lens and clears you for the Atrium service lift down to **the Undercroft**, a flooded, rusting maintenance level with failing lights. You restore three junction boxes and defeat the Foreman, who unseals the way to **Sector 3**. There you find Dr. Halvorsen alive at the Knock, then report back to Sel.
 
-  Side quests: *Static in the Vents* runs in the Atrium. *Leech Season* comes from Mags, a scavenger in the Undercroft camp: bring five Leech Sacs for a Filter Respirator.
+  Side quests: *Overgrowth* comes from Dr. Oyelaran on the Verdance hydroponics deck: cut back thorn crawlers, harvest strangler fibre and check the seed vault. *Static in the Vents* runs in the Atrium. *Leech Season* comes from Mags, a scavenger in the Undercroft camp: bring five Leech Sacs for a Filter Respirator.
 - **Undercroft gear tier:** Mags' swap shop (buys at 60%) and Undercroft drops lead to the Shock Maul (Close Quarters 8), Marksman Carbine (Marksmanship 10) and Composite Plate (Fortitude 8). Pipe Leeches (level 4) and Rust Hounds (level 7) are the training ground for the Foreman (level 10).
-- **World:** a Three.js voxel renderer with baked ambient occlusion, soft shadows, dynamic point lights, bloom and wall cutaway; the camera orbits and zooms freely. A server-authoritative 300ms tick and A* pathfinding with no corner-cutting. There are five hand-built zones (Intake Wing, Meridian Atrium, the Sector 2 quarantine, the Undercroft and Sector 3), wandering NPCs, objects that run effects, lighting and a minimap.
+- **The Meridian Atrium hub:** the first hub, laid out as districts around a central plaza and coolant core.
+  - **Commissary:** Requisitions and storage.
+  - **Fabrication Hall:** all three crafting stations and starter resource nodes.
+  - **Quarantine Gate:** the way to Sector 2.
+  - **Archives:** Sel.
+  - **Training Range:** Kade and the drones.
+  - **Engineering Bay:** the service lift to the Undercroft.
+  - **Medbay:** Medic Anand, who heals for free and sells medicine, plus beds you can rest on. This is also where incapacitated operatives wake up.
+  - **Transit Bay:** the lift from the Intake Wing and the tram to Verdance Hydroponics.
+- **Verdance Hydroponics (tier 2):** an overgrown agricultural deck between Sector 2 and the Undercroft in difficulty. Thorn Crawlers (level 4) drop thorn clusters, and Spore Drifters (level 6, ranged) drop lumen spores and moss. Strangler vines (Salvage 4) give fibre for Braided Cord, Sap Poultices (heal 11) and Thornweave Gloves.
+- **World:** a Three.js voxel renderer with baked ambient occlusion, soft shadows, dynamic point lights, bloom and wall cutaway; the camera orbits and zooms freely. A server-authoritative 300ms tick and A* pathfinding with no corner-cutting. There are six hand-built zones (Intake Wing, Meridian Atrium, the Sector 2 quarantine, Verdance Hydroponics, the Undercroft and Sector 3), wandering NPCs, objects that run effects, lighting and a minimap.
 
 ## Repository layout
 

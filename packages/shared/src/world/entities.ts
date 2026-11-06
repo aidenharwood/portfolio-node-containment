@@ -44,6 +44,9 @@ export type WorldObjectModel =
   | 'slagHeap'
   | 'resinDrum'
   | 'storageLocker'
+  | 'medBed'
+  | 'stranglerVine'
+  | 'seedVault'
   | 'refinery'
   | 'fabricator'
   | 'synthesiser';

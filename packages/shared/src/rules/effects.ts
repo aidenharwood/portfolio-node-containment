@@ -14,4 +14,5 @@ export type GameEffect =
   | { readonly type: 'teleport'; readonly zoneId: ZoneId; readonly position: TilePoint }
   | { readonly type: 'openShop'; readonly shopId: string }
   | { readonly type: 'openCrafting'; readonly station: CraftingStation }
-  | { readonly type: 'openStorage' };
+  | { readonly type: 'openStorage' }
+  | { readonly type: 'restoreIntegrity' };
