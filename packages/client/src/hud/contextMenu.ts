@@ -8,6 +8,7 @@ export interface MenuAction {
 }
 
 const LEAVE_GRACE_MS = 120;
+const RELEASE_SLOP_PIXELS = 12;
 
 export class ContextMenu {
   readonly element = h('div', { className: 'context-menu panel', hidden: true, role: 'menu' });
@@ -16,6 +17,7 @@ export class ContextMenu {
 
   constructor() {
     window.addEventListener('pointerdown', this.dismissOnOutsideClick, true);
+    window.addEventListener('pointerup', this.dismissOnTouchReleaseOutside, true);
     window.addEventListener('keydown', this.dismissOnEscape);
     this.element.addEventListener('pointerleave', (event) => {
       if (event.pointerType !== 'mouse') return;
@@ -63,11 +65,22 @@ export class ContextMenu {
 
   dispose(): void {
     window.removeEventListener('pointerdown', this.dismissOnOutsideClick, true);
+    window.removeEventListener('pointerup', this.dismissOnTouchReleaseOutside, true);
     window.removeEventListener('keydown', this.dismissOnEscape);
   }
 
   private readonly dismissOnOutsideClick = (event: PointerEvent): void => {
     if (this.isOpen && !this.element.contains(event.target as Node)) this.close();
+  };
+
+  private readonly dismissOnTouchReleaseOutside = (event: PointerEvent): void => {
+    if (!this.isOpen || event.pointerType !== 'touch') return;
+    const bounds = this.element.getBoundingClientRect();
+    const inside = event.clientX >= bounds.left - RELEASE_SLOP_PIXELS
+      && event.clientX <= bounds.right + RELEASE_SLOP_PIXELS
+      && event.clientY >= bounds.top - RELEASE_SLOP_PIXELS
+      && event.clientY <= bounds.bottom + RELEASE_SLOP_PIXELS;
+    if (!inside) this.close();
   };
 
   private readonly dismissOnEscape = (event: KeyboardEvent): void => {
