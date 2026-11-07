@@ -33,14 +33,22 @@ import { actionsForTarget, type ActionContext } from '../input/worldActions.ts';
 import { GameRenderer } from '../render/gameRenderer.ts';
 import type { ClickMarker, PickTarget } from '../render/pickTarget.ts';
 import { h, replaceChildren, type Screen } from '../ui/dom.ts';
+import { isCoarsePointer } from '../ui/viewport.ts';
 
-const DRAG_THRESHOLD_PIXELS = 6;
+const DRAG_THRESHOLD_PIXELS = { mouse: 6, touch: 10 } as const;
 const ORBIT_YAW_PER_PIXEL = 0.008;
 const ORBIT_PITCH_PER_PIXEL = 0.006;
 const ZOOM_STEP = 1.12;
 
+interface PinchState {
+  readonly distance: number;
+  readonly midX: number;
+  readonly midY: number;
+}
+
 interface DragState {
   readonly button: number;
+  readonly touch: boolean;
   readonly startX: number;
   readonly startY: number;
   lastX: number;
@@ -66,7 +74,8 @@ export function createGameScreen(app: AppNavigator): Screen {
   const crafting = new CraftingWindow(connection, world);
   const activity = new ActivityBar(connection, world);
   const zoneBanner = h('div', { className: 'zone-banner' });
-  const cameraHint = h('div', { className: 'camera-hint' }, 'Drag or Q / E to rotate · Scroll to zoom · Home to reset');
+  const cameraHint = h('div', { className: 'camera-hint' },
+    isCoarsePointer() ? 'Drag to rotate · Pinch to zoom · Hold for options' : 'Drag or Q / E to rotate · Scroll to zoom · Home to reset');
 
   let hover: PickTarget | null = null;
   let clickMarker: ClickMarker | null = null;
@@ -75,6 +84,10 @@ export function createGameScreen(app: AppNavigator): Screen {
   let objectiveCreatures = new Set<string>();
   let pointer: { x: number; y: number; clientX: number; clientY: number } | null = null;
   let drag: DragState | null = null;
+  let pointerIsTouch = false;
+  const touches = new Map<number, { x: number; y: number }>();
+  let pinch: PinchState | null = null;
+  let multiTouchGesture = false;
   let frameHandle = 0;
 
   const examine = (text: string) => chat.push({ channel: 'examine', text });
@@ -166,7 +179,7 @@ export function createGameScreen(app: AppNavigator): Screen {
       return;
     }
     hover = renderer.pick(pointer.x, pointer.y);
-    const content = bubbleContentFor(hover);
+    const content = pointerIsTouch ? null : bubbleContentFor(hover);
     if (content) bubble.show(pointer.clientX, pointer.clientY, content);
     else bubble.hide();
     canvas.style.cursor = hover && hover.kind !== 'tile' ? 'pointer' : drag?.rotating ? 'grabbing' : 'default';
@@ -177,19 +190,64 @@ export function createGameScreen(app: AppNavigator): Screen {
     actionsForTarget(hover, actionContext())[0]?.run();
   };
 
+  const trackPointer = (event: PointerEvent) => {
+    const bounds = canvas.getBoundingClientRect();
+    pointer = { x: event.clientX - bounds.left, y: event.clientY - bounds.top, clientX: event.clientX, clientY: event.clientY };
+  };
+
+  const measurePinch = (): PinchState | null => {
+    const [first, second] = [...touches.values()];
+    if (!first || !second) return null;
+    return { distance: Math.max(1, Math.hypot(first.x - second.x, first.y - second.y)), midX: (first.x + second.x) / 2, midY: (first.y + second.y) / 2 };
+  };
+
+  const forgetTouchPointer = () => {
+    pointer = null;
+    hover = null;
+  };
+
   canvas.addEventListener('pointerdown', (event) => {
+    pointerIsTouch = event.pointerType === 'touch';
+    if (pointerIsTouch) {
+      touches.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      canvas.setPointerCapture(event.pointerId);
+      if (touches.size >= 2) {
+        drag = null;
+        multiTouchGesture = true;
+        pinch = measurePinch();
+        bubble.hide();
+        cameraHint.classList.add('dismissed');
+        return;
+      }
+      multiTouchGesture = false;
+      trackPointer(event);
+    }
     if (event.button !== 0 && event.button !== 1) return;
     if (event.button === 1) event.preventDefault();
-    drag = { button: event.button, startX: event.clientX, startY: event.clientY, lastX: event.clientX, lastY: event.clientY, rotating: event.button === 1 };
+    drag = { button: event.button, touch: pointerIsTouch, startX: event.clientX, startY: event.clientY, lastX: event.clientX, lastY: event.clientY, rotating: event.button === 1 };
     canvas.setPointerCapture(event.pointerId);
   });
 
   canvas.addEventListener('pointermove', (event) => {
-    const bounds = canvas.getBoundingClientRect();
-    pointer = { x: event.clientX - bounds.left, y: event.clientY - bounds.top, clientX: event.clientX, clientY: event.clientY };
+    if (event.pointerType === 'touch') {
+      if (!touches.has(event.pointerId)) return;
+      touches.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      if (pinch) {
+        const next = measurePinch();
+        if (next) {
+          renderer.cameraRig.zoom(pinch.distance / next.distance);
+          renderer.cameraRig.orbit(-(next.midX - pinch.midX) * ORBIT_YAW_PER_PIXEL, (next.midY - pinch.midY) * ORBIT_PITCH_PER_PIXEL);
+          pinch = next;
+        }
+        return;
+      }
+    } else {
+      pointerIsTouch = false;
+      trackPointer(event);
+    }
     if (drag) {
       const travelled = Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY);
-      if (!drag.rotating && travelled > DRAG_THRESHOLD_PIXELS) {
+      if (!drag.rotating && travelled > DRAG_THRESHOLD_PIXELS[drag.touch ? 'touch' : 'mouse']) {
         drag.rotating = true;
         cameraHint.classList.add('dismissed');
       }
@@ -202,15 +260,36 @@ export function createGameScreen(app: AppNavigator): Screen {
     }
   });
 
+  const endTouch = (event: PointerEvent): boolean => {
+    if (event.pointerType !== 'touch') return false;
+    touches.delete(event.pointerId);
+    if (touches.size < 2) pinch = null;
+    if (!multiTouchGesture) return false;
+    drag = null;
+    if (touches.size === 0) {
+      multiTouchGesture = false;
+      forgetTouchPointer();
+    }
+    return true;
+  };
+
   canvas.addEventListener('pointerup', (event) => {
+    if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+    if (endTouch(event)) return;
     const finished = drag;
     drag = null;
-    if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
     if (finished && finished.button === 0 && !finished.rotating && !menu.isOpen) performPrimaryAction();
+    if (finished?.touch && !menu.isOpen) forgetTouchPointer();
+  });
+
+  canvas.addEventListener('pointercancel', (event) => {
+    endTouch(event);
+    drag = null;
+    if (event.pointerType === 'touch' && touches.size === 0) forgetTouchPointer();
   });
 
   canvas.addEventListener('pointerleave', () => {
-    if (drag) return;
+    if (drag || pointerIsTouch) return;
     pointer = null;
     hover = null;
     bubble.hide();
@@ -225,6 +304,8 @@ export function createGameScreen(app: AppNavigator): Screen {
     const walk = stacked.findLast((action) => action.verb === 'Walk here');
     const actions = [...stacked.filter((action) => action.verb !== 'Walk here'), ...(walk ? [walk] : [])];
     bubble.hide();
+    drag = null;
+    if (pointerIsTouch) forgetTouchPointer();
     if (actions.length > 0) menu.open(event.clientX, event.clientY, actions);
   });
 

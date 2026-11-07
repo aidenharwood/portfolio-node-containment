@@ -2,6 +2,7 @@ import { countItem, CURRENCY_ITEM_ID, GAME_CONTENT, sellPrice, type InventorySta
 import type { GameConnection } from '../net/gameConnection.ts';
 import { itemIconUrl } from '../render/items/itemSprites.ts';
 import type { WorldState } from '../state/worldState.ts';
+import { primaryGesture, secondaryGesture } from '../ui/viewport.ts';
 import { h, replaceChildren } from '../ui/dom.ts';
 import { attachItemTooltip, hideItemTooltip } from '../ui/itemTooltip.ts';
 import type { ContextMenu } from './contextMenu.ts';
@@ -78,7 +79,7 @@ export class ShopWindow {
       ),
       h('footer', { className: 'shop-footer' },
         h('span', {}, 'Scrip ', h('strong', { className: 'scrip-amount' }, scrip.toLocaleString())),
-        h('span', { className: 'tab-hint' }, 'Click for one · Right-click to buy or sell more'),
+        h('span', { className: 'tab-hint' }, `${primaryGesture()} for one · ${secondaryGesture()} to buy or sell more`),
       ),
     ));
   }

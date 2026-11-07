@@ -9,6 +9,7 @@ import {
 } from '@containment/shared';
 import type { GameConnection } from '../../net/gameConnection.ts';
 import { itemIconUrl } from '../../render/items/itemSprites.ts';
+import { primaryGesture } from '../../ui/viewport.ts';
 import { h, replaceChildren } from '../../ui/dom.ts';
 import { attachItemTooltip } from '../../ui/itemTooltip.ts';
 import type { PanelTab } from '../sidePanel.ts';
@@ -37,7 +38,7 @@ export function createEquipmentTab(connection: GameConnection): PanelTab {
   );
 
   const element = h('div', { className: 'tab-equipment' },
-    h('header', { className: 'tab-header' }, h('h3', {}, 'Loadout'), h('span', { className: 'tab-hint' }, 'Click to remove')),
+    h('header', { className: 'tab-header' }, h('h3', {}, 'Loadout'), h('span', { className: 'tab-hint' }, `${primaryGesture()} to remove`)),
     h('div', { className: 'paper-doll' }, ...slots.values()),
     h('h4', { className: 'subheading' }, 'Protection & Output'),
     stats,

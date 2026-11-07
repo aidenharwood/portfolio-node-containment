@@ -22,13 +22,16 @@ export function setTooltipEquipment(equipment: EquipmentState): void {
 
 export function attachItemTooltip(target: HTMLElement, item: () => ItemDefinition | null): void {
   target.addEventListener('pointerenter', (event) => {
+    if (event.pointerType !== 'mouse') return;
     const definition = item();
     if (!definition) return;
     renderTooltip(definition);
     tooltip.hidden = false;
     position(event);
   });
-  target.addEventListener('pointermove', position);
+  target.addEventListener('pointermove', (event) => {
+    if (!tooltip.hidden) position(event);
+  });
   target.addEventListener('pointerleave', hideItemTooltip);
 }
 

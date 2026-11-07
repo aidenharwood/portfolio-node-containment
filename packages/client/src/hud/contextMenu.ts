@@ -17,7 +17,8 @@ export class ContextMenu {
   constructor() {
     window.addEventListener('pointerdown', this.dismissOnOutsideClick, true);
     window.addEventListener('keydown', this.dismissOnEscape);
-    this.element.addEventListener('pointerleave', () => {
+    this.element.addEventListener('pointerleave', (event) => {
+      if (event.pointerType !== 'mouse') return;
       this.cancelLeaveTimer();
       this.leaveTimer = window.setTimeout(() => this.close(), LEAVE_GRACE_MS);
     });

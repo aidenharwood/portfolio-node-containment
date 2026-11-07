@@ -1,6 +1,7 @@
 import type { ChatChannel } from '@containment/shared';
 import type { GameConnection } from '../net/gameConnection.ts';
 import { h } from '../ui/dom.ts';
+import { isCoarsePointer, isCompactLayout } from '../ui/viewport.ts';
 
 export type ChatLine = { readonly channel: ChatChannel | 'examine'; readonly author?: string; readonly text: string };
 
@@ -24,7 +25,7 @@ export class ChatLog {
 
   constructor(connection: GameConnection) {
     this.log = h('div', { className: 'chat-log', role: 'log', ariaLive: 'polite' });
-    this.input = h('input', { className: 'chat-input', maxLength: 160, placeholder: 'Press Enter to speak' });
+    this.input = h('input', { className: 'chat-input', maxLength: 160, placeholder: isCoarsePointer() ? 'Tap to speak' : 'Press Enter to speak' });
     const form = h('form', { className: 'chat-form' }, h('span', { className: 'chat-prompt' }, '›'), this.input);
     form.onsubmit = (event) => {
       event.preventDefault();
@@ -46,7 +47,17 @@ export class ChatLog {
       }, filter[0]?.toUpperCase() + filter.slice(1)),
     );
 
-    this.element = h('section', { className: 'hud-chat panel' }, h('div', { className: 'chat-tabs' }, ...tabs), this.log, form);
+    const collapseToggle = h('button', {
+      className: 'chat-collapse',
+      type: 'button',
+      ariaLabel: 'Toggle chat size',
+      onclick: () => {
+        this.element.classList.toggle('collapsed');
+        this.log.scrollTop = this.log.scrollHeight;
+      },
+    });
+
+    this.element = h('section', { className: `hud-chat panel${isCompactLayout() ? ' collapsed' : ''}` }, h('div', { className: 'chat-tabs' }, ...tabs, collapseToggle), this.log, form);
     this.unsubscribe = connection.on('chat.message', (message) => this.push(message));
   }
 

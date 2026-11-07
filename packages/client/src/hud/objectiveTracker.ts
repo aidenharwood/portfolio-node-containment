@@ -1,9 +1,10 @@
 import { GAME_CONTENT, trackedQuests, type QuestLog } from '@containment/shared';
 import { h, replaceChildren } from '../ui/dom.ts';
+import { isCompactLayout } from '../ui/viewport.ts';
 
 export class ObjectiveTracker {
   readonly element = h('aside', { className: 'hud-objectives' });
-  private collapsed = false;
+  private collapsed = isCompactLayout();
 
   update(log: QuestLog): void {
     const quests = trackedQuests(log, GAME_CONTENT.quests);

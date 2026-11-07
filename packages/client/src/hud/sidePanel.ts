@@ -1,5 +1,6 @@
 import type { SelfState } from '@containment/shared';
 import { h } from '../ui/dom.ts';
+import { isCompactLayout } from '../ui/viewport.ts';
 
 export interface PanelTab {
   readonly id: string;
@@ -26,7 +27,7 @@ export class SidePanel {
           type: 'button',
           role: 'tab',
           title: `${tab.label} (F${index + 1})`,
-          onclick: () => this.select(tab.id),
+          onclick: () => this.toggle(tab.id),
         }, h('span', { className: 'panel-tab-glyph' }, tab.glyph), h('span', { className: 'panel-tab-label' }, tab.label));
         this.buttons.set(tab.id, button);
         return button;
@@ -34,10 +35,26 @@ export class SidePanel {
     );
     this.element = h('section', { className: 'hud-side panel' }, strip, h('div', { className: 'panel-body' }, ...tabs.map((tab) => tab.element)));
     this.select(this.active);
+    if (isCompactLayout()) this.collapse();
+  }
+
+  toggle(id: string): void {
+    if (id === this.active && !this.isCollapsed) this.collapse();
+    else this.select(id);
+  }
+
+  get isCollapsed(): boolean {
+    return this.element.classList.contains('collapsed');
+  }
+
+  collapse(): void {
+    this.element.classList.add('collapsed');
+    for (const button of this.buttons.values()) button.classList.remove('active');
   }
 
   select(id: string): void {
     this.active = id;
+    this.element.classList.remove('collapsed');
     for (const tab of this.tabs) {
       tab.element.hidden = tab.id !== id;
       const button = this.buttons.get(tab.id);

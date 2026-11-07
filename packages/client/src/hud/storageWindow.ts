@@ -2,6 +2,7 @@ import { countItem, GAME_CONTENT, STORAGE_CAPACITY, type ItemDefinition } from '
 import type { GameConnection } from '../net/gameConnection.ts';
 import { itemIconUrl } from '../render/items/itemSprites.ts';
 import type { WorldState } from '../state/worldState.ts';
+import { primaryGesture, secondaryGesture } from '../ui/viewport.ts';
 import { h, replaceChildren } from '../ui/dom.ts';
 import { attachItemTooltip, hideItemTooltip } from '../ui/itemTooltip.ts';
 import type { ContextMenu } from './contextMenu.ts';
@@ -69,7 +70,7 @@ export class StorageWindow {
           h('div', { className: 'shop-column' },
             h('p', { className: 'eyebrow' }, 'Stored'),
             self.storage.length === 0
-              ? h('p', { className: 'tab-hint' }, 'Nothing stored yet. Click items in your pack to store them.')
+              ? h('p', { className: 'tab-hint' }, `Nothing stored yet. ${primaryGesture()} items in your pack to store them.`)
               : h('div', { className: 'shop-sell-grid storage-shelves' },
                   ...self.storage.map((stack) => {
                     const item = GAME_CONTENT.items.get(stack.itemId);
@@ -90,7 +91,7 @@ export class StorageWindow {
           ),
         ),
         h('footer', { className: 'shop-footer' },
-          h('span', { className: 'tab-hint' }, 'Click to move one · Right-click for more'),
+          h('span', { className: 'tab-hint' }, `${primaryGesture()} to move one · ${secondaryGesture()} for more`),
           h('button', { className: 'button small', type: 'button', onclick: () => this.connection.send({ type: 'storage.depositAll' }) }, 'Deposit pack'),
         ),
       ),

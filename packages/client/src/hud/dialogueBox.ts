@@ -1,6 +1,7 @@
 import type { DialogueView } from '@containment/shared';
 import type { GameConnection } from '../net/gameConnection.ts';
 import { h, replaceChildren } from '../ui/dom.ts';
+import { isCoarsePointer } from '../ui/viewport.ts';
 
 const CHARACTERS_PER_SECOND = 70;
 
@@ -59,7 +60,7 @@ export class DialogueBox {
               h('span', { className: 'option-key' }, String(position + 1)), option.text)),
           ),
         )
-      : h('button', { className: 'dialogue-continue', type: 'button', onclick: () => this.advance() }, 'Click here to continue');
+      : h('button', { className: 'dialogue-continue', type: 'button', onclick: () => this.advance() }, isCoarsePointer() ? 'Tap to continue' : 'Click here to continue');
 
     replaceChildren(
       this.element,
