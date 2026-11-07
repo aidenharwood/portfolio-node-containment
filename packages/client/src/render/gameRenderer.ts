@@ -35,9 +35,6 @@ import { samePickTarget, type ClickMarker, type PickTarget } from './pickTarget.
 import { hex, lighten } from './voxel/palette.ts';
 import { ZoneScene, type LightSource } from './world/zoneScene.ts';
 
-const isScenery = (target: PickTarget): boolean =>
-  target.kind === 'terrain' || (target.kind === 'object' && target.definition.interactions.length === 0);
-
 export interface RenderOverlay {
   readonly hover: PickTarget | null;
   readonly clickMarker: ClickMarker | null;
@@ -210,7 +207,7 @@ export class GameRenderer {
   }
 
   pick(canvasX: number, canvasY: number): PickTarget | null {
-    return this.pickAll(canvasX, canvasY).find((target) => !isScenery(target)) ?? null;
+    return this.pickAll(canvasX, canvasY)[0] ?? null;
   }
 
   pickAll(canvasX: number, canvasY: number): PickTarget[] {
@@ -221,9 +218,8 @@ export class GameRenderer {
     const selfId = this.world.selfEntityId;
     const candidates: Object3D[] = [
       ...[...this.entities.entries()].filter(([id]) => id !== selfId).map(([, view]) => view.rig.root),
-      ...[...this.zone.objects.values()].map((view) => view.group),
+      ...[...this.zone.objects.values()].filter((view) => view.definition.interactions.length > 0).map((view) => view.group),
       ...this.groundItems.pickables(),
-      ...this.zone.solidWalls(),
     ];
     const groundPoint = this.raycaster.ray.intersectPlane(this.groundPlane, new Vector3());
     const groundDistance = groundPoint ? groundPoint.distanceTo(this.raycaster.ray.origin) : Infinity;
@@ -232,37 +228,19 @@ export class GameRenderer {
       if (!targets.some((existing) => samePickTarget(existing, target))) targets.push(target);
     };
 
-    let blockedByWall = false;
-    let glass: PickTarget | null = null;
     for (const hit of this.raycaster.intersectObjects(candidates, true)) {
       if (hit.distance > groundDistance + 0.01) break;
       const target = this.targetFor(hit.object);
-      if (!target) {
-        const inside = hit.point.clone().addScaledVector(this.raycaster.ray.direction, 0.05);
-        const wallTile = { x: Math.round(inside.x), y: Math.round(inside.z) };
-        const terrain = this.world.zone?.layout.tileAt(wallTile);
-        if (terrain === 'glass') {
-          glass ??= { kind: 'terrain', tile: wallTile, terrain };
-          continue;
-        }
-        if (terrain) add({ kind: 'terrain', tile: wallTile, terrain });
-        blockedByWall = true;
-        break;
-      }
-      add(target);
+      if (target) add(target);
     }
-    if (glass) add(glass);
-    if (blockedByWall || !groundPoint) return targets;
+    if (!groundPoint) return targets;
 
     const tile = { x: Math.round(groundPoint.x), y: Math.round(groundPoint.z) };
     for (const item of this.world.groundItems.values()) {
       if (item.position.x === tile.x && item.position.y === tile.y) add({ kind: 'groundItem', item });
     }
     const layout = this.world.zone?.layout;
-    if (!layout) return targets;
-    const terrain = layout.tileAt(tile);
-    if (TILE_KINDS[terrain].walkable) add({ kind: 'tile', tile });
-    else if (terrain !== 'void') add({ kind: 'terrain', tile, terrain });
+    if (layout && TILE_KINDS[layout.tileAt(tile)].walkable) add({ kind: 'tile', tile });
     return targets;
   }
 

@@ -191,10 +191,6 @@ export class ZoneScene {
     for (const fixture of this.fixtures) apply(fixture, blocksView(fixture.tile, FIXTURE_OVERHEAD_ALLOWANCE));
   }
 
-  solidWalls(): Object3D[] {
-    return this.walls.filter((wall) => !wall.faded).map((wall) => wall.group);
-  }
-
   dispose(): void {
     this.root.traverse((child) => {
       if (child instanceof Mesh) child.geometry.dispose();
