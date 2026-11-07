@@ -157,10 +157,10 @@ export class GameRenderer {
     const fog = hex(ambience.fog);
     this.scene.background = new Color(fog).multiplyScalar(0.55);
     this.scene.fog = new FogExp2(fog, 0.028);
-    this.hemisphere.color.setHex(lighten(hex(ambience.tint), 0.55));
+    this.hemisphere.color.setHex(lighten(hex(ambience.tint), 0.68));
     this.hemisphere.groundColor.setHex(hex(ambience.tint));
-    this.hemisphere.intensity = 0.9 + (1 - ambience.darkness) * 1.4;
-    this.keyLight.intensity = 0.25 + (1 - ambience.darkness) * 0.7;
+    this.hemisphere.intensity = 1.45 + (1 - ambience.darkness) * 1.1;
+    this.keyLight.intensity = 0.5 + (1 - ambience.darkness) * 0.55;
     this.assignedLights = [];
     this.lightTimer = 0;
 

@@ -112,7 +112,7 @@ export class ZoneScene {
     const volume = buildZoneVolume(layout);
     const meshOptions = { voxelSize: ZONE_VOXEL_SIZE, origin: ZONE_MESH_ORIGIN };
 
-    const floor = createVoxelObject(meshVoxels(volume, { min: [0, 0, 0], max: [volume.width, 2, volume.depth] }, meshOptions), { castShadow: false });
+    const floor = createVoxelObject(meshVoxels(volume, { min: [0, 0, 0], max: [volume.width, 2, volume.depth] }, { ...meshOptions, clipToBounds: true }), { castShadow: false });
     floor.name = 'floor';
     this.root.add(floor);
 
@@ -256,7 +256,7 @@ export class ZoneScene {
     const panelColor = failing ? 0xd9846a : 0xb4d4e6;
     const panelStripe = failing ? 0x8a3a2a : 0x8fb3c8;
     positions.forEach((position, index) => {
-      if (failing && index % 2 === 1) return;
+      const flickers = failing ? index % 3 === 0 : noise3(position.x, position.y, 0, 77) > 0.93;
       const model = new VoxelModel();
       const cx = position.x * 16;
       const cz = position.y * 16;
@@ -273,9 +273,9 @@ export class ZoneScene {
       this.lights.push({
         position: new Vector3(position.x, CEILING_FIXTURE_HEIGHT + 0.95, position.y),
         color: failing ? FAILING_LIGHT_COLOR : CEILING_LIGHT_COLOR,
-        intensity: failing ? 0.7 : 1.15,
-        radius: 6,
-        flicker: failing || noise3(position.x, position.y, 0, 77) > 0.93,
+        intensity: failing ? 1.05 : 1.2,
+        radius: failing ? 6.5 : 6,
+        flicker: flickers,
         seed: position.x * 7 + position.y,
       });
     });

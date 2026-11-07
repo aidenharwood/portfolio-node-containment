@@ -10,6 +10,7 @@ export interface VoxelMeshes {
 export interface MeshOptions {
   readonly voxelSize: number;
   readonly origin: readonly [number, number, number];
+  readonly clipToBounds?: boolean;
 }
 
 type Vector = readonly [number, number, number];
@@ -71,6 +72,10 @@ function shouldEmitFace(kind: number, neighbor: number): boolean {
 export function meshVoxels(source: VoxelSource, bounds: VoxelBounds, options: MeshOptions): VoxelMeshes {
   const buffers = { solid: new GeometryBuffer(), emissive: new GeometryBuffer(), glass: new GeometryBuffer() };
   const { voxelSize, origin } = options;
+  const neighborKind = (x: number, y: number, z: number): number => {
+    if (options.clipToBounds && (x < bounds.min[0] || y < bounds.min[1] || z < bounds.min[2] || x >= bounds.max[0] || y >= bounds.max[1] || z >= bounds.max[2])) return VOXEL_EMPTY;
+    return source.kindAt(x, y, z);
+  };
   const [minX, minY, minZ] = bounds.min;
   const [maxX, maxY, maxZ] = bounds.max;
   const cell = [0, 0, 0];
@@ -88,7 +93,7 @@ export function meshVoxels(source: VoxelSource, bounds: VoxelBounds, options: Me
 
         for (const face of FACES) {
           const [nx, ny, nz] = face.normal;
-          if (!shouldEmitFace(kind, source.kindAt(x + nx, y + ny, z + nz))) continue;
+          if (!shouldEmitFace(kind, neighborKind(x + nx, y + ny, z + nz))) continue;
 
           const occlusion = kind === VOXEL_EMISSIVE ? UNOCCLUDED : cornerOcclusion(source, cell, face);
           const base = buffer.positions.length / 3;

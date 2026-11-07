@@ -74,6 +74,8 @@ Object models face south (+y on the map) by default. Wall-mounted or doorway obj
 
 ### Add a creature
 
+Creatures are passive by default. Set `aggressive: true` only for creatures that should hunt players. They automatically ignore players more than `AGGRESSION_LEVEL_GAP` combat levels above them.
+
 1. Add a `CreatureDefinition` to `content/creatures.ts`: level, integrity, defence, an attack profile, aggro and leash radii, respawn ticks and a loot table.
 2. Place it in a zone's `creatures` list. Use `recovery` on dangerous zones so incapacitated players wake somewhere safe.
 3. Give it a look: add a `CreatureModel` id and a rig in `client/src/render/models/creatureModels.ts`. Implementing `EntityRig` gives you the attack, hurt and death animation hooks.

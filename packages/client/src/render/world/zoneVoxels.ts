@@ -35,6 +35,8 @@ const COLORS = {
   wallBody: 0x2a3a45,
   wallCap: 0x3b4b57,
   wallKick: 0x151c21,
+  wallCut: 0x34444f,
+  wallCutHatch: 0x46596a,
   wallTrim: 0x2f4250,
   wallPanel: 0x34495a,
   wallDark: 0x0b1014,
@@ -175,7 +177,7 @@ function paintWall(volume: DenseVolume, layout: ZoneLayout, tx: number, ty: numb
       const vx = tx * R + lx;
       const vz = ty * R + lz;
       volume.set(vx, SUBFLOOR, vz, COLORS.subfloor);
-      volume.set(vx, FLOOR, vz, COLORS.wallKick);
+      volume.set(vx, FLOOR, vz, (lx + lz) % 4 === 0 ? COLORS.wallCutHatch : jitter(COLORS.wallCut, 0.03, noise3(vx, FLOOR, vz, 5)));
       const outer = outerSide(lx, lz, open);
       for (let h = 0; h < WALL_LAYERS; h++) {
         const vy = FLOOR_LAYERS + h;
