@@ -9,8 +9,6 @@ import {
 } from '@containment/shared';
 import {
   AdditiveBlending,
-  BufferGeometry,
-  Float32BufferAttribute,
   Group,
   Mesh,
   MeshBasicMaterial,
@@ -24,6 +22,7 @@ import { hex, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE } from '../voxel/voxelKinds.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 import { meshVoxels } from '../voxel/voxelMesher.ts';
+import { LiquidSurface } from './liquidSurface.ts';
 import { createVoxelObject, setVoxelObjectFaded } from '../voxel/voxelMaterials.ts';
 import {
   MODEL_VOXEL_SIZE,
@@ -103,8 +102,7 @@ export class ZoneScene {
   private readonly fixtures: WallPiece[] = [];
   readonly objects = new Map<InstanceId, ObjectView>();
   readonly lights: LightSource[] = [];
-  private readonly coolant: Mesh | null;
-  private readonly coolantMaterial = new MeshBasicMaterial({ color: 0x46c8f0, transparent: true, opacity: 0.55, toneMapped: false, depthWrite: false });
+  private readonly coolant: LiquidSurface | null;
   private readonly ringMaterial = new MeshBasicMaterial({ color: 0xffb347, transparent: true, opacity: 0.8, blending: AdditiveBlending, depthWrite: false, toneMapped: false });
 
   constructor(zone: ActiveZone) {
@@ -132,8 +130,8 @@ export class ZoneScene {
       }
     }
 
-    this.coolant = this.buildCoolant(zone);
-    if (this.coolant) this.root.add(this.coolant);
+    this.coolant = LiquidSurface.build(layout, 'coolant');
+    if (this.coolant) this.root.add(this.coolant.mesh);
 
     definition.objects.forEach((placement, index) => this.addObject(placement, index));
 
@@ -168,10 +166,7 @@ export class ZoneScene {
         view.objectiveRing.scale.set(pulse, pulse, 1);
       }
     }
-    if (this.coolant) {
-      this.coolant.position.y = -0.05 + Math.sin(time * 1.3) * 0.01;
-      this.coolantMaterial.opacity = 0.5 + Math.sin(time * 2.1) * 0.08;
-    }
+    this.coolant?.update(time);
     this.ringMaterial.opacity = 0.55 + Math.sin(time * 3) * 0.3;
   }
 
@@ -204,7 +199,7 @@ export class ZoneScene {
     this.root.traverse((child) => {
       if (child instanceof Mesh) child.geometry.dispose();
     });
-    this.coolantMaterial.dispose();
+    this.coolant?.dispose();
     this.ringMaterial.dispose();
   }
 
@@ -281,22 +276,4 @@ export class ZoneScene {
     });
   }
 
-  private buildCoolant(zone: ActiveZone): Mesh | null {
-    const positions: number[] = [];
-    const indices: number[] = [];
-    for (let y = 0; y < zone.layout.height; y++) {
-      for (let x = 0; x < zone.layout.width; x++) {
-        if (zone.layout.tileAt({ x, y }) !== 'coolant') continue;
-        const base = positions.length / 3;
-        positions.push(x - 0.5, 0, y - 0.5, x + 0.5, 0, y - 0.5, x + 0.5, 0, y + 0.5, x - 0.5, 0, y + 0.5);
-        indices.push(base, base + 2, base + 1, base, base + 3, base + 2);
-      }
-    }
-    if (indices.length === 0) return null;
-    const geometry = new BufferGeometry();
-    geometry.setAttribute('position', new Float32BufferAttribute(positions, 3));
-    geometry.setIndex(indices);
-    geometry.computeVertexNormals();
-    return new Mesh(geometry, this.coolantMaterial);
-  }
 }
