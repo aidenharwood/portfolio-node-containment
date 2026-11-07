@@ -30,15 +30,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     if: github.event_name != 'pull_request'
-    permissions:
-      contents: read
-      packages: write
     steps:
       - uses: aidenharwood/portfolio-action-docker-build-push@v1
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.GHCR_USERNAME }}
+          password: ${{ secrets.GH_PAT }}
           image_name: ${{ env.IMAGE_NAME }}
           dockerfile: Dockerfile
           context: .
