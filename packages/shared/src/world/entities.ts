@@ -50,7 +50,17 @@ export type WorldObjectModel =
   | 'tram'
   | 'refinery'
   | 'fabricator'
-  | 'synthesiser';
+  | 'synthesiser'
+  | 'cryoPod'
+  | 'relayDish'
+  | 'archiveShelf'
+  | 'furnaceCore'
+  | 'mirrorPane'
+  | 'rimeCrystal'
+  | 'inkPool'
+  | 'emberSeam'
+  | 'mirrorShard'
+  | 'valveWheel';
 
 export interface ObjectInteraction {
   readonly verb: string;

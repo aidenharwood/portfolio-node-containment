@@ -68,4 +68,87 @@ export const FABRICATION_RECIPES: readonly RecipeDefinition[] = [
   recipe('fabricator', 'ward-lattice', 12, { 'charged-cell': 3, 'wiring-loom': 2 }, { experience: 240, ticks: 8 }),
 ];
 
-export const RECIPES: readonly RecipeDefinition[] = [...REFINING_RECIPES, ...MEDICAL_RECIPES, ...FABRICATION_RECIPES];
+export const DEEP_REFINING_RECIPES: readonly RecipeDefinition[] = [
+  recipe('refinery', 'rime-alloy', 12, { 'frost-crystal': 2, 'hardened-steel': 1 }, { experience: 80 }),
+  recipe('refinery', 'cryo-compound', 13, { 'moth-dust': 1, 'cryo-gel': 1 }, { experience: 84 }),
+  recipe('refinery', 'relay-weave', 16, { 'signal-copper': 2, 'wiring-loom': 1 }, { experience: 110 }),
+  recipe('refinery', 'servo-core', 17, { 'sentinel-servo': 2 }, { experience: 116 }),
+  recipe('refinery', 'echo-serum', 17, { 'echo-residue': 2 }, { experience: 116 }),
+  recipe('refinery', 'vellum-weave', 20, { 'archival-vellum': 2 }, { experience: 150 }),
+  recipe('refinery', 'ink-laminate', 21, { 'eel-hide': 2, 'black-ink': 1 }, { experience: 160 }),
+  recipe('refinery', 'ink-essence', 22, { 'black-ink': 1, 'redaction-strip': 1 }, { experience: 168 }),
+  recipe('refinery', 'furnace-steel', 25, { 'ember-ore': 2, 'hardened-steel': 1 }, { experience: 210 }),
+  recipe('refinery', 'cinder-salt', 26, { 'cinder-mote': 2 }, { experience: 220 }),
+  recipe('refinery', 'mirror-alloy', 30, { 'mirror-glass': 2, 'furnace-steel': 1 }, { experience: 290 }),
+  recipe('refinery', 'hollow-weave', 31, { 'hollow-thread': 2 }, { experience: 300 }),
+];
+
+export const DEEP_MEDICAL_RECIPES: readonly RecipeDefinition[] = [
+  recipe('synthesiser', 'rime-salve', 12, { 'gel-base': 1, 'cryo-compound': 1 }, { experience: 90 }),
+  recipe('synthesiser', 'echo-stim', 16, { 'echo-serum': 1, 'lumen-extract': 1 }, { experience: 125 }),
+  recipe('synthesiser', 'ink-tonic', 20, { 'ink-essence': 1, 'lumen-extract': 1 }, { experience: 170 }),
+  recipe('synthesiser', 'cinder-draught', 25, { 'cinder-salt': 1, 'echo-serum': 1 }, { experience: 220 }),
+  recipe('synthesiser', 'threshold-elixir', 30, { 'knock-splinter': 1, 'cinder-salt': 1 }, { experience: 300 }),
+];
+
+const fabricate = (output: string, level: number, inputs: Readonly<Record<string, number>>, experience: number): RecipeDefinition =>
+  recipe('fabricator', output, level, inputs, { experience, ticks: 8 });
+
+export const DEEP_FABRICATION_RECIPES: readonly RecipeDefinition[] = [
+  fabricate('rimeguard-helm', 12, { 'rime-alloy': 2, 'chitin-laminate': 1 }, 180),
+  fabricate('rimeguard-plate', 13, { 'rime-alloy': 4, 'polymer-sheet': 2 }, 260),
+  fabricate('rimeguard-gauntlets', 12, { 'rime-alloy': 1, 'braided-cord': 2 }, 170),
+  fabricate('rimeguard-greaves', 12, { 'rime-alloy': 2, 'synthweave-bolt': 2 }, 170),
+  fabricate('rimeguard-boots', 12, { 'rime-alloy': 1, 'chitin-laminate': 1, 'synthweave-bolt': 1 }, 170),
+  fabricate('cryo-maul', 14, { 'rime-alloy': 3, 'charged-cell': 1, 'hardened-steel': 1 }, 280),
+  fabricate('rime-carbine', 14, { 'rime-alloy': 2, 'wiring-loom': 2, 'cryo-compound': 1 }, 280),
+  fabricate('stasis-implant', 15, { 'cryo-compound': 2, 'charged-cell': 2, 'wiring-loom': 1 }, 300),
+
+  fabricate('relay-helm', 16, { 'relay-weave': 1, 'rime-alloy': 2 }, 320),
+  fabricate('relay-vest', 17, { 'relay-weave': 3, 'servo-core': 1 }, 400),
+  fabricate('relay-gloves', 16, { 'relay-weave': 1, 'servo-core': 1 }, 320),
+  fabricate('relay-trousers', 16, { 'relay-weave': 2, 'synthweave-bolt': 2 }, 300),
+  fabricate('relay-boots', 16, { 'relay-weave': 1, 'rime-alloy': 1, 'polymer-sheet': 1 }, 300),
+  fabricate('arc-baton', 18, { 'servo-core': 2, 'relay-weave': 1, 'charged-cell': 2 }, 440),
+  fabricate('arc-carbine', 18, { 'servo-core': 1, 'relay-weave': 2, 'rime-alloy': 2 }, 440),
+  fabricate('choir-visor', 18, { 'echo-serum': 2, 'polymer-sheet': 2, 'relay-weave': 1 }, 440),
+  fabricate('signal-scanner', 17, { 'relay-weave': 1, 'servo-core': 1, 'wiring-loom': 2 }, 380),
+
+  fabricate('inkproof-helm', 20, { 'ink-laminate': 2, 'relay-weave': 1 }, 520),
+  fabricate('archivist-coat', 22, { 'vellum-weave': 4, 'ink-laminate': 2 }, 680),
+  fabricate('vellum-gloves', 20, { 'vellum-weave': 1, 'ink-laminate': 1, 'servo-core': 1 }, 500),
+  fabricate('ink-trousers', 20, { 'vellum-weave': 2, 'ink-laminate': 1 }, 500),
+  fabricate('ink-boots', 20, { 'ink-laminate': 2, 'rime-alloy': 1 }, 500),
+  fabricate('censor-maul', 23, { 'ink-laminate': 3, 'rime-alloy': 3, 'servo-core': 1 }, 720),
+  fabricate('inkshot-pistol', 23, { 'ink-laminate': 2, 'servo-core': 2, 'ink-essence': 1 }, 720),
+  fabricate('palimpsest-implant', 22, { 'ink-essence': 2, 'relay-weave': 2 }, 640),
+  fabricate('lexicon-datapad', 21, { 'vellum-weave': 2, 'servo-core': 1, 'wiring-loom': 2 }, 600),
+
+  fabricate('furnace-helm', 25, { 'furnace-steel': 2, 'ink-laminate': 1 }, 820),
+  fabricate('furnace-plate', 27, { 'furnace-steel': 4, 'vellum-weave': 2 }, 1000),
+  fabricate('furnace-gauntlets', 25, { 'furnace-steel': 1, 'golem-core': 1, 'vellum-weave': 1 }, 820),
+  fabricate('furnace-greaves', 25, { 'furnace-steel': 2, 'vellum-weave': 2 }, 800),
+  fabricate('furnace-boots', 25, { 'furnace-steel': 2, 'ink-laminate': 1 }, 800),
+  fabricate('stoker-maul', 28, { 'furnace-steel': 3, 'golem-core': 2, 'servo-core': 1 }, 1100),
+  fabricate('cinder-carbine', 28, { 'furnace-steel': 2, 'cinder-salt': 2, 'servo-core': 2 }, 1100),
+  fabricate('furnace-respirator', 26, { 'furnace-steel': 1, 'cinder-salt': 2, 'polymer-sheet': 2 }, 900),
+
+  fabricate('threshold-helm', 30, { 'mirror-alloy': 2, 'hollow-weave': 1 }, 1300),
+  fabricate('threshold-plate', 32, { 'mirror-alloy': 4, 'hollow-weave': 2 }, 1600),
+  fabricate('threshold-gloves', 30, { 'hollow-weave': 2, 'golem-core': 1 }, 1250),
+  fabricate('threshold-trousers', 30, { 'hollow-weave': 3, 'mirror-alloy': 1 }, 1250),
+  fabricate('threshold-boots', 30, { 'mirror-alloy': 2, 'hollow-weave': 1 }, 1250),
+  fabricate('the-knocker', 33, { 'mirror-alloy': 3, 'knock-splinter': 3, 'golem-core': 2 }, 1800),
+  fabricate('last-word', 33, { 'mirror-alloy': 3, 'knock-splinter': 2, 'cinder-salt': 2 }, 1800),
+  fabricate('threshold-implant', 32, { 'knock-splinter': 3, 'ink-essence': 2, 'hollow-weave': 1 }, 1600),
+  fabricate('meridian-sigil', 30, { 'mirror-alloy': 1, 'knock-splinter': 1, 'furnace-steel': 1 }, 1200),
+];
+
+export const RECIPES: readonly RecipeDefinition[] = [
+  ...REFINING_RECIPES,
+  ...MEDICAL_RECIPES,
+  ...FABRICATION_RECIPES,
+  ...DEEP_REFINING_RECIPES,
+  ...DEEP_MEDICAL_RECIPES,
+  ...DEEP_FABRICATION_RECIPES,
+];

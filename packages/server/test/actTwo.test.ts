@@ -1,0 +1,302 @@
+import assert from 'node:assert/strict';
+import { describe, test } from 'node:test';
+import {
+  countItem,
+  createStartingSkills,
+  experienceForLevel,
+  maxIntegrityFor,
+  type CharacterRecord,
+  type EquipmentState,
+  type QuestProgress,
+  type ZoneLocation,
+} from '@containment/shared';
+import { createHarness, finishDialogue, type Harness } from './support/testHarness.ts';
+
+const active = (questId: string, stepIndex = 0): QuestProgress => ({ questId, status: 'active', stepIndex, objectiveProgress: [0, 0, 0] });
+const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
+
+const VETERAN = createStartingSkills({ closeQuarters: experienceForLevel(99), fortitude: experienceForLevel(99), containment: experienceForLevel(40) });
+const KIT: EquipmentState = { torso: 'composite-plate', legs: 'intake-trousers', feet: 'work-boots', primary: 'the-knocker' };
+
+const NEAR_SEL: ZoneLocation = { zoneId: 'meridian-atrium', position: { x: 39, y: 5 } };
+const NEAR_THALE: ZoneLocation = { zoneId: 'deepwatch', position: { x: 4, y: 4 } };
+const NEAR_HALVORSEN: ZoneLocation = { zoneId: 'sector-three', position: { x: 10, y: 8 } };
+const LIFT_GALLERY: ZoneLocation = { zoneId: 'deepwatch', position: { x: 29, y: 19 } };
+
+const PRIOR_QUESTS = ['orientation-protocol', 'field-fabrication', 'live-fire', 'the-knocking', 'the-far-side'];
+
+function veteranAt(location: ZoneLocation, quests: Record<string, QuestProgress>, flags: readonly string[] = []) {
+  return (record: CharacterRecord): CharacterRecord => ({
+    ...record,
+    location,
+    quests: { ...Object.fromEntries(PRIOR_QUESTS.map((id) => [id, completed(id)])), ...quests },
+    flags: [...record.flags, ...flags],
+    skills: VETERAN,
+    vitals: { integrity: maxIntegrityFor(VETERAN) },
+    equipment: KIT,
+  });
+}
+
+function stepOf(harness: Harness, questId: string): number | 'completed' | undefined {
+  const progress = harness.player.record.quests[questId];
+  return progress?.status === 'completed' ? 'completed' : progress?.stepIndex;
+}
+
+function heal(harness: Harness): void {
+  harness.player.update({ vitals: { integrity: maxIntegrityFor(harness.player.record.skills) } });
+}
+
+function defeat(harness: Harness, instanceId: string): void {
+  const creature = harness.gameplay.world.zoneOf(harness.player).creatureByInstance(instanceId);
+  assert.ok(creature, `missing creature ${instanceId}`);
+  heal(harness);
+  harness.send({ type: 'world.interact', targetKind: 'creature', instanceId, interactionIndex: 0 });
+  harness.ticksUntil(() => !creature.isAlive, 8000);
+  harness.ticksUntil(() => harness.player.combatTargetId === null, 2000);
+}
+
+function use(harness: Harness, instanceId: string, interactionIndex = 0): void {
+  harness.interactWithObject(instanceId, interactionIndex);
+  harness.ticksUntil(() => harness.player.path.length === 0, 2000);
+}
+
+function talk(harness: Harness, instanceId: string, ...choices: string[]): void {
+  harness.talkTo(instanceId);
+  finishDialogue(harness, choices.length ? (text) => choices.some((choice) => text.startsWith(choice)) : undefined);
+}
+
+const travel = (harness: Harness, location: ZoneLocation) => harness.gameplay.teleport(harness.player, location);
+
+describe('act two: the answer', () => {
+  test('A Council of One opens Deepwatch, visits the Knock and hands over to Cold Storage', () => {
+    const harness = createHarness({ prepare: veteranAt(NEAR_SEL, {}) });
+    const { player } = harness;
+
+    talk(harness, 'atrium-sel', "I'm ready");
+    assert.equal(stepOf(harness, 'a-council-of-one'), 0);
+    assert.ok(player.hasFlag('clearance.deepwatch'));
+
+    travel(harness, { zoneId: 'meridian-atrium', position: { x: 3, y: 28 } });
+    use(harness, 'atrium-deep-line');
+    assert.equal(player.zoneId, 'deepwatch');
+    assert.equal(stepOf(harness, 'a-council-of-one'), 1);
+
+    travel(harness, NEAR_THALE);
+    talk(harness, 'dw-thale');
+    assert.equal(stepOf(harness, 'a-council-of-one'), 2);
+
+    travel(harness, { zoneId: 'deepwatch', position: { x: 17, y: 3 } });
+    use(harness, 'dw-threshold-a');
+    assert.equal(player.zoneId, 'sector-three');
+    talk(harness, 's3-halvorsen');
+    assert.equal(stepOf(harness, 'a-council-of-one'), 3);
+
+    use(harness, 's3-deepwatch-a');
+    assert.equal(player.zoneId, 'deepwatch');
+    travel(harness, NEAR_THALE);
+    talk(harness, 'dw-thale', "It isn't");
+    assert.equal(stepOf(harness, 'a-council-of-one'), 'completed');
+    assert.equal(stepOf(harness, 'cold-storage'), 0);
+    assert.ok(player.hasFlag('clearance.cryovault'));
+  });
+
+  test('Cold Storage: pods, moths, the Curator and the stasis core', () => {
+    const harness = createHarness({ prepare: veteranAt(LIFT_GALLERY, { 'a-council-of-one': completed('a-council-of-one'), 'cold-storage': active('cold-storage') }, ['clearance.cryovault']) });
+    const { player } = harness;
+
+    use(harness, 'dw-cryovault-lift');
+    assert.equal(player.zoneId, 'cryovault');
+    assert.equal(stepOf(harness, 'cold-storage'), 1);
+
+    for (const pod of ['cv-pod-a', 'cv-pod-b', 'cv-pod-c', 'cv-pod-d']) use(harness, pod);
+    assert.equal(stepOf(harness, 'cold-storage'), 2);
+
+    for (const moth of ['cv-moth-hall-a', 'cv-moth-hall-b', 'cv-moth-hall-c', 'cv-moth-corridor-a', 'cv-moth-corridor-b', 'cv-moth-corridor-c']) defeat(harness, moth);
+    assert.equal(stepOf(harness, 'cold-storage'), 3);
+
+    defeat(harness, 'cv-curator');
+    assert.equal(stepOf(harness, 'cold-storage'), 4);
+
+    use(harness, 'cv-ledger');
+    assert.equal(countItem(player.record.inventory, 'stasis-core'), 1);
+    assert.equal(stepOf(harness, 'cold-storage'), 5);
+
+    travel(harness, NEAR_THALE);
+    talk(harness, 'dw-thale', 'Hand over');
+    assert.equal(stepOf(harness, 'cold-storage'), 'completed');
+    assert.equal(countItem(player.record.inventory, 'rimeguard-helm'), 1);
+    assert.equal(stepOf(harness, 'dead-air'), 0);
+    assert.ok(player.hasFlag('clearance.signal-array'));
+  });
+
+  test('Dead Air: the Array replies were coming from below', () => {
+    const harness = createHarness({ prepare: veteranAt(NEAR_SEL, { 'cold-storage': completed('cold-storage'), 'dead-air': active('dead-air') }, ['clearance.signal-array']) });
+    const { player } = harness;
+
+    talk(harness, 'atrium-sel');
+    assert.equal(stepOf(harness, 'dead-air'), 1);
+
+    travel(harness, LIFT_GALLERY);
+    use(harness, 'dw-array-lift');
+    assert.equal(player.zoneId, 'signal-array');
+    assert.equal(stepOf(harness, 'dead-air'), 2);
+
+    talk(harness, 'sa-achterberg');
+    assert.equal(stepOf(harness, 'dead-air'), 3);
+
+    for (const console of ['sa-console-a', 'sa-console-b', 'sa-console-c']) use(harness, console);
+    assert.equal(stepOf(harness, 'dead-air'), 4);
+
+    use(harness, 'sa-outbox');
+    assert.equal(stepOf(harness, 'dead-air'), 5);
+
+    defeat(harness, 'sa-choir');
+    assert.equal(stepOf(harness, 'dead-air'), 6);
+
+    use(harness, 'sa-array-core');
+    assert.equal(stepOf(harness, 'dead-air'), 7);
+
+    travel(harness, NEAR_SEL);
+    talk(harness, 'atrium-sel', 'Hand over');
+    assert.equal(stepOf(harness, 'dead-air'), 'completed');
+    assert.equal(stepOf(harness, 'original-contract'), 0);
+    assert.ok(player.hasFlag('clearance.drowned-archive'));
+  });
+
+  test('The Original Contract: drain the stacks and recover the charter', () => {
+    const harness = createHarness({
+      prepare: veteranAt({ zoneId: 'meridian-atrium', position: { x: 37, y: 25 } }, { 'dead-air': completed('dead-air'), 'original-contract': active('original-contract') }, ['clearance.drowned-archive']),
+    });
+    const { player } = harness;
+
+    talk(harness, 'atrium-lund');
+    assert.equal(countItem(player.record.inventory, 'sluice-key'), 1);
+    assert.equal(stepOf(harness, 'original-contract'), 1);
+
+    travel(harness, LIFT_GALLERY);
+    use(harness, 'dw-archive-lift');
+    assert.equal(player.zoneId, 'drowned-archive');
+    assert.equal(stepOf(harness, 'original-contract'), 2);
+
+    talk(harness, 'da-pim');
+    assert.equal(stepOf(harness, 'original-contract'), 3);
+
+    travel(harness, { zoneId: 'drowned-archive', position: { x: 36, y: 8 } });
+    use(harness, 'da-sealed-door-a');
+    assert.equal(player.record.location.position.y, 8, 'the reading room stays sealed until the sluices are open');
+
+    for (const valve of ['da-sluice-a', 'da-sluice-b', 'da-sluice-c']) use(harness, valve);
+    assert.equal(stepOf(harness, 'original-contract'), 4);
+    assert.ok(player.hasFlag('archive.drained'));
+
+    travel(harness, { zoneId: 'drowned-archive', position: { x: 36, y: 8 } });
+    use(harness, 'da-sealed-door-a');
+    assert.ok(player.record.location.position.y >= 11, 'the drained door opens into the reading room');
+
+    defeat(harness, 'da-last-archivist');
+    assert.equal(stepOf(harness, 'original-contract'), 5);
+
+    use(harness, 'da-lectern');
+    assert.equal(stepOf(harness, 'original-contract'), 6);
+
+    travel(harness, NEAR_THALE);
+    talk(harness, 'dw-thale', 'Hand over');
+    assert.equal(stepOf(harness, 'original-contract'), 'completed');
+    assert.equal(stepOf(harness, 'stoking-the-fire'), 0);
+    assert.ok(player.hasFlag('clearance.furnace'));
+  });
+
+  test('Stoking the Fire: the reactor has been feeding the door', () => {
+    const harness = createHarness({ prepare: veteranAt(NEAR_HALVORSEN, { 'original-contract': completed('original-contract'), 'stoking-the-fire': active('stoking-the-fire') }, ['clearance.furnace']) });
+    const { player } = harness;
+
+    talk(harness, 's3-halvorsen');
+    assert.equal(stepOf(harness, 'stoking-the-fire'), 1);
+
+    travel(harness, { zoneId: 'deepwatch', position: { x: 32, y: 18 } });
+    use(harness, 'dw-furnace-lift');
+    assert.equal(player.zoneId, 'furnace');
+    talk(harness, 'fu-brann');
+    assert.equal(stepOf(harness, 'stoking-the-fire'), 3);
+
+    for (const golem of ['fu-golem-a', 'fu-golem-b', 'fu-golem-c', 'fu-golem-d', 'fu-golem-e']) defeat(harness, golem);
+    assert.equal(stepOf(harness, 'stoking-the-fire'), 4);
+
+    for (const valve of ['fu-valve-a', 'fu-valve-b', 'fu-valve-c']) use(harness, valve);
+    assert.equal(stepOf(harness, 'stoking-the-fire'), 5);
+    assert.ok(player.hasFlag('furnace.vented'));
+
+    travel(harness, { zoneId: 'furnace', position: { x: 34, y: 8 } });
+    use(harness, 'fu-reactor-door-a');
+    assert.ok(player.record.location.position.y >= 11, 'the vented door opens into the reactor heart');
+
+    defeat(harness, 'fu-stoker');
+    assert.equal(stepOf(harness, 'stoking-the-fire'), 6);
+
+    use(harness, 'fu-reactor-console');
+    assert.equal(stepOf(harness, 'stoking-the-fire'), 7);
+
+    travel(harness, NEAR_THALE);
+    talk(harness, 'dw-thale', 'Read the reactor');
+    assert.equal(stepOf(harness, 'stoking-the-fire'), 'completed');
+    assert.equal(stepOf(harness, 'the-answer'), 0);
+  });
+
+  test('The Answer: through the Knock, past the Host, and home to Sel', () => {
+    const harness = createHarness({ prepare: veteranAt(NEAR_HALVORSEN, { 'stoking-the-fire': completed('stoking-the-fire'), 'the-answer': active('the-answer') }) });
+    const { player } = harness;
+
+    use(harness, 's3-knock', 1);
+    assert.equal(player.zoneId, 'sector-three', 'the Knock stays shut until Halvorsen opens it');
+
+    talk(harness, 's3-halvorsen', 'Open it');
+    assert.ok(player.hasFlag('farside.door-open'));
+    assert.equal(stepOf(harness, 'the-answer'), 1);
+
+    use(harness, 's3-knock', 1);
+    assert.equal(player.zoneId, 'meridian-below');
+    assert.equal(stepOf(harness, 'the-answer'), 2);
+
+    talk(harness, 'mb-kessler');
+    assert.equal(stepOf(harness, 'the-answer'), 3);
+
+    for (const hollow of ['mb-hollow-workshop-a', 'mb-hollow-workshop-b', 'mb-hollow-plaza-a', 'mb-hollow-plaza-b', 'mb-hollow-plaza-c', 'mb-hollow-engineering']) defeat(harness, hollow);
+    assert.equal(stepOf(harness, 'the-answer'), 4);
+
+    for (const lantern of ['mb-lantern-medbay', 'mb-lantern-workshop', 'mb-lantern-plaza']) use(harness, lantern);
+    assert.equal(stepOf(harness, 'the-answer'), 5);
+
+    defeat(harness, 'mb-host');
+    assert.equal(stepOf(harness, 'the-answer'), 6);
+
+    talk(harness, 'mb-guest', 'Yes. Come in');
+    assert.ok(player.hasFlag('ending.welcomed'));
+    assert.equal(stepOf(harness, 'the-answer'), 7);
+
+    travel(harness, NEAR_SEL);
+    talk(harness, 'atrium-sel', 'I let it in');
+    assert.equal(stepOf(harness, 'the-answer'), 'completed');
+    assert.equal(countItem(player.record.inventory, 'meridian-sigil'), 1);
+    assert.ok(player.hasFlag('storyline.act-two-complete'));
+  });
+
+  test('Fenn hands out a side quest and pays for six samples of cryo gel', () => {
+    const harness = createHarness({ prepare: veteranAt({ zoneId: 'cryovault', position: { x: 31, y: 7 } }, { 'cold-storage': active('cold-storage', 2) }) });
+    const { player } = harness;
+
+    talk(harness, 'cv-fenn', 'Can I help', "I'll do it");
+    assert.equal(stepOf(harness, 'fenns-inventory'), 0);
+
+    for (const husk of ['cv-husk-ward-a', 'cv-husk-ward-b', 'cv-husk-ward-c', 'cv-husk-ward-d', 'cv-husk-ward-e', 'cv-husk-office-a', 'cv-husk-office-b']) defeat(harness, husk);
+    defeat(harness, 'cv-husk-ward-a');
+    assert.equal(stepOf(harness, 'fenns-inventory'), 1);
+
+    player.update({ inventory: [{ itemId: 'cryo-gel', quantity: 6 }, ...player.record.inventory.slice(1)] });
+    harness.gameplay.raiseQuestEvent(player, { type: 'loadoutChanged' });
+    travel(harness, { zoneId: 'cryovault', position: { x: 31, y: 7 } });
+    talk(harness, 'cv-fenn', 'Hand over');
+    assert.equal(stepOf(harness, 'fenns-inventory'), 'completed');
+    assert.equal(countItem(player.record.inventory, 'rimeguard-gauntlets'), 1);
+    assert.equal(countItem(player.record.inventory, 'cryo-gel'), 0);
+  });
+});

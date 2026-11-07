@@ -482,6 +482,15 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
         verb: 'Listen',
         effects: [{ type: 'notify', text: 'Nothing. Then, very softly, from the other side: three knocks, and a pause, and what might be a voice saying your name.' }],
       },
+      {
+        verb: 'Step through',
+        conditions: [{ type: 'hasFlag', flag: 'farside.door-open' }],
+        failureText: 'The door is shut, and Halvorsen is standing very firmly in front of it.',
+        effects: [
+          { type: 'notify', text: 'You put your hand on the door. It opens before you push, as if it has been expecting you for a long time.' },
+          { type: 'teleport', zoneId: 'meridian-below', position: { x: 5, y: 5 } },
+        ],
+      },
     ],
   },
   {

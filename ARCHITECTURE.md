@@ -102,7 +102,7 @@ Each `ZoneInstance` holds a `groundItems` map. `GroundItemController` creates th
 - **Shared rules** live in `shared/src/crafting`:
   - `GatheringSource` and `gatherChance`;
   - `RecipeDefinition`, `craftingBlocker`, `craftOnce` and `STATION_INFO`;
-  - `tierForLevel`, which maps a skill level to a world tier (1, 5, 8 and 12 start tiers 1–4).
+  - `tierForLevel`, which maps a skill level to a world tier (1, 5, 8, 12, 16, 20, 25 and 30 start tiers 1–8).
 - **Content:** a resource node is a world object whose interaction carries `gather`. A station is a world object whose interaction runs the `openCrafting` effect. Recipes live in `content/recipes.ts`, keyed `station:output`.
 - **Server:**
   - `GatheringController` and `CraftingController` drive a repeating `player.activity` on the tick.

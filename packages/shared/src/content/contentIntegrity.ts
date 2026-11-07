@@ -142,6 +142,7 @@ export function findContentIssues(content: GameContent): string[] {
   for (const quest of content.quests.values()) {
     checkEffects(`quest ${quest.id}`, quest.rewards);
     if (quest.followUpQuestId) checkQuest(`quest ${quest.id}`, quest.followUpQuestId);
+    for (const required of quest.offerRequires ?? []) checkQuest(`quest ${quest.id}`, required);
     for (const step of quest.steps) {
       for (const objective of step.objectives) checkObjective(`quest ${quest.id}/${step.id}`, objective);
       checkEffects(`quest ${quest.id}/${step.id}`, step.onComplete);

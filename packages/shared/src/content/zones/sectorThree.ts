@@ -31,6 +31,8 @@ export const SECTOR_THREE: ZoneDefinition = {
     { instanceId: 's3-return-b', objectId: 'sector-three-return', position: { x: 1, y: 7 }, facing: 'east' },
     { instanceId: 's3-knock', objectId: 'the-knock', position: { x: 10, y: 4 } },
     { instanceId: 's3-lantern-echo', objectId: 'lantern-echo', position: { x: 15, y: 11 } },
+    { instanceId: 's3-deepwatch-a', objectId: 'sector-three-deepwatch-door', position: { x: 18, y: 6 }, facing: 'west' },
+    { instanceId: 's3-deepwatch-b', objectId: 'sector-three-deepwatch-door', position: { x: 18, y: 7 }, facing: 'west' },
   ],
   lights: [
     { position: { x: 10, y: 3 }, radius: 7, color: '#b57cff', intensity: 0.8 },

@@ -55,7 +55,7 @@ Characters differ only in how they look. There are no classes, origins or attrib
 
 1. Create `content/quests/myQuest.ts` that exports a `QuestDefinition`. Give it steps with objectives, `rewards` (effects) and a readable `rewardSummary`.
 2. Register it in `GAME_CONTENT.quests` in `gameContent.ts`.
-3. Start it from a dialogue option or node effect, `{ type: 'startQuest', questId }`, and set `offeredBy` so the NPC shows a "!" marker.
+3. Start it from a dialogue option or node effect, `{ type: 'startQuest', questId }`, and set `offeredBy` so the NPC shows a "!" marker. If the offer should wait for earlier quests, list them in `offerRequires` and gate the dialogue option with matching `questCompleted` conditions. The client only sees the quest log, so the marker cannot follow flags.
 4. For "hand over X" steps, use a `signal` objective with `npcId`. A dialogue option then gives the item and raises the signal: `takeItem` + `emitSignal`.
 5. Gate objects and dialogue with `questActive` conditions using `stepId`.
 6. Add an integration test in `server/test` that uses `createHarness()`. `tutorial.test.ts` is a full example.
@@ -66,7 +66,7 @@ Object models face south (+y on the map) by default. Wall-mounted or doorway obj
 
 ### Add a zone
 
-1. Give it a `tier` (1 is the Intake Wing and Atrium, 4 is Sector 3). Crafting checks use it to decide which gear its materials may feed.
+1. Give it a `tier` (1 is the Intake Wing and Atrium, 4 is Sector 3, Deepwatch and the Cryovault, 8 is Meridian Below). Crafting checks use it to decide which gear its materials may feed.
 2. Draw the map as an array of equal-length strings using `MAP_LEGEND` (`shared/src/world/tiles.ts`): `#` wall, `W` glass, `D` door, `.` plating, `,` concrete, `=` grate, `%` rust, `_` carpet, `!` hazard, `~` coolant.
 3. Define `areas` (rectangles that `enterArea` objectives can use), `npcs`, `objects`, `lights` and `ambience`. Combat is single-way by default; set `multiCombat: true` on an area for boss fights with adds.
 4. Connect it to another zone with an object whose interaction has a `teleport` effect.
@@ -107,6 +107,18 @@ Add a `ShopDefinition` to `content/shops.ts` (listings, which item categories it
 | The Foreman, straight after The Knocking | < 10% |
 | The Foreman, trained up in issued gear | < 50% |
 | The Foreman, trained up and in Undercroft gear | ≥ 60% |
+
+Act II is tuned against level-matched operatives (Close Quarters and Fortitude at the same level) wearing a full tier set, with the ranged path checked against each tier's carbine or pistol:
+
+| Fight | Target win rate |
+| --- | --- |
+| Each deep zone's first regulars, in the previous tier's gear | ≥ 70–85% |
+| Each tier's regulars, in that tier's gear | ≥ 85% |
+| Echo Operators at 17 in Rimeguard; Slag Golems at 26 in Archive gear | below 60% and 75% (upgrades matter) |
+| Curator 14, Choir 19, Last Archivist 24, Stoker 29, Host 34, each in its own tier's gear | 50–85% |
+| Each of those bosses for an operative one tier early | < 30% |
+
+The Act II tiers are Rimeguard (12), Relay (16), Archive (20), Furnace (25) and Threshold (30). Each is crafted from the zone of the same tier: frost crystal, signal copper, vellum and ink, ember ore, and mirror glass.
 
 The test fails if a change breaks this curve. Quests can declare a `recommendedRating`; the journal shows it next to the player's own rating.
 

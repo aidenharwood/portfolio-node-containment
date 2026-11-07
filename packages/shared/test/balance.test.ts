@@ -111,3 +111,67 @@ describe('difficulty curve', () => {
     assert.ok(duelWinRate(experienceAlongStoryline(), issued, 'static-wraith') < 0.6);
   });
 });
+
+describe('act two difficulty curve', () => {
+  const at = (level: number, style: 'closeQuarters' | 'marksmanship' = 'closeQuarters') =>
+    createStartingSkills({ [style]: experienceForLevel(level), fortitude: experienceForLevel(level) });
+  const kits: Record<string, EquipmentState> = {
+    undercroft: { torso: 'composite-plate', eyes: 'filter-respirator', primary: 'shock-maul', head: 'response-helmet', hands: 'thornweave-gloves', legs: 'intake-trousers', feet: 'work-boots' },
+    rimeguard: { torso: 'rimeguard-plate', eyes: 'filter-respirator', primary: 'cryo-maul', head: 'rimeguard-helm', hands: 'rimeguard-gauntlets', legs: 'rimeguard-greaves', feet: 'rimeguard-boots' },
+    relay: { torso: 'relay-vest', eyes: 'choir-visor', primary: 'arc-baton', head: 'relay-helm', hands: 'relay-gloves', legs: 'relay-trousers', feet: 'relay-boots' },
+    archive: { torso: 'archivist-coat', eyes: 'choir-visor', primary: 'censor-maul', head: 'inkproof-helm', hands: 'vellum-gloves', legs: 'ink-trousers', feet: 'ink-boots' },
+    furnace: { torso: 'furnace-plate', eyes: 'furnace-respirator', primary: 'stoker-maul', head: 'furnace-helm', hands: 'furnace-gauntlets', legs: 'furnace-greaves', feet: 'furnace-boots' },
+    threshold: { torso: 'threshold-plate', eyes: 'furnace-respirator', primary: 'the-knocker', head: 'threshold-helm', hands: 'threshold-gloves', legs: 'threshold-trousers', feet: 'threshold-boots' },
+  };
+  const rate = (level: number, kit: string, creature: string) => duelWinRate(at(level), kits[kit]!, creature);
+
+  test('each deep zone opens fairly for an operative in the previous tier of gear', () => {
+    assert.ok(rate(11, 'undercroft', 'frost-moth') >= 0.85);
+    assert.ok(rate(15, 'rimeguard', 'relay-sentinel') >= 0.75);
+    assert.ok(rate(19, 'relay', 'ink-eel') >= 0.75);
+    assert.ok(rate(24, 'archive', 'cinder-wisp') >= 0.7);
+    assert.ok(rate(30, 'furnace', 'hollow-operative') >= 0.75);
+  });
+
+  test('regular deep creatures are reliable once trained into their own tier of gear', () => {
+    assert.ok(rate(13, 'rimeguard', 'rime-husk') >= 0.88);
+    assert.ok(rate(17, 'relay', 'echo-operator') >= 0.85);
+    assert.ok(rate(22, 'archive', 'redactor') >= 0.85);
+    assert.ok(rate(27, 'furnace', 'slag-golem') >= 0.85);
+    assert.ok(rate(31, 'threshold', 'knockling') >= 0.85);
+  });
+
+  test('upgrading gear matters: last tier\'s kit struggles against the next tier\'s regulars', () => {
+    assert.ok(rate(17, 'rimeguard', 'echo-operator') < 0.6);
+    assert.ok(rate(26, 'archive', 'slag-golem') < 0.75);
+  });
+
+  test('every act two boss is a real fight for a ready operative and hopeless for an unready one', () => {
+    const bosses: [string, number, string, number, string][] = [
+      ['the-curator', 14, 'rimeguard', 12, 'undercroft'],
+      ['the-choir', 19, 'relay', 16, 'rimeguard'],
+      ['last-archivist', 24, 'archive', 20, 'relay'],
+      ['the-stoker', 29, 'furnace', 25, 'archive'],
+      ['the-host', 34, 'threshold', 30, 'furnace'],
+    ];
+    for (const [boss, readyLevel, readyKit, earlyLevel, earlyKit] of bosses) {
+      const ready = rate(readyLevel, readyKit, boss);
+      const early = rate(earlyLevel, earlyKit, boss);
+      assert.ok(ready >= 0.5 && ready <= 0.85, `${boss} ready ${ready}`);
+      assert.ok(early < 0.3, `${boss} early ${early}`);
+    }
+  });
+
+  test('melee and ranged training reach every boss on comparable terms', () => {
+    const ranged: [string, number, EquipmentState][] = [
+      ['the-curator', 14, { ...kits.rimeguard!, primary: 'rime-carbine' }],
+      ['the-choir', 19, { ...kits.relay!, primary: 'arc-carbine' }],
+      ['the-stoker', 29, { ...kits.furnace!, primary: 'cinder-carbine' }],
+      ['the-host', 34, { ...kits.threshold!, primary: 'last-word' }],
+    ];
+    for (const [boss, level, kit] of ranged) {
+      const winRate = duelWinRate(at(level, 'marksmanship'), kit, boss);
+      assert.ok(winRate >= 0.5 && winRate <= 0.9, `${boss} ranged ${winRate}`);
+    }
+  });
+});

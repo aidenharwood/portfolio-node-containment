@@ -7,6 +7,8 @@ const KNOCKING = 'the-knocking';
 export const LUND_DIALOGUE: DialogueDefinition = {
   id: 'lund',
   entries: [
+    { node: 'sluiceKey', conditions: [{ type: 'questActive', questId: 'original-contract', stepId: 'key' }] },
+    { node: 'wiresCheck', conditions: [{ type: 'questActive', questId: 'crossed-wires', stepId: 'lund' }] },
     { node: 'override', conditions: [{ type: 'questActive', questId: KNOCKING, stepId: 'override' }] },
     { node: 'offer', conditions: [{ type: 'questNotStarted', questId: VENTS }] },
     { node: 'progress', conditions: [{ type: 'questActive', questId: VENTS, stepId: 'inspect-vents' }] },
@@ -14,6 +16,22 @@ export const LUND_DIALOGUE: DialogueDefinition = {
     { node: 'thanks' },
   ],
   nodes: {
+    sluiceKey: {
+      speaker: 'npc',
+      text: "The Records sluice key? Sel told you about that. Of course she did. I kept it for sentimental reasons. The reason is that I was sentimental about not drowning.",
+      next: 'sluiceKeyGive',
+    },
+    sluiceKeyGive: {
+      speaker: 'npc',
+      text: 'Here. Three valves in the sluice hall. Open them slowly. And if anything in the water says your name, do not answer it either.',
+      effects: [{ type: 'giveItem', itemId: 'sluice-key' }],
+      next: null,
+    },
+    wiresCheck: {
+      speaker: 'npc',
+      text: "You're from the Array? I heard her. Achterberg, on the intercom, clear as anything, asking for the coffee I owe her. I thought the vents were talking again. Tell her I'm putting the kettle on.",
+      next: null,
+    },
     override: {
       speaker: 'npc',
       text: "Sel sent you, didn't she. She's the only one who knows I kept it.",
@@ -81,13 +99,63 @@ export const LUND_DIALOGUE: DialogueDefinition = {
 
 export const OKAFOR_DIALOGUE: DialogueDefinition = {
   id: 'okafor',
-  entries: [{ node: 'greeting' }],
+  entries: [
+    { node: 'orderDeliver', conditions: [{ type: 'questActive', questId: 'requisition-order', stepId: 'deliver' }] },
+    { node: 'greeting' },
+  ],
   nodes: {
+    orderOffer: {
+      speaker: 'npc',
+      text: "Deepwatch wants heavy kit faster than I can sign it out. Refine six hardened steel, fabricate a Composite Plate and a Shock Maul, and bring both here. I'll pay, and you'll learn something.",
+      options: [
+        { text: "I'll fill the order.", effects: [{ type: 'startQuest', questId: 'requisition-order' }], next: null },
+        { text: 'Not right now.', next: 'greeting' },
+      ],
+    },
+    orderProgress: {
+      speaker: 'npc',
+      text: 'Six hardened steel, refined. One Composite Plate, one Shock Maul. Slag comes from the Undercroft. Patterns are on the fabricator. Excuses are not accepted.',
+      next: 'greeting',
+    },
+    orderDeliver: {
+      speaker: 'npc',
+      text: 'Is that my order? Put it on the counter.',
+      options: [
+        {
+          text: 'Hand over the plate and the maul.',
+          conditions: [
+            { type: 'hasItem', itemId: 'composite-plate' },
+            { type: 'hasItem', itemId: 'shock-maul' },
+          ],
+          effects: [
+            { type: 'takeItem', itemId: 'composite-plate' },
+            { type: 'takeItem', itemId: 'shock-maul' },
+            { type: 'emitSignal', signal: 'requisition.delivered' },
+          ],
+          next: 'orderThanks',
+        },
+        { text: 'Not yet.', next: null },
+      ],
+    },
+    orderThanks: {
+      speaker: 'npc',
+      text: 'Clean welds. Straight seams. Signed, stamped, filed. If you ever want a job behind this counter, the answer is no, because I need you out there.',
+      next: null,
+    },
     greeting: {
       speaker: 'npc',
       text: 'Requisitions. State your need, your clearance and your excuse for what happened to the last thing you signed out.',
       options: [
         { text: "Let's trade.", effects: [{ type: 'openShop', shopId: 'requisitions' }], next: null },
+        {
+          text: 'Need anything made?',
+          conditions: [
+            { type: 'questCompleted', questId: KNOCKING },
+            { type: 'questNotStarted', questId: 'requisition-order' },
+          ],
+          next: 'orderOffer',
+        },
+        { text: 'How is the order going?', conditions: [{ type: 'questActive', questId: 'requisition-order' }], next: 'orderProgress' },
         { text: 'What do you stock?', next: 'stock' },
         { text: 'How do I get better gear?', next: 'progression' },
         { text: 'Nothing for now.', next: null },
@@ -115,9 +183,145 @@ export const SEL_DIALOGUE: DialogueDefinition = {
     { node: 'knockingIntro', conditions: [{ type: 'questActive', questId: KNOCKING, stepId: 'ask-sel' }] },
     { node: 'knockingDeliver', conditions: [{ type: 'questActive', questId: KNOCKING, stepId: 'return-to-sel' }] },
     { node: 'knockingProgress', conditions: [{ type: 'questActive', questId: KNOCKING }] },
+    { node: 'councilProgress', conditions: [{ type: 'questActive', questId: 'a-council-of-one' }] },
+    { node: 'deadAirIntro', conditions: [{ type: 'questActive', questId: 'dead-air', stepId: 'ask-sel' }] },
+    { node: 'deadAirReport', conditions: [{ type: 'questActive', questId: 'dead-air', stepId: 'report' }] },
+    { node: 'deadAirProgress', conditions: [{ type: 'questActive', questId: 'dead-air' }] },
+    { node: 'contractProgress', conditions: [{ type: 'questActive', questId: 'original-contract' }] },
+    { node: 'answerHome', conditions: [{ type: 'questActive', questId: 'the-answer', stepId: 'home' }] },
+    { node: 'answerProgress', conditions: [{ type: 'questActive', questId: 'the-answer' }] },
+    { node: 'councilOffer', conditions: [{ type: 'questCompleted', questId: 'the-far-side' }, { type: 'questNotStarted', questId: 'a-council-of-one' }] },
+    { node: 'epilogueWelcomed', conditions: [{ type: 'questCompleted', questId: 'the-answer' }, { type: 'hasFlag', flag: 'ending.welcomed' }] },
+    { node: 'epilogueClosed', conditions: [{ type: 'questCompleted', questId: 'the-answer' }] },
     { node: 'greeting' },
   ],
   nodes: {
+    councilOffer: {
+      speaker: 'npc',
+      text: "The Council has answered Halvorsen. Not with a letter. With a tram. They've built a forward base beside the Knock, Deepwatch Station, and sent an envoy to run it. She asked for you by name.",
+      options: [
+        {
+          text: "I'm ready.",
+          effects: [
+            { type: 'startQuest', questId: 'a-council-of-one' },
+            { type: 'setFlag', flag: 'clearance.deepwatch' },
+          ],
+          next: 'councilGo',
+        },
+        { text: 'Not yet.', next: null },
+      ],
+    },
+    councilGo: {
+      speaker: 'npc',
+      text: "The Deep Line leaves from the transit bay, beside the hydroponics tram. Director Thale is... thorough. Tell her the truth, even when it's strange. Especially then.",
+      next: null,
+    },
+    councilProgress: {
+      speaker: 'npc',
+      text: 'The Deep Line is in the transit bay. Thale is waiting at Deepwatch. Try not to keep the Council waiting; it has a long memory and very little patience.',
+      next: null,
+    },
+    deadAirIntro: {
+      speaker: 'npc',
+      text: "Warn the other Sites? I write to all eight every month. They answer every month. Cordial. Prompt. Their handwriting has not changed in forty years.",
+      next: 'deadAirIntro2',
+    },
+    deadAirIntro2: {
+      speaker: 'npc',
+      text: "I have never said that out loud. Go to the Array. Find out where my letters actually go, and who has been so kind as to answer them.",
+      next: null,
+    },
+    deadAirProgress: {
+      speaker: 'npc',
+      text: 'The Array outbox will tell you where the replies come from. Bring me whatever you find, however strange.',
+      next: null,
+    },
+    deadAirReport: {
+      speaker: 'npc',
+      text: 'You found something. I can tell from your face. Show me.',
+      options: [
+        {
+          text: 'Hand over the letter and the Choir recording.',
+          conditions: [
+            { type: 'hasItem', itemId: 'signed-letter' },
+            { type: 'hasItem', itemId: 'choir-recording' },
+          ],
+          effects: [
+            { type: 'takeItem', itemId: 'signed-letter' },
+            { type: 'takeItem', itemId: 'choir-recording' },
+            { type: 'emitSignal', signal: 'deadair.reported' },
+          ],
+          next: 'deadAirReveal',
+        },
+        { text: 'Not yet.', next: null },
+      ],
+    },
+    deadAirReveal: {
+      speaker: 'npc',
+      text: "Every Site. Every signature. All posted from below. We have been alone down here for forty years, {name}, and something has been kind enough to keep us company.",
+      next: 'deadAirNext',
+    },
+    deadAirNext: {
+      speaker: 'npc',
+      text: "The original Knock file. My teacher, Archivist Wen, took it into the lower stacks the night they flooded. I have never been able to go after her. You can. Lund has the sluice key, and Pim has volunteered to meet you. I've cleared you for the flood stair.",
+      next: null,
+    },
+    contractProgress: {
+      speaker: 'npc',
+      text: "Lund's sluice key, the flood stair lift, and Pim at the bottom. If you find Wen... tell her I kept the archive tidy.",
+      next: null,
+    },
+    answerProgress: {
+      speaker: 'npc',
+      text: "You're going through. I have written you down in every file I keep, so that whatever comes back, I will know whether it's you.",
+      next: null,
+    },
+    answerHome: {
+      speaker: 'npc',
+      text: "You're back. You're still you. I checked. What did you tell it?",
+      options: [
+        {
+          text: 'I told it no.',
+          conditions: [{ type: 'hasFlag', flag: 'ending.closed' }],
+          effects: [{ type: 'emitSignal', signal: 'answer.reported' }],
+          next: 'answerClosed',
+        },
+        {
+          text: 'I let it in.',
+          conditions: [{ type: 'hasFlag', flag: 'ending.welcomed' }],
+          effects: [{ type: 'emitSignal', signal: 'answer.reported' }],
+          next: 'answerWelcomed',
+        },
+      ],
+    },
+    answerClosed: {
+      speaker: 'npc',
+      text: "'No.' After forty years of 'not yet'. It's the first honest thing this Site has ever said to it. I'll file it under Resolved. It will be the only file in that drawer.",
+      next: null,
+    },
+    answerWelcomed: {
+      speaker: 'npc',
+      text: "You let it in. Of course you did. Well. I'd better find it a desk. And a designation. And a mug. The Directorate has never had a guest before, {name}. We're going to be terrible at it.",
+      next: null,
+    },
+    epilogueClosed: {
+      speaker: 'npc',
+      text: 'The other eight Sites wrote this morning. Real letters, with real postmarks. Two of them asked who we are. I am going to enjoy writing back.',
+      options: [
+        { text: 'What is the Meridian Directorate?', next: 'directorate' },
+        { text: 'How are anomalies classified?', next: 'classes' },
+        { text: "That's all.", next: null },
+      ],
+    },
+    epilogueWelcomed: {
+      speaker: 'npc',
+      text: "Our guest has been reading the archives. It has corrected three of my files, politely. It was right about all three. I am choosing to find this charming.",
+      options: [
+        { text: 'What is the Meridian Directorate?', next: 'directorate' },
+        { text: 'How are anomalies classified?', next: 'classes' },
+        { text: "That's all.", next: null },
+      ],
+    },
     greeting: {
       speaker: 'npc',
       text: 'Records Division. Everything that happens in this Site is written down by someone. Usually me. What do you want to know?',
@@ -254,9 +458,38 @@ export const KADE_DIALOGUE: DialogueDefinition = {
     { node: 'patchUp', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'patch-up' }] },
     { node: 'debrief', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'debrief' }] },
     { node: 'knocking', conditions: [{ type: 'questActive', questId: KNOCKING }] },
+    { node: 'facesReport', conditions: [{ type: 'questActive', questId: 'familiar-faces', stepId: 'report' }] },
+    { node: 'facesProgress', conditions: [{ type: 'questActive', questId: 'familiar-faces' }] },
+    { node: 'facesOffer', conditions: [{ type: 'questCompleted', questId: KNOCKING }, { type: 'questNotStarted', questId: 'familiar-faces' }] },
     { node: 'idle' },
   ],
   nodes: {
+    facesOffer: {
+      speaker: 'npc',
+      text: "Sector 2 keeps refilling. I recognise some of what walks in there. Corporal Avis, still on patrol. Halvorsen's team, still in the isolation ward, all static now.",
+      options: [
+        { text: 'Want them put to rest?', next: 'facesAsk' },
+        { text: 'Not my problem.', next: 'idle' },
+      ],
+    },
+    facesAsk: {
+      speaker: 'npc',
+      text: 'Properly. The Hollow Warden twice more, so it stays down a little longer each time, and four of the wraiths. You will be stronger for it, and so will they, in their way.',
+      options: [
+        { text: "I'll do it.", effects: [{ type: 'startQuest', questId: 'familiar-faces' }], next: null },
+        { text: 'Not yet.', next: 'idle' },
+      ],
+    },
+    facesProgress: {
+      speaker: 'npc',
+      text: 'The warden twice. Four wraiths in the isolation ward. Bring medgel. Wraiths hit from range; close the gap fast.',
+      next: null,
+    },
+    facesReport: {
+      speaker: 'npc',
+      text: "Good. They'll stay down a little longer now. Avis would have liked you. He'd never have said so.",
+      next: null,
+    },
     intro: {
       speaker: 'npc',
       text: "You're Varga's intake. She says you've got steady hands. Let's find out if the rest of you is steady too. Sergeant Kade, Response Division.",

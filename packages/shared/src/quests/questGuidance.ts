@@ -38,6 +38,9 @@ export function trackedQuests(log: QuestLog, quests: ReadonlyMap<QuestId, QuestD
   return tracked.sort((a, b) => categoryOrder(a.quest) - categoryOrder(b.quest));
 }
 
+export const isOfferUnlocked = (quest: QuestDefinition, log: QuestLog): boolean =>
+  (quest.offerRequires ?? []).every((questId) => log[questId]?.status === 'completed');
+
 const categoryOrder = (quest: QuestDefinition): number => ({ tutorial: 0, main: 1, side: 2 })[quest.category];
 
 export function npcQuestMarker(npcId: NpcId, log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>): NpcQuestMarker {
@@ -48,7 +51,7 @@ export function npcQuestMarker(npcId: NpcId, log: QuestLog, quests: ReadonlyMap<
     ),
   );
   if (isObjective) return 'objective';
-  const offersQuest = [...quests.values()].some((quest) => quest.offeredBy === npcId && !log[quest.id]);
+  const offersQuest = [...quests.values()].some((quest) => quest.offeredBy === npcId && !log[quest.id] && isOfferUnlocked(quest, log));
   return offersQuest ? 'available' : null;
 }
 

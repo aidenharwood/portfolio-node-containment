@@ -33,6 +33,7 @@ export interface QuestDefinition {
   readonly rewardSummary: readonly string[];
   readonly followUpQuestId?: QuestId;
   readonly offeredBy?: NpcId;
+  readonly offerRequires?: readonly QuestId[];
   readonly recommendedLevel?: number;
 }
 

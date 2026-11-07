@@ -2,6 +2,30 @@ import type { ZoneLocation } from '../character/character.ts';
 import type { StartingKit } from '../character/startingKit.ts';
 import type { CreatureDefinition, CreatureId } from '../combat/creatures.ts';
 import { CREATURES } from './creatures.ts';
+import { DEEP_CREATURES } from './deepCreatures.ts';
+import { DEEP_ITEMS } from './deepItems.ts';
+import { DEEP_NPCS } from './deepNpcs.ts';
+import { DEEP_OBJECTS } from './deepObjects.ts';
+import {
+  ACHTERBERG_DIALOGUE,
+  BRANN_DIALOGUE,
+  BUI_DIALOGUE,
+  DUVAL_DIALOGUE,
+  FENN_DIALOGUE,
+  GUEST_DIALOGUE,
+  KESSLER_DIALOGUE,
+  PENHALLOW_DIALOGUE,
+  PIM_DIALOGUE,
+  THALE_DIALOGUE,
+} from './dialogues/deepwatchDialogues.ts';
+import { A_COUNCIL_OF_ONE, COLD_STORAGE, DEAD_AIR, ORIGINAL_CONTRACT, STOKING_THE_FIRE, THE_ANSWER } from './quests/actTwoMain.ts';
+import { ACT_TWO_SIDE_QUESTS } from './quests/actTwoSide.ts';
+import { CRYOVAULT } from './zones/cryovault.ts';
+import { DEEPWATCH } from './zones/deepwatch.ts';
+import { DROWNED_ARCHIVE } from './zones/drownedArchive.ts';
+import { FURNACE } from './zones/furnace.ts';
+import { MERIDIAN_BELOW } from './zones/meridianBelow.ts';
+import { SIGNAL_ARRAY } from './zones/signalArray.ts';
 import type { ShopDefinition, ShopId } from '../economy/shop.ts';
 import { SHOPS } from './shops.ts';
 import type { RecipeDefinition } from '../crafting/recipes.ts';
@@ -68,9 +92,9 @@ function indexById<T extends { readonly id: string }>(entries: readonly T[]): Re
 }
 
 export const GAME_CONTENT: GameContent = {
-  items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS]),
-  npcs: indexById(NPCS),
-  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS]),
+  items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS]),
+  npcs: indexById([...NPCS, ...DEEP_NPCS]),
+  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS]),
   dialogues: indexById([
     REYES_DIALOGUE,
     VARGA_DIALOGUE,
@@ -85,10 +109,36 @@ export const GAME_CONTENT: GameContent = {
     HALVORSEN_DIALOGUE,
     ANAND_DIALOGUE,
     OYELARAN_DIALOGUE,
+    THALE_DIALOGUE,
+    BUI_DIALOGUE,
+    PENHALLOW_DIALOGUE,
+    DUVAL_DIALOGUE,
+    FENN_DIALOGUE,
+    ACHTERBERG_DIALOGUE,
+    PIM_DIALOGUE,
+    BRANN_DIALOGUE,
+    KESSLER_DIALOGUE,
+    GUEST_DIALOGUE,
   ]),
-  quests: indexById([ORIENTATION_PROTOCOL, FIELD_FABRICATION, LIVE_FIRE, THE_KNOCKING, THE_FAR_SIDE, STATIC_IN_THE_VENTS, LEECH_SEASON, OVERGROWTH]),
-  zones: indexById([INTAKE_WING, MERIDIAN_ATRIUM, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS]),
-  creatures: indexById(CREATURES),
+  quests: indexById([
+    ORIENTATION_PROTOCOL,
+    FIELD_FABRICATION,
+    LIVE_FIRE,
+    THE_KNOCKING,
+    THE_FAR_SIDE,
+    STATIC_IN_THE_VENTS,
+    LEECH_SEASON,
+    OVERGROWTH,
+    A_COUNCIL_OF_ONE,
+    COLD_STORAGE,
+    DEAD_AIR,
+    ORIGINAL_CONTRACT,
+    STOKING_THE_FIRE,
+    THE_ANSWER,
+    ...ACT_TWO_SIDE_QUESTS,
+  ]),
+  zones: indexById([INTAKE_WING, MERIDIAN_ATRIUM, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW]),
+  creatures: indexById([...CREATURES, ...DEEP_CREATURES]),
   shops: indexById(SHOPS),
   recipes: indexById(RECIPES),
   newCharacter: {

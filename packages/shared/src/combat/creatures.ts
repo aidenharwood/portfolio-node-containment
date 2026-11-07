@@ -3,7 +3,31 @@ import type { CombatStyle } from './weapons.ts';
 
 export type CreatureId = string;
 
-export type CreatureModel = 'trainingDrone' | 'gloamMite' | 'hollowWarden' | 'staticWraith' | 'pipeLeech' | 'rustHound' | 'foreman' | 'thornCrawler' | 'sporeDrifter';
+export type CreatureModel =
+  | 'trainingDrone'
+  | 'gloamMite'
+  | 'hollowWarden'
+  | 'staticWraith'
+  | 'pipeLeech'
+  | 'rustHound'
+  | 'foreman'
+  | 'thornCrawler'
+  | 'sporeDrifter'
+  | 'frostMoth'
+  | 'rimeHusk'
+  | 'curator'
+  | 'relaySentinel'
+  | 'echoOperator'
+  | 'choir'
+  | 'inkEel'
+  | 'redactor'
+  | 'lastArchivist'
+  | 'cinderWisp'
+  | 'slagGolem'
+  | 'stoker'
+  | 'hollowOperative'
+  | 'knockling'
+  | 'theHost';
 
 export interface LootEntry {
   readonly itemId: ItemId;
