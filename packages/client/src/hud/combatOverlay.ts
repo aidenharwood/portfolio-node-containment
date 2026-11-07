@@ -39,6 +39,10 @@ export class CombatOverlay {
         splat.element.remove();
         return false;
       }
+      if (age < 0) {
+        splat.element.hidden = true;
+        return true;
+      }
       const rise = (age / SPLAT_LIFETIME_MS) * SPLAT_RISE_PIXELS;
       splat.element.style.opacity = String(age < 700 ? 1 : 1 - (age - 700) / 400);
       const pop = age < 140 ? 1.35 - (age / 140) * 0.35 : 1;
@@ -76,9 +80,10 @@ export class CombatOverlay {
     const element = h('div', { className: `hit-splat ${event.outcome} ${perspective}` },
       event.outcome === 'miss' ? h('span', { className: 'splat-miss' }, 'MISS') : h('span', { className: 'splat-value' }, String(event.damage)),
     );
+    element.hidden = true;
     this.element.append(element);
-    const stacked = this.splats.filter((splat) => splat.entityId === event.targetId && event.at - splat.at < 400).length;
-    this.splats.push({ element, entityId: event.targetId, at: event.at, offset: (stacked % 3 - 1) * 18 });
+    const stacked = this.splats.filter((splat) => splat.entityId === event.targetId && Math.abs(event.impactAt - splat.at) < 400).length;
+    this.splats.push({ element, entityId: event.targetId, at: event.impactAt, offset: (stacked % 3 - 1) * 18 });
   }
 
   private createBar(entityId: EntityId): HealthBar {

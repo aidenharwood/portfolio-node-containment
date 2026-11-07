@@ -53,9 +53,15 @@ export interface CombatHitEvent {
   readonly damage: number;
   readonly style: 'melee' | 'ranged';
   readonly at: number;
+  readonly impactAt: number;
 }
 
 const SPEECH_DURATION_MS = 4500;
+const PROJECTILE_BASE_FLIGHT_MS = 120;
+const PROJECTILE_FLIGHT_MS_PER_TILE = 70;
+
+export const projectileFlightMs = (from: TilePoint, to: TilePoint): number =>
+  PROJECTILE_BASE_FLIGHT_MS + Math.hypot(to.x - from.x, to.y - from.y) * PROJECTILE_FLIGHT_MS_PER_TILE;
 
 export class WorldState {
   zone: ActiveZone | null = null;
@@ -157,13 +163,14 @@ export class WorldState {
       attacker.attackAt = now;
       attacker.lastCombatAt = now;
     }
+    const impactAt = message.style === 'ranged' && attacker && target ? now + projectileFlightMs(attacker.to, target.to) : now;
     if (target) {
       target.vitals = message.vitals;
       target.lastCombatAt = now;
-      if (message.outcome === 'hit') target.hurtAt = now;
+      if (message.outcome === 'hit') target.hurtAt = impactAt;
     }
     if (message.targetId === this.selfEntityId) this.selfVitals = message.vitals;
-    const event: CombatHitEvent = { ...message, at: now };
+    const event: CombatHitEvent = { ...message, at: now, impactAt };
     for (const listener of this.hitListeners) listener(event);
   }
 

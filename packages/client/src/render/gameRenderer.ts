@@ -281,7 +281,7 @@ export class GameRenderer {
     const targetHeight = this.entities.get(target.id)?.rig.height ?? 1.2;
     const from = new Vector3(muzzle.x, attackerHeight * 0.55, muzzle.y);
     const to = new Vector3(impact.x, targetHeight * 0.55, impact.y);
-    this.projectiles.launch(from, to, this.projectileColor(attacker), now);
+    this.projectiles.launch(from, to, this.projectileColor(attacker), now, Math.max(1, event.impactAt - event.at));
   }
 
   private projectileColor(attacker: ClientEntity): number {
