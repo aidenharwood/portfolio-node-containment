@@ -76,6 +76,20 @@ describe('character creation', () => {
     assert.equal(characters.roster(account.value.accountId).length, 1);
   });
 
+  test('deletes a personnel file only when its name is retyped, and only for its owner', async () => {
+    const { auth, characters } = createServices();
+    const owner = await auth.register('operative_1', 'correct horse battery');
+    const stranger = await auth.register('operative_2', 'correct horse battery');
+    assert.ok(owner.ok && stranger.ok);
+    const created = characters.create(owner.value.accountId, { ...createDefaultDraft(), name: 'Mara Voss' });
+    assert.ok(created.ok);
+    assert.equal(characters.remove(owner.value.accountId, created.value.id, 'Mara').ok, false);
+    assert.equal(characters.remove(stranger.value.accountId, created.value.id, 'Mara Voss').ok, false);
+    assert.equal(characters.remove(owner.value.accountId, created.value.id, 'mara voss').ok, true);
+    assert.equal(characters.roster(owner.value.accountId).length, 0);
+    assert.ok(characters.create(owner.value.accountId, { ...createDefaultDraft(), name: 'Mara Voss' }).ok, 'the name is free again');
+  });
+
   test('enforces unique names and the per-account limit', async () => {
     const { auth, characters } = createServices();
     const account = await auth.register('operative_1', 'correct horse battery');

@@ -106,6 +106,10 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     this.autosaveEveryTicks = Math.max(1, Math.round(options.autosaveIntervalMs / options.tickMs));
   }
 
+  isOnline(characterId: CharacterId): boolean {
+    return this.online.has(characterId);
+  }
+
   get onlineCount(): number {
     return this.online.size;
   }

@@ -561,3 +561,82 @@
   line-height: 1.5;
   color: var(--color-text-faint);
 }
+
+.roster-card {
+  position: relative;
+}
+
+.roster-delete-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 2px 8px;
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.roster-delete-button:hover,
+.roster-delete-button:focus-visible {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.roster-delete-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background: rgba(2, 6, 9, 0.72);
+}
+
+.roster-delete-backdrop[hidden] {
+  display: none;
+}
+
+.roster-delete {
+  width: min(420px, calc(100% - 32px));
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.roster-delete-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.roster-delete-input {
+  font: inherit;
+  padding: 8px 10px;
+  background: var(--color-surface-inset);
+  color: inherit;
+  border: 1px solid var(--color-line-strong);
+}
+
+.roster-delete-error {
+  min-height: 1em;
+  font-size: 12px;
+  color: var(--color-danger);
+}
+
+.roster-delete-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.button.danger {
+  background: var(--color-danger);
+  border-color: var(--color-danger);
+  color: #12070a;
+}

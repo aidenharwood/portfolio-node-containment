@@ -59,6 +59,16 @@ export class CharacterService {
     return success(record);
   }
 
+  remove(accountId: AccountId, characterId: CharacterId, confirmName: string): Result<CharacterRecord, string> {
+    const record = this.repository.findOwned(accountId, characterId);
+    if (!record) return failure('That personnel file could not be found.');
+    if (normalizeCharacterName(confirmName).toLowerCase() !== record.name.toLowerCase()) {
+      return failure(`Type ${record.name} exactly to confirm.`);
+    }
+    if (!this.repository.delete(accountId, characterId)) return failure('That personnel file could not be found.');
+    return success(record);
+  }
+
   load(accountId: AccountId, characterId: CharacterId): CharacterRecord | null {
     return this.repository.findOwned(accountId, characterId);
   }

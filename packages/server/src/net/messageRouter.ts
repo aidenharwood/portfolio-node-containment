@@ -65,6 +65,8 @@ export class MessageRouter {
         return this.selectCharacter(session, message);
       case 'character.leaveWorld':
         return this.leaveWorld(session);
+      case 'character.delete':
+        return this.deleteCharacter(session, message);
     }
   }
 
@@ -106,6 +108,20 @@ export class MessageRouter {
       return;
     }
     session.player = this.gameplay.enterWorld(result.value, session);
+  }
+
+  private deleteCharacter(session: ClientSession, message: ClientMessageOf<'character.delete'>): void {
+    if (!session.account || session.player) return;
+    if (this.gameplay.isOnline(message.characterId)) {
+      session.send({ type: 'character.rejected', errors: ['That operative is deployed right now. Leave the world with them first.'] });
+      return;
+    }
+    const result = this.characters.remove(session.account.accountId, message.characterId, message.confirmName);
+    if (!result.ok) {
+      session.send({ type: 'character.rejected', errors: [result.error] });
+      return;
+    }
+    this.sendRoster(session);
   }
 
   private selectCharacter(session: ClientSession, message: ClientMessageOf<'character.select'>): void {

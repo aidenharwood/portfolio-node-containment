@@ -45,6 +45,7 @@ export const clientMessageSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('character.create'), draft: characterDraftSchema }),
   z.object({ type: z.literal('character.select'), characterId: z.string().max(64) }),
   z.object({ type: z.literal('character.leaveWorld') }),
+  z.object({ type: z.literal('character.delete'), characterId: z.string().max(64), confirmName: z.string().max(64) }),
   z.object({ type: z.literal('world.walk'), target: tilePointSchema }),
   z.object({
     type: z.literal('world.interact'),

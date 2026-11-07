@@ -45,6 +45,11 @@ export class CharacterRepository {
       .run(record.id, record.accountId, record.name, JSON.stringify(record), record.createdAt, Date.now());
   }
 
+  delete(accountId: AccountId, characterId: CharacterId): boolean {
+    const result = this.database.prepare('DELETE FROM characters WHERE id = ? AND account_id = ?').run(characterId, accountId);
+    return Number(result.changes) > 0;
+  }
+
   save(record: CharacterRecord): void {
     this.database
       .prepare('UPDATE characters SET record = ?, updated_at = ? WHERE id = ?')
