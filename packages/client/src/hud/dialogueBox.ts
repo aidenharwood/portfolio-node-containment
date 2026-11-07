@@ -18,6 +18,10 @@ export class DialogueBox {
       connection.on('dialogue.opened', ({ view }) => this.open(view)),
       connection.on('dialogue.closed', () => this.close()),
     ];
+    this.element.addEventListener('click', (event) => {
+      if (event.target instanceof Element && event.target.closest('button')) return;
+      this.advance();
+    });
   }
 
   get isOpen(): boolean {
@@ -60,8 +64,9 @@ export class DialogueBox {
               h('span', { className: 'option-key' }, String(position + 1)), option.text)),
           ),
         )
-      : h('button', { className: 'dialogue-continue', type: 'button', onclick: () => this.advance() }, isCoarsePointer() ? 'Tap to continue' : 'Click here to continue');
+      : h('p', { className: 'dialogue-continue' }, isCoarsePointer() ? 'Tap to continue' : 'Click or press Space to continue');
 
+    this.element.classList.toggle('continuable', !view.options);
     replaceChildren(
       this.element,
       h('header', { className: `dialogue-speaker speaker-${view.speaker}` }, h('span', { className: 'speaker-name' }, view.speakerName), view.speakerTitle && h('span', { className: 'speaker-title' }, view.speakerTitle)),

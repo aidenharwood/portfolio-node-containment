@@ -693,14 +693,15 @@
   font-weight: 600;
 }
 
+.hud-dialogue.continuable {
+  cursor: pointer;
+  user-select: none;
+}
+
 .dialogue-continue {
-  margin-top: 10px;
-  background: none;
-  border: none;
+  margin: 10px 0 0;
   color: var(--color-accent);
   font-size: 12px;
-  cursor: pointer;
-  padding: 0;
   animation: blink 1.4s ease-in-out infinite;
 }
 
