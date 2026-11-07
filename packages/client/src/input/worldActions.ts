@@ -1,4 +1,4 @@
-import { GAME_CONTENT, type TilePoint } from '@containment/shared';
+import { GAME_CONTENT, type TileKindId, type TilePoint } from '@containment/shared';
 import type { MenuAction } from '../hud/contextMenu.ts';
 import type { GameConnection } from '../net/gameConnection.ts';
 import type { PickTarget } from '../render/pickTarget.ts';
@@ -10,11 +10,31 @@ export interface ActionContext {
   markClick(tile: TilePoint, tone: 'walk' | 'interact'): void;
 }
 
+const TERRAIN_INFO: Readonly<Record<TileKindId, { readonly name: string; readonly examine: string }>> = {
+  void: { name: 'Darkness', examine: 'Nothing. Not even the absence of something.' },
+  wall: { name: 'Bulkhead Wall', examine: 'Reinforced site plating. It has been rated for things you would rather not think about.' },
+  glass: { name: 'Observation Glass', examine: 'Layered containment glass. Your reflection looks slightly less tired than you are.' },
+  door: { name: 'Doorway', examine: 'A pressure doorway, latched open.' },
+  plating: { name: 'Deck Plating', examine: 'Riveted deck plating, scuffed by a thousand boots.' },
+  concrete: { name: 'Concrete Floor', examine: 'Poured concrete with old drill marks.' },
+  grate: { name: 'Floor Grate', examine: 'An open grate over glowing service ducts.' },
+  rust: { name: 'Rusted Floor', examine: 'Corroded plating. It flakes under your boots.' },
+  carpet: { name: 'Carpet', examine: 'Institutional carpet. Its pattern is designed to hide stains, and it is working hard.' },
+  hazard: { name: 'Hazard Markings', examine: 'Yellow and black stripes: the universal language of "probably not".' },
+  coolant: { name: 'Coolant Channel', examine: 'Glowing reactor coolant. Cold enough to burn. Do not drink, bathe in or fall into.' },
+  soil: { name: 'Growing Soil', examine: 'Damp, dark soil laced with root threads. Some of the threads are moving.' },
+};
+
 export function actionsForTarget(target: PickTarget | null, context: ActionContext): MenuAction[] {
   if (!target) return [];
   switch (target.kind) {
     case 'tile':
       return [walkHere(target.tile, context)];
+
+    case 'terrain': {
+      const info = TERRAIN_INFO[target.terrain];
+      return [{ verb: 'Examine', subject: info.name, subjectTone: 'object', run: () => context.examine(info.examine) }];
+    }
 
     case 'entity': {
       const { entity } = target;

@@ -35,7 +35,8 @@ import { samePickTarget, type ClickMarker, type PickTarget } from './pickTarget.
 import { hex, lighten } from './voxel/palette.ts';
 import { ZoneScene, type LightSource } from './world/zoneScene.ts';
 
-const isScenery = (target: PickTarget): boolean => target.kind === 'object' && target.definition.interactions.length === 0;
+const isScenery = (target: PickTarget): boolean =>
+  target.kind === 'terrain' || (target.kind === 'object' && target.definition.interactions.length === 0);
 
 export interface RenderOverlay {
   readonly hover: PickTarget | null;
@@ -232,15 +233,25 @@ export class GameRenderer {
     };
 
     let blockedByWall = false;
+    let glass: PickTarget | null = null;
     for (const hit of this.raycaster.intersectObjects(candidates, true)) {
       if (hit.distance > groundDistance + 0.01) break;
       const target = this.targetFor(hit.object);
       if (!target) {
+        const inside = hit.point.clone().addScaledVector(this.raycaster.ray.direction, 0.05);
+        const wallTile = { x: Math.round(inside.x), y: Math.round(inside.z) };
+        const terrain = this.world.zone?.layout.tileAt(wallTile);
+        if (terrain === 'glass') {
+          glass ??= { kind: 'terrain', tile: wallTile, terrain };
+          continue;
+        }
+        if (terrain) add({ kind: 'terrain', tile: wallTile, terrain });
         blockedByWall = true;
         break;
       }
       add(target);
     }
+    if (glass) add(glass);
     if (blockedByWall || !groundPoint) return targets;
 
     const tile = { x: Math.round(groundPoint.x), y: Math.round(groundPoint.z) };
@@ -248,7 +259,10 @@ export class GameRenderer {
       if (item.position.x === tile.x && item.position.y === tile.y) add({ kind: 'groundItem', item });
     }
     const layout = this.world.zone?.layout;
-    if (layout && TILE_KINDS[layout.tileAt(tile)].walkable) add({ kind: 'tile', tile });
+    if (!layout) return targets;
+    const terrain = layout.tileAt(tile);
+    if (TILE_KINDS[terrain].walkable) add({ kind: 'tile', tile });
+    else if (terrain !== 'void') add({ kind: 'terrain', tile, terrain });
     return targets;
   }
 

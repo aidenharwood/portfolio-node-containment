@@ -133,7 +133,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   };
 
   const bubbleContentFor = (target: PickTarget | null): BubbleContent | null => {
-    if (!target || target.kind === 'tile') return null;
+    if (!target || target.kind === 'tile' || target.kind === 'terrain') return null;
     const actions = actionsForTarget(target, actionContext());
     if (target.kind === 'groundItem') {
       return { actions, subtitle: target.item.owned ? 'Reserved for you' : 'Unclaimed' };
