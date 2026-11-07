@@ -14,6 +14,7 @@ import { ContextMenu } from '../hud/contextMenu.ts';
 import { DialogueBox } from '../hud/dialogueBox.ts';
 import { InteractionBubble, type BubbleContent } from '../hud/interactionBubble.ts';
 import { Minimap } from '../hud/minimap.ts';
+import { ClickIndicator, type ClickTone } from '../hud/clickIndicator.ts';
 import { Notices } from '../hud/notices.ts';
 import { ObjectiveTracker } from '../hud/objectiveTracker.ts';
 import { ShopWindow } from '../hud/shopWindow.ts';
@@ -73,6 +74,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   const storage = new StorageWindow(connection, world, menu);
   const crafting = new CraftingWindow(connection, world);
   const activity = new ActivityBar(connection, world);
+  const clickIndicator = new ClickIndicator();
   const zoneBanner = h('div', { className: 'zone-banner' });
   const cameraHint = h('div', { className: 'camera-hint' },
     isCoarsePointer() ? 'Drag to rotate · Pinch to zoom · Hold for options' : 'Drag or Q / E to rotate · Scroll to zoom · Home to reset');
@@ -89,19 +91,25 @@ export function createGameScreen(app: AppNavigator): Screen {
   let pinch: PinchState | null = null;
   let multiTouchGesture = false;
   let frameHandle = 0;
+  let clickOrigin: { clientX: number; clientY: number } | null = null;
 
   const examine = (text: string) => chat.push({ channel: 'examine', text });
   const actionContext = (): ActionContext => ({
     connection,
     selfEntityId: world.selfEntityId,
     examine,
-    markClick: (tile, tone) => {
-      clickMarker = { tile, tone, startedAt: performance.now() };
-    },
+    markClick: (tile, tone) => markDestination(tile, tone),
   });
 
-  const walkTo = (tile: TilePoint) => {
-    clickMarker = { tile, tone: 'walk', startedAt: performance.now() };
+  const markDestination = (tile: TilePoint, tone: ClickTone) => {
+    clickMarker = { tile, tone, startedAt: performance.now() };
+    minimap.setDestination(tile, tone);
+    if (clickOrigin) clickIndicator.show(clickOrigin.clientX, clickOrigin.clientY, tone);
+  };
+
+  const walkTo = (tile: TilePoint, clientX: number, clientY: number) => {
+    clickOrigin = { clientX, clientY };
+    markDestination(tile, 'walk');
     connection.send({ type: 'world.walk', target: tile });
   };
 
@@ -187,6 +195,7 @@ export function createGameScreen(app: AppNavigator): Screen {
 
   const performPrimaryAction = () => {
     refreshHover();
+    clickOrigin = pointer ? { clientX: pointer.clientX, clientY: pointer.clientY } : null;
     actionsForTarget(hover, actionContext())[0]?.run();
   };
 
@@ -306,6 +315,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     bubble.hide();
     drag = null;
     if (pointerIsTouch) forgetTouchPointer();
+    clickOrigin = { clientX: event.clientX, clientY: event.clientY };
     if (actions.length > 0) menu.open(event.clientX, event.clientY, actions);
   });
 
@@ -397,6 +407,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     storage.element,
     activity.element,
     notices.element,
+    clickIndicator.element,
     bubble.element,
     menu.element,
   );

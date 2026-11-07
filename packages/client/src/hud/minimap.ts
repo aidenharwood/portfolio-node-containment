@@ -1,10 +1,14 @@
 import { TILE_KINDS, type Facing, type TilePoint } from '@containment/shared';
 import type { WorldState } from '../state/worldState.ts';
 import { h } from '../ui/dom.ts';
+import type { ClickTone } from './clickIndicator.ts';
 
 const PIXELS_PER_TILE = 7;
 const MAP_SIZE = 220;
 const MAP_RADIUS = MAP_SIZE / 2 - 4;
+const DESTINATION_STALL_MS = 1500;
+const INTERACT_REACH_TILES = 1.5;
+const DESTINATION_COLORS: Readonly<Record<ClickTone, string>> = { walk: '#ffd23f', interact: '#ff5e3a' };
 
 const TILE_COLORS: Partial<Record<string, string>> = {
   wall: '#5d7180',
@@ -23,6 +27,12 @@ interface MapView {
   readonly rotation: number;
 }
 
+interface Destination {
+  readonly tile: TilePoint;
+  readonly tone: ClickTone;
+  readonly setAt: number;
+}
+
 export class Minimap {
   readonly element: HTMLElement;
   private readonly canvas = h('canvas', { className: 'minimap-canvas' });
@@ -30,8 +40,9 @@ export class Minimap {
   private readonly world: WorldState;
   private base: HTMLCanvasElement | null = null;
   private view: MapView = { centerX: 0, centerY: 0, rotation: 0 };
+  private destination: Destination | null = null;
 
-  constructor(world: WorldState, onSelectTile: (tile: TilePoint) => void) {
+  constructor(world: WorldState, onSelectTile: (tile: TilePoint, clientX: number, clientY: number) => void) {
     this.world = world;
     const ratio = Math.min(window.devicePixelRatio || 1, 2);
     this.canvas.width = MAP_SIZE * ratio;
@@ -47,11 +58,16 @@ export class Minimap {
       const sin = Math.sin(-this.view.rotation);
       const mapX = (offsetX * cos - offsetY * sin) / PIXELS_PER_TILE + this.view.centerX;
       const mapY = (offsetX * sin + offsetY * cos) / PIXELS_PER_TILE + this.view.centerY;
-      onSelectTile({ x: Math.round(mapX), y: Math.round(mapY) });
+      onSelectTile({ x: Math.round(mapX), y: Math.round(mapY) }, event.clientX, event.clientY);
     };
   }
 
+  setDestination(tile: TilePoint, tone: ClickTone): void {
+    this.destination = { tile, tone, setAt: performance.now() };
+  }
+
   rebuild(): void {
+    this.destination = null;
     const zone = this.world.zone;
     if (!zone) return;
     this.title.textContent = this.world.layer > 1 ? `${zone.definition.name} · L${this.world.layer}` : zone.definition.name;
@@ -109,6 +125,8 @@ export class Minimap {
     }
     context.restore();
 
+    this.settleDestination(position, now);
+    if (this.destination) this.paintDestination(context, this.destination, position, rotation);
     this.paintSelfArrow(context, rotation + FACING_ANGLE[self.facing]);
     this.paintNorth(context, rotation);
     context.strokeStyle = 'rgba(79, 216, 255, 0.45)';
@@ -116,6 +134,56 @@ export class Minimap {
     context.beginPath();
     context.arc(MAP_SIZE / 2, MAP_SIZE / 2, MAP_RADIUS, 0, Math.PI * 2);
     context.stroke();
+  }
+
+  private settleDestination(position: TilePoint, now: number): void {
+    const destination = this.destination;
+    const self = this.world.selfEntity;
+    if (!destination || !self) return;
+    const moving = this.world.isMoving(self, now);
+    const distance = Math.hypot(position.x - destination.tile.x, position.y - destination.tile.y);
+    const reach = destination.tone === 'walk' ? 0.05 : INTERACT_REACH_TILES;
+    const arrived = !moving && distance <= reach;
+    const stalled = !moving && now - Math.max(destination.setAt, self.movedAt + this.world.tickMs) > DESTINATION_STALL_MS;
+    if (arrived || stalled) this.destination = null;
+  }
+
+  private paintDestination(context: CanvasRenderingContext2D, destination: Destination, position: TilePoint, rotation: number): void {
+    const dx = (destination.tile.x - position.x) * PIXELS_PER_TILE;
+    const dy = (destination.tile.y - position.y) * PIXELS_PER_TILE;
+    const cos = Math.cos(rotation);
+    const sin = Math.sin(rotation);
+    let x = dx * cos - dy * sin;
+    let y = dx * sin + dy * cos;
+    const edge = MAP_RADIUS - 8;
+    const length = Math.hypot(x, y);
+    if (length > edge) {
+      x = (x / length) * edge;
+      y = (y / length) * edge;
+    }
+    const color = DESTINATION_COLORS[destination.tone];
+    context.save();
+    context.translate(MAP_SIZE / 2 + x, MAP_SIZE / 2 + y);
+    context.fillStyle = 'rgba(0, 0, 0, 0.55)';
+    context.beginPath();
+    context.ellipse(0, 0, 3.5, 1.6, 0, 0, Math.PI * 2);
+    context.fill();
+    context.strokeStyle = '#e8f4f8';
+    context.lineWidth = 1.4;
+    context.beginPath();
+    context.moveTo(0, 0);
+    context.lineTo(0, -12);
+    context.stroke();
+    context.fillStyle = color;
+    context.shadowColor = color;
+    context.shadowBlur = 5;
+    context.beginPath();
+    context.moveTo(0.6, -12);
+    context.lineTo(9, -9);
+    context.lineTo(0.6, -6);
+    context.closePath();
+    context.fill();
+    context.restore();
   }
 
   private paintSelfArrow(context: CanvasRenderingContext2D, angle: number): void {
