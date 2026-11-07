@@ -29,6 +29,7 @@ import { createDossierTab } from '../hud/tabs/dossierTab.ts';
 import { createEquipmentTab } from '../hud/tabs/equipmentTab.ts';
 import { createInventoryTab } from '../hud/tabs/inventoryTab.ts';
 import { createQuestsTab } from '../hud/tabs/questsTab.ts';
+import { QuestTracking } from '../state/questTracking.ts';
 import { createSkillsTab } from '../hud/tabs/skillsTab.ts';
 import { actionsForTarget, type ActionContext } from '../input/worldActions.ts';
 import { GameRenderer } from '../render/gameRenderer.ts';
@@ -65,7 +66,8 @@ export function createGameScreen(app: AppNavigator): Screen {
   const chat = new ChatLog(connection);
   const notices = new Notices(connection);
   const dialogue = new DialogueBox(connection);
-  const objectives = new ObjectiveTracker();
+  const questTracking = new QuestTracking();
+  const objectives = new ObjectiveTracker(questTracking);
   const bubble = new InteractionBubble();
   const speech = new SpeechLayer();
   const combatOverlay = new CombatOverlay(world);
@@ -118,13 +120,14 @@ export function createGameScreen(app: AppNavigator): Screen {
     createInventoryTab(connection, menu, { examine }),
     createEquipmentTab(connection),
     createSkillsTab(),
-    createQuestsTab(),
+    createQuestsTab(menu, questTracking),
     createDossierTab(connection, world),
   ]);
 
   const refreshGuidance = () => {
     const self = world.self;
     if (!self) return;
+    questTracking.bind(self.characterId);
     npcMarkers = new Map();
     for (const npc of GAME_CONTENT.npcs.values()) {
       const marker = npcQuestMarker(npc.id, self.quests, GAME_CONTENT.quests);

@@ -98,7 +98,7 @@
   top: 46px;
   left: 14px;
   width: 290px;
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 .objectives-toggle {
@@ -112,6 +112,7 @@
   color: var(--color-accent);
   cursor: pointer;
   text-shadow: 1px 1px 0 #000;
+  pointer-events: auto;
 }
 
 .objectives-list {
@@ -505,10 +506,42 @@
   background: var(--color-accent-dim);
 }
 
+.quest-entry.tracked {
+  font-weight: 600;
+}
+
+.quest-tracked-mark {
+  color: var(--color-accent);
+  font-size: 10px;
+}
+
+.quest-detail-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.quest-back {
+  background: none;
+  border: none;
+  padding: 2px 0;
+  font-size: 11px;
+  color: var(--color-accent);
+  cursor: pointer;
+}
+
+.quest-track {
+  font-size: 10px;
+  padding: 4px 10px;
+}
+
+.quest-track.active {
+  cursor: default;
+  color: var(--color-accent);
+}
+
 .quest-detail {
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px solid var(--color-line);
   font-size: 12px;
   line-height: 1.5;
   display: flex;

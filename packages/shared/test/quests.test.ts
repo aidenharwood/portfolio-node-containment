@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { advanceQuest, GAME_CONTENT, npcQuestMarker, startQuest, type QuestDefinition, type QuestStateProbe } from '../src/index.ts';
+import { advanceQuest, focusedQuest, GAME_CONTENT, npcQuestMarker, startQuest, type QuestDefinition, type QuestStateProbe } from '../src/index.ts';
 
 const quest: QuestDefinition = {
   id: 'sample',
@@ -70,4 +70,17 @@ test('an NPC only advertises a quest once the quests it requires are complete', 
   assert.equal(npcQuestMarker('artificer-duval', rimeguardTaken, GAME_CONTENT.quests), null, 'Servo Salvage waits for Cold Storage');
   assert.equal(npcQuestMarker('artificer-duval', { ...rimeguardTaken, 'cold-storage': done('cold-storage') }, GAME_CONTENT.quests), 'available');
   assert.equal(npcQuestMarker('archivist-sel', {}, GAME_CONTENT.quests), null, 'the Council does not call before Halvorsen is found');
+});
+
+test('the focused quest is the preferred active quest, falling back to the first active one', () => {
+  const other: QuestDefinition = { ...quest, id: 'other', name: 'Other', category: 'main' };
+  const quests = new Map([[quest.id, quest], [other.id, other]]);
+  const log = {
+    [quest.id]: startQuest(quest, probeWith(0)).progress,
+    [other.id]: startQuest(other, probeWith(0)).progress,
+  };
+  assert.equal(focusedQuest(log, quests, 'sample')?.quest.id, 'sample');
+  assert.equal(focusedQuest(log, quests, null)?.quest.id, 'other');
+  assert.equal(focusedQuest(log, quests, 'missing')?.quest.id, 'other');
+  assert.equal(focusedQuest({}, quests, 'sample'), undefined);
 });

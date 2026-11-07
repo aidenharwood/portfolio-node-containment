@@ -38,6 +38,15 @@ export function trackedQuests(log: QuestLog, quests: ReadonlyMap<QuestId, QuestD
   return tracked.sort((a, b) => categoryOrder(a.quest) - categoryOrder(b.quest));
 }
 
+export function focusedQuest(
+  log: QuestLog,
+  quests: ReadonlyMap<QuestId, QuestDefinition>,
+  preferred: QuestId | null,
+): TrackedQuest | undefined {
+  const active = trackedQuests(log, quests);
+  return active.find(({ quest }) => quest.id === preferred) ?? active[0];
+}
+
 export const isOfferUnlocked = (quest: QuestDefinition, log: QuestLog): boolean =>
   (quest.offerRequires ?? []).every((questId) => log[questId]?.status === 'completed');
 
