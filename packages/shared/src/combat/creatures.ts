@@ -29,7 +29,7 @@ export interface CreatureDefinition {
   readonly integrity: number;
   readonly defence: number;
   readonly attack: CreatureAttack;
-  readonly aggressive: boolean;
+  readonly aggressive?: boolean;
   readonly aggroRadius: number;
   readonly leashRadius: number;
   readonly wanderRadius: number;

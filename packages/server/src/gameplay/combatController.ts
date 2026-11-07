@@ -1,6 +1,8 @@
 import {
   chebyshevDistance,
   combatExperience,
+  combatLevel,
+  ignoresOutclassedPlayer,
   defeatExperience,
   scaledRespawnTicks,
   creatureAttackProfile,
@@ -309,6 +311,7 @@ export class CombatController {
     const creatureBusy = creature.engagedWith !== null && tick < creature.engagedUntilTick && !this.isMultiCombat(zone, creature.position);
     for (const player of zone.players.values()) {
       if (player.isIncapacitated) continue;
+      if (ignoresOutclassedPlayer(creature.definition.level, combatLevel(player.record.skills))) continue;
       if (creatureBusy && creature.engagedWith !== player.entityId) continue;
       if (this.playerBusyElsewhere(player, creature, zone, tick)) continue;
       const distance = chebyshevDistance(creature.position, player.position);

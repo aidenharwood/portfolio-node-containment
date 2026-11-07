@@ -42,7 +42,7 @@ export class VitalsPanel {
     this.targetElement.hidden = false;
     this.targetName.textContent = target.name;
     this.targetLevel.textContent = creature ? `Lv ${creature.level}` : '';
-    this.targetLevel.dataset.threat = creature && world.self ? relativeThreat(world.self.operativeRating, creature.level) : 'even';
+    this.targetLevel.dataset.threat = creature && world.self ? relativeThreat(world.self.combatLevel, creature.level) : 'even';
     this.targetFill.style.width = `${ratio * 100}%`;
     this.targetFill.dataset.state = ratio > 0.5 ? 'healthy' : ratio > 0.25 ? 'wounded' : 'critical';
     this.targetText.textContent = `${target.vitals.integrity} / ${target.vitals.maxIntegrity}`;

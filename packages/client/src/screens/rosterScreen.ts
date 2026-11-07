@@ -55,7 +55,7 @@ export function createRosterScreen(app: AppNavigator, roster: readonly Character
       h('h3', { className: 'roster-name' }, character.name),
       h('p', { className: 'roster-meta' }, 'Directorate operative'),
       h('dl', { className: 'roster-stats' },
-        h('dt', {}, 'Combat level'), h('dd', {}, String(character.operativeRating)),
+        h('dt', {}, 'Combat level'), h('dd', {}, String(character.combatLevel)),
         h('dt', {}, 'Location'), h('dd', {}, zone?.name ?? '—'),
       ),
       h('button', { className: 'button primary wide', type: 'button' }, 'Deploy'),

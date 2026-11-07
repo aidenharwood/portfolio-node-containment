@@ -36,7 +36,7 @@ export function createSkillsTab(): PanelTab {
           );
         }),
       );
-      total.textContent = `Total ${levelSum} · Rating ${self.operativeRating}`;
+      total.textContent = `Total ${levelSum} · Combat ${self.combatLevel}`;
     },
   };
 }

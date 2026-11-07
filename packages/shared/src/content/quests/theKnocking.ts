@@ -4,7 +4,7 @@ export const THE_KNOCKING: QuestDefinition = {
   id: 'the-knocking',
   name: 'The Knocking',
   category: 'main',
-  recommendedRating: 4,
+  recommendedLevel: 4,
   summary:
     'Sector 2 was sealed last cycle with a research team still inside. Something behind the quarantine bulkhead has been knocking ever since. The Directorate would like to know what, and would prefer it if you went to find out.',
   steps: [

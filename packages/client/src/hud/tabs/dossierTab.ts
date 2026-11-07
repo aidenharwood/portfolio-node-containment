@@ -37,7 +37,7 @@ export function createDossierTab(connection: GameConnection, world: WorldState):
         details,
         h('p', { className: 'dossier-name' }, self.name),
         h('p', { className: 'dossier-meta' }, PRONOUN_SETS[self.pronouns].label),
-        h('p', { className: 'dossier-meta' }, `Operative rating ${self.operativeRating}`),
+        h('p', { className: 'dossier-meta' }, `Combat level ${self.combatLevel}`),
       );
       replaceChildren(
         profile,

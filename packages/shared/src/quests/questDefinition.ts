@@ -33,7 +33,7 @@ export interface QuestDefinition {
   readonly rewardSummary: readonly string[];
   readonly followUpQuestId?: QuestId;
   readonly offeredBy?: NpcId;
-  readonly recommendedRating?: number;
+  readonly recommendedLevel?: number;
 }
 
 export const objectiveGoal = (objective: QuestObjective): number => {

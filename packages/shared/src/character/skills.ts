@@ -86,8 +86,11 @@ export const normalizeSkills = (stored: Partial<SkillExperience>): SkillExperien
 export const createStartingSkills = (bonusExperience: Partial<SkillExperience> = {}): SkillExperience =>
   Object.fromEntries(SKILL_IDS.map((id) => [id, bonusExperience[id] ?? 0])) as SkillExperience;
 
-export function operativeRating(skills: SkillExperience): number {
-  const levels = SKILL_IDS.map((id) => levelForExperience(skills[id]));
-  const total = levels.reduce((sum, level) => sum + level, 0);
-  return Math.max(1, Math.floor(total / SKILL_IDS.length + Math.max(...levels) / 4));
+export const COMBAT_SKILLS = ['closeQuarters', 'marksmanship', 'fortitude'] as const satisfies readonly SkillId[];
+
+export function combatLevel(skills: SkillExperience): number {
+  const fortitude = levelForExperience(skills.fortitude);
+  const melee = levelForExperience(skills.closeQuarters);
+  const ranged = levelForExperience(skills.marksmanship);
+  return Math.max(1, Math.floor(fortitude / 2 + Math.max(melee, ranged) / 2 + Math.min(melee, ranged) / 4));
 }

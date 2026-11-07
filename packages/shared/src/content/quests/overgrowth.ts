@@ -5,7 +5,7 @@ export const OVERGROWTH: QuestDefinition = {
   name: 'Overgrowth',
   category: 'side',
   offeredBy: 'botanist-oyelaran',
-  recommendedRating: 4,
+  recommendedLevel: 4,
   summary:
     'The Verdance hydroponics deck has gone wild. Dr. Oyelaran needs the thorn crawlers cut back and the seed vault checked before the vines take it.',
   steps: [

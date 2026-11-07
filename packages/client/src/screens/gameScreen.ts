@@ -146,7 +146,7 @@ export function createGameScreen(app: AppNavigator): Screen {
       return {
         actions,
         subtitle: creature ? [`Level ${creature.level}`, creature.designation].filter(Boolean).join(' · ') : undefined,
-        threat: creature && world.self ? relativeThreat(world.self.operativeRating, creature.level) : undefined,
+        threat: creature && world.self ? relativeThreat(world.self.combatLevel, creature.level) : undefined,
         objective: Boolean(entity.creatureId && objectiveCreatures.has(entity.creatureId)),
       };
     }

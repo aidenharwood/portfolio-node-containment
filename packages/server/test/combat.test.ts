@@ -149,10 +149,22 @@ describe('combat', () => {
     const { player, gameplay } = harness;
     const mite = gameplay.world.zoneOf(player).creatureByInstance('s2-mite-corridor-a');
     assert.ok(mite);
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-mite-corridor-a', interactionIndex: 0 });
     harness.ticksUntil(() => mite.targetId === player.entityId, 50);
     harness.send({ type: 'world.walk', target: { x: 29, y: 11 } });
     harness.ticksUntil(() => mite.targetId === null && mite.returningHome === false, 400);
     assert.equal(mite.integrity, mite.definition.integrity);
+  });
+
+  test('aggressive creatures ignore operatives far above their level, but not fresh ones', () => {
+    const veteran = createHarness({ prepare: prepared({ zoneId: 'sector-two', position: { x: 9, y: 11 } }, {}, veteranSkills()) });
+    const ignoring = veteran.gameplay.world.zoneOf(veteran.player).creatureByInstance('s2-mite-corridor-a');
+    for (let tick = 0; tick < 30; tick++) veteran.gameplay.tick();
+    assert.equal(ignoring?.targetId, null);
+
+    const fresh = createHarness({ prepare: prepared({ zoneId: 'sector-two', position: { x: 9, y: 11 } }, {}) });
+    const hunting = fresh.gameplay.world.zoneOf(fresh.player).creatureByInstance('s2-mite-corridor-a');
+    fresh.ticksUntil(() => hunting?.targetId === fresh.player.entityId, 50);
   });
 
   test('medgel cannot raise integrity above the maximum', () => {

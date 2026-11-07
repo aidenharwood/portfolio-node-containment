@@ -3,7 +3,7 @@ import {
   deriveCombatProfile,
   equipmentStats,
   isEquipped,
-  operativeRating,
+  combatLevel,
   PRONOUN_SETS,
   questStanding,
   type ConditionContext,
@@ -47,7 +47,7 @@ export const selfStateOf = (player: Player, content: GameContent): SelfState => 
     quests: player.record.quests,
     stats: gearStats,
     profile: deriveCombatProfile(player.record.skills, gearStats),
-    operativeRating: operativeRating(player.record.skills),
+    combatLevel: combatLevel(player.record.skills),
     vitals: player.vitals(),
   };
 };

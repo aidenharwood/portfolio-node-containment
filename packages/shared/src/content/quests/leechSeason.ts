@@ -5,7 +5,7 @@ export const LEECH_SEASON: QuestDefinition = {
   name: 'Leech Season',
   category: 'side',
   offeredBy: 'mags',
-  recommendedRating: 5,
+  recommendedLevel: 5,
   summary: 'Mags needs sealant for her camp, and the pipe leeches in the warrens are full of it.',
   steps: [
     {

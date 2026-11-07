@@ -39,6 +39,6 @@ export interface CharacterSummary {
   readonly name: string;
   readonly appearance: CharacterAppearance;
   readonly equipment: EquipmentState;
-  readonly operativeRating: number;
+  readonly combatLevel: number;
   readonly zoneId: ZoneId;
 }

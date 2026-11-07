@@ -56,9 +56,9 @@ export function createQuestsTab(): PanelTab {
       detail,
       h('h4', {}, quest.name),
       h('p', { className: 'quest-summary' }, quest.summary),
-      quest.recommendedRating !== undefined &&
-        h('p', { className: `quest-recommended${self.operativeRating < quest.recommendedRating ? ' under' : ''}` },
-          `Recommended operative rating ${quest.recommendedRating} · yours ${self.operativeRating}`),
+      quest.recommendedLevel !== undefined &&
+        h('p', { className: `quest-recommended${self.combatLevel < quest.recommendedLevel ? ' under' : ''}` },
+          `Recommended combat level ${quest.recommendedLevel} · yours ${self.combatLevel}`),
       !progress && giver && h('p', { className: 'quest-journal' }, `Speak with ${giver} to begin.`),
       step && h('p', { className: 'quest-journal' }, step.journal),
       step &&

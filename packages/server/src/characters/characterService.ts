@@ -3,7 +3,7 @@ import {
   characterDraftErrors,
   failure,
   normalizeCharacterName,
-  operativeRating,
+  combatLevel,
   success,
   type AccountId,
   type CharacterDraft,
@@ -21,7 +21,7 @@ export const summarizeCharacter = (record: CharacterRecord): CharacterSummary =>
   name: record.name,
   appearance: record.appearance,
   equipment: record.equipment,
-  operativeRating: operativeRating(record.skills),
+  combatLevel: combatLevel(record.skills),
   zoneId: record.location.zoneId,
 });
 

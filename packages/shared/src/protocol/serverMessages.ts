@@ -59,7 +59,7 @@ export interface SelfState {
   readonly stats: Readonly<Record<StatId, number>>;
   readonly profile: CombatProfile;
   readonly vitals: EntityVitals;
-  readonly operativeRating: number;
+  readonly combatLevel: number;
 }
 
 export interface DialogueView {

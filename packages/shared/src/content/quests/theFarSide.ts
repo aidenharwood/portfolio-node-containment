@@ -4,7 +4,7 @@ export const THE_FAR_SIDE: QuestDefinition = {
   id: 'the-far-side',
   name: 'The Far Side',
   category: 'main',
-  recommendedRating: 8,
+  recommendedLevel: 8,
   summary:
     "Halvorsen's log points beneath the Atrium, into the abandoned Undercroft and through a seal that should open onto bedrock. Sector 3 is down there. So, perhaps, is Dr. Halvorsen.",
   steps: [

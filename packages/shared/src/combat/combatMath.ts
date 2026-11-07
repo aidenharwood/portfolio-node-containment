@@ -98,6 +98,11 @@ export function scaledRespawnTicks(baseTicks: number, population: number): numbe
   return Math.max(Math.ceil(baseTicks * MIN_RESPAWN_FRACTION), Math.round(scaled));
 }
 
+export const AGGRESSION_LEVEL_GAP = 4;
+
+export const ignoresOutclassedPlayer = (creatureLevel: number, playerCombatLevel: number): boolean =>
+  playerCombatLevel > creatureLevel + AGGRESSION_LEVEL_GAP;
+
 export function relativeThreat(playerRating: number, creatureLevel: number): 'trivial' | 'even' | 'dangerous' {
   const gap = creatureLevel - playerRating;
   if (gap <= -3) return 'trivial';
