@@ -31,9 +31,11 @@ import type { EntityRig } from './models/entityRig.ts';
 import { createClickMarker, createGroundRing, createQuestMarker } from './models/markerModels.ts';
 import { GroundItemLayer } from './items/groundItemLayer.ts';
 import { ProjectileLayer } from './projectileLayer.ts';
-import type { ClickMarker, PickTarget } from './pickTarget.ts';
+import { samePickTarget, type ClickMarker, type PickTarget } from './pickTarget.ts';
 import { hex, lighten } from './voxel/palette.ts';
 import { ZoneScene, type LightSource } from './world/zoneScene.ts';
+
+const isScenery = (target: PickTarget): boolean => target.kind === 'object' && target.definition.interactions.length === 0;
 
 export interface RenderOverlay {
   readonly hover: PickTarget | null;
@@ -206,33 +208,48 @@ export class GameRenderer {
     this.composer.render(delta);
   }
 
-  pick(canvasX: number, canvasY: number, options: { readonly scenery?: boolean } = {}): PickTarget | null {
-    if (!this.zone) return null;
+  pick(canvasX: number, canvasY: number): PickTarget | null {
+    return this.pickAll(canvasX, canvasY).find((target) => !isScenery(target)) ?? null;
+  }
+
+  pickAll(canvasX: number, canvasY: number): PickTarget[] {
+    if (!this.zone) return [];
     const pointer = new Vector2((canvasX / this.canvas.clientWidth) * 2 - 1, -(canvasY / this.canvas.clientHeight) * 2 + 1);
     this.raycaster.setFromCamera(pointer, this.cameraRig.camera);
 
     const selfId = this.world.selfEntityId;
     const candidates: Object3D[] = [
       ...[...this.entities.entries()].filter(([id]) => id !== selfId).map(([, view]) => view.rig.root),
-      ...[...this.zone.objects.values()].filter((view) => options.scenery || view.definition.interactions.length > 0).map((view) => view.group),
+      ...[...this.zone.objects.values()].map((view) => view.group),
       ...this.groundItems.pickables(),
       ...this.zone.solidWalls(),
     ];
     const groundPoint = this.raycaster.ray.intersectPlane(this.groundPlane, new Vector3());
     const groundDistance = groundPoint ? groundPoint.distanceTo(this.raycaster.ray.origin) : Infinity;
-    const firstHit = this.raycaster.intersectObjects(candidates, true)[0];
+    const targets: PickTarget[] = [];
+    const add = (target: PickTarget) => {
+      if (!targets.some((existing) => samePickTarget(existing, target))) targets.push(target);
+    };
 
-    if (firstHit && firstHit.distance < groundDistance + 0.01) {
-      const target = this.targetFor(firstHit.object);
-      if (target) return target;
-      return null;
+    let blockedByWall = false;
+    for (const hit of this.raycaster.intersectObjects(candidates, true)) {
+      if (hit.distance > groundDistance + 0.01) break;
+      const target = this.targetFor(hit.object);
+      if (!target) {
+        blockedByWall = true;
+        break;
+      }
+      add(target);
     }
-    if (!groundPoint) return null;
+    if (blockedByWall || !groundPoint) return targets;
+
     const tile = { x: Math.round(groundPoint.x), y: Math.round(groundPoint.z) };
-    const itemOnTile = [...this.world.groundItems.values()].find((item) => item.position.x === tile.x && item.position.y === tile.y);
-    if (itemOnTile) return { kind: 'groundItem', item: itemOnTile };
+    for (const item of this.world.groundItems.values()) {
+      if (item.position.x === tile.x && item.position.y === tile.y) add({ kind: 'groundItem', item });
+    }
     const layout = this.world.zone?.layout;
-    return layout && TILE_KINDS[layout.tileAt(tile)].walkable ? { kind: 'tile', tile } : null;
+    if (layout && TILE_KINDS[layout.tileAt(tile)].walkable) add({ kind: 'tile', tile });
+    return targets;
   }
 
   anchorFor(entityId: EntityId, now: number, extraHeight = 0.25): ScreenAnchor | null {

@@ -219,8 +219,11 @@ export function createGameScreen(app: AppNavigator): Screen {
   canvas.addEventListener('contextmenu', (event) => {
     event.preventDefault();
     refreshHover();
-    const target = pointer ? renderer.pick(pointer.x, pointer.y, { scenery: true }) : hover;
-    const actions = actionsForTarget(target, actionContext());
+    const targets = pointer ? renderer.pickAll(pointer.x, pointer.y) : hover ? [hover] : [];
+    const context = actionContext();
+    const stacked = targets.flatMap((target) => actionsForTarget(target, context));
+    const walk = stacked.findLast((action) => action.verb === 'Walk here');
+    const actions = [...stacked.filter((action) => action.verb !== 'Walk here'), ...(walk ? [walk] : [])];
     bubble.hide();
     if (actions.length > 0) menu.open(event.clientX, event.clientY, actions);
   });

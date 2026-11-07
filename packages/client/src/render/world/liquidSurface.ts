@@ -50,7 +50,7 @@ const FRAGMENT_SHADER = `
 
   void main() {
     float waves = ripples(vWorld);
-    float caustic = smoothstep(0.62, 0.78, ripples(vWorld * 1.7 + 4.0)) * 0.9;
+    float caustic = smoothstep(0.64, 0.8, ripples(vWorld * 1.7 + 4.0)) * 0.55;
     float edgeDistance = 1.0;
     edgeDistance = min(edgeDistance, mix(1.0, vLocal.y, vEdges.x));
     edgeDistance = min(edgeDistance, mix(1.0, 1.0 - vLocal.x, vEdges.y));
@@ -107,9 +107,9 @@ export class LiquidSurface {
       fragmentShader: FRAGMENT_SHADER,
       uniforms: {
         time: { value: 0 },
-        deepColor: { value: new Color(0x06303f) },
-        shallowColor: { value: new Color(0x1f8fb0) },
-        glowColor: { value: new Color(0x7ff4ff) },
+        deepColor: { value: new Color(0x041f2a) },
+        shallowColor: { value: new Color(0x13607a) },
+        glowColor: { value: new Color(0x3fa8c0) },
         foamColor: { value: new Color(0xa8e8f0) },
       },
       transparent: true,
