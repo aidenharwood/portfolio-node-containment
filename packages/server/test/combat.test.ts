@@ -9,6 +9,7 @@ import {
   type QuestProgress,
   type ZoneLocation,
 } from '@containment/shared';
+import { CONSUMABLE_COOLDOWN_MESSAGE } from '../src/gameplay/gearController.ts';
 import { createHarness, finishDialogue, type Harness } from './support/testHarness.ts';
 
 const ATRIUM_NEAR_KADE: ZoneLocation = { zoneId: 'meridian-atrium', position: { x: 36, y: 12 } };
@@ -186,8 +187,10 @@ describe('combat', () => {
 
     useMedgel();
     assert.equal(countItem(player.record.inventory, 'medgel'), 2);
+    assert.equal(harness.sink.last('notice'), undefined);
     useMedgel();
     assert.equal(countItem(player.record.inventory, 'medgel'), 2);
+    assert.deepEqual(harness.sink.last('notice'), { type: 'notice', tone: 'warning', text: CONSUMABLE_COOLDOWN_MESSAGE });
 
     harness.gameplay.tick();
     harness.gameplay.tick();
