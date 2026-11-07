@@ -11,6 +11,9 @@ import type { Player } from '../world/player.ts';
 import type { World } from '../world/world.ts';
 import type { EffectHost } from './effectRunner.ts';
 
+export const CONSUMABLE_COOLDOWN_TICKS = 3;
+export const CONSUMABLE_COOLDOWN_MESSAGE = "You're still recovering from the last one.";
+
 export class GearController {
   private readonly content: GameContent;
   private readonly world: World;
@@ -40,13 +43,18 @@ export class GearController {
     this.commitLoadout(player, result.value, true);
   }
 
-  use(player: Player, slotIndex: number): void {
+  use(player: Player, slotIndex: number, tick: number): void {
     const stack = player.record.inventory[slotIndex];
     const item = stack ? this.content.items.get(stack.itemId) : undefined;
     if (!stack || !item?.consumable) {
       this.host.notify(player, 'warning', 'You cannot use that.');
       return;
     }
+    if (tick < player.nextConsumableTick) {
+      this.host.notify(player, 'warning', CONSUMABLE_COOLDOWN_MESSAGE);
+      return;
+    }
+    player.nextConsumableTick = tick + CONSUMABLE_COOLDOWN_TICKS;
     const inventory = [...player.record.inventory];
     inventory[slotIndex] = stack.quantity > 1 ? { itemId: stack.itemId, quantity: stack.quantity - 1 } : null;
     player.update({ inventory });

@@ -186,7 +186,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
         this.interactions.request(player, { kind: 'groundItem', instanceId: message.groundItemId, interactionIndex: 0 });
         break;
       case 'inventory.use':
-        this.gear.use(player, message.slotIndex);
+        this.gear.use(player, message.slotIndex, this.tickNumber);
         break;
       case 'inventory.swap':
         this.gear.swap(player, message.from, message.to);

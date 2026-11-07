@@ -175,6 +175,29 @@ describe('combat', () => {
     assert.equal(player.integrity, player.maxIntegrity);
     assert.equal(countItem(player.record.inventory, 'medgel'), 2);
   });
+
+  test('healing items can only be used once every three ticks', () => {
+    const harness = createHarness();
+    const { player } = harness;
+    const useMedgel = () => {
+      const slotIndex = player.record.inventory.findIndex((slot) => slot?.itemId === 'medgel');
+      harness.send({ type: 'inventory.use', slotIndex });
+    };
+
+    useMedgel();
+    assert.equal(countItem(player.record.inventory, 'medgel'), 2);
+    useMedgel();
+    assert.equal(countItem(player.record.inventory, 'medgel'), 2);
+
+    harness.gameplay.tick();
+    harness.gameplay.tick();
+    useMedgel();
+    assert.equal(countItem(player.record.inventory, 'medgel'), 2);
+
+    harness.gameplay.tick();
+    useMedgel();
+    assert.equal(countItem(player.record.inventory, 'medgel'), 1);
+  });
 });
 
 describe('storyline continuity', () => {

@@ -58,6 +58,7 @@ export class Player {
   engagedWith: EntityId | null = null;
   engagedUntilTick = 0;
   nextAttackTick = 0;
+  nextConsumableTick = 0;
   lastCombatTick = -Infinity;
   lastChaseTarget: TilePoint | null = null;
   private stateDirty = true;
