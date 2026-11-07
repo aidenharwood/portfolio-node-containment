@@ -51,7 +51,7 @@ export class GearController {
       return;
     }
     if (tick < player.nextConsumableTick) {
-      this.host.notify(player, 'warning', CONSUMABLE_COOLDOWN_MESSAGE);
+      player.send({ type: 'chat.message', channel: 'system', text: CONSUMABLE_COOLDOWN_MESSAGE });
       return;
     }
     player.nextConsumableTick = tick + CONSUMABLE_COOLDOWN_TICKS;

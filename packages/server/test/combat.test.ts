@@ -190,7 +190,8 @@ describe('combat', () => {
     assert.equal(harness.sink.last('notice'), undefined);
     useMedgel();
     assert.equal(countItem(player.record.inventory, 'medgel'), 2);
-    assert.deepEqual(harness.sink.last('notice'), { type: 'notice', tone: 'warning', text: CONSUMABLE_COOLDOWN_MESSAGE });
+    assert.equal(harness.sink.last('notice'), undefined);
+    assert.equal(harness.sink.last('chat.message')?.text, CONSUMABLE_COOLDOWN_MESSAGE);
 
     harness.gameplay.tick();
     harness.gameplay.tick();
