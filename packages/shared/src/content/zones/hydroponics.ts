@@ -50,7 +50,7 @@ export const HYDROPONICS: ZoneDefinition = {
     { instanceId: 'hydro-tram', objectId: 'hydroponics-tram', position: { x: 1, y: 12 }, facing: 'east' },
     { instanceId: 'hydro-platform-sign', objectId: 'warning-sign', position: { x: 7, y: 8 } },
     { instanceId: 'hydro-platform-storage', objectId: 'storage-locker', position: { x: 1, y: 15 }, facing: 'east' },
-    { instanceId: 'hydro-seed-vault', objectId: 'seed-vault-console', position: { x: 4, y: 24 } },
+    { instanceId: 'hydro-seed-vault', objectId: 'seed-vault-console', position: { x: 4, y: 24 }, facing: 'north' },
     { instanceId: 'hydro-vault-rack-a', objectId: 'server-rack', position: { x: 1, y: 19 } },
     { instanceId: 'hydro-vault-rack-b', objectId: 'server-rack', position: { x: 7, y: 19 } },
 

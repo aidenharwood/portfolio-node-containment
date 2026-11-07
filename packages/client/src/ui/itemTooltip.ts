@@ -1,5 +1,8 @@
 import {
   EQUIPMENT_SLOT_LABELS,
+  GAME_CONTENT,
+  STAT_IDS,
+  type EquipmentState,
   SKILL_INFO,
   STAT_INFO,
   type ItemDefinition,
@@ -10,6 +13,12 @@ import { h, replaceChildren } from './dom.ts';
 
 const tooltip = h('div', { className: 'item-tooltip panel', hidden: true, role: 'tooltip' });
 document.body.append(tooltip);
+
+let equipped: EquipmentState = {};
+
+export function setTooltipEquipment(equipment: EquipmentState): void {
+  equipped = equipment;
+}
 
 export function attachItemTooltip(target: HTMLElement, item: () => ItemDefinition | null): void {
   target.addEventListener('pointerenter', (event) => {
@@ -42,11 +51,33 @@ function renderTooltip(item: ItemDefinition): void {
     tooltip,
     h('p', { className: `tooltip-name rarity-${item.rarity}` }, item.name),
     h('p', { className: 'tooltip-meta' }, `${item.rarity}${equipment ? ` · ${EQUIPMENT_SLOT_LABELS[equipment.slot]}` : ` · ${item.category}`}`),
-    equipment &&
-      h('ul', { className: 'tooltip-stats' },
-        ...Object.entries(equipment.stats).map(([stat, value]) => h('li', {}, h('span', {}, STAT_INFO[stat as StatId].name), h('strong', {}, `+${value}`))),
-      ),
+    equipment && renderStats(item),
     requirementLines.length > 0 && h('p', { className: 'tooltip-requirements' }, `Requires ${requirementLines.join(', ')}`),
     h('p', { className: 'tooltip-examine' }, item.examine),
+  );
+}
+
+function renderStats(item: ItemDefinition): HTMLElement | null {
+  const equipment = item.equipment;
+  if (!equipment) return null;
+  const currentId = equipped[equipment.slot];
+  const isEquipped = currentId === item.id;
+  const current = currentId && !isEquipped ? GAME_CONTENT.items.get(currentId) : undefined;
+  const compareWith = isEquipped ? null : (current?.equipment?.stats ?? {});
+  const stats = STAT_IDS.filter((stat) => (equipment.stats[stat] ?? 0) !== 0 || (compareWith?.[stat] ?? 0) !== 0);
+  return h('div', { className: 'tooltip-comparison' },
+    h('ul', { className: 'tooltip-stats' },
+      ...stats.map((stat: StatId) => {
+        const value = equipment.stats[stat] ?? 0;
+        const delta = compareWith ? value - (compareWith[stat] ?? 0) : 0;
+        return h('li', {},
+          h('span', {}, STAT_INFO[stat].name),
+          h('strong', {}, value >= 0 ? `+${value}` : String(value)),
+          compareWith && delta !== 0 && h('em', { className: delta > 0 ? 'stat-better' : 'stat-worse' }, delta > 0 ? `▲${delta}` : `▼${-delta}`),
+        );
+      }),
+    ),
+    h('p', { className: 'tooltip-compare-note' },
+      isEquipped ? 'Currently equipped' : current ? `Compared with ${current.name}` : `${EQUIPMENT_SLOT_LABELS[equipment.slot]} slot is empty`),
   );
 }

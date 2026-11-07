@@ -20,6 +20,7 @@ import { ShopWindow } from '../hud/shopWindow.ts';
 import { ActivityBar } from '../hud/activityBar.ts';
 import { CraftingWindow } from '../hud/craftingWindow.ts';
 import { StorageWindow } from '../hud/storageWindow.ts';
+import { setTooltipEquipment } from '../ui/itemTooltip.ts';
 import { SidePanel } from '../hud/sidePanel.ts';
 import { SpeechLayer } from '../hud/speechLayer.ts';
 import { VitalsPanel } from '../hud/vitalsPanel.ts';
@@ -108,6 +109,7 @@ export function createGameScreen(app: AppNavigator): Screen {
       const marker = npcQuestMarker(npc.id, self.quests, GAME_CONTENT.quests);
       if (marker) npcMarkers.set(npc.id, marker);
     }
+    setTooltipEquipment(self.equipment);
     objectiveObjects = objectiveObjectIds(self.quests, GAME_CONTENT.quests, GAME_CONTENT.worldObjects, GAME_CONTENT.recipes);
     objectiveCreatures = objectiveCreatureIds(self.quests, GAME_CONTENT.quests);
     objectives.update(self.quests);
@@ -217,7 +219,8 @@ export function createGameScreen(app: AppNavigator): Screen {
   canvas.addEventListener('contextmenu', (event) => {
     event.preventDefault();
     refreshHover();
-    const actions = actionsForTarget(hover, actionContext());
+    const target = pointer ? renderer.pick(pointer.x, pointer.y, { scenery: true }) : hover;
+    const actions = actionsForTarget(target, actionContext());
     bubble.hide();
     if (actions.length > 0) menu.open(event.clientX, event.clientY, actions);
   });

@@ -47,6 +47,7 @@ export type WorldObjectModel =
   | 'medBed'
   | 'stranglerVine'
   | 'seedVault'
+  | 'tram'
   | 'refinery'
   | 'fabricator'
   | 'synthesiser';

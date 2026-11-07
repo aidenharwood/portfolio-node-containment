@@ -23,13 +23,14 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import type { ClientEntity, WorldState } from '../state/worldState.ts';
+import type { ClientEntity, CombatHitEvent, WorldState } from '../state/worldState.ts';
 import { CameraRig } from './cameraRig.ts';
 import { CharacterRig } from './models/characterModel.ts';
 import { createCreatureRig } from './models/creatureModels.ts';
 import type { EntityRig } from './models/entityRig.ts';
 import { createClickMarker, createGroundRing, createQuestMarker } from './models/markerModels.ts';
 import { GroundItemLayer } from './items/groundItemLayer.ts';
+import { ProjectileLayer } from './projectileLayer.ts';
 import type { ClickMarker, PickTarget } from './pickTarget.ts';
 import { hex, lighten } from './voxel/palette.ts';
 import { ZoneScene, type LightSource } from './world/zoneScene.ts';
@@ -88,6 +89,8 @@ export class GameRenderer {
   private readonly groundPlane = new Plane(new Vector3(0, 1, 0), 0);
   private zone: ZoneScene | null = null;
   private readonly groundItems = new GroundItemLayer();
+  private readonly projectiles = new ProjectileLayer();
+  private readonly stopHitListener: () => void;
   private assignedLights: LightSource[] = [];
   private lightTimer = 0;
   private lastFrame = performance.now();
@@ -111,7 +114,8 @@ export class GameRenderer {
     this.keyLight.shadow.camera.far = 40;
     this.keyLight.shadow.bias = -0.0008;
     this.keyLight.shadow.normalBias = 0.02;
-    this.scene.add(this.groundItems.root, this.hemisphere, this.keyLight, this.keyLight.target, this.hoverRing, this.selfRing, this.click.group);
+    this.stopHitListener = world.onCombatHit((event) => this.launchProjectile(event));
+    this.scene.add(this.projectiles.root, this.groundItems.root, this.hemisphere, this.keyLight, this.keyLight.target, this.hoverRing, this.selfRing, this.click.group);
 
     for (let index = 0; index < LIGHT_POOL_SIZE; index++) {
       const light = new PointLight(0xffffff, 0, 6, 2);
@@ -178,6 +182,7 @@ export class GameRenderer {
 
     this.syncEntities(now, delta, overlay);
     this.groundItems.sync(this.world.groundItems, now / 1000);
+    this.projectiles.update(now);
     const self = this.world.selfEntity;
     if (self) {
       const position = this.world.renderPosition(self, now);
@@ -201,20 +206,21 @@ export class GameRenderer {
     this.composer.render(delta);
   }
 
-  pick(canvasX: number, canvasY: number): PickTarget | null {
+  pick(canvasX: number, canvasY: number, options: { readonly scenery?: boolean } = {}): PickTarget | null {
     if (!this.zone) return null;
     const pointer = new Vector2((canvasX / this.canvas.clientWidth) * 2 - 1, -(canvasY / this.canvas.clientHeight) * 2 + 1);
     this.raycaster.setFromCamera(pointer, this.cameraRig.camera);
 
+    const selfId = this.world.selfEntityId;
     const candidates: Object3D[] = [
-      ...[...this.entities.values()].map((view) => view.rig.root),
-      ...[...this.zone.objects.values()].map((view) => view.group),
+      ...[...this.entities.entries()].filter(([id]) => id !== selfId).map(([, view]) => view.rig.root),
+      ...[...this.zone.objects.values()].filter((view) => options.scenery || view.definition.interactions.length > 0).map((view) => view.group),
       ...this.groundItems.pickables(),
       ...this.zone.solidWalls(),
     ];
-    const firstHit = this.raycaster.intersectObjects(candidates, true)[0];
     const groundPoint = this.raycaster.ray.intersectPlane(this.groundPlane, new Vector3());
     const groundDistance = groundPoint ? groundPoint.distanceTo(this.raycaster.ray.origin) : Infinity;
+    const firstHit = this.raycaster.intersectObjects(candidates, true)[0];
 
     if (firstHit && firstHit.distance < groundDistance + 0.01) {
       const target = this.targetFor(firstHit.object);
@@ -223,6 +229,8 @@ export class GameRenderer {
     }
     if (!groundPoint) return null;
     const tile = { x: Math.round(groundPoint.x), y: Math.round(groundPoint.z) };
+    const itemOnTile = [...this.world.groundItems.values()].find((item) => item.position.x === tile.x && item.position.y === tile.y);
+    if (itemOnTile) return { kind: 'groundItem', item: itemOnTile };
     const layout = this.world.zone?.layout;
     return layout && TILE_KINDS[layout.tileAt(tile)].walkable ? { kind: 'tile', tile } : null;
   }
@@ -236,6 +244,8 @@ export class GameRenderer {
   }
 
   dispose(): void {
+    this.stopHitListener();
+    this.projectiles.dispose();
     this.zone?.dispose();
     this.composer.dispose();
     this.renderer.dispose();
@@ -248,6 +258,30 @@ export class GameRenderer {
       y: (-projected.y * 0.5 + 0.5) * this.canvas.clientHeight,
       visible: projected.z < 1,
     };
+  }
+
+  private launchProjectile(event: CombatHitEvent): void {
+    if (event.style !== 'ranged') return;
+    const attacker = this.world.entities.get(event.attackerId);
+    const target = this.world.entities.get(event.targetId);
+    if (!attacker || !target) return;
+    const now = performance.now();
+    const muzzle = this.world.renderPosition(attacker, now);
+    const impact = this.world.renderPosition(target, now);
+    const attackerHeight = this.entities.get(attacker.id)?.rig.height ?? 1.2;
+    const targetHeight = this.entities.get(target.id)?.rig.height ?? 1.2;
+    const from = new Vector3(muzzle.x, attackerHeight * 0.55, muzzle.y);
+    const to = new Vector3(impact.x, targetHeight * 0.55, impact.y);
+    this.projectiles.launch(from, to, this.projectileColor(attacker), now);
+  }
+
+  private projectileColor(attacker: ClientEntity): number {
+    if (attacker.kind === 'creature') return 0xc8ff7a;
+    for (const itemId of attacker.gear) {
+      const equipment = GAME_CONTENT.items.get(itemId)?.equipment;
+      if (equipment?.slot === 'primary' && equipment.visual.emissive) return hex(equipment.visual.emissive);
+    }
+    return 0x8fdcf5;
   }
 
   private targetFor(object: Object3D): PickTarget | null {

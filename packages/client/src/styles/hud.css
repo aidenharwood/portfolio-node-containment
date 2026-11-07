@@ -1691,3 +1691,27 @@
   justify-content: flex-end;
   gap: 8px;
 }
+
+.tooltip-stats em {
+  margin-left: 6px;
+  font-style: normal;
+  font-size: 11px;
+}
+
+.tooltip-stats .stat-better {
+  color: var(--color-success);
+}
+
+.tooltip-stats .stat-worse {
+  color: var(--color-danger);
+}
+
+.tooltip-compare-note {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.tooltip-stats strong {
+  margin-left: auto;
+}

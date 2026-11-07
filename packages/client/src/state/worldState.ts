@@ -51,6 +51,7 @@ export interface CombatHitEvent {
   readonly targetId: EntityId;
   readonly outcome: 'hit' | 'miss';
   readonly damage: number;
+  readonly style: 'melee' | 'ranged';
   readonly at: number;
 }
 
