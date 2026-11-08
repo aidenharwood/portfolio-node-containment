@@ -8,6 +8,7 @@ import { parseTileLayout } from '../world/district.ts';
 import { findCraftingIssues, rawSourceTiers } from './craftingIntegrity.ts';
 import type { GameContent } from './gameContent.ts';
 import { findLevelIssues } from './levelIntegrity.ts';
+import { findTramIssues } from './tramIntegrity.ts';
 
 export function findContentIssues(content: GameContent): string[] {
   const issues: string[] = [];
@@ -40,6 +41,7 @@ export function findContentIssues(content: GameContent): string[] {
       if (effect.type === 'giveItem' || effect.type === 'takeItem') checkItem(where, effect.itemId);
       if (effect.type === 'startQuest') checkQuest(where, effect.questId);
       if (effect.type === 'openShop' && !content.shops.has(effect.shopId)) report(where, `unknown shop "${effect.shopId}"`);
+      if (effect.type === 'discoverStation' && !content.tram.stations.has(effect.stationId)) report(where, `unknown tram station "${effect.stationId}"`);
       if (effect.type === 'teleport') {
         const zone = content.districts.get(effect.districtId);
         if (!zone) report(where, `unknown zone "${effect.districtId}"`);
@@ -196,5 +198,6 @@ export function findContentIssues(content: GameContent): string[] {
 
   issues.push(...findCraftingIssues(content));
   issues.push(...findLevelIssues(content));
+  issues.push(...findTramIssues(content));
   return issues;
 }

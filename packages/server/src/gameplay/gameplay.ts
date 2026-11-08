@@ -10,9 +10,10 @@ import type {
   QuestId,
   TilePoint,
   DistrictId,
+  LevelId,
   WorldLocation,
 } from '@containment/shared';
-import { locate } from '@containment/shared';
+import { locate, visitedLevelFlag } from '@containment/shared';
 import { Player, type MessageSink } from '../world/player.ts';
 import type { LevelInstance } from '../world/levelInstance.ts';
 import { World, type WorldHooks } from '../world/world.ts';
@@ -29,6 +30,7 @@ import { selfStateOf } from './playerContext.ts';
 import { QuestTracker } from './questTracker.ts';
 import { ShopController } from './shopController.ts';
 import { StorageController } from './storageController.ts';
+import { TramController, type TramHost } from './tramController.ts';
 
 export type GameplayMessage = ClientMessageOf<
   | 'world.walk'
@@ -52,6 +54,7 @@ export type GameplayMessage = ClientMessageOf<
   | 'storage.depositAll'
   | 'storage.withdraw'
   | 'storage.close'
+  | 'tram.board'
 >;
 
 export interface CharacterStore {
@@ -67,7 +70,7 @@ export interface GameplayOptions {
   readonly levelCapacity?: number;
 }
 
-export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHost {
+export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHost, TramHost {
   readonly world: World;
   private readonly content: GameContent;
   private readonly store: CharacterStore;
@@ -84,6 +87,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
   private readonly gathering: GatheringController;
   private readonly crafting: CraftingController;
   private readonly storage: StorageController;
+  private readonly trams: TramController;
   private tickNumber = 0;
   private readonly autosaveEveryTicks: number;
   private ticksSinceAutosave = 0;
@@ -103,6 +107,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     this.gathering = new GatheringController(content, this.world, this.effects, this, options.gatheringRandom ?? options.random ?? Math.random);
     this.crafting = new CraftingController(content, this.effects, this);
     this.storage = new StorageController(content, this);
+    this.trams = new TramController(content, this.world, this);
     this.combat = new CombatController(content, this.world, this.effects, this, options.combatRandom ?? options.random ?? Math.random);
     this.autosaveEveryTicks = Math.max(1, Math.round(options.autosaveIntervalMs / options.tickMs));
   }
@@ -135,15 +140,17 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     if (this.online.get(player.record.id) !== player) return;
     this.combat.recover(player);
     this.dialogues.close(player);
+    const tramArrival = this.trams.pendingArrival(player);
     this.stopActivities(player);
     this.world.despawn(player);
+    if (tramArrival) player.relocate(tramArrival);
     this.chat.forget(player);
     this.online.delete(player.record.id);
     this.store.save(player.persistableRecord());
   }
 
   handle(player: Player, message: GameplayMessage): void {
-    if (player.incapacitatedAtTick !== null && message.type !== 'chat.say') return;
+    if ((player.incapacitatedAtTick !== null || player.isRidingTram) && message.type !== 'chat.say') return;
     switch (message.type) {
       case 'world.walk':
         this.dialogues.close(player);
@@ -228,6 +235,13 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
       case 'storage.close':
         this.storage.close(player);
         break;
+      case 'tram.board':
+        this.dialogues.close(player);
+        this.shops.close(player);
+        this.stopActivities(player);
+        this.combat.disengage(player);
+        this.trams.board(player, message.destinationStationId, this.tickNumber);
+        break;
     }
     this.flush(player);
   }
@@ -238,6 +252,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     this.groundItems.tick(this.tickNumber);
     this.gathering.tick(this.tickNumber);
     this.crafting.tick(this.tickNumber, this.online.values());
+    this.trams.tick(this.tickNumber);
     for (const player of this.online.values()) this.flush(player);
     if (++this.ticksSinceAutosave >= this.autosaveEveryTicks) {
       this.ticksSinceAutosave = 0;
@@ -294,6 +309,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
   }
 
   private stopActivities(player: Player): void {
+    this.trams.cancelBoarding(player);
     this.gathering.stop(player);
     this.crafting.close(player);
     this.storage.close(player);
@@ -309,6 +325,26 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     this.dialogues.close(player);
     this.combat.disengage(player);
     this.world.transfer(player, location);
+  }
+
+  openTramMap(player: Player): void {
+    this.trams.openMap(player);
+  }
+
+  discoverStation(player: Player, stationId: string): void {
+    this.trams.discover(player, stationId);
+  }
+
+  withdrawFromCombat(player: Player): void {
+    this.combat.disengage(player);
+  }
+
+  onDamaged(player: Player): void {
+    if (this.trams.cancelBoarding(player)) this.notify(player, 'warning', 'You were hit, so you stepped back from the tram.');
+  }
+
+  onLevelEntered(player: Player, levelId: LevelId): void {
+    player.addFlag(visitedLevelFlag(levelId));
   }
 
   notify(player: Player, tone: NoticeTone, text: string): void {
@@ -335,6 +371,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
   }
 
   onAreaEntered(player: Player, districtId: DistrictId, areaId: AreaId): void {
+    this.trams.discoverByArea(player, districtId, areaId);
     this.quests.handle(player, { type: 'enteredArea', districtId, areaId });
   }
 

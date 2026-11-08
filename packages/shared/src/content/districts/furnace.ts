@@ -45,6 +45,7 @@ export const FURNACE: DistrictDefinition = {
   ],
   npcs: [{ instanceId: 'fu-brann', npcId: 'stoker-brann', position: { x: 6, y: 6 } }],
   objects: [
+    { instanceId: 'fu-tram-stop', objectId: 'tram-stop', position: { x: 1, y: 6 }, facing: 'east' },
     { instanceId: 'fu-lift', objectId: 'furnace-return', position: { x: 1, y: 4 }, facing: 'east' },
     { instanceId: 'fu-lock-storage', objectId: 'storage-locker', position: { x: 8, y: 1 } },
     { instanceId: 'fu-lock-bed', objectId: 'med-bed', position: { x: 2, y: 8 } },

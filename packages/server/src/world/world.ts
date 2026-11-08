@@ -20,6 +20,7 @@ import { LevelInstance, type EntityMove } from './levelInstance.ts';
 export interface WorldHooks {
   onAreaEntered(player: Player, districtId: DistrictId, areaId: AreaId): void;
   onPathCompleted(player: Player): void;
+  onLevelEntered(player: Player, levelId: LevelId): void;
 }
 
 interface Walker {
@@ -106,6 +107,7 @@ export class World {
       layer: level.layer,
     });
     level.broadcastNear(player.position, { type: 'world.entitySpawned', entity: player.snapshot() }, player.entityId);
+    this.hooks.onLevelEntered(player, level.id);
     this.refreshAreas(player, level);
   }
 

@@ -34,6 +34,7 @@ export interface CombatHost {
   notify(player: Player, tone: NoticeTone, text: string): void;
   recoverIncapacitated(player: Player): void;
   onIncapacitated(player: Player): void;
+  onDamaged(player: Player): void;
   dropToGround(owner: Player, itemId: string, quantity: number, position: TilePoint): void;
 }
 
@@ -191,7 +192,7 @@ export class CombatController {
 
     let target = creature.targetId ? level.players.get(creature.targetId) : undefined;
     if (target && this.playerBusyElsewhere(target, creature, level, tick)) target = undefined;
-    if (creature.targetId && (!target || target.isIncapacitated)) {
+    if (creature.targetId && (!target || target.isIncapacitated || target.isRidingTram)) {
       creature.targetId = null;
       target = undefined;
     }
@@ -224,6 +225,7 @@ export class CombatController {
     this.engageBoth(player, creature, tick);
     player.lastCombatTick = tick;
     player.setIntegrity(player.integrity - outcome.damage);
+    if (outcome.damage > 0) this.host.onDamaged(player);
     level.broadcastNear(player.position, {
       type: 'combat.hit',
       attackerId: creature.entityId,
@@ -356,7 +358,7 @@ export class CombatController {
     let closestDistance = Infinity;
     const creatureBusy = creature.engagedWith !== null && tick < creature.engagedUntilTick && !this.isMultiCombat(level, creature.position);
     for (const player of level.players.values()) {
-      if (player.isIncapacitated) continue;
+      if (player.isIncapacitated || player.isRidingTram) continue;
       if (ignoresOutclassedPlayer(creature.definition.level, combatLevel(player.record.skills))) continue;
       if (creatureBusy && creature.engagedWith !== player.entityId) continue;
       if (this.playerBusyElsewhere(player, creature, level, tick)) continue;

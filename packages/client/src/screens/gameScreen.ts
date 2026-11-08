@@ -20,6 +20,8 @@ import { ShopWindow } from '../hud/shopWindow.ts';
 import { ActivityBar } from '../hud/activityBar.ts';
 import { CraftingWindow } from '../hud/craftingWindow.ts';
 import { StorageWindow } from '../hud/storageWindow.ts';
+import { TramRide } from '../hud/tramRide.ts';
+import { WorldMap } from '../hud/worldMap.ts';
 import { setTooltipEquipment } from '../ui/itemTooltip.ts';
 import { SidePanel } from '../hud/sidePanel.ts';
 import { SpeechLayer } from '../hud/speechLayer.ts';
@@ -115,7 +117,9 @@ export function createGameScreen(app: AppNavigator): Screen {
     connection.send({ type: 'world.walk', target });
   };
 
-  const minimap = new Minimap(world, walkTo);
+  const worldMap = new WorldMap(connection, world, questTracking);
+  const tramRide = new TramRide(connection, world);
+  const minimap = new Minimap(world, walkTo, () => worldMap.toggle());
   const sidePanel = new SidePanel([
     createInventoryTab(connection, menu, { examine }),
     createEquipmentTab(connection),
@@ -357,6 +361,15 @@ export function createGameScreen(app: AppNavigator): Screen {
       storage.requestClose();
       return;
     }
+    if (event.key === 'Escape' && worldMap.isOpen) {
+      worldMap.requestClose();
+      return;
+    }
+    if ((event.key === 'm' || event.key === 'M') && !event.ctrlKey && !event.altKey && !event.metaKey) {
+      event.preventDefault();
+      worldMap.toggle();
+      return;
+    }
     if (dialogue.handleKey(event.key)) {
       event.preventDefault();
       return;
@@ -427,7 +440,9 @@ export function createGameScreen(app: AppNavigator): Screen {
     shop.element,
     crafting.element,
     storage.element,
+    worldMap.element,
     activity.element,
+    tramRide.element,
     clickIndicator.element,
     bubble.element,
     menu.element,
@@ -455,6 +470,8 @@ export function createGameScreen(app: AppNavigator): Screen {
       shop.dispose();
       crafting.dispose();
       storage.dispose();
+      worldMap.dispose();
+      tramRide.dispose();
       activity.dispose();
       menu.dispose();
       sidePanel.dispose();

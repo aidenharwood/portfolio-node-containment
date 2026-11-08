@@ -73,6 +73,7 @@ export const clientMessageSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('storage.depositAll') }),
   z.object({ type: z.literal('storage.withdraw'), itemId: z.string().max(64), quantity: z.number().int().min(1).max(2_000_000_000) }),
   z.object({ type: z.literal('storage.close') }),
+  z.object({ type: z.literal('tram.board'), destinationStationId: z.string().max(64) }),
 ]);
 
 export type ClientMessage = z.infer<typeof clientMessageSchema>;

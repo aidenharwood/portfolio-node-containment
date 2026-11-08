@@ -15,6 +15,7 @@ import {
   type ChunkCoord,
   type LevelId,
   type WorldLocation,
+  type TramStationId,
 } from '@containment/shared';
 
 export interface MessageSink {
@@ -31,7 +32,15 @@ export interface PendingInteraction {
 
 export type PlayerActivity =
   | { readonly kind: 'gather'; readonly instanceId: InstanceId; readonly interactionIndex: number; readonly nextTick: number }
-  | { readonly kind: 'craft'; readonly recipeId: string; readonly remaining: number; readonly nextTick: number };
+  | { readonly kind: 'craft'; readonly recipeId: string; readonly remaining: number; readonly nextTick: number }
+  | {
+      readonly kind: 'tram';
+      readonly stage: 'boarding' | 'riding';
+      readonly originStationId: TramStationId;
+      readonly destinationStationId: TramStationId;
+      readonly rideTicks: number;
+      readonly dueTick: number;
+    };
 
 export interface DialogueSession {
   readonly dialogueId: DialogueId;
@@ -110,6 +119,16 @@ export class Player {
 
   get isIncapacitated(): boolean {
     return this.integrity <= 0;
+  }
+
+  get isRidingTram(): boolean {
+    return this.activity?.kind === 'tram' && this.activity.stage === 'riding';
+  }
+
+  addFlag(flag: string): boolean {
+    if (this.hasFlag(flag)) return false;
+    this.update({ flags: [...this.record.flags, flag] });
+    return true;
   }
 
   vitals(): EntityVitals {

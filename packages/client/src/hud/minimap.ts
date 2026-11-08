@@ -44,12 +44,13 @@ export class Minimap {
   private view: MapView = { centerX: 0, centerY: 0, rotation: 0 };
   private destination: Destination | null = null;
 
-  constructor(world: WorldState, onSelectTile: (tile: TilePoint, clientX: number, clientY: number) => void) {
+  constructor(world: WorldState, onSelectTile: (tile: TilePoint, clientX: number, clientY: number) => void, onOpenMap: () => void) {
     this.world = world;
     const ratio = Math.min(window.devicePixelRatio || 1, 2);
     this.canvas.width = MAP_SIZE * ratio;
     this.canvas.height = MAP_SIZE * ratio;
-    this.element = h('div', { className: 'hud-minimap panel' }, this.title, h('div', { className: 'minimap-frame' }, this.canvas));
+    const mapButton = h('button', { className: 'minimap-open-map', type: 'button', title: 'World map (M)', ariaLabel: 'Open the world map', onclick: onOpenMap }, 'Map');
+    this.element = h('div', { className: 'hud-minimap panel' }, h('div', { className: 'minimap-header' }, this.title, mapButton), h('div', { className: 'minimap-frame' }, this.canvas));
     this.canvas.onclick = (event) => {
       const bounds = this.canvas.getBoundingClientRect();
       const scale = MAP_SIZE / bounds.width;

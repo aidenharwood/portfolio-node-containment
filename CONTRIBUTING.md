@@ -79,6 +79,13 @@ A district is one hand-built map. It becomes part of the world when a level plac
    - **Gated or across levels:** use an object whose interaction has conditions and a `teleport` effect. A teleport targets `{ districtId, position }` in district-local coordinates.
 7. Run `npm test`. `findLevelIssues` flags overlaps, walkable tiles nothing can reach, duplicate instance ids, and spawns, teleports or recoveries on unwalkable tiles.
 
+### Add a tram station
+
+1. Pick an area in the district to act as the platform, and add a `tram-stop` object inside it. Leave the tiles around the stop walkable.
+2. Add a `TramStationDefinition` to `TRAM_STATIONS` in `content/tramNetwork.ts`, with an arrival `platform` tile inside that area, in district-local coordinates.
+3. Add the station to a line in `TRAM_LINES`. Neighbours in a line's list are one stop apart, and lines that share a station form interchanges.
+4. Run `npm test`. `findTramIssues` checks the area, the platform, the stop and the line.
+
 ### Add a creature
 
 Creatures are passive by default. Set `aggressive: true` only for creatures that should hunt players. They automatically ignore players more than `AGGRESSION_LEVEL_GAP` combat levels above them.

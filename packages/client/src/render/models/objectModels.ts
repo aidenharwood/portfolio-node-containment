@@ -6,6 +6,7 @@ import { VoxelModel } from '../voxel/voxelModel.ts';
 import { CRAFTING_BUILDERS } from './craftingModels.ts';
 import { DEEP_OBJECT_BUILDERS } from './deepObjectModels.ts';
 import { HUB_BUILDERS } from './hubModels.ts';
+import { TRANSIT_BUILDERS } from './transitModels.ts';
 
 export interface AnimatedPart {
   readonly model: VoxelModel;
@@ -330,6 +331,7 @@ const knockDoor: ObjectBuilder = () => {
 const BUILDERS: Readonly<Record<WorldObjectModel, ObjectBuilder>> = {
   ...CRAFTING_BUILDERS,
   ...HUB_BUILDERS,
+  ...TRANSIT_BUILDERS,
   ...DEEP_OBJECT_BUILDERS,
   junctionBox,
   pipeCluster,

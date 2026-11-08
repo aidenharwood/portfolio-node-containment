@@ -61,6 +61,9 @@ import { LEECH_SEASON } from './quests/leechSeason.ts';
 import { THE_FAR_SIDE } from './quests/theFarSide.ts';
 import { THE_KNOCKING } from './quests/theKnocking.ts';
 import { WORLD_OBJECTS } from './worldObjects.ts';
+import { TRANSIT_OBJECTS } from './transitObjects.ts';
+import { buildTramNetwork, TRAM_LINES, TRAM_STATIONS } from './tramNetwork.ts';
+import type { TramNetwork } from '../world/tram.ts';
 import { INTAKE_WING } from './districts/intakeWing.ts';
 import { MERIDIAN_ATRIUM } from './districts/meridianAtrium.ts';
 import { SECTOR_THREE } from './districts/sectorThree.ts';
@@ -76,6 +79,7 @@ export interface GameContent {
   readonly districts: ReadonlyMap<DistrictId, DistrictDefinition>;
   readonly levels: ReadonlyMap<LevelId, ResolvedLevel>;
   readonly levelOfDistrict: ReadonlyMap<DistrictId, LevelId>;
+  readonly tram: TramNetwork;
   readonly creatures: ReadonlyMap<CreatureId, CreatureDefinition>;
   readonly shops: ReadonlyMap<ShopId, ShopDefinition>;
   readonly recipes: ReadonlyMap<string, RecipeDefinition>;
@@ -112,7 +116,7 @@ function startingLocation(): WorldLocation {
 export const GAME_CONTENT: GameContent = {
   items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS]),
   npcs: indexById([...NPCS, ...DEEP_NPCS]),
-  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS]),
+  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS]),
   dialogues: indexById([
     REYES_DIALOGUE,
     VARGA_DIALOGUE,
@@ -158,6 +162,7 @@ export const GAME_CONTENT: GameContent = {
   districts: DISTRICTS,
   levels: LEVEL_INDEX.levels,
   levelOfDistrict: LEVEL_INDEX.levelOfDistrict,
+  tram: buildTramNetwork(TRAM_STATIONS, TRAM_LINES, DISTRICTS, LEVEL_INDEX),
   creatures: indexById([...CREATURES, ...DEEP_CREATURES]),
   shops: indexById(SHOPS),
   recipes: indexById(RECIPES),

@@ -45,6 +45,7 @@ export const HYDROPONICS: DistrictDefinition = {
   ],
   npcs: [{ instanceId: 'hydro-oyelaran', npcId: 'botanist-oyelaran', position: { x: 5, y: 10 } }],
   objects: [
+    { instanceId: 'hydro-tram-stop', objectId: 'tram-stop', position: { x: 1, y: 12 }, facing: 'east' },
     { instanceId: 'hydro-platform-sign', objectId: 'warning-sign', position: { x: 7, y: 8 } },
     { instanceId: 'hydro-platform-storage', objectId: 'storage-locker', position: { x: 1, y: 15 }, facing: 'east' },
     { instanceId: 'hydro-seed-vault', objectId: 'seed-vault-console', position: { x: 4, y: 24 }, facing: 'north' },

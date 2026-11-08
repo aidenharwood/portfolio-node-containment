@@ -26,6 +26,8 @@ export interface EffectHost {
   dropToGround(owner: Player, itemId: string, quantity: number, position: TilePoint): void;
   openCrafting(player: Player, station: CraftingStation): void;
   openStorage(player: Player): void;
+  openTramMap(player: Player): void;
+  discoverStation(player: Player, stationId: string): void;
 }
 
 export class EffectRunner {
@@ -54,7 +56,7 @@ export class EffectRunner {
       case 'emitSignal':
         return this.host.raiseQuestEvent(player, { type: 'signal', signal: effect.signal });
       case 'setFlag':
-        if (!player.hasFlag(effect.flag)) player.update({ flags: [...player.record.flags, effect.flag] });
+        player.addFlag(effect.flag);
         return;
       case 'notify':
         return this.host.notify(player, 'info', effect.text);
@@ -68,6 +70,10 @@ export class EffectRunner {
         return this.host.openStorage(player);
       case 'restoreIntegrity':
         return player.setIntegrity(player.maxIntegrity);
+      case 'openTramMap':
+        return this.host.openTramMap(player);
+      case 'discoverStation':
+        return this.host.discoverStation(player, effect.stationId);
     }
   }
 

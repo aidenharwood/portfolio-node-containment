@@ -46,6 +46,7 @@ export const DROWNED_ARCHIVE: DistrictDefinition = {
   ],
   npcs: [{ instanceId: 'da-pim', npcId: 'clerk-pim', position: { x: 6, y: 6 } }],
   objects: [
+    { instanceId: 'da-tram-stop', objectId: 'tram-stop', position: { x: 1, y: 5 }, facing: 'east' },
     { instanceId: 'da-lift', objectId: 'archive-return', position: { x: 1, y: 3 }, facing: 'east' },
     { instanceId: 'da-stair-storage', objectId: 'storage-locker', position: { x: 8, y: 1 } },
     { instanceId: 'da-stair-bed', objectId: 'med-bed', position: { x: 2, y: 7 } },

@@ -44,6 +44,7 @@ export * from './world/chunks.ts';
 export * from './world/district.ts';
 export * from './world/level.ts';
 export * from './world/levelLayout.ts';
+export * from './world/tram.ts';
 
 export * from './protocol/clientMessages.ts';
 export * from './protocol/serverMessages.ts';
@@ -53,3 +54,6 @@ export * from './content/craftingIntegrity.ts';
 export * from './content/gameContent.ts';
 export * from './content/levelIndex.ts';
 export * from './content/levelIntegrity.ts';
+export * from './content/tramIntegrity.ts';
+export * from './content/tramNetwork.ts';
+export * from './content/questLocations.ts';

@@ -45,6 +45,7 @@ export const INTAKE_WING: DistrictDefinition = {
     { instanceId: 'intake-osei', npcId: 'warden-osei', position: { x: 31, y: 14 } },
   ],
   objects: [
+    { instanceId: 'intake-tram-stop', objectId: 'tram-stop', position: { x: 34, y: 15 }, facing: 'west' },
     { instanceId: 'arrival-kiosk', objectId: 'intake-kiosk', position: { x: 2, y: 2 } },
     { instanceId: 'locker-wall-a', objectId: 'wall-locker', position: { x: 10, y: 1 } },
     { instanceId: 'locker-wall-b', objectId: 'wall-locker', position: { x: 11, y: 1 } },

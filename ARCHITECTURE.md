@@ -156,6 +156,19 @@ Each `LevelInstance` holds a `groundItems` map. `GroundItemController` creates t
 - **Quests** use `gather` and `craft` objectives. The matching `gathered` and `crafted` events carry counts.
 - **Integrity:** `findCraftingIssues` (`content/craftingIntegrity.ts`) enforces the crafting rule. Every equipment and consumable item needs a recipe at the right station, at or above the item's equip requirement. Every ingredient must trace back to a node or creature drop placed in a district whose `tier` is no deeper than the item's tier. A node must not need more Salvage than its district's tier allows.
 
+### Trams and the world map
+
+The tram network is content (`content/tramNetwork.ts`): **stations** (a district, the area that counts as the platform, and an arrival tile) and **lines** (ordered station lists). `buildTramNetwork` resolves each station onto its level as `GAME_CONTENT.tram`. The pure rules live in `shared/src/world/tram.ts`.
+
+- **Discovery:** entering a station's area sets the flag `tram:<stationId>`, and so does the `discoverStation` effect. `SelfState.discoveredStations` lists them for the client.
+- **Stops:** a `tram-stop` object runs the `openTramMap` effect, which sends `tram.mapOpened` for the station the player is standing in.
+- **Riding:** `tram.board { destinationStationId }` is refused unless the player stands in a station area and has found the destination. Any two stations joined through the network qualify, including the Deep Line between the main floor and the Deep. `TramController` then runs a `player.activity`:
+  - **Boarding** lasts `TRAM_BOARDING_TICKS`. Walking, interacting, teleporting or taking damage cancels it.
+  - **Riding** lasts `tramRideTicks(stops)`: at least 3 seconds, plus 2 ticks per stop beyond that. The rider stays put, every intent except chat is ignored, and creatures drop and ignore them. The client shows the in-car view between `tram.departed` and `tram.arrived`.
+  - **Arrival** teleports the rider to the destination platform. A rider who disconnects mid-ride is saved at the destination.
+- **World map** (`hud/worldMap.ts`, the M key or the minimap's Map button): one tab per floor level, greyed out as "Uncharted" until visited (the `visited:<levelId>` flag, listed in `SelfState.visitedLevels`). It draws each level from its assembled layout with district names and tiers, tram lines and stations, and the player. Districts holding the tracked quest's objectives (`objectiveDistricts`) are outlined. While the player is on a platform, known stations are clickable in the map and the line list.
+- **Integrity:** `findTramIssues` checks that each station resolves to a placed district and area, has a walkable platform inside that area and a tram stop, and is on a line. It also checks that lines only list known stations and that every tram stop sits inside a station area.
+
 ### Personal storage
 
 `shared/src/gear/storage.ts` holds the pure `deposit`, `depositAll` and `withdraw` rules. `CharacterRecord.storage` is a list of stacks. Everything stacks there, up to `STORAGE_CAPACITY` (200) different items, and quest items are refused. A world object with the `openStorage` effect opens a session (`player.storageOpen`). Walking, interacting or teleporting closes it. The server ignores storage messages unless a session is open.

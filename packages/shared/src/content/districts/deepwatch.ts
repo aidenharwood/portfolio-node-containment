@@ -48,6 +48,7 @@ export const DEEPWATCH: DistrictDefinition = {
     { instanceId: 'dw-duval', npcId: 'artificer-duval', position: { x: 30, y: 4 } },
   ],
   objects: [
+    { instanceId: 'dw-tram-stop', objectId: 'tram-stop', position: { x: 1, y: 8 }, facing: 'east' },
     { instanceId: 'dw-tram', objectId: 'deepwatch-deep-line', position: { x: 1, y: 10 }, facing: 'east' },
     { instanceId: 'dw-threshold-a', objectId: 'deepwatch-threshold-door', position: { x: 17, y: 1 } },
     { instanceId: 'dw-threshold-b', objectId: 'deepwatch-threshold-door', position: { x: 18, y: 1 } },

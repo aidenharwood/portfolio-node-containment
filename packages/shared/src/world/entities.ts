@@ -60,7 +60,9 @@ export type WorldObjectModel =
   | 'inkPool'
   | 'emberSeam'
   | 'mirrorShard'
-  | 'valveWheel';
+  | 'valveWheel'
+  | 'tramStop'
+  | 'anomaly';
 
 export interface ObjectInteraction {
   readonly verb: string;

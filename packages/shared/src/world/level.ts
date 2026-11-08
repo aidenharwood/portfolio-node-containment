@@ -27,6 +27,8 @@ export interface LevelDefinition {
   readonly capacity?: number;
 }
 
+export const visitedLevelFlag = (levelId: LevelId): string => `visited:${levelId}`;
+
 export interface WorldLocation {
   readonly levelId: LevelId;
   readonly position: TilePoint;

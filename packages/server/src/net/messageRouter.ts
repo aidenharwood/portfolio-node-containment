@@ -26,6 +26,7 @@ const GAMEPLAY_MESSAGE_TYPES = new Set<ClientMessage['type']>([
   'storage.depositAll',
   'storage.withdraw',
   'storage.close',
+  'tram.board',
 ]);
 
 const isGameplayMessage = (message: ClientMessage): message is GameplayMessage => GAMEPLAY_MESSAGE_TYPES.has(message.type);

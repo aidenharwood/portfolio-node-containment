@@ -70,6 +70,7 @@ export const MERIDIAN_ATRIUM: DistrictDefinition = {
     { instanceId: 'range-drone-e', creatureId: 'training-drone', position: { x: 43, y: 17 } },
   ],
   objects: [
+    { instanceId: 'atrium-tram-stop', objectId: 'tram-stop', position: { x: 6, y: 32 }, facing: 'north' },
     { instanceId: 'atrium-kiosk', objectId: 'intake-kiosk', position: { x: 1, y: 2 }, facing: 'east' },
     { instanceId: 'atrium-storage-a', objectId: 'storage-locker', position: { x: 9, y: 1 } },
     { instanceId: 'atrium-storage-c', objectId: 'storage-locker', position: { x: 10, y: 1 } },

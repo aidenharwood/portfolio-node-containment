@@ -10,7 +10,7 @@ import type { EquipmentState } from '../gear/equipment.ts';
 import type { InventoryState } from '../gear/inventory.ts';
 import type { StorageState } from '../gear/storage.ts';
 import type { StatId } from '../gear/stats.ts';
-import type { CharacterId, EntityId, ItemId, LevelId, NpcId } from '../ids.ts';
+import type { CharacterId, EntityId, ItemId, LevelId, NpcId, TramStationId } from '../ids.ts';
 import type { ChunkKey } from '../world/chunks.ts';
 import type { QuestLog } from '../quests/questProgress.ts';
 import type { Facing, TilePoint } from '../world/geometry.ts';
@@ -62,6 +62,8 @@ export interface SelfState {
   readonly profile: CombatProfile;
   readonly vitals: EntityVitals;
   readonly combatLevel: number;
+  readonly discoveredStations: readonly TramStationId[];
+  readonly visitedLevels: readonly LevelId[];
 }
 
 export interface DialogueView {
@@ -134,6 +136,9 @@ export type ServerMessage =
   | { readonly type: 'storage.closed' }
   | { readonly type: 'player.activity'; readonly activity: PlayerActivityView | null }
   | { readonly type: 'world.objectDepleted'; readonly instanceId: string; readonly depleted: boolean }
+  | { readonly type: 'tram.mapOpened'; readonly stationId: TramStationId }
+  | { readonly type: 'tram.departed'; readonly originStationId: TramStationId; readonly destinationStationId: TramStationId; readonly rideTicks: number }
+  | { readonly type: 'tram.arrived'; readonly stationId: TramStationId }
   | { readonly type: 'dialogue.opened'; readonly view: DialogueView }
   | { readonly type: 'dialogue.closed' }
   | { readonly type: 'chat.message'; readonly channel: ChatChannel; readonly author?: string; readonly text: string }

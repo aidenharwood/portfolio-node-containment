@@ -48,6 +48,7 @@ export const CRYOVAULT: DistrictDefinition = {
   ],
   npcs: [{ instanceId: 'cv-fenn', npcId: 'orderly-fenn', position: { x: 31, y: 5 } }],
   objects: [
+    { instanceId: 'cv-tram-stop', objectId: 'tram-stop', position: { x: 1, y: 6 }, facing: 'east' },
     { instanceId: 'cv-lift', objectId: 'cryovault-return', position: { x: 1, y: 4 }, facing: 'east' },
     { instanceId: 'cv-dock-sign', objectId: 'warning-sign', position: { x: 9, y: 1 } },
     { instanceId: 'cv-dock-crate-a', objectId: 'supply-crate', position: { x: 2, y: 8 } },

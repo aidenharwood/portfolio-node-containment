@@ -130,6 +130,14 @@ body {
     display: none;
   }
 
+  .minimap-header {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    margin: 0;
+    z-index: 1;
+  }
+
   .minimap-canvas {
     width: 112px;
     height: 112px;
