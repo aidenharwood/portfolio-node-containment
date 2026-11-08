@@ -168,10 +168,11 @@ export class Minimap {
       const y = MAP_SIZE / 2 + (dx * sin + dy * cos) * scale;
       const label = name.toUpperCase();
       const width = context.measureText(label).width + 8;
+      const labelX = Math.min(MAP_SIZE - width / 2 - 2, Math.max(width / 2 + 2, x));
       context.fillStyle = scale < 1 ? 'rgba(3, 8, 11, 0.82)' : 'rgba(3, 8, 11, 0.55)';
-      context.fillRect(x - width / 2, y - 6, width, 12);
+      context.fillRect(labelX - width / 2, y - 6, width, 12);
       context.fillStyle = scale < 1 ? '#9fd8ff' : 'rgba(232, 244, 248, 0.75)';
-      context.fillText(label, x, y + 0.5);
+      context.fillText(label, labelX, y + 0.5);
     }
     context.restore();
   }

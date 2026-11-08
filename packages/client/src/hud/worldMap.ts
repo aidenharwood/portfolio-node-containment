@@ -253,7 +253,7 @@ export class WorldMap {
         if (kind === 'void') continue;
         const district = level.layout.districtAt({ x, y });
         const target = district !== undefined && objectives.has(district);
-        context.fillStyle = TILE_KINDS[kind].walkable ? (target ? '#3d3216' : '#1c2a33') : target ? '#7a5a22' : '#40525e';
+        context.fillStyle = kind === 'coolant' ? '#1f5f7a' : TILE_KINDS[kind].walkable ? (target ? '#3d3216' : '#1c2a33') : target ? '#7a5a22' : '#40525e';
         context.fillRect(frame.offsetX + x * frame.scale, frame.offsetY + y * frame.scale, size, size);
       }
     }
@@ -266,7 +266,7 @@ export class WorldMap {
       const district = GAME_CONTENT.districts.get(districtId);
       if (!district) continue;
       const x = frame.offsetX + (rect.x + rect.width / 2) * frame.scale;
-      const y = frame.offsetY + (rect.y + rect.height / 2) * frame.scale;
+      const y = frame.offsetY + rect.y * frame.scale + 22;
       const target = objectives.has(districtId);
       if (target) {
         context.strokeStyle = OBJECTIVE_COLOR;
