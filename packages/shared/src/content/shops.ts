@@ -2,6 +2,19 @@ import type { ShopDefinition } from '../economy/shop.ts';
 
 export const SHOPS: readonly ShopDefinition[] = [
   {
+    id: 'intake-supply',
+    name: 'Intake Supply',
+    greeting: 'Scrip up front. Everything here is new, which in Site Meridian means nobody has died in it yet.',
+    listings: [
+      { itemId: 'transit-pass', price: 10 },
+      { itemId: 'medgel', price: 6 },
+      { itemId: 'utility-knife', price: 30 },
+      { itemId: 'containment-gloves', price: 40 },
+    ],
+    buysCategories: ['material', 'consumable', 'equipment'],
+    sellRate: 0.5,
+  },
+  {
     id: 'medbay',
     name: 'Atrium Medbay',
     greeting: 'Prescriptions are for people with paperwork. Everyone else pays scrip.',

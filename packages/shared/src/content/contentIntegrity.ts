@@ -9,6 +9,7 @@ import { districtObjectsOf, findAssemblyIssues } from './assemblyIntegrity.ts';
 import { findCraftingIssues, rawSourceTiers } from './craftingIntegrity.ts';
 import type { GameContent } from './gameContent.ts';
 import { findLevelIssues } from './levelIntegrity.ts';
+import { findSafetyIssues } from './safetyIntegrity.ts';
 import { findTramIssues } from './tramIntegrity.ts';
 
 export function findContentIssues(content: GameContent): string[] {
@@ -202,5 +203,6 @@ export function findContentIssues(content: GameContent): string[] {
   issues.push(...findLevelIssues(content));
   issues.push(...findTramIssues(content));
   issues.push(...findAssemblyIssues(content));
+  issues.push(...findSafetyIssues(content));
   return issues;
 }

@@ -188,36 +188,6 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     ],
   },
   {
-    id: 'intake-transit-lift',
-    name: 'Transit Lift',
-    examine: 'A heavy freight lift connecting the Intake Wing to the Meridian Atrium.',
-    model: 'transitLift',
-    blocksMovement: true,
-    light: { radius: 3, color: '#c9a227', intensity: 0.7 },
-    interactions: [
-      {
-        verb: 'Ride',
-        conditions: [{ type: 'hasFlag', flag: 'clearance.atrium-transit' }],
-        failureText: 'The lift panel reads: TRANSIT AUTHORISATION REQUIRED. Dr. Varga has not signed you off yet.',
-        effects: [{ type: 'teleport', districtId: 'meridian-atrium', position: { x: 3, y: 30 } }],
-      },
-    ],
-  },
-  {
-    id: 'atrium-intake-lift',
-    name: 'Transit Lift',
-    examine: 'The freight lift back down to the Intake Wing.',
-    model: 'transitLift',
-    blocksMovement: true,
-    light: { radius: 3, color: '#c9a227', intensity: 0.7 },
-    interactions: [
-      {
-        verb: 'Ride',
-        effects: [{ type: 'teleport', districtId: 'intake-wing', position: { x: 29, y: 14 } }],
-      },
-    ],
-  },
-  {
     id: 'atrium-core',
     name: 'Meridian Core Column',
     examine: 'The Site’s primary containment field generator, rising through every floor. It is very bright and very quiet.',
@@ -367,7 +337,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     model: 'transitLift',
     blocksMovement: true,
     light: { radius: 3, color: '#ff9a4d', intensity: 0.6, flicker: true },
-    interactions: [{ verb: 'Ascend', effects: [{ type: 'teleport', districtId: 'meridian-atrium', position: { x: 42, y: 28 } }] }],
+    interactions: [{ verb: 'Ascend', effects: [{ type: 'teleport', districtId: 'meridian-atrium', position: { x: 49, y: 34 } }] }],
   },
   {
     id: 'junction-box',

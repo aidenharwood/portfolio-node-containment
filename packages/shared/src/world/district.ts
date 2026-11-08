@@ -11,6 +11,7 @@ export interface AreaDefinition {
   readonly name: string;
   readonly rect: TileRect;
   readonly multiCombat?: boolean;
+  readonly safe?: boolean;
 }
 
 export interface NpcPlacement {

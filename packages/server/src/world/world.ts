@@ -228,17 +228,17 @@ export class World {
 
   private advanceNpc(npc: Npc, level: LevelInstance, moves: EntityMove[]): void {
     if (npc.engagedWith) return;
-    this.advanceWalker(npc, npc.definition.wanderRadius, level, moves);
+    this.advanceWalker(npc, npc.definition.wanderRadius, level, moves, false);
   }
 
   private advanceCreature(creature: Creature, level: LevelInstance, moves: EntityMove[]): void {
     if (!creature.isAlive) return;
-    this.advanceWalker(creature, creature.canWander ? creature.definition.wanderRadius : 0, level, moves);
+    this.advanceWalker(creature, creature.canWander ? creature.definition.wanderRadius : 0, level, moves, true);
   }
 
-  private advanceWalker(walker: Walker, wanderRadius: number, level: LevelInstance, moves: EntityMove[]): void {
+  private advanceWalker(walker: Walker, wanderRadius: number, level: LevelInstance, moves: EntityMove[], isCreature: boolean): void {
     if (walker.path.length === 0 && wanderRadius > 0 && this.random() < NPC_WANDER_CHANCE_PER_TICK) {
-      walker.path = this.wanderPath(walker, wanderRadius, level);
+      walker.path = this.wanderPath(walker, wanderRadius, level, isCreature);
     }
     const next = walker.path.shift();
     if (!next) return;
@@ -248,13 +248,14 @@ export class World {
     moves.push({ from, movement: { entityId: walker.entityId, position: next, facing: walker.facing } });
   }
 
-  private wanderPath(walker: Walker, radius: number, level: LevelInstance): TilePoint[] {
+  private wanderPath(walker: Walker, radius: number, level: LevelInstance, isCreature: boolean): TilePoint[] {
     const target = {
       x: walker.home.x + Math.round((this.random() * 2 - 1) * radius),
       y: walker.home.y + Math.round((this.random() * 2 - 1) * radius),
     };
-    if (!level.grid.isWalkable(target)) return [];
-    return level.pathBetween(walker.position, target, false, NPC_WANDER_SEARCH_LIMIT) ?? [];
+    if (!(isCreature ? level.creatureGrid : level.grid).isWalkable(target)) return [];
+    const path = isCreature ? level.creaturePathBetween(walker.position, target, false, NPC_WANDER_SEARCH_LIMIT) : level.pathBetween(walker.position, target, false, NPC_WANDER_SEARCH_LIMIT);
+    return path ?? [];
   }
 
   private refreshAreas(player: Player, level: LevelInstance): void {

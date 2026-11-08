@@ -5,7 +5,7 @@ export const ORIENTATION_PROTOCOL: QuestDefinition = {
   name: 'Orientation Protocol',
   category: 'tutorial',
   summary:
-    'Every new operative is processed through the Intake Wing before they are trusted with anything that bites. Complete your orientation and earn transit to the Meridian Atrium.',
+    'Every new operative is processed through the Intake Wing before they are trusted with anything that bites. Complete your orientation, and the rest of the wing will teach you to make, fight and travel.',
   steps: [
     {
       id: 'report-to-reyes',
@@ -14,12 +14,12 @@ export const ORIENTATION_PROTOCOL: QuestDefinition = {
     },
     {
       id: 'collect-gear',
-      journal: 'Reyes issued my clearance card. My issue locker is in the locker room north of the corridor.',
+      journal: 'Reyes issued my clearance card. My issue locker is in the Locker Room, the second door along the north side of the concourse.',
       objectives: [{ type: 'interactWith', objectId: 'issue-locker', label: 'Open your issue locker' }],
     },
     {
       id: 'suit-up',
-      journal: 'I should put on my issued vest and visor. Open the equipment tab or click the items in my inventory.',
+      journal: 'I should put on my issued vest and visor. Click each one in my inventory to wear it, then check the Equipment tab.',
       objectives: [
         { type: 'equipItem', itemId: 'field-vest-mk1', label: 'Wear the Field Vest Mk.I' },
         { type: 'equipItem', itemId: 'hazard-visor', label: 'Wear the Hazard Visor' },
@@ -27,12 +27,12 @@ export const ORIENTATION_PROTOCOL: QuestDefinition = {
     },
     {
       id: 'calibrate',
-      journal: 'Before any viewing, every operative is calibrated. The diagnostic terminal is in the room east of the lockers.',
+      journal: 'Before any viewing, every operative is calibrated. The diagnostic terminal is in Diagnostics, next door to the lockers.',
       objectives: [{ type: 'interactWith', objectId: 'diagnostic-terminal', label: 'Calibrate at the diagnostic terminal' }],
     },
     {
       id: 'observation',
-      journal: 'Calibrated. Next is the observation deck in the north-east of the wing.',
+      journal: 'Calibrated. Next is the Observation Deck, the wide room in the middle of the north side. A beacon marks it.',
       objectives: [{ type: 'enterArea', districtId: 'intake-wing', areaId: 'observation', label: 'Enter the observation deck' }],
     },
     {
@@ -42,7 +42,7 @@ export const ORIENTATION_PROTOCOL: QuestDefinition = {
     },
     {
       id: 'retrieve-sample',
-      journal: 'Dr. Varga needs a resonance sample from the cabinet in the south-west storeroom.',
+      journal: 'Dr. Varga needs a resonance sample from the cabinet in the Storeroom, south-west across the concourse.',
       objectives: [
         { type: 'obtainItem', itemId: 'resonance-sample', count: 1, label: 'Retrieve a resonance sample' },
       ],
@@ -54,13 +54,6 @@ export const ORIENTATION_PROTOCOL: QuestDefinition = {
         { type: 'signal', signal: 'orientation.sample-delivered', npcId: 'dr-varga', label: 'Deliver the sample to Dr. Varga' },
       ],
       onComplete: [{ type: 'setFlag', flag: 'clearance.atrium-transit' }],
-    },
-    {
-      id: 'transit',
-      journal: 'Varga authorised my transit card. The lift in the south-east bay goes up to the Meridian Atrium.',
-      objectives: [
-        { type: 'enterArea', districtId: 'meridian-atrium', areaId: 'lift-bay', label: 'Ride the transit lift to the Atrium' },
-      ],
     },
   ],
   rewards: [

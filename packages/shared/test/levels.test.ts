@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import {
   buildLevelIndex,
+  createObjectWalkabilityGrid,
   createWalkabilityGrid,
   findLevelIssues,
   GAME_CONTENT,
@@ -66,8 +67,7 @@ const level = (districts: LevelDefinition['districts']): LevelDefinition => ({
 function reachableFrom(content: GameContent, levelId: string, start: TilePoint): Set<string> {
   const resolved = content.levels.get(levelId);
   assert.ok(resolved);
-  const blocked = resolved.objects.filter((object) => content.worldObjects.get(object.objectId)?.blocksMovement).map((object) => object.position);
-  const grid = createWalkabilityGrid(resolved.layout, blocked);
+  const grid = createObjectWalkabilityGrid(resolved.layout, resolved.objects, (objectId) => content.worldObjects.get(objectId));
   const seen = new Set<string>();
   const queue = [start];
   while (queue.length > 0) {
@@ -87,7 +87,7 @@ describe('levels', () => {
   });
 
   test('locate translates district-local points into level points', () => {
-    assert.deepEqual(locate(GAME_CONTENT, 'meridian-atrium', { x: 5, y: 28 }), { levelId: 'main-floor', position: { x: 57, y: 54 } });
+    assert.deepEqual(locate(GAME_CONTENT, 'meridian-atrium', { x: 5, y: 28 }), { levelId: 'main-floor', position: { x: 61, y: 58 } });
   });
 
   test('locate is undefined for an unknown district', () => {
@@ -100,6 +100,32 @@ describe('levels', () => {
     const target = locate(GAME_CONTENT, 'hydroponics', { x: 3, y: 12 });
     assert.ok(target);
     assert.ok(reachableFrom(GAME_CONTENT, 'main-floor', mainFloor.spawn).has(tileKey(target.position)));
+  });
+
+  test('the Service Concourse joins the Atrium and the Service Yards', () => {
+    const mainFloor = GAME_CONTENT.levels.get('main-floor');
+    assert.ok(mainFloor);
+    const target = locate(GAME_CONTENT, 'service-yards', { x: 29, y: 27 });
+    assert.ok(target);
+    assert.ok(reachableFrom(GAME_CONTENT, 'main-floor', mainFloor.spawn).has(tileKey(target.position)));
+  });
+
+  test('the Intake Wing is reached by tram, not on foot', () => {
+    const mainFloor = GAME_CONTENT.levels.get('main-floor');
+    const intake = locate(GAME_CONTENT, 'intake-wing', { x: 4, y: 5 });
+    assert.ok(mainFloor && intake);
+    assert.ok(!reachableFrom(GAME_CONTENT, 'main-floor', mainFloor.spawn).has(tileKey(intake.position)));
+    assert.ok([...GAME_CONTENT.tram.stations.values()].some((station) => station.districtId === 'intake-wing'));
+  });
+
+  test('every Deep district is joined to Deepwatch by corridor or pressure door', () => {
+    const deep = GAME_CONTENT.levels.get('the-deep');
+    assert.ok(deep);
+    const reachable = reachableFrom(GAME_CONTENT, 'the-deep', deep.spawn);
+    for (const [districtId, local] of [['deep-concourse', { x: 7, y: 4 }], ['furnace-causeway', { x: 45, y: 3 }]] as const) {
+      const point = locate(GAME_CONTENT, districtId, local);
+      assert.ok(point && reachable.has(tileKey(point.position)), districtId);
+    }
   });
 
   test('the shipped content has no level issues', () => {

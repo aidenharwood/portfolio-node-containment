@@ -39,9 +39,22 @@ export class QuestTracker {
 
   resumeFollowUps(player: Player): void {
     for (const progress of Object.values(player.record.quests)) {
+      const definition = this.content.quests.get(progress.questId);
+      if (progress.status === 'active' && definition && progress.stepIndex >= definition.steps.length) this.completeRetiredSteps(player, definition);
+    }
+    for (const progress of Object.values(player.record.quests)) {
       const followUp = progress.status === 'completed' ? this.content.quests.get(progress.questId)?.followUpQuestId : undefined;
+      const supersededBy = followUp ? this.content.quests.get(followUp)?.followUpQuestId : undefined;
+      if (supersededBy && player.record.quests[supersededBy]) continue;
       if (followUp && !player.record.quests[followUp]) this.start(player, followUp);
     }
+  }
+
+  private completeRetiredSteps(player: Player, definition: QuestDefinition): void {
+    const progress = player.record.quests[definition.id];
+    if (!progress) return;
+    player.update({ quests: { ...player.record.quests, [definition.id]: { ...progress, status: 'completed' } } });
+    this.applyEffects(player, definition.rewards);
   }
 
   handle(player: Player, event: QuestEvent): void {

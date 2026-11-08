@@ -10,7 +10,7 @@ import {
   type GameContent,
   type QuestStateProbe,
   type SelfState,
-  tramStationFlag,
+  isStationKnown,
   visitedLevelFlag,
 } from '@containment/shared';
 import type { Player } from '../world/player.ts';
@@ -51,7 +51,7 @@ export const selfStateOf = (player: Player, content: GameContent): SelfState => 
     profile: deriveCombatProfile(player.record.skills, gearStats),
     combatLevel: combatLevel(player.record.skills),
     vitals: player.vitals(),
-    discoveredStations: [...content.tram.stations.keys()].filter((stationId) => player.hasFlag(tramStationFlag(stationId))),
+    discoveredStations: [...content.tram.stations.keys()].filter((stationId) => isStationKnown(content.tram, stationId, (flag) => player.hasFlag(flag))),
     visitedLevels: [...content.levels.keys()].filter((levelId) => player.hasFlag(visitedLevelFlag(levelId))),
   };
 };

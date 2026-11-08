@@ -521,6 +521,17 @@ export const ITEMS: readonly ItemDefinition[] = [
     value: 14,
   },
   {
+    id: 'transit-pass',
+    name: 'Transit Pass',
+    examine: 'A laminated tram pass with your intake number on it. The hologram is a picture of a tram, in case you forget what it is for.',
+    category: 'quest',
+    rarity: 'issued',
+    icon: 'keycard',
+    iconColors: ['#4fd8ff', '#c9a227'],
+    maxStack: 1,
+    value: 0,
+  },
+  {
     id: 'lantern-lens',
     name: 'Lantern Lens',
     examine: "A curved amber lens Dr. Varga ground from the lantern's housing. Through it, dead machines show where their current wants to go.",

@@ -51,7 +51,7 @@ export const REYES_DIALOGUE: DialogueDefinition = {
     },
     hint: {
       speaker: 'npc',
-      text: "Lockers first. Diagnostics next door. Then the observation deck — Dr. Varga's expecting you. Storeroom's south-west if she sends you fetching.",
+      text: "Lockers first. Diagnostics next door. Then the observation deck — Dr. Varga's expecting you. After that it's Pell's workshop, Osei's range and Hale's counter, south and east. Anything glowing on your HUD is where you're meant to be.",
       next: null,
     },
     after: {
@@ -70,7 +70,6 @@ export const VARGA_DIALOGUE: DialogueDefinition = {
     { node: 'intro', conditions: [{ type: 'questActive', questId: ORIENTATION, stepId: 'meet-varga' }] },
     { node: 'waiting', conditions: [{ type: 'questActive', questId: ORIENTATION, stepId: 'retrieve-sample' }] },
     { node: 'deliver', conditions: [{ type: 'questActive', questId: ORIENTATION, stepId: 'deliver-sample' }] },
-    { node: 'cleared', conditions: [{ type: 'questActive', questId: ORIENTATION, stepId: 'transit' }] },
     { node: 'after', conditions: [{ type: 'questCompleted', questId: ORIENTATION }] },
     { node: 'notYet' },
   ],
@@ -141,12 +140,7 @@ export const VARGA_DIALOGUE: DialogueDefinition = {
     },
     delivered: {
       speaker: 'npc',
-      text: "Warm. Good. It remembers what it saw. Steady hands, {name}. I've authorised your transit card — take the lift in the south-east bay up to the Atrium and report for assignment.",
-      next: null,
-    },
-    cleared: {
-      speaker: 'npc',
-      text: 'The lift is in the south-east bay. Go on. The lantern already showed me you leaving.',
+      text: "Warm. Good. It remembers what it saw. Steady hands, {name}. I've authorised your transit card. Before you ride up to the Atrium, Pell wants you in the workshop across the concourse. The lantern says you'll be glad of it.",
       next: null,
     },
     after: {
@@ -169,18 +163,19 @@ export const PELL_DIALOGUE: DialogueDefinition = {
     { node: 'gatherHint', conditions: [{ type: 'questActive', questId: 'field-fabrication', stepId: 'gather' }] },
     { node: 'refineHint', conditions: [{ type: 'questActive', questId: 'field-fabrication', stepId: 'refine' }] },
     { node: 'assembleHint', conditions: [{ type: 'questActive', questId: 'field-fabrication', stepId: 'assemble' }] },
+    { node: 'stowHint', conditions: [{ type: 'questActive', questId: 'field-fabrication', stepId: 'stow' }] },
     { node: 'inspect', conditions: [{ type: 'questActive', questId: 'field-fabrication', stepId: 'report' }] },
     { node: 'greeting' },
   ],
   nodes: {
     workshopIntro: {
       speaker: 'npc',
-      text: "There you are! Varga said you had steady hands. Good. Everything on this site was salvaged, refined and assembled by somebody, and today that somebody is you.",
+      text: "There you are! Varga said you had steady hands. Good. Welcome to the Intake Workshop. Everything on this site was salvaged, refined and assembled by somebody, and today that somebody is you.",
       next: 'workshopChain',
     },
     workshopChain: {
       speaker: 'npc',
-      text: 'Three steps, always. Gather raw stock. Refine it into base parts. Assemble the parts into something useful. You came in with nothing but an undersuit, so that needs fixing. Start with the scrap heaps, the textile bin and the moss bed.',
+      text: 'Three steps, always. Gather raw stock. Refine it into base parts. Assemble the parts into something useful. You came in with nothing but an undersuit, so that needs fixing. Start with the scrap heaps and textile bins by the north wall, and the moss beds by the south.',
       next: null,
     },
     gatherHint: {
@@ -190,12 +185,17 @@ export const PELL_DIALOGUE: DialogueDefinition = {
     },
     refineHint: {
       speaker: 'npc',
-      text: "The refinery's the orange one. Two raw in, one clean part out. Three alloy plates, four synthweave bolts and a gel base.",
+      text: "The refinery's the orange one on the east wall. Two raw in, one clean part out. Three alloy plates, four synthweave bolts and a gel base.",
       next: null,
     },
     assembleHint: {
       speaker: 'npc',
       text: 'Fabricator for the trousers, boots and baton; bio-synthesiser for the Medgel. Patterns are loaded; you just feed it parts and keep your fingers clear.',
+      next: null,
+    },
+    stowHint: {
+      speaker: 'npc',
+      text: "Lovely work. Now, your pack is not a warehouse. Open the storage locker on the west wall. Every locker on site opens onto the same shelves, so whatever you leave here is waiting for you in the Atrium.",
       next: null,
     },
     inspect: {
@@ -205,7 +205,7 @@ export const PELL_DIALOGUE: DialogueDefinition = {
     },
     tiers: {
       speaker: 'npc',
-      text: "The deeper you go, the better the stock. Sector 2 has live conduit and lumen blooms. The Undercroft has smelter slag. Anything you don't need to carry goes in personal storage: the lockers by Requisitions and in the Undercroft camp share the same shelves. Sergeant Kade is waiting for you on the range, so go and hit something with that baton.",
+      text: "The deeper you go, the better the stock, and the angrier the neighbours. Out past the Atrium, the Service Yards have scrap and cloth like this, only guarded. Sector 2 has live conduit and lumen blooms. The Undercroft has smelter slag. The Atrium has a fabrication hall just like this one. Warden Osei is waiting for you on the range, so go and hit something with that baton.",
       next: null,
     },
     greeting: {
@@ -236,22 +236,151 @@ export const PELL_DIALOGUE: DialogueDefinition = {
   },
 };
 
+const LIVE_FIRE = 'live-fire';
+const TRANSIT = 'cleared-for-transit';
+
 export const OSEI_DIALOGUE: DialogueDefinition = {
   id: 'osei',
   entries: [
-    { node: 'cleared', conditions: [{ type: 'hasFlag', flag: 'clearance.atrium-transit' }] },
-    { node: 'locked' },
+    { node: 'intro', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'report-to-osei' }] },
+    { node: 'armUp', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'arm-up' }] },
+    { node: 'drill', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'drill' }] },
+    { node: 'patchUp', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'patch-up' }] },
+    { node: 'rest', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'rest' }] },
+    { node: 'debrief', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'debrief' }] },
+    { node: 'transit', conditions: [{ type: 'questActive', questId: TRANSIT }] },
+    { node: 'notYet', conditions: [{ type: 'questNotStarted', questId: LIVE_FIRE }] },
+    { node: 'idle' },
   ],
   nodes: {
-    locked: {
+    notYet: {
       speaker: 'npc',
-      text: "Lift's locked to cleared personnel. Get Dr. Varga's sign-off. Then we'll talk. Briefly.",
+      text: "Range is closed to unprocessed intakes. Finish with Varga and Pell first. Then we'll see what you're made of. Briefly.",
       next: null,
     },
-    cleared: {
+    intro: {
       speaker: 'npc',
-      text: "You're cleared. Lift's yours. Atrium's up top. Mind the gap; it's bigger than it looks.",
+      text: "Warden Osei. I keep this range and I keep intakes alive long enough to leave it. Pell says you've got a baton. Let's see if you can hold it.",
+      options: [
+        { text: 'I fabricated my own baton.', conditions: [{ type: 'hasItem', itemId: 'stun-baton' }], next: 'ownBaton' },
+        { text: 'Reporting for training.', conditions: [{ type: 'lacksItem', itemId: 'stun-baton' }], next: 'issue' },
+      ],
+    },
+    ownBaton: {
+      speaker: 'npc',
+      text: 'Good balance. Pell taught you, but you made it. Wield it.',
+      next: 'howTo',
+    },
+    issue: {
+      speaker: 'npc',
+      text: 'Lost it already? Range spare. Capacitor head, rubber grip, no sense of humour. Wield it.',
+      effects: [{ type: 'giveItem', itemId: 'stun-baton' }],
+      next: 'howTo',
+    },
+    howTo: {
+      speaker: 'npc',
+      text: 'Then step past the hazard line and hit a drone until it stops being upright. They hit back. Gently. Mostly. This gallery is a safe area: nothing hostile follows you up here, here or anywhere marked safe.',
+      options: [
+        { text: 'How does combat work here?', next: 'combatBasics' },
+        {
+          text: 'Can I qualify on a sidearm instead?',
+          conditions: [{ type: 'lacksFlag', flag: 'kade.issued-dart-pistol' }],
+          next: 'rangedIssue',
+        },
+        { text: 'Understood.', next: null },
+      ],
+    },
+    combatBasics: {
+      speaker: 'npc',
+      text: 'Click a target, close the distance, swing on rhythm. Close Quarters decides how often you land and how hard. Fortitude keeps you standing. Gear helps; training helps more. Nobody here was born good at this.',
+      next: 'howTo',
+    },
+    rangedIssue: {
+      speaker: 'npc',
+      text: 'Trainee dart pistol. Low power, honest accuracy. Marksmanship trains every time a dart lands, same as the baton trains Close Quarters. Work up to five and Requisitions in the Atrium will trust you with a Kestrel.',
+      effects: [
+        { type: 'giveItem', itemId: 'dart-pistol' },
+        { type: 'setFlag', flag: 'kade.issued-dart-pistol' },
+      ],
+      next: 'howTo',
+    },
+    armUp: { speaker: 'npc', text: "Baton's in your inventory. Click it to wield. I'll wait. I'm very good at waiting.", next: null },
+    drill: { speaker: 'npc', text: "Three drones. The red markers are yours. Click one to engage. If you're hurting, step back into the gallery and breathe.", next: null },
+    patchUp: { speaker: 'npc', text: 'Medgel. Inventory. Click it to apply. Into the wound, not the eyes.', next: null },
+    rest: {
+      speaker: 'npc',
+      text: "Medgel costs scrip. Beds don't. Supply Office, north-east, two of them by the window. Lie down, let the canopy work, then come back.",
       next: null,
+    },
+    debrief: {
+      speaker: 'npc',
+      text: "Not bad for a first live drill. That's everything Intake can teach you. The rest of the Site is learned the hard way.",
+      next: 'leaving',
+    },
+    leaving: {
+      speaker: 'npc',
+      text: 'Last stop is Hale in the Supply Office. Buy a transit pass and take the tram up to the Atrium. Sergeant Kade meets every new arrival there. Tell him Osei says you can stand up straight.',
+      next: null,
+    },
+    transit: {
+      speaker: 'npc',
+      text: 'Hale sells the pass. The tram stop is in the Transit Bay, east end of the concourse. Go on.',
+      next: null,
+    },
+    idle: {
+      speaker: 'npc',
+      text: "Range is open. The drones reset themselves. That's more than I can say for people.",
+      options: [
+        {
+          text: 'Can I qualify on a sidearm?',
+          conditions: [{ type: 'lacksFlag', flag: 'kade.issued-dart-pistol' }],
+          next: 'rangedIssue',
+        },
+        { text: 'Goodbye.', next: null },
+      ],
+    },
+  },
+};
+
+export const HALE_DIALOGUE: DialogueDefinition = {
+  id: 'hale',
+  entries: [
+    { node: 'signOff', conditions: [{ type: 'questActive', questId: TRANSIT, stepId: 'see-hale' }] },
+    { node: 'pass', conditions: [{ type: 'questActive', questId: TRANSIT, stepId: 'buy-pass' }] },
+    { node: 'board', conditions: [{ type: 'questActive', questId: TRANSIT }] },
+    { node: 'greeting' },
+  ],
+  nodes: {
+    signOff: {
+      speaker: 'npc',
+      text: "Supply Clerk Hale. Let me look at you. Vest, visor, boots you made yourself, a baton you've actually swung. Fine. Signed. You're the first this week who didn't ask where the lift was.",
+      next: 'trading',
+    },
+    trading: {
+      speaker: 'npc',
+      text: "This is a counter, and that means scrip. I sell what you'll need and I buy back what you won't: spare cloth, scrap, medicine. Every shop on site works the same way. You'll want a transit pass before the tram lets you on.",
+      options: [{ text: 'Show me what you have.', effects: [{ type: 'openShop', shopId: 'intake-supply' }], next: null }],
+    },
+    pass: {
+      speaker: 'npc',
+      text: 'Transit pass. Ten scrip. It tells every tram board on the line that you exist, which is more than the payroll system will.',
+      options: [
+        { text: 'Show me what you have.', effects: [{ type: 'openShop', shopId: 'intake-supply' }], next: null },
+        { text: 'Later.', next: null },
+      ],
+    },
+    board: {
+      speaker: 'npc',
+      text: "Tram stop's in the Transit Bay, east end. Click the board, pick the Atrium. Don't lean on the doors.",
+      next: null,
+    },
+    greeting: {
+      speaker: 'npc',
+      text: 'Supply Office. Scrip up front. No refunds on anything that has been anywhere.',
+      options: [
+        { text: 'Show me what you have.', effects: [{ type: 'openShop', shopId: 'intake-supply' }], next: null },
+        { text: 'Goodbye.', next: null },
+      ],
     },
   },
 };

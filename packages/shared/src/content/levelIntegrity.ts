@@ -27,6 +27,11 @@ function teleportsOf(content: GameContent, level: ResolvedLevel): { readonly sou
   );
 }
 
+function tramLinksOf(content: GameContent, level: ResolvedLevel): Map<string, TilePoint[]> {
+  const platforms = [...content.tram.stations.values()].filter((station) => station.levelId === level.id && station.lineIds.length > 0).map((station) => station.platformPoint);
+  return new Map(platforms.map((platform) => [tileKey(platform), platforms.filter((other) => other !== platform)]));
+}
+
 function findOverlaps(content: GameContent, level: ResolvedLevel, report: (problem: string) => void): void {
   const owners = new Map<string, string>();
   const reported = new Set<string>();
@@ -51,7 +56,7 @@ function findOverlaps(content: GameContent, level: ResolvedLevel, report: (probl
 }
 
 function findUnreachable(content: GameContent, level: ResolvedLevel, grid: WalkabilityGrid, report: (problem: string) => void): void {
-  const jumps = new Map<string, TilePoint[]>();
+  const jumps = tramLinksOf(content, level);
   for (const teleport of teleportsOf(content, level)) {
     const destination = locate(content, teleport.districtId, teleport.position);
     if (destination?.levelId !== level.id) continue;

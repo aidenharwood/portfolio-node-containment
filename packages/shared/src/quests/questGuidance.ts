@@ -1,5 +1,5 @@
 import type { RecipeDefinition } from '../crafting/recipes.ts';
-import type { NpcId, QuestId, WorldObjectId } from '../ids.ts';
+import type { AreaId, DistrictId, NpcId, QuestId, WorldObjectId } from '../ids.ts';
 import type { WorldObjectDefinition } from '../world/entities.ts';
 import { objectiveGoal, type QuestDefinition, type QuestObjective, type QuestStepDefinition } from './questDefinition.ts';
 import type { QuestLog } from './questProgress.ts';
@@ -72,6 +72,17 @@ export function objectiveCreatureIds(log: QuestLog, quests: ReadonlyMap<QuestId,
     }
   }
   return ids;
+}
+
+export interface ObjectiveArea {
+  readonly districtId: DistrictId;
+  readonly areaId: AreaId;
+}
+
+export function objectiveAreas(log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>): ObjectiveArea[] {
+  return trackedQuests(log, quests).flatMap(({ objectives }) =>
+    objectives.flatMap(({ objective, done }) => (!done && objective.type === 'enterArea' ? [{ districtId: objective.districtId, areaId: objective.areaId }] : [])),
+  );
 }
 
 export function objectiveObjectIds(

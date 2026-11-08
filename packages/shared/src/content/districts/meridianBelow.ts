@@ -45,7 +45,7 @@ export const MERIDIAN_BELOW: DistrictDefinition = {
   ],
   areas: [
     { id: 'arrival', name: 'Arrival', rect: { x: 1, y: 1, width: 11, height: 9 } },
-    { id: 'empty-medbay', name: 'The Empty Medbay', rect: { x: 13, y: 1, width: 20, height: 7 } },
+    { id: 'empty-medbay', name: 'The Empty Medbay', rect: { x: 13, y: 1, width: 20, height: 7 }, safe: true },
     { id: 'engineering-below', name: 'Engineering, Inverted', rect: { x: 34, y: 1, width: 11, height: 12 } },
     { id: 'wrong-workshop', name: 'The Wrong Workshop', rect: { x: 1, y: 11, width: 11, height: 14 } },
     { id: 'inverted-plaza', name: 'The Inverted Plaza', rect: { x: 13, y: 9, width: 20, height: 16 } },

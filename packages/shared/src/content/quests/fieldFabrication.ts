@@ -5,17 +5,17 @@ export const FIELD_FABRICATION: QuestDefinition = {
   name: 'Field Fabrication',
   category: 'tutorial',
   summary:
-    'Everything an operative carries was salvaged, refined and assembled by someone. Technician Pell runs the Atrium workshop and wants you to be that someone.',
+    'Everything an operative carries was salvaged, refined and assembled by someone. Technician Pell runs the Intake Workshop and wants you to be that someone.',
   steps: [
     {
       id: 'meet-pell',
-      journal: 'Technician Pell has asked for me at the Atrium workshop, along the west wall of the plaza.',
+      journal: 'Technician Pell runs the Intake Workshop, the big room south of the concourse.',
       objectives: [{ type: 'talkTo', npcId: 'technician-pell', label: 'Speak with Technician Pell' }],
     },
     {
       id: 'gather',
       journal:
-        'Pell wants raw stock. Scrap heaps give Scrap Alloy, the textile bin gives Synthweave Offcuts and the moss bed gives Gloam Moss. Click a source and I will keep working it until it runs dry or my pack is full.',
+        'Pell wants raw stock. Scrap heaps give Scrap Alloy, the textile bins give Synthweave Offcuts and the moss beds give Gloam Moss. The glowing rings show which sources I need. Click one and I will keep working it until it runs dry or my pack is full.',
       objectives: [
         { type: 'gather', itemId: 'scrap-alloy', count: 6, label: 'Salvage Scrap Alloy' },
         { type: 'gather', itemId: 'synthweave-offcut', count: 8, label: 'Sort Synthweave Offcuts' },
@@ -24,7 +24,7 @@ export const FIELD_FABRICATION: QuestDefinition = {
     },
     {
       id: 'refine',
-      journal: 'Raw stock is no use to a fabricator. The refinery turns two of anything raw into one clean base part.',
+      journal: 'Raw stock is no use to a fabricator. The refinery on the east wall turns two of anything raw into one clean base part.',
       objectives: [
         { type: 'craft', itemId: 'alloy-plate', count: 3, label: 'Refine Alloy Plates' },
         { type: 'craft', itemId: 'synthweave-bolt', count: 4, label: 'Refine Synthweave Bolts' },
@@ -41,6 +41,12 @@ export const FIELD_FABRICATION: QuestDefinition = {
         { type: 'craft', itemId: 'stun-baton', count: 1, label: 'Assemble a Stun Baton' },
         { type: 'craft', itemId: 'medgel', count: 1, label: 'Synthesise a Medgel Ampoule' },
       ],
+    },
+    {
+      id: 'stow',
+      journal:
+        'Pell says anything I am not using belongs in personal storage, not my pack. Every storage locker on site opens onto the same shelves, so what I leave here I can collect in the Atrium. There is one on the workshop wall.',
+      objectives: [{ type: 'interactWith', objectId: 'storage-locker', label: 'Open your personal storage' }],
     },
     {
       id: 'report',

@@ -1,6 +1,7 @@
 import {
   GAME_CONTENT,
   npcQuestMarker,
+  objectiveAreas,
   objectiveCreatureIds,
   objectiveObjectIds,
   relativeThreat,
@@ -86,6 +87,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   let npcMarkers = new Map<string, NpcQuestMarker>();
   let objectiveObjects = new Set<string>();
   let objectiveCreatures = new Set<string>();
+  let objectiveBeacons: TilePoint[] = [];
   let pointer: { x: number; y: number; clientX: number; clientY: number } | null = null;
   let drag: DragState | null = null;
   let pointerIsTouch = false;
@@ -128,6 +130,17 @@ export function createGameScreen(app: AppNavigator): Screen {
     createDossierTab(connection, world),
   ]);
 
+  const refreshBeacons = () => {
+    const self = world.self;
+    const areas = world.zone?.definition.areas ?? [];
+    if (!self) return;
+    objectiveBeacons = objectiveAreas(self.quests, GAME_CONTENT.quests).flatMap((target) =>
+      areas
+        .filter((area) => area.districtId === target.districtId && area.id === target.areaId)
+        .map((area) => ({ x: area.rect.x + Math.floor(area.rect.width / 2), y: area.rect.y + Math.floor(area.rect.height / 2) })),
+    );
+  };
+
   const refreshGuidance = () => {
     const self = world.self;
     if (!self) return;
@@ -140,6 +153,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     setTooltipEquipment(self.equipment);
     objectiveObjects = objectiveObjectIds(self.quests, GAME_CONTENT.quests, GAME_CONTENT.worldObjects, GAME_CONTENT.recipes);
     objectiveCreatures = objectiveCreatureIds(self.quests, GAME_CONTENT.quests);
+    refreshBeacons();
     objectives.update(self.quests);
     sidePanel.update(self);
   };
@@ -159,6 +173,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   const onZoneChanged = () => {
     renderer.rebuildZone();
     minimap.rebuild();
+    refreshBeacons();
     shownDistrictId = world.currentDistrict()?.id ?? null;
     showZoneBanner();
   };
@@ -414,7 +429,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   const unsubscribers = [world.on('zoneChanged', onZoneChanged), world.on('selfChanged', refreshGuidance)];
 
   const loop = (now: number) => {
-    renderer.render(now, { hover, clickMarker, objectiveObjectIds: objectiveObjects, npcMarkers });
+    renderer.render(now, { hover, clickMarker, objectiveObjectIds: objectiveObjects, npcMarkers, objectiveCreatureIds: objectiveCreatures, objectiveBeacons });
     refreshHover();
     speech.update(world, renderer, now);
     combatOverlay.update(world, renderer, now);

@@ -3,6 +3,7 @@ import {
   TRAM_BOARDING_TICKS,
   tramBoardingRefusal,
   tramRideTicks,
+  isStationKnown,
   tramStationFlag,
   tramStops,
   type GameContent,
@@ -60,7 +61,7 @@ export class TramController {
     const refusal = tramBoardingRefusal(this.content.tram, {
       origin,
       destinationId: destinationStationId,
-      knowsStation: (stationId) => player.hasFlag(tramStationFlag(stationId)),
+      knowsStation: (stationId) => isStationKnown(this.content.tram, stationId, (flag) => player.hasFlag(flag)),
     });
     if (refusal || !origin) {
       this.host.notify(player, 'warning', refusal ?? 'You need to be standing on a tram platform.');

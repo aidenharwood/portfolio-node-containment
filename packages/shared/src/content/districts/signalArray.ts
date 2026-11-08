@@ -38,7 +38,7 @@ export const SIGNAL_ARRAY: DistrictDefinition = {
     '############################################',
   ],
   areas: [
-    { id: 'uplink-lobby', name: 'Uplink Lobby', rect: { x: 1, y: 1, width: 9, height: 8 } },
+    { id: 'uplink-lobby', name: 'Uplink Lobby', rect: { x: 1, y: 1, width: 9, height: 8 }, safe: true },
     { id: 'relay-floor', name: 'Relay Floor', rect: { x: 11, y: 1, width: 20, height: 12 } },
     { id: 'operator-pit', name: 'Operator Pit', rect: { x: 32, y: 1, width: 11, height: 12 } },
     { id: 'cable-run', name: 'Cable Run', rect: { x: 1, y: 10, width: 9, height: 17 } },

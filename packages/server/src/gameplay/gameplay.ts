@@ -14,6 +14,7 @@ import type {
   WorldLocation,
 } from '@containment/shared';
 import { locate, visitedLevelFlag } from '@containment/shared';
+import { returnUnfinishedTrainee } from '../characters/traineePlacement.ts';
 import { Player, type MessageSink } from '../world/player.ts';
 import type { LevelInstance } from '../world/levelInstance.ts';
 import { World, type WorldHooks } from '../world/world.ts';
@@ -126,7 +127,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
       this.leaveWorld(existing);
       existing.sink.detach('This operative was deployed from another connection.');
     }
-    const player = new Player(existing?.persistableRecord() ?? record, sink);
+    const player = new Player(existing?.persistableRecord() ?? returnUnfinishedTrainee(record, this.content), sink);
     this.online.set(record.id, player);
     this.world.spawn(player);
     this.quests.handle(player, { type: 'loadoutChanged' });

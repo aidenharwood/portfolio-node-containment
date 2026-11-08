@@ -28,7 +28,7 @@ function deep(placements: readonly Placement[], random: () => number = () => 0.9
   const operatives: Operative[] = placements.map((placement, index) => {
     const base = createCharacterRecord({ ...createDefaultDraft(), name: `Operative ${String.fromCharCode(65 + index)}` }, { id: `c-${index}`, accountId: `a-${index}` }, GAME_CONTENT);
     const inventory = addItem(base.inventory, GAME_CONTENT.items, 'medgel', 3).inventory;
-    const record: CharacterRecord = { ...base, inventory, flags: [...base.flags, ...(placement.flags ?? [])], location: at(placement.districtId, placement.position) };
+    const record: CharacterRecord = { ...base, inventory, quests: {}, flags: [...base.flags, ...(placement.flags ?? [])], location: at(placement.districtId, placement.position) };
     const sink = new RecordingSink();
     return { player: gameplay.enterWorld(record, sink), sink };
   });
@@ -103,14 +103,14 @@ describe('chunked interest', () => {
   });
 
   test('a same-level teleport swaps interest', () => {
-    const { operatives, interact } = deep([
-      { districtId: 'deepwatch', position: { x: 25, y: 21 }, flags: ['clearance.cryovault'] },
+    const { gameplay, operatives } = deep([
+      { districtId: 'deepwatch', position: { x: 25, y: 21 } },
       { districtId: 'deepwatch', position: { x: 24, y: 21 } },
     ]);
     const [a, b] = operatives;
     assert.ok(a && b);
     a.sink.messages.length = 0;
-    interact(a, 'dw-cryovault-lift');
+    gameplay.teleport(a.player, at('drowned-archive', { x: 40, y: 20 }));
     assert.equal(a.player.levelId, 'the-deep');
     assert.equal(ofType(a.sink, 'world.entered').length, 0);
     assert.ok(ofType(a.sink, 'world.chunksLeft').length > 0);
@@ -119,9 +119,9 @@ describe('chunked interest', () => {
   });
 
   test('chunk entry respects ground-item privacy', () => {
-    const { gameplay, operatives, interact } = deep([
-      { districtId: 'cryovault', position: { x: 4, y: 4 }, flags: ['clearance.cryovault'] },
-      { districtId: 'deepwatch', position: { x: 24, y: 21 }, flags: ['clearance.cryovault'] },
+    const { gameplay, operatives } = deep([
+      { districtId: 'cryovault', position: { x: 4, y: 4 } },
+      { districtId: 'deepwatch', position: { x: 24, y: 21 } },
     ]);
     const [a, b] = operatives;
     assert.ok(a && b);
@@ -130,14 +130,14 @@ describe('chunked interest', () => {
     const dropped = a.sink.last('world.groundItemAdded')?.item;
     assert.ok(dropped);
 
-    interact(a, 'cv-lift');
+    gameplay.teleport(a.player, at('deepwatch', { x: 29, y: 21 }));
     assert.equal(a.player.levelId, 'the-deep');
     a.sink.messages.length = 0;
-    interact(a, 'dw-cryovault-lift');
+    gameplay.teleport(a.player, at('cryovault', { x: 4, y: 4 }));
     assert.ok(ofType(a.sink, 'world.chunksEntered').some((message) => message.groundItems.some((item) => item.id === dropped.id)));
 
     b.sink.messages.length = 0;
-    interact(b, 'dw-cryovault-lift');
+    gameplay.teleport(b.player, at('cryovault', { x: 5, y: 5 }));
     const bEntered = ofType(b.sink, 'world.chunksEntered');
     assert.ok(bEntered.length > 0);
     assert.ok(bEntered.every((message) => message.groundItems.every((item) => item.id !== dropped.id)));

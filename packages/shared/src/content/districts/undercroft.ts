@@ -5,7 +5,7 @@ export const UNDERCROFT: DistrictDefinition = {
   name: 'The Undercroft',
   subtitle: 'Site Meridian — Abandoned Maintenance Level',
   tier: 3,
-  recovery: { districtId: 'meridian-atrium', position: { x: 20, y: 29 } },
+  recovery: { districtId: 'meridian-atrium', position: { x: 20, y: 32 } },
   ambience: { darkness: 0.7, tint: '#10120c', fog: '#0d0f0a', fixtures: 'failing' },
   map: [
     '########################################',
@@ -39,7 +39,7 @@ export const UNDERCROFT: DistrictDefinition = {
     { id: 'landing', name: 'Service Landing', rect: { x: 1, y: 1, width: 8, height: 6 } },
     { id: 'tunnel', name: 'Cable Tunnel', rect: { x: 9, y: 3, width: 22, height: 2 } },
     { id: 'junction-room', name: 'Junction Room', rect: { x: 31, y: 1, width: 8, height: 7 } },
-    { id: 'camp', name: "Mags' Camp", rect: { x: 1, y: 9, width: 10, height: 7 } },
+    { id: 'camp', name: "Mags' Camp", rect: { x: 1, y: 9, width: 10, height: 7 }, safe: true },
     { id: 'pump-hall', name: 'Pump Hall', rect: { x: 12, y: 8, width: 16, height: 11 } },
     { id: 'warrens', name: 'Leech Warrens', rect: { x: 1, y: 17, width: 10, height: 8 } },
     { id: 'east-corridor', name: 'East Service Corridor', rect: { x: 28, y: 10, width: 11, height: 2 } },

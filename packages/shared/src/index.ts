@@ -58,5 +58,6 @@ export * from './content/gameContent.ts';
 export * from './content/levelIndex.ts';
 export * from './content/levelIntegrity.ts';
 export * from './content/tramIntegrity.ts';
+export * from './content/safetyIntegrity.ts';
 export * from './content/tramNetwork.ts';
 export * from './content/questLocations.ts';

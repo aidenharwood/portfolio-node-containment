@@ -72,7 +72,7 @@ export function createHarness(options: HarnessOptions = {}): Harness {
     GAME_CONTENT,
   );
   const carrying = { ...created, inventory: addItem(created.inventory, GAME_CONTENT.items, 'medgel', TEST_MEDGEL).inventory };
-  const record = options.prepare ? options.prepare(carrying) : carrying;
+  const record = options.prepare ? options.prepare({ ...carrying, quests: {} }) : carrying;
   const sink = new RecordingSink();
   const player = gameplay.enterWorld(record, sink);
   harnessWorlds.set(player, gameplay);

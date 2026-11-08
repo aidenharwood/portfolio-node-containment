@@ -5,8 +5,9 @@ import type { LocatableContent } from './levelIndex.ts';
 import { locate } from './levelIndex.ts';
 
 export const TRAM_STATIONS: readonly TramStationDefinition[] = [
-  { id: 'intake-transit', name: 'Intake Transit Bay', districtId: 'intake-wing', areaId: 'transit-bay', platform: { x: 28, y: 15 } },
-  { id: 'atrium-transit', name: 'Atrium Transit Bay', districtId: 'meridian-atrium', areaId: 'lift-bay', platform: { x: 6, y: 30 } },
+  { id: 'intake-transit', name: 'Intake Transit Bay', districtId: 'intake-wing', areaId: 'transit-bay', platform: { x: 52, y: 19 }, alwaysKnown: true },
+  { id: 'atrium-transit', name: 'Atrium Transit Bay', districtId: 'meridian-atrium', areaId: 'lift-bay', platform: { x: 6, y: 31 } },
+  { id: 'yards-depot', name: 'Service Yards Depot', districtId: 'service-yards', areaId: 'yard-office', platform: { x: 6, y: 14 } },
   { id: 'verdance-platform', name: 'Verdance Platform', districtId: 'hydroponics', areaId: 'platform', platform: { x: 4, y: 13 } },
   { id: 'deepwatch-platform', name: 'Deepwatch Platform Hall', districtId: 'deepwatch', areaId: 'platform-hall', platform: { x: 4, y: 11 } },
   { id: 'cryovault-dock', name: 'Cryovault Receiving Dock', districtId: 'cryovault', areaId: 'dock', platform: { x: 4, y: 5 } },
@@ -16,7 +17,8 @@ export const TRAM_STATIONS: readonly TramStationDefinition[] = [
 ];
 
 export const TRAM_LINES: readonly TramLineDefinition[] = [
-  { id: 'meridian-line', name: 'Meridian Line', color: '#7cf29a', stations: ['intake-transit', 'atrium-transit', 'verdance-platform'] },
+  { id: 'intake-shuttle', name: 'Intake Shuttle', color: '#d8e7ef', stations: ['intake-transit', 'atrium-transit'] },
+  { id: 'meridian-line', name: 'Meridian Line', color: '#7cf29a', stations: ['verdance-platform', 'atrium-transit', 'yards-depot'] },
   { id: 'deep-line', name: 'Deep Line', color: '#4fd8ff', stations: ['atrium-transit', 'deepwatch-platform'] },
   {
     id: 'abyssal-circuit',

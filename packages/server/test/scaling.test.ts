@@ -18,7 +18,7 @@ function crowd(count: number, options: { capacity: number; districtId: string; p
   const players: Player[] = [];
   for (let index = 0; index < count; index++) {
     const base = createCharacterRecord({ ...createDefaultDraft(), name: `Operative ${String.fromCharCode(65 + index)}` }, { id: `c-${index}`, accountId: `a-${index}` }, GAME_CONTENT);
-    const record: CharacterRecord = { ...base, location: at(options.districtId, options.position) };
+    const record: CharacterRecord = { ...base, quests: {}, location: at(options.districtId, options.position) };
     players.push(gameplay.enterWorld(record, new RecordingSink()));
   }
   return { gameplay, players };

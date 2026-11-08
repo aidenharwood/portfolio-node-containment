@@ -1,15 +1,35 @@
 import type { NpcQuestMarker } from '@containment/shared';
-import { AdditiveBlending, BoxGeometry, Group, Mesh, MeshBasicMaterial, RingGeometry } from 'three';
+import { AdditiveBlending, BoxGeometry, CylinderGeometry, DoubleSide, Group, Mesh, MeshBasicMaterial, RingGeometry } from 'three';
 import { VOXEL_EMISSIVE } from '../voxel/voxelKinds.ts';
 import { createVoxelObject } from '../voxel/voxelMaterials.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 
-const MARKER_COLORS: Readonly<Record<NonNullable<NpcQuestMarker>, readonly [number, number]>> = {
+export type QuestMarkerKind = NonNullable<NpcQuestMarker> | 'target';
+
+const MARKER_COLORS: Readonly<Record<QuestMarkerKind, readonly [number, number]>> = {
   available: [0xffd23f, 0xfff1a8],
   objective: [0x4fd8ff, 0xc8f6ff],
+  target: [0xff5e3a, 0xffc4a8],
 };
 
-export function createQuestMarker(kind: NonNullable<NpcQuestMarker>): Group {
+const BEACON_HEIGHT = 2.6;
+
+export function createAreaBeacon(): Group {
+  const beacon = new Group();
+  beacon.name = 'objective-beacon';
+  const column = new Mesh(
+    new CylinderGeometry(0.32, 0.5, BEACON_HEIGHT, 20, 1, true),
+    new MeshBasicMaterial({ color: 0x4fd8ff, transparent: true, opacity: 0.22, blending: AdditiveBlending, depthWrite: false, toneMapped: false, side: DoubleSide }),
+  );
+  column.position.y = BEACON_HEIGHT / 2;
+  beacon.add(column, createGroundRing(0x4fd8ff, 0.55, 0.7), createGroundRing(0xc8f6ff, 0.9, 0.96));
+  const marker = createQuestMarker('objective');
+  marker.position.y = BEACON_HEIGHT + 0.2;
+  beacon.add(marker);
+  return beacon;
+}
+
+export function createQuestMarker(kind: QuestMarkerKind): Group {
   const [outer, inner] = MARKER_COLORS[kind];
   const model = new VoxelModel();
   for (let y = -4; y <= 4; y++) {

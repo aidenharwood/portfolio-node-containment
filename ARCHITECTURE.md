@@ -35,15 +35,40 @@
 
 ### Levels and districts
 
-The world is a handful of continuous **levels** (`content/levels/`): the main floor, the Undercroft, the Deep and three pocket dimensions. A level is assembled from **districts** (`content/districts/`, one hand-built map each) placed at an `origin`, plus **connector** maps such as the Verdance Concourse that join them.
+The world is a handful of continuous **levels** (`content/levels/`): the main floor, the Undercroft, the Deep and three pocket dimensions. A level is assembled from **districts** (`content/districts/`, one hand-built map each) placed at an `origin`. Wide corridors between districts are districts too (`concourses.ts`, `deepCorridors.ts`), so they can carry areas, litter, bridges and names on the map. `LevelDefinition.connectors` still exists for bare corridor maps with no objects.
 
 - District content (map, areas, NPCs, objects, creatures, lights) is authored in **district-local** coordinates. `resolveLevel` (`world/levelLayout.ts`) stamps everything onto one `LevelLayout` and offsets every placement into level coordinates. The result, a `ResolvedLevel`, is what the server and client run on. `GAME_CONTENT.levels` holds them.
 - `LevelLayout.districtAt(point)` says which district a tile belongs to, and `toLevelPoint` and `toLocalPoint` convert positions.
 - Positions in effects and quests stay district-local (`{ districtId, position }`). `locate(content, districtId, local)` turns one into a `WorldLocation` (`{ levelId, position }`), which is what a character record stores.
 - A teleport within the same level moves the player in place without re-entering. A teleport to another level leaves and re-enters.
 - An area is identified by its district and area id together, so area ids may repeat across districts.
-- `findLevelIssues` (`content/levelIntegrity.ts`) rejects overlapping placements, walkable tiles that cannot be reached from the level spawn (walking or through a same-level teleport), duplicate instance ids on a level, and spawns, teleports or recoveries that land on an unwalkable tile.
+- `findLevelIssues` (`content/levelIntegrity.ts`) rejects overlapping placements, walkable tiles that cannot be reached from the level spawn (walking, through a same-level teleport, or by tram between platforms on the same level), duplicate instance ids on a level, and spawns, teleports or recoveries that land on an unwalkable tile.
 - Legacy character records saved with `{ zoneId, position }` are upgraded on load by `upgradeLegacyLocation`.
+
+### World structure
+
+- **Intake Wing** (tutorial, tier 1) is self-contained and reached only by tram (the Intake Shuttle). Its quests teach every system in order, each step marked in the world: Orientation Protocol (gear, area travel, dialogue), Field Fabrication (gathering, refining, assembly, storage), Live Fire (combat, consumables, resting) and Cleared for Transit (trading, trams). The last one ends on the tram to the Atrium and hands over to The Knocking.
+- **Meridian Atrium** is the hub: Requisitions and storage, a Fabrication Hall (stations only, no nodes), the medbay, storyline quest givers, the transit hall and the gates out. Every area is safe and nothing hostile lives there.
+- **Beyond the Atrium**, wide concourses lead west to Hydroponics and east to the Service Yards, and the quarantine gate leads north to Sector 2. On the Deep, the Deep Concourse and Furnace Causeway join Deepwatch to every district on foot; story clearance gates the pressure doors at the far end of each corridor. Only the Undercroft (a lift) and the pockets sit off the walking and tram network.
+- **Outposts and hostile ground:** each district beyond the hub keeps its friendly NPCs and tram stop in a safe area, and its gathering nodes and creatures outside it.
+- **Returning trainees:** `returnUnfinishedTrainee` (`server/src/characters/traineePlacement.ts`) puts anyone with an unfinished tutorial quest back at the Intake start on login, unless their current step is heading to where they already are. The Intake station is `alwaysKnown`, so anyone can ride back to it.
+
+### Safe areas
+
+An area with `safe: true` is non-hostile ground.
+
+- Creatures path, wander and walk home on `LevelInstance.creatureGrid`, which treats safe tiles as walls, so they never enter one.
+- A creature never aggroes a player in a safe area, and a creature whose target steps into one gives up and walks home, healing as it would past its leash.
+- A player standing in a safe area must step out before they can attack, so nothing is sniped from safety.
+- `findSafetyIssues` (`content/safetyIntegrity.ts`) requires every NPC on a floor level to stand in a safe area and every creature to be placed outside one.
+
+### Quest guidance
+
+- NPCs show a blue marker when they are an objective and a gold one when they offer a quest (`npcQuestMarker`).
+- Objective objects get a pulsing ground ring (`objectiveObjectIds`), including every node and station a `gather` or `craft` objective needs.
+- Objective creatures get a red target marker (`objectiveCreatureIds`).
+- `enterArea` objectives raise a light beacon in the middle of the target area when it is on the current level (`objectiveAreas`).
+- The world map outlines districts holding the tracked quest's objectives (`objectiveDistricts`).
 
 ### Pocket dimensions
 
@@ -168,7 +193,7 @@ Each `LevelInstance` holds a `groundItems` map. `GroundItemController` creates t
 
 The tram network is content (`content/tramNetwork.ts`): **stations** (a district, the area that counts as the platform, and an arrival tile) and **lines** (ordered station lists). `buildTramNetwork` resolves each station onto its level as `GAME_CONTENT.tram`. The pure rules live in `shared/src/world/tram.ts`.
 
-- **Discovery:** entering a station's area sets the flag `tram:<stationId>`, and so does the `discoverStation` effect. `SelfState.discoveredStations` lists them for the client.
+- **Discovery:** entering a station's area sets the flag `tram:<stationId>`, and so does the `discoverStation` effect. A station with `alwaysKnown: true` (the Intake Transit Bay) is known to everyone. `SelfState.discoveredStations` lists them for the client.
 - **Stops:** a `tram-stop` object runs the `openTramMap` effect, which sends `tram.mapOpened` for the station the player is standing in.
 - **Riding:** `tram.board { destinationStationId }` is refused unless the player stands in a station area and has found the destination. Any two stations joined through the network qualify, including the Deep Line between the main floor and the Deep. `TramController` then runs a `player.activity`:
   - **Boarding** lasts `TRAM_BOARDING_TICKS`. Walking, interacting, teleporting or taking damage cancels it.

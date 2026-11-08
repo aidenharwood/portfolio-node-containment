@@ -22,7 +22,7 @@ export const SECTOR_THREE: DistrictDefinition = {
     '#,,,,,,,,,,,,,,,,,,#',
     '####################',
   ],
-  areas: [{ id: 'threshold', name: 'The Threshold', rect: { x: 1, y: 1, width: 18, height: 12 } }],
+  areas: [{ id: 'threshold', name: 'The Threshold', rect: { x: 1, y: 1, width: 18, height: 12 }, safe: true }],
   npcs: [{ instanceId: 's3-halvorsen', npcId: 'dr-halvorsen', position: { x: 10, y: 7 } }],
   objects: [
     { instanceId: 's3-return-a', objectId: 'sector-three-return', position: { x: 1, y: 6 }, facing: 'east' },

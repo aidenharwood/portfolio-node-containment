@@ -9,8 +9,13 @@ export const THE_KNOCKING: QuestDefinition = {
     'Sector 2 was sealed last cycle with a research team still inside. Something behind the quarantine bulkhead has been knocking ever since. The Directorate would like to know what, and would prefer it if you went to find out.',
   steps: [
     {
+      id: 'report-to-kade',
+      journal: 'I have arrived in the Meridian Atrium, the hub of Site Meridian. Sergeant Kade of the Response Division meets every new arrival in the Response Office, east of the plaza.',
+      objectives: [{ type: 'talkTo', npcId: 'sergeant-kade', label: 'Report to Sergeant Kade' }],
+    },
+    {
       id: 'ask-sel',
-      journal: 'Kade says the Sector 2 file is sealed above his clearance. Archivist Sel keeps every file in the Site, sealed or not.',
+      journal: 'Kade says the Sector 2 file is sealed above his clearance. Archivist Sel keeps every file in the Site, sealed or not, in the Archives north-east of the plaza.',
       objectives: [{ type: 'talkTo', npcId: 'archivist-sel', label: 'Ask Archivist Sel about Sector 2' }],
     },
     {
@@ -20,7 +25,7 @@ export const THE_KNOCKING: QuestDefinition = {
     },
     {
       id: 'enter-sector-2',
-      journal: 'I have the override. The Sector 2 bulkhead is on the north wall of the Atrium.',
+      journal: 'I have the override. The Sector 2 bulkhead is in the Quarantine Gate hall, north of the plaza.',
       objectives: [{ type: 'enterArea', districtId: 'sector-two', areaId: 'airlock', label: 'Enter Sector 2' }],
     },
     {

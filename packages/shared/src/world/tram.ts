@@ -7,7 +7,11 @@ export interface TramStationDefinition {
   readonly districtId: DistrictId;
   readonly areaId: AreaId;
   readonly platform: TilePoint;
+  readonly alwaysKnown?: boolean;
 }
+
+export const isStationKnown = (network: TramNetwork, stationId: TramStationId, hasFlag: (flag: string) => boolean): boolean =>
+  network.stations.get(stationId)?.alwaysKnown === true || hasFlag(tramStationFlag(stationId));
 
 export interface TramLineDefinition {
   readonly id: TramLineId;

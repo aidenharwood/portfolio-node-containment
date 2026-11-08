@@ -52,6 +52,7 @@ export class LevelInstance {
   readonly definition: ResolvedLevel;
   readonly layout: LevelLayout;
   readonly grid: WalkabilityGrid;
+  readonly creatureGrid: WalkabilityGrid;
   readonly players = new Map<EntityId, Player>();
   readonly npcs = new Map<InstanceId, Npc>();
   readonly objects = new Map<InstanceId, PlacedObject>();
@@ -72,6 +73,8 @@ export class LevelInstance {
       if (objectDefinition) this.objects.set(placement.instanceId, { placement, definition: objectDefinition });
     }
     this.grid = createObjectWalkabilityGrid(this.layout, definition.objects, (objectId) => content.worldObjects.get(objectId));
+    const grid = this.grid;
+    this.creatureGrid = { isWalkable: (point) => grid.isWalkable(point) && !this.isSafe(point) };
 
     for (const placement of definition.creatures) {
       const creatureDefinition = content.creatures.get(placement.creatureId);
@@ -208,8 +211,16 @@ export class LevelInstance {
     return this.definition.areas.filter((area) => rectContains(area.rect, point));
   }
 
+  isSafe(point: TilePoint): boolean {
+    return this.definition.areas.some((area) => area.safe === true && rectContains(area.rect, point));
+  }
+
   pathBetween(from: TilePoint, to: TilePoint, arriveAdjacent: boolean, maxSearchNodes?: number): TilePoint[] | null {
     return findPath(this.grid, { from, to, arriveAdjacent, maxSearchNodes });
+  }
+
+  creaturePathBetween(from: TilePoint, to: TilePoint, arriveAdjacent: boolean, maxSearchNodes?: number): TilePoint[] | null {
+    return findPath(this.creatureGrid, { from, to, arriveAdjacent, maxSearchNodes });
   }
 
   creatureByInstance(instanceId: InstanceId): Creature | undefined {

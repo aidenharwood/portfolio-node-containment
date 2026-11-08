@@ -9,10 +9,12 @@ export const THE_DEEP: LevelDefinition = {
   spawn: { districtId: 'deepwatch', position: { x: 3, y: 10 } },
   districts: [
     { districtId: 'deepwatch', origin: { x: 60, y: 0 } },
-    { districtId: 'cryovault', origin: { x: 0, y: 30 } },
-    { districtId: 'signal-array', origin: { x: 48, y: 30 } },
-    { districtId: 'drowned-archive', origin: { x: 96, y: 30 } },
-    { districtId: 'furnace', origin: { x: 100, y: 0 } },
+    { districtId: 'deep-concourse', origin: { x: 0, y: 24 } },
+    { districtId: 'furnace-causeway', origin: { x: 96, y: 15 } },
+    { districtId: 'cryovault', origin: { x: 0, y: 31 } },
+    { districtId: 'signal-array', origin: { x: 48, y: 31 } },
+    { districtId: 'drowned-archive', origin: { x: 96, y: 31 } },
+    { districtId: 'furnace', origin: { x: 144, y: 0 } },
   ],
   connectors: [],
 };

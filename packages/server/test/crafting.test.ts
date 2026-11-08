@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import { countItem, type CharacterRecord, type QuestProgress, type WorldLocation } from '@containment/shared';
 import { createHarness, finishDialogue, type Harness, at, levelPoint } from './support/testHarness.ts';
 
-const WORKSHOP: WorldLocation = at('meridian-atrium', { x: 3, y: 12 });
+const WORKSHOP: WorldLocation = at('intake-wing', { x: 18, y: 23 });
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 
@@ -36,69 +36,73 @@ describe('gathering, refining and assembly', () => {
     const harness = createHarness({ prepare: atWorkshop() });
     assert.equal(stepOf(harness, 'field-fabrication'), 0);
 
-    harness.talkTo('atrium-pell');
+    harness.talkTo('intake-pell');
     finishDialogue(harness);
     assert.equal(stepOf(harness, 'field-fabrication'), 1);
 
-    gatherFrom(harness, 'workshop-scrap-a', 'scrap-alloy', 6);
-    gatherFrom(harness, 'workshop-textiles', 'synthweave-offcut', 6);
-    gatherFrom(harness, 'workshop-textiles-b', 'synthweave-offcut', 2);
-    gatherFrom(harness, 'workshop-moss-a', 'gloam-moss', 2);
+    gatherFrom(harness, 'intake-scrap-a', 'scrap-alloy', 6);
+    gatherFrom(harness, 'intake-textile-a', 'synthweave-offcut', 6);
+    gatherFrom(harness, 'intake-textile-b', 'synthweave-offcut', 2);
+    gatherFrom(harness, 'intake-moss-a', 'gloam-moss', 2);
     assert.equal(stepOf(harness, 'field-fabrication'), 2);
     assert.ok(harness.player.record.skills.salvage > 0);
 
-    craftAt(harness, 'workshop-refinery', 'refinery:alloy-plate', 3);
-    craftAt(harness, 'workshop-refinery', 'refinery:synthweave-bolt', 4);
-    craftAt(harness, 'workshop-refinery', 'refinery:gel-base', 1);
+    craftAt(harness, 'intake-refinery', 'refinery:alloy-plate', 3);
+    craftAt(harness, 'intake-refinery', 'refinery:synthweave-bolt', 4);
+    craftAt(harness, 'intake-refinery', 'refinery:gel-base', 1);
     assert.equal(stepOf(harness, 'field-fabrication'), 3);
     assert.equal(carried(harness, 'scrap-alloy'), 0);
 
-    craftAt(harness, 'workshop-fabricator', 'fabricator:intake-trousers', 1);
-    craftAt(harness, 'workshop-fabricator', 'fabricator:work-boots', 1);
-    craftAt(harness, 'workshop-fabricator', 'fabricator:stun-baton', 1);
+    craftAt(harness, 'intake-fabricator', 'fabricator:intake-trousers', 1);
+    craftAt(harness, 'intake-fabricator', 'fabricator:work-boots', 1);
+    craftAt(harness, 'intake-fabricator', 'fabricator:stun-baton', 1);
     assert.equal(carried(harness, 'intake-trousers'), 1);
     assert.equal(carried(harness, 'work-boots'), 1);
     const medgelBefore = carried(harness, 'medgel');
-    craftAt(harness, 'workshop-synthesiser', 'synthesiser:medgel', 1);
+    craftAt(harness, 'intake-synthesiser', 'synthesiser:medgel', 1);
     assert.equal(carried(harness, 'stun-baton'), 1);
     assert.equal(carried(harness, 'medgel'), medgelBefore + 1);
     assert.equal(stepOf(harness, 'field-fabrication'), 4);
 
-    harness.talkTo('atrium-pell');
+    harness.interactWithObject('intake-workshop-storage');
+    assert.equal(harness.sink.last('storage.opened')?.type, 'storage.opened');
+    assert.equal(stepOf(harness, 'field-fabrication'), 5);
+
+    harness.talkTo('intake-pell');
     finishDialogue(harness);
     assert.equal(stepOf(harness, 'field-fabrication'), 'completed');
     assert.equal(stepOf(harness, 'live-fire'), 0);
     for (const skill of ['refining', 'engineering', 'biochemistry'] as const) assert.ok(harness.player.record.skills[skill] > 0, skill);
   });
 
-  test('Kade accepts a home-made baton instead of issuing one', () => {
+  test('Osei accepts a home-made baton instead of issuing one', () => {
     const harness = createHarness({
       prepare: (record) => ({
         ...atWorkshop({ 'field-fabrication': completed('field-fabrication') })(record),
-        location: at('meridian-atrium', { x: 36, y: 12 }),
+        location: at('intake-wing', { x: 36, y: 18 }),
         inventory: [{ itemId: 'stun-baton', quantity: 1 }, ...record.inventory.slice(1)],
       }),
     });
-    harness.talkTo('atrium-kade');
+    harness.talkTo('intake-osei');
     finishDialogue(harness, (text) => text.startsWith('I fabricated'));
     assert.equal(carried(harness, 'stun-baton'), 1);
   });
 
   test('a resource node runs dry, tells the level, and replenishes', () => {
     const harness = createHarness({ prepare: atWorkshop() });
-    harness.interactWithObject('workshop-scrap-b');
+    harness.interactWithObject('intake-scrap-b');
     harness.ticksUntil(() => harness.player.activity === null, 400);
     assert.equal(carried(harness, 'scrap-alloy'), 6);
-    assert.deepEqual(harness.sink.last('world.objectDepleted'), { type: 'world.objectDepleted', instanceId: 'workshop-scrap-b', depleted: true });
+    assert.deepEqual(harness.sink.last('world.objectDepleted'), { type: 'world.objectDepleted', instanceId: 'intake-scrap-b', depleted: true });
 
-    harness.interactWithObject('workshop-scrap-b');
+    harness.interactWithObject('intake-scrap-b');
     assert.equal(harness.player.activity, null, 'an exhausted node refuses work');
     harness.ticksUntil(() => harness.sink.last('world.objectDepleted')?.depleted === false, 200);
   });
 
   test('gathering and crafting are gated by skill level and validated on the server', () => {
     const harness = createHarness({ prepare: atWorkshop() });
-    harness.interactWithObject('workshop-resin');
+    harness.interactWithObject('intake-resin');
     assert.equal(harness.player.activity, null);
     assert.match(harness.sink.last('notice')?.text ?? '', /Salvage level 3/);
 
@@ -106,7 +110,7 @@ describe('gathering, refining and assembly', () => {
     assert.equal(harness.player.activity, null, 'crafting needs an open station');
 
     harness.player.update({ inventory: [{ itemId: 'hardened-steel', quantity: 3 }, { itemId: 'chitin-laminate', quantity: 2 }, ...harness.player.record.inventory.slice(2)] });
-    harness.interactWithObject('workshop-fabricator');
+    harness.interactWithObject('intake-fabricator');
     harness.send({ type: 'crafting.make', recipeId: 'fabricator:composite-plate', quantity: 1 });
     assert.equal(harness.player.activity, null);
     assert.match(harness.sink.last('notice')?.text ?? '', /Engineering level 9/);
@@ -118,10 +122,10 @@ describe('gathering, refining and assembly', () => {
   test('walking away stops work and closes the station', () => {
     const harness = createHarness({ prepare: atWorkshop() });
     harness.player.update({ inventory: [{ itemId: 'scrap-alloy', quantity: 10 }, ...harness.player.record.inventory.slice(1)] });
-    harness.interactWithObject('workshop-refinery');
+    harness.interactWithObject('intake-refinery');
     harness.send({ type: 'crafting.make', recipeId: 'refinery:alloy-plate', quantity: 5 });
     assert.equal(harness.player.activity?.kind, 'craft');
-    harness.send({ type: 'world.walk', target: levelPoint('meridian-atrium', { x: 10, y: 11 }) });
+    harness.send({ type: 'world.walk', target: levelPoint('intake-wing', { x: 20, y: 21 }) });
     assert.equal(harness.player.activity, null);
     assert.equal(harness.player.craftingStation, null);
     assert.equal(harness.sink.last('crafting.closed')?.type, 'crafting.closed');

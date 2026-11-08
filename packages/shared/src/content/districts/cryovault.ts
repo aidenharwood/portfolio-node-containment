@@ -40,7 +40,7 @@ export const CRYOVAULT: DistrictDefinition = {
   areas: [
     { id: 'dock', name: 'Receiving Dock', rect: { x: 1, y: 1, width: 9, height: 8 } },
     { id: 'pod-hall', name: 'Pod Hall', rect: { x: 11, y: 1, width: 16, height: 8 } },
-    { id: 'fenn-nook', name: "Fenn's Nook", rect: { x: 28, y: 1, width: 7, height: 8 } },
+    { id: 'fenn-nook', name: "Fenn's Nook", rect: { x: 28, y: 1, width: 7, height: 8 }, safe: true },
     { id: 'freezer-plant', name: 'Freezer Plant', rect: { x: 36, y: 1, width: 7, height: 8 } },
     { id: 'cold-corridor', name: 'Cold Corridor', rect: { x: 1, y: 10, width: 42, height: 3 } },
     { id: 'husk-ward', name: 'Husk Ward', rect: { x: 1, y: 14, width: 20, height: 13 } },

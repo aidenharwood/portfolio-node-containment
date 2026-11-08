@@ -38,7 +38,7 @@ export const FURNACE: DistrictDefinition = {
     '############################################',
   ],
   areas: [
-    { id: 'coolant-lock', name: 'Coolant Lock', rect: { x: 1, y: 1, width: 8, height: 8 } },
+    { id: 'coolant-lock', name: 'Coolant Lock', rect: { x: 1, y: 1, width: 8, height: 8 }, safe: true },
     { id: 'ember-galleries', name: 'Ember Galleries', rect: { x: 10, y: 1, width: 33, height: 9 } },
     { id: 'foundry', name: 'Foundry Floor', rect: { x: 1, y: 11, width: 26, height: 16 } },
     { id: 'reactor-heart', name: 'Reactor Heart', rect: { x: 28, y: 11, width: 15, height: 16 }, multiCombat: true },

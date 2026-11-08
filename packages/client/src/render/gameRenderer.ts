@@ -1,4 +1,4 @@
-import { GAME_CONTENT, WEAPON_KIND_INFO, type EntityId, type Facing, type ItemId, type NpcQuestMarker } from '@containment/shared';
+import { GAME_CONTENT, WEAPON_KIND_INFO, type EntityId, type Facing, type ItemId, type NpcQuestMarker, type TilePoint } from '@containment/shared';
 import {
   ACESFilmicToneMapping,
   Color,
@@ -28,7 +28,7 @@ import { CameraRig } from './cameraRig.ts';
 import { CharacterRig } from './models/characterModel.ts';
 import { createCreatureRig } from './models/creatureModels.ts';
 import { attackDurationMs, type EntityRig } from './models/entityRig.ts';
-import { createClickMarker, createGroundRing, createQuestMarker } from './models/markerModels.ts';
+import { createAreaBeacon, createClickMarker, createGroundRing, createQuestMarker, type QuestMarkerKind } from './models/markerModels.ts';
 import { GroundItemLayer } from './items/groundItemLayer.ts';
 import { ProjectileLayer } from './projectileLayer.ts';
 import { samePickTarget, type ClickMarker, type PickTarget } from './pickTarget.ts';
@@ -41,6 +41,8 @@ export interface RenderOverlay {
   readonly clickMarker: ClickMarker | null;
   readonly objectiveObjectIds: ReadonlySet<string>;
   readonly npcMarkers: ReadonlyMap<string, NpcQuestMarker>;
+  readonly objectiveCreatureIds: ReadonlySet<string>;
+  readonly objectiveBeacons: readonly TilePoint[];
 }
 
 export interface ScreenAnchor {
@@ -55,7 +57,7 @@ interface EntityView {
   gear: readonly ItemId[];
   yaw: number;
   marker: Group | null;
-  markerKind: NpcQuestMarker;
+  markerKind: QuestMarkerKind | null;
 }
 
 const LIGHT_POOL_SIZE = 12;
@@ -88,6 +90,7 @@ export class GameRenderer {
   private readonly hoverRing = createGroundRing(0xffd23f, 0.34, 0.42);
   private readonly selfRing = createGroundRing(0x4fd8ff, 0.3, 0.36);
   private readonly click = createClickMarker();
+  private readonly beacons: Group[] = [];
   private readonly raycaster = new Raycaster();
   private readonly groundPlane = new Plane(new Vector3(0, 1, 0), 0);
   private zone: LevelScene | null = null;
@@ -230,6 +233,7 @@ export class GameRenderer {
     this.updateLights(delta, time, focus);
     this.updateHover(overlay.hover, now);
     this.updateClickMarker(overlay.clickMarker, now);
+    this.updateBeacons(overlay.objectiveBeacons, time);
 
     this.composer.render(delta);
   }
@@ -378,7 +382,7 @@ export class GameRenderer {
       view.rig.root.rotation.z = -dying * 1.4;
       view.rig.root.position.y = -dying * 0.15;
 
-      this.updateQuestMarker(view, entity.npcId ? (overlay.npcMarkers.get(entity.npcId) ?? null) : null, now);
+      this.updateQuestMarker(view, this.markerFor(entity, overlay), now);
     }
   }
 
@@ -393,7 +397,30 @@ export class GameRenderer {
     return view;
   }
 
-  private updateQuestMarker(view: EntityView, kind: NpcQuestMarker, now: number): void {
+  private markerFor(entity: ClientEntity, overlay: RenderOverlay): QuestMarkerKind | null {
+    if (entity.npcId) return overlay.npcMarkers.get(entity.npcId) ?? null;
+    const isTarget = entity.creatureId !== undefined && entity.dyingAt === null && overlay.objectiveCreatureIds.has(entity.creatureId);
+    return isTarget ? 'target' : null;
+  }
+
+  private updateBeacons(points: readonly TilePoint[], time: number): void {
+    while (this.beacons.length < points.length) {
+      const beacon = createAreaBeacon();
+      this.scene.add(beacon);
+      this.beacons.push(beacon);
+    }
+    this.beacons.forEach((beacon, index) => {
+      const point = points[index];
+      beacon.visible = point !== undefined;
+      if (!point) return;
+      beacon.position.set(point.x, 0.03, point.y);
+      const pulse = 1 + Math.sin(time * 2.4 + index) * 0.08;
+      beacon.scale.set(pulse, 1, pulse);
+      beacon.rotation.y = time * 0.6;
+    });
+  }
+
+  private updateQuestMarker(view: EntityView, kind: QuestMarkerKind | null, now: number): void {
     if (kind !== view.markerKind) {
       view.marker?.removeFromParent();
       view.marker = kind ? createQuestMarker(kind) : null;

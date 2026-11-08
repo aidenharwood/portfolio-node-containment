@@ -111,7 +111,7 @@ export class CombatController {
 
     const attack = playerAttackProfile(player.record.skills, player.record.equipment, this.content.items);
     const sightline = (from: TilePoint, to: TilePoint) => hasLineOfSight(level.layout, from, to);
-    if (isWithinAttackRange(attack, player.position, creature.position, sightline)) {
+    if (isWithinAttackRange(attack, player.position, creature.position, sightline) && !level.isSafe(player.position)) {
       player.path = [];
       player.lastChaseTarget = null;
       if (tick < player.nextAttackTick) return;
@@ -201,6 +201,10 @@ export class CombatController {
       if (target) creature.targetId = target.entityId;
     }
     if (!target) return;
+    if (level.isSafe(target.position)) {
+      this.sendHome(creature, level);
+      return;
+    }
 
     const attack = creatureAttackProfile(definition);
     const sightline = (from: TilePoint, to: TilePoint) => hasLineOfSight(level.layout, from, to);
@@ -215,7 +219,7 @@ export class CombatController {
 
     if (tick - creature.lastPathTick >= CHASE_REPATH_TICKS) {
       creature.lastPathTick = tick;
-      creature.path = level.pathBetween(creature.position, target.position, true, CREATURE_PATH_SEARCH_LIMIT) ?? [];
+      creature.path = level.creaturePathBetween(creature.position, target.position, true, CREATURE_PATH_SEARCH_LIMIT) ?? [];
     }
   }
 
@@ -322,7 +326,7 @@ export class CombatController {
     creature.contributors.clear();
     creature.returningHome = true;
     creature.integrity = creature.definition.integrity;
-    creature.path = level.pathBetween(creature.position, creature.home, false, CREATURE_PATH_SEARCH_LIMIT) ?? [];
+    creature.path = level.creaturePathBetween(creature.position, creature.home, false, CREATURE_PATH_SEARCH_LIMIT) ?? [];
   }
 
   isMultiCombat(level: LevelInstance, point: TilePoint): boolean {
@@ -358,7 +362,7 @@ export class CombatController {
     let closestDistance = Infinity;
     const creatureBusy = creature.engagedWith !== null && tick < creature.engagedUntilTick && !this.isMultiCombat(level, creature.position);
     for (const player of level.players.values()) {
-      if (player.isIncapacitated || player.isRidingTram) continue;
+      if (player.isIncapacitated || player.isRidingTram || level.isSafe(player.position)) continue;
       if (ignoresOutclassedPlayer(creature.definition.level, combatLevel(player.record.skills))) continue;
       if (creatureBusy && creature.engagedWith !== player.entityId) continue;
       if (this.playerBusyElsewhere(player, creature, level, tick)) continue;

@@ -43,9 +43,9 @@ import type { QuestDefinition } from '../quests/questDefinition.ts';
 import type { NpcDefinition, WorldObjectDefinition } from '../world/entities.ts';
 import type { DistrictDefinition } from '../world/district.ts';
 import { AMES_DIALOGUE, KADE_DIALOGUE, LUND_DIALOGUE, OKAFOR_DIALOGUE, SEL_DIALOGUE } from './dialogues/atriumDialogues.ts';
-import { OSEI_DIALOGUE, PELL_DIALOGUE, REYES_DIALOGUE, VARGA_DIALOGUE } from './dialogues/intakeDialogues.ts';
+import { HALE_DIALOGUE, OSEI_DIALOGUE, PELL_DIALOGUE, REYES_DIALOGUE, VARGA_DIALOGUE } from './dialogues/intakeDialogues.ts';
 import { HALVORSEN_DIALOGUE, MAGS_DIALOGUE } from './dialogues/undercroftDialogues.ts';
-import { ANAND_DIALOGUE, OYELARAN_DIALOGUE } from './dialogues/hubDialogues.ts';
+import { ANAND_DIALOGUE, OYELARAN_DIALOGUE, QUILL_DIALOGUE } from './dialogues/hubDialogues.ts';
 import { OVERGROWTH } from './quests/overgrowth.ts';
 import { HYDROPONICS } from './districts/hydroponics.ts';
 import { CRAFTING_ITEMS } from './craftingItems.ts';
@@ -56,6 +56,8 @@ import { FIELD_FABRICATION } from './quests/fieldFabrication.ts';
 import { NPCS } from './npcs.ts';
 import { ORIENTATION_PROTOCOL } from './quests/orientationProtocol.ts';
 import { LIVE_FIRE } from './quests/liveFire.ts';
+import { CLEARED_FOR_TRANSIT } from './quests/clearedForTransit.ts';
+import { SCRAP_RUN } from './quests/scrapRun.ts';
 import { STATIC_IN_THE_VENTS } from './quests/staticInTheVents.ts';
 import { LEECH_SEASON } from './quests/leechSeason.ts';
 import { THE_FAR_SIDE } from './quests/theFarSide.ts';
@@ -72,6 +74,9 @@ import { VERDANT_FOLD_LEVEL } from './levels/verdantFoldLevel.ts';
 import { buildTramNetwork, TRAM_LINES, TRAM_STATIONS } from './tramNetwork.ts';
 import type { TramNetwork } from '../world/tram.ts';
 import { INTAKE_WING } from './districts/intakeWing.ts';
+import { SERVICE_YARDS } from './districts/serviceYards.ts';
+import { SERVICE_CONCOURSE, VERDANCE_CONCOURSE } from './districts/concourses.ts';
+import { DEEP_CONCOURSE, FURNACE_CAUSEWAY } from './districts/deepCorridors.ts';
 import { MERIDIAN_ATRIUM } from './districts/meridianAtrium.ts';
 import { SECTOR_THREE } from './districts/sectorThree.ts';
 import { SECTOR_TWO } from './districts/sectorTwo.ts';
@@ -112,7 +117,7 @@ function indexById<T extends { readonly id: string }>(entries: readonly T[]): Re
   return index;
 }
 
-const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([INTAKE_WING, MERIDIAN_ATRIUM, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW, VERDANT_FOLD]);
+const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([INTAKE_WING, MERIDIAN_ATRIUM, VERDANCE_CONCOURSE, SERVICE_CONCOURSE, SERVICE_YARDS, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, DEEP_CONCOURSE, FURNACE_CAUSEWAY, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW, VERDANT_FOLD]);
 const ASSEMBLY_INDEX: ReadonlyMap<AssemblyId, AssemblyDefinition> = indexById(ASSEMBLIES);
 const LEVEL_INDEX: LevelIndex = buildLevelIndex([MAIN_FLOOR, UNDERCROFT_LEVEL, THE_DEEP, THE_THRESHOLD, MERIDIAN_BELOW_LEVEL, VERDANT_FOLD_LEVEL], DISTRICTS, ASSEMBLY_INDEX);
 
@@ -132,6 +137,8 @@ export const GAME_CONTENT: GameContent = {
     VARGA_DIALOGUE,
     PELL_DIALOGUE,
     OSEI_DIALOGUE,
+    HALE_DIALOGUE,
+    QUILL_DIALOGUE,
     LUND_DIALOGUE,
     OKAFOR_DIALOGUE,
     SEL_DIALOGUE,
@@ -156,6 +163,8 @@ export const GAME_CONTENT: GameContent = {
     ORIENTATION_PROTOCOL,
     FIELD_FABRICATION,
     LIVE_FIRE,
+    CLEARED_FOR_TRANSIT,
+    SCRAP_RUN,
     THE_KNOCKING,
     THE_FAR_SIDE,
     STATIC_IN_THE_VENTS,

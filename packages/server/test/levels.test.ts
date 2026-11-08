@@ -4,7 +4,7 @@ import { GAME_CONTENT, type CharacterRecord, type TilePoint } from '@containment
 import { upgradeLegacyLocation } from '../src/characters/legacyLocation.ts';
 import { at, createHarness, levelPoint, type Harness } from './support/testHarness.ts';
 
-const MAIN_FLOOR_SPAWN = { levelId: 'main-floor', position: levelPoint('meridian-atrium', { x: 5, y: 28 }) };
+const MAIN_FLOOR_SPAWN = { levelId: 'main-floor', position: levelPoint('meridian-atrium', { x: 6, y: 31 }) };
 
 function walkTo(harness: Harness, target: TilePoint): void {
   harness.send({ type: 'world.walk', target });
@@ -37,30 +37,53 @@ describe('levels', () => {
   });
 
   test('walking from the Atrium into Hydroponics needs no teleport', () => {
-    const harness = createHarness({ prepare: placedAt(at('meridian-atrium', { x: 3, y: 26 })) });
-    walkTo(harness, { x: 45, y: 53 });
+    const harness = createHarness({ prepare: placedAt(at('meridian-atrium', { x: 3, y: 24 })) });
+    walkTo(harness, levelPoint('verdance-concourse', { x: 9, y: 2 }));
     walkTo(harness, levelPoint('hydroponics', { x: 30, y: 23 }));
     walkTo(harness, levelPoint('hydroponics', { x: 3, y: 12 }));
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'hydroponics');
     assert.equal(harness.sink.messages.filter((message) => message.type === 'world.entered').length, 1);
   });
 
-  test('a gated same-level lift still teleports within the level', () => {
-    const harness = createHarness({ prepare: placedAt(at('deepwatch', { x: 25, y: 21 }), ['clearance.cryovault']) });
-    harness.interactWithObject('dw-cryovault-lift');
+  test('walking from the Atrium out to the Service Yards needs no teleport', () => {
+    const harness = createHarness({ prepare: placedAt(at('meridian-atrium', { x: 45, y: 24 })) });
+    walkTo(harness, levelPoint('service-concourse', { x: 7, y: 3 }));
+    walkTo(harness, levelPoint('service-yards', { x: 6, y: 13 }));
+    assert.equal(harness.gameplay.world.districtOf(harness.player), 'service-yards');
+    assert.equal(harness.sink.messages.filter((message) => message.type === 'world.entered').length, 1);
+  });
+
+  test('Deepwatch opens onto the Deep Concourse on foot, and a gated pressure door leads on', () => {
+    const harness = createHarness({ prepare: placedAt(at('deepwatch', { x: 29, y: 21 }), ['clearance.signal-array']) });
+    walkTo(harness, levelPoint('deep-concourse', { x: 70, y: 3 }));
+    assert.equal(harness.gameplay.world.districtOf(harness.player), 'deep-concourse');
+    harness.interactWithObject('dc-array-door-a');
     assert.equal(harness.player.levelId, 'the-deep');
-    assert.equal(harness.gameplay.world.districtOf(harness.player), 'cryovault');
+    assert.equal(harness.gameplay.world.districtOf(harness.player), 'signal-array');
+  });
+
+  test('a pressure door stays shut without clearance', () => {
+    const harness = createHarness({ prepare: placedAt(at('deep-concourse', { x: 7, y: 4 })) });
+    harness.interactWithObject('dc-cryovault-door-a');
+    assert.equal(harness.gameplay.world.districtOf(harness.player), 'deep-concourse');
+    assert.match(harness.sink.last('notice')?.text ?? '', /COLD STORAGE SEALED/);
+  });
+
+  test('Deepwatch reaches the Furnace Causeway on foot', () => {
+    const harness = createHarness({ prepare: placedAt(at('deepwatch', { x: 30, y: 18 })) });
+    walkTo(harness, levelPoint('furnace-causeway', { x: 10, y: 3 }));
+    assert.equal(harness.gameplay.world.districtOf(harness.player), 'furnace-causeway');
   });
 
   test('a saved position on an unwalkable tile spawns nearby in the same district', () => {
-    const harness = createHarness({ prepare: placedAt(at('intake-wing', { x: 25, y: 5 })) });
+    const harness = createHarness({ prepare: placedAt(at('intake-wing', { x: 27, y: 5 })) });
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'intake-wing');
-    const target = levelPoint('intake-wing', { x: 25, y: 5 });
+    const target = levelPoint('intake-wing', { x: 27, y: 5 });
     assert.ok(Math.max(Math.abs(harness.player.position.x - target.x), Math.abs(harness.player.position.y - target.y)) <= 3);
   });
 
   test('incapacitation in the Intake Wing recovers in the Intake Wing', () => {
-    const harness = createHarness({ prepare: placedAt(at('intake-wing', { x: 25, y: 5 })) });
+    const harness = createHarness({ prepare: placedAt(at('intake-wing', { x: 27, y: 5 })) });
     harness.gameplay.recoverIncapacitated(harness.player);
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'intake-wing');
     assert.deepEqual(harness.player.position, levelPoint('intake-wing', { x: 4, y: 5 }));

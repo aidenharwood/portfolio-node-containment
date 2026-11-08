@@ -71,12 +71,13 @@ A district is one hand-built map. It becomes part of the world when a level plac
 
 1. Give it a `tier` (1 is the Intake Wing and Atrium, 4 is Sector 3, Deepwatch and the Cryovault, 8 is Meridian Below). Crafting checks use it to decide which gear its materials may feed.
 2. Draw the map as an array of equal-length strings using `MAP_LEGEND` (`shared/src/world/tiles.ts`): `#` wall, `W` glass, `D` door, `.` plating, `,` concrete, `=` grate, `%` rust, `_` carpet, `!` hazard, `~` coolant.
-3. Define `areas` (rectangles that `enterArea` objectives can use), `npcs`, `objects`, `lights` and `ambience`. Combat is single-way by default; set `multiCombat: true` on an area for boss fights with adds.
+3. Define `areas` (rectangles that `enterArea` objectives can use), `npcs`, `objects`, `lights` and `ambience`. Combat is single-way by default; set `multiCombat: true` on an area for boss fights with adds. Mark outposts, camps and hubs `safe: true`: friendly NPCs on a floor level must stand in one, creatures must be placed outside one, and gathering nodes belong in the hostile areas around it.
 4. Register it in `DISTRICTS` in `content/gameContent.ts`.
 5. Place it on a level (`content/levels/*.ts`) with an `origin` in level coordinates. Districts on one level must not overlap.
 6. Connect it:
-   - **Walking:** open a `D` door in its outer wall and add a connector map (a corridor, using spaces for empty tiles) whose floor lines up with the doors on both sides.
-   - **Gated or across levels:** use an object whose interaction has conditions and a `teleport` effect. A teleport targets `{ districtId, position }` in district-local coordinates.
+   - **Walking:** open a doorway at least five tiles wide in its outer wall and add a corridor district (see `content/districts/concourses.ts`) whose floor lines up with the doors on both sides. Dress it with litter, cable runs and bridges over coolant culverts.
+   - **Gated:** end the corridor at the district wall with a pressure door: a `passage` object with conditions and a `teleport` inside, plus a return door that teleports back onto the corridor.
+   - **Across levels:** use an object whose interaction has conditions and a `teleport` effect, or a tram line. A teleport targets `{ districtId, position }` in district-local coordinates.
 7. Run `npm test`. `findLevelIssues` flags overlaps, walkable tiles nothing can reach, duplicate instance ids, and spawns, teleports or recoveries on unwalkable tiles.
 
 ### Add a pocket dimension

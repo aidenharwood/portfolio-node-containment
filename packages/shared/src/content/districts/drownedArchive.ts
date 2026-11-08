@@ -38,7 +38,7 @@ export const DROWNED_ARCHIVE: DistrictDefinition = {
     '############################################',
   ],
   areas: [
-    { id: 'flood-stair', name: 'Flood Stair', rect: { x: 1, y: 1, width: 8, height: 7 } },
+    { id: 'flood-stair', name: 'Flood Stair', rect: { x: 1, y: 1, width: 8, height: 7 }, safe: true },
     { id: 'stacks', name: 'The Drowned Stacks', rect: { x: 10, y: 1, width: 33, height: 8 } },
     { id: 'sluice-hall', name: 'Sluice Hall', rect: { x: 1, y: 10, width: 13, height: 17 } },
     { id: 'reading-rooms', name: 'Reading Rooms', rect: { x: 15, y: 11, width: 15, height: 16 } },

@@ -13,8 +13,9 @@ import { PLAYER_RECOVERY_TICKS } from '../src/gameplay/combatController.ts';
 import { CONSUMABLE_COOLDOWN_MESSAGE } from '../src/gameplay/gearController.ts';
 import { createHarness, finishDialogue, type Harness, at, districtOf, levelPoint } from './support/testHarness.ts';
 
-const ATRIUM_NEAR_KADE: WorldLocation = at('meridian-atrium', { x: 36, y: 12 });
-const ATRIUM_NEAR_SEL: WorldLocation = at('meridian-atrium', { x: 39, y: 5 });
+const ATRIUM_NEAR_KADE: WorldLocation = at('meridian-atrium', { x: 42, y: 13 });
+const ATRIUM_NEAR_SEL: WorldLocation = at('meridian-atrium', { x: 43, y: 5 });
+const RANGE_GALLERY: WorldLocation = at('intake-wing', { x: 36, y: 18 });
 
 const activeAt = (questId: string, stepIndex = 0, objectiveCount = 1): QuestProgress => ({
   questId,
@@ -52,11 +53,11 @@ function defeat(harness: Harness, instanceId: string, limit = 2000): void {
 describe('combat', () => {
   test('Live Fire teaches wielding, fighting and healing, then opens the storyline', () => {
     const harness = createHarness({
-      prepare: prepared(ATRIUM_NEAR_KADE, { 'orientation-protocol': completed('orientation-protocol'), 'live-fire': activeAt('live-fire') }),
+      prepare: prepared(RANGE_GALLERY, { 'orientation-protocol': completed('orientation-protocol'), 'live-fire': activeAt('live-fire') }),
     });
     const { player } = harness;
 
-    harness.talkTo('atrium-kade');
+    harness.talkTo('intake-osei');
     finishDialogue(harness);
     assert.equal(countItem(player.record.inventory, 'stun-baton'), 1);
     assert.equal(stepOf(harness, 'live-fire'), 1);
@@ -79,48 +80,56 @@ describe('combat', () => {
     assert.ok(player.integrity > integrityBefore);
     assert.equal(stepOf(harness, 'live-fire'), 4);
 
-    harness.talkTo('atrium-kade');
+    harness.interactWithObject('intake-bed-a');
+    assert.equal(player.integrity, player.maxIntegrity);
+    assert.equal(stepOf(harness, 'live-fire'), 5);
+
+    harness.talkTo('intake-osei');
     finishDialogue(harness);
     assert.equal(stepOf(harness, 'live-fire'), 'completed');
-    assert.equal(stepOf(harness, 'the-knocking'), 0);
+    assert.equal(stepOf(harness, 'cleared-for-transit'), 0);
   });
 
   test('The Knocking can be completed end to end through Sector 2', () => {
     const harness = createHarness({
-      prepare: prepared(ATRIUM_NEAR_SEL, { 'live-fire': completed('live-fire'), 'the-knocking': activeAt('the-knocking') }, {
+      prepare: prepared(ATRIUM_NEAR_KADE, { 'live-fire': completed('live-fire'), 'the-knocking': activeAt('the-knocking') }, {
         ...veteranSkills(),
         equipment: { torso: 'intake-jumpsuit', legs: 'intake-trousers', feet: 'work-boots', primary: 'stun-baton' },
       }),
     });
     const { player } = harness;
 
-    harness.talkTo('atrium-sel');
+    harness.talkTo('atrium-kade');
     finishDialogue(harness);
     assert.equal(stepOf(harness, 'the-knocking'), 1);
+
+    harness.talkTo('atrium-sel');
+    finishDialogue(harness);
+    assert.equal(stepOf(harness, 'the-knocking'), 2);
 
     harness.talkTo('atrium-lund');
     finishDialogue(harness, (text) => text.includes('override key'));
     assert.equal(countItem(player.record.inventory, 'quarantine-override-key'), 1);
-    assert.equal(stepOf(harness, 'the-knocking'), 2);
+    assert.equal(stepOf(harness, 'the-knocking'), 3);
 
     harness.interactWithObject('sector2-bulkhead-b');
     assert.equal(districtOf(player), 'sector-two');
-    assert.equal(stepOf(harness, 'the-knocking'), 3);
+    assert.equal(stepOf(harness, 'the-knocking'), 4);
 
     for (const mite of ['s2-mite-corridor-a', 's2-mite-corridor-b', 's2-mite-corridor-c', 's2-mite-corridor-d']) {
-      if (stepOf(harness, 'the-knocking') !== 3) break;
+      if (stepOf(harness, 'the-knocking') !== 4) break;
       defeat(harness, mite);
     }
-    assert.equal(stepOf(harness, 'the-knocking'), 4);
+    assert.equal(stepOf(harness, 'the-knocking'), 5);
     const zoneLoot = [...harness.gameplay.world.levelOf(player).groundItems.values()];
     assert.ok(zoneLoot.some((item) => item.itemId === 'gloam-chitin' && item.ownerId === player.entityId), 'mite loot should land on the floor, reserved for the killer');
 
     harness.interactWithObject('s2-lab-terminal');
     harness.ticksUntil(() => countItem(player.record.inventory, 'expedition-log') === 1, 400);
-    assert.equal(stepOf(harness, 'the-knocking'), 5);
+    assert.equal(stepOf(harness, 'the-knocking'), 6);
 
     defeat(harness, 's2-warden', 4000);
-    assert.equal(stepOf(harness, 'the-knocking'), 6);
+    assert.equal(stepOf(harness, 'the-knocking'), 7);
 
     harness.ticksUntil(() => player.combatTargetId === null, 600);
     harness.interactWithObject('s2-exit-a');
@@ -178,7 +187,7 @@ describe('combat', () => {
     const saved = harness.saved.at(-1);
     assert.ok(saved);
     assert.equal(saved.vitals.integrity, player.maxIntegrity);
-    assert.deepEqual(saved.location, at('meridian-atrium', { x: 20, y: 29 }));
+    assert.deepEqual(saved.location, at('meridian-atrium', { x: 20, y: 32 }));
   });
 
   test('creatures give up the chase beyond their leash and heal', () => {
@@ -283,15 +292,15 @@ describe('economy', () => {
 });
 
 describe('marksmanship path', () => {
-  test('Kade issues one dart pistol, and shooting with it trains marksmanship from level 1', () => {
+  test('Osei issues one dart pistol, and shooting with it trains marksmanship from level 1', () => {
     const harness = createHarness({
-      prepare: prepared(ATRIUM_NEAR_KADE, { 'live-fire': completed('live-fire'), 'the-knocking': completed('the-knocking') }),
+      prepare: prepared(RANGE_GALLERY, { 'live-fire': completed('live-fire'), 'the-knocking': completed('the-knocking') }),
     });
     const { player } = harness;
-    harness.talkTo('atrium-kade');
+    harness.talkTo('intake-osei');
     finishDialogue(harness, (text) => text.includes('sidearm'));
     assert.equal(countItem(player.record.inventory, 'dart-pistol'), 1);
-    harness.talkTo('atrium-kade');
+    harness.talkTo('intake-osei');
     finishDialogue(harness, (text) => text.includes('sidearm'));
     assert.equal(countItem(player.record.inventory, 'dart-pistol'), 1, 'only issued once');
 
@@ -322,7 +331,7 @@ describe('the far side', () => {
     assert.ok(player.hasFlag('clearance.undercroft'));
     assert.equal(stepOf(harness, 'the-far-side'), 1);
 
-    harness.gameplay.teleport(player, at('meridian-atrium', { x: 42, y: 28 }));
+    harness.gameplay.teleport(player, at('meridian-atrium', { x: 49, y: 34 }));
     harness.interactWithObject('atrium-service-lift');
     assert.equal(districtOf(player), 'undercroft');
     assert.equal(stepOf(harness, 'the-far-side'), 2);

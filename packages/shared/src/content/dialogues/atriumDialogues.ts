@@ -1,7 +1,6 @@
 import type { DialogueDefinition } from '../../dialogue/dialogue.ts';
 
 const VENTS = 'static-in-the-vents';
-const LIVE_FIRE = 'live-fire';
 const KNOCKING = 'the-knocking';
 
 export const LUND_DIALOGUE: DialogueDefinition = {
@@ -452,11 +451,7 @@ export const AMES_DIALOGUE: DialogueDefinition = {
 export const KADE_DIALOGUE: DialogueDefinition = {
   id: 'kade',
   entries: [
-    { node: 'intro', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'report-to-kade' }] },
-    { node: 'armUp', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'arm-up' }] },
-    { node: 'drill', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'drill' }] },
-    { node: 'patchUp', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'patch-up' }] },
-    { node: 'debrief', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'debrief' }] },
+    { node: 'arrival', conditions: [{ type: 'questActive', questId: KNOCKING, stepId: 'report-to-kade' }] },
     { node: 'knocking', conditions: [{ type: 'questActive', questId: KNOCKING }] },
     { node: 'facesReport', conditions: [{ type: 'questActive', questId: 'familiar-faces', stepId: 'report' }] },
     { node: 'facesProgress', conditions: [{ type: 'questActive', questId: 'familiar-faces' }] },
@@ -490,58 +485,9 @@ export const KADE_DIALOGUE: DialogueDefinition = {
       text: "Good. They'll stay down a little longer now. Avis would have liked you. He'd never have said so.",
       next: null,
     },
-    intro: {
+    arrival: {
       speaker: 'npc',
-      text: "You're Varga's intake. She says you've got steady hands. Let's find out if the rest of you is steady too. Sergeant Kade, Response Division.",
-      options: [
-        { text: 'I fabricated my own baton.', conditions: [{ type: 'hasItem', itemId: 'stun-baton' }], next: 'ownBaton' },
-        { text: 'Reporting for training.', conditions: [{ type: 'lacksItem', itemId: 'stun-baton' }], next: 'issue' },
-      ],
-    },
-    ownBaton: {
-      speaker: 'npc',
-      text: "Pell's work? No, yours. Good balance. Then you don't need mine. Wield it.",
-      next: 'howTo',
-    },
-    issue: {
-      speaker: 'npc',
-      text: 'Standard issue stun baton. Capacitor head, rubber grip, no sense of humour. Wield it.',
-      effects: [{ type: 'giveItem', itemId: 'stun-baton' }],
-      next: 'howTo',
-    },
-    howTo: {
-      speaker: 'npc',
-      text: 'Then pick a drone on the range and hit it until it stops being upright. They hit back. Gently. Mostly.',
-      options: [
-        { text: 'How does combat work here?', next: 'combatBasics' },
-        {
-          text: 'Can I qualify on a sidearm instead?',
-          conditions: [{ type: 'lacksFlag', flag: 'kade.issued-dart-pistol' }],
-          next: 'rangedIssue',
-        },
-        { text: 'Understood.', next: null },
-      ],
-    },
-    combatBasics: {
-      speaker: 'npc',
-      text: 'Click a target, close the distance, swing on rhythm. Close Quarters decides how often you land and how hard. Fortitude keeps you standing. Gear helps; training helps more. Nobody here was born good at this.',
-      next: 'howTo',
-    },
-    rangedIssue: {
-      speaker: 'npc',
-      text: "Trainee dart pistol. Low power, honest accuracy. Marksmanship trains every time a dart lands, same as the baton trains Close Quarters. Work up to five and Requisitions will trust you with a Kestrel.",
-      effects: [
-        { type: 'giveItem', itemId: 'dart-pistol' },
-        { type: 'setFlag', flag: 'kade.issued-dart-pistol' },
-      ],
-      next: 'howTo',
-    },
-    armUp: { speaker: 'npc', text: "Baton's in your inventory. Click it to wield. I'll wait. I'm very good at waiting.", next: null },
-    drill: { speaker: 'npc', text: "Three drones. Click one to engage. If you're hurting, step back and breathe.", next: null },
-    patchUp: { speaker: 'npc', text: 'Medgel. Inventory. Click it to apply. Into the wound, not the eyes.', next: null },
-    debrief: {
-      speaker: 'npc',
-      text: 'Not bad for a first live drill. Now. Off the record.',
+      text: "Off the tram and still upright. Osei says you can stand up straight, which from Osei is a medal. Sergeant Kade, Response Division. Welcome to the Atrium. Everything you need is around this plaza: Requisitions and storage north-west, fabrication west, the medbay south, my office east.",
       next: 'knockingHook',
     },
     knockingHook: {
@@ -564,15 +510,8 @@ export const KADE_DIALOGUE: DialogueDefinition = {
     },
     idle: {
       speaker: 'npc',
-      text: "Range is open. The drones reset themselves. That's more than I can say for people.",
-      options: [
-        {
-          text: 'Can I qualify on a sidearm?',
-          conditions: [{ type: 'lacksFlag', flag: 'kade.issued-dart-pistol' }],
-          next: 'rangedIssue',
-        },
-        { text: 'Goodbye.', next: null },
-      ],
+      text: "Response Office. If it bites, it comes across this desk first. If you need practice, Osei's range in the Intake Wing is one tram ride away.",
+      next: null,
     },
   },
 };

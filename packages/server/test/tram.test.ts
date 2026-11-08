@@ -62,7 +62,7 @@ test('a ride to another level re-enters on that level and marks it visited', () 
 });
 
 test('stops on other lines are reached through interchanges', () => {
-  const harness = createHarness({ prepare: onPlatform('intake-wing', { x: 28, y: 15 }, ['deepwatch-platform']) });
+  const harness = createHarness({ prepare: onPlatform('intake-wing', { x: 52, y: 19 }, ['deepwatch-platform']) });
   boardAndDepart(harness, 'deepwatch-platform');
   assert.equal(harness.sink.last('tram.departed')?.rideTicks, 10);
   harness.ticksUntil(() => harness.sink.last('tram.arrived') !== undefined, 12);
@@ -106,4 +106,12 @@ test('leaving mid-ride saves the rider at the destination', () => {
   boardAndDepart(harness, 'verdance-platform');
   harness.gameplay.leaveWorld(harness.player);
   assert.deepEqual(harness.saved.at(-1)?.location, { levelId: 'main-floor', position: stationPoint('verdance-platform') });
+});
+
+test('the Meridian Line runs from the Atrium out to the Service Yards depot', () => {
+  const harness = createHarness({ prepare: onPlatform('meridian-atrium', ATRIUM_PLATFORM, ['yards-depot']) });
+  boardAndDepart(harness, 'yards-depot');
+  harness.ticksUntil(() => harness.sink.last('tram.arrived') !== undefined, 12);
+  assert.equal(districtOf(harness.player), 'service-yards');
+  assert.deepEqual(harness.player.position, stationPoint('yards-depot'));
 });
