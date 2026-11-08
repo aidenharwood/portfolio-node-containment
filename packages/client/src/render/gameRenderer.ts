@@ -31,6 +31,7 @@ import { attackDurationMs, type EntityRig } from './models/entityRig.ts';
 import { createAreaBeacon, createClickMarker, createGroundRing, createQuestMarker, type QuestMarkerKind } from './models/markerModels.ts';
 import { GroundItemLayer } from './items/groundItemLayer.ts';
 import { ProjectileLayer } from './projectileLayer.ts';
+import { RouteLayer } from './routeLayer.ts';
 import { samePickTarget, type ClickMarker, type PickTarget } from './pickTarget.ts';
 import { hex, lighten } from './voxel/palette.ts';
 import { copyAmbience, createBlendedAmbience, easeAmbience, sampleAmbience, type BlendedAmbience } from './world/ambienceBlend.ts';
@@ -43,6 +44,7 @@ export interface RenderOverlay {
   readonly npcMarkers: ReadonlyMap<string, NpcQuestMarker>;
   readonly objectiveCreatureIds: ReadonlySet<string>;
   readonly objectiveBeacons: readonly TilePoint[];
+  readonly guidanceRoute: readonly TilePoint[];
 }
 
 export interface ScreenAnchor {
@@ -101,6 +103,7 @@ export class GameRenderer {
   private readonly background = new Color();
   private readonly groundItems = new GroundItemLayer();
   private readonly projectiles = new ProjectileLayer();
+  private readonly route = new RouteLayer();
   private readonly stopHitListener: () => void;
   private assignedLights: LightSource[] = [];
   private lightTimer = 0;
@@ -128,7 +131,7 @@ export class GameRenderer {
     this.stopHitListener = world.onCombatHit((event) => this.launchProjectile(event));
     this.scene.fog = this.fog;
     this.scene.background = this.background;
-    this.scene.add(this.projectiles.root, this.groundItems.root, this.hemisphere, this.keyLight, this.keyLight.target, this.hoverRing, this.selfRing, this.click.group);
+    this.scene.add(this.projectiles.root, this.groundItems.root, this.hemisphere, this.keyLight, this.keyLight.target, this.hoverRing, this.selfRing, this.click.group, this.route.mesh);
 
     for (let index = 0; index < LIGHT_POOL_SIZE; index++) {
       const light = new PointLight(0xffffff, 0, 6, 2);
@@ -234,6 +237,7 @@ export class GameRenderer {
     this.updateHover(overlay.hover, now);
     this.updateClickMarker(overlay.clickMarker, now);
     this.updateBeacons(overlay.objectiveBeacons, time);
+    this.route.update(overlay.guidanceRoute, time);
 
     this.composer.render(delta);
   }

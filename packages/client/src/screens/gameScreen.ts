@@ -31,6 +31,7 @@ import { createDossierTab } from '../hud/tabs/dossierTab.ts';
 import { createEquipmentTab } from '../hud/tabs/equipmentTab.ts';
 import { createInventoryTab } from '../hud/tabs/inventoryTab.ts';
 import { createQuestsTab } from '../hud/tabs/questsTab.ts';
+import { GuidanceRoute } from '../state/guidanceRoute.ts';
 import { QuestTracking } from '../state/questTracking.ts';
 import { createSkillsTab } from '../hud/tabs/skillsTab.ts';
 import { actionsForTarget, type ActionContext } from '../input/worldActions.ts';
@@ -69,6 +70,8 @@ export function createGameScreen(app: AppNavigator): Screen {
   const dialogue = new DialogueBox(connection);
   const questTracking = new QuestTracking();
   const objectives = new ObjectiveTracker(questTracking);
+  const guidanceRoute = new GuidanceRoute(world);
+  questTracking.onChange(() => guidanceRoute.invalidate());
   const bubble = new InteractionBubble();
   const speech = new SpeechLayer();
   const combatOverlay = new CombatOverlay(world);
@@ -154,6 +157,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     objectiveObjects = objectiveObjectIds(self.quests, GAME_CONTENT.quests, GAME_CONTENT.worldObjects, GAME_CONTENT.recipes);
     objectiveCreatures = objectiveCreatureIds(self.quests, GAME_CONTENT.quests);
     refreshBeacons();
+    guidanceRoute.invalidate();
     objectives.update(self.quests);
     sidePanel.update(self);
   };
@@ -172,6 +176,7 @@ export function createGameScreen(app: AppNavigator): Screen {
 
   const onZoneChanged = () => {
     renderer.rebuildZone();
+    guidanceRoute.invalidate();
     minimap.rebuild();
     refreshBeacons();
     shownDistrictId = world.currentDistrict()?.id ?? null;
@@ -429,7 +434,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   const unsubscribers = [world.on('zoneChanged', onZoneChanged), world.on('selfChanged', refreshGuidance)];
 
   const loop = (now: number) => {
-    renderer.render(now, { hover, clickMarker, objectiveObjectIds: objectiveObjects, npcMarkers, objectiveCreatureIds: objectiveCreatures, objectiveBeacons });
+    renderer.render(now, { hover, clickMarker, objectiveObjectIds: objectiveObjects, npcMarkers, objectiveCreatureIds: objectiveCreatures, objectiveBeacons, guidanceRoute: guidanceRoute.current(now, questTracking.questId) });
     refreshHover();
     speech.update(world, renderer, now);
     combatOverlay.update(world, renderer, now);

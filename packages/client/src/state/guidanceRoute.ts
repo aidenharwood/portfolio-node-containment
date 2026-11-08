@@ -59,10 +59,14 @@ export class GuidanceRoute {
     const tracked = focusedHandheldQuest(self.quests, GAME_CONTENT.quests, preferred);
     if (!tracked) return [];
     const goals = routeGoals(tracked, this.scene(zone.definition), GAME_CONTENT);
-    const nearest = [...goals].sort((a, b) => octile(origin, a.point) - octile(origin, b.point)).slice(0, CANDIDATE_LIMIT);
-    for (const goal of nearest) {
-      const path = this.pathTo(origin, goal);
-      if (path) return [origin, ...path];
+    const here = zone.layout.districtAt(origin);
+    const local = goals.filter((goal) => zone.layout.districtAt(goal.point) === here);
+    for (const candidates of [local, goals]) {
+      const nearest = [...candidates].sort((a, b) => octile(origin, a.point) - octile(origin, b.point)).slice(0, CANDIDATE_LIMIT);
+      for (const goal of nearest) {
+        const path = this.pathTo(origin, goal);
+        if (path) return [origin, ...path];
+      }
     }
     return [];
   }

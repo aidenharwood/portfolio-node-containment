@@ -74,6 +74,12 @@ An area with `safe: true` is non-hostile ground.
 
 ### Quest guidance
 
+Quests are either **handheld** or **journal-only**. `isHandheld(quest)` reads `QuestDefinition.handheld` and defaults to true for `tutorial` quests and false for everything else, so set `handheld` on a quest to override its category either way. Only handheld quests put guidance in the world. Journal-only quests are directed by their journal text, the objective tracker and the world map's district outlines.
+
+- A handheld quest draws a walking route on the floor from the player to the nearest objective target (`routeGoals` in `shared/src/quests/questRoute.ts`, planned by the client's `GuidanceRoute` and drawn by `RouteLayer`). It follows the tracked quest when that one is handheld, otherwise the first handheld quest. Targets in the player's own district are tried first. Live NPC and creature positions win over their placements. The route is re-planned when the player changes tile, when quest state or tracking changes, and every 800ms otherwise. Objectives with no world target (`obtainItem`, `equipItem`, `useItem`) and targets on another level draw no route.
+
+The world markers below also appear only for handheld quests, apart from the gold quest-offer marker:
+
 - NPCs show a blue marker when they are an objective and a gold one when they offer a quest (`npcQuestMarker`).
 - Objective objects get a pulsing ground ring (`objectiveObjectIds`), including every node and station a `gather` or `craft` objective needs.
 - Objective creatures get a red target marker (`objectiveCreatureIds`).
