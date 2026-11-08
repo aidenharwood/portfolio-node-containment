@@ -47,7 +47,17 @@ const COLORS = {
   glassFrame: 0x33434e,
   lintel: 0x26343e,
   lintelLight: 0x7cf29a,
+  ballast: 0x15191b,
+  ballastStone: 0x22272a,
+  rail: 0x8a9aa6,
+  sleeper: 0x2e241c,
+  tunnel: 0x040608,
+  tunnelLamp: 0xff5e3a,
 } as const;
+
+type Axis = 'x' | 'y';
+const TUNNEL_DEPTH = R / 2;
+const TUNNEL_HEIGHT = 11;
 
 type Side = 'north' | 'south' | 'east' | 'west';
 
@@ -62,6 +72,7 @@ export function buildTileVolume(layout: TileLayout, region: TileRect): DenseVolu
       if (kind === 'void') continue;
       if (kind === 'wall') paintWall(volume, layout, tx, ty);
       else if (kind === 'glass') paintGlass(volume, tx, ty);
+      else if (kind === 'track') paintTrack(volume, trackAxis(layout, tx, ty), tx, ty);
       else paintFloor(volume, kind, tx, ty);
       if (kind === 'door') paintLintel(volume, layout, tx, ty);
     }
@@ -194,6 +205,70 @@ function paintWall(volume: DenseVolume, layout: TileLayout, tx: number, ty: numb
         }
         paintWallFace(volume, vx, vy, vz, h, outer, noise3(tx, ty, SIDE_SALT[outer.side], 9), grain);
       }
+    }
+  }
+  for (const side of tunnelSides(layout, tx, ty)) paintTunnel(volume, side, tx, ty);
+}
+
+function trackAxis(layout: TileLayout, tx: number, ty: number): Axis {
+  const run = (dx: number, dy: number) => {
+    let length = 0;
+    while (layout.tileAt({ x: tx + dx * (length + 1), y: ty + dy * (length + 1) }) === 'track') length++;
+    return length;
+  };
+  return run(1, 0) + run(-1, 0) >= run(0, 1) + run(0, -1) ? 'x' : 'y';
+}
+
+function trackVoxel(along: number, across: number, grain: number): number | null {
+  if (across === 2 || across === R - 3) return jitter(COLORS.rail, 0.04, grain);
+  if (along % 4 === 1 && across >= 1 && across <= R - 2) return jitter(COLORS.sleeper, 0.06, grain);
+  return null;
+}
+
+function paintTrackVoxel(volume: DenseVolume, vx: number, vz: number, along: number, across: number): void {
+  const grain = noise3(vx, FLOOR, vz, 17);
+  volume.set(vx, SUBFLOOR, vz, grain > 0.7 ? COLORS.ballastStone : jitter(COLORS.ballast, 0.05, grain));
+  const surface = trackVoxel(along, across, grain);
+  if (surface === null) volume.clear(vx, FLOOR, vz);
+  else volume.set(vx, FLOOR, vz, surface);
+}
+
+function paintTrack(volume: DenseVolume, axis: Axis, tx: number, ty: number): void {
+  for (let lz = 0; lz < R; lz++) {
+    for (let lx = 0; lx < R; lx++) {
+      paintTrackVoxel(volume, tx * R + lx, ty * R + lz, axis === 'x' ? lx : lz, axis === 'x' ? lz : lx);
+    }
+  }
+}
+
+function tunnelSides(layout: TileLayout, tx: number, ty: number): Side[] {
+  const sides: [Side, number, number, Axis][] = [
+    ['north', tx, ty - 1, 'y'],
+    ['south', tx, ty + 1, 'y'],
+    ['west', tx - 1, ty, 'x'],
+    ['east', tx + 1, ty, 'x'],
+  ];
+  return sides.filter(([, x, y, axis]) => layout.tileAt({ x, y }) === 'track' && trackAxis(layout, x, y) === axis).map(([side]) => side);
+}
+
+function paintTunnel(volume: DenseVolume, side: Side, tx: number, ty: number): void {
+  for (let lz = 0; lz < R; lz++) {
+    for (let lx = 0; lx < R; lx++) {
+      const depth = side === 'north' ? lz : side === 'south' ? R - 1 - lz : side === 'west' ? lx : R - 1 - lx;
+      if (depth > TUNNEL_DEPTH) continue;
+      const across = side === 'north' || side === 'south' ? lx : lz;
+      const vx = tx * R + lx;
+      const vz = ty * R + lz;
+      for (let h = 0; h < TUNNEL_HEIGHT; h++) {
+        if (depth === TUNNEL_DEPTH) volume.set(vx, FLOOR_LAYERS + h, vz, COLORS.tunnel);
+        else volume.clear(vx, FLOOR_LAYERS + h, vz);
+      }
+      if (depth === 0) {
+        const lamp = across >= 3 && across <= 4;
+        volume.set(vx, FLOOR_LAYERS + TUNNEL_HEIGHT, vz, lamp ? COLORS.tunnelLamp : COLORS.wallTrim, lamp ? VOXEL_EMISSIVE : VOXEL_SOLID);
+      }
+      if (depth < TUNNEL_DEPTH) paintTrackVoxel(volume, vx, vz, depth, across);
+      else volume.set(vx, FLOOR, vz, COLORS.tunnel);
     }
   }
 }

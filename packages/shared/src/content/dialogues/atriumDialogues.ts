@@ -189,7 +189,13 @@ export const SEL_DIALOGUE: DialogueDefinition = {
     { node: 'contractProgress', conditions: [{ type: 'questActive', questId: 'original-contract' }] },
     { node: 'answerHome', conditions: [{ type: 'questActive', questId: 'the-answer', stepId: 'home' }] },
     { node: 'answerProgress', conditions: [{ type: 'questActive', questId: 'the-answer' }] },
+    { node: 'ninthProgress', conditions: [{ type: 'questActive', questId: 'the-ninth-letter' }] },
+    { node: 'officeProgress', conditions: [{ type: 'questActive', questId: 'dead-letter-office' }] },
+    { node: 'returnsReport', conditions: [{ type: 'questActive', questId: 'return-to-sender', stepId: 'sel' }] },
+    { node: 'returnsProgress', conditions: [{ type: 'questActive', questId: 'return-to-sender' }] },
     { node: 'councilOffer', conditions: [{ type: 'questCompleted', questId: 'the-far-side' }, { type: 'questNotStarted', questId: 'a-council-of-one' }] },
+    { node: 'ninthOffer', conditions: [{ type: 'questCompleted', questId: 'the-answer' }, { type: 'questNotStarted', questId: 'the-ninth-letter' }] },
+    { node: 'actThreeEpilogue', conditions: [{ type: 'questCompleted', questId: 'return-to-sender' }] },
     { node: 'epilogueWelcomed', conditions: [{ type: 'questCompleted', questId: 'the-answer' }, { type: 'hasFlag', flag: 'ending.welcomed' }] },
     { node: 'epilogueClosed', conditions: [{ type: 'questCompleted', questId: 'the-answer' }] },
     { node: 'greeting' },
@@ -302,6 +308,78 @@ export const SEL_DIALOGUE: DialogueDefinition = {
       speaker: 'npc',
       text: "You let it in. Of course you did. Well. I'd better find it a desk. And a designation. And a mug. The Directorate has never had a guest before, {name}. We're going to be terrible at it.",
       next: null,
+    },
+    ninthOffer: {
+      speaker: 'npc',
+      text: 'Eight Sites wrote this morning. I counted the letters twice, {name}. There are nine. The ninth is addressed to you, care of Records, and it is in your handwriting.',
+      options: [
+        {
+          text: 'Let me see it.',
+          effects: [
+            { type: 'startQuest', questId: 'the-ninth-letter' },
+            { type: 'giveItem', itemId: 'ninth-letter' },
+          ],
+          next: 'ninthGo',
+        },
+        { text: 'Not yet.', next: null },
+      ],
+    },
+    ninthGo: {
+      speaker: 'npc',
+      text: "It says: 'Everything is quiet here. No need to come.' You didn't write that. The frank is from the Signal Array, and Achterberg sends every letter that leaves this Site. Ask him who sent this one.",
+      next: null,
+    },
+    ninthProgress: {
+      speaker: 'npc',
+      text: 'Achterberg, at the Signal Array. If the Array has been posting letters on its own, I want to know for how long.',
+      next: null,
+    },
+    officeProgress: {
+      speaker: 'npc',
+      text: "A sorting office. Of course there's a sorting office. Forty years of 'all quiet here', every one of them in our handwriting. Shut it, {name}. Then bring me whatever it was keeping.",
+      next: null,
+    },
+    returnsProgress: {
+      speaker: 'npc',
+      text: "The founder's letter. Halvorsen signs it, Achterberg sends it, and for the first time in forty years Meridian tells the truth on purpose.",
+      next: null,
+    },
+    returnsReport: {
+      speaker: 'npc',
+      text: 'Achterberg rang. He sounded happy, which I found unsettling. Is it done?',
+      options: [
+        {
+          text: "It's sent. Every Site will have it.",
+          conditions: [{ type: 'hasFlag', flag: 'ending.welcomed' }],
+          effects: [{ type: 'emitSignal', signal: 'returns.reported' }],
+          next: 'returnsWelcomed',
+        },
+        {
+          text: "It's sent. Every Site will have it.",
+          conditions: [{ type: 'lacksFlag', flag: 'ending.welcomed' }],
+          effects: [{ type: 'emitSignal', signal: 'returns.reported' }],
+          next: 'returnsClosed',
+        },
+      ],
+    },
+    returnsWelcomed: {
+      speaker: 'npc',
+      text: "Our guest read it over my shoulder. It said the founder had lovely handwriting, then asked whether it ought to write to the other Sites itself, to apologise. I said yes. I'm going to proofread.",
+      next: null,
+    },
+    returnsClosed: {
+      speaker: 'npc',
+      text: "Forty years late, and still the most important letter this Site has ever sent. I'm filing the copy under Resolved. That makes two files in that drawer. It's becoming a habit.",
+      next: null,
+    },
+    actThreeEpilogue: {
+      speaker: 'npc',
+      text: 'Site Halcyon wrote back first. Their archivist wants to compare notes, and their Signals officer wants to know whether Achterberg is real. I am going to need a bigger drawer.',
+      options: [
+        { text: 'What is the Meridian Directorate?', next: 'directorate' },
+        { text: 'How are anomalies classified?', next: 'classes' },
+        { text: "That's all.", next: null },
+      ],
     },
     epilogueClosed: {
       speaker: 'npc',

@@ -9,9 +9,9 @@ export const FURNACE: DistrictDefinition = {
   ambience: { darkness: 0.55, tint: '#1c0a04', fog: '#1a0c06', fixtures: 'failing' },
   map: [
     '############################################',
-    '#........#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#',
-    '#........#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#',
-    '#........#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#',
+    '#TTTTTTTT#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#',
+    '#TTTTTTTT#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#',
+    '#!!!!!!!!#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#',
     'D........D%%!!!!!!!!!!!!!!!!!!!!!!!!!!!!%%%#',
     'D........D%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#',
     '#........#%%%%%%%%~~~%%%%%%%%%~~~%%%%%%%%%%#',
@@ -48,7 +48,7 @@ export const FURNACE: DistrictDefinition = {
     { instanceId: 'fu-blast-door-a', objectId: 'furnace-door', position: { x: 0, y: 4 }, facing: 'west' },
     { instanceId: 'fu-blast-door-b', objectId: 'furnace-door', position: { x: 0, y: 5 }, facing: 'west' },
     { instanceId: 'fu-tram-stop', objectId: 'tram-stop', position: { x: 1, y: 6 }, facing: 'east' },
-    { instanceId: 'fu-lock-storage', objectId: 'storage-locker', position: { x: 8, y: 1 } },
+    { instanceId: 'fu-lock-storage', objectId: 'storage-locker', position: { x: 8, y: 7 } },
     { instanceId: 'fu-lock-bed', objectId: 'med-bed', position: { x: 2, y: 8 } },
     { instanceId: 'fu-lock-synthesiser', objectId: 'synthesiser', position: { x: 8, y: 8 }, facing: 'west' },
 

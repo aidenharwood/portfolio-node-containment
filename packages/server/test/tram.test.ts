@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { GAME_CONTENT, TRAM_BOARDING_TICKS, tramStationFlag, visitedLevelFlag, type CharacterRecord } from '@containment/shared';
+import { GAME_CONTENT, TRAM_BOARDING_TICKS, tramStationFlag, type CharacterRecord } from '@containment/shared';
 import { at, createHarness, districtOf, levelPoint, type Harness } from './support/testHarness.ts';
 
 const onPlatform = (districtId: string, local: { x: number; y: number }, stations: readonly string[]) => (record: CharacterRecord): CharacterRecord => ({
@@ -52,26 +52,27 @@ test('a ride departs, keeps the rider still and arrives on the destination platf
   assert.equal(harness.player.activity, null);
 });
 
-test('a ride to another level re-enters on that level and marks it visited', () => {
-  const harness = createHarness({ prepare: onPlatform('meridian-atrium', ATRIUM_PLATFORM, ['deepwatch-platform']) });
-  boardAndDepart(harness, 'deepwatch-platform');
-  harness.ticksUntil(() => harness.sink.last('tram.arrived') !== undefined, 12);
-  assert.equal(harness.player.levelId, 'the-deep');
-  assert.equal(harness.sink.last('world.entered')?.levelId, 'the-deep');
-  assert.ok(harness.player.hasFlag(visitedLevelFlag('the-deep')));
-});
-
-test('stops on other lines are reached through interchanges', () => {
-  const harness = createHarness({ prepare: onPlatform('intake-wing', { x: 52, y: 19 }, ['deepwatch-platform']) });
-  boardAndDepart(harness, 'deepwatch-platform');
+test('the Abyssal Circuit runs between the Deep districts', () => {
+  const harness = createHarness({ prepare: onPlatform('deepwatch', { x: 30, y: 11 }, ['furnace-lock']) });
+  boardAndDepart(harness, 'furnace-lock');
   assert.equal(harness.sink.last('tram.departed')?.rideTicks, 10);
   harness.ticksUntil(() => harness.sink.last('tram.arrived') !== undefined, 12);
-  assert.equal(districtOf(harness.player), 'deepwatch');
+  assert.equal(harness.player.levelId, 'the-deep');
+  assert.equal(districtOf(harness.player), 'furnace');
+});
+
+test('a tram does not run to stations off its own lines', () => {
+  const harness = createHarness({ prepare: onPlatform('intake-wing', { x: 52, y: 19 }, ['verdance-platform', 'deepwatch-platform']) });
+  for (const destinationStationId of ['verdance-platform', 'deepwatch-platform']) {
+    harness.send({ type: 'tram.board', destinationStationId });
+    assert.equal(harness.player.activity, null);
+    assert.match(harness.sink.last('notice')?.text ?? '', /does not run to/);
+  }
 });
 
 test('an undiscovered destination is refused', () => {
   const harness = createHarness({ prepare: onPlatform('meridian-atrium', ATRIUM_PLATFORM, []) });
-  harness.send({ type: 'tram.board', destinationStationId: 'deepwatch-platform' });
+  harness.send({ type: 'tram.board', destinationStationId: 'yards-depot' });
   assert.equal(harness.player.activity, null);
   assert.match(harness.sink.last('notice')?.text ?? '', /not found that station/);
 });

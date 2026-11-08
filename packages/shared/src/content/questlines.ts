@@ -23,6 +23,13 @@ export const QUESTLINES: readonly QuestlineDefinition[] = [
     questIds: ['a-council-of-one', 'cold-storage', 'dead-air', 'original-contract', 'stoking-the-fire', 'the-answer'],
   },
   {
+    id: 'act-three',
+    name: 'Act III · Return to Sender',
+    kind: 'main',
+    summary: 'Eight Sites wrote back after the answer. Nine letters arrived, and the ninth is in your handwriting.',
+    questIds: ['the-ninth-letter', 'dead-letter-office', 'return-to-sender'],
+  },
+  {
     id: 'meridian-proper',
     name: 'Meridian Proper',
     kind: 'side',

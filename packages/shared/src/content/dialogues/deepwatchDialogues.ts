@@ -490,6 +490,8 @@ export const ACHTERBERG_DIALOGUE: DialogueDefinition = {
   id: 'achterberg',
   entries: [
     { node: 'deadAirMeet', conditions: [{ type: 'questActive', questId: DEAD_AIR, stepId: 'achterberg' }] },
+    { node: 'ninthTrace', conditions: [{ type: 'questActive', questId: 'the-ninth-letter', stepId: 'achterberg' }] },
+    { node: 'returnsSend', conditions: [{ type: 'questActive', questId: 'return-to-sender', stepId: 'send' }] },
     { node: 'wiresReport', conditions: [{ type: 'questActive', questId: 'crossed-wires', stepId: 'report' }] },
     { node: 'callbackReport', conditions: [{ type: 'questActive', questId: 'callback', stepId: 'report' }] },
     { node: 'greeting' },
@@ -544,6 +546,53 @@ export const ACHTERBERG_DIALOGUE: DialogueDefinition = {
     callbackReport: {
       speaker: 'npc',
       text: 'Quiet. Properly quiet. Here, take the visor. It filters forty voices down to one. Make sure the one it keeps is yours.',
+      next: null,
+    },
+    ninthTrace: {
+      speaker: 'npc',
+      text: "Sel rang ahead. She says you have a letter I franked. I haven't franked anything since you pulled the Choir off my relays. Let me see it.",
+      options: [
+        {
+          text: 'Hand over the ninth letter.',
+          conditions: [{ type: 'hasItem', itemId: 'ninth-letter' }],
+          effects: [
+            { type: 'takeItem', itemId: 'ninth-letter' },
+            { type: 'emitSignal', signal: 'ninth.traced' },
+          ],
+          next: 'ninthTraced',
+        },
+        { text: "I don't have it on me.", next: null },
+      ],
+    },
+    ninthTraced: {
+      speaker: 'npc',
+      text: "That's my frank. That's my outbox. But the routing code isn't any relay of mine. It's a return code: undeliverable, held at the sorting office. We don't have a sorting office.",
+      next: 'ninthTraced2',
+    },
+    ninthTraced2: {
+      speaker: 'npc',
+      text: 'The outbox has been drawing a draught all morning, from the east wall of the Operator Pit. I put a chair in front of it. Go and see where our post has been going for forty years. Move the chair first.',
+      next: null,
+    },
+    returnsSend: {
+      speaker: 'npc',
+      text: "Halvorsen signed it? Then it's real post. I've cleared a relay that points up for once. Give it here and I'll send it properly, with my own hands.",
+      options: [
+        {
+          text: 'Hand over the countersigned letter.',
+          conditions: [{ type: 'hasItem', itemId: 'countersigned-letter' }],
+          effects: [
+            { type: 'takeItem', itemId: 'countersigned-letter' },
+            { type: 'emitSignal', signal: 'returns.sent' },
+          ],
+          next: 'returnsSent',
+        },
+        { text: "I don't have it on me.", next: null },
+      ],
+    },
+    returnsSent: {
+      speaker: 'npc',
+      text: "Sent. Eight relays, eight Sites, and for once the needle went up. Twenty years I've been posting letters. That's the first one I'm sure anybody will read. Tell Sel. She'll want it filed.",
       next: null,
     },
   },

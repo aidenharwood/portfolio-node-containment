@@ -19,6 +19,7 @@ const TILE_COLORS: Partial<Record<string, string>> = {
   hazard: '#a88417',
   door: '#c9a227',
   carpet: '#3a3150',
+  track: '#2a2420',
 };
 
 const FACING_ANGLE: Readonly<Record<Facing, number>> = { north: -Math.PI / 2, east: 0, south: Math.PI / 2, west: Math.PI };

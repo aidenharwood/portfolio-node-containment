@@ -5,6 +5,7 @@ import {
   tramRideTicks,
   isStationKnown,
   tramStationFlag,
+  tramLineBetween,
   tramStops,
   type GameContent,
   type NoticeTone,
@@ -142,7 +143,6 @@ export class TramController {
   }
 
   private lineName(origin: TramStation, destination: TramStation): string {
-    const shared = origin.lineIds.find((lineId) => destination.lineIds.includes(lineId)) ?? origin.lineIds[0];
-    return (shared && this.content.tram.lines.get(shared)?.name) ?? 'tram';
+    return tramLineBetween(this.content.tram, origin.id, destination.id)?.name ?? 'tram';
   }
 }

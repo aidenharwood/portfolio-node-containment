@@ -19,7 +19,6 @@ export const TRAM_STATIONS: readonly TramStationDefinition[] = [
 export const TRAM_LINES: readonly TramLineDefinition[] = [
   { id: 'intake-shuttle', name: 'Intake Shuttle', color: '#d8e7ef', stations: ['intake-transit', 'atrium-transit'] },
   { id: 'meridian-line', name: 'Meridian Line', color: '#7cf29a', stations: ['verdance-platform', 'atrium-transit', 'yards-depot'] },
-  { id: 'deep-line', name: 'Deep Line', color: '#4fd8ff', stations: ['atrium-transit', 'deepwatch-platform'] },
   {
     id: 'abyssal-circuit',
     name: 'Abyssal Circuit',

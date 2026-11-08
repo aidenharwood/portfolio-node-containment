@@ -69,7 +69,7 @@ Object models face south (+y on the map) by default. Wall-mounted or doorway obj
 
 A district is one hand-built map. It becomes part of the world when a level places it.
 
-1. Give it a `tier` (1 is the Intake Wing and Atrium, 4 is Sector 3, Deepwatch and the Cryovault, 8 is Meridian Below). Crafting checks use it to decide which gear its materials may feed.
+1. Give it a `tier` (1 is the Intake Wing and Atrium, 4 is Sector 3, Deepwatch and the Cryovault, 8 is Meridian Below, 9 is the Dead Letter Office). Crafting checks use it to decide which gear its materials may feed.
 2. Draw the map as an array of equal-length strings using `MAP_LEGEND` (`shared/src/world/tiles.ts`): `#` wall, `W` glass, `D` door, `.` plating, `,` concrete, `=` grate, `%` rust, `_` carpet, `!` hazard, `~` coolant.
 3. Define `areas` (rectangles that `enterArea` objectives can use), `npcs`, `objects`, `lights` and `ambience`. Combat is single-way by default; set `multiCombat: true` on an area for boss fights with adds. Mark outposts, camps and hubs `safe: true`: friendly NPCs on a floor level must stand in one, creatures must be placed outside one, and gathering nodes belong in the hostile areas around it.
 4. Register it in `DISTRICTS` in `content/gameContent.ts`.
@@ -146,6 +146,8 @@ Act II is tuned against level-matched operatives (Close Quarters and Fortitude a
 | Echo Operators at 17 in Rimeguard; Slag Golems at 26 in Archive gear | below 60% and 75% (upgrades matter) |
 | Curator 14, Choir 19, Last Archivist 24, Stoker 29, Host 34, each in its own tier's gear | 50–85% |
 | Each of those bosses for an operative one tier early | < 30% |
+| Act III: Franking Clerks at 34 and Courier Echoes at 35 in Threshold gear | ≥ 85% |
+| Act III: the Postmaster at 38 in Threshold gear (melee 50–85%, ranged 50–90%), and at 33 | < 30% at 33 |
 
 The Act II tiers are Rimeguard (12), Relay (16), Archive (20), Furnace (25) and Threshold (30). Each is crafted from the district of the same tier: frost crystal, signal copper, vellum and ink, ember ore, and mirror glass.
 

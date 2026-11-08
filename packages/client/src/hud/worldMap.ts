@@ -1,6 +1,7 @@
 import {
   trackedQuest,
   GAME_CONTENT,
+  linesThrough,
   objectiveDistricts,
   stationAt,
   TILE_KINDS,
@@ -227,7 +228,7 @@ export class WorldMap {
     const seconds = (stops: number) => Math.round(((TRAM_BOARDING_TICKS + tramRideTicks(stops)) * this.world.tickMs) / 1000);
     return h('aside', { className: 'world-map-lines', ariaLabel: 'Destinations' },
       h('p', { className: 'eyebrow' }, boarding ? 'Choose a destination' : 'Stand on a platform to ride'),
-      ...[...network.lines.values()].map((line) =>
+      ...(boarding ? linesThrough(network, boarding.id) : []).map((line) =>
         h('section', { className: 'world-map-line', style: { '--line-color': line.color } },
           h('h4', {}, line.name),
           h('ol', {},
@@ -469,7 +470,7 @@ export class WorldMap {
         if (kind === 'void') continue;
         const district = level.layout.districtAt({ x, y });
         const target = district !== undefined && objectives.has(district);
-        context.fillStyle = kind === 'coolant' ? '#1f5f7a' : kind === 'door' ? '#2f5a6a' : TILE_KINDS[kind].walkable ? (target ? '#3d3216' : '#1c2a33') : target ? '#7a5a22' : '#40525e';
+        context.fillStyle = kind === 'coolant' ? '#1f5f7a' : kind === 'track' ? '#2a2420' : kind === 'door' ? '#2f5a6a' : TILE_KINDS[kind].walkable ? (target ? '#3d3216' : '#1c2a33') : target ? '#7a5a22' : '#40525e';
         context.fillRect(frame.offsetX + x * frame.scale, frame.offsetY + y * frame.scale, size, size);
       }
     }

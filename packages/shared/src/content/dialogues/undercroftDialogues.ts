@@ -80,6 +80,7 @@ export const HALVORSEN_DIALOGUE: DialogueDefinition = {
     { node: 'fireWaiting', conditions: [{ type: 'questActive', questId: 'stoking-the-fire' }] },
     { node: 'answerOpen', conditions: [{ type: 'questActive', questId: 'the-answer', stepId: 'halvorsen' }] },
     { node: 'answerWaiting', conditions: [{ type: 'questActive', questId: 'the-answer' }] },
+    { node: 'returnsCountersign', conditions: [{ type: 'questActive', questId: 'return-to-sender', stepId: 'halvorsen' }] },
     { node: 'epilogueWelcomed', conditions: [{ type: 'hasFlag', flag: 'ending.welcomed' }] },
     { node: 'epilogueClosed', conditions: [{ type: 'hasFlag', flag: 'ending.closed' }] },
     { node: 'deepWatching', conditions: [{ type: 'questCompleted', questId: 'a-council-of-one' }] },
@@ -147,6 +148,28 @@ export const HALVORSEN_DIALOGUE: DialogueDefinition = {
     epilogueClosed: {
       speaker: 'npc',
       text: "It's just a door now. I keep putting my hand on it. It's cold. It's wonderful. I think I might go upstairs. I think I might have a coffee.",
+      next: null,
+    },
+    returnsCountersign: {
+      speaker: 'npc',
+      text: "That's the founder's hand. I'd know it anywhere; it's on every page of the charter. What does it want from me?",
+      options: [
+        {
+          text: 'It needs the signature of whoever keeps the door.',
+          conditions: [{ type: 'hasItem', itemId: 'founders-letter' }],
+          effects: [
+            { type: 'takeItem', itemId: 'founders-letter' },
+            { type: 'giveItem', itemId: 'countersigned-letter' },
+            { type: 'emitSignal', signal: 'returns.countersigned' },
+          ],
+          next: 'returnsSigned',
+        },
+        { text: "I don't have it on me.", next: null },
+      ],
+    },
+    returnsSigned: {
+      speaker: 'npc',
+      text: "'Do not wait for us. We have told it not yet. Somebody will have to tell it something else.' Forty years, and the other Sites never even knew it was knocking. There. Keeper of the Door. I suppose I was. Send it before I change my mind about anything.",
       next: null,
     },
     epilogueWelcomed: {

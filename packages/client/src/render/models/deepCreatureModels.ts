@@ -26,6 +26,9 @@ type DeepCreatureModel = Extract<
   | 'hollowOperative'
   | 'knockling'
   | 'theHost'
+  | 'frankingClerk'
+  | 'courierEcho'
+  | 'postmaster'
 >;
 
 const VOXEL = CHARACTER_VOXEL_SIZE;
@@ -578,4 +581,25 @@ export const DEEP_CREATURE_FACTORIES: Readonly<Record<DeepCreatureModel, () => E
   }),
   knockling: () => new KnocklingRig(),
   theHost: () => new HostRig(),
+  frankingClerk: humanoid({
+    appearance: { ...PALE, skinTone: '#d8cdb4', physique: 'male', bodyType: 'slight', height: 1.02, hairStyle: 'swept', hairColor: '#151214', eyeColor: '#c9a227', faceMark: 'barcodeTattoo' },
+    gear: ['archivist-coat', 'ink-trousers', 'ink-boots', 'vellum-gloves', 'research-datapad'],
+    scale: 1,
+    stride: 0.9,
+    tremor: 0.01,
+  }),
+  courierEcho: humanoid({
+    appearance: { ...PALE, physique: 'female', bodyType: 'average', height: 1.0, hairStyle: 'crop', hairColor: '#e8e2d4', eyeColor: '#ff8a4a' },
+    gear: ['field-vest-mk1', 'intake-trousers', 'work-boots', 'threshold-helm', 'last-word'],
+    scale: 1,
+    stride: 1.05,
+    hover: 0.06,
+  }),
+  postmaster: humanoid({
+    appearance: { ...PALE, skinTone: '#e8dcc0', physique: 'male', bodyType: 'broad', height: 1.1, hairStyle: 'long', hairColor: '#e8e2d4', eyeColor: '#c9a227', augment: 'ocularImplant' },
+    gear: ['lab-coat', 'threshold-trousers', 'threshold-boots', 'threshold-gloves', 'lexicon-datapad'],
+    scale: 1.3,
+    stride: 0.55,
+    lean: 0.08,
+  }),
 };

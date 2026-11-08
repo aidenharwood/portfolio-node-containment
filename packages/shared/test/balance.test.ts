@@ -162,6 +162,18 @@ describe('act two difficulty curve', () => {
     }
   });
 
+  test('the Dead Letter Office suits a threshold-kitted operative past the Host', () => {
+    assert.ok(rate(34, 'threshold', 'franking-clerk') >= 0.85);
+    assert.ok(rate(35, 'threshold', 'courier-echo') >= 0.85);
+    assert.ok(rate(34, 'furnace', 'courier-echo') < 0.75);
+    const ready = rate(38, 'threshold', 'the-postmaster');
+    const early = rate(33, 'threshold', 'the-postmaster');
+    const ranged = duelWinRate(at(38, 'marksmanship'), { ...kits.threshold!, primary: 'last-word' }, 'the-postmaster');
+    assert.ok(ready >= 0.5 && ready <= 0.85, `postmaster ready ${ready}`);
+    assert.ok(ranged >= 0.5 && ranged <= 0.9, `postmaster ranged ${ranged}`);
+    assert.ok(early < 0.3, `postmaster early ${early}`);
+  });
+
   test('melee and ranged training reach every boss on comparable terms', () => {
     const ranged: [string, number, EquipmentState][] = [
       ['the-curator', 14, { ...kits.rimeguard!, primary: 'rime-carbine' }],

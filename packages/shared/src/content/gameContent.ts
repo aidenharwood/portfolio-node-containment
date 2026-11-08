@@ -73,6 +73,12 @@ import { THE_KNOCKING } from './quests/theKnocking.ts';
 import { WORLD_OBJECTS } from './worldObjects.ts';
 import { TRANSIT_OBJECTS } from './transitObjects.ts';
 import { POCKET_OBJECTS } from './pocketObjects.ts';
+import { OFFICE_OBJECTS } from './officeObjects.ts';
+import { OFFICE_CREATURES, OFFICE_NPCS } from './officeActors.ts';
+import { ODUYA_DIALOGUE } from './dialogues/officeDialogues.ts';
+import { ACT_THREE_MAIN_QUESTS } from './quests/actThreeMain.ts';
+import { DEAD_LETTER_OFFICE } from './districts/deadLetterOffice.ts';
+import { DEAD_LETTER_OFFICE_LEVEL } from './levels/deadLetterOfficeLevel.ts';
 import { ASSEMBLY_OBJECTS } from './assemblyObjects.ts';
 import { LITTER_OBJECTS } from './litterObjects.ts';
 import { FURNITURE_OBJECTS } from './furnitureObjects.ts';
@@ -127,9 +133,9 @@ function indexById<T extends { readonly id: string }>(entries: readonly T[]): Re
   return index;
 }
 
-const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([INTAKE_WING, MERIDIAN_ATRIUM, VERDANCE_CONCOURSE, SERVICE_CONCOURSE, SERVICE_YARDS, WATERWORKS, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, DEEP_CONCOURSE, FURNACE_CAUSEWAY, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW, VERDANT_FOLD]);
+const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([INTAKE_WING, MERIDIAN_ATRIUM, VERDANCE_CONCOURSE, SERVICE_CONCOURSE, SERVICE_YARDS, WATERWORKS, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, DEEP_CONCOURSE, FURNACE_CAUSEWAY, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW, VERDANT_FOLD, DEAD_LETTER_OFFICE]);
 const ASSEMBLY_INDEX: ReadonlyMap<AssemblyId, AssemblyDefinition> = indexById(ASSEMBLIES);
-const LEVEL_INDEX: LevelIndex = buildLevelIndex([MAIN_FLOOR, UNDERCROFT_LEVEL, THE_DEEP, THE_THRESHOLD, MERIDIAN_BELOW_LEVEL, VERDANT_FOLD_LEVEL], DISTRICTS, ASSEMBLY_INDEX);
+const LEVEL_INDEX: LevelIndex = buildLevelIndex([MAIN_FLOOR, UNDERCROFT_LEVEL, THE_DEEP, THE_THRESHOLD, MERIDIAN_BELOW_LEVEL, VERDANT_FOLD_LEVEL, DEAD_LETTER_OFFICE_LEVEL], DISTRICTS, ASSEMBLY_INDEX);
 
 function startingLocation(): WorldLocation {
   const location = locate(LEVEL_INDEX, INTAKE_WING.id, { x: 4, y: 5 });
@@ -139,8 +145,8 @@ function startingLocation(): WorldLocation {
 
 export const GAME_CONTENT: GameContent = {
   items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS]),
-  npcs: indexById([...NPCS, ...DEEP_NPCS, ...WATERWORKS_NPCS]),
-  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...FURNITURE_OBJECTS]),
+  npcs: indexById([...NPCS, ...DEEP_NPCS, ...WATERWORKS_NPCS, ...OFFICE_NPCS]),
+  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...FURNITURE_OBJECTS, ...OFFICE_OBJECTS]),
   assemblies: ASSEMBLY_INDEX,
   dialogues: indexById([
     REYES_DIALOGUE,
@@ -169,6 +175,7 @@ export const GAME_CONTENT: GameContent = {
     KESSLER_DIALOGUE,
     GUEST_DIALOGUE,
     NGATA_DIALOGUE,
+    ODUYA_DIALOGUE,
   ]),
   quests: indexById([
     ORIENTATION_PROTOCOL,
@@ -189,13 +196,14 @@ export const GAME_CONTENT: GameContent = {
     THE_ANSWER,
     ...ACT_TWO_SIDE_QUESTS,
     ...WATERWORKS_QUESTS,
+    ...ACT_THREE_MAIN_QUESTS,
   ]),
   questlines: indexById(QUESTLINES),
   districts: DISTRICTS,
   levels: LEVEL_INDEX.levels,
   levelOfDistrict: LEVEL_INDEX.levelOfDistrict,
   tram: buildTramNetwork(TRAM_STATIONS, TRAM_LINES, DISTRICTS, LEVEL_INDEX),
-  creatures: indexById([...CREATURES, ...DEEP_CREATURES, ...WATERWORKS_CREATURES]),
+  creatures: indexById([...CREATURES, ...DEEP_CREATURES, ...WATERWORKS_CREATURES, ...OFFICE_CREATURES]),
   shops: indexById(SHOPS),
   recipes: indexById(RECIPES),
   newCharacter: {

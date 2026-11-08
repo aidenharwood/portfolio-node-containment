@@ -61,6 +61,7 @@ export const SIGNAL_ARRAY: DistrictDefinition = {
     { instanceId: 'sa-patch-floor', objectId: 'patch-point', position: { x: 15, y: 12 } },
 
     { instanceId: 'sa-outbox', objectId: 'outbox-terminal', position: { x: 37, y: 1 } },
+    { instanceId: 'sa-return-chute', objectId: 'return-chute', position: { x: 42, y: 3 }, facing: 'west' },
     { instanceId: 'sa-pit-rack-a', objectId: 'server-rack', position: { x: 33, y: 1 } },
     { instanceId: 'sa-pit-rack-b', objectId: 'server-rack', position: { x: 41, y: 1 } },
     { instanceId: 'sa-pit-bench-a', objectId: 'briefing-bench', position: { x: 34, y: 9 } },

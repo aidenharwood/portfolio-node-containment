@@ -35,7 +35,7 @@
 
 ### Levels and districts
 
-The world is a handful of continuous **levels** (`content/levels/`): the main floor, the Undercroft, the Deep and three pocket dimensions. A level is assembled from **districts** (`content/districts/`, one hand-built map each) placed at an `origin`. Wide corridors between districts are districts too (`concourses.ts`, `deepCorridors.ts`), so they can carry areas, litter, bridges and names on the map. `LevelDefinition.connectors` still exists for bare corridor maps with no objects.
+The world is a handful of continuous **levels** (`content/levels/`): the main floor, the Undercroft, the Deep and four pocket dimensions. A level is assembled from **districts** (`content/districts/`, one hand-built map each) placed at an `origin`. Wide corridors between districts are districts too (`concourses.ts`, `deepCorridors.ts`), so they can carry areas, litter, bridges and names on the map. `LevelDefinition.connectors` still exists for bare corridor maps with no objects.
 
 - District content (map, areas, NPCs, objects, creatures, lights) is authored in **district-local** coordinates. `resolveLevel` (`world/levelLayout.ts`) stamps everything onto one `LevelLayout` and offsets every placement into level coordinates. The result, a `ResolvedLevel`, is what the server and client run on. `GAME_CONTENT.levels` holds them.
 - `LevelLayout.districtAt(point)` says which district a tile belongs to, and `toLevelPoint` and `toLocalPoint` convert positions.
@@ -88,7 +88,7 @@ The world markers below also follow only the tracked quest, apart from the gold 
 
 ### Pocket dimensions
 
-A pocket is an ordinary shared, layered level with `kind: 'pocket'`: the Threshold, Meridian Below and the Verdant Fold. Pockets are entered through gated objects whose interaction runs a `teleport`. The Verdant Fold opens through an `anomaly` object in the Hydroponics Heart Bed once Overgrowth is complete.
+A pocket is an ordinary shared, layered level with `kind: 'pocket'`: the Threshold, Meridian Below, the Verdant Fold and the Dead Letter Office. Pockets are entered through gated objects whose interaction runs a `teleport`. The Verdant Fold opens through an `anomaly` object in the Hydroponics Heart Bed once Overgrowth is complete. The Dead Letter Office opens through the return chute in the Signal Array's Operator Pit once Achterberg traces the ninth letter (Act III).
 
 - Every level a player enters sets `visited:<levelId>` (`World` calls `WorldHooks.onLevelEntered` on each spawn). The first visit to a pocket sends a notice.
 - The world map lists a pocket as a tab only once it has been visited. Floor levels always have a tab, shown as "Uncharted" until visited.

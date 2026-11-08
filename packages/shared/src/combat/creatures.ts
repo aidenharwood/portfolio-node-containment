@@ -30,7 +30,10 @@ export type CreatureModel =
   | 'theHost'
   | 'siltSkimmer'
   | 'sumpBloat'
-  | 'sumpMother';
+  | 'sumpMother'
+  | 'frankingClerk'
+  | 'courierEcho'
+  | 'postmaster';
 
 export interface LootEntry {
   readonly itemId: ItemId;

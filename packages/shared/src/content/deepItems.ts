@@ -1,8 +1,5 @@
-import type { SkillId } from '../character/skills.ts';
-import type { WeaponProfile } from '../combat/weapons.ts';
-import type { EquipmentSlot } from '../gear/slots.ts';
-import type { GearVisual, ItemDefinition, ItemIconShape, ItemRarity } from '../gear/items.ts';
-import type { StatBlock } from '../gear/stats.ts';
+import type { ItemDefinition, ItemIconShape, ItemRarity } from '../gear/items.ts';
+import { gear } from './gearItem.ts';
 
 const material = (
   id: string,
@@ -35,39 +32,6 @@ const medicine = (
   verb: string,
   heal: number,
 ): ItemDefinition => ({ id, name, examine, category: 'consumable', rarity, icon: 'vial', iconColors, maxStack: 20, value, consumable: { verb, heal } });
-
-interface GearSpec {
-  readonly id: string;
-  readonly name: string;
-  readonly examine: string;
-  readonly rarity: ItemRarity;
-  readonly icon: ItemIconShape;
-  readonly slot: EquipmentSlot;
-  readonly stats: StatBlock;
-  readonly requires: Readonly<Partial<Record<SkillId, number>>>;
-  readonly visual: GearVisual;
-  readonly value: number;
-  readonly weapon?: WeaponProfile;
-}
-
-const gear = (spec: GearSpec): ItemDefinition => ({
-  id: spec.id,
-  name: spec.name,
-  examine: spec.examine,
-  category: 'equipment',
-  rarity: spec.rarity,
-  icon: spec.icon,
-  iconColors: [spec.visual.primary, spec.visual.emissive ?? spec.visual.secondary],
-  maxStack: 1,
-  value: spec.value,
-  equipment: {
-    slot: spec.slot,
-    stats: spec.stats,
-    requirements: { skills: spec.requires },
-    visual: spec.visual,
-    ...(spec.weapon ? { weapon: spec.weapon } : {}),
-  },
-});
 
 export const DEEP_RAW_MATERIALS: readonly ItemDefinition[] = [
   material('frost-crystal', 'Frost Crystal', 'A shard of rime grown on a failing cryo line. It never quite reaches room temperature.', 'shard', ['#c8f0ff', '#4a7a9a'], 20),
@@ -110,6 +74,9 @@ export const DEEP_QUEST_ITEMS: readonly ItemDefinition[] = [
   questItem('founding-charter', 'Founding Charter', 'The original Meridian charter, signed in a hand that shakes. Clause one is a single line: "We answered: not yet."', 'sheet', ['#e8dcc0', '#b57cff']),
   questItem('reactor-log', 'Reactor Log', "The Stoker's handwritten log. Forty years of output figures, and beside every one: FED THE DOOR.", 'sheet', ['#ff8a4a', '#3a2018']),
   questItem('signed-letter', 'Unsent Letter', 'A Directorate letter addressed to Site Meridian, signed by every other Site. The postmark is from the far side.', 'sheet', ['#e8f0ff', '#8a7aba']),
+  questItem('ninth-letter', 'The Ninth Letter', 'Addressed to you, care of Records. The handwriting is yours. You did not write it. The frank says SIGNAL ARRAY, and the date is this morning.', 'sheet', ['#f2e6c8', '#c9a227']),
+  questItem('founders-letter', "The Founder's Letter", 'Sealed forty years ago and addressed to all eight Sites. On the envelope: URGENT. On the back, in a different hand: HELD FOR COUNTERSIGNATURE.', 'sheet', ['#e8dcc0', '#7a3a0a']),
+  questItem('countersigned-letter', 'Countersigned Letter', "The founder's letter, with a second signature under the first: M. Halvorsen, Keeper of the Door. The ink is still drying.", 'sheet', ['#e8dcc0', '#b57cff']),
 ];
 
 export const DEEP_MEDICINE: readonly ItemDefinition[] = [

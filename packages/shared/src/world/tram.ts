@@ -47,34 +47,20 @@ export function stationAt(network: TramNetwork, levelId: LevelId, point: TilePoi
   return undefined;
 }
 
-function neighboursOf(network: TramNetwork, stationId: TramStationId): TramStationId[] {
-  const neighbours: TramStationId[] = [];
-  for (const line of network.lines.values()) {
-    const index = line.stations.indexOf(stationId);
-    if (index < 0) continue;
-    const before = line.stations[index - 1];
-    const after = line.stations[index + 1];
-    if (before) neighbours.push(before);
-    if (after) neighbours.push(after);
-  }
-  return neighbours;
-}
+export const linesThrough = (network: TramNetwork, stationId: TramStationId): TramLineDefinition[] =>
+  [...network.lines.values()].filter((line) => line.stations.includes(stationId));
 
 export function tramStops(network: TramNetwork, from: TramStationId, to: TramStationId): number | null {
   if (!network.stations.has(from) || !network.stations.has(to)) return null;
-  const distance = new Map<TramStationId, number>([[from, 0]]);
-  const queue: TramStationId[] = [from];
-  while (queue.length > 0) {
-    const current = queue.shift() as TramStationId;
-    const travelled = distance.get(current) as number;
-    if (current === to) return travelled;
-    for (const next of neighboursOf(network, current)) {
-      if (distance.has(next)) continue;
-      distance.set(next, travelled + 1);
-      queue.push(next);
-    }
-  }
-  return null;
+  const hops = linesThrough(network, from)
+    .filter((line) => line.stations.includes(to))
+    .map((line) => Math.abs(line.stations.indexOf(from) - line.stations.indexOf(to)));
+  return hops.length > 0 ? Math.min(...hops) : null;
+}
+
+export function tramLineBetween(network: TramNetwork, from: TramStationId, to: TramStationId): TramLineDefinition | undefined {
+  const stops = tramStops(network, from, to);
+  return linesThrough(network, from).find((line) => line.stations.includes(to) && Math.abs(line.stations.indexOf(from) - line.stations.indexOf(to)) === stops);
 }
 
 export interface TramBoardingCheck {
@@ -88,6 +74,6 @@ export function tramBoardingRefusal(network: TramNetwork, { origin, destinationI
   const destination = network.stations.get(destinationId);
   if (!destination || !knowsStation(destinationId)) return 'You have not found that station yet.';
   if (destination.id === origin.id) return `You are already at ${origin.name}.`;
-  if (tramStops(network, origin.id, destination.id) === null) return `No line runs from ${origin.name} to ${destination.name}.`;
+  if (tramStops(network, origin.id, destination.id) === null) return `The tram at ${origin.name} does not run to ${destination.name}.`;
   return null;
 }
