@@ -351,7 +351,6 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
 
   notify(player: Player, tone: NoticeTone, text: string): void {
     player.send({ type: 'notice', tone, text });
-    player.send({ type: 'chat.message', channel: 'system', text });
   }
 
   onIncapacitated(player: Player): void {
