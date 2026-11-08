@@ -1,13 +1,12 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import {
-  focusedQuest,
+  trackedQuest,
   GAME_CONTENT,
-  guidedQuest,
   npcQuestMarker,
   objectiveAreas,
   routeGoals,
-  trackedQuests,
+  activeQuests,
   type QuestLog,
   type RouteScene,
 } from '../src/index.ts';
@@ -33,8 +32,9 @@ describe('quest handholding', () => {
 
   test('only the tracked quest is guided when several are active', () => {
     const log = { ...activeAt('the-knocking', 0), ...activeAt('orientation-protocol', 4) };
-    assert.equal(trackedQuests(log, GAME_CONTENT.quests).length, 2);
-    assert.deepEqual(guidedQuest(log, GAME_CONTENT.quests, 'the-knocking').map(({ quest }) => quest.id), ['the-knocking']);
+    assert.equal(activeQuests(log, GAME_CONTENT.quests).length, 2);
+    assert.equal(trackedQuest(log, GAME_CONTENT.quests, 'missing')?.quest.id, 'orientation-protocol');
+    assert.equal(trackedQuest(log, GAME_CONTENT.quests, 'the-knocking')?.quest.id, 'the-knocking');
     assert.deepEqual(objectiveAreas(log, GAME_CONTENT.quests, 'the-knocking'), []);
     assert.notEqual(npcQuestMarker('sergeant-kade', log, GAME_CONTENT.quests, 'orientation-protocol'), 'objective');
     assert.deepEqual(objectiveAreas(log, GAME_CONTENT.quests, 'orientation-protocol'), [{ districtId: 'intake-wing', areaId: 'observation' }]);
@@ -42,12 +42,12 @@ describe('quest handholding', () => {
 
   test('with nothing tracked the first active quest is guided', () => {
     const log = { ...activeAt('the-knocking', 0), ...activeAt('orientation-protocol', 4) };
-    assert.deepEqual(guidedQuest(log, GAME_CONTENT.quests, null).map(({ quest }) => quest.id), ['orientation-protocol']);
-    assert.deepEqual(guidedQuest({}, GAME_CONTENT.quests, null), []);
+    assert.equal(trackedQuest(log, GAME_CONTENT.quests, null)?.quest.id, 'orientation-protocol');
+    assert.equal(trackedQuest({}, GAME_CONTENT.quests, null), undefined);
   });
 
   test('a talk step routes to the NPC, preferring their live position', () => {
-    const tracked = focusedQuest(activeAt('orientation-protocol', 0), GAME_CONTENT.quests, null);
+    const tracked = trackedQuest(activeAt('orientation-protocol', 0), GAME_CONTENT.quests, null);
     assert.ok(tracked);
     const levelId = [...GAME_CONTENT.levels.values()].find((resolved) => resolved.npcs.some((npc) => npc.npcId === 'officer-reyes'))?.id;
     assert.ok(levelId);
@@ -59,7 +59,7 @@ describe('quest handholding', () => {
   });
 
   test('a side quest talk step routes to its NPC too', () => {
-    const tracked = focusedQuest(activeAt('the-knocking', 0), GAME_CONTENT.quests, 'the-knocking');
+    const tracked = trackedQuest(activeAt('the-knocking', 0), GAME_CONTENT.quests, 'the-knocking');
     assert.ok(tracked);
     const levelId = [...GAME_CONTENT.levels.values()].find((resolved) => resolved.npcs.some((npc) => npc.npcId === 'sergeant-kade'))?.id;
     assert.ok(levelId);
@@ -68,7 +68,7 @@ describe('quest handholding', () => {
 
   test('an area step routes to the middle of the area', () => {
     const log = activeAt('orientation-protocol', 4);
-    const tracked = focusedQuest(log, GAME_CONTENT.quests, null);
+    const tracked = trackedQuest(log, GAME_CONTENT.quests, null);
     assert.ok(tracked);
     const [target] = objectiveAreas(log, GAME_CONTENT.quests, null);
     const levelId = [...GAME_CONTENT.levels.values()].find((resolved) => resolved.areas.some((area) => area.districtId === target?.districtId && area.id === target?.areaId))?.id;

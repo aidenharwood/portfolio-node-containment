@@ -74,11 +74,11 @@ An area with `safe: true` is non-hostile ground.
 
 ### Quest guidance
 
-Every world guide follows one quest: the tracked quest, or the first active quest (tutorial, then main, then side) when nothing is tracked (`guidedQuest` and `focusedQuest` in `shared/src/quests/questGuidance.ts`). Tracking lives on the client per character (`QuestTracking`), and changing it re-derives the markers and re-plans the route at once. Other active quests stay in the journal and the objective tracker but put nothing in the world.
+Every world guide follows one quest: the tracked quest, or the first active quest (tutorial, then main, then side) when nothing is tracked (`trackedQuest` in `shared/src/quests/questGuidance.ts`). Only one quest is ever tracked: `QuestTracking` holds a single quest id, and tracking another quest replaces it. Tracking lives on the client per character, and changing it re-derives the markers and re-plans the route at once. The HUD objective tracker shows only the tracked quest too. Other active quests stay in the journal (`activeQuests`) but put nothing in the world.
 
-- The guided quest draws a walking route on the floor from the player to the nearest objective target (`routeGoals` in `shared/src/quests/questRoute.ts`, planned by the client's `GuidanceRoute` and drawn by `RouteLayer`). Targets in the player's own district are tried first. Live NPC and creature positions win over their placements. The route is re-planned when the player changes tile, when quest state or tracking changes, and every 800ms otherwise. Objectives with no world target (`obtainItem`, `equipItem`, `useItem`) and targets on another level draw no route.
+- The tracked quest draws a walking route on the floor from the player to the nearest objective target (`routeGoals` in `shared/src/quests/questRoute.ts`, planned by the client's `GuidanceRoute` and drawn by `RouteLayer`). Targets in the player's own district are tried first. Live NPC and creature positions win over their placements. The route is re-planned when the player changes tile, when quest state or tracking changes, and every 800ms otherwise. Objectives with no world target (`obtainItem`, `equipItem`, `useItem`) and targets on another level draw no route.
 
-The world markers below also follow only the guided quest, apart from the gold quest-offer marker:
+The world markers below also follow only the tracked quest, apart from the gold quest-offer marker:
 
 - NPCs show a blue marker when they are an objective and a gold one when they offer a quest (`npcQuestMarker`).
 - Objective objects get a pulsing ground ring (`objectiveObjectIds`), including every node and station a `gather` or `craft` objective needs.

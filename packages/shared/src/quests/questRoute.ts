@@ -5,7 +5,7 @@ import type { WorldObjectDefinition } from '../world/entities.ts';
 import type { TilePoint } from '../world/geometry.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
 import type { QuestObjective } from './questDefinition.ts';
-import { objectIdsForObjective, type TrackedQuest } from './questGuidance.ts';
+import { objectIdsForObjective, type ActiveQuest } from './questGuidance.ts';
 
 export interface RouteGoal {
   readonly point: TilePoint;
@@ -71,6 +71,6 @@ function goalsForObjective(objective: QuestObjective, scene: RouteScene, content
   }
 }
 
-export function routeGoals(tracked: TrackedQuest, scene: RouteScene, content: RouteContent): RouteGoal[] {
+export function routeGoals(tracked: ActiveQuest, scene: RouteScene, content: RouteContent): RouteGoal[] {
   return tracked.objectives.flatMap(({ objective, done }) => (done ? [] : goalsForObjective(objective, scene, content)));
 }

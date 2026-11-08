@@ -1,5 +1,5 @@
 import {
-  focusedQuest,
+  trackedQuest,
   GAME_CONTENT,
   objectiveGoal,
   QUESTLINE_KIND_LABELS,
@@ -41,7 +41,7 @@ export function createQuestsTab(menu: ContextMenu, tracking: QuestTracking): Pan
   };
 
   const trackedId = (): QuestId | null =>
-    self ? focusedQuest(self.quests, GAME_CONTENT.quests, tracking.questId)?.quest.id ?? null : null;
+    self ? trackedQuest(self.quests, GAME_CONTENT.quests, tracking.questId)?.quest.id ?? null : null;
 
   const open = (questId: QuestId | null) => {
     selected = questId;

@@ -1,4 +1,4 @@
-import { focusedQuest, GAME_CONTENT, type QuestLog } from '@containment/shared';
+import { trackedQuest, GAME_CONTENT, type QuestLog } from '@containment/shared';
 import type { QuestTracking } from '../state/questTracking.ts';
 import { h, replaceChildren } from '../ui/dom.ts';
 
@@ -19,12 +19,12 @@ export class ObjectiveTracker {
   }
 
   private render(): void {
-    const focused = focusedQuest(this.log, GAME_CONTENT.quests, this.tracking.questId);
-    if (!focused) {
+    const tracked = trackedQuest(this.log, GAME_CONTENT.quests, this.tracking.questId);
+    if (!tracked) {
       replaceChildren(this.element);
       return;
     }
-    const { quest, objectives } = focused;
+    const { quest, objectives } = tracked;
     const toggle = h('button', { className: 'objectives-toggle', type: 'button', onclick: () => {
       this.collapsed = !this.collapsed;
       this.render();

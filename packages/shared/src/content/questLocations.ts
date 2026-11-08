@@ -1,5 +1,5 @@
 import type { DistrictId } from '../ids.ts';
-import type { TrackedObjective } from '../quests/questGuidance.ts';
+import type { ActiveObjective } from '../quests/questGuidance.ts';
 import type { DistrictDefinition } from '../world/district.ts';
 import { districtObjects } from '../world/levelLayout.ts';
 import type { GameContent } from './gameContent.ts';
@@ -8,7 +8,7 @@ function districtsWhere(content: GameContent, matches: (district: DistrictDefini
   return [...content.districts.values()].filter(matches).map((district) => district.id);
 }
 
-function districtsForObjective(content: GameContent, { objective, done }: TrackedObjective): DistrictId[] {
+function districtsForObjective(content: GameContent, { objective, done }: ActiveObjective): DistrictId[] {
   if (done) return [];
   switch (objective.type) {
     case 'enterArea':
@@ -36,6 +36,6 @@ function districtsForObjective(content: GameContent, { objective, done }: Tracke
   }
 }
 
-export function objectiveDistricts(objectives: readonly TrackedObjective[], content: GameContent): Set<DistrictId> {
+export function objectiveDistricts(objectives: readonly ActiveObjective[], content: GameContent): Set<DistrictId> {
   return new Set(objectives.flatMap((objective) => districtsForObjective(content, objective)));
 }

@@ -4,23 +4,23 @@ import type { WorldObjectDefinition } from '../world/entities.ts';
 import { objectiveGoal, type QuestDefinition, type QuestObjective, type QuestStepDefinition } from './questDefinition.ts';
 import type { QuestLog } from './questProgress.ts';
 
-export interface TrackedObjective {
+export interface ActiveObjective {
   readonly objective: QuestObjective;
   readonly progress: number;
   readonly goal: number;
   readonly done: boolean;
 }
 
-export interface TrackedQuest {
+export interface ActiveQuest {
   readonly quest: QuestDefinition;
   readonly step: QuestStepDefinition;
-  readonly objectives: readonly TrackedObjective[];
+  readonly objectives: readonly ActiveObjective[];
 }
 
 export type NpcQuestMarker = 'objective' | 'available' | null;
 
-export function trackedQuests(log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>): TrackedQuest[] {
-  const tracked: TrackedQuest[] = [];
+export function activeQuests(log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>): ActiveQuest[] {
+  const tracked: ActiveQuest[] = [];
   for (const progress of Object.values(log)) {
     const quest = quests.get(progress.questId);
     const step = quest?.steps[progress.stepIndex];
@@ -38,23 +38,17 @@ export function trackedQuests(log: QuestLog, quests: ReadonlyMap<QuestId, QuestD
   return tracked.sort((a, b) => categoryOrder(a.quest) - categoryOrder(b.quest));
 }
 
-export function focusedQuest(
+export function trackedQuest(
   log: QuestLog,
   quests: ReadonlyMap<QuestId, QuestDefinition>,
   preferred: QuestId | null,
-): TrackedQuest | undefined {
-  const active = trackedQuests(log, quests);
+): ActiveQuest | undefined {
+  const active = activeQuests(log, quests);
   return active.find(({ quest }) => quest.id === preferred) ?? active[0];
 }
 
-export function guidedQuest(
-  log: QuestLog,
-  quests: ReadonlyMap<QuestId, QuestDefinition>,
-  preferred: QuestId | null,
-): TrackedQuest[] {
-  const focused = focusedQuest(log, quests, preferred);
-  return focused ? [focused] : [];
-}
+const openObjectives = (log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>, preferred: QuestId | null): QuestObjective[] =>
+  (trackedQuest(log, quests, preferred)?.objectives ?? []).flatMap(({ objective, done }) => (done ? [] : [objective]));
 
 export const isOfferUnlocked = (quest: QuestDefinition, log: QuestLog): boolean =>
   (quest.offerRequires ?? []).every((questId) => log[questId]?.status === 'completed');
@@ -67,11 +61,8 @@ export function npcQuestMarker(
   quests: ReadonlyMap<QuestId, QuestDefinition>,
   preferred: QuestId | null,
 ): NpcQuestMarker {
-  const isObjective = guidedQuest(log, quests, preferred).some(({ objectives }) =>
-    objectives.some(
-      ({ objective, done }) =>
-        !done && (objective.type === 'talkTo' || objective.type === 'signal') && objective.npcId === npcId,
-    ),
+  const isObjective = openObjectives(log, quests, preferred).some(
+    (objective) => (objective.type === 'talkTo' || objective.type === 'signal') && objective.npcId === npcId,
   );
   if (isObjective) return 'objective';
   const offersQuest = [...quests.values()].some((quest) => quest.offeredBy === npcId && !log[quest.id] && isOfferUnlocked(quest, log));
@@ -80,10 +71,8 @@ export function npcQuestMarker(
 
 export function objectiveCreatureIds(log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>, preferred: QuestId | null): Set<string> {
   const ids = new Set<string>();
-  for (const { objectives } of guidedQuest(log, quests, preferred)) {
-    for (const { objective, done } of objectives) {
-      if (!done && objective.type === 'defeat') ids.add(objective.creatureId);
-    }
+  for (const objective of openObjectives(log, quests, preferred)) {
+    if (objective.type === 'defeat') ids.add(objective.creatureId);
   }
   return ids;
 }
@@ -94,8 +83,8 @@ export interface ObjectiveArea {
 }
 
 export function objectiveAreas(log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>, preferred: QuestId | null): ObjectiveArea[] {
-  return guidedQuest(log, quests, preferred).flatMap(({ objectives }) =>
-    objectives.flatMap(({ objective, done }) => (!done && objective.type === 'enterArea' ? [{ districtId: objective.districtId, areaId: objective.areaId }] : [])),
+  return openObjectives(log, quests, preferred).flatMap((objective) =>
+    objective.type === 'enterArea' ? [{ districtId: objective.districtId, areaId: objective.areaId }] : [],
   );
 }
 
@@ -129,10 +118,8 @@ export function objectiveObjectIds(
   recipes: ReadonlyMap<string, RecipeDefinition> = new Map(),
 ): Set<WorldObjectId> {
   const ids = new Set<WorldObjectId>();
-  for (const { objectives } of guidedQuest(log, quests, preferred)) {
-    for (const { objective, done } of objectives) {
-      if (!done) for (const id of objectIdsForObjective(objective, objects, recipes)) ids.add(id);
-    }
+  for (const objective of openObjectives(log, quests, preferred)) {
+    for (const id of objectIdsForObjective(objective, objects, recipes)) ids.add(id);
   }
   return ids;
 }

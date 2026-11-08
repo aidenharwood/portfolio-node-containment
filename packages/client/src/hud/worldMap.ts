@@ -1,5 +1,5 @@
 import {
-  focusedQuest,
+  trackedQuest,
   GAME_CONTENT,
   objectiveDistricts,
   stationAt,
@@ -159,7 +159,7 @@ export class WorldMap {
   private objectiveDistrictIds(): Set<DistrictId> {
     const self = this.world.self;
     if (!self) return new Set();
-    const quest = focusedQuest(self.quests, GAME_CONTENT.quests, this.questTracking.questId);
+    const quest = trackedQuest(self.quests, GAME_CONTENT.quests, this.questTracking.questId);
     return quest ? objectiveDistricts(quest.objectives, GAME_CONTENT) : new Set();
   }
 

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { advanceQuest, focusedQuest, GAME_CONTENT, npcQuestMarker, startQuest, type QuestDefinition, type QuestStateProbe } from '../src/index.ts';
+import { advanceQuest, trackedQuest, GAME_CONTENT, npcQuestMarker, startQuest, type QuestDefinition, type QuestStateProbe } from '../src/index.ts';
 
 const quest: QuestDefinition = {
   id: 'sample',
@@ -72,15 +72,15 @@ test('an NPC only advertises a quest once the quests it requires are complete', 
   assert.equal(npcQuestMarker('archivist-sel', {}, GAME_CONTENT.quests, null), null, 'the Council does not call before Halvorsen is found');
 });
 
-test('the focused quest is the preferred active quest, falling back to the first active one', () => {
+test('the tracked quest is the preferred active quest, falling back to the first active one', () => {
   const other: QuestDefinition = { ...quest, id: 'other', name: 'Other', category: 'main' };
   const quests = new Map([[quest.id, quest], [other.id, other]]);
   const log = {
     [quest.id]: startQuest(quest, probeWith(0)).progress,
     [other.id]: startQuest(other, probeWith(0)).progress,
   };
-  assert.equal(focusedQuest(log, quests, 'sample')?.quest.id, 'sample');
-  assert.equal(focusedQuest(log, quests, null)?.quest.id, 'other');
-  assert.equal(focusedQuest(log, quests, 'missing')?.quest.id, 'other');
-  assert.equal(focusedQuest({}, quests, 'sample'), undefined);
+  assert.equal(trackedQuest(log, quests, 'sample')?.quest.id, 'sample');
+  assert.equal(trackedQuest(log, quests, null)?.quest.id, 'other');
+  assert.equal(trackedQuest(log, quests, 'missing')?.quest.id, 'other');
+  assert.equal(trackedQuest({}, quests, 'sample'), undefined);
 });
