@@ -9,3 +9,5 @@ export type DialogueId = string;
 export type DistrictId = string;
 export type AreaId = string;
 export type InstanceId = string;
+export type LevelId = string;
+export type ConnectorId = string;
