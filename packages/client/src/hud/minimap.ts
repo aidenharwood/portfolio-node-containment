@@ -62,6 +62,11 @@ export class Minimap {
     };
   }
 
+  refreshTitle(): void {
+    const name = this.world.currentDistrict()?.name ?? this.world.zone?.definition.name ?? '';
+    this.title.textContent = this.world.layer > 1 ? `${name} · L${this.world.layer}` : name;
+  }
+
   setDestination(tile: TilePoint, tone: ClickTone): void {
     this.destination = { tile, tone, setAt: performance.now() };
   }
@@ -70,7 +75,7 @@ export class Minimap {
     this.destination = null;
     const zone = this.world.zone;
     if (!zone) return;
-    this.title.textContent = this.world.layer > 1 ? `${zone.definition.name} · L${this.world.layer}` : zone.definition.name;
+    this.refreshTitle();
     const base = document.createElement('canvas');
     base.width = zone.layout.width * PIXELS_PER_TILE;
     base.height = zone.layout.height * PIXELS_PER_TILE;

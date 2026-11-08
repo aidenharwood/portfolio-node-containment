@@ -1,4 +1,4 @@
-import { GAME_CONTENT, TILE_KINDS, type EntityId, type Facing, type ItemId, type NpcQuestMarker } from '@containment/shared';
+import { GAME_CONTENT, TILE_KINDS, type EntityId, type Facing, type ItemId, type NpcQuestMarker, type ZoneAmbience } from '@containment/shared';
 import {
   ACESFilmicToneMapping,
   Color,
@@ -141,6 +141,16 @@ export class GameRenderer {
     this.cameraRig.resize(width, height);
   }
 
+  applyAmbience(ambience: ZoneAmbience): void {
+    const fog = hex(ambience.fog);
+    this.scene.background = new Color(fog).multiplyScalar(0.55);
+    this.scene.fog = new FogExp2(fog, 0.028);
+    this.hemisphere.color.setHex(lighten(hex(ambience.tint), 0.68));
+    this.hemisphere.groundColor.setHex(hex(ambience.tint));
+    this.hemisphere.intensity = 1.45 + (1 - ambience.darkness) * 1.1;
+    this.keyLight.intensity = 0.5 + (1 - ambience.darkness) * 0.55;
+  }
+
   rebuildZone(): void {
     if (this.zone) {
       this.scene.remove(this.zone.root);
@@ -153,14 +163,7 @@ export class GameRenderer {
     this.zone = new ZoneScene(active);
     this.scene.add(this.zone.root);
 
-    const { ambience } = active.definition;
-    const fog = hex(ambience.fog);
-    this.scene.background = new Color(fog).multiplyScalar(0.55);
-    this.scene.fog = new FogExp2(fog, 0.028);
-    this.hemisphere.color.setHex(lighten(hex(ambience.tint), 0.68));
-    this.hemisphere.groundColor.setHex(hex(ambience.tint));
-    this.hemisphere.intensity = 1.45 + (1 - ambience.darkness) * 1.1;
-    this.keyLight.intensity = 0.5 + (1 - ambience.darkness) * 0.55;
+    this.applyAmbience(active.definition.ambienceAt(this.world.selfEntity?.to ?? active.definition.spawn));
     this.assignedLights = [];
     this.lightTimer = 0;
 

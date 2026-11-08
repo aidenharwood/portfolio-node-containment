@@ -243,10 +243,10 @@ export class ZoneScene {
     const positions = ceilingFixturePositions(zone, new Set(zone.definition.objects.map((placement) => `${placement.position.x},${placement.position.y}`)));
     if (positions.length === 0) return;
     const panelY = Math.round(CEILING_FIXTURE_HEIGHT / MODEL_VOXEL_SIZE);
-    const failing = zone.definition.ambience.fixtures === 'failing';
-    const panelColor = failing ? 0xd9846a : 0xb4d4e6;
-    const panelStripe = failing ? 0x8a3a2a : 0x8fb3c8;
     positions.forEach((position, index) => {
+      const failing = zone.definition.ambienceAt(position).fixtures === 'failing';
+      const panelColor = failing ? 0xd9846a : 0xb4d4e6;
+      const panelStripe = failing ? 0x8a3a2a : 0x8fb3c8;
       const flickers = failing ? index % 3 === 0 : noise3(position.x, position.y, 0, 77) > 0.93;
       const model = new VoxelModel();
       const cx = position.x * 16;

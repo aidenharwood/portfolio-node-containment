@@ -150,9 +150,21 @@ export function createGameScreen(app: AppNavigator): Screen {
     zoneBanner.classList.add('visible');
   };
 
+  let shownDistrictId: string | null = null;
+
   const onZoneChanged = () => {
     renderer.rebuildZone();
     minimap.rebuild();
+    shownDistrictId = world.currentDistrict()?.id ?? null;
+    showZoneBanner();
+  };
+
+  const followDistrict = () => {
+    const district = world.currentDistrict();
+    if (!district || district.id === shownDistrictId) return;
+    shownDistrictId = district.id;
+    renderer.applyAmbience(district.ambience);
+    minimap.refreshTitle();
     showZoneBanner();
   };
 
@@ -386,6 +398,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     combatOverlay.update(world, renderer, now);
     vitals.update(world);
     minimap.render(now, renderer.cameraRig.headingRadians);
+    followDistrict();
     frameHandle = requestAnimationFrame(loop);
   };
 
