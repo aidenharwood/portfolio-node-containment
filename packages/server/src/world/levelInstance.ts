@@ -1,7 +1,7 @@
 import {
   chunkKeyOf,
   chunkOf,
-  createWalkabilityGrid,
+  createObjectWalkabilityGrid,
   interestDelta,
   interestSet,
   findPath,
@@ -71,10 +71,7 @@ export class LevelInstance {
       const objectDefinition = content.worldObjects.get(placement.objectId);
       if (objectDefinition) this.objects.set(placement.instanceId, { placement, definition: objectDefinition });
     }
-    const blockedTiles = [...this.objects.values()]
-      .filter((object) => object.definition.blocksMovement)
-      .map((object) => object.placement.position);
-    this.grid = createWalkabilityGrid(this.layout, blockedTiles);
+    this.grid = createObjectWalkabilityGrid(this.layout, definition.objects, (objectId) => content.worldObjects.get(objectId));
 
     for (const placement of definition.creatures) {
       const creatureDefinition = content.creatures.get(placement.creatureId);

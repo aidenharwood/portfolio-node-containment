@@ -30,7 +30,7 @@ import { SHOPS } from './shops.ts';
 import type { RecipeDefinition } from '../crafting/recipes.ts';
 import type { DialogueDefinition } from '../dialogue/dialogue.ts';
 import type { ItemCatalog, ItemDefinition } from '../gear/items.ts';
-import type { DialogueId, DistrictId, LevelId, NpcId, QuestId, WorldObjectId } from '../ids.ts';
+import type { AssemblyId, DialogueId, DistrictId, LevelId, NpcId, QuestId, WorldObjectId } from '../ids.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
 import { buildLevelIndex, locate, type LevelIndex } from './levelIndex.ts';
 import type { WorldLocation } from '../world/level.ts';
@@ -63,6 +63,10 @@ import { THE_KNOCKING } from './quests/theKnocking.ts';
 import { WORLD_OBJECTS } from './worldObjects.ts';
 import { TRANSIT_OBJECTS } from './transitObjects.ts';
 import { POCKET_OBJECTS } from './pocketObjects.ts';
+import { ASSEMBLY_OBJECTS } from './assemblyObjects.ts';
+import { LITTER_OBJECTS } from './litterObjects.ts';
+import { ASSEMBLIES } from './assemblies.ts';
+import type { AssemblyDefinition } from '../world/assemblies.ts';
 import { VERDANT_FOLD } from './districts/verdantFold.ts';
 import { VERDANT_FOLD_LEVEL } from './levels/verdantFoldLevel.ts';
 import { buildTramNetwork, TRAM_LINES, TRAM_STATIONS } from './tramNetwork.ts';
@@ -77,6 +81,7 @@ export interface GameContent {
   readonly items: ItemCatalog;
   readonly npcs: ReadonlyMap<NpcId, NpcDefinition>;
   readonly worldObjects: ReadonlyMap<WorldObjectId, WorldObjectDefinition>;
+  readonly assemblies: ReadonlyMap<AssemblyId, AssemblyDefinition>;
   readonly dialogues: ReadonlyMap<DialogueId, DialogueDefinition>;
   readonly quests: ReadonlyMap<QuestId, QuestDefinition>;
   readonly districts: ReadonlyMap<DistrictId, DistrictDefinition>;
@@ -108,7 +113,8 @@ function indexById<T extends { readonly id: string }>(entries: readonly T[]): Re
 }
 
 const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([INTAKE_WING, MERIDIAN_ATRIUM, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW, VERDANT_FOLD]);
-const LEVEL_INDEX: LevelIndex = buildLevelIndex([MAIN_FLOOR, UNDERCROFT_LEVEL, THE_DEEP, THE_THRESHOLD, MERIDIAN_BELOW_LEVEL, VERDANT_FOLD_LEVEL], DISTRICTS);
+const ASSEMBLY_INDEX: ReadonlyMap<AssemblyId, AssemblyDefinition> = indexById(ASSEMBLIES);
+const LEVEL_INDEX: LevelIndex = buildLevelIndex([MAIN_FLOOR, UNDERCROFT_LEVEL, THE_DEEP, THE_THRESHOLD, MERIDIAN_BELOW_LEVEL, VERDANT_FOLD_LEVEL], DISTRICTS, ASSEMBLY_INDEX);
 
 function startingLocation(): WorldLocation {
   const location = locate(LEVEL_INDEX, INTAKE_WING.id, { x: 4, y: 5 });
@@ -119,7 +125,8 @@ function startingLocation(): WorldLocation {
 export const GAME_CONTENT: GameContent = {
   items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS]),
   npcs: indexById([...NPCS, ...DEEP_NPCS]),
-  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS]),
+  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS]),
+  assemblies: ASSEMBLY_INDEX,
   dialogues: indexById([
     REYES_DIALOGUE,
     VARGA_DIALOGUE,

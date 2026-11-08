@@ -1,4 +1,4 @@
-import { createWalkabilityGrid, locate, type GameContent, type TilePoint, type WorldLocation } from '@containment/shared';
+import { createObjectWalkabilityGrid, locate, type GameContent, type TilePoint, type WorldLocation } from '@containment/shared';
 
 interface LegacyLocation {
   readonly zoneId: string;
@@ -11,8 +11,7 @@ const isLegacy = (stored: unknown): stored is LegacyLocation => typeof (stored a
 function isWalkable(location: WorldLocation, content: GameContent): boolean {
   const level = content.levels.get(location.levelId);
   if (!level) return false;
-  const blocked = level.objects.filter((object) => content.worldObjects.get(object.objectId)?.blocksMovement).map((object) => object.position);
-  return createWalkabilityGrid(level.layout, blocked).isWalkable(location.position);
+  return createObjectWalkabilityGrid(level.layout, level.objects, (objectId) => content.worldObjects.get(objectId)).isWalkable(location.position);
 }
 
 function mainFloorSpawn(content: GameContent): WorldLocation {

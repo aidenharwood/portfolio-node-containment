@@ -62,7 +62,21 @@ export type WorldObjectModel =
   | 'mirrorShard'
   | 'valveWheel'
   | 'tramStop'
-  | 'anomaly';
+  | 'anomaly'
+  | 'tramNoseLeft'
+  | 'tramNoseRight'
+  | 'tramDoor'
+  | 'tramWindow'
+  | 'bridgeSpan'
+  | 'bridgeEndLeft'
+  | 'bridgeEndRight'
+  | 'catwalkSpan'
+  | 'catwalkEnd'
+  | 'litterPapers'
+  | 'litterDebris'
+  | 'litterPuddle'
+  | 'cableRun'
+  | 'cableRunEnd';
 
 export interface ObjectInteraction {
   readonly verb: string;
@@ -87,6 +101,7 @@ export interface WorldObjectDefinition {
   readonly examine: string;
   readonly model: WorldObjectModel;
   readonly blocksMovement: boolean;
+  readonly deck?: boolean;
   readonly modelScale?: number;
   readonly light?: ObjectLight;
   readonly interactions: readonly ObjectInteraction[];

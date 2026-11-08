@@ -1,4 +1,5 @@
-import type { DistrictId, LevelId } from '../ids.ts';
+import type { AssemblyId, DistrictId, LevelId } from '../ids.ts';
+import type { AssemblyDefinition } from '../world/assemblies.ts';
 import type { DistrictDefinition } from '../world/district.ts';
 import type { TilePoint } from '../world/geometry.ts';
 import type { LevelDefinition, WorldLocation } from '../world/level.ts';
@@ -14,14 +15,18 @@ export interface LocatableContent {
   readonly levelOfDistrict: ReadonlyMap<DistrictId, LevelId>;
 }
 
-export function buildLevelIndex(levels: readonly LevelDefinition[], districts: ReadonlyMap<DistrictId, DistrictDefinition>): LevelIndex {
+export function buildLevelIndex(
+  levels: readonly LevelDefinition[],
+  districts: ReadonlyMap<DistrictId, DistrictDefinition>,
+  assemblies: ReadonlyMap<AssemblyId, AssemblyDefinition> = new Map(),
+): LevelIndex {
   const levelOfDistrict = new Map<DistrictId, LevelId>();
   for (const level of levels) {
     for (const placement of level.districts) {
       if (!levelOfDistrict.has(placement.districtId)) levelOfDistrict.set(placement.districtId, level.id);
     }
   }
-  return { levels: new Map(levels.map((level) => [level.id, resolveLevel(level, districts)])), levelOfDistrict };
+  return { levels: new Map(levels.map((level) => [level.id, resolveLevel(level, districts, assemblies)])), levelOfDistrict };
 }
 
 export function locate(content: LocatableContent, districtId: DistrictId, local: TilePoint): WorldLocation | undefined {

@@ -13,3 +13,4 @@ export type LevelId = string;
 export type ConnectorId = string;
 export type TramStationId = string;
 export type TramLineId = string;
+export type AssemblyId = string;

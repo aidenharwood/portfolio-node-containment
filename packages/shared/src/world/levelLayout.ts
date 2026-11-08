@@ -1,4 +1,5 @@
-import type { ConnectorId, DistrictId, LevelId } from '../ids.ts';
+import type { AssemblyId, ConnectorId, DistrictId, LevelId } from '../ids.ts';
+import { expandAssembly, type AssemblyDefinition } from './assemblies.ts';
 import {
   parseTileLayout,
   type AreaDefinition,
@@ -126,7 +127,24 @@ export function assembleLevel(level: LevelDefinition, districts: ReadonlyMap<Dis
   };
 }
 
-export function resolveLevel(level: LevelDefinition, districts: ReadonlyMap<DistrictId, DistrictDefinition>): ResolvedLevel {
+function assemblyOf(assemblies: ReadonlyMap<AssemblyId, AssemblyDefinition>, assemblyId: AssemblyId): AssemblyDefinition {
+  const assembly = assemblies.get(assemblyId);
+  if (!assembly) throw new Error(`Unknown assembly "${assemblyId}".`);
+  return assembly;
+}
+
+export function districtObjects(district: DistrictDefinition, assemblies: ReadonlyMap<AssemblyId, AssemblyDefinition>): ObjectPlacement[] {
+  return [
+    ...district.objects,
+    ...(district.assemblies ?? []).flatMap((placement) => expandAssembly(assemblyOf(assemblies, placement.assemblyId), placement)),
+  ];
+}
+
+export function resolveLevel(
+  level: LevelDefinition,
+  districts: ReadonlyMap<DistrictId, DistrictDefinition>,
+  assemblies: ReadonlyMap<AssemblyId, AssemblyDefinition> = new Map(),
+): ResolvedLevel {
   const layout = assembleLevel(level, districts);
   const placed = level.districts.map((placement) => ({ origin: placement.origin, district: districtOf(districts, placement.districtId) }));
   const ambience = districtOf(districts, level.spawn.districtId).ambience;
@@ -148,7 +166,9 @@ export function resolveLevel(level: LevelDefinition, districts: ReadonlyMap<Dist
       rect: { x: origin.x, y: origin.y, width: Math.max(0, ...district.map.map((row) => row.length)), height: district.map.length },
     })),
     npcs: placed.flatMap(({ origin, district }) => district.npcs.map((npc) => ({ ...npc, position: offset(npc.position, origin) }))),
-    objects: placed.flatMap(({ origin, district }) => district.objects.map((object) => ({ ...object, position: offset(object.position, origin) }))),
+    objects: placed.flatMap(({ origin, district }) =>
+      districtObjects(district, assemblies).map((object) => ({ ...object, position: offset(object.position, origin) })),
+    ),
     creatures: placed.flatMap(({ origin, district }) =>
       (district.creatures ?? []).map((creature) => ({ ...creature, position: offset(creature.position, origin) })),
     ),

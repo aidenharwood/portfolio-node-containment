@@ -35,6 +35,7 @@ export * from './quests/questProgress.ts';
 
 export * from './dialogue/dialogue.ts';
 
+export * from './world/assemblies.ts';
 export * from './world/entities.ts';
 export * from './world/geometry.ts';
 export * from './world/lineOfSight.ts';
@@ -49,6 +50,8 @@ export * from './world/tram.ts';
 export * from './protocol/clientMessages.ts';
 export * from './protocol/serverMessages.ts';
 
+export * from './content/assemblyIntegrity.ts';
+export * from './content/assemblies.ts';
 export * from './content/contentIntegrity.ts';
 export * from './content/craftingIntegrity.ts';
 export * from './content/gameContent.ts';

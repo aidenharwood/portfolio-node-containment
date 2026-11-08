@@ -3,9 +3,11 @@ import type { Object3D } from 'three';
 import { darken, jitter, lighten, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE } from '../voxel/voxelKinds.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
+import { ASSEMBLY_BUILDERS } from './assemblyModels.ts';
 import { CRAFTING_BUILDERS } from './craftingModels.ts';
 import { DEEP_OBJECT_BUILDERS } from './deepObjectModels.ts';
 import { HUB_BUILDERS } from './hubModels.ts';
+import { LITTER_BUILDERS } from './litterModels.ts';
 import { TRANSIT_BUILDERS } from './transitModels.ts';
 
 export interface AnimatedPart {
@@ -333,6 +335,8 @@ const BUILDERS: Readonly<Record<WorldObjectModel, ObjectBuilder>> = {
   ...HUB_BUILDERS,
   ...TRANSIT_BUILDERS,
   ...DEEP_OBJECT_BUILDERS,
+  ...ASSEMBLY_BUILDERS,
+  ...LITTER_BUILDERS,
   junctionBox,
   pipeCluster,
   pumpHousing,

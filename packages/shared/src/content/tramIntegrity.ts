@@ -1,4 +1,4 @@
-import { createWalkabilityGrid } from '../world/district.ts';
+import { createObjectWalkabilityGrid } from '../world/district.ts';
 import { rectContains } from '../world/geometry.ts';
 import type { TramStationDefinition } from '../world/tram.ts';
 import type { GameContent } from './gameContent.ts';
@@ -22,8 +22,7 @@ export function findTramIssues(content: GameContent, definitions: readonly TramS
     const level = content.levels.get(station.levelId);
     if (!level) continue;
     if (!rectContains(station.area, station.platformPoint)) issues.push(`Tram station "${station.id}" has its platform outside its area.`);
-    const blocked = level.objects.filter((object) => content.worldObjects.get(object.objectId)?.blocksMovement).map((object) => object.position);
-    if (!createWalkabilityGrid(level.layout, blocked).isWalkable(station.platformPoint)) issues.push(`Tram station "${station.id}" has an unwalkable platform.`);
+    if (!createObjectWalkabilityGrid(level.layout, level.objects, (objectId) => content.worldObjects.get(objectId)).isWalkable(station.platformPoint)) issues.push(`Tram station "${station.id}" has an unwalkable platform.`);
     const hasStop = level.objects.some((object) => rectContains(station.area, object.position) && opensTramMap(content, object.objectId));
     if (!hasStop) issues.push(`Tram station "${station.id}" has no tram stop in its area.`);
     if (station.lineIds.length === 0) issues.push(`Tram station "${station.id}" is not on any line.`);

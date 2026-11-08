@@ -92,6 +92,14 @@ A district is one hand-built map. It becomes part of the world when a level plac
 3. Add the station to a line in `TRAM_LINES`. Neighbours in a line's list are one stop apart, and lines that share a station form interchanges.
 4. Run `npm test`. `findTramIssues` checks the area, the platform, the stop and the line.
 
+### Add a multi-tile object or bridge
+
+1. Add one world object per distinct piece (in `content/assemblyObjects.ts`), each with its own `WorldObjectModel`. Pieces people walk on need `deck: true` and `blocksMovement: false`.
+2. Give each model a builder in `client/src/render/models/assemblyModels.ts`. Make the edges match the neighbouring pieces.
+3. Add an `AssemblyDefinition` to `content/assemblies.ts`: a `layout` grid, a `pieces` legend (with `turns` for rotated reuse), and a `stretchRow` if it should fit spans of any length.
+4. Place it with a district's `assemblies` list. Use `facing` to turn it and `span` to stretch it.
+5. Run `npm test`. `findAssemblyIssues` checks the definition and every placement.
+
 ### Add a creature
 
 Creatures are passive by default. Set `aggressive: true` only for creatures that should hunt players. They automatically ignore players more than `AGGRESSION_LEVEL_GAP` combat levels above them.

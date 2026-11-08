@@ -177,6 +177,17 @@ The tram network is content (`content/tramNetwork.ts`): **stations** (a district
 - **World map** (`hud/worldMap.ts`, the M key or the minimap's Map button): one tab per floor level, greyed out as "Uncharted" until visited (the `visited:<levelId>` flag, listed in `SelfState.visitedLevels`). It draws each level from its assembled layout with district names and tiers, tram lines and stations, and the player. Districts holding the tracked quest's objectives (`objectiveDistricts`) are outlined. While the player is on a platform, known stations are clickable in the map and the line list.
 - **Integrity:** `findTramIssues` checks that each station resolves to a placed district and area, has a walkable platform inside that area and a tram stop, and is on a line. It also checks that lines only list known stations and that every tram stop sits inside a station area.
 
+### Multi-tile assemblies
+
+Anything bigger than one tile, such as a tram car or a bridge, is an **assembly** (`shared/src/world/assemblies.ts`, content in `content/assemblies.ts`). It is a grid of single-tile pieces, and each piece is an ordinary world object with its own voxel model, built so its edges meet its neighbours exactly.
+
+- **Definition:** `pieces` maps one character to `{ objectId, turns }`, and `layout` draws the grid in rows like a district map, with a space for an empty cell. `turns` rotates a piece by quarter turns, so one model covers both sides of a symmetric object (the far side of a tram car is the near side turned twice). Pieces that are mirror images, like the two noses of a tram car, need two models.
+- **Stretching:** `stretchRow` names a row that repeats `span` times when placed, so one bridge or catwalk definition fits any gap.
+- **Placement:** a district lists `assemblies: [{ instanceId, assemblyId, position, facing, span }]`. `position` is the top-left tile of the placed (rotated) footprint. `resolveLevel` expands each one into object placements with instance ids `<instanceId>/<column>,<row>`, so the server, the client and the integrity checks only ever see single-tile objects.
+- **Decks:** a world object with `deck: true` makes its tile walkable even over a gap (void or coolant). Bridges and catwalks are built from decks. Every walkability grid comes from `createObjectWalkabilityGrid`, which applies blocking objects and decks together.
+- **Litter:** floor clutter (`content/litterObjects.ts`) is ordinary objects with `blocksMovement: false` and no interactions. Objects without interactions are never picked, so clicks fall through to the tile underneath. The `cable-run` assembly stretches litter across several tiles.
+- **Integrity:** `findAssemblyIssues` checks that each layout is rectangular, uses only known pieces and objects, and has a valid stretch row, and that every placement names a known assembly with a sensible span. Expanded pieces count towards the "two objects share a tile" check.
+
 ### Personal storage
 
 `shared/src/gear/storage.ts` holds the pure `deposit`, `depositAll` and `withdraw` rules. `CharacterRecord.storage` is a list of stacks. Everything stacks there, up to `STORAGE_CAPACITY` (200) different items, and quest items are refused. A world object with the `openStorage` effect opens a session (`player.storageOpen`). Walking, interacting or teleporting closes it. The server ignores storage messages unless a session is open.
@@ -237,6 +248,7 @@ Everything in the world is built procedurally from voxels at runtime; there are 
 
 To add a look:
 
+- **New assembly piece:** add a builder to `models/assemblyModels.ts`. Leave out the placement seed and draw edges that continue across the tile border, so neighbouring pieces join without a seam. Use `canvasOf(model, true)` to get a mirror-image piece.
 - **New object:** add a builder to `objectModels.ts` keyed by `WorldObjectModel`. `heightVoxels` sizes its hover ring and light. Use `modelScale` on the definition for oversized props.
 - **New gear model:** handle the `visual.model` in `characterModel.ts`. Torso, head and visor models go in the part builders, held items in `addHeldItem`.
 

@@ -1,6 +1,6 @@
 import {
   chunkKeyOf,
-  createWalkabilityGrid,
+  createObjectWalkabilityGrid,
   GAME_CONTENT,
   walkableTilesNear,
   type WalkabilityGrid,
@@ -219,10 +219,8 @@ export class WorldState {
   private enterZone(message: ServerMessageOf<'world.entered'>): void {
     const definition = GAME_CONTENT.levels.get(message.levelId);
     if (!definition) return;
-    const blocked = definition.objects
-      .filter((placement) => GAME_CONTENT.worldObjects.get(placement.objectId)?.blocksMovement)
-      .map((placement) => placement.position);
-    this.zone = { definition, layout: definition.layout, grid: createWalkabilityGrid(definition.layout, blocked) };
+    const grid = createObjectWalkabilityGrid(definition.layout, definition.objects, (objectId) => GAME_CONTENT.worldObjects.get(objectId));
+    this.zone = { definition, layout: definition.layout, grid };
     this.selfEntityId = message.selfEntityId;
     this.tickMs = message.tickMs;
     this.layer = message.layer;

@@ -1,6 +1,8 @@
 import type { CreatureId } from '../combat/creatures.ts';
 import type { AreaId, InstanceId, NpcId, WorldObjectId, DistrictId } from '../ids.ts';
 import { tileKey, type Facing, type TilePoint, type TileRect } from './geometry.ts';
+import type { AssemblyPlacement } from './assemblies.ts';
+import type { WorldObjectDefinition } from './entities.ts';
 import type { WalkabilityGrid } from './pathfinding.ts';
 import { MAP_LEGEND, TILE_KINDS, type TileKindId } from './tiles.ts';
 
@@ -55,6 +57,7 @@ export interface DistrictDefinition {
   readonly areas: readonly AreaDefinition[];
   readonly npcs: readonly NpcPlacement[];
   readonly objects: readonly ObjectPlacement[];
+  readonly assemblies?: readonly AssemblyPlacement[];
   readonly creatures?: readonly CreaturePlacement[];
   readonly lights: readonly ZoneLight[];
 }
@@ -86,9 +89,26 @@ export function parseTileLayout(map: readonly string[]): TileLayout {
   };
 }
 
-export function createWalkabilityGrid(layout: TileLayout, blockedTiles: Iterable<TilePoint>): WalkabilityGrid {
+export function createWalkabilityGrid(layout: TileLayout, blockedTiles: Iterable<TilePoint>, deckTiles: Iterable<TilePoint> = []): WalkabilityGrid {
   const blocked = new Set([...blockedTiles].map(tileKey));
+  const decks = new Set([...deckTiles].map(tileKey));
   return {
-    isWalkable: (point) => TILE_KINDS[layout.tileAt(point)].walkable && !blocked.has(tileKey(point)),
+    isWalkable: (point) => {
+      const key = tileKey(point);
+      return !blocked.has(key) && (decks.has(key) || TILE_KINDS[layout.tileAt(point)].walkable);
+    },
   };
+}
+
+export function createObjectWalkabilityGrid(
+  layout: TileLayout,
+  placements: readonly ObjectPlacement[],
+  definitionOf: (objectId: WorldObjectId) => WorldObjectDefinition | undefined,
+): WalkabilityGrid {
+  const placed = placements.map((placement) => ({ position: placement.position, definition: definitionOf(placement.objectId) }));
+  return createWalkabilityGrid(
+    layout,
+    placed.filter(({ definition }) => definition?.blocksMovement).map(({ position }) => position),
+    placed.filter(({ definition }) => definition?.deck && !definition.blocksMovement).map(({ position }) => position),
+  );
 }

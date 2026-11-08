@@ -5,6 +5,7 @@ import type { QuestObjective } from '../quests/questDefinition.ts';
 import { isShapeForSlot } from '../gear/slots.ts';
 import { TILE_KINDS } from '../world/tiles.ts';
 import { parseTileLayout } from '../world/district.ts';
+import { districtObjectsOf, findAssemblyIssues } from './assemblyIntegrity.ts';
 import { findCraftingIssues, rawSourceTiers } from './craftingIntegrity.ts';
 import type { GameContent } from './gameContent.ts';
 import { findLevelIssues } from './levelIntegrity.ts';
@@ -168,7 +169,8 @@ export function findContentIssues(content: GameContent): string[] {
     const isWalkable = (x: number, y: number) => TILE_KINDS[layout.tileAt({ x, y })].walkable;
     const instanceIds = new Set<string>();
     const occupied = new Set<string>();
-    for (const placement of [...zone.npcs, ...zone.objects]) {
+    const objects = districtObjectsOf(content, zone.id);
+    for (const placement of [...zone.npcs, ...objects]) {
       if (instanceIds.has(placement.instanceId)) report(where, `duplicate instance id "${placement.instanceId}"`);
       instanceIds.add(placement.instanceId);
     }
@@ -184,7 +186,7 @@ export function findContentIssues(content: GameContent): string[] {
         report(where, `creature "${placement.instanceId}" stands on an unwalkable tile`);
       }
     }
-    for (const placement of zone.objects) {
+    for (const placement of objects) {
       if (!content.worldObjects.has(placement.objectId)) report(where, `unknown object "${placement.objectId}"`);
       const key = `${placement.position.x},${placement.position.y}`;
       if (occupied.has(key)) report(where, `two objects share tile ${key}`);
@@ -199,5 +201,6 @@ export function findContentIssues(content: GameContent): string[] {
   issues.push(...findCraftingIssues(content));
   issues.push(...findLevelIssues(content));
   issues.push(...findTramIssues(content));
+  issues.push(...findAssemblyIssues(content));
   return issues;
 }
