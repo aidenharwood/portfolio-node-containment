@@ -17,11 +17,11 @@ interface Operative {
   readonly sink: RecordingSink;
 }
 
-function deep(placements: readonly Placement[]) {
+function deep(placements: readonly Placement[], random: () => number = () => 0.99) {
   const gameplay = new Gameplay(GAME_CONTENT, { save: () => undefined }, {
     tickMs: 300,
     autosaveIntervalMs: 60_000,
-    random: () => 0.99,
+    random,
     combatRandom: () => 0.01,
     levelCapacity: 50,
   });
@@ -154,5 +154,76 @@ describe('chunked interest', () => {
     gameplay.handle(speaker.player, { type: 'chat.say', text: 'Anyone down here?' });
     assert.ok(ofType(near.sink, 'chat.message').some((message) => message.channel === 'local'));
     assert.ok(!ofType(far.sink, 'chat.message').some((message) => message.channel === 'local'));
+  });
+});
+
+function lcg(seed: number): () => number {
+  let state = seed;
+  return () => {
+    state = (state * 1664525 + 1013904223) % 4294967296;
+    return state / 4294967296;
+  };
+}
+
+const samePlace = (a: TilePoint, b: TilePoint) => a.x === b.x && a.y === b.y;
+
+describe('dormancy and interest-bounded intents', () => {
+  test('an unwatched creature does not wander', () => {
+    const { gameplay, operatives } = deep([{ districtId: 'deepwatch', position: { x: 2, y: 10 } }], lcg(7));
+    const [a] = operatives;
+    assert.ok(a);
+    const level = gameplay.world.levelOf(a.player);
+    for (let tick = 0; tick < 300; tick++) gameplay.tick();
+    const watched = level.interestOf(a.player);
+    const creatures = [...level.creatures.values()].filter((creature) => creature.isAlive);
+    const unwatched = creatures.filter((creature) => creature.home.x >= 96);
+    assert.ok(unwatched.length > 0);
+    assert.ok(unwatched.every((creature) => samePlace(creature.position, creature.home) && creature.targetId === null));
+    assert.ok(creatures.some((creature) => watched.has(`${Math.floor(creature.home.x / 32)},${Math.floor(creature.home.y / 32)}`) && !samePlace(creature.position, creature.home)));
+  });
+
+  test('an unwatched creature still respawns', () => {
+    const { gameplay, operatives } = deep([{ districtId: 'deepwatch', position: { x: 2, y: 10 } }]);
+    const [a] = operatives;
+    assert.ok(a);
+    const wisp = gameplay.world.levelOf(a.player).creatureByInstance('fu-wisp-a');
+    assert.ok(wisp);
+    wisp.state = 'despawned';
+    wisp.diedAtTick = 0;
+    wisp.respawnDelayTicks = 1;
+    for (let tick = 0; tick < 3; tick++) gameplay.tick();
+    assert.notEqual(wisp.state, 'despawned');
+  });
+
+  test('an abandoned creature resets home', () => {
+    const { gameplay, operatives } = deep([{ districtId: 'cryovault', position: { x: 4, y: 4 } }]);
+    const [a] = operatives;
+    assert.ok(a);
+    const level = gameplay.world.levelOf(a.player);
+    const creature = [...level.creatures.values()].find((candidate) => candidate.home.x < 28 && candidate.home.y >= 30);
+    assert.ok(creature);
+    creature.targetId = a.player.entityId;
+    creature.integrity = 1;
+    creature.position = { x: creature.home.x + 1, y: creature.home.y };
+    gameplay.teleport(a.player, at('deepwatch', { x: 25, y: 20 }));
+    gameplay.tick();
+    assert.equal(creature.targetId, null);
+    assert.deepEqual(creature.position, creature.home);
+    assert.equal(creature.integrity, creature.definition.integrity);
+  });
+
+  test('walking to a tile outside the interest set is refused', () => {
+    const { gameplay, operatives } = deep([{ districtId: 'hydroponics', position: { x: 30, y: 23 } }]);
+    const [a] = operatives;
+    assert.ok(a);
+    assert.equal(gameplay.world.walk(a.player, levelPoint('meridian-atrium', { x: 16, y: 12 })), false);
+  });
+
+  test('interacting with an npc outside the interest set is refused', () => {
+    const { gameplay, operatives } = deep([{ districtId: 'hydroponics', position: { x: 30, y: 23 } }]);
+    const [a] = operatives;
+    assert.ok(a);
+    gameplay.handle(a.player, { type: 'world.interact', targetKind: 'npc', instanceId: 'atrium-sel', interactionIndex: 0 });
+    assert.equal(a.player.pendingInteraction, null);
   });
 });

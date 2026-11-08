@@ -34,7 +34,7 @@ export class InteractionController {
 
   request(player: Player, pending: Omit<PendingInteraction, 'repathAttempts'>): void {
     const target = this.targetPosition(player, pending);
-    if (!target) return;
+    if (!target || !this.world.levelOf(player).isInterestOf(player, target)) return;
     this.dialogues.close(player);
     player.pendingInteraction = { ...pending, repathAttempts: 0 };
     if (pending.kind === 'groundItem') {

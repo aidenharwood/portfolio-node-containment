@@ -1,5 +1,9 @@
 import {
   chebyshevDistance,
+  chunkKeyOf,
+  chunkOf,
+  interestSet,
+  type ChunkKey,
   combatExperience,
   combatLevel,
   ignoresOutclassedPlayer,
@@ -60,7 +64,7 @@ export class CombatController {
   engage(player: Player, instanceId: InstanceId, tick: number): void {
     const level = this.world.levelOf(player);
     const creature = level.creatureByInstance(instanceId);
-    if (!creature?.isAlive) return;
+    if (!creature?.isAlive || !level.isInterestOf(player, creature.position)) return;
     const refusal = this.singleWayRefusal(player, creature, level, tick);
     if (refusal) {
       this.host.notify(player, 'warning', refusal);
@@ -81,7 +85,8 @@ export class CombatController {
 
   tick(tick: number): void {
     for (const level of this.world.instances()) {
-      for (const creature of level.creatures.values()) this.updateCreature(creature, level, tick);
+      const watched = level.watchedChunks();
+      for (const creature of level.creatures.values()) this.updateCreature(creature, level, tick, watched);
       for (const player of [...level.players.values()]) {
         if (level.players.has(player.entityId)) this.updatePlayer(player, level, tick);
       }
@@ -147,7 +152,7 @@ export class CombatController {
     }
   }
 
-  private updateCreature(creature: Creature, level: LevelInstance, tick: number): void {
+  private updateCreature(creature: Creature, level: LevelInstance, tick: number, watched: ReadonlySet<ChunkKey>): void {
     if (creature.state === 'dying' && tick >= creature.diedAtTick + DEATH_ANIMATION_TICKS) {
       creature.state = 'despawned';
       level.broadcastNear(creature.position, { type: 'world.entityDespawned', entityId: creature.entityId });
@@ -159,6 +164,13 @@ export class CombatController {
       return;
     }
     if (!creature.isAlive) return;
+
+    const isWatched = watched.has(chunkKeyOf(creature.position));
+    if (creature.targetId && this.targetAbandoned(creature, level)) {
+      if (isWatched) this.sendHome(creature, level);
+      else this.resetHome(creature);
+    }
+    if (!isWatched) return;
 
     const definition = creature.definition;
     if (!creature.returningHome && chebyshevDistance(creature.position, creature.home) > definition.leashRadius) this.sendHome(creature, level);
@@ -266,6 +278,21 @@ export class CombatController {
     player.combatTargetId = null;
     player.path = [];
     this.host.recoverIncapacitated(player);
+  }
+
+  private targetAbandoned(creature: Creature, level: LevelInstance): boolean {
+    const target = creature.targetId ? level.players.get(creature.targetId) : undefined;
+    return !target || !interestSet(chunkOf(creature.position)).has(chunkKeyOf(target.position));
+  }
+
+  private resetHome(creature: Creature): void {
+    creature.targetId = null;
+    creature.engagedWith = null;
+    creature.contributors.clear();
+    creature.returningHome = false;
+    creature.integrity = creature.definition.integrity;
+    creature.path = [];
+    creature.position = creature.home;
   }
 
   private sendHome(creature: Creature, level: LevelInstance): void {

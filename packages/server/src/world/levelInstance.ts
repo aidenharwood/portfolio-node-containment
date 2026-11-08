@@ -97,6 +97,18 @@ export class LevelInstance {
     return player.interestChunk ? interestSet(player.interestChunk) : NO_CHUNKS;
   }
 
+  watchedChunks(): ReadonlySet<ChunkKey> {
+    const watched = new Set<ChunkKey>();
+    for (const player of this.players.values()) {
+      for (const key of this.interestOf(player)) watched.add(key);
+    }
+    return watched;
+  }
+
+  isInterestOf(player: Player, point: TilePoint): boolean {
+    return this.interestOf(player).has(chunkKeyOf(point));
+  }
+
   observersOf(point: TilePoint): Player[] {
     const key = chunkKeyOf(point);
     return [...this.players.values()].filter((player) => this.interestOf(player).has(key));

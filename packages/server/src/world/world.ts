@@ -1,5 +1,5 @@
 import {
-  chebyshevDistance,
+  chunkKeyOf,
   chunkOf,
   facingBetween,
   type Facing,
@@ -40,7 +40,6 @@ const EMPTY_LAYER_RETIREMENT_TICKS = 200;
 
 const NPC_WANDER_CHANCE_PER_TICK = 0.04;
 const NPC_WANDER_SEARCH_LIMIT = 200;
-const MAX_WALK_DISTANCE = 64;
 
 export class World {
   readonly tickMs: number;
@@ -151,8 +150,9 @@ export class World {
   }
 
   walk(player: Player, target: TilePoint): boolean {
-    if (chebyshevDistance(player.position, target) > MAX_WALK_DISTANCE) return false;
-    const path = this.levelOf(player).pathBetween(player.position, target, false);
+    const level = this.levelOf(player);
+    if (!level.isInterestOf(player, target)) return false;
+    const path = level.pathBetween(player.position, target, false);
     if (!path) return false;
     player.path = path;
     return true;
@@ -185,8 +185,13 @@ export class World {
     for (const level of this.instances()) {
       if (level.players.size === 0) continue;
       const moves: EntityMove[] = [];
-      for (const npc of level.npcs.values()) this.advanceNpc(npc, level, moves);
-      for (const creature of level.creatures.values()) this.advanceCreature(creature, level, moves);
+      const watched = level.watchedChunks();
+      for (const npc of level.npcs.values()) {
+        if (watched.has(chunkKeyOf(npc.position))) this.advanceNpc(npc, level, moves);
+      }
+      for (const creature of level.creatures.values()) {
+        if (watched.has(chunkKeyOf(creature.position))) this.advanceCreature(creature, level, moves);
+      }
 
       const arrived: Player[] = [];
       for (const player of [...level.players.values()]) {
