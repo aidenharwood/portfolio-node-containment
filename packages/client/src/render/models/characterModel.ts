@@ -1,5 +1,6 @@
 import {
   GAME_CONTENT,
+  type AttackMotion,
   type BodyType,
   type CharacterAppearance,
   type EquipmentSlot,
@@ -7,6 +8,7 @@ import {
   type GearVisual,
   type ItemId,
   type Physique,
+  type WeaponKind,
 } from '@containment/shared';
 import { Group } from 'three';
 import { darken, hex, jitter, lighten, mix, noise3 } from '../voxel/palette.ts';
@@ -16,6 +18,7 @@ import type { VoxelMeshes } from '../voxel/voxelMesher.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 import { CHARACTER_VOXEL_SIZE } from '../world/worldScale.ts';
 import { swingCurve, type EntityRig } from './entityRig.ts';
+import { attackPose, gripFor, heldWeaponOf, REST_POSE } from './weaponPoses.ts';
 
 interface WornGear<S extends EquipmentSlot> extends GearVisual {
   readonly shape: GearShape<S>;
@@ -96,6 +99,7 @@ export interface CharacterPose {
   readonly walkPhase: number;
   readonly time: number;
   readonly attackProgress?: number | null;
+  readonly attackMotion?: AttackMotion | null;
   readonly hurtProgress?: number | null;
 }
 
@@ -106,6 +110,7 @@ export class CharacterRig implements EntityRig {
   private parts = new Map<PartName, Group>();
   private appearance: CharacterAppearance;
   private gearKey = '';
+  private heldWeapon: WeaponKind | null = null;
 
   constructor(appearance: CharacterAppearance, gear: readonly ItemId[]) {
     this.appearance = appearance;
@@ -120,6 +125,7 @@ export class CharacterRig implements EntityRig {
     if (key === this.gearKey) return;
     this.gearKey = key;
     this.appearance = appearance;
+    this.heldWeapon = heldWeaponOf(gear);
     for (const part of this.parts.values()) part.removeFromParent();
     this.parts.clear();
 
@@ -141,6 +147,11 @@ export class CharacterRig implements EntityRig {
 
   animate(pose: CharacterPose): void {
     const stride = pose.moving ? Math.sin(pose.walkPhase) : 0;
+    const breathe = Math.sin(pose.time * 1.3) * 0.02;
+    const grip = gripFor(this.heldWeapon);
+    const armSwing = grip === REST_POSE ? 0.5 : 0.12;
+    const action = pose.attackProgress == null ? REST_POSE : attackPose(pose.attackMotion ?? 'strike', pose.attackProgress);
+    const recoil = swingCurve(pose.hurtProgress ?? null);
     const legLeft = this.parts.get('legLeft');
     const legRight = this.parts.get('legRight');
     const armLeft = this.parts.get('armLeft');
@@ -149,17 +160,17 @@ export class CharacterRig implements EntityRig {
     if (legLeft) legLeft.rotation.x = stride * 0.6;
     if (legRight) legRight.rotation.x = -stride * 0.6;
     if (armLeft) {
-      armLeft.rotation.x = -stride * 0.5;
-      armLeft.rotation.z = -0.05 - Math.sin(pose.time * 1.3) * 0.02;
+      armLeft.rotation.x = -stride * armSwing + grip.leftX + action.leftX;
+      armLeft.rotation.z = -0.05 - breathe + grip.leftZ + action.leftZ;
     }
-    const swing = swingCurve(pose.attackProgress ?? null);
-    const recoil = swingCurve(pose.hurtProgress ?? null);
     if (armRight) {
-      armRight.rotation.x = stride * 0.5 - swing * 2.1;
-      armRight.rotation.z = 0.05 + Math.sin(pose.time * 1.3) * 0.02;
+      armRight.rotation.x = stride * armSwing + grip.rightX + action.rightX;
+      armRight.rotation.z = 0.05 + breathe + grip.rightZ + action.rightZ;
     }
     if (head) head.rotation.y = pose.moving ? 0 : Math.sin(pose.time * 0.35) * 0.18;
-    this.upper.rotation.x = swing * 0.18 - recoil * 0.22;
+    this.upper.rotation.x = action.lean - recoil * 0.22;
+    this.upper.rotation.y = action.twist;
+    this.upper.position.z = action.lunge;
     this.upper.position.y = pose.moving ? Math.abs(stride) * 0.035 : Math.sin(pose.time * 1.8) * 0.006;
   }
 
@@ -399,6 +410,46 @@ const HELD_GEAR: Readonly<Record<GearShape<'primary' | 'secondary'>, HeldRendere
     model.fill(handX, 13, 11, handX, 13, 12, darken(body, 0.5));
     model.fill(handX, 14, 3, handX, 14, 6, darken(body, 0.35));
     if (gear.emissive) model.set(handX, 15, 4, hex(gear.emissive), VOXEL_EMISSIVE);
+  },
+  knife: (model, gear, handX) => {
+    const steel = hex(gear.primary);
+    model.fill(handX, 12, 1, handX, 12, 2, hex(gear.secondary));
+    model.fill(handX, 12, 3, handX, 13, 5, steel);
+    model.set(handX, 12, 6, lighten(steel, 0.2));
+    if (gear.emissive) model.fill(handX, 11, 3, handX, 11, 5, hex(gear.emissive), VOXEL_EMISSIVE);
+  },
+  blade: (model, gear, handX) => {
+    const steel = hex(gear.primary);
+    model.fill(handX, 12, 1, handX, 12, 2, hex(gear.secondary));
+    model.fill(handX - 1, 11, 3, handX + 1, 14, 3, darken(hex(gear.secondary), 0.2));
+    model.fill(handX, 12, 4, handX, 14, 9, (x, y, z) => jitter(steel, 0.03, noise3(x, y, z, 17)));
+    model.fill(handX, 12, 10, handX, 13, 11, lighten(steel, 0.15));
+    if (gear.emissive) model.fill(handX, 11, 5, handX, 11, 10, hex(gear.emissive), VOXEL_EMISSIVE);
+  },
+  polearm: (model, gear, handX) => {
+    const head = hex(gear.primary);
+    model.fill(handX, 12, -7, handX, 12, 14, hex(gear.secondary));
+    model.fill(handX, 11, 15, handX, 13, 18, (x, y, z) => jitter(head, 0.04, noise3(x, y, z, 23)));
+    model.fill(handX, 14, 14, handX, 15, 16, darken(head, 0.2));
+    if (gear.emissive) model.set(handX, 12, 19, hex(gear.emissive), VOXEL_EMISSIVE);
+  },
+  rifle: (model, gear, handX) => {
+    const body = hex(gear.primary);
+    model.fill(handX, 13, -4, handX, 13, 14, body);
+    model.fill(handX, 12, -6, handX, 13, -3, hex(gear.secondary));
+    model.fill(handX, 12, 1, handX, 12, 2, hex(gear.secondary));
+    model.fill(handX, 13, 15, handX, 13, 17, darken(body, 0.5));
+    model.fill(handX, 15, 2, handX, 15, 7, darken(body, 0.35));
+    model.set(handX, 14, 4, darken(body, 0.35));
+    if (gear.emissive) model.set(handX, 15, 8, hex(gear.emissive), VOXEL_EMISSIVE);
+  },
+  scattergun: (model, gear, handX) => {
+    const body = hex(gear.primary);
+    model.fill(handX, 13, -2, handX, 14, 7, (x, y, z) => jitter(body, 0.03, noise3(x, y, z, 29)));
+    model.fill(handX, 12, -5, handX, 13, -2, hex(gear.secondary));
+    model.fill(handX, 12, 3, handX, 12, 6, darken(hex(gear.secondary), 0.15));
+    model.fill(handX, 13, 8, handX, 14, 8, darken(body, 0.5));
+    if (gear.emissive) model.fill(handX, 15, 1, handX, 15, 3, hex(gear.emissive), VOXEL_EMISSIVE);
   },
   datapad: (model, gear, handX) => {
     model.fill(handX - 1, 12, 1, handX + 1, 15, 1, hex(gear.secondary));

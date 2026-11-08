@@ -128,6 +128,7 @@ export class CombatController {
         outcome: outcome.hit ? 'hit' : 'miss',
         damage: outcome.damage,
         style: attack.style,
+        ...(attack.weapon ? { weapon: attack.weapon } : {}),
         vitals: creature.vitals(),
       });
       for (const award of combatExperience(attack.style, outcome.damage)) {

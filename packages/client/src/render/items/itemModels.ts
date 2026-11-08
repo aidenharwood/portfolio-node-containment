@@ -264,6 +264,57 @@ const carbine: ItemBuilder = ({ primary, secondary, emissive }) => {
   return model;
 };
 
+const knife: ItemBuilder = ({ primary, secondary, emissive }) => {
+  const model = new VoxelModel();
+  for (const offset of [0, 1]) line(model, [-6 + offset, 0, 0], [-3 + offset, 3, 0], secondary);
+  line(model, [-5, 4, 0], [-2, 1, 0], darken(secondary, 0.3));
+  for (const offset of [0, 1]) line(model, [-2 + offset, 3, 0], [4, 9 - offset, 0], offset === 1 ? lighten(primary, 0.2) : primary);
+  model.set(5, 10, 0, lighten(primary, 0.3));
+  if (emissive) line(model, [-1, 4, 0], [3, 8, 0], emissive, VOXEL_EMISSIVE);
+  return model;
+};
+
+const blade: ItemBuilder = ({ primary, secondary, emissive }) => {
+  const model = new VoxelModel();
+  for (const offset of [0, 1]) line(model, [-8 + offset, -2, 0], [-5 + offset, 1, 0], secondary);
+  line(model, [-7, 3, 0], [-3, -1, 0], darken(secondary, 0.3));
+  for (const offset of [0, 1, 2]) line(model, [-4 + offset, 2, 0], [8, 13 - offset, 0], offset === 2 ? lighten(primary, 0.2) : primary);
+  if (emissive) line(model, [-1, 2, 1], [7, 10, 1], emissive, VOXEL_EMISSIVE);
+  return model;
+};
+
+const polearm: ItemBuilder = ({ primary, secondary, emissive }) => {
+  const model = new VoxelModel();
+  line(model, [-10, -4, 0], [5, 11, 0], secondary);
+  line(model, [-9, -4, 0], [6, 11, 0], darken(secondary, 0.2));
+  for (const offset of [0, 1]) line(model, [5 + offset, 11, 0], [9, 15 - offset, 0], primary);
+  line(model, [5, 13, 0], [3, 15, 0], darken(primary, 0.2));
+  line(model, [7, 10, 0], [9, 8, 0], darken(primary, 0.2));
+  if (emissive) model.fill(10, 16, 0, 10, 16, 0, emissive, VOXEL_EMISSIVE);
+  return model;
+};
+
+const rifle: ItemBuilder = ({ primary, secondary, emissive }) => {
+  const model = new VoxelModel().fill(-10, 5, -1, 12, 6, 1, grain(primary));
+  model.fill(-15, 3, -1, -10, 6, 1, secondary);
+  model.fill(-5, 0, -1, -3, 4, 1, secondary);
+  model.fill(13, 5, 0, 18, 5, 0, darken(primary, 0.5));
+  model.fill(-4, 8, -1, 4, 9, 1, darken(primary, 0.3));
+  model.fill(-2, 7, 0, 1, 7, 0, darken(primary, 0.45));
+  if (emissive) model.fill(5, 8, 0, 5, 9, 0, emissive, VOXEL_EMISSIVE);
+  return model;
+};
+
+const scattergun: ItemBuilder = ({ primary, secondary, emissive }) => {
+  const model = new VoxelModel().fill(-7, 5, -1, 7, 8, 1, grain(primary));
+  model.fill(-11, 3, -1, -7, 7, 1, secondary);
+  model.fill(-3, 0, -1, -1, 5, 1, secondary);
+  model.fill(1, 3, -1, 6, 4, 1, darken(secondary, 0.15));
+  model.fill(8, 5, -1, 8, 8, 1, darken(primary, 0.5));
+  if (emissive) model.fill(-5, 9, 0, -2, 9, 0, emissive, VOXEL_EMISSIVE);
+  return model;
+};
+
 const plate: ItemBuilder = ({ primary, secondary, emissive }) => {
   const model = new VoxelModel().fill(-6, 0, -2, 6, 13, 1, grain(primary, 0.05));
   for (let y = 2; y <= 12; y += 3) model.fill(-6, y, 2, 6, y + 1, 2, darken(primary, 0.2));
@@ -383,6 +434,11 @@ const BUILDERS: Readonly<Record<ItemIconShape, ItemBuilder>> = {
   cell,
   maul,
   carbine,
+  knife,
+  blade,
+  polearm,
+  rifle,
+  scattergun,
   plate,
   respirator,
   helmet,

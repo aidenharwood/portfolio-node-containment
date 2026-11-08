@@ -22,7 +22,7 @@ export const EQUIPMENT_SHAPES = {
   hands: ['gloves'],
   legs: ['trousers'],
   feet: ['boots'],
-  primary: ['baton', 'maul', 'pistol', 'carbine'],
+  primary: ['knife', 'baton', 'blade', 'maul', 'polearm', 'pistol', 'carbine', 'rifle', 'scattergun'],
   secondary: ['datapad', 'scanner'],
   implant: ['implant'],
   utility: ['badge'],

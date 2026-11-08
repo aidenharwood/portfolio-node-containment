@@ -67,6 +67,8 @@ describe('combat', () => {
     const closeQuartersBefore = player.record.skills.closeQuarters;
     for (const drone of ['range-drone-a', 'range-drone-b', 'range-drone-c']) defeat(harness, drone);
     assert.ok(player.record.skills.closeQuarters > closeQuartersBefore);
+    const swing = harness.sink.messages.find((message) => message.type === 'combat.hit' && message.attackerId === player.entityId);
+    assert.ok(swing?.type === 'combat.hit' && swing.weapon === 'baton', 'swings tell clients which weapon to animate');
     assert.ok(player.integrity < player.maxIntegrity, 'drones should land at least one hit');
     assert.equal(stepOf(harness, 'live-fire'), 3);
 

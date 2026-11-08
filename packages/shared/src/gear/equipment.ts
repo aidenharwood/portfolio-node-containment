@@ -1,4 +1,5 @@
 import { levelForExperience, SKILL_IDS, SKILL_INFO, type SkillExperience } from '../character/skills.ts';
+import { isTwoHandedWeapon } from '../combat/weapons.ts';
 import type { ItemId } from '../ids.ts';
 import { failure, success, type Result } from '../result.ts';
 import { addItem, isSlotIndex, type InventoryState } from './inventory.ts';
@@ -45,21 +46,35 @@ export function equipFromInventory(
   if (unmet.length > 0) return failure(`You need ${unmet.join(', ')} to equip the ${item.name}.`);
 
   const slot = item.equipment.slot;
-  const previouslyEquipped = loadout.equipment[slot];
-  const inventory = [...loadout.inventory];
+  const vacated = [slot, ...slotsFreedFor(item, loadout.equipment, catalog)];
+  const displaced = vacated.flatMap((freed) => (loadout.equipment[freed] ? [loadout.equipment[freed]] : []));
+  let inventory = [...loadout.inventory];
   inventory[slotIndex] = stack.quantity > 1 ? { itemId: stack.itemId, quantity: stack.quantity - 1 } : null;
 
-  if (previouslyEquipped) {
+  for (const itemId of displaced) {
     if (inventory[slotIndex] === null) {
-      inventory[slotIndex] = { itemId: previouslyEquipped, quantity: 1 };
-    } else {
-      const outcome = addItem(inventory, catalog, previouslyEquipped, 1);
-      if (outcome.overflow > 0) return failure('Your inventory is too full to swap that equipment.');
-      return success({ inventory: outcome.inventory, equipment: { ...loadout.equipment, [slot]: item.id }, equipped: item });
+      inventory[slotIndex] = { itemId, quantity: 1 };
+      continue;
     }
+    const outcome = addItem(inventory, catalog, itemId, 1);
+    if (outcome.overflow > 0) return failure('Your inventory is too full to swap that equipment.');
+    inventory = [...outcome.inventory];
   }
 
-  return success({ inventory, equipment: { ...loadout.equipment, [slot]: item.id }, equipped: item });
+  const equipment: Partial<Record<EquipmentSlot, ItemId>> = { ...loadout.equipment };
+  for (const freed of vacated) delete equipment[freed];
+  equipment[slot] = item.id;
+  return success({ inventory, equipment, equipped: item });
+}
+
+export function slotsFreedFor(item: ItemDefinition, equipment: EquipmentState, catalog: ItemCatalog): EquipmentSlot[] {
+  const slot = item.equipment?.slot;
+  if (slot === 'primary' && isTwoHandedWeapon(item.equipment?.weapon)) return ['secondary'];
+  if (slot === 'secondary') {
+    const primary = equipment.primary ? catalog.get(equipment.primary) : undefined;
+    if (isTwoHandedWeapon(primary?.equipment?.weapon)) return ['primary'];
+  }
+  return [];
 }
 
 export function unequipToInventory(loadout: Loadout, slot: EquipmentSlot, catalog: ItemCatalog): Result<Loadout> {

@@ -4,7 +4,7 @@ import { equipmentStats, type EquipmentState } from '../gear/equipment.ts';
 import type { ItemCatalog } from '../gear/items.ts';
 import { chebyshevDistance, isCardinallyAdjacent, type TilePoint } from '../world/geometry.ts';
 import type { CreatureDefinition } from './creatures.ts';
-import { UNARMED, type CombatStyle, type WeaponProfile } from './weapons.ts';
+import { UNARMED, WEAPON_KIND_INFO, type CombatStyle, type WeaponKind, type WeaponProfile } from './weapons.ts';
 
 export interface AttackProfile {
   readonly style: CombatStyle;
@@ -12,6 +12,7 @@ export interface AttackProfile {
   readonly maxHit: number;
   readonly range: number;
   readonly speedTicks: number;
+  readonly weapon?: WeaponKind;
 }
 
 export interface AttackOutcome {
@@ -39,14 +40,16 @@ export function weaponOf(equipment: EquipmentState, items: ItemCatalog): WeaponP
 
 export function playerAttackProfile(skills: SkillExperience, equipment: EquipmentState, items: ItemCatalog): AttackProfile {
   const weapon = weaponOf(equipment, items);
+  const kind = WEAPON_KIND_INFO[weapon.kind];
   const profile = deriveCombatProfile(skills, equipmentStats(equipment, items));
-  const accuracy = weapon.style === 'melee' ? profile.meleeRating : profile.rangedRating;
+  const accuracy = kind.style === 'melee' ? profile.meleeRating : profile.rangedRating;
   return {
-    style: weapon.style,
+    style: kind.style,
     accuracy,
-    maxHit: 1 + Math.floor(accuracy / RATING_PER_MAX_HIT),
+    maxHit: 1 + Math.floor((accuracy * kind.damageScale) / RATING_PER_MAX_HIT),
     range: weapon.range,
     speedTicks: weapon.speedTicks,
+    weapon: weapon.kind,
   };
 }
 
@@ -69,9 +72,21 @@ export function isWithinAttackRange(
   to: TilePoint,
   hasLineOfSight: (from: TilePoint, to: TilePoint) => boolean,
 ): boolean {
-  if (attack.style === 'melee') return isCardinallyAdjacent(from, to);
+  if (attack.style === 'melee') return attack.range <= 1 ? isCardinallyAdjacent(from, to) : isWithinReach(attack.range, from, to, hasLineOfSight);
   const distance = chebyshevDistance(from, to);
   return distance >= 1 && distance <= attack.range && hasLineOfSight(from, to);
+}
+
+function isWithinReach(
+  reach: number,
+  from: TilePoint,
+  to: TilePoint,
+  hasLineOfSight: (from: TilePoint, to: TilePoint) => boolean,
+): boolean {
+  const dx = Math.abs(to.x - from.x);
+  const dy = Math.abs(to.y - from.y);
+  const inLine = (dx === 0) !== (dy === 0);
+  return inLine && dx + dy <= reach && hasLineOfSight(from, to);
 }
 
 export function combatExperience(style: CombatStyle, damage: number): ExperienceAward[] {

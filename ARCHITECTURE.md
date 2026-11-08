@@ -97,7 +97,28 @@ The pure rules live in `shared/src/combat/combatMath.ts`: attack profiles, hit c
 - **Incapacitation:** an incapacitated player is moved to the `recovery` location of the district they fell in (or the level spawn) at full integrity.
 - **Regeneration and auto-retaliate:** integrity regenerates 1 point every 20 ticks once out of combat. A player who is idle when attacked fights back automatically.
 
-Creatures are content (`content/creatures.ts`) placed through `DistrictDefinition.creatures`. Weapons are `equipment.weapon` (style, range and speed), and consumables are `item.consumable`. Quests use `defeat` and `useItem` objectives.
+Creatures are content (`content/creatures.ts`) placed through `DistrictDefinition.creatures`. Consumables are `item.consumable`. Quests use `defeat` and `useItem` objectives.
+
+### Weapons
+
+A weapon is `equipment.weapon`: a `kind`, a `range` and `speedTicks`. `WEAPON_KIND_INFO` in `shared/src/combat/weapons.ts` gives each kind its style, grip, attack motion, projectile and damage scale:
+
+| Kind | Grip | Style | Motion | Projectile | Notes |
+| --- | --- | --- | --- | --- | --- |
+| knife | one-handed | melee | stab | | 3 ticks, light hits (×0.75) |
+| baton | one-handed | melee | strike | | |
+| blade | one-handed | melee | slash | | |
+| maul | two-handed | melee | slam | | |
+| polearm | two-handed | melee | lunge | | reach 2 in a straight line (×0.9) |
+| pistol | one-handed | ranged | snap shot | dart | |
+| carbine | two-handed | ranged | shoulder shot | bolt | |
+| rifle | two-handed | ranged | heavy shot | tracer | 7 ticks, range 9 (×1.35) |
+| scattergun | two-handed | ranged | blast | pellets | range 3 (×1.15) |
+
+- **Damage scale** multiplies the rating before it becomes a max hit, so fast weapons hit lighter and slow ones harder. `weapons.test.ts` keeps damage per tick within a band across kinds.
+- **Reach:** a melee weapon with `range` above 1 hits targets up to that many tiles away in a straight cardinal line, with line of sight.
+- **Two-handed grip:** wielding one returns the `secondary` item to the inventory, and equipping a secondary item lowers a two-handed weapon (`slotsFreedFor` in `gear/equipment.ts`).
+- **Client:** `combat.hit` carries the attacker's `weapon`. `render/models/weaponPoses.ts` holds the idle grip and per-motion arm poses for `CharacterRig`, `entityRig.ts` sets each motion's duration, and `ProjectileLayer` draws each projectile kind with its own shape, flight speed, muzzle flash and impact.
 
 On the client, `render/models/creatureModels.ts` builds a voxel rig per `CreatureModel`. Every rig implements `EntityRig`, so the renderer can drive attack, hurt and death animations from `combat.hit` and `combat.death` messages. `hud/combatOverlay.ts` draws hit splats and overhead bars, and `hud/vitalsPanel.ts` draws your integrity and the target panel.
 
