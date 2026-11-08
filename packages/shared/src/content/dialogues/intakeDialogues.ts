@@ -14,13 +14,19 @@ export const REYES_DIALOGUE: DialogueDefinition = {
     welcome: {
       speaker: 'npc',
       text: "Name and— no, don't tell me, it's on the screen. {name}. Welcome to Site Meridian, Intake Wing, Sublevel Four. I'm Officer Reyes. You'll be processed, outfitted, and pointed at something dangerous. In that order.",
+      effects: [{ type: 'giveItem', itemId: 'clearance-card-l1' }],
       next: 'card',
     },
     card: {
       speaker: 'npc',
       text: 'First: your clearance card. Level One. It opens doors that do not matter and logs every door you try that does.',
-      effects: [{ type: 'giveItem', itemId: 'clearance-card-l1' }],
       next: 'questions',
+    },
+    reissue: {
+      speaker: 'npc',
+      text: 'Lost it already? Here. Level One, again. The system logged that too.',
+      effects: [{ type: 'giveItem', itemId: 'clearance-card-l1' }],
+      next: null,
     },
     questions: {
       speaker: 'npc',
@@ -45,6 +51,7 @@ export const REYES_DIALOGUE: DialogueDefinition = {
       speaker: 'npc',
       text: "Still here? Your orientation checklist is on your HUD, operative. Follow it. The faster you finish, the sooner you're somebody else's problem.",
       options: [
+        { text: "I don't have a clearance card.", next: 'reissue', conditions: [{ type: 'lacksItem', itemId: 'clearance-card-l1' }] },
         { text: 'What should I be doing right now?', next: 'hint' },
         { text: 'Goodbye.', next: null },
       ],

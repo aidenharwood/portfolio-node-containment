@@ -77,6 +77,27 @@ describe('orientation protocol tutorial', () => {
     assert.equal(countItem(harness.player.record.inventory, 'field-vest-mk1'), 1);
   });
 
+  test('leaving Reyes on the first line still hands over the clearance card', () => {
+    const harness = createHarness();
+    harness.talkTo('intake-reyes');
+    harness.send({ type: 'world.walk', target: levelPoint('intake-wing', { x: 2, y: 6 }) });
+    assert.equal(harness.player.dialogue, null);
+    assert.equal(currentStep(harness), 1);
+    assert.equal(countItem(harness.player.record.inventory, 'clearance-card-l1'), 1);
+  });
+
+  test('Reyes reissues a missing clearance card', () => {
+    const harness = createHarness({
+      prepare: (record) => ({ ...record, quests: { [ORIENTATION]: { questId: ORIENTATION, status: 'active', stepIndex: 1, objectiveProgress: [0] } } }),
+    });
+    assert.equal(countItem(harness.player.record.inventory, 'clearance-card-l1'), 0);
+    harness.talkTo('intake-reyes');
+    finishDialogue(harness, (text) => text.includes('clearance card'));
+    assert.equal(countItem(harness.player.record.inventory, 'clearance-card-l1'), 1);
+    harness.interactWithObject('issue-locker');
+    assert.equal(currentStep(harness), 2);
+  });
+
   test('the locker refuses operatives without a clearance card', () => {
     const harness = createHarness();
     harness.interactWithObject('issue-locker');
