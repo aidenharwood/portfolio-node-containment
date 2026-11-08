@@ -342,6 +342,10 @@ export function createGameScreen(app: AppNavigator): Screen {
 
   const onKeyDown = (event: KeyboardEvent) => {
     if (chat.isTyping()) return;
+    const activatesFocused = (event.key === 'Enter' || event.key === ' ')
+      && event.target instanceof Element
+      && event.target.closest('button, [role="button"], input, textarea, select') !== null;
+    if (activatesFocused) return;
     if (event.key === 'Escape' && shop.isOpen) {
       shop.requestClose();
       return;
@@ -358,6 +362,10 @@ export function createGameScreen(app: AppNavigator): Screen {
       event.preventDefault();
       return;
     }
+    if (event.key === 'Escape' && !menu.isOpen && !sidePanel.isCollapsed) {
+      sidePanel.collapse();
+      return;
+    }
     if (renderer.cameraRig.pressKey(event.key, true)) {
       event.preventDefault();
       cameraHint.classList.add('dismissed');
@@ -372,10 +380,10 @@ export function createGameScreen(app: AppNavigator): Screen {
       chat.focusInput();
       return;
     }
-    const functionKey = /^F([1-5])$/.exec(event.key);
-    if (functionKey) {
+    const panelKey = event.ctrlKey || event.altKey || event.metaKey ? null : /^F?([1-5])$/.exec(event.key);
+    if (panelKey) {
       event.preventDefault();
-      sidePanel.selectByIndex(Number(functionKey[1]) - 1);
+      sidePanel.toggleByIndex(Number(panelKey[1]) - 1);
     }
   };
   const onKeyUp = (event: KeyboardEvent) => {

@@ -22,6 +22,8 @@ export function createSkillsTab(): PanelTab {
   let shownId: SkillId | null = null;
   let pinned = false;
   let lastPointerType = '';
+  let signalAttention: () => void = () => undefined;
+  const shownLevels = new Map<SkillId, number>();
 
   const total = h('span', { className: 'tab-hint' });
   const list = h('div', { className: 'skill-grid' });
@@ -78,6 +80,7 @@ export function createSkillsTab(): PanelTab {
     const fill = h('span');
     const tile = h('button', { className: 'skill-tile', type: 'button', ariaLabel: SKILL_INFO[id].name },
       h('span', { className: 'skill-face' }, skillIcon(id), level),
+      h('span', { className: 'skill-name' }, SKILL_INFO[id].shortName),
       h('span', { className: 'skill-bar' }, fill),
     );
     tile.addEventListener('pointerenter', (event) => {
@@ -94,8 +97,17 @@ export function createSkillsTab(): PanelTab {
     tile.addEventListener('pointerdown', (event) => {
       lastPointerType = event.pointerType;
     });
-    tile.addEventListener('click', () => {
-      if (lastPointerType === 'mouse') return;
+    tile.addEventListener('focus', () => {
+      if (pinned || !tile.matches(':focus-visible')) return;
+      show(id);
+      placeBeside(tile);
+    });
+    tile.addEventListener('blur', () => {
+      if (!pinned && shownId === id) hide();
+    });
+    tile.addEventListener('animationend', () => tile.classList.remove('levelled'));
+    tile.addEventListener('click', (event) => {
+      if (event.detail > 0 && lastPointerType === 'mouse') return;
       if (pinned && shownId === id) return hide();
       show(id);
       pinned = true;
@@ -116,6 +128,9 @@ export function createSkillsTab(): PanelTab {
     label: 'Skills',
     glyph: '◈',
     element,
+    bindAttention(signal) {
+      signalAttention = signal;
+    },
     update(self) {
       experienceById = self.skills;
       let levelSum = 0;
@@ -125,6 +140,14 @@ export function createSkillsTab(): PanelTab {
         const experience = self.skills[id];
         const level = levelForExperience(experience);
         levelSum += level;
+        const previous = shownLevels.get(id);
+        shownLevels.set(id, level);
+        if (previous !== undefined && level > previous) {
+          tile.element.classList.remove('levelled');
+          void tile.element.offsetWidth;
+          tile.element.classList.add('levelled');
+          signalAttention();
+        }
         tile.level.textContent = String(level);
         tile.fill.style.width = `${levelProgress(experience) * 100}%`;
         tile.element.classList.toggle('mastered', level >= SKILL_LEVEL_CAP);

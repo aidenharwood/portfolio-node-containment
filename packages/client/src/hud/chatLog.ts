@@ -1,9 +1,9 @@
-import type { ChatChannel } from '@containment/shared';
+import type { ChatChannel, NoticeTone } from '@containment/shared';
 import type { GameConnection } from '../net/gameConnection.ts';
 import { h } from '../ui/dom.ts';
 import { isCoarsePointer, isCompactLayout } from '../ui/viewport.ts';
 
-export type ChatLine = { readonly channel: ChatChannel | 'examine'; readonly author?: string; readonly text: string };
+export type ChatLine = { readonly channel: ChatChannel | 'examine' | 'notice'; readonly author?: string; readonly text: string; readonly tone?: NoticeTone };
 
 type Filter = 'all' | 'game' | 'local';
 
@@ -21,7 +21,7 @@ export class ChatLog {
   private readonly input: HTMLInputElement;
   private readonly lines: ChatLine[] = [];
   private filter: Filter = 'all';
-  private readonly unsubscribe: () => void;
+  private readonly unsubscribers: (() => void)[];
 
   constructor(connection: GameConnection) {
     this.log = h('div', { className: 'chat-log', role: 'log', ariaLive: 'polite' });
@@ -58,7 +58,11 @@ export class ChatLog {
     });
 
     this.element = h('section', { className: `hud-chat panel${isCompactLayout() ? ' collapsed' : ''}` }, h('div', { className: 'chat-tabs' }, ...tabs, collapseToggle), this.log, form);
-    this.unsubscribe = connection.on('chat.message', (message) => this.push(message));
+    this.unsubscribers = [
+      connection.on('chat.message', (message) => this.push(message)),
+      connection.on('notice', ({ tone, text }) => this.push({ channel: 'notice', tone, text })),
+      connection.on('error', ({ message }) => this.push({ channel: 'notice', tone: 'warning', text: message })),
+    ];
   }
 
   push(line: ChatLine): void {
@@ -80,7 +84,7 @@ export class ChatLog {
   }
 
   dispose(): void {
-    this.unsubscribe();
+    this.unsubscribers.forEach((unsubscribe) => unsubscribe());
   }
 
   private redraw(): void {
@@ -90,5 +94,5 @@ export class ChatLog {
 }
 
 function renderLine(line: ChatLine): HTMLElement {
-  return h('p', { className: `chat-line channel-${line.channel}` }, line.author && h('span', { className: 'chat-author' }, `${line.author}: `), line.text);
+  return h('p', { className: `chat-line channel-${line.channel}${line.tone ? ` tone-${line.tone}` : ''}` }, line.author && h('span', { className: 'chat-author' }, `${line.author}: `), line.text);
 }

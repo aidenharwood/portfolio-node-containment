@@ -16,44 +16,54 @@ export type SkillExperience = Readonly<Record<SkillId, number>>;
 
 export interface SkillInfo {
   readonly name: string;
+  readonly shortName: string;
   readonly summary: string;
 }
 
 export const SKILL_INFO: Readonly<Record<SkillId, SkillInfo>> = {
   containment: {
     name: 'Containment',
+    shortName: 'Contain',
     summary: 'Securing, restraining and re-housing anomalous entities and objects.',
   },
   research: {
     name: 'Research',
+    shortName: 'Research',
     summary: 'Studying anomalies, decoding artefacts and filing the paperwork nobody reads.',
   },
   engineering: {
     name: 'Engineering',
+    shortName: 'Engineer',
     summary: 'Building, repairing and overclocking the hardware that keeps the walls standing.',
   },
   marksmanship: {
     name: 'Marksmanship',
+    shortName: 'Marksman',
     summary: 'Accuracy with ranged armaments, from sidearms to suppression rigs.',
   },
   closeQuarters: {
     name: 'Close Quarters',
+    shortName: 'Close Qtrs',
     summary: 'Batons, blades and the art of not being grabbed.',
   },
   fortitude: {
     name: 'Fortitude',
+    shortName: 'Fortitude',
     summary: 'Endurance against injury, exposure and long shifts in cold corridors.',
   },
   salvage: {
     name: 'Salvage',
+    shortName: 'Salvage',
     summary: 'Recovering useful material from wreckage, breach sites and forgotten storerooms.',
   },
   refining: {
     name: 'Refining',
+    shortName: 'Refining',
     summary: 'Processing raw salvage and organics into clean base parts at a refinery.',
   },
   biochemistry: {
     name: 'Biochemistry',
+    shortName: 'Biochem',
     summary: 'Synthesising medical supplies from refined compounds.',
   },
 };

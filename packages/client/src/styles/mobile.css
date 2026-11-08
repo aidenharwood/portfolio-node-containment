@@ -65,6 +65,10 @@ body {
 }
 
 @media (pointer: coarse) {
+  .panel-tab-key {
+    display: none;
+  }
+
   .context-item {
     min-height: 44px;
     padding-top: 10px;
@@ -146,7 +150,7 @@ body {
   }
 
   .vitals-label {
-    font-size: 10px;
+    font-size: 11px;
   }
 
   .hud-vitals .vitals-value {

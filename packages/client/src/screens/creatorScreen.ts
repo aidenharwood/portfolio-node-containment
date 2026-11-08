@@ -43,6 +43,9 @@ export function createCreatorScreen(app: AppNavigator, canGoBack: boolean): Scre
   const summary = h('div', { className: 'creator-summary' });
   const errors = h('ul', { className: 'form-errors', role: 'alert' });
   const submit = h('button', { className: 'button primary wide', type: 'button' }, 'Submit for processing');
+  const submitHint = h('p', { className: 'submit-hint', id: 'creator-submit-hint', ariaLive: 'polite' });
+  submit.setAttribute('aria-describedby', submitHint.id);
+  const hasKit = kit.equipment.length > 0 || kit.items.length > 0;
   const identitySection = h('section', { className: 'creator-section' });
   const appearanceSection = h('section', { className: 'creator-section' });
 
@@ -132,7 +135,7 @@ export function createCreatorScreen(app: AppNavigator, canGoBack: boolean): Scre
         ),
         h('p', { className: 'summary-note' }, 'Every operative starts equal. Proficiencies — and everything derived from them — are earned through training.'),
       ),
-      h('div', { className: 'summary-block' },
+      hasKit && h('div', { className: 'summary-block' },
         h('p', { className: 'eyebrow' }, 'Standard issue'),
         h('div', { className: 'summary-kit' },
           ...issued.map(({ itemId, count }) => {
@@ -147,7 +150,9 @@ export function createCreatorScreen(app: AppNavigator, canGoBack: boolean): Scre
         ),
       ),
     );
-    submit.disabled = characterDraftErrors(draft).length > 0;
+    const [problem] = characterDraftErrors(draft);
+    submit.disabled = problem !== undefined;
+    submitHint.textContent = problem === undefined ? '' : draft.name.trim() ? problem : 'Enter a name to submit.';
   };
 
   submit.onclick = () => {
@@ -194,12 +199,12 @@ export function createCreatorScreen(app: AppNavigator, canGoBack: boolean): Scre
           h('div', { className: 'stage-frame' }, preview.element),
           h('div', { className: 'stage-controls' },
             h('button', { className: 'button ghost small', type: 'button', onclick: () => preview.rotate(-1), ariaLabel: 'Rotate left' }, '⟲'),
-            h('label', { className: 'toggle' }, kitToggle, 'Issue kit'),
+            hasKit && h('label', { className: 'toggle' }, kitToggle, 'Issue kit'),
             h('label', { className: 'toggle' }, walkToggle, 'Walk cycle'),
             h('button', { className: 'button ghost small', type: 'button', onclick: () => preview.rotate(1), ariaLabel: 'Rotate right' }, '⟳'),
           ),
         ),
-        h('aside', { className: 'creator-aside panel' }, summary, errors, submit),
+        h('aside', { className: 'creator-aside panel' }, summary, errors, submit, submitHint),
       ),
     ),
   );

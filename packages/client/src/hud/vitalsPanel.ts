@@ -11,6 +11,8 @@ export class VitalsPanel {
   private readonly targetLevel = h('span', { className: 'target-level' });
   private readonly targetFill = h('span', { className: 'vitals-fill' });
   private readonly targetText = h('span', { className: 'vitals-value' });
+  private selfSignature = '';
+  private targetSignature = '';
 
   constructor() {
     this.element = h('section', { className: 'hud-vitals panel' },
@@ -25,7 +27,9 @@ export class VitalsPanel {
 
   update(world: WorldState): void {
     const vitals = world.selfVitals;
-    if (vitals) {
+    const selfSignature = vitals ? `${vitals.integrity}/${vitals.maxIntegrity}` : '';
+    if (vitals && selfSignature !== this.selfSignature) {
+      this.selfSignature = selfSignature;
       const ratio = vitals.integrity / vitals.maxIntegrity;
       this.integrityFill.style.width = `${ratio * 100}%`;
       this.integrityFill.dataset.state = ratio > 0.5 ? 'healthy' : ratio > 0.25 ? 'wounded' : 'critical';
@@ -35,8 +39,13 @@ export class VitalsPanel {
     const target = world.combatTargetId ? world.entities.get(world.combatTargetId) : undefined;
     if (!target?.vitals || target.dyingAt !== null) {
       this.targetElement.hidden = true;
+      this.targetSignature = '';
       return;
     }
+    const combatLevel = world.self?.combatLevel ?? 0;
+    const targetSignature = `${target.id}|${target.name}|${target.vitals.integrity}/${target.vitals.maxIntegrity}|${combatLevel}`;
+    if (targetSignature === this.targetSignature) return;
+    this.targetSignature = targetSignature;
     const creature = target.creatureId ? GAME_CONTENT.creatures.get(target.creatureId) : undefined;
     const ratio = target.vitals.integrity / target.vitals.maxIntegrity;
     this.targetElement.hidden = false;

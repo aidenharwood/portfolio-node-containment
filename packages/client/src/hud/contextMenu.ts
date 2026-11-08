@@ -58,6 +58,10 @@ export class ContextMenu {
     this.element.style.top = `${Math.min(clientY - 8, window.innerHeight - bounds.height - 8)}px`;
   }
 
+  focusFirst(): void {
+    this.element.querySelector<HTMLButtonElement>('.context-item')?.focus();
+  }
+
   close(): void {
     this.cancelLeaveTimer();
     this.element.hidden = true;

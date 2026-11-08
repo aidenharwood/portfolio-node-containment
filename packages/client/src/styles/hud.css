@@ -53,7 +53,7 @@
 
 .zone-banner {
   position: absolute;
-  top: 18%;
+  top: 11%;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
@@ -62,7 +62,7 @@
 }
 
 .zone-banner.visible {
-  animation: zone-banner 4.5s ease forwards;
+  animation: zone-banner 3.2s ease forwards;
 }
 
 .zone-name {
@@ -84,8 +84,8 @@
     opacity: 0;
     letter-spacing: 0.1em;
   }
-  15%,
-  70% {
+  12%,
+  55% {
     opacity: 1;
   }
   100% {
@@ -227,14 +227,44 @@
   color: var(--color-text-muted);
 }
 
+.panel-tab {
+  position: relative;
+}
+
+.panel-tab-key {
+  position: absolute;
+  top: 3px;
+  right: 5px;
+  font-size: 10px;
+  line-height: 1;
+  color: var(--color-text-faint);
+}
+
 .panel-tab-glyph {
   font-size: 16px;
 }
 
 .panel-tab-label {
-  font-size: 9px;
-  letter-spacing: 0.06em;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
+}
+
+.panel-tab.attention {
+  color: var(--color-gold);
+}
+
+.panel-tab.attention .panel-tab-glyph {
+  animation: tab-attention 1.2s ease-in-out 3;
+}
+
+@keyframes tab-attention {
+  50% {
+    text-shadow: 0 0 10px var(--color-gold);
+    transform: scale(1.25);
+  }
 }
 
 .panel-tab.active {
@@ -252,8 +282,10 @@
 
 .tab-header {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
+  gap: 2px 10px;
   margin-bottom: 10px;
 }
 
@@ -264,7 +296,7 @@
 }
 
 .tab-hint {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--color-text-faint);
 }
 
@@ -345,7 +377,7 @@
 }
 
 .slot-label {
-  font-size: 9px;
+  font-size: 10px;
   color: var(--color-text-faint);
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -398,10 +430,31 @@
   cursor: help;
 }
 
-.skill-tile:hover,
-.skill-tile:focus-visible {
+.skill-tile:hover {
   border-color: var(--color-line-strong);
-  outline: none;
+}
+
+.skill-tile.levelled {
+  animation: skill-levelled 1.6s ease-out;
+}
+
+@keyframes skill-levelled {
+  0%,
+  30% {
+    border-color: var(--color-gold);
+    box-shadow: 0 0 14px rgba(255, 210, 63, 0.55), inset 0 0 12px rgba(255, 210, 63, 0.3);
+  }
+}
+
+.skill-name {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 11px;
+  line-height: 1.1;
+  color: var(--color-text-muted);
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .skill-face {
@@ -471,7 +524,7 @@
 }
 
 .quest-group {
-  font-size: 10px;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.14em;
   color: var(--color-text-faint);
@@ -512,7 +565,7 @@
 
 .quest-tracked-mark {
   color: var(--color-accent);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .quest-detail-bar {
@@ -532,7 +585,7 @@
 }
 
 .quest-track {
-  font-size: 10px;
+  font-size: 11px;
   padding: 4px 10px;
 }
 
@@ -675,6 +728,18 @@
 
 .chat-line.channel-local {
   color: #ffe14d;
+}
+
+.chat-line.channel-notice {
+  color: var(--color-text);
+}
+
+.chat-line.channel-notice.tone-success {
+  color: var(--color-success);
+}
+
+.chat-line.channel-notice.tone-warning {
+  color: var(--color-warning);
 }
 
 .chat-author {
@@ -921,7 +986,7 @@
 }
 
 .tooltip-meta {
-  font-size: 10px;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--color-text-faint);
@@ -1438,7 +1503,7 @@
 
 .shop-price::after {
   content: ' ◈';
-  font-size: 10px;
+  font-size: 11px;
   opacity: 0.7;
 }
 
@@ -1456,7 +1521,7 @@
   position: absolute;
   right: 2px;
   bottom: 1px;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--color-gold);
   text-shadow: 1px 1px 0 #000;
 }
@@ -1855,7 +1920,17 @@
   }
 }
 
+:where(.game-screen) :is(button, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .panel-tab.attention .panel-tab-glyph,
+  .skill-tile.levelled {
+    animation: none;
+  }
+
   .click-indicator.playing {
     animation-duration: 0.6s;
     animation-timing-function: steps(1, end);

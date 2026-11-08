@@ -41,10 +41,26 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
   };
 
   const slots = Array.from({ length: INVENTORY_CAPACITY }, (_, index) => {
-    const slot = h('div', { className: 'inventory-slot', draggable: true, dataset: { index: String(index) } });
+    const slot = h('div', { className: 'inventory-slot', draggable: true, tabIndex: 0, role: 'button', ariaLabel: `Empty slot ${index + 1}`, dataset: { index: String(index) } });
     slot.onclick = () => {
       const item = slotItem(index);
       if (item) actionsFor(index, item).find((action) => action.verb !== 'Drop')?.run();
+    };
+    slot.onkeydown = (event) => {
+      const item = slotItem(index);
+      if (!item) return;
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        event.stopPropagation();
+        slot.click();
+      } else if (event.key === 'ContextMenu' || (event.shiftKey && event.key === 'F10')) {
+        event.preventDefault();
+        event.stopPropagation();
+        const bounds = slot.getBoundingClientRect();
+        hideItemTooltip();
+        menu.open(bounds.left + bounds.width / 2, bounds.bottom, actionsFor(index, item));
+        menu.focusFirst();
+      }
     };
     slot.oncontextmenu = (event) => {
       event.preventDefault();
@@ -84,6 +100,7 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
         const item = stack ? GAME_CONTENT.items.get(stack.itemId) : undefined;
         if (stack?.itemId === 'meridian-scrip') scripTotal += stack.quantity;
         slot.className = `inventory-slot${item ? ` filled rarity-${item.rarity}` : ''}`;
+        slot.ariaLabel = item ? (stack && stack.quantity > 1 ? `${item.name} × ${stack.quantity}` : item.name) : `Empty slot ${index + 1}`;
         replaceChildren(
           slot,
           item && h('img', { src: itemIconUrl(item), alt: item.name, draggable: false }),
