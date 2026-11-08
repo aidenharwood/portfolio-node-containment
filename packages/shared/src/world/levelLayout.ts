@@ -10,7 +10,7 @@ import {
   type ZoneAmbience,
   type ZoneLight,
 } from './district.ts';
-import type { TilePoint } from './geometry.ts';
+import type { TilePoint, TileRect } from './geometry.ts';
 import type { LevelDefinition } from './level.ts';
 import type { TileKindId } from './tiles.ts';
 
@@ -25,6 +25,11 @@ export interface ResolvedArea extends AreaDefinition {
   readonly districtId: DistrictId;
 }
 
+export interface PlacedDistrict {
+  readonly districtId: DistrictId;
+  readonly rect: TileRect;
+}
+
 export interface ResolvedLevel {
   readonly definition: LevelDefinition;
   readonly id: LevelId;
@@ -34,6 +39,7 @@ export interface ResolvedLevel {
   readonly capacity?: number;
   readonly ambience: ZoneAmbience;
   readonly areas: readonly ResolvedArea[];
+  readonly districts: readonly PlacedDistrict[];
   readonly npcs: readonly NpcPlacement[];
   readonly objects: readonly ObjectPlacement[];
   readonly creatures: readonly CreaturePlacement[];
@@ -137,6 +143,10 @@ export function resolveLevel(level: LevelDefinition, districts: ReadonlyMap<Dist
     areas: placed.flatMap(({ origin, district }) =>
       district.areas.map((area) => ({ ...area, rect: { ...area.rect, ...offset(area.rect, origin) }, districtId: district.id })),
     ),
+    districts: placed.map(({ origin, district }) => ({
+      districtId: district.id,
+      rect: { x: origin.x, y: origin.y, width: Math.max(0, ...district.map.map((row) => row.length)), height: district.map.length },
+    })),
     npcs: placed.flatMap(({ origin, district }) => district.npcs.map((npc) => ({ ...npc, position: offset(npc.position, origin) }))),
     objects: placed.flatMap(({ origin, district }) => district.objects.map((object) => ({ ...object, position: offset(object.position, origin) }))),
     creatures: placed.flatMap(({ origin, district }) =>

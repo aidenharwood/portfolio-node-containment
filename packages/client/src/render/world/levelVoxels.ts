@@ -1,4 +1,4 @@
-import { TILE_KINDS, type TileKindId, type TileLayout } from '@containment/shared';
+import { TILE_KINDS, type TileKindId, type TileLayout, type TileRect } from '@containment/shared';
 import { DenseVolume } from '../voxel/denseVolume.ts';
 import { darken, jitter, lighten, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE, VOXEL_GLASS, VOXEL_SOLID } from '../voxel/voxelKinds.ts';
@@ -53,10 +53,11 @@ type Side = 'north' | 'south' | 'east' | 'west';
 
 const isWallKind = (kind: TileKindId): boolean => TILE_KINDS[kind].structure === 'wall';
 
-export function buildZoneVolume(layout: TileLayout): DenseVolume {
-  const volume = new DenseVolume(layout.width * R, ZONE_VOLUME_HEIGHT, layout.height * R);
-  for (let ty = 0; ty < layout.height; ty++) {
-    for (let tx = 0; tx < layout.width; tx++) {
+export function buildTileVolume(layout: TileLayout, region: TileRect): DenseVolume {
+  const padded = { x: region.x - 1, y: region.y - 1, width: region.width + 2, height: region.height + 2 };
+  const volume = new DenseVolume(padded.width * R, ZONE_VOLUME_HEIGHT, padded.height * R, padded.x * R, padded.y * R);
+  for (let ty = padded.y; ty < padded.y + padded.height; ty++) {
+    for (let tx = padded.x; tx < padded.x + padded.width; tx++) {
       const kind = layout.tileAt({ x: tx, y: ty });
       if (kind === 'void') continue;
       if (kind === 'wall') paintWall(volume, layout, tx, ty);

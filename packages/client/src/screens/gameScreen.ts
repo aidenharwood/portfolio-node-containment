@@ -163,7 +163,6 @@ export function createGameScreen(app: AppNavigator): Screen {
     const district = world.currentDistrict();
     if (!district || district.id === shownDistrictId) return;
     shownDistrictId = district.id;
-    renderer.applyAmbience(district.ambience);
     minimap.refreshTitle();
     showZoneBanner();
   };

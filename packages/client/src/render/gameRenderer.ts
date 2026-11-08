@@ -1,4 +1,4 @@
-import { GAME_CONTENT, WEAPON_KIND_INFO, type EntityId, type Facing, type ItemId, type NpcQuestMarker, type ZoneAmbience } from '@containment/shared';
+import { GAME_CONTENT, WEAPON_KIND_INFO, type EntityId, type Facing, type ItemId, type NpcQuestMarker } from '@containment/shared';
 import {
   ACESFilmicToneMapping,
   Color,
@@ -33,7 +33,8 @@ import { GroundItemLayer } from './items/groundItemLayer.ts';
 import { ProjectileLayer } from './projectileLayer.ts';
 import { samePickTarget, type ClickMarker, type PickTarget } from './pickTarget.ts';
 import { hex, lighten } from './voxel/palette.ts';
-import { ZoneScene, type LightSource } from './world/zoneScene.ts';
+import { copyAmbience, createBlendedAmbience, easeAmbience, sampleAmbience, type BlendedAmbience } from './world/ambienceBlend.ts';
+import { LevelScene, type LightSource } from './world/levelScene.ts';
 
 export interface RenderOverlay {
   readonly hover: PickTarget | null;
@@ -62,6 +63,8 @@ const LIGHT_REASSIGN_SECONDS = 0.25;
 const HURT_ANIMATION_MS = 300;
 const MUZZLE_REACH = 0.5;
 const DEATH_ANIMATION_MS = 700;
+const AMBIENCE_EASE_PER_SECOND = 3;
+const FOG_DENSITY = 0.028;
 
 const animationProgress = (startedAt: number, duration: number, now: number): number | null => {
   const progress = (now - startedAt) / duration;
@@ -87,7 +90,12 @@ export class GameRenderer {
   private readonly click = createClickMarker();
   private readonly raycaster = new Raycaster();
   private readonly groundPlane = new Plane(new Vector3(0, 1, 0), 0);
-  private zone: ZoneScene | null = null;
+  private zone: LevelScene | null = null;
+  private readonly ambience = createBlendedAmbience();
+  private readonly ambienceTarget = createBlendedAmbience();
+  private ambienceTile: string | null = null;
+  private readonly fog = new FogExp2(0x000000, FOG_DENSITY);
+  private readonly background = new Color();
   private readonly groundItems = new GroundItemLayer();
   private readonly projectiles = new ProjectileLayer();
   private readonly stopHitListener: () => void;
@@ -115,6 +123,8 @@ export class GameRenderer {
     this.keyLight.shadow.bias = -0.0008;
     this.keyLight.shadow.normalBias = 0.02;
     this.stopHitListener = world.onCombatHit((event) => this.launchProjectile(event));
+    this.scene.fog = this.fog;
+    this.scene.background = this.background;
     this.scene.add(this.projectiles.root, this.groundItems.root, this.hemisphere, this.keyLight, this.keyLight.target, this.hoverRing, this.selfRing, this.click.group);
 
     for (let index = 0; index < LIGHT_POOL_SIZE; index++) {
@@ -141,14 +151,28 @@ export class GameRenderer {
     this.cameraRig.resize(width, height);
   }
 
-  applyAmbience(ambience: ZoneAmbience): void {
-    const fog = hex(ambience.fog);
-    this.scene.background = new Color(fog).multiplyScalar(0.55);
-    this.scene.fog = new FogExp2(fog, 0.028);
-    this.hemisphere.color.setHex(lighten(hex(ambience.tint), 0.68));
-    this.hemisphere.groundColor.setHex(hex(ambience.tint));
+  private applyAmbience(ambience: BlendedAmbience): void {
+    this.fog.color.copy(ambience.fog);
+    this.background.copy(ambience.fog).multiplyScalar(0.55);
+    const tint = ambience.tint.getHex();
+    this.hemisphere.color.setHex(lighten(tint, 0.68));
+    this.hemisphere.groundColor.setHex(tint);
     this.hemisphere.intensity = 1.45 + (1 - ambience.darkness) * 1.1;
     this.keyLight.intensity = 0.5 + (1 - ambience.darkness) * 0.55;
+  }
+
+  private followAmbience(focus: Vector3, delta: number, snap: boolean): void {
+    const level = this.world.zone?.definition;
+    if (!level) return;
+    const tile = { x: Math.round(focus.x), y: Math.round(focus.z) };
+    const key = `${tile.x},${tile.y}`;
+    if (key !== this.ambienceTile) {
+      this.ambienceTile = key;
+      sampleAmbience(level, tile, this.ambienceTarget);
+    }
+    if (snap) copyAmbience(this.ambience, this.ambienceTarget);
+    else easeAmbience(this.ambience, this.ambienceTarget, 1 - Math.exp(-delta * AMBIENCE_EASE_PER_SECOND));
+    this.applyAmbience(this.ambience);
   }
 
   rebuildZone(): void {
@@ -160,18 +184,17 @@ export class GameRenderer {
     this.entities.clear();
     const active = this.world.zone;
     if (!active) return;
-    this.zone = new ZoneScene(active);
+    this.zone = new LevelScene(active);
     this.scene.add(this.zone.root);
-
-    this.applyAmbience(active.definition.ambienceAt(this.world.selfEntity?.to ?? active.definition.spawn));
     this.assignedLights = [];
     this.lightTimer = 0;
 
-    const self = this.world.selfEntity;
-    if (self) {
-      this.cameraRig.follow(new Vector3(self.to.x, 0.8, self.to.y));
-      this.cameraRig.snapToFocus();
-    }
+    const start = this.world.selfEntity?.to ?? active.definition.spawn;
+    this.cameraRig.follow(new Vector3(start.x, 0.8, start.y));
+    this.cameraRig.snapToFocus();
+    this.zone.stream(start);
+    this.ambienceTile = null;
+    this.followAmbience(new Vector3(start.x, 0, start.y), 0, true);
   }
 
   render(now: number, overlay: RenderOverlay): void {
@@ -198,6 +221,8 @@ export class GameRenderer {
     this.cameraRig.update(delta);
 
     const focus = this.cameraRig.focusPoint;
+    this.zone.stream({ x: focus.x, y: focus.z });
+    this.followAmbience(focus, delta, false);
     this.keyLight.position.set(focus.x + 5, focus.y + 12, focus.z + 3);
     this.keyLight.target.position.copy(focus);
     this.zone.update(time, overlay.objectiveObjectIds, this.world.depletedObjects);

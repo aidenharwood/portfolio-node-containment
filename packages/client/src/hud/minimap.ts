@@ -1,4 +1,4 @@
-import { TILE_KINDS, type Facing, type TilePoint } from '@containment/shared';
+import { GAME_CONTENT, TILE_KINDS, type Facing, type TilePoint } from '@containment/shared';
 import type { WorldState } from '../state/worldState.ts';
 import { h } from '../ui/dom.ts';
 import type { ClickTone } from './clickIndicator.ts';
@@ -8,6 +8,8 @@ const MAP_SIZE = 220;
 const MAP_RADIUS = MAP_SIZE / 2 - 4;
 const DESTINATION_STALL_MS = 1500;
 const INTERACT_REACH_TILES = 1.5;
+const LABEL_RIM_INSET = 14;
+const LABEL_VISIBLE_TILES = 140;
 const DESTINATION_COLORS: Readonly<Record<ClickTone, string>> = { walk: '#ffd23f', interact: '#ff5e3a' };
 
 const TILE_COLORS: Partial<Record<string, string>> = {
@@ -130,6 +132,7 @@ export class Minimap {
     }
     context.restore();
 
+    this.paintDistrictLabels(context, position, rotation);
     this.settleDestination(position, now);
     if (this.destination) this.paintDestination(context, this.destination, position, rotation);
     this.paintSelfArrow(context, rotation + FACING_ANGLE[self.facing]);
@@ -139,6 +142,37 @@ export class Minimap {
     context.beginPath();
     context.arc(MAP_SIZE / 2, MAP_SIZE / 2, MAP_RADIUS, 0, Math.PI * 2);
     context.stroke();
+  }
+
+  private paintDistrictLabels(context: CanvasRenderingContext2D, position: TilePoint, rotation: number): void {
+    const level = this.world.zone?.definition;
+    if (!level) return;
+    const current = this.world.currentDistrict()?.id;
+    const cos = Math.cos(rotation);
+    const sin = Math.sin(rotation);
+    context.save();
+    context.font = '600 8px "Chakra Petch", sans-serif';
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    for (const { districtId, rect } of level.districts) {
+      if (districtId === current) continue;
+      const name = GAME_CONTENT.districts.get(districtId)?.name;
+      if (!name) continue;
+      const dx = (rect.x + rect.width / 2 - position.x) * PIXELS_PER_TILE;
+      const dy = (rect.y + rect.height / 2 - position.y) * PIXELS_PER_TILE;
+      const length = Math.hypot(dx, dy);
+      if (length / PIXELS_PER_TILE > LABEL_VISIBLE_TILES) continue;
+      const scale = Math.min(1, (MAP_RADIUS - LABEL_RIM_INSET) / Math.max(1, length));
+      const x = MAP_SIZE / 2 + (dx * cos - dy * sin) * scale;
+      const y = MAP_SIZE / 2 + (dx * sin + dy * cos) * scale;
+      const label = name.toUpperCase();
+      const width = context.measureText(label).width + 8;
+      context.fillStyle = scale < 1 ? 'rgba(3, 8, 11, 0.82)' : 'rgba(3, 8, 11, 0.55)';
+      context.fillRect(x - width / 2, y - 6, width, 12);
+      context.fillStyle = scale < 1 ? '#9fd8ff' : 'rgba(232, 244, 248, 0.75)';
+      context.fillText(label, x, y + 0.5);
+    }
+    context.restore();
   }
 
   private settleDestination(position: TilePoint, now: number): void {

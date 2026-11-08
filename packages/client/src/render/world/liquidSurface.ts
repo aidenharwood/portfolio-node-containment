@@ -1,5 +1,5 @@
 import { BufferGeometry, Color, DoubleSide, Float32BufferAttribute, Mesh, ShaderMaterial } from 'three';
-import type { TileLayout } from '@containment/shared';
+import type { TileLayout, TileRect } from '@containment/shared';
 
 const SURFACE_Y = -0.07;
 
@@ -75,14 +75,14 @@ export class LiquidSurface {
     this.material = material;
   }
 
-  static build(layout: TileLayout, kind: string): LiquidSurface | null {
+  static build(layout: TileLayout, kind: string, region: TileRect): LiquidSurface | null {
     const positions: number[] = [];
     const edges: number[] = [];
     const locals: number[] = [];
     const indices: number[] = [];
     const isLiquid = (x: number, y: number) => layout.tileAt({ x, y }) === kind;
-    for (let y = 0; y < layout.height; y++) {
-      for (let x = 0; x < layout.width; x++) {
+    for (let y = region.y; y < region.y + region.height; y++) {
+      for (let x = region.x; x < region.x + region.width; x++) {
         if (!isLiquid(x, y)) continue;
         const flags = [isLiquid(x, y - 1) ? 0 : 1, isLiquid(x + 1, y) ? 0 : 1, isLiquid(x, y + 1) ? 0 : 1, isLiquid(x - 1, y) ? 0 : 1];
         const base = positions.length / 3;
