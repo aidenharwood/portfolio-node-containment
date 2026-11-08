@@ -10,6 +10,7 @@ import type { InventoryState } from '../gear/inventory.ts';
 import type { StorageState } from '../gear/storage.ts';
 import type { StatId } from '../gear/stats.ts';
 import type { CharacterId, EntityId, ItemId, LevelId, NpcId } from '../ids.ts';
+import type { ChunkKey } from '../world/chunks.ts';
 import type { QuestLog } from '../quests/questProgress.ts';
 import type { Facing, TilePoint } from '../world/geometry.ts';
 
@@ -98,6 +99,14 @@ export type ServerMessage =
     }
   | { readonly type: 'world.entitySpawned'; readonly entity: EntitySnapshot }
   | { readonly type: 'world.entityDespawned'; readonly entityId: EntityId }
+  | {
+      readonly type: 'world.chunksEntered';
+      readonly chunks: readonly ChunkKey[];
+      readonly entities: readonly EntitySnapshot[];
+      readonly groundItems: readonly GroundItemSnapshot[];
+      readonly depletedObjects: readonly string[];
+    }
+  | { readonly type: 'world.chunksLeft'; readonly chunks: readonly ChunkKey[] }
   | { readonly type: 'world.tick'; readonly movements: readonly EntityMovement[] }
   | { readonly type: 'world.entityGearChanged'; readonly entityId: EntityId; readonly gear: readonly ItemId[] }
   | { readonly type: 'world.speech'; readonly entityId: EntityId; readonly text: string }

@@ -23,8 +23,8 @@ export class ChatController {
     }
     this.lastMessageAt.set(player.entityId, now);
     const level = this.world.levelOf(player);
-    level.broadcast({ type: 'chat.message', channel: 'local', author: player.record.name, text });
-    level.broadcast({ type: 'world.speech', entityId: player.entityId, text });
+    level.broadcastNear(player.position, { type: 'chat.message', channel: 'local', author: player.record.name, text });
+    level.broadcastNear(player.position, { type: 'world.speech', entityId: player.entityId, text });
   }
 
   forget(player: Player): void {

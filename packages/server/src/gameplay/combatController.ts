@@ -116,7 +116,7 @@ export class CombatController {
       const outcome = rollAttack(attack, creature.definition.defence, this.random);
       creature.integrity = Math.max(0, creature.integrity - outcome.damage);
       if (outcome.damage > 0) creature.contributors.add(player.entityId);
-      level.broadcast({
+      level.broadcastNear(creature.position, {
         type: 'combat.hit',
         attackerId: player.entityId,
         targetId: creature.entityId,
@@ -150,12 +150,12 @@ export class CombatController {
   private updateCreature(creature: Creature, level: LevelInstance, tick: number): void {
     if (creature.state === 'dying' && tick >= creature.diedAtTick + DEATH_ANIMATION_TICKS) {
       creature.state = 'despawned';
-      level.broadcast({ type: 'world.entityDespawned', entityId: creature.entityId });
+      level.broadcastNear(creature.position, { type: 'world.entityDespawned', entityId: creature.entityId });
       return;
     }
     if (creature.state === 'despawned' && tick >= creature.diedAtTick + creature.respawnDelayTicks) {
       creature.respawn();
-      level.broadcast({ type: 'world.entitySpawned', entity: creature.snapshot() });
+      level.broadcastNear(creature.position, { type: 'world.entitySpawned', entity: creature.snapshot() });
       return;
     }
     if (!creature.isAlive) return;
@@ -202,7 +202,7 @@ export class CombatController {
     this.engageBoth(player, creature, tick);
     player.lastCombatTick = tick;
     player.setIntegrity(player.integrity - outcome.damage);
-    level.broadcast({
+    level.broadcastNear(player.position, {
       type: 'combat.hit',
       attackerId: creature.entityId,
       targetId: player.entityId,
@@ -230,7 +230,7 @@ export class CombatController {
     creature.targetId = null;
     creature.engagedWith = null;
     creature.path = [];
-    level.broadcast({ type: 'combat.death', entityId: creature.entityId });
+    level.broadcastNear(creature.position, { type: 'combat.death', entityId: creature.entityId });
 
     for (const player of level.players.values()) {
       if (player.combatTargetId === creature.entityId) this.disengage(player);
@@ -259,7 +259,7 @@ export class CombatController {
   }
 
   private incapacitate(player: Player, level: LevelInstance): void {
-    level.broadcast({ type: 'combat.death', entityId: player.entityId });
+    level.broadcastNear(player.position, { type: 'combat.death', entityId: player.entityId });
     for (const creature of level.creatures.values()) {
       if (creature.targetId === player.entityId) this.sendHome(creature, level);
     }

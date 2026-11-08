@@ -102,7 +102,7 @@ export class GroundItemController {
   }
 
   private announce(level: LevelInstance, item: GroundItem): void {
-    for (const player of level.players.values()) {
+    for (const player of level.observersOf(item.position)) {
       if (isGroundItemVisibleTo(item, player.entityId)) {
         player.send({ type: 'world.groundItemAdded', item: groundItemSnapshot(item, player.entityId) });
       }
@@ -111,6 +111,6 @@ export class GroundItemController {
 
   private remove(level: LevelInstance, item: GroundItem): void {
     level.groundItems.delete(item.id);
-    level.broadcast({ type: 'world.groundItemRemoved', id: item.id });
+    level.broadcastNear(item.position, { type: 'world.groundItemRemoved', id: item.id });
   }
 }

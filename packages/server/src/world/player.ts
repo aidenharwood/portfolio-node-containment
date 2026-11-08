@@ -12,6 +12,7 @@ import {
   type InstanceId,
   type ServerMessage,
   type TilePoint,
+  type ChunkCoord,
   type LevelId,
   type WorldLocation,
 } from '@containment/shared';
@@ -61,6 +62,7 @@ export class Player {
   nextConsumableTick = 0;
   lastCombatTick = -Infinity;
   lastChaseTarget: TilePoint | null = null;
+  interestChunk: ChunkCoord | null = null;
   private stateDirty = true;
 
   constructor(record: CharacterRecord, sink: MessageSink) {

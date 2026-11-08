@@ -1,8 +1,14 @@
 import {
+  chunkKeyOf,
+  chunkOf,
   createWalkabilityGrid,
+  interestDelta,
+  interestSet,
   findPath,
   rectContains,
+  type ChunkKey,
   type EntityId,
+  type EntityMovement,
   type EntitySnapshot,
   type GroundItemSnapshot,
   type GameContent,
@@ -23,6 +29,19 @@ import { Npc } from './npc.ts';
 import type { Player } from './player.ts';
 
 const SAFE_SPAWN_SEARCH_RADIUS = 12;
+
+export interface EntityMove {
+  readonly from: TilePoint;
+  readonly movement: EntityMovement;
+}
+
+export interface InterestChange {
+  readonly entered: ReadonlySet<ChunkKey>;
+  readonly left: ReadonlySet<ChunkKey>;
+}
+
+const NO_CHUNKS: ReadonlySet<ChunkKey> = new Set();
+const NO_CHANGE: InterestChange = { entered: NO_CHUNKS, left: NO_CHUNKS };
 
 export interface PlacedObject {
   readonly placement: ObjectPlacement;
@@ -74,22 +93,95 @@ export class LevelInstance {
     return this.definition.id;
   }
 
-  broadcast(message: ServerMessage, exceptEntityId?: EntityId): void {
-    for (const player of this.players.values()) {
+  interestOf(player: Player): ReadonlySet<ChunkKey> {
+    return player.interestChunk ? interestSet(player.interestChunk) : NO_CHUNKS;
+  }
+
+  observersOf(point: TilePoint): Player[] {
+    const key = chunkKeyOf(point);
+    return [...this.players.values()].filter((player) => this.interestOf(player).has(key));
+  }
+
+  broadcastNear(point: TilePoint, message: ServerMessage, exceptEntityId?: EntityId): void {
+    for (const player of this.observersOf(point)) {
       if (player.entityId !== exceptEntityId) player.send(message);
     }
   }
 
-  entitySnapshots(): EntitySnapshot[] {
+  entitySnapshotsIn(chunks: ReadonlySet<ChunkKey>): EntitySnapshot[] {
+    const inside = (point: TilePoint) => chunks.has(chunkKeyOf(point));
     return [
-      ...[...this.npcs.values()].map((npc) => npc.snapshot()),
-      ...[...this.creatures.values()].filter((creature) => creature.state !== 'despawned').map((creature) => creature.snapshot()),
-      ...[...this.players.values()].map((player) => player.snapshot()),
+      ...[...this.npcs.values()].filter((npc) => inside(npc.position)).map((npc) => npc.snapshot()),
+      ...[...this.creatures.values()].filter((creature) => creature.state !== 'despawned' && inside(creature.position)).map((creature) => creature.snapshot()),
+      ...[...this.players.values()].filter((player) => inside(player.position)).map((player) => player.snapshot()),
     ];
   }
 
-  groundItemsVisibleTo(entityId: EntityId): GroundItemSnapshot[] {
-    return [...this.groundItems.values()].filter((item) => isGroundItemVisibleTo(item, entityId)).map((item) => groundItemSnapshot(item, entityId));
+  groundItemsVisibleIn(chunks: ReadonlySet<ChunkKey>, entityId: EntityId): GroundItemSnapshot[] {
+    return [...this.groundItems.values()]
+      .filter((item) => chunks.has(chunkKeyOf(item.position)) && isGroundItemVisibleTo(item, entityId))
+      .map((item) => groundItemSnapshot(item, entityId));
+  }
+
+  depletedObjectsIn(chunks: ReadonlySet<ChunkKey>): InstanceId[] {
+    return [...this.depletedUntil.keys()].filter((instanceId) => {
+      const position = this.objects.get(instanceId)?.placement.position;
+      return position !== undefined && chunks.has(chunkKeyOf(position));
+    });
+  }
+
+  syncInterest(player: Player): InterestChange {
+    const next = chunkOf(player.position);
+    const delta = interestDelta(player.interestChunk, next);
+    player.interestChunk = next;
+    if (delta.left.length > 0) player.send({ type: 'world.chunksLeft', chunks: delta.left });
+    if (delta.entered.length > 0) {
+      const entered = new Set(delta.entered);
+      player.send({
+        type: 'world.chunksEntered',
+        chunks: delta.entered,
+        entities: this.entitySnapshotsIn(entered).filter((entity) => entity.id !== player.entityId),
+        groundItems: this.groundItemsVisibleIn(entered, player.entityId),
+        depletedObjects: this.depletedObjectsIn(entered),
+      });
+    }
+    return { entered: new Set(delta.entered), left: new Set(delta.left) };
+  }
+
+  publishMoves(moves: readonly EntityMove[], interestBefore: ReadonlyMap<EntityId, ReadonlySet<ChunkKey>>, changes: ReadonlyMap<EntityId, InterestChange>): void {
+    for (const observer of this.players.values()) {
+      const before = interestBefore.get(observer.entityId) ?? NO_CHUNKS;
+      const after = this.interestOf(observer);
+      const change = changes.get(observer.entityId) ?? NO_CHANGE;
+      const visible: EntityMovement[] = [];
+      for (const move of moves) {
+        if (move.movement.entityId === observer.entityId) {
+          visible.push(move.movement);
+          continue;
+        }
+        const fromKey = chunkKeyOf(move.from);
+        const toKey = chunkKeyOf(move.movement.position);
+        const clientKnows = (before.has(fromKey) && !change.left.has(fromKey)) || change.entered.has(toKey);
+        if (after.has(toKey)) {
+          if (clientKnows) visible.push(move.movement);
+          else {
+            const snapshot = this.snapshotOf(move.movement.entityId);
+            if (snapshot) observer.send({ type: 'world.entitySpawned', entity: snapshot });
+          }
+        } else if (before.has(fromKey) && !change.left.has(fromKey)) {
+          observer.send({ type: 'world.entityDespawned', entityId: move.movement.entityId });
+        }
+      }
+      if (visible.length > 0) observer.send({ type: 'world.tick', movements: visible });
+    }
+  }
+
+  snapshotOf(entityId: EntityId): EntitySnapshot | undefined {
+    const player = this.players.get(entityId);
+    if (player) return player.snapshot();
+    const creature = this.creatures.get(entityId);
+    if (creature) return creature.state === 'despawned' ? undefined : creature.snapshot();
+    return [...this.npcs.values()].find((npc) => npc.entityId === entityId)?.snapshot();
   }
 
   spendNodeCharge(instanceId: InstanceId, capacity: number): boolean {

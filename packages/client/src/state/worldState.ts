@@ -1,5 +1,7 @@
 import {
+  chunkKeyOf,
   GAME_CONTENT,
+  type ChunkKey,
   type EntityId,
   type EntityVitals,
   type GroundItemSnapshot,
@@ -84,6 +86,8 @@ export class WorldState {
       connection.on('world.entitySpawned', ({ entity }) => this.entities.set(entity.id, toClientEntity(entity))),
       connection.on('world.entityDespawned', ({ entityId }) => this.entities.delete(entityId)),
       connection.on('world.tick', (message) => this.applyMovements(message)),
+      connection.on('world.chunksEntered', (message) => this.enterChunks(message)),
+      connection.on('world.chunksLeft', ({ chunks }) => this.leaveChunks(new Set(chunks))),
       connection.on('world.entityGearChanged', ({ entityId, gear }) => {
         const entity = this.entities.get(entityId);
         if (entity) entity.gear = gear;
@@ -195,6 +199,24 @@ export class WorldState {
     this.depletedObjects.clear();
     for (const instanceId of message.depletedObjects) this.depletedObjects.add(instanceId);
     this.emit('zoneChanged');
+  }
+
+  private enterChunks(message: ServerMessageOf<'world.chunksEntered'>): void {
+    for (const entity of message.entities) this.entities.set(entity.id, toClientEntity(entity));
+    for (const item of message.groundItems) this.groundItems.set(item.id, item);
+    for (const instanceId of message.depletedObjects) this.depletedObjects.add(instanceId);
+  }
+
+  private leaveChunks(chunks: ReadonlySet<ChunkKey>): void {
+    for (const [id, entity] of this.entities) {
+      if (id !== this.selfEntityId && chunks.has(chunkKeyOf(entity.to))) this.entities.delete(id);
+    }
+    for (const [id, item] of this.groundItems) {
+      if (chunks.has(chunkKeyOf(item.position))) this.groundItems.delete(id);
+    }
+    for (const placement of this.zone?.definition.objects ?? []) {
+      if (chunks.has(chunkKeyOf(placement.position))) this.depletedObjects.delete(placement.instanceId);
+    }
   }
 
   private applyMovements(message: ServerMessageOf<'world.tick'>): void {

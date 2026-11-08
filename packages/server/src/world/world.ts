@@ -1,9 +1,9 @@
 import {
   chebyshevDistance,
+  chunkOf,
   facingBetween,
   type Facing,
   type AreaId,
-  type EntityMovement,
   type GameContent,
   type TilePoint,
   type DistrictId,
@@ -14,7 +14,7 @@ import {
 import type { Creature } from './creature.ts';
 import type { Npc } from './npc.ts';
 import type { Player } from './player.ts';
-import { LevelInstance } from './levelInstance.ts';
+import { LevelInstance, type EntityMove } from './levelInstance.ts';
 
 export interface WorldHooks {
   onAreaEntered(player: Player, districtId: DistrictId, areaId: AreaId): void;
@@ -92,17 +92,19 @@ export class World {
     player.relocate({ levelId: level.id, position: level.safeSpawnPoint(player.position) });
     level.players.set(player.entityId, player);
     this.playerLayers.set(player.entityId, level);
+    player.interestChunk = chunkOf(player.position);
+    const interest = level.interestOf(player);
     player.send({
       type: 'world.entered',
       levelId: level.id,
       selfEntityId: player.entityId,
-      entities: level.entitySnapshots(),
-      groundItems: level.groundItemsVisibleTo(player.entityId),
-      depletedObjects: [...level.depletedUntil.keys()],
+      entities: level.entitySnapshotsIn(interest),
+      groundItems: level.groundItemsVisibleIn(interest, player.entityId),
+      depletedObjects: level.depletedObjectsIn(interest),
       tickMs: this.tickMs,
       layer: level.layer,
     });
-    level.broadcast({ type: 'world.entitySpawned', entity: player.snapshot() }, player.entityId);
+    level.broadcastNear(player.position, { type: 'world.entitySpawned', entity: player.snapshot() }, player.entityId);
     this.refreshAreas(player, level);
   }
 
@@ -110,7 +112,8 @@ export class World {
     const level = this.playerLayers.get(player.entityId);
     this.playerLayers.delete(player.entityId);
     if (!level?.players.delete(player.entityId)) return;
-    level.broadcast({ type: 'world.entityDespawned', entityId: player.entityId });
+    player.interestChunk = null;
+    level.broadcastNear(player.position, { type: 'world.entityDespawned', entityId: player.entityId });
     for (const npc of level.npcs.values()) {
       if (npc.engagedWith === player.entityId) npc.engagedWith = null;
     }
@@ -123,9 +126,28 @@ export class World {
   }
 
   transfer(player: Player, location: WorldLocation): void {
+    const current = this.findLevelOf(player);
+    if (current?.id === location.levelId) {
+      this.moveWithin(player, current, location.position);
+      return;
+    }
     this.despawn(player);
     player.relocate(location);
     this.spawn(player);
+  }
+
+  private moveWithin(player: Player, level: LevelInstance, target: TilePoint): void {
+    const from = player.position;
+    const interestBefore = new Map([...level.players.values()].map((other) => [other.entityId, level.interestOf(other)] as const));
+    player.relocate({ levelId: level.id, position: level.safeSpawnPoint(target) });
+    const change = level.syncInterest(player);
+    player.send({ type: 'world.entitySpawned', entity: player.snapshot() });
+    level.publishMoves(
+      [{ from, movement: { entityId: player.entityId, position: player.position, facing: player.facing } }],
+      interestBefore,
+      new Map([[player.entityId, change]]),
+    );
+    this.refreshAreas(player, level);
   }
 
   walk(player: Player, target: TilePoint): boolean {
@@ -145,7 +167,7 @@ export class World {
 
   face(player: Player, target: TilePoint): void {
     player.facing = facingBetween(player.position, target, player.facing);
-    this.levelOf(player).broadcast({
+    this.levelOf(player).broadcastNear(player.position, {
       type: 'world.tick',
       movements: [{ entityId: player.entityId, position: player.position, facing: player.facing }],
     });
@@ -154,7 +176,7 @@ export class World {
   faceNpc(npc: Walker, target: TilePoint, level: LevelInstance): void {
     npc.facing = facingBetween(npc.position, target, npc.facing);
     npc.path = [];
-    level.broadcast({ type: 'world.tick', movements: [{ entityId: npc.entityId, position: npc.position, facing: npc.facing }] });
+    level.broadcastNear(npc.position, { type: 'world.tick', movements: [{ entityId: npc.entityId, position: npc.position, facing: npc.facing }] });
   }
 
   tick(): void {
@@ -162,48 +184,52 @@ export class World {
     this.retireEmptyLayers();
     for (const level of this.instances()) {
       if (level.players.size === 0) continue;
-      const movements: EntityMovement[] = [];
-      for (const npc of level.npcs.values()) this.advanceNpc(npc, level, movements);
-      for (const creature of level.creatures.values()) this.advanceCreature(creature, level, movements);
+      const moves: EntityMove[] = [];
+      for (const npc of level.npcs.values()) this.advanceNpc(npc, level, moves);
+      for (const creature of level.creatures.values()) this.advanceCreature(creature, level, moves);
 
       const arrived: Player[] = [];
       for (const player of [...level.players.values()]) {
         const next = player.path.shift();
         if (next) {
+          const from = player.position;
           player.facing = facingBetween(player.position, next, player.facing);
           player.position = next;
-          movements.push({ entityId: player.entityId, position: next, facing: player.facing });
+          moves.push({ from, movement: { entityId: player.entityId, position: next, facing: player.facing } });
           this.refreshAreas(player, level);
         }
         if (player.path.length === 0 && player.pendingInteraction) arrived.push(player);
       }
 
-      if (movements.length > 0) level.broadcast({ type: 'world.tick', movements });
+      const interestBefore = new Map([...level.players.values()].map((player) => [player.entityId, level.interestOf(player)] as const));
+      const changes = new Map([...level.players.values()].map((player) => [player.entityId, level.syncInterest(player)] as const));
+      level.publishMoves(moves, interestBefore, changes);
       for (const player of arrived) {
         if (level.players.has(player.entityId)) this.hooks.onPathCompleted(player);
       }
     }
   }
 
-  private advanceNpc(npc: Npc, level: LevelInstance, movements: EntityMovement[]): void {
+  private advanceNpc(npc: Npc, level: LevelInstance, moves: EntityMove[]): void {
     if (npc.engagedWith) return;
-    this.advanceWalker(npc, npc.definition.wanderRadius, level, movements);
+    this.advanceWalker(npc, npc.definition.wanderRadius, level, moves);
   }
 
-  private advanceCreature(creature: Creature, level: LevelInstance, movements: EntityMovement[]): void {
+  private advanceCreature(creature: Creature, level: LevelInstance, moves: EntityMove[]): void {
     if (!creature.isAlive) return;
-    this.advanceWalker(creature, creature.canWander ? creature.definition.wanderRadius : 0, level, movements);
+    this.advanceWalker(creature, creature.canWander ? creature.definition.wanderRadius : 0, level, moves);
   }
 
-  private advanceWalker(walker: Walker, wanderRadius: number, level: LevelInstance, movements: EntityMovement[]): void {
+  private advanceWalker(walker: Walker, wanderRadius: number, level: LevelInstance, moves: EntityMove[]): void {
     if (walker.path.length === 0 && wanderRadius > 0 && this.random() < NPC_WANDER_CHANCE_PER_TICK) {
       walker.path = this.wanderPath(walker, wanderRadius, level);
     }
     const next = walker.path.shift();
     if (!next) return;
+    const from = walker.position;
     walker.facing = facingBetween(walker.position, next, walker.facing);
     walker.position = next;
-    movements.push({ entityId: walker.entityId, position: next, facing: walker.facing });
+    moves.push({ from, movement: { entityId: walker.entityId, position: next, facing: walker.facing } });
   }
 
   private wanderPath(walker: Walker, radius: number, level: LevelInstance): TilePoint[] {

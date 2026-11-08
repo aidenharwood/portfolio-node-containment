@@ -51,7 +51,8 @@ export class GatheringController {
       for (const [instanceId, until] of level.depletedUntil) {
         if (until > tick) continue;
         level.restoreNode(instanceId);
-        level.broadcast({ type: 'world.objectDepleted', instanceId, depleted: false });
+        const position = level.objects.get(instanceId)?.placement.position;
+        if (position) level.broadcastNear(position, { type: 'world.objectDepleted', instanceId, depleted: false });
       }
       for (const player of level.players.values()) {
         const activity = player.activity;
@@ -84,7 +85,7 @@ export class GatheringController {
 
     if (level.spendNodeCharge(instanceId, source.charges)) {
       level.depletedUntil.set(instanceId, tick + source.respawnTicks);
-      level.broadcast({ type: 'world.objectDepleted', instanceId, depleted: true });
+      level.broadcastNear(placed.placement.position, { type: 'world.objectDepleted', instanceId, depleted: true });
       this.host.notify(player, 'info', `The ${placed.definition.name} is exhausted for now.`);
       return this.stop(player);
     }
