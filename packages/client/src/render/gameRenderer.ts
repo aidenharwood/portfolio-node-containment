@@ -1,4 +1,4 @@
-import { GAME_CONTENT, TILE_KINDS, type EntityId, type Facing, type ItemId, type NpcQuestMarker } from '@containment/shared';
+import { GAME_CONTENT, TILE_KINDS, WEAPON_KIND_INFO, type EntityId, type Facing, type ItemId, type NpcQuestMarker } from '@containment/shared';
 import {
   ACESFilmicToneMapping,
   Color,
@@ -27,7 +27,7 @@ import type { ClientEntity, CombatHitEvent, WorldState } from '../state/worldSta
 import { CameraRig } from './cameraRig.ts';
 import { CharacterRig } from './models/characterModel.ts';
 import { createCreatureRig } from './models/creatureModels.ts';
-import type { EntityRig } from './models/entityRig.ts';
+import { attackDurationMs, type EntityRig } from './models/entityRig.ts';
 import { createClickMarker, createGroundRing, createQuestMarker } from './models/markerModels.ts';
 import { GroundItemLayer } from './items/groundItemLayer.ts';
 import { ProjectileLayer } from './projectileLayer.ts';
@@ -59,8 +59,8 @@ interface EntityView {
 
 const LIGHT_POOL_SIZE = 12;
 const LIGHT_REASSIGN_SECONDS = 0.25;
-const ATTACK_ANIMATION_MS = 380;
 const HURT_ANIMATION_MS = 300;
+const MUZZLE_REACH = 0.5;
 const DEATH_ANIMATION_MS = 700;
 
 const animationProgress = (startedAt: number, duration: number, now: number): number | null => {
@@ -270,7 +270,7 @@ export class GameRenderer {
   }
 
   private launchProjectile(event: CombatHitEvent): void {
-    if (event.style !== 'ranged') return;
+    if (!event.projectile) return;
     const attacker = this.world.entities.get(event.attackerId);
     const target = this.world.entities.get(event.targetId);
     if (!attacker || !target) return;
@@ -281,7 +281,8 @@ export class GameRenderer {
     const targetHeight = this.entities.get(target.id)?.rig.height ?? 1.2;
     const from = new Vector3(muzzle.x, attackerHeight * 0.55, muzzle.y);
     const to = new Vector3(impact.x, targetHeight * 0.55, impact.y);
-    this.projectiles.launch(from, to, this.projectileColor(attacker), now, Math.max(1, event.impactAt - event.at));
+    if (attacker.kind !== 'creature') from.lerp(to, Math.min(0.45, MUZZLE_REACH / Math.max(0.001, from.distanceTo(to))));
+    this.projectiles.launch(event.projectile, from, to, this.projectileColor(attacker), now, Math.max(1, event.impactAt - event.at));
   }
 
   private projectileColor(attacker: ClientEntity): number {
@@ -336,11 +337,13 @@ export class GameRenderer {
       const desiredYaw = moving && (dx !== 0 || dz !== 0) ? Math.atan2(dx, dz) : FACING_YAW[entity.facing];
       view.yaw += shortestAngle(view.yaw, desiredYaw) * Math.min(1, delta * 12);
       view.rig.root.rotation.y = view.yaw;
+      const attackMotion = entity.attackWeapon ? WEAPON_KIND_INFO[entity.attackWeapon].motion : null;
       view.rig.animate({
         moving,
         walkPhase: entity.walkPhase,
         time: now / 1000 + entity.id.length,
-        attackProgress: animationProgress(entity.attackAt, ATTACK_ANIMATION_MS, now),
+        attackProgress: animationProgress(entity.attackAt, attackDurationMs(attackMotion), now),
+        attackMotion,
         hurtProgress: animationProgress(entity.hurtAt, HURT_ANIMATION_MS, now),
       });
       const dying = entity.dyingAt === null ? 0 : Math.min(1, (now - entity.dyingAt) / DEATH_ANIMATION_MS);

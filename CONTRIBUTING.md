@@ -83,7 +83,7 @@ Creatures are passive by default. Set `aggressive: true` only for creatures that
 
 ### Add a weapon or consumable
 
-- **Weapon:** add `weapon: { style, range, speedTicks }` under `equipment`. Power and Accuracy come from `equipment.stats`. Melee uses Close Quarters, ranged uses Marksmanship.
+- **Weapon:** add `weapon: { kind, range, speedTicks }` under `equipment`, with an `icon` equal to `kind`. The kind decides style, grip, animation and projectile (see `WEAPON_KIND_INFO`). Melee rating comes from Power and Close Quarters, ranged from Accuracy and Marksmanship. Match a new weapon's damage per tick to the other weapons of its tier; a new kind needs an entry in `WEAPON_KIND_INFO`, a shape in `EQUIPMENT_SHAPES.primary`, an icon builder, a held renderer and, for a new motion, a pose in `weaponPoses.ts`.
 - **Consumable:** add `consumable: { verb, heal }`. The inventory shows the verb as the item's default action.
 
 ### Add a shop or stock

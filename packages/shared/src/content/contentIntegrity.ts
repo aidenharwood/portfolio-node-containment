@@ -96,6 +96,10 @@ export function findContentIssues(content: GameContent): string[] {
     if (item.equipment && !isShapeForSlot(item.equipment.slot, item.icon)) {
       report(`item ${item.id}`, `icon "${item.icon}" is not a ${item.equipment.slot} shape, so the worn model would not match the icon`);
     }
+    const weapon = item.equipment?.weapon;
+    if (item.equipment?.slot === 'primary' && !weapon) report(`item ${item.id}`, 'primary item lacks a weapon profile');
+    if (weapon && weapon.kind !== item.icon) report(`item ${item.id}`, `weapon kind "${weapon.kind}" does not match its icon "${item.icon}"`);
+    if (weapon && (weapon.range < 1 || weapon.speedTicks < 1)) report(`item ${item.id}`, 'weapon range and speed must be at least 1');
   }
 
   const { kit } = content.newCharacter;

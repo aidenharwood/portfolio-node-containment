@@ -1,6 +1,7 @@
 import {
   GAME_CONTENT,
   parseZoneLayout,
+  WEAPON_KIND_INFO,
   type EntityId,
   type EntityVitals,
   type GroundItemSnapshot,
@@ -13,6 +14,8 @@ import {
   type TilePoint,
   type ZoneDefinition,
   type ZoneLayout,
+  type ProjectileKind,
+  type WeaponKind,
 } from '@containment/shared';
 import type { GameConnection } from '../net/gameConnection.ts';
 
@@ -28,6 +31,7 @@ export interface ClientEntity {
   vitals: EntityVitals | undefined;
   lastCombatAt: number;
   attackAt: number;
+  attackWeapon: WeaponKind | null;
   hurtAt: number;
   dyingAt: number | null;
   gear: readonly ItemId[];
@@ -52,6 +56,8 @@ export interface CombatHitEvent {
   readonly outcome: 'hit' | 'miss';
   readonly damage: number;
   readonly style: 'melee' | 'ranged';
+  readonly weapon: WeaponKind | null;
+  readonly projectile: ProjectileKind | null;
   readonly at: number;
   readonly impactAt: number;
 }
@@ -60,8 +66,21 @@ const SPEECH_DURATION_MS = 4500;
 const PROJECTILE_BASE_FLIGHT_MS = 120;
 const PROJECTILE_FLIGHT_MS_PER_TILE = 70;
 
-export const projectileFlightMs = (from: TilePoint, to: TilePoint): number =>
-  PROJECTILE_BASE_FLIGHT_MS + Math.hypot(to.x - from.x, to.y - from.y) * PROJECTILE_FLIGHT_MS_PER_TILE;
+const PROJECTILE_FLIGHT_SCALE: Readonly<Record<ProjectileKind, number>> = {
+  dart: 0.9,
+  bolt: 1,
+  tracer: 0.35,
+  pellets: 0.6,
+  spit: 1.25,
+};
+
+export const projectileFlightMs = (kind: ProjectileKind, from: TilePoint, to: TilePoint): number =>
+  (PROJECTILE_BASE_FLIGHT_MS + Math.hypot(to.x - from.x, to.y - from.y) * PROJECTILE_FLIGHT_MS_PER_TILE) * PROJECTILE_FLIGHT_SCALE[kind];
+
+const projectileOf = (style: 'melee' | 'ranged', weapon: WeaponKind | null): ProjectileKind | null => {
+  if (style !== 'ranged') return null;
+  return weapon ? (WEAPON_KIND_INFO[weapon].projectile ?? 'bolt') : 'spit';
+};
 
 export class WorldState {
   zone: ActiveZone | null = null;
@@ -159,18 +178,21 @@ export class WorldState {
     const now = performance.now();
     const attacker = this.entities.get(message.attackerId);
     const target = this.entities.get(message.targetId);
+    const weapon = message.weapon ?? null;
+    const projectile = projectileOf(message.style, weapon);
     if (attacker) {
       attacker.attackAt = now;
+      attacker.attackWeapon = weapon;
       attacker.lastCombatAt = now;
     }
-    const impactAt = message.style === 'ranged' && attacker && target ? now + projectileFlightMs(attacker.to, target.to) : now;
+    const impactAt = projectile && attacker && target ? now + projectileFlightMs(projectile, attacker.to, target.to) : now;
     if (target) {
       target.vitals = message.vitals;
       target.lastCombatAt = now;
       if (message.outcome === 'hit') target.hurtAt = impactAt;
     }
     if (message.targetId === this.selfEntityId) this.selfVitals = message.vitals;
-    const event: CombatHitEvent = { ...message, at: now, impactAt };
+    const event: CombatHitEvent = { ...message, weapon, projectile, at: now, impactAt };
     for (const listener of this.hitListeners) listener(event);
   }
 
@@ -222,6 +244,7 @@ function toClientEntity(snapshot: EntitySnapshot): ClientEntity {
     vitals: snapshot.vitals,
     lastCombatAt: -Infinity,
     attackAt: -Infinity,
+    attackWeapon: null,
     hurtAt: -Infinity,
     dyingAt: null,
     gear: snapshot.gear,

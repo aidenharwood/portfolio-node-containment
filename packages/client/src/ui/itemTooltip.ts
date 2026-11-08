@@ -5,6 +5,9 @@ import {
   type EquipmentState,
   SKILL_INFO,
   STAT_INFO,
+  WEAPON_KIND_INFO,
+  attackPace,
+  type WeaponProfile,
   type ItemDefinition,
   type SkillId,
   type StatId,
@@ -54,10 +57,18 @@ function renderTooltip(item: ItemDefinition): void {
     tooltip,
     h('p', { className: `tooltip-name rarity-${item.rarity}` }, item.name),
     h('p', { className: 'tooltip-meta' }, `${item.rarity}${equipment ? ` · ${EQUIPMENT_SLOT_LABELS[equipment.slot]}` : ` · ${item.category}`}`),
+    equipment?.weapon && h('p', { className: 'tooltip-meta' }, weaponSummary(equipment.weapon)),
     equipment && renderStats(item),
     requirementLines.length > 0 && h('p', { className: 'tooltip-requirements' }, `Requires ${requirementLines.join(', ')}`),
     h('p', { className: 'tooltip-examine' }, item.examine),
   );
+}
+
+function weaponSummary(weapon: WeaponProfile): string {
+  const info = WEAPON_KIND_INFO[weapon.kind];
+  const grip = info.grip === 'twoHanded' ? 'Two-handed' : 'One-handed';
+  const reach = info.style === 'ranged' ? `Range ${weapon.range}` : weapon.range > 1 ? `Reach ${weapon.range}` : 'Melee';
+  return `${grip} ${info.name.toLowerCase()} · ${attackPace(weapon.speedTicks)} · ${reach}`;
 }
 
 function renderStats(item: ItemDefinition): HTMLElement | null {
