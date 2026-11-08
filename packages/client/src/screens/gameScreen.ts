@@ -71,7 +71,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   const questTracking = new QuestTracking();
   const objectives = new ObjectiveTracker(questTracking);
   const guidanceRoute = new GuidanceRoute(world);
-  questTracking.onChange(() => guidanceRoute.invalidate());
+  questTracking.onChange(() => refreshGuidance());
   const bubble = new InteractionBubble();
   const speech = new SpeechLayer();
   const combatOverlay = new CombatOverlay(world);
@@ -137,7 +137,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     const self = world.self;
     const areas = world.zone?.definition.areas ?? [];
     if (!self) return;
-    objectiveBeacons = objectiveAreas(self.quests, GAME_CONTENT.quests).flatMap((target) =>
+    objectiveBeacons = objectiveAreas(self.quests, GAME_CONTENT.quests, questTracking.questId).flatMap((target) =>
       areas
         .filter((area) => area.districtId === target.districtId && area.id === target.areaId)
         .map((area) => ({ x: area.rect.x + Math.floor(area.rect.width / 2), y: area.rect.y + Math.floor(area.rect.height / 2) })),
@@ -150,12 +150,12 @@ export function createGameScreen(app: AppNavigator): Screen {
     questTracking.bind(self.characterId);
     npcMarkers = new Map();
     for (const npc of GAME_CONTENT.npcs.values()) {
-      const marker = npcQuestMarker(npc.id, self.quests, GAME_CONTENT.quests);
+      const marker = npcQuestMarker(npc.id, self.quests, GAME_CONTENT.quests, questTracking.questId);
       if (marker) npcMarkers.set(npc.id, marker);
     }
     setTooltipEquipment(self.equipment);
-    objectiveObjects = objectiveObjectIds(self.quests, GAME_CONTENT.quests, GAME_CONTENT.worldObjects, GAME_CONTENT.recipes);
-    objectiveCreatures = objectiveCreatureIds(self.quests, GAME_CONTENT.quests);
+    objectiveObjects = objectiveObjectIds(self.quests, GAME_CONTENT.quests, questTracking.questId, GAME_CONTENT.worldObjects, GAME_CONTENT.recipes);
+    objectiveCreatures = objectiveCreatureIds(self.quests, GAME_CONTENT.quests, questTracking.questId);
     refreshBeacons();
     guidanceRoute.invalidate();
     objectives.update(self.quests);

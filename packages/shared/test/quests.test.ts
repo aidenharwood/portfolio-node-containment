@@ -65,11 +65,11 @@ describe('quest progression', () => {
 
 test('an NPC only advertises a quest once the quests it requires are complete', () => {
   const done = (questId: string) => ({ questId, status: 'completed' as const, stepIndex: 0, objectiveProgress: [] });
-  assert.equal(npcQuestMarker('artificer-duval', {}, GAME_CONTENT.quests), 'available', 'Rimeguard is offered straight away');
+  assert.equal(npcQuestMarker('artificer-duval', {}, GAME_CONTENT.quests, null), 'available', 'Rimeguard is offered straight away');
   const rimeguardTaken = { rimeguard: done('rimeguard') };
-  assert.equal(npcQuestMarker('artificer-duval', rimeguardTaken, GAME_CONTENT.quests), null, 'Servo Salvage waits for Cold Storage');
-  assert.equal(npcQuestMarker('artificer-duval', { ...rimeguardTaken, 'cold-storage': done('cold-storage') }, GAME_CONTENT.quests), 'available');
-  assert.equal(npcQuestMarker('archivist-sel', {}, GAME_CONTENT.quests), null, 'the Council does not call before Halvorsen is found');
+  assert.equal(npcQuestMarker('artificer-duval', rimeguardTaken, GAME_CONTENT.quests, null), null, 'Servo Salvage waits for Cold Storage');
+  assert.equal(npcQuestMarker('artificer-duval', { ...rimeguardTaken, 'cold-storage': done('cold-storage') }, GAME_CONTENT.quests, null), 'available');
+  assert.equal(npcQuestMarker('archivist-sel', {}, GAME_CONTENT.quests, null), null, 'the Council does not call before Halvorsen is found');
 });
 
 test('the focused quest is the preferred active quest, falling back to the first active one', () => {

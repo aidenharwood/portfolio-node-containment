@@ -1,7 +1,7 @@
 import type { RecipeDefinition } from '../crafting/recipes.ts';
 import type { AreaId, DistrictId, NpcId, QuestId, WorldObjectId } from '../ids.ts';
 import type { WorldObjectDefinition } from '../world/entities.ts';
-import { isHandheld, objectiveGoal, type QuestDefinition, type QuestObjective, type QuestStepDefinition } from './questDefinition.ts';
+import { objectiveGoal, type QuestDefinition, type QuestObjective, type QuestStepDefinition } from './questDefinition.ts';
 import type { QuestLog } from './questProgress.ts';
 
 export interface TrackedObjective {
@@ -47,17 +47,13 @@ export function focusedQuest(
   return active.find(({ quest }) => quest.id === preferred) ?? active[0];
 }
 
-export function handheldQuests(log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>): TrackedQuest[] {
-  return trackedQuests(log, quests).filter(({ quest }) => isHandheld(quest));
-}
-
-export function focusedHandheldQuest(
+export function guidedQuest(
   log: QuestLog,
   quests: ReadonlyMap<QuestId, QuestDefinition>,
   preferred: QuestId | null,
-): TrackedQuest | undefined {
-  const handheld = handheldQuests(log, quests);
-  return handheld.find(({ quest }) => quest.id === preferred) ?? handheld[0];
+): TrackedQuest[] {
+  const focused = focusedQuest(log, quests, preferred);
+  return focused ? [focused] : [];
 }
 
 export const isOfferUnlocked = (quest: QuestDefinition, log: QuestLog): boolean =>
@@ -65,8 +61,13 @@ export const isOfferUnlocked = (quest: QuestDefinition, log: QuestLog): boolean 
 
 const categoryOrder = (quest: QuestDefinition): number => ({ tutorial: 0, main: 1, side: 2 })[quest.category];
 
-export function npcQuestMarker(npcId: NpcId, log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>): NpcQuestMarker {
-  const isObjective = handheldQuests(log, quests).some(({ objectives }) =>
+export function npcQuestMarker(
+  npcId: NpcId,
+  log: QuestLog,
+  quests: ReadonlyMap<QuestId, QuestDefinition>,
+  preferred: QuestId | null,
+): NpcQuestMarker {
+  const isObjective = guidedQuest(log, quests, preferred).some(({ objectives }) =>
     objectives.some(
       ({ objective, done }) =>
         !done && (objective.type === 'talkTo' || objective.type === 'signal') && objective.npcId === npcId,
@@ -77,9 +78,9 @@ export function npcQuestMarker(npcId: NpcId, log: QuestLog, quests: ReadonlyMap<
   return offersQuest ? 'available' : null;
 }
 
-export function objectiveCreatureIds(log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>): Set<string> {
+export function objectiveCreatureIds(log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>, preferred: QuestId | null): Set<string> {
   const ids = new Set<string>();
-  for (const { objectives } of handheldQuests(log, quests)) {
+  for (const { objectives } of guidedQuest(log, quests, preferred)) {
     for (const { objective, done } of objectives) {
       if (!done && objective.type === 'defeat') ids.add(objective.creatureId);
     }
@@ -92,8 +93,8 @@ export interface ObjectiveArea {
   readonly areaId: AreaId;
 }
 
-export function objectiveAreas(log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>): ObjectiveArea[] {
-  return handheldQuests(log, quests).flatMap(({ objectives }) =>
+export function objectiveAreas(log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>, preferred: QuestId | null): ObjectiveArea[] {
+  return guidedQuest(log, quests, preferred).flatMap(({ objectives }) =>
     objectives.flatMap(({ objective, done }) => (!done && objective.type === 'enterArea' ? [{ districtId: objective.districtId, areaId: objective.areaId }] : [])),
   );
 }
@@ -123,11 +124,12 @@ export function objectIdsForObjective(
 export function objectiveObjectIds(
   log: QuestLog,
   quests: ReadonlyMap<QuestId, QuestDefinition>,
+  preferred: QuestId | null,
   objects: ReadonlyMap<WorldObjectId, WorldObjectDefinition> = new Map(),
   recipes: ReadonlyMap<string, RecipeDefinition> = new Map(),
 ): Set<WorldObjectId> {
   const ids = new Set<WorldObjectId>();
-  for (const { objectives } of handheldQuests(log, quests)) {
+  for (const { objectives } of guidedQuest(log, quests, preferred)) {
     for (const { objective, done } of objectives) {
       if (!done) for (const id of objectIdsForObjective(objective, objects, recipes)) ids.add(id);
     }

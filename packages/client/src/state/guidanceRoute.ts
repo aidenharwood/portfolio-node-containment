@@ -1,6 +1,6 @@
 import {
   findPath,
-  focusedHandheldQuest,
+  focusedQuest,
   GAME_CONTENT,
   routeGoals,
   tileKey,
@@ -56,7 +56,7 @@ export class GuidanceRoute {
   private plan(origin: TilePoint, preferred: QuestId | null): TilePoint[] {
     const { self, zone } = this.world;
     if (!self || !zone) return [];
-    const tracked = focusedHandheldQuest(self.quests, GAME_CONTENT.quests, preferred);
+    const tracked = focusedQuest(self.quests, GAME_CONTENT.quests, preferred);
     if (!tracked) return [];
     const goals = routeGoals(tracked, this.scene(zone.definition), GAME_CONTENT);
     const here = zone.layout.districtAt(origin);

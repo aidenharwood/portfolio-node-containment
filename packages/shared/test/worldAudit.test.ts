@@ -51,9 +51,9 @@ describe('world audit', () => {
   });
 
   test('area objectives produce beacons and object objectives produce rings', () => {
-    assert.deepEqual(objectiveAreas(activeAt('orientation-protocol', 4), GAME_CONTENT.quests), [{ districtId: 'intake-wing', areaId: 'observation' }]);
-    assert.deepEqual(objectiveAreas(activeAt('cleared-for-transit', 3), GAME_CONTENT.quests), [{ districtId: 'meridian-atrium', areaId: 'lift-bay' }]);
-    const tramRings = objectiveObjectIds(activeAt('cleared-for-transit', 2), GAME_CONTENT.quests, GAME_CONTENT.worldObjects);
+    assert.deepEqual(objectiveAreas(activeAt('orientation-protocol', 4), GAME_CONTENT.quests, null), [{ districtId: 'intake-wing', areaId: 'observation' }]);
+    assert.deepEqual(objectiveAreas(activeAt('cleared-for-transit', 3), GAME_CONTENT.quests, null), [{ districtId: 'meridian-atrium', areaId: 'lift-bay' }]);
+    const tramRings = objectiveObjectIds(activeAt('cleared-for-transit', 2), GAME_CONTENT.quests, null, GAME_CONTENT.worldObjects);
     for (const objectId of ['tram-car-door', 'tram-car-window', 'tram-car-nose-left', 'tram-car-nose-right']) assert.ok(tramRings.has(objectId), objectId);
   });
 
