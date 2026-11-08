@@ -30,11 +30,7 @@ export class InteractionBubble {
           h('span', { className: 'bubble-verb' }, primary.verb),
           primary.subject && h('span', { className: `bubble-subject tone-${primary.subjectTone ?? 'object'}` }, primary.subject),
         ),
-        (content.subtitle || content.objective) &&
-          h('div', { className: 'bubble-meta' },
-            content.objective && h('span', { className: 'bubble-objective' }, '◆ Objective'),
-            content.subtitle && h('span', { className: content.threat ? `bubble-threat threat-${content.threat}` : '' }, content.subtitle),
-          ),
+        bubbleMeta(content),
         h('div', { className: 'bubble-hints' },
           h('span', { className: 'mouse-hint' }, h('span', { className: 'mouse-icon left' }), primary.verb),
           others.length > 0 && h('span', { className: 'mouse-hint' }, h('span', { className: 'mouse-icon right' }), others.map((action) => action.verb).join(' · ')),
@@ -53,4 +49,12 @@ export class InteractionBubble {
     this.element.hidden = true;
     this.signature = '';
   }
+}
+
+export function bubbleMeta(content: BubbleContent): HTMLElement | null {
+  if (!content.subtitle && !content.objective) return null;
+  return h('div', { className: 'bubble-meta' },
+    content.objective && h('span', { className: 'bubble-objective' }, '◆ Objective'),
+    content.subtitle && h('span', { className: content.threat ? `bubble-threat threat-${content.threat}` : '' }, content.subtitle),
+  );
 }

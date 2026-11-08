@@ -12,7 +12,7 @@ import { ChatLog } from '../hud/chatLog.ts';
 import { CombatOverlay } from '../hud/combatOverlay.ts';
 import { ContextMenu } from '../hud/contextMenu.ts';
 import { DialogueBox } from '../hud/dialogueBox.ts';
-import { InteractionBubble, type BubbleContent } from '../hud/interactionBubble.ts';
+import { InteractionBubble, bubbleMeta, type BubbleContent } from '../hud/interactionBubble.ts';
 import { Minimap } from '../hud/minimap.ts';
 import { ClickIndicator, type ClickTone } from '../hud/clickIndicator.ts';
 import { ObjectiveTracker } from '../hud/objectiveTracker.ts';
@@ -330,11 +330,13 @@ export function createGameScreen(app: AppNavigator): Screen {
     const stacked = targets.flatMap((target) => actionsForTarget(target, context));
     const walk = stacked.findLast((action) => action.verb === 'Walk here');
     const actions = [...stacked.filter((action) => action.verb !== 'Walk here'), ...(walk ? [walk] : [])];
+    const touchContent = pointerIsTouch ? bubbleContentFor(targets.find((target) => target.kind !== 'tile') ?? null) : null;
+    const touchDetails = touchContent ? bubbleMeta(touchContent) : null;
     bubble.hide();
     drag = null;
     if (pointerIsTouch) forgetTouchPointer();
     clickOrigin = { clientX: event.clientX, clientY: event.clientY };
-    if (actions.length > 0) menu.open(event.clientX, event.clientY, actions);
+    if (actions.length > 0) menu.open(event.clientX, event.clientY, actions, touchDetails);
   });
 
   canvas.addEventListener('wheel', (event) => {

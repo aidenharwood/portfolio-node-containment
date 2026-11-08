@@ -17,13 +17,37 @@ import { h, replaceChildren } from './dom.ts';
 const tooltip = h('div', { className: 'item-tooltip panel', hidden: true, role: 'tooltip' });
 document.body.append(tooltip);
 
+const EDGE_MARGIN = 8;
+const MENU_GAP = 6;
+
 let equipped: EquipmentState = {};
+let lastPointerType = '';
+const touchSources = new WeakMap<Element, () => ItemDefinition | null>();
+
+window.addEventListener('pointerdown', (event) => {
+  lastPointerType = event.pointerType;
+  if (event.pointerType === 'touch') hideItemTooltip();
+}, true);
+
+window.addEventListener('pointerup', (event) => {
+  if (event.pointerType === 'touch' && !document.querySelector('.context-menu:not([hidden])')) hideItemTooltip();
+});
+
+window.addEventListener('contextmenu', (event) => {
+  if (lastPointerType !== 'touch' || !(event.target instanceof Element)) return;
+  const definition = touchSourceFor(event.target)?.();
+  if (!definition) return;
+  renderTooltip(definition);
+  tooltip.hidden = false;
+  placeForTouch(event.clientX, event.clientY);
+});
 
 export function setTooltipEquipment(equipment: EquipmentState): void {
   equipped = equipment;
 }
 
 export function attachItemTooltip(target: HTMLElement, item: () => ItemDefinition | null): void {
+  touchSources.set(target, item);
   target.addEventListener('pointerenter', (event) => {
     if (event.pointerType !== 'mouse') return;
     const definition = item();
@@ -46,6 +70,36 @@ function position(event: PointerEvent): void {
   const bounds = tooltip.getBoundingClientRect();
   tooltip.style.left = `${Math.min(event.clientX + 16, window.innerWidth - bounds.width - 8)}px`;
   tooltip.style.top = `${Math.min(event.clientY + 16, window.innerHeight - bounds.height - 8)}px`;
+}
+
+function touchSourceFor(start: Element): (() => ItemDefinition | null) | undefined {
+  for (let node: Element | null = start; node; node = node.parentElement) {
+    const source = touchSources.get(node);
+    if (source) return source;
+  }
+  return undefined;
+}
+
+function placeForTouch(clientX: number, clientY: number): void {
+  const bounds = tooltip.getBoundingClientRect();
+  const menu = document.querySelector<HTMLElement>('.context-menu:not([hidden])')?.getBoundingClientRect();
+  const anchor = menu ?? new DOMRect(clientX, clientY, 0, 0);
+  const clampX = (x: number) => Math.max(EDGE_MARGIN, Math.min(x, window.innerWidth - bounds.width - EDGE_MARGIN));
+  const clampY = (y: number) => Math.max(EDGE_MARGIN, Math.min(y, window.innerHeight - bounds.height - EDGE_MARGIN));
+  const centredX = clampX(anchor.left + anchor.width / 2 - bounds.width / 2);
+  const above = anchor.top - MENU_GAP - bounds.height;
+  const below = anchor.bottom + MENU_GAP;
+  const right = anchor.right + MENU_GAP;
+  const left = anchor.left - MENU_GAP - bounds.width;
+  let x = centredX;
+  let y: number;
+  if (above >= EDGE_MARGIN) y = above;
+  else if (below + bounds.height <= window.innerHeight - EDGE_MARGIN) y = below;
+  else if (right + bounds.width <= window.innerWidth - EDGE_MARGIN) [x, y] = [right, clampY(anchor.top)];
+  else if (left >= EDGE_MARGIN) [x, y] = [left, clampY(anchor.top)];
+  else y = EDGE_MARGIN;
+  tooltip.style.left = `${x}px`;
+  tooltip.style.top = `${y}px`;
 }
 
 function renderTooltip(item: ItemDefinition): void {

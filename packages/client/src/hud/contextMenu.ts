@@ -41,12 +41,13 @@ export class ContextMenu {
     return !this.element.hidden;
   }
 
-  open(clientX: number, clientY: number, actions: readonly MenuAction[]): void {
+  open(clientX: number, clientY: number, actions: readonly MenuAction[], touchDetails?: HTMLElement | null): void {
     this.itemActions.clear();
     this.highlighted = null;
     this.heldPointerId = this.touchesDown.size === 1 ? ([...this.touchesDown][0] ?? null) : null;
     replaceChildren(
       this.element,
+      this.heldPointerId !== null && touchDetails && h('div', { className: 'context-details' }, touchDetails),
       h('div', { className: 'context-title' }, 'Choose Option'),
       ...[...actions, { verb: 'Cancel', run: () => undefined }].map((action) => {
         const button = h('button', {

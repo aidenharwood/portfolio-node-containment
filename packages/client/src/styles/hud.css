@@ -918,6 +918,15 @@
   --bevel: 6px;
 }
 
+.context-details {
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.context-details .bubble-meta {
+  margin: 0;
+}
+
 .context-title {
   font-family: var(--font-display);
   font-size: 11px;
