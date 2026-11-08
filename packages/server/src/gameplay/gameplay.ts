@@ -133,6 +133,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
 
   leaveWorld(player: Player): void {
     if (this.online.get(player.record.id) !== player) return;
+    this.combat.recover(player);
     this.dialogues.close(player);
     this.stopActivities(player);
     this.world.despawn(player);
@@ -142,6 +143,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
   }
 
   handle(player: Player, message: GameplayMessage): void {
+    if (player.incapacitatedAtTick !== null && message.type !== 'chat.say') return;
     switch (message.type) {
       case 'world.walk':
         this.dialogues.close(player);
@@ -312,6 +314,12 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
   notify(player: Player, tone: NoticeTone, text: string): void {
     player.send({ type: 'notice', tone, text });
     player.send({ type: 'chat.message', channel: 'system', text });
+  }
+
+  onIncapacitated(player: Player): void {
+    this.shops.close(player);
+    this.stopActivities(player);
+    this.dialogues.close(player);
   }
 
   recoverIncapacitated(player: Player): void {

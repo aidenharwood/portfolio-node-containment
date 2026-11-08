@@ -9,6 +9,7 @@ import {
   type QuestProgress,
   type WorldLocation,
 } from '@containment/shared';
+import { PLAYER_RECOVERY_TICKS } from '../src/gameplay/combatController.ts';
 import { CONSUMABLE_COOLDOWN_MESSAGE } from '../src/gameplay/gearController.ts';
 import { createHarness, finishDialogue, type Harness, at, districtOf, levelPoint } from './support/testHarness.ts';
 
@@ -142,6 +143,42 @@ describe('combat', () => {
     assert.equal(player.integrity, player.maxIntegrity);
     assert.equal(player.combatTargetId, null);
     assert.match(harness.sink.last('notice')?.text ?? '', /incapacitated/);
+  });
+
+  test('an incapacitated operative lies where they fell before medical recovers them', () => {
+    const harness = createHarness({
+      prepare: prepared(at('sector-two', { x: 9, y: 11 }), {}, { vitals: { integrity: 1 } }),
+    });
+    const { player, sink } = harness;
+    const fell = () => sink.messages.some((message) => message.type === 'combat.death' && message.entityId === player.entityId);
+    harness.ticksUntil(fell, 200);
+    const fallenAt = player.position;
+    assert.equal(districtOf(player), 'sector-two');
+    assert.equal(player.integrity, 0);
+
+    harness.send({ type: 'world.walk', target: levelPoint('sector-two', { x: 9, y: 13 }) });
+    let ticks = 0;
+    while (districtOf(player) === 'sector-two' && ticks < 50) {
+      assert.deepEqual(player.position, fallenAt);
+      harness.gameplay.tick();
+      ticks++;
+    }
+    assert.equal(ticks, PLAYER_RECOVERY_TICKS);
+    assert.equal(districtOf(player), 'meridian-atrium');
+    assert.equal(player.integrity, player.maxIntegrity);
+  });
+
+  test('an operative who disconnects while incapacitated is saved recovered', () => {
+    const harness = createHarness({
+      prepare: prepared(at('sector-two', { x: 9, y: 11 }), {}, { vitals: { integrity: 1 } }),
+    });
+    const { player, sink } = harness;
+    harness.ticksUntil(() => sink.messages.some((message) => message.type === 'combat.death' && message.entityId === player.entityId), 200);
+    harness.gameplay.leaveWorld(player);
+    const saved = harness.saved.at(-1);
+    assert.ok(saved);
+    assert.equal(saved.vitals.integrity, player.maxIntegrity);
+    assert.deepEqual(saved.location, at('meridian-atrium', { x: 20, y: 29 }));
   });
 
   test('creatures give up the chase beyond their leash and heal', () => {

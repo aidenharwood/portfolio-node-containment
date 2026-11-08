@@ -62,6 +62,7 @@ export class Player {
   nextConsumableTick = 0;
   lastCombatTick = -Infinity;
   lastChaseTarget: TilePoint | null = null;
+  incapacitatedAtTick: number | null = null;
   interestChunk: ChunkCoord | null = null;
   private stateDirty = true;
 

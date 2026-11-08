@@ -33,10 +33,12 @@ export interface CombatHost {
   raiseQuestEvent(player: Player, event: QuestEvent): void;
   notify(player: Player, tone: NoticeTone, text: string): void;
   recoverIncapacitated(player: Player): void;
+  onIncapacitated(player: Player): void;
   dropToGround(owner: Player, itemId: string, quantity: number, position: TilePoint): void;
 }
 
 const DEATH_ANIMATION_TICKS = 3;
+export const PLAYER_RECOVERY_TICKS = 7;
 const CHASE_REPATH_TICKS = 2;
 const CREATURE_PATH_SEARCH_LIMIT = 400;
 const REGENERATION_INTERVAL_TICKS = 20;
@@ -95,6 +97,10 @@ export class CombatController {
   }
 
   private updatePlayer(player: Player, level: LevelInstance, tick: number): void {
+    if (player.incapacitatedAtTick !== null) {
+      if (tick >= player.incapacitatedAtTick + PLAYER_RECOVERY_TICKS) this.recover(player);
+      return;
+    }
     if (player.combatTargetId === null) return;
     const creature = level.creatures.get(player.combatTargetId);
     if (!creature?.isAlive) {
@@ -229,7 +235,7 @@ export class CombatController {
     });
 
     if (player.isIncapacitated) {
-      this.incapacitate(player, level);
+      this.incapacitate(player, level, tick);
       return;
     }
     const idle = player.combatTargetId === null && player.path.length === 0 && !player.pendingInteraction && !player.dialogue;
@@ -274,14 +280,23 @@ export class CombatController {
     this.host.raiseQuestEvent(player, { type: 'defeated', creatureId: creature.definition.id });
   }
 
-  private incapacitate(player: Player, level: LevelInstance): void {
+  recover(player: Player): void {
+    if (player.incapacitatedAtTick === null) return;
+    player.incapacitatedAtTick = null;
+    this.host.recoverIncapacitated(player);
+  }
+
+  private incapacitate(player: Player, level: LevelInstance, tick: number): void {
     level.broadcastNear(player.position, { type: 'combat.death', entityId: player.entityId });
     for (const creature of level.creatures.values()) {
       if (creature.targetId === player.entityId) this.sendHome(creature, level);
     }
     player.combatTargetId = null;
+    player.lastChaseTarget = null;
     player.path = [];
-    this.host.recoverIncapacitated(player);
+    player.pendingInteraction = null;
+    player.incapacitatedAtTick = tick;
+    this.host.onIncapacitated(player);
   }
 
   private targetAbandoned(creature: Creature, level: LevelInstance): boolean {
@@ -356,7 +371,7 @@ export class CombatController {
 
   private regenerate(level: LevelInstance, tick: number): void {
     for (const player of level.players.values()) {
-      if (player.integrity >= player.maxIntegrity || tick - player.lastCombatTick < OUT_OF_COMBAT_TICKS) continue;
+      if (player.incapacitatedAtTick !== null || player.integrity >= player.maxIntegrity || tick - player.lastCombatTick < OUT_OF_COMBAT_TICKS) continue;
       player.setIntegrity(player.integrity + 1);
     }
   }
