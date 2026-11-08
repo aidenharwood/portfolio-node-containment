@@ -51,3 +51,5 @@ export * from './protocol/serverMessages.ts';
 export * from './content/contentIntegrity.ts';
 export * from './content/craftingIntegrity.ts';
 export * from './content/gameContent.ts';
+export * from './content/levelIndex.ts';
+export * from './content/levelIntegrity.ts';

@@ -31,7 +31,14 @@ import { SHOPS } from './shops.ts';
 import type { RecipeDefinition } from '../crafting/recipes.ts';
 import type { DialogueDefinition } from '../dialogue/dialogue.ts';
 import type { ItemCatalog, ItemDefinition } from '../gear/items.ts';
-import type { DialogueId, NpcId, QuestId, WorldObjectId, DistrictId } from '../ids.ts';
+import type { DialogueId, DistrictId, LevelId, NpcId, QuestId, WorldObjectId } from '../ids.ts';
+import type { ResolvedLevel } from '../world/levelLayout.ts';
+import { buildLevelIndex } from './levelIndex.ts';
+import { MAIN_FLOOR } from './levels/mainFloor.ts';
+import { MERIDIAN_BELOW_LEVEL } from './levels/meridianBelowLevel.ts';
+import { THE_DEEP } from './levels/theDeep.ts';
+import { THE_THRESHOLD } from './levels/theThreshold.ts';
+import { UNDERCROFT_LEVEL } from './levels/undercroftLevel.ts';
 import type { QuestDefinition } from '../quests/questDefinition.ts';
 import type { NpcDefinition, WorldObjectDefinition } from '../world/entities.ts';
 import type { DistrictDefinition } from '../world/district.ts';
@@ -67,6 +74,8 @@ export interface GameContent {
   readonly dialogues: ReadonlyMap<DialogueId, DialogueDefinition>;
   readonly quests: ReadonlyMap<QuestId, QuestDefinition>;
   readonly districts: ReadonlyMap<DistrictId, DistrictDefinition>;
+  readonly levels: ReadonlyMap<LevelId, ResolvedLevel>;
+  readonly levelOfDistrict: ReadonlyMap<DistrictId, LevelId>;
   readonly creatures: ReadonlyMap<CreatureId, CreatureDefinition>;
   readonly shops: ReadonlyMap<ShopId, ShopDefinition>;
   readonly recipes: ReadonlyMap<string, RecipeDefinition>;
@@ -90,6 +99,9 @@ function indexById<T extends { readonly id: string }>(entries: readonly T[]): Re
   }
   return index;
 }
+
+const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([INTAKE_WING, MERIDIAN_ATRIUM, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW]);
+const LEVEL_INDEX = buildLevelIndex([MAIN_FLOOR, UNDERCROFT_LEVEL, THE_DEEP, THE_THRESHOLD, MERIDIAN_BELOW_LEVEL], DISTRICTS);
 
 export const GAME_CONTENT: GameContent = {
   items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS]),
@@ -137,7 +149,9 @@ export const GAME_CONTENT: GameContent = {
     THE_ANSWER,
     ...ACT_TWO_SIDE_QUESTS,
   ]),
-  districts: indexById([INTAKE_WING, MERIDIAN_ATRIUM, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW]),
+  districts: DISTRICTS,
+  levels: LEVEL_INDEX.levels,
+  levelOfDistrict: LEVEL_INDEX.levelOfDistrict,
   creatures: indexById([...CREATURES, ...DEEP_CREATURES]),
   shops: indexById(SHOPS),
   recipes: indexById(RECIPES),

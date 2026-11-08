@@ -7,6 +7,7 @@ import { TILE_KINDS } from '../world/tiles.ts';
 import { parseTileLayout } from '../world/district.ts';
 import { findCraftingIssues, rawSourceTiers } from './craftingIntegrity.ts';
 import type { GameContent } from './gameContent.ts';
+import { findLevelIssues } from './levelIntegrity.ts';
 
 export function findContentIssues(content: GameContent): string[] {
   const issues: string[] = [];
@@ -191,5 +192,6 @@ export function findContentIssues(content: GameContent): string[] {
   checkQuest('newCharacter', content.newCharacter.startingQuestId);
 
   issues.push(...findCraftingIssues(content));
+  issues.push(...findLevelIssues(content));
   return issues;
 }
