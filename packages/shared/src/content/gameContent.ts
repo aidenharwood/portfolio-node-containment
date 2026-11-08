@@ -62,6 +62,9 @@ import { THE_FAR_SIDE } from './quests/theFarSide.ts';
 import { THE_KNOCKING } from './quests/theKnocking.ts';
 import { WORLD_OBJECTS } from './worldObjects.ts';
 import { TRANSIT_OBJECTS } from './transitObjects.ts';
+import { POCKET_OBJECTS } from './pocketObjects.ts';
+import { VERDANT_FOLD } from './districts/verdantFold.ts';
+import { VERDANT_FOLD_LEVEL } from './levels/verdantFoldLevel.ts';
 import { buildTramNetwork, TRAM_LINES, TRAM_STATIONS } from './tramNetwork.ts';
 import type { TramNetwork } from '../world/tram.ts';
 import { INTAKE_WING } from './districts/intakeWing.ts';
@@ -104,8 +107,8 @@ function indexById<T extends { readonly id: string }>(entries: readonly T[]): Re
   return index;
 }
 
-const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([INTAKE_WING, MERIDIAN_ATRIUM, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW]);
-const LEVEL_INDEX: LevelIndex = buildLevelIndex([MAIN_FLOOR, UNDERCROFT_LEVEL, THE_DEEP, THE_THRESHOLD, MERIDIAN_BELOW_LEVEL], DISTRICTS);
+const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([INTAKE_WING, MERIDIAN_ATRIUM, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW, VERDANT_FOLD]);
+const LEVEL_INDEX: LevelIndex = buildLevelIndex([MAIN_FLOOR, UNDERCROFT_LEVEL, THE_DEEP, THE_THRESHOLD, MERIDIAN_BELOW_LEVEL, VERDANT_FOLD_LEVEL], DISTRICTS);
 
 function startingLocation(): WorldLocation {
   const location = locate(LEVEL_INDEX, INTAKE_WING.id, { x: 4, y: 5 });
@@ -116,7 +119,7 @@ function startingLocation(): WorldLocation {
 export const GAME_CONTENT: GameContent = {
   items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS]),
   npcs: indexById([...NPCS, ...DEEP_NPCS]),
-  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS]),
+  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS]),
   dialogues: indexById([
     REYES_DIALOGUE,
     VARGA_DIALOGUE,

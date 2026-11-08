@@ -344,7 +344,9 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
   }
 
   onLevelEntered(player: Player, levelId: LevelId): void {
-    player.addFlag(visitedLevelFlag(levelId));
+    const firstVisit = player.addFlag(visitedLevelFlag(levelId));
+    const level = this.content.levels.get(levelId);
+    if (firstVisit && level?.definition.kind === 'pocket') this.notify(player, 'info', `You have slipped into ${level.name}. It is on your world map now.`);
   }
 
   notify(player: Player, tone: NoticeTone, text: string): void {
