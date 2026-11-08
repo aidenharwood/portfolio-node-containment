@@ -227,3 +227,34 @@ describe('dormancy and interest-bounded intents', () => {
     assert.equal(a.player.pendingInteraction, null);
   });
 });
+
+describe('review fixes', () => {
+  test('a same-level recovery refreshes the player for observers who see both ends', () => {
+    const { gameplay, operatives } = deep([
+      { districtId: 'signal-array', position: { x: 12, y: 10 } },
+      { districtId: 'deepwatch', position: { x: 2, y: 10 } },
+    ]);
+    const [a, b] = operatives;
+    assert.ok(a && b);
+    assert.ok(b.sink.last('world.entered')?.entities.some((entity) => entity.id === a.player.entityId));
+    b.sink.messages.length = 0;
+    gameplay.recoverIncapacitated(a.player);
+    assert.equal(gameplay.world.districtOf(a.player), 'deepwatch');
+    assert.ok(ofType(b.sink, 'world.entitySpawned').some((message) => message.entity.id === a.player.entityId));
+  });
+
+  test('a creature reset home while unwatched reappears for whoever watches its home', () => {
+    const { gameplay, operatives } = deep([{ districtId: 'deepwatch', position: { x: 2, y: 10 } }]);
+    const [o] = operatives;
+    assert.ok(o);
+    const level = gameplay.world.levelOf(o.player);
+    const creature = [...level.creatures.values()].find((candidate) => candidate.home.x < 28 && candidate.home.y >= 30);
+    assert.ok(creature && level.isInterestOf(o.player, creature.home));
+    creature.position = levelPoint('drowned-archive', { x: 4, y: 4 });
+    creature.targetId = 'player:gone';
+    o.sink.messages.length = 0;
+    gameplay.tick();
+    assert.deepEqual(creature.position, creature.home);
+    assert.ok(ofType(o.sink, 'world.entitySpawned').some((message) => message.entity.id === creature.entityId));
+  });
+});

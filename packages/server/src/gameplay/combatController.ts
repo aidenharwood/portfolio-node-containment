@@ -168,7 +168,10 @@ export class CombatController {
     const isWatched = watched.has(chunkKeyOf(creature.position));
     if (creature.targetId && this.targetAbandoned(creature, level)) {
       if (isWatched) this.sendHome(creature, level);
-      else this.resetHome(creature);
+      else {
+        this.resetHome(creature);
+        level.broadcastNear(creature.position, { type: 'world.entitySpawned', entity: creature.snapshot() });
+      }
     }
     if (!isWatched) return;
 

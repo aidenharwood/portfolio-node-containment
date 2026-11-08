@@ -139,13 +139,15 @@ export class World {
     const from = player.position;
     const interestBefore = new Map([...level.players.values()].map((other) => [other.entityId, level.interestOf(other)] as const));
     player.relocate({ levelId: level.id, position: level.safeSpawnPoint(target) });
-    const change = level.syncInterest(player);
-    player.send({ type: 'world.entitySpawned', entity: player.snapshot() });
-    level.publishMoves(
-      [{ from, movement: { entityId: player.entityId, position: player.position, facing: player.facing } }],
-      interestBefore,
-      new Map([[player.entityId, change]]),
-    );
+    level.syncInterest(player);
+    const fromKey = chunkKeyOf(from);
+    const snapshot = player.snapshot();
+    player.send({ type: 'world.entitySpawned', entity: snapshot });
+    for (const observer of level.players.values()) {
+      if (observer === player) continue;
+      if (level.isInterestOf(observer, player.position)) observer.send({ type: 'world.entitySpawned', entity: snapshot });
+      else if (interestBefore.get(observer.entityId)?.has(fromKey)) observer.send({ type: 'world.entityDespawned', entityId: player.entityId });
+    }
     this.refreshAreas(player, level);
   }
 
