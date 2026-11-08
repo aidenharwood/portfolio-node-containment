@@ -8,7 +8,7 @@ export const CRYOVAULT: DistrictDefinition = {
   recovery: { districtId: 'deepwatch', position: { x: 5, y: 20 } },
   ambience: { darkness: 0.6, tint: '#081420', fog: '#0c1a28', fixtures: 'failing' },
   map: [
-    '############################################',
+    '#####DD#####################################',
     '#=========#,,,,,,,,,,,,,,,,#_______#=======#',
     '#=========#,,,,,,,,,,,,,,,,#_______#=======#',
     '#=========#,,,,,,,,,,,,,,,,#_______#=======#',
@@ -49,7 +49,6 @@ export const CRYOVAULT: DistrictDefinition = {
   npcs: [{ instanceId: 'cv-fenn', npcId: 'orderly-fenn', position: { x: 31, y: 5 } }],
   objects: [
     { instanceId: 'cv-tram-stop', objectId: 'tram-stop', position: { x: 1, y: 6 }, facing: 'east' },
-    { instanceId: 'cv-lift', objectId: 'cryovault-return', position: { x: 1, y: 4 }, facing: 'east' },
     { instanceId: 'cv-dock-sign', objectId: 'warning-sign', position: { x: 9, y: 1 } },
     { instanceId: 'cv-dock-crate-a', objectId: 'supply-crate', position: { x: 2, y: 8 } },
     { instanceId: 'cv-dock-crate-b', objectId: 'supply-crate', position: { x: 8, y: 8 } },

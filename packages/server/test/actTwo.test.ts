@@ -186,7 +186,7 @@ describe('act two: the answer', () => {
 
     travel(harness, at('drowned-archive', { x: 36, y: 8 }));
     use(harness, 'da-sealed-door-a');
-    assert.equal(player.record.location.position.y, levelPoint('drowned-archive', { x: 36, y: 8 }).y, 'the reading room stays sealed until the sluices are open');
+    assert.equal(player.position.y, levelPoint('drowned-archive', { x: 36, y: 8 }).y, 'the reading room stays sealed until the sluices are open');
 
     for (const valve of ['da-sluice-a', 'da-sluice-b', 'da-sluice-c']) use(harness, valve);
     assert.equal(stepOf(harness, 'original-contract'), 4);
@@ -194,7 +194,7 @@ describe('act two: the answer', () => {
 
     travel(harness, at('drowned-archive', { x: 36, y: 8 }));
     use(harness, 'da-sealed-door-a');
-    assert.ok(player.record.location.position.y >= levelPoint('drowned-archive', { x: 0, y: 11 }).y, 'the drained door opens into the reading room');
+    assert.ok(player.position.y >= levelPoint('drowned-archive', { x: 0, y: 11 }).y, 'the drained door opens into the reading room');
 
     defeat(harness, 'da-last-archivist');
     assert.equal(stepOf(harness, 'original-contract'), 5);
@@ -217,7 +217,7 @@ describe('act two: the answer', () => {
     assert.equal(stepOf(harness, 'stoking-the-fire'), 1);
 
     travel(harness, FURNACE_DOOR);
-    use(harness, 'fc-furnace-door-a');
+    use(harness, 'fu-blast-door-a');
     assert.equal(districtOf(player), 'furnace');
     talk(harness, 'fu-brann');
     assert.equal(stepOf(harness, 'stoking-the-fire'), 3);
@@ -231,7 +231,7 @@ describe('act two: the answer', () => {
 
     travel(harness, at('furnace', { x: 34, y: 8 }));
     use(harness, 'fu-reactor-door-a');
-    assert.ok(player.record.location.position.y >= levelPoint('furnace', { x: 0, y: 11 }).y, 'the vented door opens into the reactor heart');
+    assert.ok(player.position.y >= levelPoint('furnace', { x: 0, y: 11 }).y, 'the vented door opens into the reactor heart');
 
     defeat(harness, 'fu-stoker');
     assert.equal(stepOf(harness, 'stoking-the-fire'), 6);

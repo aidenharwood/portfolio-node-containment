@@ -11,7 +11,9 @@ import {
   type QuestStateProbe,
   type SelfState,
   isStationKnown,
+  isDoorOpenFor,
   visitedLevelFlag,
+  type WorldObjectId,
 } from '@containment/shared';
 import type { Player } from '../world/player.ts';
 
@@ -53,5 +55,15 @@ export const selfStateOf = (player: Player, content: GameContent): SelfState => 
     vitals: player.vitals(),
     discoveredStations: [...content.tram.stations.keys()].filter((stationId) => isStationKnown(content.tram, stationId, (flag) => player.hasFlag(flag))),
     visitedLevels: [...content.levels.keys()].filter((levelId) => player.hasFlag(visitedLevelFlag(levelId))),
+    openDoors: [...openDoorsOf(player, content)],
   };
 };
+
+export function openDoorsOf(player: Player, content: GameContent): Set<WorldObjectId> {
+  const context = conditionContextFor(player, content);
+  const open = new Set<WorldObjectId>();
+  for (const definition of content.worldObjects.values()) {
+    if (definition.door && isDoorOpenFor(definition.id, definition.door, context)) open.add(definition.id);
+  }
+  return open;
+}

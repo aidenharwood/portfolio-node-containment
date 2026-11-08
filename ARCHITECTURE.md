@@ -49,9 +49,19 @@ The world is a handful of continuous **levels** (`content/levels/`): the main fl
 
 - **Intake Wing** (tutorial, tier 1) is self-contained and reached only by tram (the Intake Shuttle). Its quests teach every system in order, each step marked in the world: Orientation Protocol (gear, area travel, dialogue), Field Fabrication (gathering, refining, assembly, storage), Live Fire (combat, consumables, resting) and Cleared for Transit (trading, trams). The last one ends on the tram to the Atrium and hands over to The Knocking.
 - **Meridian Atrium** is the hub: Requisitions and storage, a Fabrication Hall (stations only, no nodes), the medbay, storyline quest givers, the transit hall and the gates out. Every area is safe and nothing hostile lives there.
-- **Beyond the Atrium**, wide concourses lead west to Hydroponics and east to the Service Yards, and the quarantine gate leads north to Sector 2. On the Deep, the Deep Concourse and Furnace Causeway join Deepwatch to every district on foot; story clearance gates the pressure doors at the far end of each corridor. Only the Undercroft (a lift) and the pockets sit off the walking and tram network.
+- **Beyond the Atrium**, wide concourses lead west to Hydroponics and east to the Service Yards, and the quarantine bulkhead opens north straight into the Sector 2 airlock. On the Deep, the Deep Concourse and Furnace Causeway join Deepwatch to every district on foot; story clearance gates the pressure doors at the far end of each corridor, and each door opens directly into its district. Only the Undercroft (a lift) and the pockets sit off the walking and tram network.
 - **Outposts and hostile ground:** each district beyond the hub keeps its friendly NPCs and tram stop in a safe area, and its gathering nodes and creatures outside it.
 - **Returning trainees:** `returnUnfinishedTrainee` (`server/src/characters/traineePlacement.ts`) puts anyone with an unfinished tutorial quest back at the Intake start on login, unless their current step is heading to where they already are. The Intake station is `alwaysKnown`, so anyone can ride back to it.
+
+### Doors
+
+A world object with `door: { conditions }` (`shared/src/world/doors.ts`) is a player-bound door set into a doorway between two areas on the same level. Use one instead of a teleport whenever both sides are on one level.
+
+- The shared walkability grid always treats a door as shut, so creatures and anyone without access are blocked.
+- A door is open for a player who meets its conditions, or who has opened it before (the `door-opened:<objectId>` flag), so losing a key never traps anyone. `openDoorsOf` lists them, `World.walk` and `approach` path through them, and `SelfState.openDoors` tells the client.
+- Interacting with a door walks the player through it (`pathThroughDoor`). The interaction's effects run only on the first opening, and its `failureText` is the locked message.
+- The client slides a door into the floor while you stand near one that is open for you. Other players see it shut.
+- `findLevelIssues` counts every door as open when checking reachability.
 
 ### Safe areas
 
@@ -199,7 +209,7 @@ The tram network is content (`content/tramNetwork.ts`): **stations** (a district
   - **Boarding** lasts `TRAM_BOARDING_TICKS`. Walking, interacting, teleporting or taking damage cancels it.
   - **Riding** lasts `tramRideTicks(stops)`: at least 3 seconds, plus 2 ticks per stop beyond that. The rider stays put, every intent except chat is ignored, and creatures drop and ignore them. The client shows the in-car view between `tram.departed` and `tram.arrived`.
   - **Arrival** teleports the rider to the destination platform. A rider who disconnects mid-ride is saved at the destination.
-- **World map** (`hud/worldMap.ts`, the M key or the minimap's Map button): one tab per floor level, greyed out as "Uncharted" until visited (the `visited:<levelId>` flag, listed in `SelfState.visitedLevels`). It draws each level from its assembled layout with district names and tiers, tram lines and stations, and the player. Districts holding the tracked quest's objectives (`objectiveDistricts`) are outlined. While the player is on a platform, known stations are clickable in the map and the line list.
+- **World map** (`hud/worldMap.ts`, the M key or the minimap's Map button): a full-screen map that pans (drag), zooms (wheel, pinch or the buttons) and recentres on you, with a level dropdown listing every floor level, disabled as "Uncharted" until visited (the `visited:<levelId>` flag, listed in `SelfState.visitedLevels`). It draws each level from its assembled layout with district names and tiers, tram lines and stations, and the player. Districts holding the tracked quest's objectives (`objectiveDistricts`) are outlined. A tram stop opens the same map in transit mode, with a destinations sidebar (a bottom sheet on narrow screens) listing each line and a Ride button per reachable stop. Known stations are also tappable on the map.
 - **Integrity:** `findTramIssues` checks that each station resolves to a placed district and area, has a walkable platform inside that area and a tram stop, and is on a line. It also checks that lines only list known stations and that every tram stop sits inside a station area.
 
 ### Multi-tile assemblies
@@ -210,7 +220,8 @@ Anything bigger than one tile, such as a tram car or a bridge, is an **assembly*
 - **Stretching:** `stretchRow` names a row that repeats `span` times when placed, so one bridge or catwalk definition fits any gap.
 - **Placement:** a district lists `assemblies: [{ instanceId, assemblyId, position, facing, span }]`. `position` is the top-left tile of the placed (rotated) footprint. `resolveLevel` expands each one into object placements with instance ids `<instanceId>/<column>,<row>`, so the server, the client and the integrity checks only ever see single-tile objects.
 - **Decks:** a world object with `deck: true` makes its tile walkable even over a gap (void or coolant). Bridges and catwalks are built from decks. Every walkability grid comes from `createObjectWalkabilityGrid`, which applies blocking objects and decks together.
-- **Litter:** floor clutter (`content/litterObjects.ts`) is ordinary objects with `blocksMovement: false` and no interactions. Objects without interactions are never picked, so clicks fall through to the tile underneath. The `cable-run` assembly stretches litter across several tiles.
+- **Floor scatter:** `render/world/floorScatter.ts` sprinkles pebbles, grit, flakes, bolts, leaves and tufts over floor tiles per chunk, seeded by tile so it never changes, to break up flat textures. Tiles holding an object are left clear.
+- **Litter:** floor clutter (`content/litterObjects.ts`, including rubble and gravel piles) is ordinary objects with `blocksMovement: false` and no interactions. Objects without interactions are never picked, so clicks fall through to the tile underneath. The `cable-run` assembly stretches litter across several tiles.
 - **Integrity:** `findAssemblyIssues` checks that each layout is rectangular, uses only known pieces and objects, and has a valid stretch row, and that every placement names a known assembly with a sensible span. Expanded pieces count towards the "two objects share a tile" check.
 
 ### Personal storage

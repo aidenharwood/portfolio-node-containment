@@ -3,6 +3,7 @@ import type { GatheringSource } from '../crafting/gathering.ts';
 import type { DialogueId, ItemId, NpcId, WorldObjectId } from '../ids.ts';
 import type { Condition } from '../rules/conditions.ts';
 import type { GameEffect } from '../rules/effects.ts';
+import type { DoorDefinition } from './doors.ts';
 
 export interface NpcDefinition {
   readonly id: NpcId;
@@ -75,6 +76,8 @@ export type WorldObjectModel =
   | 'litterPapers'
   | 'litterDebris'
   | 'litterPuddle'
+  | 'litterRubble'
+  | 'litterGravel'
   | 'cableRun'
   | 'cableRunEnd';
 
@@ -102,6 +105,7 @@ export interface WorldObjectDefinition {
   readonly model: WorldObjectModel;
   readonly blocksMovement: boolean;
   readonly deck?: boolean;
+  readonly door?: DoorDefinition;
   readonly modelScale?: number;
   readonly light?: ObjectLight;
   readonly interactions: readonly ObjectInteraction[];

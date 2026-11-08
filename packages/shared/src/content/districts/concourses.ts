@@ -22,6 +22,7 @@ export const VERDANCE_CONCOURSE: DistrictDefinition = {
     { instanceId: 'vc-puddle', objectId: 'litter-puddle', position: { x: 5, y: 3 } },
     { instanceId: 'vc-papers', objectId: 'litter-papers', position: { x: 14, y: 2 } },
     { instanceId: 'vc-debris', objectId: 'litter-debris', position: { x: 2, y: 5 } },
+    { instanceId: 'vc-gravel', objectId: 'litter-gravel', position: { x: 16, y: 3 } },
   ],
   assemblies: [
     { instanceId: 'vc-bridge-north', assemblyId: 'bridge', position: { x: 7, y: 1 }, facing: 'east', span: 3 },
@@ -59,6 +60,7 @@ export const SERVICE_CONCOURSE: DistrictDefinition = {
     { instanceId: 'sc-debris', objectId: 'litter-debris', position: { x: 7, y: 2 } },
     { instanceId: 'sc-papers', objectId: 'litter-papers', position: { x: 12, y: 4 } },
     { instanceId: 'sc-puddle', objectId: 'litter-puddle', position: { x: 2, y: 4 } },
+    { instanceId: 'sc-rubble', objectId: 'litter-rubble', position: { x: 10, y: 2 } },
   ],
   assemblies: [{ instanceId: 'sc-cable-run', assemblyId: 'cable-run', position: { x: 1, y: 3 }, facing: 'east', span: 9 }],
   lights: [

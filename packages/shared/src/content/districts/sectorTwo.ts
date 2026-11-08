@@ -29,7 +29,7 @@ export const SECTOR_TWO: DistrictDefinition = {
     '#========#,,,,,,,,,#...........#',
     '#========#,,,,,,,,,#...........#',
     '#========#,,,,,,,,,#...........#',
-    '################################',
+    '####DD##########################',
   ],
   areas: [
     { id: 'airlock', name: 'Quarantine Airlock', rect: { x: 1, y: 15, width: 8, height: 6 } },
@@ -41,8 +41,6 @@ export const SECTOR_TWO: DistrictDefinition = {
   ],
   npcs: [],
   objects: [
-    { instanceId: 's2-exit-a', objectId: 'sector-two-exit', position: { x: 1, y: 17 }, facing: 'east' },
-    { instanceId: 's2-exit-b', objectId: 'sector-two-exit', position: { x: 1, y: 18 }, facing: 'east' },
     { instanceId: 's2-airlock-sign', objectId: 'warning-sign', position: { x: 7, y: 15 } },
     { instanceId: 's2-corridor-sign', objectId: 'warning-sign', position: { x: 12, y: 9 } },
     { instanceId: 's2-lab-terminal', objectId: 'halvorsen-terminal', position: { x: 6, y: 2 } },

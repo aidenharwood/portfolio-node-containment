@@ -8,7 +8,7 @@ export const SIGNAL_ARRAY: DistrictDefinition = {
   recovery: { districtId: 'deepwatch', position: { x: 5, y: 20 } },
   ambience: { darkness: 0.62, tint: '#16100a', fog: '#140e0a', fixtures: 'failing' },
   map: [
-    '############################################',
+    '####DD######################################',
     '#.........#====================#___________#',
     '#.........#====================#___________#',
     '#.........#====================#___________#',
@@ -47,7 +47,6 @@ export const SIGNAL_ARRAY: DistrictDefinition = {
   npcs: [{ instanceId: 'sa-achterberg', npcId: 'officer-achterberg', position: { x: 6, y: 6 } }],
   objects: [
     { instanceId: 'sa-tram-stop', objectId: 'tram-stop', position: { x: 1, y: 7 }, facing: 'east' },
-    { instanceId: 'sa-lift', objectId: 'signal-array-return', position: { x: 1, y: 4 }, facing: 'east' },
     { instanceId: 'sa-lobby-storage', objectId: 'storage-locker', position: { x: 9, y: 1 } },
     { instanceId: 'sa-lobby-bed', objectId: 'med-bed', position: { x: 8, y: 8 } },
     { instanceId: 'sa-lobby-sign', objectId: 'warning-sign', position: { x: 5, y: 1 } },

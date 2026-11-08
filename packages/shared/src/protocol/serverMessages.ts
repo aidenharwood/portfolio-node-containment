@@ -10,7 +10,7 @@ import type { EquipmentState } from '../gear/equipment.ts';
 import type { InventoryState } from '../gear/inventory.ts';
 import type { StorageState } from '../gear/storage.ts';
 import type { StatId } from '../gear/stats.ts';
-import type { CharacterId, EntityId, ItemId, LevelId, NpcId, TramStationId } from '../ids.ts';
+import type { CharacterId, EntityId, ItemId, LevelId, NpcId, TramStationId, WorldObjectId } from '../ids.ts';
 import type { ChunkKey } from '../world/chunks.ts';
 import type { QuestLog } from '../quests/questProgress.ts';
 import type { Facing, TilePoint } from '../world/geometry.ts';
@@ -64,6 +64,7 @@ export interface SelfState {
   readonly combatLevel: number;
   readonly discoveredStations: readonly TramStationId[];
   readonly visitedLevels: readonly LevelId[];
+  readonly openDoors: readonly WorldObjectId[];
 }
 
 export interface DialogueView {

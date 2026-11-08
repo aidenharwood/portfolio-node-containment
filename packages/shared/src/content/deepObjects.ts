@@ -32,6 +32,25 @@ const passage = (
   ],
 });
 
+const door = (
+  id: string,
+  name: string,
+  examine: string,
+  model: WorldObjectModel,
+  verb: string,
+  light: ObjectLight,
+  gate: { readonly conditions: readonly Condition[]; readonly failureText: string; readonly arrival?: string },
+): WorldObjectDefinition => ({
+  id,
+  name,
+  examine,
+  model,
+  blocksMovement: true,
+  light,
+  door: { conditions: gate.conditions },
+  interactions: [{ verb, failureText: gate.failureText, effects: gate.arrival ? [{ type: 'notify', text: gate.arrival }] : [] }],
+});
+
 const decor = (id: string, name: string, examine: string, model: WorldObjectModel, light?: ObjectLight, scale?: number): WorldObjectDefinition => ({
   id,
   name,
@@ -79,58 +98,49 @@ export const DEEP_PASSAGES: readonly WorldObjectDefinition[] = [
   passage('deepwatch-deep-line', 'Deep Line Tram', 'The express back up to the Meridian Atrium. It smells of coffee, which is the most normal thing at Deepwatch.', 'tram', 'Ride', { districtId: 'meridian-atrium', position: { x: 3, y: 31 } }, TRAM_LIGHT),
   passage('deepwatch-threshold-door', 'Threshold Passage', 'A short pressure corridor bored through to the Sector 3 threshold. The far end is always colder.', 'bulkhead', 'Enter', { districtId: 'sector-three', position: { x: 16, y: 6 } }, SEAL_LIGHT),
   passage('sector-three-deepwatch-door', 'Deepwatch Passage', 'A freshly bored pressure corridor, still smelling of cut stone. Deepwatch Station is on the other side.', 'bulkhead', 'Enter', { districtId: 'deepwatch', position: { x: 17, y: 3 } }, LIFT_LIGHT),
-  passage(
+  door(
     'cryovault-door',
     'Cryovault Pressure Door',
     'A frost-rimed pressure door into Cold Storage. The frost grows out of the seams, not onto them.',
     'bulkhead',
     'Enter',
-    { districtId: 'cryovault', position: { x: 4, y: 4 } },
     { radius: 3, color: '#7ae0ff', intensity: 0.6 },
     { conditions: [{ type: 'hasFlag', flag: 'clearance.cryovault' }], failureText: 'The lift panel reads: COLD STORAGE SEALED BY ORDER OF THE COUNCIL.' },
   ),
-  passage('cryovault-return', 'Concourse Door', 'The pressure door back out to the Deep Concourse. The handle is warmer than anything else in here.', 'bulkhead', 'Leave', { districtId: 'deep-concourse', position: { x: 5, y: 4 } }, LIFT_LIGHT),
-  passage(
+  door(
     'signal-array-door',
     'Array Pressure Door',
     'A cable-wrapped pressure door into the Signal Array, the deck that writes letters to the other eight Sites.',
     'bulkhead',
     'Enter',
-    { districtId: 'signal-array', position: { x: 4, y: 4 } },
     { radius: 3, color: '#ffb87a', intensity: 0.6 },
     { conditions: [{ type: 'hasFlag', flag: 'clearance.signal-array' }], failureText: 'The lift panel reads: ARRAY OFFLINE. CONTACT RECORDS DIVISION.' },
   ),
-  passage('signal-array-return', 'Concourse Door', 'The way back out to the Deep Concourse. The intercom beside it is still playing a carrier tone.', 'bulkhead', 'Leave', { districtId: 'deep-concourse', position: { x: 52, y: 4 } }, LIFT_LIGHT),
-  passage(
+  door(
     'archive-door',
     'Flood Stair Door',
     'A pressure door down to the drowned Records stacks. Water beads on the inside of the glass.',
     'bulkhead',
     'Enter',
-    { districtId: 'drowned-archive', position: { x: 4, y: 4 } },
     { radius: 3, color: '#b57cff', intensity: 0.6 },
     { conditions: [{ type: 'hasFlag', flag: 'clearance.drowned-archive' }], failureText: 'The lift panel reads: RECORDS ACCESS BY ARCHIVIST APPROVAL ONLY.' },
   ),
-  passage('archive-return', 'Concourse Door', 'The way back out, dripping. Someone has stencilled DRY LAND on the frame.', 'bulkhead', 'Leave', { districtId: 'deep-concourse', position: { x: 100, y: 4 } }, LIFT_LIGHT),
-  passage(
+  door(
     'furnace-door',
     'Reactor Blast Door',
     'A heavy blast door to the Meridian reactor. The metal glows a dull red near the floor.',
     'bulkhead',
     'Enter',
-    { districtId: 'furnace', position: { x: 4, y: 4 } },
     { radius: 3, color: '#ff7a2a', intensity: 0.7, flicker: true },
     { conditions: [{ type: 'hasFlag', flag: 'clearance.furnace' }], failureText: 'The lift panel reads: REACTOR ACCESS REQUIRES DIRECTOR AUTHORISATION.' },
   ),
-  passage('furnace-return', 'Causeway Door', 'The blast door back out to the causeway. The air beyond is ten degrees cooler and you are grateful for every one.', 'bulkhead', 'Leave', { districtId: 'furnace-causeway', position: { x: 46, y: 3 } }, LIFT_LIGHT),
   passage('far-side-return', 'The Way Back', 'The back of the Knock. From this side it is a perfectly ordinary door, which is the most frightening thing about it.', 'knockDoor', 'Go back', { districtId: 'sector-three', position: { x: 10, y: 9 } }, SEAL_LIGHT),
-  passage(
+  door(
     'sealed-reading-door',
     'Sealed Reading Room',
     'A pressure door to the room where the original Knock file was kept. Black water has pooled against the seal.',
     'bulkhead',
     'Open',
-    { districtId: 'drowned-archive', position: { x: 36, y: 12 } },
     SEAL_LIGHT,
     {
       conditions: [{ type: 'hasFlag', flag: 'archive.drained' }],
@@ -138,14 +148,12 @@ export const DEEP_PASSAGES: readonly WorldObjectDefinition[] = [
       arrival: 'The door swings inward on a room that has been holding its breath for forty years.',
     },
   ),
-  passage('reading-room-exit', 'Reading Room Door', 'The way back into the stacks.', 'bulkhead', 'Leave', { districtId: 'drowned-archive', position: { x: 36, y: 8 } }, LIFT_LIGHT),
-  passage(
+  door(
     'reactor-door',
     'Reactor Heart Door',
     'A blast door into the reactor heart. The pressure gauge beside it is buried in the red.',
     'bulkhead',
     'Open',
-    { districtId: 'furnace', position: { x: 34, y: 12 } },
     { radius: 3, color: '#ff4d2a', intensity: 0.8, flicker: true },
     {
       conditions: [{ type: 'hasFlag', flag: 'furnace.vented' }],
@@ -153,7 +161,6 @@ export const DEEP_PASSAGES: readonly WorldObjectDefinition[] = [
       arrival: 'The door grinds aside. The heat comes through first, then the sound of a shovel.',
     },
   ),
-  passage('reactor-exit', 'Reactor Heart Door', 'The way back out to the ember galleries.', 'bulkhead', 'Leave', { districtId: 'furnace', position: { x: 34, y: 8 } }, LIFT_LIGHT),
 ];
 
 export const DEEP_QUEST_OBJECTS: readonly WorldObjectDefinition[] = [

@@ -12,6 +12,7 @@ import type {
   DistrictId,
   LevelId,
   WorldLocation,
+  WorldObjectId,
 } from '@containment/shared';
 import { locate, visitedLevelFlag } from '@containment/shared';
 import { returnUnfinishedTrainee } from '../characters/traineePlacement.ts';
@@ -27,7 +28,7 @@ import { EffectRunner, type EffectHost } from './effectRunner.ts';
 import { GearController } from './gearController.ts';
 import { GroundItemController } from './groundItemController.ts';
 import { InteractionController } from './interactionController.ts';
-import { selfStateOf } from './playerContext.ts';
+import { openDoorsOf, selfStateOf } from './playerContext.ts';
 import { QuestTracker } from './questTracker.ts';
 import { ShopController } from './shopController.ts';
 import { StorageController } from './storageController.ts';
@@ -342,6 +343,10 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
 
   onDamaged(player: Player): void {
     if (this.trams.cancelBoarding(player)) this.notify(player, 'warning', 'You were hit, so you stepped back from the tram.');
+  }
+
+  openDoorsFor(player: Player): ReadonlySet<WorldObjectId> {
+    return openDoorsOf(player, this.content);
   }
 
   onLevelEntered(player: Player, levelId: LevelId): void {

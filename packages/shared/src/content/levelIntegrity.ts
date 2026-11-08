@@ -1,5 +1,6 @@
 import type { DistrictId } from '../ids.ts';
 import { createObjectWalkabilityGrid, parseTileLayout } from '../world/district.ts';
+import { doorTilesOf, withOpenDoors } from '../world/doors.ts';
 import { tileKey, type TilePoint } from '../world/geometry.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
 import type { WalkabilityGrid } from '../world/pathfinding.ts';
@@ -16,7 +17,9 @@ const CARDINAL_STEPS: readonly TilePoint[] = [
 const step = (point: TilePoint, by: TilePoint): TilePoint => ({ x: point.x + by.x, y: point.y + by.y });
 
 function gridOf(content: GameContent, level: ResolvedLevel): WalkabilityGrid {
-  return createObjectWalkabilityGrid(level.layout, level.objects, (objectId) => content.worldObjects.get(objectId));
+  const definitionOf = (objectId: string) => content.worldObjects.get(objectId);
+  const grid = createObjectWalkabilityGrid(level.layout, level.objects, definitionOf);
+  return withOpenDoors(grid, level.layout, doorTilesOf(level.objects, definitionOf), () => true);
 }
 
 function teleportsOf(content: GameContent, level: ResolvedLevel): { readonly source: TilePoint; readonly districtId: DistrictId; readonly position: TilePoint }[] {

@@ -7,7 +7,7 @@ export const MERIDIAN_ATRIUM: DistrictDefinition = {
   tier: 1,
   ambience: { darkness: 0.36, tint: '#08141c', fog: '#0c1c26' },
   map: [
-    '####################################################',
+    '#########################DD#########################',
     '#____________#,,,,,,,,,,,,,,,,,,,,,,,,#____________#',
     '#____________#,,,,,,,,,,,,,,,,,,,,,,,,#____________#',
     '#____________#,,,,,,,,,,,,,,,,,,,,,,,,#____________#',
@@ -77,8 +77,8 @@ export const MERIDIAN_ATRIUM: DistrictDefinition = {
     { instanceId: 'commissary-bench', objectId: 'briefing-bench', position: { x: 3, y: 7 } },
     { instanceId: 'commissary-papers', objectId: 'litter-papers', position: { x: 8, y: 6 } },
 
-    { instanceId: 'sector2-bulkhead-a', objectId: 'sealed-bulkhead', position: { x: 25, y: 1 } },
-    { instanceId: 'sector2-bulkhead-b', objectId: 'sealed-bulkhead', position: { x: 26, y: 1 } },
+    { instanceId: 'sector2-bulkhead-a', objectId: 'sealed-bulkhead', position: { x: 25, y: 0 } },
+    { instanceId: 'sector2-bulkhead-b', objectId: 'sealed-bulkhead', position: { x: 26, y: 0 } },
     { instanceId: 'gate-sign-west', objectId: 'warning-sign', position: { x: 23, y: 1 } },
     { instanceId: 'gate-sign-east', objectId: 'warning-sign', position: { x: 28, y: 1 } },
     { instanceId: 'vent-north', objectId: 'vent-panel', position: { x: 36, y: 1 } },

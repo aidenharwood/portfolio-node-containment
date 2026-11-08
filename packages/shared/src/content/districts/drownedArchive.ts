@@ -8,7 +8,7 @@ export const DROWNED_ARCHIVE: DistrictDefinition = {
   recovery: { districtId: 'deepwatch', position: { x: 5, y: 20 } },
   ambience: { darkness: 0.66, tint: '#0e0a18', fog: '#0c0816', fixtures: 'failing' },
   map: [
-    '############################################',
+    '####DD######################################',
     '#........#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#',
     '#........#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#',
     '#........#,,,,~~~~,~~~~~~~,~~~~~~~,~~~,,,,,#',
@@ -47,7 +47,6 @@ export const DROWNED_ARCHIVE: DistrictDefinition = {
   npcs: [{ instanceId: 'da-pim', npcId: 'clerk-pim', position: { x: 6, y: 6 } }],
   objects: [
     { instanceId: 'da-tram-stop', objectId: 'tram-stop', position: { x: 1, y: 5 }, facing: 'east' },
-    { instanceId: 'da-lift', objectId: 'archive-return', position: { x: 1, y: 3 }, facing: 'east' },
     { instanceId: 'da-stair-storage', objectId: 'storage-locker', position: { x: 8, y: 1 } },
     { instanceId: 'da-stair-bed', objectId: 'med-bed', position: { x: 2, y: 7 } },
 
@@ -82,7 +81,6 @@ export const DROWNED_ARCHIVE: DistrictDefinition = {
     { instanceId: 'da-reading-bench-a', objectId: 'briefing-bench', position: { x: 22, y: 13 } },
     { instanceId: 'da-reading-bench-b', objectId: 'briefing-bench', position: { x: 22, y: 24 } },
 
-    { instanceId: 'da-sealed-exit', objectId: 'reading-room-exit', position: { x: 38, y: 11 } },
     { instanceId: 'da-lectern', objectId: 'charter-lectern', position: { x: 37, y: 25 } },
     { instanceId: 'da-sealed-shelf-a', objectId: 'archive-shelf', position: { x: 31, y: 11 } },
     { instanceId: 'da-sealed-shelf-b', objectId: 'archive-shelf', position: { x: 42, y: 26 } },

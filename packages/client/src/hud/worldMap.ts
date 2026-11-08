@@ -20,9 +20,16 @@ import type { QuestTracking } from '../state/questTracking.ts';
 import type { WorldState } from '../state/worldState.ts';
 import { h, replaceChildren } from '../ui/dom.ts';
 
-const MAP_PADDING = 18;
-const STATION_HIT_RADIUS = 12;
+const MAP_PADDING = 24;
+const MOUSE_HIT_RADIUS = 14;
+const TOUCH_HIT_RADIUS = 24;
+const TAP_SLOP = 8;
+const MAX_SCALE = 28;
+const READABLE_SCALE = 5;
+const ZOOM_STEP = 1.4;
 const OBJECTIVE_COLOR = '#ffb347';
+
+type MapMode = 'map' | 'transit';
 
 interface StationHit {
   readonly station: TramStation;
@@ -36,28 +43,56 @@ interface MapFrame {
   readonly offsetY: number;
 }
 
+interface MapView {
+  scale: number;
+  centreX: number;
+  centreY: number;
+}
+
+interface PointerTrack {
+  x: number;
+  y: number;
+  readonly startX: number;
+  readonly startY: number;
+}
+
 const levelOrder = (a: ResolvedLevel, b: ResolvedLevel): number =>
   (a.definition.kind === b.definition.kind ? 0 : a.definition.kind === 'floor' ? -1 : 1) || b.definition.depth - a.definition.depth;
 
+const levelDepthLabel = (level: ResolvedLevel): string => (level.definition.kind === 'pocket' ? 'Pocket' : `Level ${level.definition.depth}`);
+
 export class WorldMap {
-  readonly element = h('section', { className: 'world-map panel', hidden: true, role: 'dialog', ariaLabel: 'World map' });
+  readonly element = h('section', { className: 'world-map', hidden: true, role: 'dialog', ariaLabel: 'World map' });
   private readonly canvas = h('canvas', { className: 'world-map-canvas' });
   private readonly connection: GameConnection;
   private readonly world: WorldState;
   private readonly questTracking: QuestTracking;
   private readonly unsubscribers: (() => void)[];
+  private readonly pointers = new Map<number, PointerTrack>();
+  private readonly resizeObserver: ResizeObserver;
   private open = false;
+  private mode: MapMode = 'map';
   private shownLevelId: LevelId | null = null;
   private openedAtStationId: TramStationId | null = null;
   private stationHits: StationHit[] = [];
+  private view: MapView | null = null;
+  private pinchDistance: number | null = null;
+  private lastPointerType = 'mouse';
+  private paintQueued = false;
 
   constructor(connection: GameConnection, world: WorldState, questTracking: QuestTracking) {
     this.connection = connection;
     this.world = world;
     this.questTracking = questTracking;
-    this.canvas.onclick = (event) => this.boardAt(event);
+    this.canvas.addEventListener('pointerdown', (event) => this.pointerDown(event));
+    this.canvas.addEventListener('pointermove', (event) => this.pointerMove(event));
+    this.canvas.addEventListener('pointerup', (event) => this.pointerUp(event));
+    this.canvas.addEventListener('pointercancel', (event) => this.pointers.delete(event.pointerId));
+    this.canvas.addEventListener('wheel', (event) => this.wheel(event), { passive: false });
+    this.resizeObserver = new ResizeObserver(() => this.queuePaint());
+    this.resizeObserver.observe(this.canvas);
     this.unsubscribers = [
-      connection.on('tram.mapOpened', ({ stationId }) => this.show(stationId)),
+      connection.on('tram.mapOpened', ({ stationId }) => this.show('transit', stationId)),
       connection.on('tram.departed', () => this.hide()),
       world.on('selfChanged', () => this.render()),
       world.on('zoneChanged', () => this.hide()),
@@ -71,7 +106,7 @@ export class WorldMap {
 
   toggle(): void {
     if (this.open) this.hide();
-    else this.show(null);
+    else this.show('map', null);
   }
 
   requestClose(): void {
@@ -79,20 +114,25 @@ export class WorldMap {
   }
 
   dispose(): void {
+    this.resizeObserver.disconnect();
     this.unsubscribers.forEach((unsubscribe) => unsubscribe());
   }
 
-  private show(stationId: TramStationId | null): void {
+  private show(mode: MapMode, stationId: TramStationId | null): void {
     this.open = true;
+    this.mode = mode;
     this.openedAtStationId = stationId;
     this.shownLevelId = this.world.zone?.definition.id ?? null;
+    this.view = null;
     this.element.hidden = false;
+    this.element.classList.toggle('transit', mode === 'transit');
     this.render();
   }
 
   private hide(): void {
     this.open = false;
     this.element.hidden = true;
+    this.pointers.clear();
   }
 
   private knows(stationId: TramStationId): boolean {
@@ -123,58 +163,70 @@ export class WorldMap {
     return quest ? objectiveDistricts(quest.objectives, GAME_CONTENT) : new Set();
   }
 
+  private shownLevel(): ResolvedLevel | undefined {
+    const levels = this.visibleLevels();
+    return levels.find(({ level, charted }) => level.id === this.shownLevelId && charted)?.level ?? this.world.zone?.definition;
+  }
+
   private render(): void {
     if (!this.open || !this.world.self) return;
-    const levels = this.visibleLevels();
-    const shown = levels.find(({ level, charted }) => level.id === this.shownLevelId && charted)?.level ?? this.world.zone?.definition;
+    const shown = this.shownLevel();
     if (!shown) return;
     this.shownLevelId = shown.id;
     const objectives = this.objectiveDistrictIds();
     const boarding = this.boardingStation();
+    const transit = this.mode === 'transit';
 
     replaceChildren(
       this.element,
-      h('header', { className: 'shop-header' },
-        h('div', {},
-          h('h3', {}, 'Site Meridian Transit'),
-          h('p', { className: 'shop-greeting' }, boarding
-            ? `You are on the platform at ${boarding.name}. Pick a destination you have found.`
-            : 'Stand on a tram platform and use its stop to ride. Press M to close.'),
+      h('header', { className: 'world-map-bar' },
+        h('div', { className: 'world-map-title' },
+          h('h3', {}, transit ? 'Site Meridian Transit' : 'Site Meridian'),
+          h('p', { className: 'world-map-hint' }, transit && boarding ? `On the platform at ${boarding.name}` : 'Drag to pan, pinch or scroll to zoom'),
         ),
-        h('button', { className: 'dialogue-close', type: 'button', ariaLabel: 'Close world map', onclick: () => this.hide() }, '×'),
-      ),
-      h('nav', { className: 'world-map-tabs', ariaLabel: 'Levels' },
-        ...levels.map(({ level, charted }) => {
-          const hasObjective = level.districts.some(({ districtId }) => objectives.has(districtId));
-          return h('button', {
-            className: `world-map-tab${level.id === shown.id ? ' active' : ''}`,
-            type: 'button',
-            disabled: !charted,
-            ariaPressed: String(level.id === shown.id),
-            onclick: () => {
-              this.shownLevelId = level.id;
-              this.render();
-            },
-          },
-            charted ? level.name : 'Uncharted',
-            h('span', { className: 'world-map-tab-depth' }, level.definition.kind === 'pocket' ? 'Pocket' : `Level ${level.definition.depth}`),
-            hasObjective && charted ? h('span', { className: 'world-map-objective-dot', title: 'Tracked objective' }) : null,
-          );
-        }),
+        this.levelPicker(shown, objectives),
+        h('button', { className: 'dialogue-close world-map-close', type: 'button', ariaLabel: 'Close map', onclick: () => this.hide() }, '×'),
       ),
       h('div', { className: 'world-map-body' },
-        h('div', { className: 'world-map-frame' }, this.canvas),
-        this.destinationList(boarding),
+        h('div', { className: 'world-map-frame' },
+          this.canvas,
+          h('div', { className: 'world-map-zoom' },
+            h('button', { type: 'button', ariaLabel: 'Zoom in', onclick: () => this.zoomBy(ZOOM_STEP) }, '+'),
+            h('button', { type: 'button', ariaLabel: 'Zoom out', onclick: () => this.zoomBy(1 / ZOOM_STEP) }, '−'),
+            h('button', { type: 'button', ariaLabel: 'Centre on you', title: 'Centre on you', onclick: () => this.recentre() }, '◎'),
+          ),
+        ),
+        transit ? this.destinationList(boarding) : null,
       ),
     );
-    requestAnimationFrame(() => this.paint(shown, objectives, boarding));
+    this.queuePaint();
+  }
+
+  private levelPicker(shown: ResolvedLevel, objectives: ReadonlySet<DistrictId>): HTMLElement {
+    const select = h('select', {
+      className: 'world-map-level',
+      ariaLabel: 'Level',
+      onchange: () => {
+        this.shownLevelId = select.value;
+        this.view = null;
+        this.render();
+      },
+    },
+      ...this.visibleLevels().map(({ level, charted }) => {
+        const hasObjective = charted && level.districts.some(({ districtId }) => objectives.has(districtId));
+        return h('option', { value: level.id, disabled: !charted, selected: level.id === shown.id },
+          `${charted ? level.name : 'Uncharted'} · ${levelDepthLabel(level)}${hasObjective ? ' · ◆ objective' : ''}`,
+        );
+      }),
+    );
+    return h('label', { className: 'world-map-level-field' }, h('span', { className: 'eyebrow' }, 'Level'), select);
   }
 
   private destinationList(boarding: TramStation | undefined): HTMLElement {
     const network = GAME_CONTENT.tram;
     const seconds = (stops: number) => Math.round(((TRAM_BOARDING_TICKS + tramRideTicks(stops)) * this.world.tickMs) / 1000);
-    return h('div', { className: 'world-map-lines' },
-      h('p', { className: 'eyebrow' }, 'Tram lines'),
+    return h('aside', { className: 'world-map-lines', ariaLabel: 'Destinations' },
+      h('p', { className: 'eyebrow' }, boarding ? 'Choose a destination' : 'Stand on a platform to ride'),
       ...[...network.lines.values()].map((line) =>
         h('section', { className: 'world-map-line', style: { '--line-color': line.color } },
           h('h4', {}, line.name),
@@ -194,9 +246,12 @@ export class WorldMap {
                   disabled: refusal !== null,
                   title: refusal ?? `Ride to ${station.name}`,
                   onclick: () => this.board(stationId),
+                  onpointerenter: () => this.focusStation(station, false),
+                  onfocus: () => this.focusStation(station, false),
                 },
                   h('span', { className: 'world-map-stop-name' }, station.name),
                   h('span', { className: 'world-map-stop-detail' }, detail),
+                  refusal === null && !here ? h('span', { className: 'world-map-stop-ride' }, 'Ride') : null,
                 ),
               );
             }),
@@ -206,26 +261,185 @@ export class WorldMap {
     );
   }
 
+  private focusStation(station: TramStation, force: boolean): void {
+    if (station.levelId !== this.shownLevelId && !force) return;
+    if (station.levelId !== this.shownLevelId) {
+      this.shownLevelId = station.levelId;
+      this.view = null;
+      this.render();
+    }
+    const view = this.currentView();
+    if (!view) return;
+    view.centreX = station.platformPoint.x + 0.5;
+    view.centreY = station.platformPoint.y + 0.5;
+    this.queuePaint();
+  }
+
   private board(stationId: TramStationId): void {
     this.connection.send({ type: 'tram.board', destinationStationId: stationId });
     this.hide();
   }
 
-  private boardAt(event: MouseEvent): void {
+  private fitScale(level: ResolvedLevel): number {
+    const width = this.canvas.clientWidth;
+    const height = this.canvas.clientHeight;
+    return Math.max(0.5, Math.min((width - MAP_PADDING * 2) / level.layout.width, (height - MAP_PADDING * 2) / level.layout.height));
+  }
+
+  private currentView(): MapView | null {
+    const level = this.shownLevel();
+    if (!level || this.canvas.clientWidth === 0) return null;
+    if (this.view) return this.view;
+    const fit = this.fitScale(level);
+    const self = this.world.selfEntity;
+    const onLevel = self && this.world.zone?.definition.id === level.id;
+    const scale = Math.min(MAX_SCALE, Math.max(fit, READABLE_SCALE));
+    const zoomed = scale > fit;
+    this.view = {
+      scale,
+      centreX: zoomed && onLevel ? self.to.x + 0.5 : level.layout.width / 2,
+      centreY: zoomed && onLevel ? self.to.y + 0.5 : level.layout.height / 2,
+    };
+    return this.view;
+  }
+
+  private clampView(view: MapView, level: ResolvedLevel): void {
+    view.scale = Math.min(MAX_SCALE, Math.max(this.fitScale(level), view.scale));
+    view.centreX = Math.min(level.layout.width, Math.max(0, view.centreX));
+    view.centreY = Math.min(level.layout.height, Math.max(0, view.centreY));
+  }
+
+  private frameOf(view: MapView): MapFrame {
+    return {
+      scale: view.scale,
+      offsetX: this.canvas.clientWidth / 2 - view.centreX * view.scale,
+      offsetY: this.canvas.clientHeight / 2 - view.centreY * view.scale,
+    };
+  }
+
+  private zoomBy(factor: number, anchorX = this.canvas.clientWidth / 2, anchorY = this.canvas.clientHeight / 2): void {
+    const view = this.currentView();
+    const level = this.shownLevel();
+    if (!view || !level) return;
+    const frame = this.frameOf(view);
+    const tileX = (anchorX - frame.offsetX) / frame.scale;
+    const tileY = (anchorY - frame.offsetY) / frame.scale;
+    view.scale *= factor;
+    this.clampView(view, level);
+    view.centreX = tileX - (anchorX - this.canvas.clientWidth / 2) / view.scale;
+    view.centreY = tileY - (anchorY - this.canvas.clientHeight / 2) / view.scale;
+    this.clampView(view, level);
+    this.queuePaint();
+  }
+
+  private recentre(): void {
+    const self = this.world.selfEntity;
+    const zone = this.world.zone;
+    if (!self || !zone) return;
+    if (this.shownLevelId !== zone.definition.id) {
+      this.shownLevelId = zone.definition.id;
+      this.view = null;
+      this.render();
+    }
+    const view = this.currentView();
+    if (!view) return;
+    view.scale = Math.max(view.scale, READABLE_SCALE * 1.6);
+    view.centreX = self.to.x + 0.5;
+    view.centreY = self.to.y + 0.5;
+    this.clampView(view, zone.definition);
+    this.queuePaint();
+  }
+
+  private localPoint(event: PointerEvent | WheelEvent): { x: number; y: number } {
     const bounds = this.canvas.getBoundingClientRect();
-    const x = event.clientX - bounds.left;
-    const y = event.clientY - bounds.top;
+    return { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
+  }
+
+  private pointerDown(event: PointerEvent): void {
+    this.lastPointerType = event.pointerType;
+    const point = this.localPoint(event);
+    this.canvas.setPointerCapture(event.pointerId);
+    this.pointers.set(event.pointerId, { ...point, startX: point.x, startY: point.y });
+    this.pinchDistance = this.pointers.size === 2 ? this.spread() : null;
+  }
+
+  private pointerMove(event: PointerEvent): void {
+    const track = this.pointers.get(event.pointerId);
+    const view = this.currentView();
+    const level = this.shownLevel();
+    if (!track || !view || !level) return;
+    const point = this.localPoint(event);
+    const dx = point.x - track.x;
+    const dy = point.y - track.y;
+    track.x = point.x;
+    track.y = point.y;
+    if (this.pointers.size >= 2) {
+      const spread = this.spread();
+      if (this.pinchDistance && spread > 0) {
+        const [a, b] = [...this.pointers.values()] as [PointerTrack, PointerTrack];
+        this.zoomBy(spread / this.pinchDistance, (a.x + b.x) / 2, (a.y + b.y) / 2);
+      }
+      this.pinchDistance = spread;
+      view.centreX -= dx / view.scale / 2;
+      view.centreY -= dy / view.scale / 2;
+    } else {
+      view.centreX -= dx / view.scale;
+      view.centreY -= dy / view.scale;
+    }
+    this.clampView(view, level);
+    this.queuePaint();
+  }
+
+  private pointerUp(event: PointerEvent): void {
+    const track = this.pointers.get(event.pointerId);
+    const wasSingle = this.pointers.size === 1;
+    this.pointers.delete(event.pointerId);
+    this.pinchDistance = null;
+    if (!track || !wasSingle) return;
+    if (Math.hypot(track.x - track.startX, track.y - track.startY) > TAP_SLOP) return;
+    this.tapAt(track.x, track.y);
+  }
+
+  private spread(): number {
+    const [a, b] = [...this.pointers.values()];
+    return a && b ? Math.hypot(a.x - b.x, a.y - b.y) : 0;
+  }
+
+  private wheel(event: WheelEvent): void {
+    event.preventDefault();
+    const point = this.localPoint(event);
+    this.zoomBy(event.deltaY < 0 ? 1.15 : 1 / 1.15, point.x, point.y);
+  }
+
+  private tapAt(x: number, y: number): void {
+    if (this.mode !== 'transit') return;
+    const radius = this.lastPointerType === 'mouse' ? MOUSE_HIT_RADIUS : TOUCH_HIT_RADIUS;
+    const hit = this.stationHits
+      .map((candidate) => ({ candidate, distance: Math.hypot(candidate.x - x, candidate.y - y) }))
+      .filter(({ distance }) => distance <= radius)
+      .sort((a, b) => a.distance - b.distance)[0]?.candidate;
     const boarding = this.boardingStation();
-    const hit = this.stationHits.find((candidate) => Math.hypot(candidate.x - x, candidate.y - y) <= STATION_HIT_RADIUS);
     if (!hit || !boarding) return;
     const refusal = tramBoardingRefusal(GAME_CONTENT.tram, { origin: boarding, destinationId: hit.station.id, knowsStation: (id) => this.knows(id) });
     if (!refusal) this.board(hit.station.id);
   }
 
-  private paint(level: ResolvedLevel, objectives: ReadonlySet<DistrictId>, boarding: TramStation | undefined): void {
+  private queuePaint(): void {
+    if (this.paintQueued || !this.open) return;
+    this.paintQueued = true;
+    requestAnimationFrame(() => {
+      this.paintQueued = false;
+      this.paint();
+    });
+  }
+
+  private paint(): void {
+    const level = this.shownLevel();
+    const view = this.currentView();
+    if (!this.open || !level || !view) return;
+    this.clampView(view, level);
     const width = this.canvas.clientWidth;
     const height = this.canvas.clientHeight;
-    if (width === 0 || height === 0) return;
     const ratio = Math.min(window.devicePixelRatio || 1, 2);
     this.canvas.width = Math.round(width * ratio);
     this.canvas.height = Math.round(height * ratio);
@@ -233,27 +447,29 @@ export class WorldMap {
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
     context.clearRect(0, 0, width, height);
 
-    const scale = Math.min((width - MAP_PADDING * 2) / level.layout.width, (height - MAP_PADDING * 2) / level.layout.height);
-    const frame: MapFrame = {
-      scale,
-      offsetX: (width - level.layout.width * scale) / 2,
-      offsetY: (height - level.layout.height * scale) / 2,
-    };
+    const frame = this.frameOf(view);
+    const objectives = this.objectiveDistrictIds();
     this.paintTiles(context, level, objectives, frame);
     this.paintDistrictLabels(context, level, objectives, frame);
-    this.stationHits = this.paintNetwork(context, level, boarding, frame);
+    this.stationHits = this.paintNetwork(context, level, this.boardingStation(), frame);
     this.paintSelf(context, level, frame);
   }
 
   private paintTiles(context: CanvasRenderingContext2D, level: ResolvedLevel, objectives: ReadonlySet<DistrictId>, frame: MapFrame): void {
-    const size = Math.max(1, frame.scale);
-    for (let y = 0; y < level.layout.height; y++) {
-      for (let x = 0; x < level.layout.width; x++) {
+    const size = Math.max(1, frame.scale) + 0.5;
+    const width = this.canvas.clientWidth;
+    const height = this.canvas.clientHeight;
+    const minX = Math.max(0, Math.floor(-frame.offsetX / frame.scale));
+    const minY = Math.max(0, Math.floor(-frame.offsetY / frame.scale));
+    const maxX = Math.min(level.layout.width, Math.ceil((width - frame.offsetX) / frame.scale));
+    const maxY = Math.min(level.layout.height, Math.ceil((height - frame.offsetY) / frame.scale));
+    for (let y = minY; y < maxY; y++) {
+      for (let x = minX; x < maxX; x++) {
         const kind = level.layout.tileAt({ x, y });
         if (kind === 'void') continue;
         const district = level.layout.districtAt({ x, y });
         const target = district !== undefined && objectives.has(district);
-        context.fillStyle = kind === 'coolant' ? '#1f5f7a' : TILE_KINDS[kind].walkable ? (target ? '#3d3216' : '#1c2a33') : target ? '#7a5a22' : '#40525e';
+        context.fillStyle = kind === 'coolant' ? '#1f5f7a' : kind === 'door' ? '#2f5a6a' : TILE_KINDS[kind].walkable ? (target ? '#3d3216' : '#1c2a33') : target ? '#7a5a22' : '#40525e';
         context.fillRect(frame.offsetX + x * frame.scale, frame.offsetY + y * frame.scale, size, size);
       }
     }
@@ -262,11 +478,12 @@ export class WorldMap {
   private paintDistrictLabels(context: CanvasRenderingContext2D, level: ResolvedLevel, objectives: ReadonlySet<DistrictId>, frame: MapFrame): void {
     context.textAlign = 'center';
     context.textBaseline = 'middle';
+    const detailed = frame.scale >= 3;
     for (const { districtId, rect } of level.districts) {
       const district = GAME_CONTENT.districts.get(districtId);
       if (!district) continue;
       const x = frame.offsetX + (rect.x + rect.width / 2) * frame.scale;
-      const y = frame.offsetY + rect.y * frame.scale + 22;
+      const y = frame.offsetY + (rect.y + rect.height / 2) * frame.scale;
       const target = objectives.has(districtId);
       if (target) {
         context.strokeStyle = OBJECTIVE_COLOR;
@@ -275,19 +492,22 @@ export class WorldMap {
         context.strokeRect(frame.offsetX + rect.x * frame.scale, frame.offsetY + rect.y * frame.scale, rect.width * frame.scale, rect.height * frame.scale);
         context.setLineDash([]);
       }
-      context.font = '700 13px "Chakra Petch", sans-serif';
+      if (rect.width * frame.scale < 36) continue;
+      context.font = `700 ${detailed ? 14 : 12}px "Chakra Petch", sans-serif`;
       const name = district.name.toUpperCase();
       const labelWidth = context.measureText(name).width + 14;
-      context.fillStyle = 'rgba(3, 8, 11, 0.78)';
-      context.fillRect(x - labelWidth / 2, y - 16, labelWidth, target ? 44 : 32);
+      const labelHeight = detailed ? (target ? 46 : 34) : 20;
+      context.fillStyle = 'rgba(3, 8, 11, 0.8)';
+      context.fillRect(x - labelWidth / 2, y - labelHeight / 2, labelWidth, labelHeight);
       context.fillStyle = target ? OBJECTIVE_COLOR : '#e8f4f8';
-      context.fillText(name, x, y - 7);
-      context.font = '500 10px "IBM Plex Mono", monospace';
-      context.fillStyle = '#7f97a4';
-      context.fillText(`Tier ${district.tier}`, x, y + 7);
+      context.fillText(name, x, detailed ? y - labelHeight / 2 + 10 : y);
+      if (!detailed) continue;
+      context.font = '500 11px "IBM Plex Mono", monospace';
+      context.fillStyle = '#9fb3be';
+      context.fillText(`Tier ${district.tier}`, x, y - labelHeight / 2 + 24);
       if (target) {
         context.fillStyle = OBJECTIVE_COLOR;
-        context.fillText('Tracked objective', x, y + 20);
+        context.fillText('Tracked objective', x, y - labelHeight / 2 + 37);
       }
     }
   }
@@ -307,7 +527,7 @@ export class WorldMap {
         const there = next.levelId === level.id;
         if (!here && !there) return;
         context.strokeStyle = line.color;
-        context.lineWidth = 3;
+        context.lineWidth = 4;
         context.globalAlpha = this.knows(station.id) && this.knows(next.id) ? 0.9 : 0.35;
         if (here && there) {
           const from = point(station);
@@ -319,41 +539,51 @@ export class WorldMap {
         } else {
           const local = here ? station : next;
           const away = here ? next : station;
-          this.paintLevelLink(context, point(local), away, line.color);
+          this.paintLevelLink(context, point(local), away, line.color, level);
         }
         context.globalAlpha = 1;
       });
     }
 
     const hits: StationHit[] = [];
+    const transit = this.mode === 'transit';
     for (const station of network.stations.values()) {
       if (station.levelId !== level.id) continue;
       const { x, y } = point(station);
       const known = this.knows(station.id);
       const lineColor = network.lines.get(station.lineIds[0] ?? '')?.color ?? '#e8f4f8';
+      const rideable = transit && boarding !== undefined && known && station.id !== boarding.id;
+      if (rideable) {
+        context.beginPath();
+        context.arc(x, y, 13, 0, Math.PI * 2);
+        context.fillStyle = 'rgba(79, 216, 255, 0.18)';
+        context.fill();
+      }
       context.beginPath();
-      context.arc(x, y, station.id === boarding?.id ? 8 : 6, 0, Math.PI * 2);
+      context.arc(x, y, station.id === boarding?.id ? 9 : 7, 0, Math.PI * 2);
       context.fillStyle = known ? lineColor : 'rgba(3, 8, 11, 0.9)';
       context.fill();
       context.lineWidth = 2;
       context.strokeStyle = known ? '#e8f4f8' : '#6f8794';
       context.stroke();
       if (!known) continue;
-      context.font = '600 11px "Chakra Petch", sans-serif';
+      context.font = '600 13px "Chakra Petch", sans-serif';
       context.textAlign = 'left';
+      const labelWidth = context.measureText(station.name).width + 10;
+      context.fillStyle = 'rgba(3, 8, 11, 0.75)';
+      context.fillRect(x + 11, y - 10, labelWidth, 20);
       context.fillStyle = '#e8f4f8';
-      context.fillText(station.name, x + 11, y);
+      context.fillText(station.name, x + 16, y);
       hits.push({ station, x, y });
     }
     context.textAlign = 'center';
     return hits;
   }
 
-  private paintLevelLink(context: CanvasRenderingContext2D, from: { x: number; y: number }, away: TramStation, color: string): void {
+  private paintLevelLink(context: CanvasRenderingContext2D, from: { x: number; y: number }, away: TramStation, color: string, shown: ResolvedLevel): void {
     const awayLevel = GAME_CONTENT.levels.get(away.levelId);
-    const shown = this.shownLevelId ? GAME_CONTENT.levels.get(this.shownLevelId) : undefined;
-    const goesDown = (awayLevel?.definition.depth ?? 0) < (shown?.definition.depth ?? 0);
-    const dy = goesDown ? 26 : -26;
+    const goesDown = (awayLevel?.definition.depth ?? 0) < shown.definition.depth;
+    const dy = goesDown ? 28 : -28;
     context.beginPath();
     context.moveTo(from.x, from.y);
     context.lineTo(from.x, from.y + dy);
@@ -363,7 +593,7 @@ export class WorldMap {
     context.lineTo(from.x, from.y + dy);
     context.lineTo(from.x + 5, from.y + dy - Math.sign(dy) * 6);
     context.stroke();
-    context.font = '600 10px "Chakra Petch", sans-serif';
+    context.font = '600 11px "Chakra Petch", sans-serif';
     context.textAlign = 'left';
     context.fillStyle = color;
     context.fillText(`${goesDown ? 'Down' : 'Up'} to ${awayLevel?.name ?? 'elsewhere'}`, from.x + 8, from.y + dy);
@@ -377,15 +607,15 @@ export class WorldMap {
     const x = frame.offsetX + (position.x + 0.5) * frame.scale;
     const y = frame.offsetY + (position.y + 0.5) * frame.scale;
     context.beginPath();
-    context.arc(x, y, 5, 0, Math.PI * 2);
+    context.arc(x, y, 6, 0, Math.PI * 2);
     context.fillStyle = '#4fd8ff';
     context.shadowColor = '#4fd8ff';
-    context.shadowBlur = 10;
+    context.shadowBlur = 12;
     context.fill();
     context.shadowBlur = 0;
-    context.font = '700 10px "Chakra Petch", sans-serif';
+    context.font = '700 11px "Chakra Petch", sans-serif';
     context.fillStyle = '#4fd8ff';
-    context.fillText('YOU', x, y - 12);
+    context.fillText('YOU', x, y - 14);
   }
 }
 

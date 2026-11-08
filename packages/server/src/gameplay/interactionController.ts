@@ -1,7 +1,17 @@
-import { areConditionsMet, isCardinallyAdjacent, samePoint, type GameContent, type TilePoint } from '@containment/shared';
+import {
+  areConditionsMet,
+  doorOpenedFlag,
+  isCardinallyAdjacent,
+  isDoorOpenFor,
+  pathThroughDoor,
+  samePoint,
+  type GameContent,
+  type ObjectInteraction,
+  type TilePoint,
+} from '@containment/shared';
 import type { PendingInteraction, Player } from '../world/player.ts';
 import type { World } from '../world/world.ts';
-import type { LevelInstance } from '../world/levelInstance.ts';
+import type { LevelInstance, PlacedObject } from '../world/levelInstance.ts';
 import type { DialogueController } from './dialogueController.ts';
 import type { EffectHost, EffectRunner } from './effectRunner.ts';
 
@@ -10,7 +20,7 @@ export interface InteractionHost extends EffectHost {
   groundItemPosition(player: Player, groundItemId: string): TilePoint | null;
   startGathering(player: Player, instanceId: string, interactionIndex: number): void;
 }
-import { conditionContextFor } from './playerContext.ts';
+import { conditionContextFor, openDoorsOf } from './playerContext.ts';
 
 const MAX_REPATH_ATTEMPTS = 4;
 
@@ -101,6 +111,10 @@ export class InteractionController {
     const placed = level.objects.get(pending.instanceId);
     const interaction = placed?.definition.interactions[pending.interactionIndex];
     if (!placed || !interaction) return;
+    if (placed.definition.door) {
+      this.passDoor(player, level, placed, interaction);
+      return;
+    }
 
     const useFlag = objectUseFlag(level.layout.districtAt(placed.placement.position) ?? level.id, pending.instanceId, pending.interactionIndex);
     if (interaction.oncePerCharacter && player.hasFlag(useFlag)) {
@@ -120,6 +134,18 @@ export class InteractionController {
     if (interaction.oncePerCharacter) player.update({ flags: [...player.record.flags, useFlag] });
     this.effects.apply(player, interaction.effects);
     this.host.raiseQuestEvent(player, { type: 'interactedWith', objectId: placed.definition.id });
+  }
+
+  private passDoor(player: Player, level: LevelInstance, placed: PlacedObject, interaction: ObjectInteraction): void {
+    const { id, door } = placed.definition;
+    if (!door || !isDoorOpenFor(id, door, conditionContextFor(player, this.content))) {
+      this.host.notify(player, 'warning', interaction.failureText ?? 'The door is locked.');
+      return;
+    }
+    if (player.addFlag(doorOpenedFlag(id))) this.effects.apply(player, interaction.effects);
+    const grid = level.gridWithDoors(openDoorsOf(player, this.content));
+    player.path = pathThroughDoor(grid, level.layout, level.doors, player.position, placed.placement.position);
+    this.host.raiseQuestEvent(player, { type: 'interactedWith', objectId: id });
   }
 
   private targetPosition(player: Player, pending: Pick<PendingInteraction, 'kind' | 'instanceId'>): TilePoint | null {

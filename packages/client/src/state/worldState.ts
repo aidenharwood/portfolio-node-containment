@@ -1,6 +1,8 @@
 import {
   chunkKeyOf,
   createObjectWalkabilityGrid,
+  doorTilesOf,
+  withOpenDoors,
   GAME_CONTENT,
   walkableTilesNear,
   type WalkabilityGrid,
@@ -145,6 +147,10 @@ export class WorldState {
     );
   }
 
+  get openDoors(): ReadonlySet<string> {
+    return new Set(this.self?.openDoors ?? []);
+  }
+
   get selfEntity(): ClientEntity | undefined {
     return this.selfEntityId ? this.entities.get(this.selfEntityId) : undefined;
   }
@@ -219,7 +225,9 @@ export class WorldState {
   private enterZone(message: ServerMessageOf<'world.entered'>): void {
     const definition = GAME_CONTENT.levels.get(message.levelId);
     if (!definition) return;
-    const grid = createObjectWalkabilityGrid(definition.layout, definition.objects, (objectId) => GAME_CONTENT.worldObjects.get(objectId));
+    const definitionOf = (objectId: string) => GAME_CONTENT.worldObjects.get(objectId);
+    const baseGrid = createObjectWalkabilityGrid(definition.layout, definition.objects, definitionOf);
+    const grid = withOpenDoors(baseGrid, definition.layout, doorTilesOf(definition.objects, definitionOf), (objectId) => this.openDoors.has(objectId));
     this.zone = { definition, layout: definition.layout, grid };
     this.selfEntityId = message.selfEntityId;
     this.tickMs = message.tickMs;

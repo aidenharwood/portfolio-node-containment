@@ -4,7 +4,7 @@ import { VOXEL_EMISSIVE, VOXEL_GLASS } from '../voxel/voxelKinds.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 import type { AnimatedPart, ObjectModelParts } from './objectModels.ts';
 
-type LitterModel = Extract<WorldObjectModel, 'litterPapers' | 'litterDebris' | 'litterPuddle' | 'cableRun' | 'cableRunEnd'>;
+type LitterModel = Extract<WorldObjectModel, 'litterPapers' | 'litterDebris' | 'litterPuddle' | 'litterRubble' | 'litterGravel' | 'cableRun' | 'cableRunEnd'>;
 
 const TILE_MIN = -8;
 const TILE_MAX = 7;
@@ -63,6 +63,43 @@ const litterPuddle = (seed: number): ObjectModelParts => {
   ]);
 };
 
+const STONE_TONES = [0x5d6266, 0x4a4f53, 0x6f7377, 0x3d4246, 0x7a7468, 0x2a2e31];
+
+const stoneTone = (seed: number, index: number): number => STONE_TONES[Math.floor(noise3(index, 3, 0, seed) * STONE_TONES.length) % STONE_TONES.length] as number;
+
+const litterRubble = (seed: number): ObjectModelParts => {
+  const model = new VoxelModel();
+  for (let rock = 0; rock < 7; rock++) {
+    const { x, z } = scatterSpot(seed, rock + 40);
+    const size = 1 + Math.floor(noise3(rock, 4, 0, seed) * 2.4);
+    const tone = stoneTone(seed, rock);
+    model.fill(x - size, 0, z - size, x + size, size, z + size, (vx, vy, vz) => {
+      const reach = Math.hypot(vx - x, (vy + 0.5) * 1.4, vz - z);
+      return reach <= size + 0.3 && noise3(vx, vy, vz, seed + rock) > 0.18 ? jitter(tone, 0.07, noise3(vx, vy, vz, seed)) : null;
+    });
+  }
+  for (let pebble = 0; pebble < 14; pebble++) {
+    const { x, z } = scatterSpot(seed, pebble + 60);
+    model.set(x, 0, z, jitter(stoneTone(seed, pebble + 9), 0.08, noise3(x, 0, z, seed)));
+  }
+  const rebar = scatterSpot(seed, 90);
+  model.fill(rebar.x - 4, 1, rebar.z, rebar.x + 2, 1, rebar.z, 0x5a3a26).set(rebar.x + 3, 2, rebar.z, 0x5a3a26);
+  return parts(model, 5);
+};
+
+const litterGravel = (seed: number): ObjectModelParts => {
+  const model = new VoxelModel();
+  for (let x = TILE_MIN + 1; x <= TILE_MAX - 1; x++) {
+    for (let z = TILE_MIN + 1; z <= TILE_MAX - 1; z++) {
+      const spread = Math.hypot(x + 0.5, z + 0.5) + (noise3(x, 0, z, seed) - 0.5) * 4;
+      const roll = noise3(x, 1, z, seed + 3);
+      if (spread < 6 && roll > 0.55) model.set(x, 0, z, jitter(stoneTone(seed, x * 16 + z), 0.08, roll));
+      if (spread < 3 && roll > 0.9) model.set(x, 1, z, stoneTone(seed, x + z));
+    }
+  }
+  return parts(model, 2);
+};
+
 const CABLE_COLORS = [0x1b2228, 0xc99a1c, 0x2f6f8a, 0x8a3a2a];
 const CABLE_LANES = [-3, -1, 1, 3];
 
@@ -93,6 +130,8 @@ export const LITTER_BUILDERS: Readonly<Record<LitterModel, (seed: number) => Obj
   litterPapers,
   litterDebris,
   litterPuddle,
+  litterRubble,
+  litterGravel,
   cableRun,
   cableRunEnd,
 };

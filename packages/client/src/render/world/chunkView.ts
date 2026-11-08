@@ -2,6 +2,7 @@ import {
   CHUNK_SIZE,
   GAME_CONTENT,
   TILE_KINDS,
+  tileKey,
   type ChunkCoord,
   type Facing,
   type InstanceId,
@@ -20,6 +21,7 @@ import { VoxelModel } from '../voxel/voxelModel.ts';
 import { meshVoxels } from '../voxel/voxelMesher.ts';
 import { createVoxelObject } from '../voxel/voxelMaterials.ts';
 import { LiquidSurface } from './liquidSurface.ts';
+import { buildFloorScatter } from './floorScatter.ts';
 import { buildTileVolume } from './levelVoxels.ts';
 import { MODEL_VOXEL_SIZE, TILE_RESOLUTION, WALL_HEIGHT, ZONE_MESH_ORIGIN, ZONE_VOLUME_HEIGHT, ZONE_VOXEL_SIZE } from './worldScale.ts';
 
@@ -100,7 +102,7 @@ export class ChunkView {
 
   constructor(zone: ActiveZone, region: TileRect, contents: ChunkContents, ringMaterial: Material) {
     this.ringMaterial = ringMaterial;
-    if (hasStructure(zone, region)) this.buildStructure(zone, region);
+    if (hasStructure(zone, region)) this.buildStructure(zone, region, new Set(contents.objects.map(({ placement }) => tileKey(placement.position))));
     contents.objects.forEach(({ placement, index }) => this.addObject(placement, index));
     contents.fixtures.forEach((spot) => this.addCeilingFixture(spot));
     contents.lights.forEach((light, index) => {
@@ -127,7 +129,7 @@ export class ChunkView {
     this.coolant?.dispose();
   }
 
-  private buildStructure(zone: ActiveZone, region: TileRect): void {
+  private buildStructure(zone: ActiveZone, region: TileRect, occupied: ReadonlySet<string>): void {
     const { layout } = zone;
     const volume = buildTileVolume(layout, region);
     const meshOptions = { voxelSize: ZONE_VOXEL_SIZE, origin: ZONE_MESH_ORIGIN };
@@ -139,6 +141,12 @@ export class ChunkView {
     const floor = createVoxelObject(meshVoxels(volume, floorBounds, { ...meshOptions, clipToBounds: true }), { castShadow: false });
     floor.name = 'floor';
     this.root.add(floor);
+    const scatter = buildFloorScatter(layout, region, (tile) => occupied.has(tileKey(tile)));
+    if (!scatter.isEmpty) {
+      const litter = createVoxelObject(scatter.mesh(MODEL_VOXEL_SIZE), { castShadow: false });
+      litter.name = 'floorScatter';
+      this.root.add(litter);
+    }
 
     for (let ty = region.y; ty < region.y + region.height; ty++) {
       for (let tx = region.x; tx < region.x + region.width; tx++) {

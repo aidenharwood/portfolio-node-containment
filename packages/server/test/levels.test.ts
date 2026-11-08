@@ -58,6 +58,7 @@ describe('levels', () => {
     walkTo(harness, levelPoint('deep-concourse', { x: 70, y: 3 }));
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'deep-concourse');
     harness.interactWithObject('dc-array-door-a');
+    harness.ticksUntil(() => harness.player.path.length === 0);
     assert.equal(harness.player.levelId, 'the-deep');
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'signal-array');
   });
@@ -67,6 +68,27 @@ describe('levels', () => {
     harness.interactWithObject('dc-cryovault-door-a');
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'deep-concourse');
     assert.match(harness.sink.last('notice')?.text ?? '', /COLD STORAGE SEALED/);
+  });
+
+  test('a cleared player walks straight through a joined pressure door, and it stays open for them alone', () => {
+    const harness = createHarness({ prepare: placedAt(at('deep-concourse', { x: 5, y: 3 }), ['clearance.cryovault']) });
+    walkTo(harness, levelPoint('cryovault', { x: 5, y: 3 }));
+    assert.equal(harness.gameplay.world.districtOf(harness.player), 'cryovault');
+    assert.ok(harness.sink.last('player.state')?.self.openDoors.includes('cryovault-door'));
+
+    const level = harness.gameplay.world.levelOf(harness.player);
+    const door = levelPoint('deep-concourse', { x: 5, y: 6 });
+    assert.equal(level.grid.isWalkable(door), false, 'the shared grid keeps the door shut for everyone else');
+    assert.equal(level.creatureGrid.isWalkable(door), false, 'creatures never pass a door');
+  });
+
+  test('a door you have opened stays open after the key is gone', () => {
+    const harness = createHarness({ prepare: placedAt(at('deep-concourse', { x: 5, y: 4 }), ['clearance.cryovault']) });
+    harness.interactWithObject('dc-cryovault-door-a');
+    harness.ticksUntil(() => harness.player.path.length === 0);
+    assert.equal(harness.gameplay.world.districtOf(harness.player), 'cryovault');
+    harness.player.update({ flags: harness.player.record.flags.filter((flag) => flag !== 'clearance.cryovault') });
+    walkTo(harness, levelPoint('deep-concourse', { x: 5, y: 3 }));
   });
 
   test('Deepwatch reaches the Furnace Causeway on foot', () => {

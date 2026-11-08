@@ -2,6 +2,10 @@ import {
   chunkKeyOf,
   chunkOf,
   createObjectWalkabilityGrid,
+  doorTilesOf,
+  withOpenDoors,
+  type DoorTiles,
+  type WorldObjectId,
   interestDelta,
   interestSet,
   findPath,
@@ -53,6 +57,7 @@ export class LevelInstance {
   readonly layout: LevelLayout;
   readonly grid: WalkabilityGrid;
   readonly creatureGrid: WalkabilityGrid;
+  readonly doors: DoorTiles;
   readonly players = new Map<EntityId, Player>();
   readonly npcs = new Map<InstanceId, Npc>();
   readonly objects = new Map<InstanceId, PlacedObject>();
@@ -74,6 +79,7 @@ export class LevelInstance {
     }
     this.grid = createObjectWalkabilityGrid(this.layout, definition.objects, (objectId) => content.worldObjects.get(objectId));
     const grid = this.grid;
+    this.doors = doorTilesOf(definition.objects, (objectId) => content.worldObjects.get(objectId));
     this.creatureGrid = { isWalkable: (point) => grid.isWalkable(point) && !this.isSafe(point) };
 
     for (const placement of definition.creatures) {
@@ -215,8 +221,12 @@ export class LevelInstance {
     return this.definition.areas.some((area) => area.safe === true && rectContains(area.rect, point));
   }
 
-  pathBetween(from: TilePoint, to: TilePoint, arriveAdjacent: boolean, maxSearchNodes?: number): TilePoint[] | null {
-    return findPath(this.grid, { from, to, arriveAdjacent, maxSearchNodes });
+  gridWithDoors(openDoors: ReadonlySet<WorldObjectId>): WalkabilityGrid {
+    return openDoors.size === 0 ? this.grid : withOpenDoors(this.grid, this.layout, this.doors, (objectId) => openDoors.has(objectId));
+  }
+
+  pathBetween(from: TilePoint, to: TilePoint, arriveAdjacent: boolean, maxSearchNodes?: number, openDoors: ReadonlySet<WorldObjectId> = new Set()): TilePoint[] | null {
+    return findPath(this.gridWithDoors(openDoors), { from, to, arriveAdjacent, maxSearchNodes });
   }
 
   creaturePathBetween(from: TilePoint, to: TilePoint, arriveAdjacent: boolean, maxSearchNodes?: number): TilePoint[] | null {

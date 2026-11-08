@@ -43,6 +43,7 @@ export * from './world/pathfinding.ts';
 export * from './world/tiles.ts';
 export * from './world/chunks.ts';
 export * from './world/district.ts';
+export * from './world/doors.ts';
 export * from './world/level.ts';
 export * from './world/levelLayout.ts';
 export * from './world/tram.ts';

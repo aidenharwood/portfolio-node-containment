@@ -113,6 +113,7 @@ describe('combat', () => {
     assert.equal(stepOf(harness, 'the-knocking'), 3);
 
     harness.interactWithObject('sector2-bulkhead-b');
+    harness.ticksUntil(() => player.path.length === 0);
     assert.equal(districtOf(player), 'sector-two');
     assert.equal(stepOf(harness, 'the-knocking'), 4);
 
@@ -132,7 +133,8 @@ describe('combat', () => {
     assert.equal(stepOf(harness, 'the-knocking'), 7);
 
     harness.ticksUntil(() => player.combatTargetId === null, 600);
-    harness.interactWithObject('s2-exit-a');
+    harness.interactWithObject('sector2-bulkhead-a');
+    harness.ticksUntil(() => player.path.length === 0);
     assert.equal(districtOf(player), 'meridian-atrium');
 
     harness.talkTo('atrium-sel');

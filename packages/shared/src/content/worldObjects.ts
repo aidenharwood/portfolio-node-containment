@@ -226,15 +226,12 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     model: 'bulkhead',
     blocksMovement: true,
     light: { radius: 2.5, color: '#ff4d4d', intensity: 0.7, flicker: true },
+    door: { conditions: [{ type: 'hasItem', itemId: 'quarantine-override-key' }] },
     interactions: [
       {
         verb: 'Open',
-        conditions: [{ type: 'hasItem', itemId: 'quarantine-override-key' }],
         failureText: 'The bulkhead does not respond. Somewhere behind it, something knocks twice.',
-        effects: [
-          { type: 'notify', text: 'The override key turns. Seals hiss. The air beyond is very cold.' },
-          { type: 'teleport', districtId: 'sector-two', position: { x: 3, y: 17 } },
-        ],
+        effects: [{ type: 'notify', text: 'The override key turns. Seals hiss. The air beyond is very cold.' }],
       },
     ],
   },
@@ -245,20 +242,6 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     model: 'planter',
     blocksMovement: true,
     interactions: [],
-  },
-  {
-    id: 'sector-two-exit',
-    name: 'Quarantine Bulkhead',
-    examine: 'The way back to the Atrium. Someone has scratched a tally on the inside of the frame: forty-one marks.',
-    model: 'bulkhead',
-    blocksMovement: true,
-    light: { radius: 2.5, color: '#ff4d4d', intensity: 0.7, flicker: true },
-    interactions: [
-      {
-        verb: 'Open',
-        effects: [{ type: 'teleport', districtId: 'meridian-atrium', position: { x: 22, y: 3 } }],
-      },
-    ],
   },
   {
     id: 'halvorsen-terminal',

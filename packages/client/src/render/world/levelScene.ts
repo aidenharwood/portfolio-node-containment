@@ -16,6 +16,12 @@ import { ChunkView, chunkRegion, type ChunkContents, type FixtureSpot, type Inde
 
 export type { LightSource, ObjectView, WallPiece } from './chunkView.ts';
 
+export interface DoorView {
+  readonly open: ReadonlySet<string>;
+  readonly self: TilePoint | null;
+}
+
+const DOOR_OPEN_RANGE = 2.6;
 const FADE_RADIUS = 1.4;
 const FADE_REACH = 7;
 const FIXTURE_SPACING = 4;
@@ -104,8 +110,9 @@ export class LevelScene {
     }
   }
 
-  update(time: number, objectiveObjectIds: ReadonlySet<string>, depletedObjects: ReadonlySet<string>): void {
+  update(time: number, objectiveObjectIds: ReadonlySet<string>, depletedObjects: ReadonlySet<string>, doors: DoorView): void {
     for (const view of this.objects.values()) {
+      if (view.definition.door) this.slideDoor(view, doors);
       const depleted = depletedObjects.has(view.instanceId);
       for (const { part, spec } of view.animated) {
         spec.animate(part, time, view.seed);
@@ -123,6 +130,12 @@ export class LevelScene {
     }
     for (const { view } of this.chunks.values()) view.update(time);
     this.ringMaterial.opacity = 0.55 + Math.sin(time * 3) * 0.3;
+  }
+
+  private slideDoor(view: ObjectView, doors: DoorView): void {
+    const near = doors.self !== null && Math.hypot(doors.self.x - view.placement.position.x, doors.self.y - view.placement.position.y) <= DOOR_OPEN_RANGE;
+    const target = near && doors.open.has(view.definition.id) ? -view.height - 0.05 : 0;
+    view.group.position.y += (target - view.group.position.y) * 0.14;
   }
 
   updateCutaway(camera: Vector3, focus: Vector3): void {

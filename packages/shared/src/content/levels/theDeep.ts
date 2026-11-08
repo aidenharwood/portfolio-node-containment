@@ -14,7 +14,7 @@ export const THE_DEEP: LevelDefinition = {
     { districtId: 'cryovault', origin: { x: 0, y: 31 } },
     { districtId: 'signal-array', origin: { x: 48, y: 31 } },
     { districtId: 'drowned-archive', origin: { x: 96, y: 31 } },
-    { districtId: 'furnace', origin: { x: 144, y: 0 } },
+    { districtId: 'furnace', origin: { x: 144, y: 13 } },
   ],
   connectors: [],
 };

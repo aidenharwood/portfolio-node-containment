@@ -11,6 +11,7 @@ import {
   type LevelId,
   type ResolvedLevel,
   type WorldLocation,
+  type WorldObjectId,
 } from '@containment/shared';
 import type { Creature } from './creature.ts';
 import type { Npc } from './npc.ts';
@@ -21,6 +22,7 @@ export interface WorldHooks {
   onAreaEntered(player: Player, districtId: DistrictId, areaId: AreaId): void;
   onPathCompleted(player: Player): void;
   onLevelEntered(player: Player, levelId: LevelId): void;
+  openDoorsFor(player: Player): ReadonlySet<WorldObjectId>;
 }
 
 interface Walker {
@@ -158,10 +160,11 @@ export class World {
   walk(player: Player, target: TilePoint): boolean {
     const level = this.levelOf(player);
     if (!level.isInterestOf(player, target)) return false;
-    const candidates = walkableTilesNear(level.grid, target, player.position).slice(0, WALK_SNAP_ATTEMPTS);
+    const openDoors = this.hooks.openDoorsFor(player);
+    const candidates = walkableTilesNear(level.gridWithDoors(openDoors), target, player.position).slice(0, WALK_SNAP_ATTEMPTS);
     for (const candidate of candidates) {
       if (!level.isInterestOf(player, candidate)) continue;
-      const path = level.pathBetween(player.position, candidate, false);
+      const path = level.pathBetween(player.position, candidate, false, undefined, openDoors);
       if (!path) continue;
       player.path = path;
       return true;
@@ -170,7 +173,7 @@ export class World {
   }
 
   approach(player: Player, target: TilePoint): boolean {
-    const path = this.levelOf(player).pathBetween(player.position, target, true);
+    const path = this.levelOf(player).pathBetween(player.position, target, true, undefined, this.hooks.openDoorsFor(player));
     if (!path) return false;
     player.path = path;
     return true;
