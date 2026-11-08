@@ -14,6 +14,7 @@ export function installTouchContextMenu(): () => void {
   let pending: PendingPress | null = null;
   let lastPointerWasTouch = false;
   let suppressClickUntil = 0;
+  let heldPointerId: number | null = null;
 
   const cancel = () => {
     if (pending) window.clearTimeout(pending.timer);
@@ -38,6 +39,7 @@ export function installTouchContextMenu(): () => void {
       target,
       timer: window.setTimeout(() => {
         pending = null;
+        heldPointerId = pointerId;
         suppressClickUntil = performance.now() + CLICK_SUPPRESS_MS;
         navigator.vibrate?.(12);
         target.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX, clientY, button: 2 }));
@@ -52,6 +54,10 @@ export function installTouchContextMenu(): () => void {
 
   const onPointerEnd = (event: PointerEvent) => {
     if (pending && event.pointerId === pending.pointerId) cancel();
+    if (event.pointerId === heldPointerId) {
+      heldPointerId = null;
+      suppressClickUntil = performance.now() + CLICK_SUPPRESS_MS;
+    }
   };
 
   const onNativeContextMenu = (event: MouseEvent) => {

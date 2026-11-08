@@ -1,4 +1,4 @@
-import { GAME_CONTENT, TILE_KINDS, WEAPON_KIND_INFO, type EntityId, type Facing, type ItemId, type NpcQuestMarker, type ZoneAmbience } from '@containment/shared';
+import { GAME_CONTENT, WEAPON_KIND_INFO, type EntityId, type Facing, type ItemId, type NpcQuestMarker, type ZoneAmbience } from '@containment/shared';
 import {
   ACESFilmicToneMapping,
   Color,
@@ -242,8 +242,8 @@ export class GameRenderer {
     for (const item of this.world.groundItems.values()) {
       if (item.position.x === tile.x && item.position.y === tile.y) add({ kind: 'groundItem', item });
     }
-    const layout = this.world.zone?.layout;
-    if (layout && TILE_KINDS[layout.tileAt(tile)].walkable) add({ kind: 'tile', tile });
+    const walkTarget = this.world.walkTargetFor(tile);
+    if (walkTarget) add({ kind: 'tile', tile: walkTarget });
     return targets;
   }
 

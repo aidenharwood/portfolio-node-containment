@@ -110,9 +110,11 @@ export function createGameScreen(app: AppNavigator): Screen {
   };
 
   const walkTo = (tile: TilePoint, clientX: number, clientY: number) => {
+    const target = world.walkTargetFor(tile);
+    if (!target) return;
     clickOrigin = { clientX, clientY };
-    markDestination(tile, 'walk');
-    connection.send({ type: 'world.walk', target: tile });
+    markDestination(target, 'walk');
+    connection.send({ type: 'world.walk', target });
   };
 
   const minimap = new Minimap(world, walkTo);
@@ -419,10 +421,9 @@ export function createGameScreen(app: AppNavigator): Screen {
     h('div', { className: 'scanlines' }),
     zoneBanner,
     cameraHint,
-    objectives.element,
+    h('div', { className: 'hud-top-left' }, vitals.targetElement, objectives.element),
     minimap.element,
     vitals.element,
-    vitals.targetElement,
     sidePanel.element,
     chat.element,
     dialogue.element,

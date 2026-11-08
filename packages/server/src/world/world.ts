@@ -2,6 +2,7 @@ import {
   chunkKeyOf,
   chunkOf,
   facingBetween,
+  walkableTilesNear,
   type Facing,
   type AreaId,
   type GameContent,
@@ -37,6 +38,7 @@ export interface WorldOptions {
 
 export const DEFAULT_ZONE_CAPACITY = 50;
 const EMPTY_LAYER_RETIREMENT_TICKS = 200;
+const WALK_SNAP_ATTEMPTS = 8;
 
 const NPC_WANDER_CHANCE_PER_TICK = 0.04;
 const NPC_WANDER_SEARCH_LIMIT = 200;
@@ -154,10 +156,15 @@ export class World {
   walk(player: Player, target: TilePoint): boolean {
     const level = this.levelOf(player);
     if (!level.isInterestOf(player, target)) return false;
-    const path = level.pathBetween(player.position, target, false);
-    if (!path) return false;
-    player.path = path;
-    return true;
+    const candidates = walkableTilesNear(level.grid, target, player.position).slice(0, WALK_SNAP_ATTEMPTS);
+    for (const candidate of candidates) {
+      if (!level.isInterestOf(player, candidate)) continue;
+      const path = level.pathBetween(player.position, candidate, false);
+      if (!path) continue;
+      player.path = path;
+      return true;
+    }
+    return false;
   }
 
   approach(player: Player, target: TilePoint): boolean {

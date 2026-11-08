@@ -68,6 +68,24 @@ export function findPath(grid: WalkabilityGrid, request: PathRequest): TilePoint
   return null;
 }
 
+export const WALK_SNAP_RADIUS = 6;
+
+export function walkableTilesNear(grid: WalkabilityGrid, target: TilePoint, from: TilePoint, maxRadius = WALK_SNAP_RADIUS): TilePoint[] {
+  if (grid.isWalkable(target)) return [target];
+  const candidates: { point: TilePoint; distance: number; detour: number }[] = [];
+  for (let dy = -maxRadius; dy <= maxRadius; dy++) {
+    for (let dx = -maxRadius; dx <= maxRadius; dx++) {
+      const distance = Math.hypot(dx, dy);
+      if (distance === 0 || distance > maxRadius) continue;
+      const point = { x: target.x + dx, y: target.y + dy };
+      if (grid.isWalkable(point)) candidates.push({ point, distance, detour: Math.hypot(point.x - from.x, point.y - from.y) });
+    }
+  }
+  return candidates
+    .sort((a, b) => a.distance - b.distance || a.detour - b.detour)
+    .map((candidate) => candidate.point);
+}
+
 function* walkableSteps(grid: WalkabilityGrid, origin: TilePoint): Generator<{ point: TilePoint; cost: number }> {
   for (const offset of CARDINAL_OFFSETS) {
     const point = { x: origin.x + offset.x, y: origin.y + offset.y };

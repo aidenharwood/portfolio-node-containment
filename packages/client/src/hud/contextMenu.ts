@@ -8,16 +8,21 @@ export interface MenuAction {
 }
 
 const LEAVE_GRACE_MS = 120;
-const RELEASE_SLOP_PIXELS = 12;
 
 export class ContextMenu {
   readonly element = h('div', { className: 'context-menu panel', hidden: true, role: 'menu' });
 
   private leaveTimer: number | null = null;
+  private readonly touchesDown = new Set<number>();
+  private heldPointerId: number | null = null;
+  private highlighted: HTMLElement | null = null;
+  private readonly itemActions = new Map<HTMLElement, MenuAction>();
 
   constructor() {
-    window.addEventListener('pointerdown', this.dismissOnOutsideClick, true);
-    window.addEventListener('pointerup', this.dismissOnTouchReleaseOutside, true);
+    window.addEventListener('pointerdown', this.onPointerDown, true);
+    window.addEventListener('pointermove', this.followHeldTouch, true);
+    window.addEventListener('pointerup', this.onPointerUp, true);
+    window.addEventListener('pointercancel', this.onPointerCancel, true);
     window.addEventListener('keydown', this.dismissOnEscape);
     this.element.addEventListener('pointerleave', (event) => {
       if (event.pointerType !== 'mouse') return;
@@ -37,20 +42,22 @@ export class ContextMenu {
   }
 
   open(clientX: number, clientY: number, actions: readonly MenuAction[]): void {
+    this.itemActions.clear();
+    this.highlighted = null;
+    this.heldPointerId = this.touchesDown.size === 1 ? ([...this.touchesDown][0] ?? null) : null;
     replaceChildren(
       this.element,
       h('div', { className: 'context-title' }, 'Choose Option'),
-      ...[...actions, { verb: 'Cancel', run: () => undefined }].map((action) =>
-        h('button', {
+      ...[...actions, { verb: 'Cancel', run: () => undefined }].map((action) => {
+        const button = h('button', {
           className: 'context-item',
           type: 'button',
           role: 'menuitem',
-          onclick: () => {
-            this.close();
-            action.run();
-          },
-        }, action.verb, action.subject && h('span', { className: `subject tone-${action.subjectTone ?? 'object'}` }, ` ${action.subject}`)),
-      ),
+          onclick: () => this.choose(action),
+        }, action.verb, action.subject && h('span', { className: `subject tone-${action.subjectTone ?? 'object'}` }, ` ${action.subject}`));
+        this.itemActions.set(button, action);
+        return button;
+      }),
     );
     this.element.hidden = false;
     const bounds = this.element.getBoundingClientRect();
@@ -64,27 +71,61 @@ export class ContextMenu {
 
   close(): void {
     this.cancelLeaveTimer();
+    this.heldPointerId = null;
+    this.highlight(null);
     this.element.hidden = true;
   }
 
   dispose(): void {
-    window.removeEventListener('pointerdown', this.dismissOnOutsideClick, true);
-    window.removeEventListener('pointerup', this.dismissOnTouchReleaseOutside, true);
+    window.removeEventListener('pointerdown', this.onPointerDown, true);
+    window.removeEventListener('pointermove', this.followHeldTouch, true);
+    window.removeEventListener('pointerup', this.onPointerUp, true);
+    window.removeEventListener('pointercancel', this.onPointerCancel, true);
     window.removeEventListener('keydown', this.dismissOnEscape);
   }
 
-  private readonly dismissOnOutsideClick = (event: PointerEvent): void => {
+  private choose(action: MenuAction): void {
+    this.close();
+    action.run();
+  }
+
+  private itemAt(clientX: number, clientY: number): HTMLElement | null {
+    const item = document.elementFromPoint(clientX, clientY)?.closest<HTMLElement>('.context-item') ?? null;
+    return item && this.element.contains(item) ? item : null;
+  }
+
+  private highlight(item: HTMLElement | null): void {
+    if (item === this.highlighted) return;
+    this.highlighted?.classList.remove('touch-active');
+    item?.classList.add('touch-active');
+    this.highlighted = item;
+  }
+
+  private readonly onPointerDown = (event: PointerEvent): void => {
+    if (event.pointerType === 'touch') this.touchesDown.add(event.pointerId);
     if (this.isOpen && !this.element.contains(event.target as Node)) this.close();
   };
 
-  private readonly dismissOnTouchReleaseOutside = (event: PointerEvent): void => {
-    if (!this.isOpen || event.pointerType !== 'touch') return;
-    const bounds = this.element.getBoundingClientRect();
-    const inside = event.clientX >= bounds.left - RELEASE_SLOP_PIXELS
-      && event.clientX <= bounds.right + RELEASE_SLOP_PIXELS
-      && event.clientY >= bounds.top - RELEASE_SLOP_PIXELS
-      && event.clientY <= bounds.bottom + RELEASE_SLOP_PIXELS;
-    if (!inside) this.close();
+  private readonly followHeldTouch = (event: PointerEvent): void => {
+    if (!this.isOpen || event.pointerId !== this.heldPointerId) return;
+    this.highlight(this.itemAt(event.clientX, event.clientY));
+  };
+
+  private readonly onPointerUp = (event: PointerEvent): void => {
+    this.touchesDown.delete(event.pointerId);
+    if (!this.isOpen || event.pointerId !== this.heldPointerId) return;
+    const item = this.itemAt(event.clientX, event.clientY);
+    const action = item ? this.itemActions.get(item) : undefined;
+    if (action) this.choose(action);
+    else this.close();
+  };
+
+  private readonly onPointerCancel = (event: PointerEvent): void => {
+    this.touchesDown.delete(event.pointerId);
+    if (event.pointerId === this.heldPointerId) {
+      this.heldPointerId = null;
+      this.highlight(null);
+    }
   };
 
   private readonly dismissOnEscape = (event: KeyboardEvent): void => {

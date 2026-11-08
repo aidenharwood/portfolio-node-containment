@@ -1,6 +1,9 @@
 import {
   chunkKeyOf,
+  createWalkabilityGrid,
   GAME_CONTENT,
+  walkableTilesNear,
+  type WalkabilityGrid,
   type ChunkKey,
   WEAPON_KIND_INFO,
   type EntityId,
@@ -48,6 +51,7 @@ export interface ClientEntity {
 export interface ActiveZone {
   readonly definition: ResolvedLevel;
   readonly layout: LevelLayout;
+  readonly grid: WalkabilityGrid;
 }
 
 type WorldEvent = 'zoneChanged' | 'selfChanged' | 'vitalsChanged';
@@ -206,10 +210,19 @@ export class WorldState {
     for (const listener of this.hitListeners) listener(event);
   }
 
+  walkTargetFor(tile: TilePoint): TilePoint | null {
+    if (!this.zone) return null;
+    const from = this.selfEntity?.to ?? tile;
+    return walkableTilesNear(this.zone.grid, tile, from)[0] ?? null;
+  }
+
   private enterZone(message: ServerMessageOf<'world.entered'>): void {
     const definition = GAME_CONTENT.levels.get(message.levelId);
     if (!definition) return;
-    this.zone = { definition, layout: definition.layout };
+    const blocked = definition.objects
+      .filter((placement) => GAME_CONTENT.worldObjects.get(placement.objectId)?.blocksMovement)
+      .map((placement) => placement.position);
+    this.zone = { definition, layout: definition.layout, grid: createWalkabilityGrid(definition.layout, blocked) };
     this.selfEntityId = message.selfEntityId;
     this.tickMs = message.tickMs;
     this.layer = message.layer;

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { createWalkabilityGrid, findPath, parseTileLayout } from '../src/index.ts';
+import { createWalkabilityGrid, findPath, parseTileLayout, walkableTilesNear } from '../src/index.ts';
 
 const layout = parseTileLayout([
   '#######',
@@ -47,5 +47,27 @@ describe('findPath', () => {
 
   test('returns an empty path when already at the destination', () => {
     assert.deepEqual(findPath(grid, { from: { x: 1, y: 1 }, to: { x: 1, y: 1 } }), []);
+  });
+});
+
+describe('walkableTilesNear', () => {
+  test('keeps a walkable target as it is', () => {
+    assert.deepEqual(walkableTilesNear(grid, { x: 3, y: 1 }, { x: 1, y: 1 }), [{ x: 3, y: 1 }]);
+  });
+
+  test('snaps a wall to the closest walkable tile, preferring the side nearer the walker', () => {
+    const [nearest] = walkableTilesNear(grid, { x: 3, y: 2 }, { x: 3, y: 1 });
+    assert.deepEqual(nearest, { x: 3, y: 1 });
+    const [fromBelow] = walkableTilesNear(grid, { x: 3, y: 2 }, { x: 4, y: 3 });
+    assert.deepEqual(fromBelow, { x: 3, y: 3 });
+  });
+
+  test('snaps tiles outside the map back inside', () => {
+    const [nearest] = walkableTilesNear(grid, { x: 3, y: -1 }, { x: 1, y: 1 });
+    assert.deepEqual(nearest, { x: 3, y: 1 });
+  });
+
+  test('gives up when nothing walkable is in range', () => {
+    assert.deepEqual(walkableTilesNear(grid, { x: 40, y: 40 }, { x: 1, y: 1 }), []);
   });
 });

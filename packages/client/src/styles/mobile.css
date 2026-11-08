@@ -98,27 +98,20 @@ body {
 }
 
 @media (max-width: 760px), (max-height: 520px) {
-  .hud-objectives {
+  .hud-top-left {
     top: calc(8px + var(--safe-top));
     left: calc(8px + var(--safe-left));
     width: min(260px, calc(100% - 150px));
+    gap: 6px;
+  }
+
+  .hud-objectives {
     font-size: 12px;
   }
 
   .objectives-list {
     padding: 6px 8px;
     gap: 6px;
-  }
-
-  .game-screen:has(.hud-target:not([hidden])) .hud-objectives {
-    display: none;
-  }
-
-  .hud-target {
-    top: calc(8px + var(--safe-top));
-    left: calc(8px + var(--safe-left));
-    transform: none;
-    width: min(260px, calc(100% - 150px));
   }
 
   .hud-minimap {
@@ -165,7 +158,7 @@ body {
     bottom: calc(8px + var(--safe-bottom));
     width: min(380px, calc(100% - 16px - var(--safe-left) - var(--safe-right)));
     height: auto;
-    max-height: min(460px, calc(100% - 24px - var(--safe-top) - var(--safe-bottom)));
+    max-height: min(460px, calc(100% - 188px - var(--safe-top) - var(--safe-bottom)));
     flex-direction: column-reverse;
     z-index: 20;
     --bevel: 8px;
@@ -261,6 +254,12 @@ body {
 
   .hud-side {
     width: min(380px, calc(100% - 380px));
+    max-height: calc(100% - 144px - var(--safe-top) - var(--safe-bottom));
+  }
+
+  .hud-vitals {
+    top: calc(8px + var(--safe-top));
+    right: calc(136px + var(--safe-right));
   }
 
   .hud-dialogue {
