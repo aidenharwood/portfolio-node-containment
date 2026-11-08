@@ -40,6 +40,8 @@ import { THE_DEEP } from './levels/theDeep.ts';
 import { THE_THRESHOLD } from './levels/theThreshold.ts';
 import { UNDERCROFT_LEVEL } from './levels/undercroftLevel.ts';
 import type { QuestDefinition } from '../quests/questDefinition.ts';
+import type { QuestlineDefinition, QuestlineId } from '../quests/questline.ts';
+import { QUESTLINES } from './questlines.ts';
 import type { NpcDefinition, WorldObjectDefinition } from '../world/entities.ts';
 import type { DistrictDefinition } from '../world/district.ts';
 import { AMES_DIALOGUE, KADE_DIALOGUE, LUND_DIALOGUE, OKAFOR_DIALOGUE, SEL_DIALOGUE } from './dialogues/atriumDialogues.ts';
@@ -89,6 +91,7 @@ export interface GameContent {
   readonly assemblies: ReadonlyMap<AssemblyId, AssemblyDefinition>;
   readonly dialogues: ReadonlyMap<DialogueId, DialogueDefinition>;
   readonly quests: ReadonlyMap<QuestId, QuestDefinition>;
+  readonly questlines: ReadonlyMap<QuestlineId, QuestlineDefinition>;
   readonly districts: ReadonlyMap<DistrictId, DistrictDefinition>;
   readonly levels: ReadonlyMap<LevelId, ResolvedLevel>;
   readonly levelOfDistrict: ReadonlyMap<DistrictId, LevelId>;
@@ -178,6 +181,7 @@ export const GAME_CONTENT: GameContent = {
     THE_ANSWER,
     ...ACT_TWO_SIDE_QUESTS,
   ]),
+  questlines: indexById(QUESTLINES),
   districts: DISTRICTS,
   levels: LEVEL_INDEX.levels,
   levelOfDistrict: LEVEL_INDEX.levelOfDistrict,

@@ -1,4 +1,16 @@
-import { focusedQuest, GAME_CONTENT, objectiveGoal, type QuestDefinition, type QuestId, type SelfState } from '@containment/shared';
+import {
+  focusedQuest,
+  GAME_CONTENT,
+  objectiveGoal,
+  QUESTLINE_KIND_LABELS,
+  QUESTLINE_KINDS,
+  questlineOf,
+  type QuestDefinition,
+  type QuestId,
+  type QuestlineDefinition,
+  type QuestlineId,
+  type SelfState,
+} from '@containment/shared';
 import type { QuestTracking } from '../../state/questTracking.ts';
 import { h, replaceChildren } from '../../ui/dom.ts';
 import type { ContextMenu, MenuAction } from '../contextMenu.ts';
@@ -6,18 +18,26 @@ import type { PanelTab } from '../sidePanel.ts';
 
 type QuestState = 'active' | 'completed' | 'available';
 
-const GROUP_LABELS: Record<QuestState, string> = { active: 'In progress', available: 'Rumoured', completed: 'Completed' };
+const STATE_TAGS: Record<QuestState, string> = { active: 'In progress', available: 'Rumoured', completed: 'Done' };
+
+const questlinePriority = (states: readonly QuestState[]): number => {
+  if (states.includes('active')) return 0;
+  if (states.includes('available')) return 1;
+  return 2;
+};
 
 export function createQuestsTab(menu: ContextMenu, tracking: QuestTracking): PanelTab {
   let selected: QuestId | null = null;
   let self: SelfState | null = null;
+  const toggled = new Set<QuestlineId>();
   const body = h('div', { className: 'quest-body' });
   const element = h('div', { className: 'tab-quests' }, h('header', { className: 'tab-header' }, h('h3', {}, 'Journal')), body);
 
   const stateOf = (quest: QuestDefinition): QuestState | null => {
     const progress = self?.quests[quest.id];
     if (progress) return progress.status;
-    return quest.offeredBy ? 'available' : null;
+    const unlocked = (quest.offerRequires ?? []).every((questId) => self?.quests[questId]?.status === 'completed');
+    return quest.offeredBy && unlocked ? 'available' : null;
   };
 
   const trackedId = (): QuestId | null =>
@@ -43,28 +63,62 @@ export function createQuestsTab(menu: ContextMenu, tracking: QuestTracking): Pan
     else renderList();
   };
 
+  const renderQuestEntry = (quest: QuestDefinition, state: QuestState, tracked: QuestId | null) =>
+    h('button', {
+      className: `quest-entry state-${state}${tracked === quest.id ? ' tracked' : ''}`,
+      type: 'button',
+      onclick: () => open(quest.id),
+      oncontextmenu: (event: MouseEvent) => {
+        event.preventDefault();
+        menu.open(event.clientX, event.clientY, actionsFor(quest, state));
+      },
+    },
+    h('span', { className: 'quest-entry-name' }, quest.name, tracked === quest.id && h('span', { className: 'quest-tracked-mark' }, ' ◆')),
+    h('span', { className: 'quest-entry-tag' }, STATE_TAGS[state]));
+
+  const renderQuestline = (questline: QuestlineDefinition, entries: readonly [QuestDefinition, QuestState][], tracked: QuestId | null) => {
+    const completed = entries.filter(([, state]) => state === 'completed').length;
+    const finished = questline.questIds.every((questId) => self?.quests[questId]?.status === 'completed');
+    const collapsed = finished !== toggled.has(questline.id);
+    return h('section', { className: `questline${finished ? ' finished' : ''}` },
+      h('button', {
+        className: 'questline-header',
+        type: 'button',
+        title: questline.summary,
+        onclick: () => {
+          if (toggled.has(questline.id)) toggled.delete(questline.id);
+          else toggled.add(questline.id);
+          render();
+        },
+      },
+      h('span', { className: 'questline-caret' }, collapsed ? '▸' : '▾'),
+      h('span', { className: 'questline-name' }, questline.name),
+      h('span', { className: 'questline-count' }, `${completed}/${questline.questIds.length}`)),
+      !collapsed && h('div', { className: 'questline-quests' }, ...entries.map(([quest, state]) => renderQuestEntry(quest, state, tracked))),
+    );
+  };
+
   const renderList = () => {
-    const quests = [...GAME_CONTENT.quests.values()];
     const tracked = trackedId();
+    const questlines = [...GAME_CONTENT.questlines.values()].map((questline) => {
+      const entries = questline.questIds.flatMap((questId): [QuestDefinition, QuestState][] => {
+        const quest = GAME_CONTENT.quests.get(questId);
+        const state = quest ? stateOf(quest) : null;
+        return quest && state ? [[quest, state]] : [];
+      });
+      return { questline, entries, priority: questlinePriority(entries.map(([, state]) => state)) };
+    });
     replaceChildren(
       body,
       h('div', { className: 'quest-list' },
-        ...(['active', 'available', 'completed'] as const).flatMap((state) => {
-          const group = quests.filter((quest) => stateOf(quest) === state);
-          if (group.length === 0) return [];
+        ...QUESTLINE_KINDS.flatMap((kind) => {
+          const visible = questlines
+            .filter(({ questline, entries }) => questline.kind === kind && entries.length > 0)
+            .sort((a, b) => a.priority - b.priority);
+          if (visible.length === 0) return [];
           return [
-            h('p', { className: 'quest-group' }, GROUP_LABELS[state]),
-            ...group.map((quest) =>
-              h('button', {
-                className: `quest-entry state-${state}${tracked === quest.id ? ' tracked' : ''}`,
-                type: 'button',
-                onclick: () => open(quest.id),
-                oncontextmenu: (event: MouseEvent) => {
-                  event.preventDefault();
-                  menu.open(event.clientX, event.clientY, actionsFor(quest, state));
-                },
-              }, quest.name, tracked === quest.id && h('span', { className: 'quest-tracked-mark' }, ' ◆')),
-            ),
+            h('p', { className: `quest-group kind-${kind}` }, QUESTLINE_KIND_LABELS[kind]),
+            ...visible.map(({ questline, entries }) => renderQuestline(questline, entries, tracked)),
           ];
         }),
       ),
@@ -77,6 +131,7 @@ export function createQuestsTab(menu: ContextMenu, tracking: QuestTracking): Pan
     const step = progress && progress.status === 'active' ? quest.steps[progress.stepIndex] : undefined;
     const giver = quest.offeredBy ? GAME_CONTENT.npcs.get(quest.offeredBy)?.name : undefined;
     const isTracked = trackedId() === quest.id;
+    const questline = questlineOf(GAME_CONTENT.questlines.values(), quest.id);
     replaceChildren(
       body,
       h('div', { className: 'quest-detail' },
@@ -89,6 +144,7 @@ export function createQuestsTab(menu: ContextMenu, tracking: QuestTracking): Pan
             onclick: () => tracking.track(quest.id),
           }, isTracked ? 'Tracking' : 'Track'),
         ),
+        questline && h('p', { className: `quest-questline kind-${questline.kind}` }, `${QUESTLINE_KIND_LABELS[questline.kind]} · ${questline.name}`),
         h('h4', {}, quest.name),
         h('p', { className: 'quest-summary' }, quest.summary),
         quest.recommendedLevel !== undefined &&

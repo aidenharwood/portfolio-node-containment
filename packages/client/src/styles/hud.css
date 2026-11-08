@@ -569,8 +569,81 @@
   margin: 8px 0 4px;
 }
 
+.quest-group.kind-main {
+  color: var(--color-gold);
+}
+
+.questline {
+  margin-bottom: 4px;
+}
+
+.questline-header {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 3px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.questline-header:hover {
+  background: var(--color-accent-dim);
+}
+
+.questline.finished .questline-header {
+  color: var(--color-text-faint);
+}
+
+.questline-caret {
+  width: 10px;
+  color: var(--color-text-faint);
+}
+
+.questline-name {
+  flex: 1;
+}
+
+.questline-count {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--color-text-faint);
+}
+
+.questline-quests {
+  padding-left: 14px;
+}
+
+.quest-entry-tag {
+  white-space: nowrap;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+}
+
+.quest-questline {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-faint);
+  margin: 0;
+}
+
+.quest-questline.kind-main {
+  color: var(--color-gold);
+}
+
 .quest-entry {
-  display: block;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
   width: 100%;
   text-align: left;
   background: none;

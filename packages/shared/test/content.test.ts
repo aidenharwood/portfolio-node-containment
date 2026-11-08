@@ -68,3 +68,15 @@ test('every lift into a deep zone has a way back out', () => {
     assert.ok(levelId !== undefined && enteredLevels.has(levelId), `nothing leads into ${districtId}`);
   }
 });
+
+test('every quest sits in exactly one questline of its own kind', () => {
+  const [first, second] = [...GAME_CONTENT.questlines.values()].filter((questline) => questline.kind === 'side');
+  assert.ok(first && second);
+  const misplaced = new Map(GAME_CONTENT.questlines);
+  misplaced.set(first.id, { ...first, questIds: first.questIds.slice(1) });
+  misplaced.set(second.id, { ...second, questIds: [...second.questIds, 'the-knocking'] });
+  const issues = findContentIssues({ ...GAME_CONTENT, questlines: misplaced });
+  assert.ok(issues.some((issue) => issue.includes(first.questIds[0] ?? '') && issue.includes('no questline')));
+  assert.ok(issues.some((issue) => issue.includes('"the-knocking" is already in questline')));
+  assert.ok(issues.some((issue) => issue.includes('main quest "the-knocking" does not belong in a side questline')));
+});

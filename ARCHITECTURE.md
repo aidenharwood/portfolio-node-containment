@@ -133,6 +133,8 @@ When a player clicks an NPC or object, `InteractionController.request` stores a 
 
 `QuestTracker` wires the pure engine to players: it applies `onComplete` effects and rewards, and starts follow-up quests.
 
+**Questlines** (`content/questlines.ts`) group quests for the journal. A questline is `main` (a chapter of a storyline, such as Induction or an act) or `side` (a run of related errands), and lists its quests in story order. Every quest belongs to exactly one questline of its own kind (`tutorial` and `main` quests in main questlines, `side` quests in side ones), which `findContentIssues` enforces. The journal shows Main storyline and Side quests sections, each split by questline, and folds away questlines that are finished. Add a new storyline or quest chain by adding a questline.
+
 ### Combat
 
 The pure rules live in `shared/src/combat/combatMath.ts`: attack profiles, hit chance, damage rolls, range and sightline checks, and XP per point of damage. `server/src/gameplay/combatController.ts` runs them each tick, after movement:

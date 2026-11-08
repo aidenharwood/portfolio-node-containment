@@ -2,6 +2,7 @@ import type { DialogueDefinition } from '../dialogue/dialogue.ts';
 import type { Condition } from '../rules/conditions.ts';
 import type { GameEffect } from '../rules/effects.ts';
 import type { QuestObjective } from '../quests/questDefinition.ts';
+import { questlineKindFor } from '../quests/questline.ts';
 import { isShapeForSlot } from '../gear/slots.ts';
 import { TILE_KINDS } from '../world/tiles.ts';
 import { parseTileLayout } from '../world/district.ts';
@@ -156,6 +157,23 @@ export function findContentIssues(content: GameContent): string[] {
       for (const objective of step.objectives) checkObjective(`quest ${quest.id}/${step.id}`, objective);
       checkEffects(`quest ${quest.id}/${step.id}`, step.onComplete);
     }
+  }
+
+  const questlineOfQuest = new Map<string, string>();
+  for (const questline of content.questlines.values()) {
+    const where = `questline ${questline.id}`;
+    if (questline.questIds.length === 0) report(where, 'holds no quests');
+    for (const questId of questline.questIds) {
+      checkQuest(where, questId);
+      const previous = questlineOfQuest.get(questId);
+      if (previous) report(where, `quest "${questId}" is already in questline "${previous}"`);
+      questlineOfQuest.set(questId, questline.id);
+      const quest = content.quests.get(questId);
+      if (quest && questlineKindFor(quest) !== questline.kind) report(where, `${quest.category} quest "${questId}" does not belong in a ${questline.kind} questline`);
+    }
+  }
+  for (const quest of content.quests.values()) {
+    if (!questlineOfQuest.has(quest.id)) report(`quest ${quest.id}`, 'belongs to no questline');
   }
 
   for (const zone of content.districts.values()) {

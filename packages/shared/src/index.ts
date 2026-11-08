@@ -30,6 +30,7 @@ export * from './rules/conditions.ts';
 export * from './rules/effects.ts';
 
 export * from './quests/questDefinition.ts';
+export * from './quests/questline.ts';
 export * from './quests/questGuidance.ts';
 export * from './quests/questRoute.ts';
 export * from './quests/questProgress.ts';
