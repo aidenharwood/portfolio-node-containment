@@ -32,7 +32,7 @@ export function deposit(
   const stack = inventory[slotIndex];
   if (!stack) return failure('There is nothing in that slot.');
   const item = catalog.get(stack.itemId);
-  if (!item || item.category === 'quest') return failure('That cannot go into storage.');
+  if (!item) return failure('That cannot go into storage.');
   const moved = Math.min(Math.max(1, Math.floor(quantity)), countItem(inventory, stack.itemId));
   const removed = removeItem(inventory, stack.itemId, moved);
   if (!removed.ok) return removed;
@@ -44,7 +44,8 @@ export function deposit(
 export function depositAll(inventory: InventoryState, storage: StorageState, catalog: ItemCatalog): StorageTransfer {
   let state: StorageTransfer = { inventory, storage, moved: 0 };
   for (let index = 0; index < inventory.length; index++) {
-    if (!state.inventory[index]) continue;
+    const stack = state.inventory[index];
+    if (!stack || catalog.get(stack.itemId)?.category === 'quest') continue;
     const next = deposit(state.inventory, state.storage, catalog, index, Number.MAX_SAFE_INTEGER);
     if (next.ok) state = { ...next.value, moved: state.moved + next.value.moved };
   }

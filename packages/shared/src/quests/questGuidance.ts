@@ -1,7 +1,7 @@
 import type { RecipeDefinition } from '../crafting/recipes.ts';
 import type { AreaId, DistrictId, NpcId, QuestId, WorldObjectId } from '../ids.ts';
 import type { WorldObjectDefinition } from '../world/entities.ts';
-import { objectiveGoal, type QuestDefinition, type QuestObjective, type QuestStepDefinition } from './questDefinition.ts';
+import { isHandheld, objectiveGoal, type QuestDefinition, type QuestObjective, type QuestStepDefinition } from './questDefinition.ts';
 import type { QuestLog } from './questProgress.ts';
 
 export interface TrackedObjective {
@@ -47,13 +47,26 @@ export function focusedQuest(
   return active.find(({ quest }) => quest.id === preferred) ?? active[0];
 }
 
+export function handheldQuests(log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>): TrackedQuest[] {
+  return trackedQuests(log, quests).filter(({ quest }) => isHandheld(quest));
+}
+
+export function focusedHandheldQuest(
+  log: QuestLog,
+  quests: ReadonlyMap<QuestId, QuestDefinition>,
+  preferred: QuestId | null,
+): TrackedQuest | undefined {
+  const handheld = handheldQuests(log, quests);
+  return handheld.find(({ quest }) => quest.id === preferred) ?? handheld[0];
+}
+
 export const isOfferUnlocked = (quest: QuestDefinition, log: QuestLog): boolean =>
   (quest.offerRequires ?? []).every((questId) => log[questId]?.status === 'completed');
 
 const categoryOrder = (quest: QuestDefinition): number => ({ tutorial: 0, main: 1, side: 2 })[quest.category];
 
 export function npcQuestMarker(npcId: NpcId, log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>): NpcQuestMarker {
-  const isObjective = trackedQuests(log, quests).some(({ objectives }) =>
+  const isObjective = handheldQuests(log, quests).some(({ objectives }) =>
     objectives.some(
       ({ objective, done }) =>
         !done && (objective.type === 'talkTo' || objective.type === 'signal') && objective.npcId === npcId,
@@ -66,7 +79,7 @@ export function npcQuestMarker(npcId: NpcId, log: QuestLog, quests: ReadonlyMap<
 
 export function objectiveCreatureIds(log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>): Set<string> {
   const ids = new Set<string>();
-  for (const { objectives } of trackedQuests(log, quests)) {
+  for (const { objectives } of handheldQuests(log, quests)) {
     for (const { objective, done } of objectives) {
       if (!done && objective.type === 'defeat') ids.add(objective.creatureId);
     }
@@ -80,9 +93,29 @@ export interface ObjectiveArea {
 }
 
 export function objectiveAreas(log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>): ObjectiveArea[] {
-  return trackedQuests(log, quests).flatMap(({ objectives }) =>
+  return handheldQuests(log, quests).flatMap(({ objectives }) =>
     objectives.flatMap(({ objective, done }) => (!done && objective.type === 'enterArea' ? [{ districtId: objective.districtId, areaId: objective.areaId }] : [])),
   );
+}
+
+export function objectIdsForObjective(
+  objective: QuestObjective,
+  objects: ReadonlyMap<WorldObjectId, WorldObjectDefinition>,
+  recipes: ReadonlyMap<string, RecipeDefinition>,
+): Set<WorldObjectId> {
+  if (objective.type === 'interactWith') return new Set([objective.objectId]);
+  if (objective.type !== 'gather' && objective.type !== 'craft') return new Set();
+  const station = [...recipes.values()].find((recipe) => recipe.output.itemId === objective.itemId)?.station;
+  const ids = new Set<WorldObjectId>();
+  for (const object of objects.values()) {
+    const matches = object.interactions.some((interaction) =>
+      objective.type === 'gather'
+        ? interaction.gather?.itemId === objective.itemId
+        : interaction.effects.some((effect) => effect.type === 'openCrafting' && effect.station === station),
+    );
+    if (matches) ids.add(object.id);
+  }
+  return ids;
 }
 
 export function objectiveObjectIds(
@@ -92,20 +125,9 @@ export function objectiveObjectIds(
   recipes: ReadonlyMap<string, RecipeDefinition> = new Map(),
 ): Set<WorldObjectId> {
   const ids = new Set<WorldObjectId>();
-  const stationFor = (itemId: string) => [...recipes.values()].find((recipe) => recipe.output.itemId === itemId)?.station;
-  for (const { objectives } of trackedQuests(log, quests)) {
+  for (const { objectives } of handheldQuests(log, quests)) {
     for (const { objective, done } of objectives) {
-      if (done) continue;
-      if (objective.type === 'interactWith') ids.add(objective.objectId);
-      for (const object of objects.values()) {
-        const gathers = objective.type === 'gather' && object.interactions.some((interaction) => interaction.gather?.itemId === objective.itemId);
-        const crafts =
-          objective.type === 'craft' &&
-          object.interactions.some((interaction) =>
-            interaction.effects.some((effect) => effect.type === 'openCrafting' && effect.station === stationFor(objective.itemId)),
-          );
-        if (gathers || crafts) ids.add(object.id);
-      }
+      if (!done) for (const id of objectIdsForObjective(objective, objects, recipes)) ids.add(id);
     }
   }
   return ids;

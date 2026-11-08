@@ -35,7 +35,10 @@ export interface QuestDefinition {
   readonly offeredBy?: NpcId;
   readonly offerRequires?: readonly QuestId[];
   readonly recommendedLevel?: number;
+  readonly handheld?: boolean;
 }
+
+export const isHandheld = (quest: QuestDefinition): boolean => quest.handheld ?? quest.category === 'tutorial';
 
 export const objectiveGoal = (objective: QuestObjective): number => {
   switch (objective.type) {

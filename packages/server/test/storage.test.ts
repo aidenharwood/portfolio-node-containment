@@ -10,7 +10,7 @@ const nearLocker = (record: CharacterRecord): CharacterRecord => ({
 });
 
 describe('personal storage', () => {
-  test('deposits and withdraws through a storage locker, and keeps quest items out', () => {
+  test('deposits and withdraws through a storage locker, and leaves quest items in the pack when depositing everything', () => {
     const harness = createHarness({ prepare: nearLocker });
     const { player } = harness;
     harness.send({ type: 'storage.deposit', slotIndex: 0, quantity: 5 });
@@ -21,9 +21,6 @@ describe('personal storage', () => {
     harness.send({ type: 'storage.deposit', slotIndex: 0, quantity: 5 });
     assert.equal(storedCount(player.record.storage, 'scrap-alloy'), 5);
     assert.equal(countItem(player.record.inventory, 'scrap-alloy'), 25);
-
-    harness.send({ type: 'storage.deposit', slotIndex: 2, quantity: 1 });
-    assert.equal(countItem(player.record.inventory, 'clearance-card-l1'), 1);
 
     harness.send({ type: 'storage.depositAll' });
     assert.equal(storedCount(player.record.storage, 'scrap-alloy'), 30);

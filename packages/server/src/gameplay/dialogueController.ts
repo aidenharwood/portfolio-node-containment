@@ -1,7 +1,12 @@
 import {
   availableOptions,
+  countItem,
+  destroyedQuantity,
   fillDialogueTemplate,
+  forgetDestroyed,
+  questItemsIssuedBy,
   selectEntryNode,
+  storedCount,
   type DialogueDefinition,
   type DialogueNode,
   type GameContent,
@@ -26,6 +31,7 @@ export class DialogueController {
   }
 
   open(player: Player, npc: Npc): void {
+    this.reissueDestroyedItems(player, npc);
     const dialogue = npc.definition.dialogueId ? this.content.dialogues.get(npc.definition.dialogueId) : undefined;
     const entryNode = dialogue ? selectEntryNode(dialogue, conditionContextFor(player, this.content)) : null;
     if (!dialogue || !entryNode) {
@@ -64,6 +70,19 @@ export class DialogueController {
     if (npc?.engagedWith === player.entityId) npc.engagedWith = null;
     player.dialogue = null;
     player.send({ type: 'dialogue.closed' });
+  }
+
+  private reissueDestroyedItems(player: Player, npc: Npc): void {
+    for (const itemId of questItemsIssuedBy(this.content, npc.definition.id)) {
+      const quantity = destroyedQuantity(player.record.flags, itemId);
+      if (quantity === 0) continue;
+      player.update({ flags: forgetDestroyed(player.record.flags, [itemId]) });
+      if (countItem(player.record.inventory, itemId) > 0 || storedCount(player.record.storage, itemId) > 0) continue;
+      this.effects.apply(player, [
+        { type: 'giveItem', itemId, count: quantity },
+        { type: 'notify', text: `${npc.definition.name} issues you a replacement ${this.content.items.get(itemId)?.name ?? itemId}.` },
+      ]);
+    }
   }
 
   private moveTo(player: Player, dialogue: DialogueDefinition, nodeId: string | null): void {

@@ -31,6 +31,7 @@ export * from './rules/effects.ts';
 
 export * from './quests/questDefinition.ts';
 export * from './quests/questGuidance.ts';
+export * from './quests/questRoute.ts';
 export * from './quests/questProgress.ts';
 
 export * from './dialogue/dialogue.ts';
@@ -56,6 +57,7 @@ export * from './content/assemblies.ts';
 export * from './content/contentIntegrity.ts';
 export * from './content/craftingIntegrity.ts';
 export * from './content/gameContent.ts';
+export * from './content/questItemReissue.ts';
 export * from './content/levelIndex.ts';
 export * from './content/levelIntegrity.ts';
 export * from './content/tramIntegrity.ts';

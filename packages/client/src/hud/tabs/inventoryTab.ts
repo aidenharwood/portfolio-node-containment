@@ -33,7 +33,9 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
       const verb = item.equipment.slot === 'primary' || item.equipment.slot === 'secondary' ? 'Wield' : 'Wear';
       actions.push({ verb, subject: item.name, subjectTone: 'item', run: () => connection.send({ type: 'inventory.equip', slotIndex: index }) });
     }
-    if (item.category !== 'quest') {
+    if (item.category === 'quest') {
+      actions.push({ verb: 'Destroy', subject: item.name, subjectTone: 'item', run: () => connection.send({ type: 'inventory.destroy', slotIndex: index }) });
+    } else {
       actions.push({ verb: 'Drop', subject: item.name, subjectTone: 'item', run: () => connection.send({ type: 'inventory.drop', slotIndex: index }) });
     }
     actions.push({ verb: 'Examine', subject: item.name, subjectTone: 'item', run: () => examiner.examine(item.examine) });
@@ -44,7 +46,7 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
     const slot = h('div', { className: 'inventory-slot', draggable: true, tabIndex: 0, role: 'button', ariaLabel: `Empty slot ${index + 1}`, dataset: { index: String(index) } });
     slot.onclick = () => {
       const item = slotItem(index);
-      if (item) actionsFor(index, item).find((action) => action.verb !== 'Drop')?.run();
+      if (item) actionsFor(index, item).find((action) => action.verb !== 'Drop' && action.verb !== 'Destroy')?.run();
     };
     slot.onkeydown = (event) => {
       const item = slotItem(index);

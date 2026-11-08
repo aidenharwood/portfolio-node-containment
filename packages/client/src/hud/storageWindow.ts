@@ -99,15 +99,12 @@ export class StorageWindow {
   }
 
   private cell(item: ItemDefinition, shown: number, verb: string, move: (quantity: number) => void, available = shown): HTMLElement {
-    const locked = verb === 'Deposit' && item.category === 'quest';
     const cell = h('button', {
-      className: `inventory-slot filled rarity-${item.rarity}${locked ? ' locked' : ''}`,
+      className: `inventory-slot filled rarity-${item.rarity}`,
       type: 'button',
-      disabled: locked,
       onclick: () => move(1),
       oncontextmenu: (event: MouseEvent) => {
         event.preventDefault();
-        if (locked) return;
         hideItemTooltip();
         this.menu.open(event.clientX, event.clientY, quantityActions(verb, item, available, move));
       },

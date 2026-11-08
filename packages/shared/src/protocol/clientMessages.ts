@@ -59,6 +59,7 @@ export const clientMessageSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('inventory.equip'), slotIndex: z.number().int().min(0).max(64) }),
   z.object({ type: z.literal('inventory.use'), slotIndex: z.number().int().min(0).max(64) }),
   z.object({ type: z.literal('inventory.drop'), slotIndex: z.number().int().min(0).max(64) }),
+  z.object({ type: z.literal('inventory.destroy'), slotIndex: z.number().int().min(0).max(64) }),
   z.object({ type: z.literal('world.pickup'), groundItemId: z.string().max(64) }),
   z.object({ type: z.literal('inventory.swap'), from: z.number().int().min(0).max(64), to: z.number().int().min(0).max(64) }),
   z.object({ type: z.literal('equipment.unequip'), slot: z.enum(EQUIPMENT_SLOTS) }),

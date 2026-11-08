@@ -43,6 +43,7 @@ export type GameplayMessage = ClientMessageOf<
   | 'inventory.equip'
   | 'inventory.use'
   | 'inventory.drop'
+  | 'inventory.destroy'
   | 'world.pickup'
   | 'inventory.swap'
   | 'equipment.unequip'
@@ -190,6 +191,9 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
         break;
       case 'inventory.drop':
         this.gear.drop(player, message.slotIndex);
+        break;
+      case 'inventory.destroy':
+        this.gear.destroy(player, message.slotIndex);
         break;
       case 'world.pickup':
         this.dialogues.close(player);

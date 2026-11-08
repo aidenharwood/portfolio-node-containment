@@ -13,6 +13,7 @@ const GAMEPLAY_MESSAGE_TYPES = new Set<ClientMessage['type']>([
   'inventory.equip',
   'inventory.use',
   'inventory.drop',
+  'inventory.destroy',
   'world.pickup',
   'inventory.swap',
   'equipment.unequip',

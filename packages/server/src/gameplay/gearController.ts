@@ -1,6 +1,7 @@
 import {
   equipFromInventory,
   equippedItemIds,
+  recordDestroyed,
   swapSlots,
   unequipToInventory,
   type EquipmentSlot,
@@ -75,13 +76,28 @@ export class GearController {
     const item = stack ? this.content.items.get(stack.itemId) : undefined;
     if (!stack || !item) return;
     if (item.category === 'quest') {
-      this.host.notify(player, 'warning', `You shouldn't drop the ${item.name}.`);
+      this.host.notify(player, 'warning', `You shouldn't drop the ${item.name}. Destroy it if you no longer want it.`);
       return;
     }
     const inventory = [...player.record.inventory];
     inventory[slotIndex] = null;
     player.update({ inventory });
     this.host.dropToGround(player, stack.itemId, stack.quantity, player.position);
+    this.host.raiseQuestEvent(player, { type: 'loadoutChanged' });
+  }
+
+  destroy(player: Player, slotIndex: number): void {
+    const stack = player.record.inventory[slotIndex];
+    const item = stack ? this.content.items.get(stack.itemId) : undefined;
+    if (!stack || !item) return;
+    if (item.category !== 'quest') {
+      this.host.notify(player, 'warning', `Drop the ${item.name} instead.`);
+      return;
+    }
+    const inventory = [...player.record.inventory];
+    inventory[slotIndex] = null;
+    player.update({ inventory, flags: recordDestroyed(player.record.flags, item.id, stack.quantity) });
+    this.host.notify(player, 'info', `You destroy the ${item.name}. Whoever gave it to you can issue another.`);
     this.host.raiseQuestEvent(player, { type: 'loadoutChanged' });
   }
 

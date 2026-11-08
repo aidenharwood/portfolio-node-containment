@@ -1,10 +1,15 @@
 import {
   areConditionsMet,
+  countItem,
+  destroyedQuantity,
   doorOpenedFlag,
+  forgetDestroyed,
+  interactionGrantsQuestItem,
   isCardinallyAdjacent,
   isDoorOpenFor,
   pathThroughDoor,
   samePoint,
+  storedCount,
   type GameContent,
   type ObjectInteraction,
   type TilePoint,
@@ -116,6 +121,8 @@ export class InteractionController {
       return;
     }
 
+    if (this.reissueDestroyedItems(player, interaction)) return;
+
     const useFlag = objectUseFlag(level.layout.districtAt(placed.placement.position) ?? level.id, pending.instanceId, pending.interactionIndex);
     if (interaction.oncePerCharacter && player.hasFlag(useFlag)) {
       this.host.notify(player, 'info', interaction.alreadyUsedText ?? 'Nothing more to do here.');
@@ -146,6 +153,22 @@ export class InteractionController {
     const grid = level.gridWithDoors(openDoorsOf(player, this.content));
     player.path = pathThroughDoor(grid, level.layout, level.doors, player.position, placed.placement.position);
     this.host.raiseQuestEvent(player, { type: 'interactedWith', objectId: id });
+  }
+
+  private reissueDestroyedItems(player: Player, interaction: ObjectInteraction): boolean {
+    const granted = interactionGrantsQuestItem(this.content, interaction);
+    const destroyed = granted.filter((itemId) => destroyedQuantity(player.record.flags, itemId) > 0);
+    if (destroyed.length === 0) return false;
+    const missing = destroyed
+      .filter((itemId) => countItem(player.record.inventory, itemId) === 0 && storedCount(player.record.storage, itemId) === 0)
+      .map((itemId) => ({ itemId, count: destroyedQuantity(player.record.flags, itemId) }));
+    player.update({ flags: forgetDestroyed(player.record.flags, destroyed) });
+    if (missing.length === 0) return false;
+    this.effects.apply(player, [
+      ...missing.map(({ itemId, count }) => ({ type: 'giveItem' as const, itemId, count })),
+      { type: 'notify', text: `You recover a replacement ${missing.map(({ itemId }) => this.content.items.get(itemId)?.name ?? itemId).join(' and ')}.` },
+    ]);
+    return true;
   }
 
   private targetPosition(player: Player, pending: Pick<PendingInteraction, 'kind' | 'instanceId'>): TilePoint | null {
