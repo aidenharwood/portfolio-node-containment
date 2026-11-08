@@ -107,6 +107,11 @@ export const SERVICE_YARDS: DistrictDefinition = {
     { instanceId: 'yd-moss-d', objectId: 'moss-bed', position: { x: 37, y: 27 } },
     { instanceId: 'yd-culvert-resin', objectId: 'resin-drum', position: { x: 38, y: 22 } },
     { instanceId: 'yd-culvert-puddle', objectId: 'litter-puddle', position: { x: 29, y: 19 } },
+
+    { instanceId: 'yards-desk-a', objectId: 'office-desk', position: { x: 3, y: 9 } },
+    { instanceId: 'yards-desk-b', objectId: 'office-desk', position: { x: 8, y: 9 } },
+    { instanceId: 'yards-cabinet', objectId: 'filing-cabinet', position: { x: 11, y: 11 }, facing: 'west' },
+    { instanceId: 'yards-cooler', objectId: 'water-cooler', position: { x: 1, y: 9 }, facing: 'east' },
   ],
   assemblies: [
     { instanceId: 'yards-tram-car', assemblyId: 'tram-car', position: { x: 3, y: 18 }, facing: 'north' },

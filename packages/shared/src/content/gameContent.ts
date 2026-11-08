@@ -75,6 +75,7 @@ import { TRANSIT_OBJECTS } from './transitObjects.ts';
 import { POCKET_OBJECTS } from './pocketObjects.ts';
 import { ASSEMBLY_OBJECTS } from './assemblyObjects.ts';
 import { LITTER_OBJECTS } from './litterObjects.ts';
+import { FURNITURE_OBJECTS } from './furnitureObjects.ts';
 import { ASSEMBLIES } from './assemblies.ts';
 import type { AssemblyDefinition } from '../world/assemblies.ts';
 import { VERDANT_FOLD } from './districts/verdantFold.ts';
@@ -139,7 +140,7 @@ function startingLocation(): WorldLocation {
 export const GAME_CONTENT: GameContent = {
   items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS]),
   npcs: indexById([...NPCS, ...DEEP_NPCS, ...WATERWORKS_NPCS]),
-  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS]),
+  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...FURNITURE_OBJECTS]),
   assemblies: ASSEMBLY_INDEX,
   dialogues: indexById([
     REYES_DIALOGUE,
