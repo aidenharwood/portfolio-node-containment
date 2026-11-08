@@ -45,7 +45,7 @@ Environment variables for the server: `GAME_SERVER_PORT` (default 7420), `DATABA
 - **Economy:** Quartermaster Okafor runs Meridian Requisitions. Right-click and choose "Trade", or ask in dialogue, to buy Medgel and gear with scrip. You can sell creature materials and spare equipment back at half value. Right-click a listing or an item to buy or sell 1, 5, 10 or all of it.
 - **Personal storage:** storage lockers by Requisitions (Atrium) and in the Undercroft camp open onto the same storage, which has 200 slots and stacks everything. Click to move one, or right-click for 5, X (any amount) or all. "Deposit pack" stores everything except quest items. Lockers stand in the Commissary, the Fabrication Hall, the Undercroft camp and on the hydroponics platform.
 - **Built for crowds:**
-  - **Layers:** each zone has a capacity. Once a zone is full, new arrivals go to an overflow copy of it (shown as "Layer 2" in the banner and minimap). Overflow layers that sit empty are retired.
+  - **Layers:** each level has a capacity. Once a level is full, new arrivals go to an overflow copy of it (shown as "Layer 2" in the banner and minimap). Overflow layers that sit empty are retired.
   - **Single-way combat:** outside special areas, a creature fights one operative at a time and an operative is fought by one creature at a time. You can't attack something another operative is fighting, and you can't be piled on. Multi-combat areas, such as the Foreman's workshop with its leech adds, allow free-for-all fights.
   - **Shared credit (multi-combat areas):** everyone who damages a creature gets quest credit, kill XP and their own loot roll.
   - **Faster respawns when busy:** respawns speed up as a layer gets busier.
@@ -53,7 +53,7 @@ Environment variables for the server: `GAME_SERVER_PORT` (default 7420), `DATABA
   - Creature loot and anything you drop or can't carry lands on the floor as a small spinning voxel model.
   - For the first minute only its owner can see or take it; it has a gold halo. Then it goes public with a cyan halo, and it despawns after three minutes.
   - Click an item to walk over and take it. Quest items can't be dropped.
-- **Gathering, refining and crafting:** every piece of gear and every healing item can be made. Raw stock is gathered with Salvage from resource nodes: scrap heaps, textile bins, moss beds, resin drums, severed conduits, lumen blooms and slag heaps. Creature drops count as raw stock too. A Refinery turns raw stock into base parts (Refining), a Fabricator assembles parts into equipment (Engineering), and a Bio-synthesiser makes medicine (Biochemistry): Medgel, Trauma Foam and Clotting Shots. Click a node and you keep working it until it runs dry (it replenishes after a while, for everyone in that zone layer) or your pack is full. Workshops are in the Atrium (west wall) and Mags' camp in the Undercroft. Deeper zones hold better stock.
+- **Gathering, refining and crafting:** every piece of gear and every healing item can be made. Raw stock is gathered with Salvage from resource nodes: scrap heaps, textile bins, moss beds, resin drums, severed conduits, lumen blooms and slag heaps. Creature drops count as raw stock too. A Refinery turns raw stock into base parts (Refining), a Fabricator assembles parts into equipment (Engineering), and a Bio-synthesiser makes medicine (Biochemistry): Medgel, Trauma Foam and Clotting Shots. Click a node and you keep working it until it runs dry (it replenishes after a while, for everyone in that level layer) or your pack is full. Workshops are in the Atrium (west wall) and Mags' camp in the Undercroft. Deeper districts hold better stock.
 - **Ranged training path:** a level-1 Trainee Dart Pistol (from Sergeant Kade, or 35 scrip at Requisitions) trains Marksmanship up to the Kestrel's level-5 requirement.
 - **Minimap:** circular, centred on you and rotated with the camera, with a north marker, your facing arrow, creatures, NPCs and ground items. Click it to walk.
 - **Item sprites:** every item has a voxel model. Its inventory and shop icon is a render of that model.
@@ -76,7 +76,7 @@ Environment variables for the server: `GAME_SERVER_PORT` (default 7420), `DATABA
   - **Medbay:** Medic Anand, who heals for free and sells medicine, plus beds you can rest on. This is also where incapacitated operatives wake up.
   - **Transit Bay:** the lift from the Intake Wing and the tram to Verdance Hydroponics.
 - **Verdance Hydroponics (tier 2):** an overgrown agricultural deck between Sector 2 and the Undercroft in difficulty. Thorn Crawlers (level 4) drop thorn clusters, and Spore Drifters (level 6, ranged) drop lumen spores and moss. Strangler vines (Salvage 4) give fibre for Braided Cord, Sap Poultices (heal 11) and Thornweave Gloves.
-- **World:** a Three.js voxel renderer with baked ambient occlusion, soft shadows, dynamic point lights, bloom and wall cutaway; the camera orbits and zooms freely. A server-authoritative 300ms tick and A* pathfinding with no corner-cutting. There are six hand-built zones (Intake Wing, Meridian Atrium, the Sector 2 quarantine, Verdance Hydroponics, the Undercroft and Sector 3), wandering NPCs, objects that run effects, lighting and a minimap.
+- **World:** a Three.js voxel renderer with baked ambient occlusion, soft shadows, dynamic point lights, bloom and wall cutaway; the camera orbits and zooms freely. A server-authoritative 300ms tick and A* pathfinding with no corner-cutting. The world is a set of continuous levels assembled from hand-built districts (the main floor joins the Intake Wing, Meridian Atrium, the Sector 2 quarantine and Verdance Hydroponics; below it lie the Undercroft and the Deep), with lifts between levels, pocket dimensions beyond the Threshold, and only nearby activity sent to each player. There are wandering NPCs, objects that run effects, lighting and a minimap.
 
 ## Repository layout
 
@@ -88,4 +88,4 @@ packages/
 scripts/    Dev tooling
 ```
 
-Read [ARCHITECTURE.md](ARCHITECTURE.md) for how the pieces fit, and [CONTRIBUTING.md](CONTRIBUTING.md) for conventions and recipes, such as adding an item, an NPC, a quest or a zone.
+Read [ARCHITECTURE.md](ARCHITECTURE.md) for how the pieces fit, and [CONTRIBUTING.md](CONTRIBUTING.md) for conventions and recipes, such as adding an item, an NPC, a quest or a district.

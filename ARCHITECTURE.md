@@ -4,7 +4,7 @@
 
 1. **The server is authoritative.** Clients send intents (`world.walk`, `world.interact`, `inventory.equip`). The server validates them, simulates, and broadcasts the outcome. A client never decides what it owns or where it stands.
 2. **Rules live in `shared`, as pure functions.** Equipping, inventory maths, quest progression, condition checks, pathfinding and character validation take plain data and return new data. The server applies them authoritatively. The client uses the same functions for previews and UI hints (requirement tooltips, quest markers, the derived combat profile) without trusting them.
-3. **Content is data, not code.** Items, the new-character kit, NPCs, objects, dialogue, quests and zones are typed records in `packages/shared/src/content`. Behaviour comes from a small vocabulary of **conditions** and **effects**, so most new gameplay needs no new engine code.
+3. **Content is data, not code.** Items, the new-character kit, NPCs, objects, dialogue, quests, districts and levels are typed records in `packages/shared/src/content`. Behaviour comes from a small vocabulary of **conditions** and **effects**, so most new gameplay needs no new engine code.
 4. **One concept per file. Names do the explaining.** The code carries no comments by design. When something needs explaining, rename it or extract a function.
 
 ## Data flow
@@ -33,16 +33,39 @@
 - `serverMessages.ts` holds a TypeScript discriminated union. Server output is trusted, so it needs no runtime validation.
 - Add a message: extend the schema or union, handle it in `messageRouter` (account or roster messages) or `Gameplay.handle` (in-world messages), then listen with `connection.on('<type>', …)` on the client.
 
+### Levels and districts
+
+The world is a handful of continuous **levels** (`content/levels/`): the main floor, the Undercroft, the Deep and two pocket dimensions. A level is assembled from **districts** (`content/districts/`, one hand-built map each) placed at an `origin`, plus **connector** maps such as the Verdance Concourse that join them.
+
+- District content (map, areas, NPCs, objects, creatures, lights) is authored in **district-local** coordinates. `resolveLevel` (`world/levelLayout.ts`) stamps everything onto one `LevelLayout` and offsets every placement into level coordinates. The result, a `ResolvedLevel`, is what the server and client run on. `GAME_CONTENT.levels` holds them.
+- `LevelLayout.districtAt(point)` says which district a tile belongs to, and `toLevelPoint` and `toLocalPoint` convert positions.
+- Positions in effects and quests stay district-local (`{ districtId, position }`). `locate(content, districtId, local)` turns one into a `WorldLocation` (`{ levelId, position }`), which is what a character record stores.
+- A teleport within the same level moves the player in place without re-entering. A teleport to another level leaves and re-enters.
+- An area is identified by its district and area id together, so area ids may repeat across districts.
+- `findLevelIssues` (`content/levelIntegrity.ts`) rejects overlapping placements, walkable tiles that cannot be reached from the level spawn (walking or through a same-level teleport), duplicate instance ids on a level, and spawns, teleports or recoveries that land on an unwalkable tile.
+- Legacy character records saved with `{ zoneId, position }` are upgraded on load by `upgradeLegacyLocation`.
+
 ### Tick model
 
-`World.tick()` runs every 300ms. Each tick it:
+`World.tick()` runs every 300ms. For each level layer with players it:
 
-1. advances NPC wander paths,
+1. advances NPC and creature wander paths in **watched** chunks,
 2. moves each player one tile along their path and fires `onAreaEntered` for newly entered areas,
-3. broadcasts a single `world.tick` with every movement in the zone,
+3. sends each player their chunk changes and a `world.tick` holding only the movements they can see (see Interest management),
 4. resolves pending interactions for players whose path has finished (`onPathCompleted`).
 
 The client interpolates each entity from its previous tile to its new one over one tick.
+
+### Interest management
+
+Levels are split into 32 × 32 tile chunks (`world/chunks.ts`). A player's **interest set** is the 3 × 3 block of chunks around the chunk they last received (`Player.interestChunk`).
+
+- **Broadcasts:** every broadcast is `LevelInstance.broadcastNear(point, message)`, which reaches only players whose interest set contains that point's chunk. This covers chat, combat, gear changes, depletion and ground items.
+- **Entering a level:** `world.entered` carries only the entities, ground items and depleted objects in the interest set.
+- **Crossing chunks:** `syncInterest` sends `world.chunksLeft`, and the client drops everything in those chunks. It then sends `world.chunksEntered` with the newly visible entities, ground items and depleted objects.
+- **Moving entities:** `publishMoves` gives each observer a tick only for entities its client already knows about. It sends `world.entitySpawned` for an entity that comes into view and `world.entityDespawned` for one that leaves.
+- **Dormancy:** a chunk is watched while it is in any player's interest set. NPCs and creatures in unwatched chunks don't wander, chase or aggro, but respawn and depletion timers keep running. A creature whose target leaves its interest drops the target. If no one is watching it, the creature is reset at home at full integrity.
+- **Range limits:** walk, interact and engage targets must be inside the player's interest set, and the server ignores them otherwise.
 
 ### Interactions
 
@@ -71,16 +94,16 @@ The pure rules live in `shared/src/combat/combatMath.ts`: attack profiles, hit c
   - Any creature retaliates when attacked.
   - A creature dragged past `leashRadius` walks home and heals.
   - A defeated creature plays a death animation for 3 ticks, despawns, and respawns after `respawnTicks`. Loot rolls go straight to the killer's inventory, and a `defeated` quest event fires.
-- **Incapacitation:** an incapacitated player is moved to the zone's `recovery` location (or its spawn) at full integrity.
+- **Incapacitation:** an incapacitated player is moved to the `recovery` location of the district they fell in (or the level spawn) at full integrity.
 - **Regeneration and auto-retaliate:** integrity regenerates 1 point every 20 ticks once out of combat. A player who is idle when attacked fights back automatically.
 
-Creatures are content (`content/creatures.ts`) placed through `ZoneDefinition.creatures`. Weapons are `equipment.weapon` (style, range and speed), and consumables are `item.consumable`. Quests use `defeat` and `useItem` objectives.
+Creatures are content (`content/creatures.ts`) placed through `DistrictDefinition.creatures`. Weapons are `equipment.weapon` (style, range and speed), and consumables are `item.consumable`. Quests use `defeat` and `useItem` objectives.
 
 On the client, `render/models/creatureModels.ts` builds a voxel rig per `CreatureModel`. Every rig implements `EntityRig`, so the renderer can drive attack, hurt and death animations from `combat.hit` and `combat.death` messages. `hud/combatOverlay.ts` draws hit splats and overhead bars, and `hud/vitalsPanel.ts` draws your integrity and the target panel.
 
 ### Scaling and fairness
 
-- **Layers:** `World` keeps a list of `ZoneInstance` layers per zone. `spawn` places a player in the busiest layer that still has room under the zone's `capacity` (default 50; tests can override it). When every layer is full it creates a new one, and empty overflow layers are retired after about 60 seconds. Use `world.zoneOf(player)` and `world.instances()`; never look a zone up by id.
+- **Layers:** `World` keeps a list of `LevelInstance` layers per level. `spawn` places a player in the busiest layer that still has room under the level's `capacity` (default 50; tests can override it with `levelCapacity`). When every layer is full it creates a new one, and empty overflow layers are retired after about 60 seconds. Use `world.levelOf(player)`, `world.districtOf(player)` and `world.instances()`; never look a level up by id.
 - **Single-way combat:** `CombatController` pairs a player and a creature with `engagedWith` for `ENGAGEMENT_TICKS` (about 3.6 seconds) after every swing.
   - Outside multi-combat areas, `engage` refuses a creature that is engaged with someone else, and a player who is under attack by a different creature.
   - Aggression skips players who are already engaged.
@@ -90,7 +113,7 @@ On the client, `render/models/creatureModels.ts` builds a voxel rig per `Creatur
 
 ### Ground items
 
-Each `ZoneInstance` holds a `groundItems` map. `GroundItemController` creates them for creature loot, the inventory "Drop" action, and overflow from a full inventory (`EffectHost.dropToGround`).
+Each `LevelInstance` holds a `groundItems` map. `GroundItemController` creates them for creature loot, the inventory "Drop" action, and overflow from a full inventory (`EffectHost.dropToGround`).
 
 - **Private, then public:** an item starts owned and visible only to its owner. After `OWNER_PRIVACY_TICKS` (200 ticks, 60 s) it goes public and is announced to everyone in the layer. It is removed after `GROUND_LIFETIME_TICKS` (600 ticks, 3 min).
 - **Messages:** `world.groundItemAdded` and `world.groundItemRemoved` are sent only to players allowed to see the item. `world.entered` includes the items visible to the arriving player.
@@ -107,10 +130,10 @@ Each `ZoneInstance` holds a `groundItems` map. `GroundItemController` creates th
 - **Server:**
   - `GatheringController` and `CraftingController` drive a repeating `player.activity` on the tick.
   - Walking, interacting, teleporting or leaving cancels it.
-  - Node charges and depletion are per `ZoneInstance` layer, broadcast as `world.objectDepleted` and included in `world.entered`.
+  - Node charges and depletion are per `LevelInstance` layer, broadcast near the node as `world.objectDepleted` and included in `world.entered` and `world.chunksEntered`.
   - The server re-validates the open station, skill level and materials on every craft.
 - **Quests** use `gather` and `craft` objectives. The matching `gathered` and `crafted` events carry counts.
-- **Integrity:** `findCraftingIssues` (`content/craftingIntegrity.ts`) enforces the crafting rule. Every equipment and consumable item needs a recipe at the right station, at or above the item's equip requirement. Every ingredient must trace back to a node or creature drop placed in a zone whose `tier` is no deeper than the item's tier. A node must not need more Salvage than its zone's tier allows.
+- **Integrity:** `findCraftingIssues` (`content/craftingIntegrity.ts`) enforces the crafting rule. Every equipment and consumable item needs a recipe at the right station, at or above the item's equip requirement. Every ingredient must trace back to a node or creature drop placed in a district whose `tier` is no deeper than the item's tier. A node must not need more Salvage than its district's tier allows.
 
 ### Personal storage
 
@@ -148,16 +171,16 @@ Everything in the world is built procedurally from voxels at runtime; there are 
 
 | Scale | Voxel size | Used for |
 | ----- | ---------- | -------- |
-| 8 per tile | 1/8 | Zone floors and walls (`world/zoneVoxels.ts`). Walls are 16 voxels (2 units) tall. |
+| 8 per tile | 1/8 | Level floors and walls (`world/zoneVoxels.ts`). Walls are 16 voxels (2 units) tall. |
 | 16 per tile | 1/16 | World objects (`models/objectModels.ts`) |
 | 20 per unit | 1/20 | Characters (`models/characterModel.ts`), about 32 voxels tall |
 
 - **`voxel/`** is the engine.
   - `VoxelModel` is a sparse builder with `fill`, `set` and `paintExisting`.
-  - `DenseVolume` is a flat zone grid.
+  - `DenseVolume` is a flat level grid.
   - `meshVoxels` turns either one into geometry. It culls hidden faces and bakes per-vertex ambient occlusion.
   - Voxels have three kinds: `solid` (lit), `emissive` (unlit, so it feeds bloom) and `glass` (transparent). Each kind becomes its own mesh with shared materials from `voxelMaterials.ts`.
-- **`world/zoneScene.ts`** meshes the floor once. It hangs **ceiling light fixtures** automatically, spaced across each zone area. Each fixture is an emissive panel plus a point light raised high enough not to wash out heads, and it fades out with the cutaway when it would block the view. A zone whose `ambience.fixtures` is `'failing'` gets flickering, partly dead fixtures instead. It meshes each wall, glass and door tile as its own group so it can **cut away** (fade) walls between the camera and the player. It places object models, animates their moving parts, and collects light sources.
+- **`world/zoneScene.ts`** meshes the floor once. It hangs **ceiling light fixtures** automatically, spaced across each area. Each fixture is an emissive panel plus a point light raised high enough not to wash out heads, and it fades out with the cutaway when it would block the view. A fixture inside a district whose `ambience.fixtures` is `'failing'` gets flickering, partly dead fixtures instead. It meshes each wall, glass and door tile as its own group so it can **cut away** (fade) walls between the camera and the player. It places object models, animates their moving parts, and collects light sources.
 - **`models/characterModel.ts`** builds an articulated `CharacterRig` (legs, torso, head and arms on pivots) from `CharacterAppearance` and equipped gear visuals. Geometry is cached per look, so NPCs that look the same share it.
 - **`gameRenderer.ts`** handles:
   - renderer setup: ACES tone mapping, soft shadows from a key light that follows the focus, a hemisphere fill, and a pool of 8 point lights reassigned to the nearest sources;

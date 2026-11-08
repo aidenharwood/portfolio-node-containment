@@ -7,7 +7,7 @@
 - **Domain logic goes in `shared`, and stays pure.** No I/O, no `Date.now()`, no `Math.random()` unless injected. If the client and server both need a rule, it lives there.
 - **Content is data.** Before writing engine code for a feature, check whether a new `Condition` or `GameEffect` variant would express it.
 - **Every change keeps these green:** `npm run typecheck` and `npm test`.
-- `findContentIssues` (in `shared/src/content/contentIntegrity.ts`) validates every cross-reference in the content: item ids, quest steps, dialogue nodes, zone placements, teleport destinations. The server refuses to boot if it reports anything, and the test suite runs it.
+- `findContentIssues` (in `shared/src/content/contentIntegrity.ts`) validates every cross-reference in the content: item ids, quest steps, dialogue nodes, district placements, teleport destinations, and level layouts (`findLevelIssues`). The server refuses to boot if it reports anything, and the test suite runs it.
 
 ## Where things live
 
@@ -16,15 +16,16 @@
 | Add or tune items                  | `shared/src/content/items.ts`                       |
 | Change the new-character kit       | `newCharacter.kit` in `shared/src/content/gameContent.ts` |
 | Change how skills drive stats      | `shared/src/character/derivedStats.ts`             |
-| Add an NPC                         | `shared/src/content/npcs.ts` + a zone's `npcs`      |
+| Add an NPC                         | `shared/src/content/npcs.ts` + a district's `npcs`  |
 | Write dialogue                     | `shared/src/content/dialogues/*.ts`                 |
 | Add an interactive object          | `shared/src/content/worldObjects.ts`                |
 | Write a quest                      | `shared/src/content/quests/*.ts`, then register it in `gameContent.ts` |
-| Build or modify a zone             | `shared/src/content/zones/*.ts`                     |
+| Build or modify a district         | `shared/src/content/districts/*.ts`                 |
+| Place districts or add a connector | `shared/src/content/levels/*.ts`                    |
 | Add a recipe, material or resource node | `shared/src/content/{recipes,craftingItems,craftingObjects}.ts` |
 | Change a game rule                 | `shared/src/{character,gear,quests,rules}`          |
 | Add a client→server command        | `shared/src/protocol/clientMessages.ts` → `server/src/gameplay/gameplay.ts` |
-| Change how something looks         | `client/src/render/*` (voxel models in `render/models`, zones in `render/world`) |
+| Change how something looks         | `client/src/render/*` (voxel models in `render/models`, levels in `render/world`) |
 | Change the HUD                     | `client/src/hud/*`, `client/src/styles/hud.css`     |
 
 ## Progression rule
@@ -48,8 +49,8 @@ Characters differ only in how they look. There are no classes, origins or attrib
 2. Add a recipe in `content/recipes.ts`:
    - gear goes on the `fabricator`; medicine goes on the `synthesiser`;
    - its level must be at least the item's highest equip requirement.
-3. Make sure every ingredient can be sourced, either refined on the `refinery` or gathered raw. A raw source is a resource node or a creature drop placed in a zone with `tier ≤ tierForLevel(recipe level)`.
-4. For new raw stock, add a node with `resourceNode(...)` in `content/craftingObjects.ts` and place it in a zone of the right tier. Give its model a builder in `client/src/render/models/craftingModels.ts`.
+3. Make sure every ingredient can be sourced, either refined on the `refinery` or gathered raw. A raw source is a resource node or a creature drop placed in a district with `tier ≤ tierForLevel(recipe level)`.
+4. For new raw stock, add a node with `resourceNode(...)` in `content/craftingObjects.ts` and place it in a district of the right tier. Give its model a builder in `client/src/render/models/craftingModels.ts`.
 
 ### Add a quest
 
@@ -64,20 +65,26 @@ Characters differ only in how they look. There are no classes, origins or attrib
 
 Object models face south (+y on the map) by default. Wall-mounted or doorway objects on an east, west or north wall need `facing` on their `ObjectPlacement`, for example `facing: 'east'` for a bulkhead on a west wall. Wide doorways are two adjacent placements of the same object, like the Sector 2 bulkheads in the Atrium and the matching pair inside Sector 2.
 
-### Add a zone
+### Add a district
+
+A district is one hand-built map. It becomes part of the world when a level places it.
 
 1. Give it a `tier` (1 is the Intake Wing and Atrium, 4 is Sector 3, Deepwatch and the Cryovault, 8 is Meridian Below). Crafting checks use it to decide which gear its materials may feed.
 2. Draw the map as an array of equal-length strings using `MAP_LEGEND` (`shared/src/world/tiles.ts`): `#` wall, `W` glass, `D` door, `.` plating, `,` concrete, `=` grate, `%` rust, `_` carpet, `!` hazard, `~` coolant.
 3. Define `areas` (rectangles that `enterArea` objectives can use), `npcs`, `objects`, `lights` and `ambience`. Combat is single-way by default; set `multiCombat: true` on an area for boss fights with adds.
-4. Connect it to another zone with an object whose interaction has a `teleport` effect.
-5. Register it in `GAME_CONTENT.zones`. `npm test` will flag unwalkable spawns, bad teleports and overlapping objects.
+4. Register it in `DISTRICTS` in `content/gameContent.ts`.
+5. Place it on a level (`content/levels/*.ts`) with an `origin` in level coordinates. Districts on one level must not overlap.
+6. Connect it:
+   - **Walking:** open a `D` door in its outer wall and add a connector map (a corridor, using spaces for empty tiles) whose floor lines up with the doors on both sides.
+   - **Gated or across levels:** use an object whose interaction has conditions and a `teleport` effect. A teleport targets `{ districtId, position }` in district-local coordinates.
+7. Run `npm test`. `findLevelIssues` flags overlaps, walkable tiles nothing can reach, duplicate instance ids, and spawns, teleports or recoveries on unwalkable tiles.
 
 ### Add a creature
 
 Creatures are passive by default. Set `aggressive: true` only for creatures that should hunt players. They automatically ignore players more than `AGGRESSION_LEVEL_GAP` combat levels above them.
 
 1. Add a `CreatureDefinition` to `content/creatures.ts`: level, integrity, defence, an attack profile, aggro and leash radii, respawn ticks and a loot table.
-2. Place it in a zone's `creatures` list. Use `recovery` on dangerous zones so incapacitated players wake somewhere safe.
+2. Place it in a district's `creatures` list. Use `recovery` on dangerous districts so incapacitated players wake somewhere safe.
 3. Give it a look: add a `CreatureModel` id and a rig in `client/src/render/models/creatureModels.ts`. Implementing `EntityRig` gives you the attack, hurt and death animation hooks.
 4. Reference it from quests with a `defeat` objective. `findContentIssues` validates creature ids, placements and loot items.
 
@@ -112,13 +119,13 @@ Act II is tuned against level-matched operatives (Close Quarters and Fortitude a
 
 | Fight | Target win rate |
 | --- | --- |
-| Each deep zone's first regulars, in the previous tier's gear | ≥ 70–85% |
+| Each deep district's first regulars, in the previous tier's gear | ≥ 70–85% |
 | Each tier's regulars, in that tier's gear | ≥ 85% |
 | Echo Operators at 17 in Rimeguard; Slag Golems at 26 in Archive gear | below 60% and 75% (upgrades matter) |
 | Curator 14, Choir 19, Last Archivist 24, Stoker 29, Host 34, each in its own tier's gear | 50–85% |
 | Each of those bosses for an operative one tier early | < 30% |
 
-The Act II tiers are Rimeguard (12), Relay (16), Archive (20), Furnace (25) and Threshold (30). Each is crafted from the zone of the same tier: frost crystal, signal copper, vellum and ink, ember ore, and mirror glass.
+The Act II tiers are Rimeguard (12), Relay (16), Archive (20), Furnace (25) and Threshold (30). Each is crafted from the district of the same tier: frost crystal, signal copper, vellum and ink, ember ore, and mirror glass.
 
 The test fails if a change breaks this curve. Quests can declare a `recommendedRating`; the journal shows it next to the player's own rating.
 
