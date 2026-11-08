@@ -35,7 +35,7 @@ export class DialogueController {
 
     this.close(player);
     npc.engagedWith = player.entityId;
-    this.world.faceNpc(npc, player.position, this.world.zoneOf(player));
+    this.world.faceNpc(npc, player.position, this.world.levelOf(player));
     player.dialogue = { dialogueId: dialogue.id, nodeId: entryNode, npcInstanceId: npc.placement.instanceId };
     this.enterNode(player, dialogue, entryNode);
     this.host.raiseQuestEvent(player, { type: 'talkedTo', npcId: npc.definition.id });
@@ -60,7 +60,7 @@ export class DialogueController {
 
   close(player: Player): void {
     if (!player.dialogue) return;
-    const npc = this.world.findZoneOf(player)?.npcs.get(player.dialogue.npcInstanceId);
+    const npc = this.world.findLevelOf(player)?.npcs.get(player.dialogue.npcInstanceId);
     if (npc?.engagedWith === player.entityId) npc.engagedWith = null;
     player.dialogue = null;
     player.send({ type: 'dialogue.closed' });
@@ -82,7 +82,7 @@ export class DialogueController {
     if (node.effects) this.effects.apply(player, node.effects);
     if (player.dialogue?.nodeId !== nodeId) return;
 
-    const npc = this.world.findZoneOf(player)?.npcs.get(session.npcInstanceId);
+    const npc = this.world.findLevelOf(player)?.npcs.get(session.npcInstanceId);
     const context = conditionContextFor(player, this.content);
     const options = availableOptions(node, context);
     const values = dialogueTemplateValuesFor(player);

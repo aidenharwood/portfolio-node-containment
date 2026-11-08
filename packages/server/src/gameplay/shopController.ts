@@ -59,7 +59,7 @@ export class ShopController {
     const session = player.shopSession;
     if (!session) return null;
     if (session.keeperInstanceId) {
-      const keeper = this.world.findZoneOf(player)?.npcs.get(session.keeperInstanceId);
+      const keeper = this.world.findLevelOf(player)?.npcs.get(session.keeperInstanceId);
       if (!keeper || chebyshevDistance(keeper.position, player.position) > MAX_TRADE_DISTANCE) {
         this.close(player);
         this.host.notify(player, 'warning', 'You are too far away to trade.');

@@ -1,24 +1,26 @@
 import {
   addItem,
+  locate,
   levelForExperience,
   removeItem,
   SKILL_INFO,
   type SkillId,
   type CraftingStation,
+  type DistrictId,
   type GameContent,
   type GameEffect,
   type NoticeTone,
   type QuestEvent,
   type QuestId,
   type TilePoint,
-  type ZoneLocation,
+  type WorldLocation,
 } from '@containment/shared';
 import type { Player } from '../world/player.ts';
 
 export interface EffectHost {
   startQuest(player: Player, questId: QuestId): void;
   raiseQuestEvent(player: Player, event: QuestEvent): void;
-  teleport(player: Player, location: ZoneLocation): void;
+  teleport(player: Player, location: WorldLocation): void;
   notify(player: Player, tone: NoticeTone, text: string): void;
   openShop(player: Player, shopId: string, keeperInstanceId: string | null): void;
   dropToGround(owner: Player, itemId: string, quantity: number, position: TilePoint): void;
@@ -57,7 +59,7 @@ export class EffectRunner {
       case 'notify':
         return this.host.notify(player, 'info', effect.text);
       case 'teleport':
-        return this.host.teleport(player, { zoneId: effect.districtId, position: effect.position });
+        return this.teleport(player, effect.districtId, effect.position);
       case 'openShop':
         return this.host.openShop(player, effect.shopId, player.dialogue?.npcInstanceId ?? null);
       case 'openCrafting':
@@ -67,6 +69,16 @@ export class EffectRunner {
       case 'restoreIntegrity':
         return player.setIntegrity(player.maxIntegrity);
     }
+  }
+
+  private teleport(player: Player, districtId: DistrictId, position: TilePoint): void {
+    const location = locate(this.content, districtId, position);
+    if (!location) {
+      console.warn(`Teleport to unknown district "${districtId}".`);
+      this.host.notify(player, 'warning', 'That route is not available.');
+      return;
+    }
+    this.host.teleport(player, location);
   }
 
   private giveItem(player: Player, itemId: string, count: number): void {

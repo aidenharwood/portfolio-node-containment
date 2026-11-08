@@ -7,13 +7,13 @@ import {
   maxIntegrityFor,
   type CharacterRecord,
   type QuestProgress,
-  type ZoneLocation,
+  type WorldLocation,
 } from '@containment/shared';
 import { CONSUMABLE_COOLDOWN_MESSAGE } from '../src/gameplay/gearController.ts';
-import { createHarness, finishDialogue, type Harness } from './support/testHarness.ts';
+import { createHarness, finishDialogue, type Harness, at, districtOf, levelPoint } from './support/testHarness.ts';
 
-const ATRIUM_NEAR_KADE: ZoneLocation = { zoneId: 'meridian-atrium', position: { x: 36, y: 12 } };
-const ATRIUM_NEAR_SEL: ZoneLocation = { zoneId: 'meridian-atrium', position: { x: 39, y: 5 } };
+const ATRIUM_NEAR_KADE: WorldLocation = at('meridian-atrium', { x: 36, y: 12 });
+const ATRIUM_NEAR_SEL: WorldLocation = at('meridian-atrium', { x: 39, y: 5 });
 
 const activeAt = (questId: string, stepIndex = 0, objectiveCount = 1): QuestProgress => ({
   questId,
@@ -24,7 +24,7 @@ const activeAt = (questId: string, stepIndex = 0, objectiveCount = 1): QuestProg
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 
-const prepared = (location: ZoneLocation, quests: Record<string, QuestProgress>, changes: Partial<CharacterRecord> = {}) =>
+const prepared = (location: WorldLocation, quests: Record<string, QuestProgress>, changes: Partial<CharacterRecord> = {}) =>
   (record: CharacterRecord): CharacterRecord => ({ ...record, location, quests, ...changes });
 
 const veteranSkills = () => {
@@ -41,7 +41,7 @@ function stepOf(harness: Harness, questId: string): number | 'completed' | undef
 }
 
 function defeat(harness: Harness, instanceId: string, limit = 2000): void {
-  const creature = harness.gameplay.world.zoneOf(harness.player).creatureByInstance(instanceId);
+  const creature = harness.gameplay.world.levelOf(harness.player).creatureByInstance(instanceId);
   assert.ok(creature, `missing creature ${instanceId}`);
   if (!creature.isAlive) return;
   harness.send({ type: 'world.interact', targetKind: 'creature', instanceId, interactionIndex: 0 });
@@ -101,7 +101,7 @@ describe('combat', () => {
     assert.equal(stepOf(harness, 'the-knocking'), 2);
 
     harness.interactWithObject('sector2-bulkhead-b');
-    assert.equal(player.zoneId, 'sector-two');
+    assert.equal(districtOf(player), 'sector-two');
     assert.equal(stepOf(harness, 'the-knocking'), 3);
 
     for (const mite of ['s2-mite-corridor-a', 's2-mite-corridor-b', 's2-mite-corridor-c', 's2-mite-corridor-d']) {
@@ -109,7 +109,7 @@ describe('combat', () => {
       defeat(harness, mite);
     }
     assert.equal(stepOf(harness, 'the-knocking'), 4);
-    const zoneLoot = [...harness.gameplay.world.zoneOf(player).groundItems.values()];
+    const zoneLoot = [...harness.gameplay.world.levelOf(player).groundItems.values()];
     assert.ok(zoneLoot.some((item) => item.itemId === 'gloam-chitin' && item.ownerId === player.entityId), 'mite loot should land on the floor, reserved for the killer');
 
     harness.interactWithObject('s2-lab-terminal');
@@ -121,7 +121,7 @@ describe('combat', () => {
 
     harness.ticksUntil(() => player.combatTargetId === null, 600);
     harness.interactWithObject('s2-exit-a');
-    assert.equal(player.zoneId, 'meridian-atrium');
+    assert.equal(districtOf(player), 'meridian-atrium');
 
     harness.talkTo('atrium-sel');
     finishDialogue(harness, (text) => text.startsWith('Hand over'));
@@ -132,11 +132,11 @@ describe('combat', () => {
 
   test('an incapacitated operative is recovered to safety at full integrity', () => {
     const harness = createHarness({
-      prepare: prepared({ zoneId: 'sector-two', position: { x: 9, y: 11 } }, {}, { vitals: { integrity: 1 } }),
+      prepare: prepared(at('sector-two', { x: 9, y: 11 }), {}, { vitals: { integrity: 1 } }),
     });
     const { player } = harness;
-    harness.ticksUntil(() => player.zoneId === 'meridian-atrium', 200);
-    assert.ok(harness.gameplay.world.zoneOf(player).areasAt(player.position).some((area) => area.id === 'medbay'), 'recovery wakes operatives in the medbay');
+    harness.ticksUntil(() => districtOf(player) === 'meridian-atrium', 200);
+    assert.ok(harness.gameplay.world.levelOf(player).areasAt(player.position).some((area) => area.id === 'medbay'), 'recovery wakes operatives in the medbay');
     assert.equal(player.integrity, player.maxIntegrity);
     assert.equal(player.combatTargetId, null);
     assert.match(harness.sink.last('notice')?.text ?? '', /incapacitated/);
@@ -144,27 +144,27 @@ describe('combat', () => {
 
   test('creatures give up the chase beyond their leash and heal', () => {
     const harness = createHarness({
-      prepare: prepared({ zoneId: 'sector-two', position: { x: 9, y: 11 } }, {}, veteranSkills()),
+      prepare: prepared(at('sector-two', { x: 9, y: 11 }), {}, veteranSkills()),
       combatRandom: () => 0.99,
     });
     const { player, gameplay } = harness;
-    const mite = gameplay.world.zoneOf(player).creatureByInstance('s2-mite-corridor-a');
+    const mite = gameplay.world.levelOf(player).creatureByInstance('s2-mite-corridor-a');
     assert.ok(mite);
     harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-mite-corridor-a', interactionIndex: 0 });
     harness.ticksUntil(() => mite.targetId === player.entityId, 50);
-    harness.send({ type: 'world.walk', target: { x: 29, y: 11 } });
+    harness.send({ type: 'world.walk', target: levelPoint('sector-two', { x: 29, y: 11 }) });
     harness.ticksUntil(() => mite.targetId === null && mite.returningHome === false, 400);
     assert.equal(mite.integrity, mite.definition.integrity);
   });
 
   test('aggressive creatures ignore operatives far above their level, but not fresh ones', () => {
-    const veteran = createHarness({ prepare: prepared({ zoneId: 'sector-two', position: { x: 9, y: 11 } }, {}, veteranSkills()) });
-    const ignoring = veteran.gameplay.world.zoneOf(veteran.player).creatureByInstance('s2-mite-corridor-a');
+    const veteran = createHarness({ prepare: prepared(at('sector-two', { x: 9, y: 11 }), {}, veteranSkills()) });
+    const ignoring = veteran.gameplay.world.levelOf(veteran.player).creatureByInstance('s2-mite-corridor-a');
     for (let tick = 0; tick < 30; tick++) veteran.gameplay.tick();
     assert.equal(ignoring?.targetId, null);
 
-    const fresh = createHarness({ prepare: prepared({ zoneId: 'sector-two', position: { x: 9, y: 11 } }, {}) });
-    const hunting = fresh.gameplay.world.zoneOf(fresh.player).creatureByInstance('s2-mite-corridor-a');
+    const fresh = createHarness({ prepare: prepared(at('sector-two', { x: 9, y: 11 }), {}) });
+    const hunting = fresh.gameplay.world.levelOf(fresh.player).creatureByInstance('s2-mite-corridor-a');
     fresh.ticksUntil(() => hunting?.targetId === fresh.player.entityId, 50);
   });
 
@@ -216,7 +216,7 @@ describe('storyline continuity', () => {
 describe('economy', () => {
   test('requisitions sells medgel for scrip and buys back loot', () => {
     const harness = createHarness({
-      prepare: prepared({ zoneId: 'meridian-atrium', position: { x: 5, y: 4 } }, {}),
+      prepare: prepared(at('meridian-atrium', { x: 5, y: 4 }), {}),
     });
     const { player } = harness;
     harness.gameplay.openShop(player, 'requisitions', 'atrium-okafor');
@@ -236,9 +236,9 @@ describe('economy', () => {
   });
 
   test('walking away closes the shop', () => {
-    const harness = createHarness({ prepare: prepared({ zoneId: 'meridian-atrium', position: { x: 5, y: 4 } }, {}) });
+    const harness = createHarness({ prepare: prepared(at('meridian-atrium', { x: 5, y: 4 }), {}) });
     harness.gameplay.openShop(harness.player, 'requisitions', 'atrium-okafor');
-    harness.send({ type: 'world.walk', target: { x: 12, y: 16 } });
+    harness.send({ type: 'world.walk', target: levelPoint('meridian-atrium', { x: 12, y: 16 }) });
     assert.equal(harness.player.shopSession, null);
   });
 });
@@ -269,7 +269,7 @@ describe('the far side', () => {
   test('The Far Side runs from Varga, through the Undercroft, to Halvorsen and back to Sel', () => {
     const skills = createStartingSkills({ closeQuarters: experienceForLevel(40), fortitude: experienceForLevel(45) });
     const harness = createHarness({
-      prepare: prepared({ zoneId: 'intake-wing', position: { x: 25, y: 5 } }, { 'the-knocking': completed('the-knocking'), 'the-far-side': activeAt('the-far-side') }, {
+      prepare: prepared(at('intake-wing', { x: 25, y: 5 }), { 'the-knocking': completed('the-knocking'), 'the-far-side': activeAt('the-far-side') }, {
         skills,
         vitals: { integrity: maxIntegrityFor(skills) },
         equipment: { torso: 'composite-plate', legs: 'intake-trousers', feet: 'work-boots', primary: 'shock-maul' },
@@ -283,9 +283,9 @@ describe('the far side', () => {
     assert.ok(player.hasFlag('clearance.undercroft'));
     assert.equal(stepOf(harness, 'the-far-side'), 1);
 
-    harness.gameplay.teleport(player, { zoneId: 'meridian-atrium', position: { x: 42, y: 28 } });
+    harness.gameplay.teleport(player, at('meridian-atrium', { x: 42, y: 28 }));
     harness.interactWithObject('atrium-service-lift');
-    assert.equal(player.zoneId, 'undercroft');
+    assert.equal(districtOf(player), 'undercroft');
     assert.equal(stepOf(harness, 'the-far-side'), 2);
 
     harness.interactWithObject('uc-junction-a');
@@ -297,14 +297,14 @@ describe('the far side', () => {
     assert.ok(player.hasFlag('undercroft.power-restored'));
 
     harness.interactWithObject('uc-sector-three-seal-a');
-    assert.equal(player.zoneId, 'undercroft', 'the seal stays shut while the Foreman stands');
+    assert.equal(districtOf(player), 'undercroft', 'the seal stays shut while the Foreman stands');
 
     defeat(harness, 'uc-foreman', 6000);
     assert.equal(stepOf(harness, 'the-far-side'), 4);
     harness.ticksUntil(() => player.combatTargetId === null, 2000);
 
     harness.interactWithObject('uc-sector-three-seal-a');
-    assert.equal(player.zoneId, 'sector-three');
+    assert.equal(districtOf(player), 'sector-three');
     assert.equal(stepOf(harness, 'the-far-side'), 5);
 
     harness.talkTo('s3-halvorsen');
@@ -319,7 +319,7 @@ describe('the far side', () => {
   });
 
   test('Mags trades, and Leech Season pays out a respirator for five sacs', () => {
-    const harness = createHarness({ prepare: prepared({ zoneId: 'undercroft', position: { x: 7, y: 12 } }, {}) });
+    const harness = createHarness({ prepare: prepared(at('undercroft', { x: 7, y: 12 }), {}) });
     const { player } = harness;
     harness.talkTo('undercroft-mags');
     finishDialogue(harness, (text) => text.startsWith('Need any work') || text.startsWith("I'll get"));

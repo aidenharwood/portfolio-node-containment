@@ -5,8 +5,6 @@ export const SIGNAL_ARRAY: DistrictDefinition = {
   name: 'The Signal Array',
   subtitle: 'Site Meridian — Long-Range Communications',
   tier: 5,
-  spawn: { x: 4, y: 4 },
-  capacity: 24,
   recovery: { districtId: 'deepwatch', position: { x: 5, y: 20 } },
   ambience: { darkness: 0.62, tint: '#16100a', fog: '#140e0a', fixtures: 'failing' },
   map: [

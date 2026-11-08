@@ -1,4 +1,3 @@
-import type { ZoneLocation } from '../character/character.ts';
 import type { StartingKit } from '../character/startingKit.ts';
 import type { CreatureDefinition, CreatureId } from '../combat/creatures.ts';
 import { CREATURES } from './creatures.ts';
@@ -33,7 +32,8 @@ import type { DialogueDefinition } from '../dialogue/dialogue.ts';
 import type { ItemCatalog, ItemDefinition } from '../gear/items.ts';
 import type { DialogueId, DistrictId, LevelId, NpcId, QuestId, WorldObjectId } from '../ids.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
-import { buildLevelIndex } from './levelIndex.ts';
+import { buildLevelIndex, locate, type LevelIndex } from './levelIndex.ts';
+import type { WorldLocation } from '../world/level.ts';
 import { MAIN_FLOOR } from './levels/mainFloor.ts';
 import { MERIDIAN_BELOW_LEVEL } from './levels/meridianBelowLevel.ts';
 import { THE_DEEP } from './levels/theDeep.ts';
@@ -80,7 +80,7 @@ export interface GameContent {
   readonly shops: ReadonlyMap<ShopId, ShopDefinition>;
   readonly recipes: ReadonlyMap<string, RecipeDefinition>;
   readonly newCharacter: {
-    readonly startingLocation: ZoneLocation;
+    readonly startingLocation: WorldLocation;
     readonly startingQuestId: QuestId;
     readonly kit: StartingKit;
   };
@@ -101,7 +101,13 @@ function indexById<T extends { readonly id: string }>(entries: readonly T[]): Re
 }
 
 const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([INTAKE_WING, MERIDIAN_ATRIUM, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW]);
-const LEVEL_INDEX = buildLevelIndex([MAIN_FLOOR, UNDERCROFT_LEVEL, THE_DEEP, THE_THRESHOLD, MERIDIAN_BELOW_LEVEL], DISTRICTS);
+const LEVEL_INDEX: LevelIndex = buildLevelIndex([MAIN_FLOOR, UNDERCROFT_LEVEL, THE_DEEP, THE_THRESHOLD, MERIDIAN_BELOW_LEVEL], DISTRICTS);
+
+function startingLocation(): WorldLocation {
+  const location = locate(LEVEL_INDEX, INTAKE_WING.id, { x: 4, y: 5 });
+  if (!location) throw new Error("The Intake Wing is not placed on a level.");
+  return location;
+}
 
 export const GAME_CONTENT: GameContent = {
   items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS]),
@@ -156,7 +162,7 @@ export const GAME_CONTENT: GameContent = {
   shops: indexById(SHOPS),
   recipes: indexById(RECIPES),
   newCharacter: {
-    startingLocation: { zoneId: INTAKE_WING.id, position: INTAKE_WING.spawn },
+    startingLocation: startingLocation(),
     startingQuestId: ORIENTATION_PROTOCOL.id,
     kit: STANDARD_ISSUE_KIT,
   },

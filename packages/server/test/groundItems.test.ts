@@ -4,7 +4,7 @@ import { addItem, countItem, createDefaultDraft, GAME_CONTENT, type GroundItemSn
 import { createCharacterRecord } from '../src/characters/characterFactory.ts';
 import { Gameplay } from '../src/gameplay/gameplay.ts';
 import { OWNER_PRIVACY_TICKS, GROUND_LIFETIME_TICKS } from '../src/gameplay/groundItemController.ts';
-import { RecordingSink } from './support/testHarness.ts';
+import { RecordingSink, at, levelPoint } from './support/testHarness.ts';
 
 function setup() {
   const gameplay = new Gameplay(GAME_CONTENT, { save: () => undefined }, {
@@ -17,7 +17,7 @@ function setup() {
     const record = createCharacterRecord({ ...createDefaultDraft(), name }, { id: name, accountId: name }, GAME_CONTENT);
     const sink = new RecordingSink();
     const inventory = addItem(record.inventory, GAME_CONTENT.items, 'medgel', 3).inventory;
-    const player = gameplay.enterWorld({ ...record, inventory, location: { zoneId: 'meridian-atrium', position: { x, y: 16 } } }, sink);
+    const player = gameplay.enterWorld({ ...record, inventory, location: at('meridian-atrium', { x, y: 16 }) }, sink);
     return { player, sink };
   };
   return { gameplay, owner: join('Owner Operative', 12), bystander: join('Other Operative', 13) };
@@ -39,7 +39,7 @@ describe('ground items', () => {
     gameplay.handle(owner.player, { type: 'inventory.drop', slotIndex: slot });
     assert.equal(countItem(owner.player.record.inventory, 'medgel'), 0);
 
-    const [dropped] = [...gameplay.world.zoneOf(owner.player).groundItems.values()];
+    const [dropped] = [...gameplay.world.levelOf(owner.player).groundItems.values()];
     assert.ok(dropped);
     assert.ok(visibleIds(owner.sink).has(dropped.id));
     assert.ok(!visibleIds(bystander.sink).has(dropped.id));
@@ -52,7 +52,7 @@ describe('ground items', () => {
     assert.ok(visibleIds(bystander.sink).has(dropped.id), 'items go public after the privacy window');
 
     for (let tick = 0; tick < GROUND_LIFETIME_TICKS; tick++) gameplay.tick();
-    assert.equal(gameplay.world.zoneOf(owner.player).groundItems.size, 0);
+    assert.equal(gameplay.world.levelOf(owner.player).groundItems.size, 0);
     assert.ok(!visibleIds(owner.sink).has(dropped.id));
   });
 
@@ -60,24 +60,24 @@ describe('ground items', () => {
     const { gameplay, owner } = setup();
     const slot = owner.player.record.inventory.findIndex((stack) => stack?.itemId === 'medgel');
     gameplay.handle(owner.player, { type: 'inventory.drop', slotIndex: slot });
-    const [dropped] = [...gameplay.world.zoneOf(owner.player).groundItems.values()];
+    const [dropped] = [...gameplay.world.levelOf(owner.player).groundItems.values()];
     assert.ok(dropped);
-    gameplay.handle(owner.player, { type: 'world.walk', target: { x: 16, y: 16 } });
+    gameplay.handle(owner.player, { type: 'world.walk', target: levelPoint('meridian-atrium', { x: 16, y: 16 }) });
     for (let tick = 0; tick < 10; tick++) gameplay.tick();
     gameplay.handle(owner.player, { type: 'world.pickup', groundItemId: dropped.id });
     for (let tick = 0; tick < 20 && countItem(owner.player.record.inventory, 'medgel') === 0; tick++) gameplay.tick();
     assert.equal(countItem(owner.player.record.inventory, 'medgel'), 3);
-    assert.equal(gameplay.world.zoneOf(owner.player).groundItems.size, 0);
+    assert.equal(gameplay.world.levelOf(owner.player).groundItems.size, 0);
   });
 
-  test('a late arrival sees public ground items in the zone snapshot', () => {
+  test('a late arrival sees public ground items in the level snapshot', () => {
     const { gameplay, owner } = setup();
     const slot = owner.player.record.inventory.findIndex((stack) => stack?.itemId === 'medgel');
     gameplay.handle(owner.player, { type: 'inventory.drop', slotIndex: slot });
     for (let tick = 0; tick < OWNER_PRIVACY_TICKS + 1; tick++) gameplay.tick();
     const record = createCharacterRecord({ ...createDefaultDraft(), name: 'Late Operative' }, { id: 'late', accountId: 'late' }, GAME_CONTENT);
     const sink = new RecordingSink();
-    gameplay.enterWorld({ ...record, location: { zoneId: 'meridian-atrium', position: { x: 10, y: 16 } } }, sink);
+    gameplay.enterWorld({ ...record, location: at('meridian-atrium', { x: 10, y: 16 }) }, sink);
     const entered = sink.last('world.entered');
     assert.ok(entered?.groundItems.some((item: GroundItemSnapshot) => item.itemId === 'medgel' && !item.owned));
   });

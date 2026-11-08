@@ -12,8 +12,8 @@ import {
   type InstanceId,
   type ServerMessage,
   type TilePoint,
-  type DistrictId,
-  type ZoneLocation,
+  type LevelId,
+  type WorldLocation,
 } from '@containment/shared';
 
 export interface MessageSink {
@@ -70,8 +70,8 @@ export class Player {
     this.position = record.location.position;
   }
 
-  get zoneId(): DistrictId {
-    return this.record.location.zoneId;
+  get levelId(): LevelId {
+    return this.record.location.levelId;
   }
 
   send(message: ServerMessage): void {
@@ -83,7 +83,7 @@ export class Player {
     this.stateDirty = true;
   }
 
-  relocate(location: ZoneLocation): void {
+  relocate(location: WorldLocation): void {
     this.record = { ...this.record, location };
     this.position = location.position;
     this.path = [];
@@ -128,7 +128,7 @@ export class Player {
   }
 
   persistableRecord(): CharacterRecord {
-    return { ...this.record, location: { zoneId: this.zoneId, position: this.position } };
+    return { ...this.record, location: { levelId: this.levelId, position: this.position } };
   }
 
   snapshot(): EntitySnapshot {

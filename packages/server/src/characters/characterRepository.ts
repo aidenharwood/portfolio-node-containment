@@ -1,24 +1,27 @@
-import { maxIntegrityFor, normalizeAppearance, normalizeSkills, type AccountId, type CharacterId, type CharacterRecord } from '@containment/shared';
+import { maxIntegrityFor, normalizeAppearance, normalizeSkills, type AccountId, type CharacterId, type CharacterRecord, type GameContent } from '@containment/shared';
+import { upgradeLegacyLocation } from './legacyLocation.ts';
 import type { Database } from '../persistence/database.ts';
 
-function parseRecord(json: string): CharacterRecord {
-  const stored = JSON.parse(json) as Omit<CharacterRecord, 'vitals' | 'storage'> & Partial<Pick<CharacterRecord, 'vitals' | 'storage'>>;
+function parseRecord(json: string, content: GameContent): CharacterRecord {
+  const stored = JSON.parse(json) as Omit<CharacterRecord, 'vitals' | 'storage' | 'location'> & Partial<Pick<CharacterRecord, 'vitals' | 'storage'>> & { readonly location: unknown };
   const skills = normalizeSkills(stored.skills);
-  return { ...stored, appearance: normalizeAppearance(stored.appearance), storage: stored.storage ?? [], skills, vitals: stored.vitals ?? { integrity: maxIntegrityFor(skills) } };
+  return { ...stored, location: upgradeLegacyLocation(stored.location, content), appearance: normalizeAppearance(stored.appearance), storage: stored.storage ?? [], skills, vitals: stored.vitals ?? { integrity: maxIntegrityFor(skills) } };
 }
 
 export class CharacterRepository {
   private readonly database: Database;
+  private readonly content: GameContent;
 
-  constructor(database: Database) {
+  constructor(database: Database, content: GameContent) {
     this.database = database;
+    this.content = content;
   }
 
   listForAccount(accountId: AccountId): CharacterRecord[] {
     const rows = this.database
       .prepare('SELECT record FROM characters WHERE account_id = ? ORDER BY created_at')
       .all(accountId) as { record: string }[];
-    return rows.map((row) => parseRecord(row.record));
+    return rows.map((row) => parseRecord(row.record, this.content));
   }
 
   countForAccount(accountId: AccountId): number {
@@ -32,7 +35,7 @@ export class CharacterRepository {
     const row = this.database
       .prepare('SELECT record FROM characters WHERE id = ? AND account_id = ?')
       .get(characterId, accountId) as { record: string } | undefined;
-    return row ? parseRecord(row.record) : null;
+    return row ? parseRecord(row.record, this.content) : null;
   }
 
   isNameTaken(name: string): boolean {

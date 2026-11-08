@@ -1,6 +1,5 @@
 import {
   GAME_CONTENT,
-  parseTileLayout,
   type EntityId,
   type EntityVitals,
   type GroundItemSnapshot,
@@ -12,7 +11,8 @@ import {
   type CreatureId,
   type TilePoint,
   type DistrictDefinition,
-  type TileLayout,
+  type LevelLayout,
+  type ResolvedLevel,
 } from '@containment/shared';
 import type { GameConnection } from '../net/gameConnection.ts';
 
@@ -40,8 +40,8 @@ export interface ClientEntity {
 }
 
 export interface ActiveZone {
-  readonly definition: DistrictDefinition;
-  readonly layout: TileLayout;
+  readonly definition: ResolvedLevel;
+  readonly layout: LevelLayout;
 }
 
 type WorldEvent = 'zoneChanged' | 'selfChanged' | 'vitalsChanged';
@@ -122,6 +122,12 @@ export class WorldState {
     return this.selfEntityId ? this.entities.get(this.selfEntityId) : undefined;
   }
 
+  currentDistrict(): DistrictDefinition | undefined {
+    const position = this.selfEntity?.to;
+    const districtId = position && this.zone?.layout.districtAt(position);
+    return districtId ? GAME_CONTENT.districts.get(districtId) : undefined;
+  }
+
   on(event: WorldEvent, listener: () => void): () => void {
     const bucket = this.listeners.get(event) ?? new Set();
     bucket.add(listener);
@@ -175,9 +181,9 @@ export class WorldState {
   }
 
   private enterZone(message: ServerMessageOf<'world.entered'>): void {
-    const definition = GAME_CONTENT.districts.get(message.zoneId);
+    const definition = GAME_CONTENT.levels.get(message.levelId);
     if (!definition) return;
-    this.zone = { definition, layout: parseTileLayout(definition.map) };
+    this.zone = { definition, layout: definition.layout };
     this.selfEntityId = message.selfEntityId;
     this.tickMs = message.tickMs;
     this.layer = message.layer;

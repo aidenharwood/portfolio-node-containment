@@ -5,8 +5,6 @@ export const DEEPWATCH: DistrictDefinition = {
   name: 'Deepwatch Station',
   subtitle: 'Site Meridian — Forward Base, Sector 3 Annex',
   tier: 4,
-  spawn: { x: 3, y: 10 },
-  capacity: 60,
   ambience: { darkness: 0.42, tint: '#0a1018', fog: '#0c141e' },
   map: [
     '####################################',

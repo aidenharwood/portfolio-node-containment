@@ -97,7 +97,7 @@ export class GearController {
   private commitLoadout(player: Player, loadout: Loadout, equipmentChanged: boolean): void {
     player.update({ inventory: loadout.inventory, equipment: loadout.equipment });
     if (equipmentChanged) {
-      this.world.zoneOf(player).broadcast({
+      this.world.levelOf(player).broadcast({
         type: 'world.entityGearChanged',
         entityId: player.entityId,
         gear: equippedItemIds(loadout.equipment),

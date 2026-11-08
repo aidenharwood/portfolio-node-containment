@@ -59,8 +59,12 @@ test('every lift into a deep zone has a way back out', () => {
   for (const [from, targets] of destinations) {
     for (const to of targets) assert.ok(destinations.get(to)?.size, `${to} is reachable from ${from} but has no exit`);
   }
-  for (const zoneId of GAME_CONTENT.districts.keys()) {
-    if (zoneId === GAME_CONTENT.newCharacter.startingLocation.zoneId) continue;
-    assert.ok([...destinations.values()].some((targets) => targets.has(zoneId)), `nothing leads into ${zoneId}`);
+  const enteredLevels = new Set([GAME_CONTENT.newCharacter.startingLocation.levelId]);
+  for (const targets of destinations.values()) {
+    for (const districtId of targets) enteredLevels.add(GAME_CONTENT.levelOfDistrict.get(districtId) ?? '');
+  }
+  for (const districtId of GAME_CONTENT.districts.keys()) {
+    const levelId = GAME_CONTENT.levelOfDistrict.get(districtId);
+    assert.ok(levelId !== undefined && enteredLevels.has(levelId), `nothing leads into ${districtId}`);
   }
 });

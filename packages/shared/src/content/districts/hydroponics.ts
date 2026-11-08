@@ -5,8 +5,6 @@ export const HYDROPONICS: DistrictDefinition = {
   name: 'Verdance Hydroponics',
   subtitle: 'Site Meridian — Agricultural Containment Deck',
   tier: 2,
-  spawn: { x: 3, y: 12 },
-  capacity: 30,
   recovery: { districtId: 'meridian-atrium', position: { x: 20, y: 29 } },
   ambience: { darkness: 0.62, tint: '#08160c', fog: '#0a1a10', fixtures: 'failing' },
   map: [
@@ -47,7 +45,6 @@ export const HYDROPONICS: DistrictDefinition = {
   ],
   npcs: [{ instanceId: 'hydro-oyelaran', npcId: 'botanist-oyelaran', position: { x: 5, y: 10 } }],
   objects: [
-    { instanceId: 'hydro-tram', objectId: 'hydroponics-tram', position: { x: 1, y: 12 }, facing: 'east' },
     { instanceId: 'hydro-platform-sign', objectId: 'warning-sign', position: { x: 7, y: 8 } },
     { instanceId: 'hydro-platform-storage', objectId: 'storage-locker', position: { x: 1, y: 15 }, facing: 'east' },
     { instanceId: 'hydro-seed-vault', objectId: 'seed-vault-console', position: { x: 4, y: 24 }, facing: 'north' },

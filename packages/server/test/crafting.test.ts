@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { countItem, type CharacterRecord, type QuestProgress, type ZoneLocation } from '@containment/shared';
-import { createHarness, finishDialogue, type Harness } from './support/testHarness.ts';
+import { countItem, type CharacterRecord, type QuestProgress, type WorldLocation } from '@containment/shared';
+import { createHarness, finishDialogue, type Harness, at, levelPoint } from './support/testHarness.ts';
 
-const WORKSHOP: ZoneLocation = { zoneId: 'meridian-atrium', position: { x: 3, y: 12 } };
+const WORKSHOP: WorldLocation = at('meridian-atrium', { x: 3, y: 12 });
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 
@@ -75,7 +75,7 @@ describe('gathering, refining and assembly', () => {
     const harness = createHarness({
       prepare: (record) => ({
         ...atWorkshop({ 'field-fabrication': completed('field-fabrication') })(record),
-        location: { zoneId: 'meridian-atrium', position: { x: 36, y: 12 } },
+        location: at('meridian-atrium', { x: 36, y: 12 }),
         inventory: [{ itemId: 'stun-baton', quantity: 1 }, ...record.inventory.slice(1)],
       }),
     });
@@ -84,7 +84,7 @@ describe('gathering, refining and assembly', () => {
     assert.equal(carried(harness, 'stun-baton'), 1);
   });
 
-  test('a resource node runs dry, tells the zone, and replenishes', () => {
+  test('a resource node runs dry, tells the level, and replenishes', () => {
     const harness = createHarness({ prepare: atWorkshop() });
     harness.interactWithObject('workshop-scrap-b');
     harness.ticksUntil(() => harness.player.activity === null, 400);
@@ -121,7 +121,7 @@ describe('gathering, refining and assembly', () => {
     harness.interactWithObject('workshop-refinery');
     harness.send({ type: 'crafting.make', recipeId: 'refinery:alloy-plate', quantity: 5 });
     assert.equal(harness.player.activity?.kind, 'craft');
-    harness.send({ type: 'world.walk', target: { x: 10, y: 11 } });
+    harness.send({ type: 'world.walk', target: levelPoint('meridian-atrium', { x: 10, y: 11 }) });
     assert.equal(harness.player.activity, null);
     assert.equal(harness.player.craftingStation, null);
     assert.equal(harness.sink.last('crafting.closed')?.type, 'crafting.closed');

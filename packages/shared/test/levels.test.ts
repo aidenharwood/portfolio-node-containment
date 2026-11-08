@@ -22,7 +22,6 @@ const room = (id: string, map: readonly string[], extras: Partial<DistrictDefini
   subtitle: '',
   tier: 1,
   map,
-  spawn: { x: 1, y: 1 },
   ambience: AMBIENCE,
   areas: [],
   npcs: [],

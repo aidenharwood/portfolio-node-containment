@@ -5,8 +5,6 @@ export const MERIDIAN_ATRIUM: DistrictDefinition = {
   name: 'Meridian Atrium',
   subtitle: 'Site Meridian — Central Hub',
   tier: 1,
-  spawn: { x: 5, y: 28 },
-  capacity: 80,
   ambience: { darkness: 0.38, tint: '#08141c', fog: '#0c1c26' },
   map: [
     '##############################################',
@@ -134,7 +132,6 @@ export const MERIDIAN_ATRIUM: DistrictDefinition = {
     { instanceId: 'medbay-synthesiser', objectId: 'synthesiser', position: { x: 32, y: 27 }, facing: 'west' },
 
     { instanceId: 'atrium-lift', objectId: 'atrium-intake-lift', position: { x: 1, y: 30 }, facing: 'east' },
-    { instanceId: 'atrium-hydro-tram', objectId: 'atrium-hydroponics-tram', position: { x: 1, y: 26 }, facing: 'east' },
     { instanceId: 'atrium-deep-line', objectId: 'atrium-deep-line', position: { x: 1, y: 28 }, facing: 'east' },
     { instanceId: 'vent-lift-bay', objectId: 'vent-panel', position: { x: 11, y: 31 }, facing: 'west' },
     { instanceId: 'transit-directory', objectId: 'intake-kiosk', position: { x: 11, y: 26 }, facing: 'west' },

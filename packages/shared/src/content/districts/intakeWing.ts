@@ -5,8 +5,6 @@ export const INTAKE_WING: DistrictDefinition = {
   name: 'Intake Wing',
   subtitle: 'Site Meridian — Sublevel 4',
   tier: 1,
-  spawn: { x: 4, y: 5 },
-  capacity: 40,
   recovery: { districtId: 'intake-wing', position: { x: 4, y: 5 } },
   ambience: { darkness: 0.58, tint: '#071219', fog: '#0b1a22' },
   map: [

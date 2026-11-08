@@ -3,15 +3,10 @@ import type { EquipmentState } from '../gear/equipment.ts';
 import type { InventoryState } from '../gear/inventory.ts';
 import type { StorageState } from '../gear/storage.ts';
 import type { QuestLog } from '../quests/questProgress.ts';
-import type { TilePoint } from '../world/geometry.ts';
+import type { WorldLocation } from '../world/level.ts';
 import type { CharacterAppearance } from './appearance.ts';
 import type { PronounSetId } from './pronouns.ts';
 import type { SkillExperience } from './skills.ts';
-
-export interface ZoneLocation {
-  readonly zoneId: DistrictId;
-  readonly position: TilePoint;
-}
 
 export interface CharacterVitals {
   readonly integrity: number;
@@ -30,7 +25,7 @@ export interface CharacterRecord {
   readonly equipment: EquipmentState;
   readonly quests: QuestLog;
   readonly flags: readonly string[];
-  readonly location: ZoneLocation;
+  readonly location: WorldLocation;
   readonly createdAt: number;
 }
 
@@ -40,5 +35,5 @@ export interface CharacterSummary {
   readonly appearance: CharacterAppearance;
   readonly equipment: EquipmentState;
   readonly combatLevel: number;
-  readonly zoneId: DistrictId;
+  readonly districtId: DistrictId;
 }

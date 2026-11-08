@@ -22,9 +22,9 @@ export class ChatController {
       return;
     }
     this.lastMessageAt.set(player.entityId, now);
-    const zone = this.world.zoneOf(player);
-    zone.broadcast({ type: 'chat.message', channel: 'local', author: player.record.name, text });
-    zone.broadcast({ type: 'world.speech', entityId: player.entityId, text });
+    const level = this.world.levelOf(player);
+    level.broadcast({ type: 'chat.message', channel: 'local', author: player.record.name, text });
+    level.broadcast({ type: 'world.speech', entityId: player.entityId, text });
   }
 
   forget(player: Player): void {

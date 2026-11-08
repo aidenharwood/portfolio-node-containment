@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { countItem } from '@containment/shared';
-import { createHarness, finishDialogue, type Harness } from './support/testHarness.ts';
+import { createHarness, finishDialogue, type Harness, at, districtOf, levelPoint } from './support/testHarness.ts';
 
 const ORIENTATION = 'orientation-protocol';
 
@@ -14,7 +14,7 @@ describe('orientation protocol tutorial', () => {
   test('a new operative can complete the full tutorial and reach the atrium', () => {
     const harness = createHarness();
     const { player } = harness;
-    assert.equal(player.zoneId, 'intake-wing');
+    assert.equal(districtOf(player), 'intake-wing');
     assert.equal(currentStep(harness), 0);
 
     harness.talkTo('intake-reyes');
@@ -37,7 +37,7 @@ describe('orientation protocol tutorial', () => {
     assert.ok(player.record.skills.research > researchBefore);
     assert.equal(currentStep(harness), 4);
 
-    harness.send({ type: 'world.walk', target: { x: 23, y: 5 } });
+    harness.send({ type: 'world.walk', target: levelPoint('intake-wing', { x: 23, y: 5 }) });
     harness.ticksUntil(() => currentStep(harness) === 5);
 
     harness.talkTo('intake-varga');
@@ -55,7 +55,7 @@ describe('orientation protocol tutorial', () => {
     assert.equal(currentStep(harness), 8);
 
     harness.interactWithObject('transit-lift');
-    assert.equal(player.zoneId, 'meridian-atrium');
+    assert.equal(districtOf(player), 'meridian-atrium');
     assert.equal(currentStep(harness), 'completed');
     assert.equal(countItem(player.record.inventory, 'operative-badge'), 1);
     assert.equal(countItem(player.record.inventory, 'meridian-scrip'), 50);
@@ -80,22 +80,22 @@ describe('orientation protocol tutorial', () => {
   test('the transit lift stays locked until Dr. Varga signs off', () => {
     const harness = createHarness();
     harness.interactWithObject('transit-lift');
-    assert.equal(harness.player.zoneId, 'intake-wing');
+    assert.equal(districtOf(harness.player), 'intake-wing');
   });
 
   test('walking away closes an open dialogue', () => {
     const harness = createHarness();
     harness.talkTo('intake-reyes');
-    harness.send({ type: 'world.walk', target: { x: 2, y: 6 } });
+    harness.send({ type: 'world.walk', target: levelPoint('intake-wing', { x: 2, y: 6 }) });
     assert.equal(harness.player.dialogue, null);
     assert.equal(harness.sink.last('dialogue.closed')?.type, 'dialogue.closed');
   });
 
   test('leaving the world persists the character', () => {
     const harness = createHarness();
-    harness.send({ type: 'world.walk', target: { x: 2, y: 6 } });
+    harness.send({ type: 'world.walk', target: levelPoint('intake-wing', { x: 2, y: 6 }) });
     harness.ticksUntil(() => harness.player.path.length === 0);
     harness.gameplay.leaveWorld(harness.player);
-    assert.deepEqual(harness.saved.at(-1)?.location.position, { x: 2, y: 6 });
+    assert.deepEqual(harness.saved.at(-1)?.location.position, levelPoint('intake-wing', { x: 2, y: 6 }));
   });
 });

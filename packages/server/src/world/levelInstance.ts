@@ -1,9 +1,7 @@
 import {
   createWalkabilityGrid,
   findPath,
-  parseTileLayout,
   rectContains,
-  type AreaDefinition,
   type EntityId,
   type EntitySnapshot,
   type GroundItemSnapshot,
@@ -14,22 +12,26 @@ import {
   type TilePoint,
   type WalkabilityGrid,
   type WorldObjectDefinition,
-  type DistrictDefinition,
-  type TileLayout,
+  type LevelId,
+  type LevelLayout,
+  type ResolvedArea,
+  type ResolvedLevel,
 } from '@containment/shared';
 import { Creature } from './creature.ts';
 import { groundItemSnapshot, isGroundItemVisibleTo, type GroundItem } from './groundItem.ts';
 import { Npc } from './npc.ts';
 import type { Player } from './player.ts';
 
+const SAFE_SPAWN_SEARCH_RADIUS = 12;
+
 export interface PlacedObject {
   readonly placement: ObjectPlacement;
   readonly definition: WorldObjectDefinition;
 }
 
-export class ZoneInstance {
-  readonly definition: DistrictDefinition;
-  readonly layout: TileLayout;
+export class LevelInstance {
+  readonly definition: ResolvedLevel;
+  readonly layout: LevelLayout;
   readonly grid: WalkabilityGrid;
   readonly players = new Map<EntityId, Player>();
   readonly npcs = new Map<InstanceId, Npc>();
@@ -41,10 +43,10 @@ export class ZoneInstance {
   readonly layer: number;
   emptySinceTick: number | null = null;
 
-  constructor(definition: DistrictDefinition, content: GameContent, layer: number) {
+  constructor(definition: ResolvedLevel, content: GameContent, layer: number) {
     this.definition = definition;
     this.layer = layer;
-    this.layout = parseTileLayout(definition.map);
+    this.layout = definition.layout;
 
     for (const placement of definition.objects) {
       const objectDefinition = content.worldObjects.get(placement.objectId);
@@ -55,7 +57,7 @@ export class ZoneInstance {
       .map((object) => object.placement.position);
     this.grid = createWalkabilityGrid(this.layout, blockedTiles);
 
-    for (const placement of definition.creatures ?? []) {
+    for (const placement of definition.creatures) {
       const creatureDefinition = content.creatures.get(placement.creatureId);
       if (!creatureDefinition) continue;
       const creature = new Creature(placement, creatureDefinition);
@@ -68,7 +70,7 @@ export class ZoneInstance {
     }
   }
 
-  get id(): string {
+  get id(): LevelId {
     return this.definition.id;
   }
 
@@ -101,7 +103,7 @@ export class ZoneInstance {
     this.nodeCharges.delete(instanceId);
   }
 
-  areasAt(point: TilePoint): AreaDefinition[] {
+  areasAt(point: TilePoint): ResolvedArea[] {
     return this.definition.areas.filter((area) => rectContains(area.rect, point));
   }
 
@@ -114,6 +116,18 @@ export class ZoneInstance {
   }
 
   safeSpawnPoint(preferred: TilePoint): TilePoint {
-    return this.grid.isWalkable(preferred) ? preferred : this.definition.spawn;
+    if (this.grid.isWalkable(preferred)) return preferred;
+    const districtId = this.layout.districtAt(preferred);
+    if (!districtId) return this.definition.spawn;
+    for (let radius = 1; radius <= SAFE_SPAWN_SEARCH_RADIUS; radius++) {
+      for (let dy = -radius; dy <= radius; dy++) {
+        for (let dx = -radius; dx <= radius; dx++) {
+          if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
+          const candidate = { x: preferred.x + dx, y: preferred.y + dy };
+          if (this.grid.isWalkable(candidate) && this.layout.districtAt(candidate) === districtId) return candidate;
+        }
+      }
+    }
+    return this.definition.spawn;
   }
 }

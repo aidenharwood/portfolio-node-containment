@@ -141,10 +141,10 @@ export function createGameScreen(app: AppNavigator): Screen {
   };
 
   const showZoneBanner = () => {
-    const zone = world.zone?.definition;
-    if (!zone) return;
+    const district = world.currentDistrict();
+    if (!district) return;
     const layerLabel = world.layer > 1 ? ` · Layer ${world.layer}` : '';
-    replaceChildren(zoneBanner, h('p', { className: 'zone-subtitle' }, zone.subtitle + layerLabel), h('h2', { className: 'zone-name' }, zone.name));
+    replaceChildren(zoneBanner, h('p', { className: 'zone-subtitle' }, district.subtitle + layerLabel), h('h2', { className: 'zone-name' }, district.name));
     zoneBanner.classList.remove('visible');
     void zoneBanner.offsetWidth;
     zoneBanner.classList.add('visible');

@@ -12,7 +12,6 @@ const room = (id: string, ambience: ZoneAmbience, extras: Partial<DistrictDefini
   subtitle: '',
   tier: 1,
   map: ['####', '#..#', '####'],
-  spawn: { x: 1, y: 1 },
   ambience,
   areas: [],
   npcs: [],

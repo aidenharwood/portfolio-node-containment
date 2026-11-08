@@ -2,7 +2,7 @@ import { addItem, chebyshevDistance, samePoint, type EntityId, type GameContent,
 import { groundItemSnapshot, isGroundItemVisibleTo, type GroundItem } from '../world/groundItem.ts';
 import type { Player } from '../world/player.ts';
 import type { World } from '../world/world.ts';
-import type { ZoneInstance } from '../world/zoneInstance.ts';
+import type { LevelInstance } from '../world/levelInstance.ts';
 import type { EffectHost } from './effectRunner.ts';
 
 export const OWNER_PRIVACY_TICKS = 200;
@@ -28,17 +28,17 @@ export class GroundItemController {
     this.host = host;
   }
 
-  drop(zone: ZoneInstance, request: DropRequest): GroundItem | null {
+  drop(level: LevelInstance, request: DropRequest): GroundItem | null {
     const definition = this.content.items.get(request.itemId);
     if (!definition || request.quantity <= 0) return null;
     const existing = definition.maxStack > 1
-      ? [...zone.groundItems.values()].find(
+      ? [...level.groundItems.values()].find(
           (item) => item.itemId === request.itemId && item.ownerId === request.ownerId && samePoint(item.position, request.position),
         )
       : undefined;
     if (existing) {
       existing.quantity += request.quantity;
-      this.announce(zone, existing);
+      this.announce(level, existing);
       return existing;
     }
     const item: GroundItem = {
@@ -50,14 +50,14 @@ export class GroundItemController {
       publicAtTick: this.currentTick + OWNER_PRIVACY_TICKS,
       expiresAtTick: this.currentTick + GROUND_LIFETIME_TICKS,
     };
-    zone.groundItems.set(item.id, item);
-    this.announce(zone, item);
+    level.groundItems.set(item.id, item);
+    this.announce(level, item);
     return item;
   }
 
   pickup(player: Player, groundItemId: string): void {
-    const zone = this.world.zoneOf(player);
-    const item = zone.groundItems.get(groundItemId);
+    const level = this.world.levelOf(player);
+    const item = level.groundItems.get(groundItemId);
     if (!item || !isGroundItemVisibleTo(item, player.entityId)) {
       this.host.notify(player, 'warning', 'That is no longer there.');
       return;
@@ -73,44 +73,44 @@ export class GroundItemController {
     player.send({ type: 'chat.message', channel: 'system', text: `You take ${outcome.added > 1 ? `${outcome.added} × ` : ''}${name}.` });
     if (outcome.overflow > 0) {
       item.quantity = outcome.overflow;
-      this.announce(zone, item);
+      this.announce(level, item);
     } else {
-      this.remove(zone, item);
+      this.remove(level, item);
     }
     this.host.raiseQuestEvent(player, { type: 'loadoutChanged' });
   }
 
   positionOf(player: Player, groundItemId: string): TilePoint | null {
-    const item = this.world.zoneOf(player).groundItems.get(groundItemId);
+    const item = this.world.levelOf(player).groundItems.get(groundItemId);
     return item && isGroundItemVisibleTo(item, player.entityId) ? item.position : null;
   }
 
   tick(tick: number): void {
     this.currentTick = tick;
-    for (const zone of this.world.instances()) {
-      for (const item of [...zone.groundItems.values()]) {
+    for (const level of this.world.instances()) {
+      for (const item of [...level.groundItems.values()]) {
         if (tick >= item.expiresAtTick) {
-          this.remove(zone, item);
+          this.remove(level, item);
           continue;
         }
         if (item.ownerId !== null && tick >= item.publicAtTick) {
           item.ownerId = null;
-          this.announce(zone, item);
+          this.announce(level, item);
         }
       }
     }
   }
 
-  private announce(zone: ZoneInstance, item: GroundItem): void {
-    for (const player of zone.players.values()) {
+  private announce(level: LevelInstance, item: GroundItem): void {
+    for (const player of level.players.values()) {
       if (isGroundItemVisibleTo(item, player.entityId)) {
         player.send({ type: 'world.groundItemAdded', item: groundItemSnapshot(item, player.entityId) });
       }
     }
   }
 
-  private remove(zone: ZoneInstance, item: GroundItem): void {
-    zone.groundItems.delete(item.id);
-    zone.broadcast({ type: 'world.groundItemRemoved', id: item.id });
+  private remove(level: LevelInstance, item: GroundItem): void {
+    level.groundItems.delete(item.id);
+    level.broadcast({ type: 'world.groundItemRemoved', id: item.id });
   }
 }

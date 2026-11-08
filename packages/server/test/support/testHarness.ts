@@ -1,11 +1,15 @@
 import {
   addItem,
+  locate,
   createDefaultDraft,
   GAME_CONTENT,
   type CharacterRecord,
+  type DistrictId,
   type ServerMessage,
   type ServerMessageOf,
   type ServerMessageType,
+  type TilePoint,
+  type WorldLocation,
 } from '@containment/shared';
 import { createCharacterRecord } from '../../src/characters/characterFactory.ts';
 import { Gameplay, type GameplayMessage } from '../../src/gameplay/gameplay.ts';
@@ -47,6 +51,12 @@ export interface HarnessOptions {
   readonly combatRandom?: () => number;
 }
 
+const harnessWorlds = new WeakMap<Player, Gameplay>();
+
+export function districtOf(player: Player): DistrictId | undefined {
+  return harnessWorlds.get(player)?.world.districtOf(player);
+}
+
 export function createHarness(options: HarnessOptions = {}): Harness {
   const saved: CharacterRecord[] = [];
   const gameplay = new Gameplay(GAME_CONTENT, { save: (record) => saved.push(record) }, {
@@ -65,6 +75,7 @@ export function createHarness(options: HarnessOptions = {}): Harness {
   const record = options.prepare ? options.prepare(carrying) : carrying;
   const sink = new RecordingSink();
   const player = gameplay.enterWorld(record, sink);
+  harnessWorlds.set(player, gameplay);
 
   const harness: Harness = {
     gameplay,
@@ -100,4 +111,14 @@ export function finishDialogue(harness: Harness, preferredOption?: (text: string
     if (option) harness.send({ type: 'dialogue.choose', optionIndex: option.index });
     else harness.send({ type: 'dialogue.continue' });
   }
+}
+
+export function at(districtId: DistrictId, local: TilePoint): WorldLocation {
+  const location = locate(GAME_CONTENT, districtId, local);
+  if (!location) throw new Error(`Unknown district "${districtId}".`);
+  return location;
+}
+
+export function levelPoint(districtId: DistrictId, local: TilePoint): TilePoint {
+  return at(districtId, local).position;
 }

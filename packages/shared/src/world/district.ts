@@ -50,8 +50,6 @@ export interface DistrictDefinition {
   readonly subtitle: string;
   readonly tier: number;
   readonly map: readonly string[];
-  readonly spawn: TilePoint;
-  readonly capacity?: number;
   readonly recovery?: { readonly districtId: DistrictId; readonly position: TilePoint };
   readonly ambience: ZoneAmbience;
   readonly areas: readonly AreaDefinition[];

@@ -8,9 +8,9 @@ import {
   type CharacterRecord,
   type EquipmentState,
   type QuestProgress,
-  type ZoneLocation,
+  type WorldLocation,
 } from '@containment/shared';
-import { createHarness, finishDialogue, type Harness } from './support/testHarness.ts';
+import { createHarness, finishDialogue, type Harness, at, districtOf, levelPoint } from './support/testHarness.ts';
 
 const active = (questId: string, stepIndex = 0): QuestProgress => ({ questId, status: 'active', stepIndex, objectiveProgress: [0, 0, 0] });
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
@@ -18,14 +18,14 @@ const completed = (questId: string): QuestProgress => ({ questId, status: 'compl
 const VETERAN = createStartingSkills({ closeQuarters: experienceForLevel(99), fortitude: experienceForLevel(99), containment: experienceForLevel(40) });
 const KIT: EquipmentState = { torso: 'composite-plate', legs: 'intake-trousers', feet: 'work-boots', primary: 'the-knocker' };
 
-const NEAR_SEL: ZoneLocation = { zoneId: 'meridian-atrium', position: { x: 39, y: 5 } };
-const NEAR_THALE: ZoneLocation = { zoneId: 'deepwatch', position: { x: 4, y: 4 } };
-const NEAR_HALVORSEN: ZoneLocation = { zoneId: 'sector-three', position: { x: 10, y: 8 } };
-const LIFT_GALLERY: ZoneLocation = { zoneId: 'deepwatch', position: { x: 29, y: 19 } };
+const NEAR_SEL: WorldLocation = at('meridian-atrium', { x: 39, y: 5 });
+const NEAR_THALE: WorldLocation = at('deepwatch', { x: 4, y: 4 });
+const NEAR_HALVORSEN: WorldLocation = at('sector-three', { x: 10, y: 8 });
+const LIFT_GALLERY: WorldLocation = at('deepwatch', { x: 29, y: 19 });
 
 const PRIOR_QUESTS = ['orientation-protocol', 'field-fabrication', 'live-fire', 'the-knocking', 'the-far-side'];
 
-function veteranAt(location: ZoneLocation, quests: Record<string, QuestProgress>, flags: readonly string[] = []) {
+function veteranAt(location: WorldLocation, quests: Record<string, QuestProgress>, flags: readonly string[] = []) {
   return (record: CharacterRecord): CharacterRecord => ({
     ...record,
     location,
@@ -47,7 +47,7 @@ function heal(harness: Harness): void {
 }
 
 function defeat(harness: Harness, instanceId: string): void {
-  const creature = harness.gameplay.world.zoneOf(harness.player).creatureByInstance(instanceId);
+  const creature = harness.gameplay.world.levelOf(harness.player).creatureByInstance(instanceId);
   assert.ok(creature, `missing creature ${instanceId}`);
   heal(harness);
   harness.send({ type: 'world.interact', targetKind: 'creature', instanceId, interactionIndex: 0 });
@@ -65,7 +65,7 @@ function talk(harness: Harness, instanceId: string, ...choices: string[]): void 
   finishDialogue(harness, choices.length ? (text) => choices.some((choice) => text.startsWith(choice)) : undefined);
 }
 
-const travel = (harness: Harness, location: ZoneLocation) => harness.gameplay.teleport(harness.player, location);
+const travel = (harness: Harness, location: WorldLocation) => harness.gameplay.teleport(harness.player, location);
 
 describe('act two: the answer', () => {
   test('A Council of One opens Deepwatch, visits the Knock and hands over to Cold Storage', () => {
@@ -76,23 +76,23 @@ describe('act two: the answer', () => {
     assert.equal(stepOf(harness, 'a-council-of-one'), 0);
     assert.ok(player.hasFlag('clearance.deepwatch'));
 
-    travel(harness, { zoneId: 'meridian-atrium', position: { x: 3, y: 28 } });
+    travel(harness, at('meridian-atrium', { x: 3, y: 28 }));
     use(harness, 'atrium-deep-line');
-    assert.equal(player.zoneId, 'deepwatch');
+    assert.equal(districtOf(player), 'deepwatch');
     assert.equal(stepOf(harness, 'a-council-of-one'), 1);
 
     travel(harness, NEAR_THALE);
     talk(harness, 'dw-thale');
     assert.equal(stepOf(harness, 'a-council-of-one'), 2);
 
-    travel(harness, { zoneId: 'deepwatch', position: { x: 17, y: 3 } });
+    travel(harness, at('deepwatch', { x: 17, y: 3 }));
     use(harness, 'dw-threshold-a');
-    assert.equal(player.zoneId, 'sector-three');
+    assert.equal(districtOf(player), 'sector-three');
     talk(harness, 's3-halvorsen');
     assert.equal(stepOf(harness, 'a-council-of-one'), 3);
 
     use(harness, 's3-deepwatch-a');
-    assert.equal(player.zoneId, 'deepwatch');
+    assert.equal(districtOf(player), 'deepwatch');
     travel(harness, NEAR_THALE);
     talk(harness, 'dw-thale', "It isn't");
     assert.equal(stepOf(harness, 'a-council-of-one'), 'completed');
@@ -105,7 +105,7 @@ describe('act two: the answer', () => {
     const { player } = harness;
 
     use(harness, 'dw-cryovault-lift');
-    assert.equal(player.zoneId, 'cryovault');
+    assert.equal(districtOf(player), 'cryovault');
     assert.equal(stepOf(harness, 'cold-storage'), 1);
 
     for (const pod of ['cv-pod-a', 'cv-pod-b', 'cv-pod-c', 'cv-pod-d']) use(harness, pod);
@@ -138,7 +138,7 @@ describe('act two: the answer', () => {
 
     travel(harness, LIFT_GALLERY);
     use(harness, 'dw-array-lift');
-    assert.equal(player.zoneId, 'signal-array');
+    assert.equal(districtOf(player), 'signal-array');
     assert.equal(stepOf(harness, 'dead-air'), 2);
 
     talk(harness, 'sa-achterberg');
@@ -165,7 +165,7 @@ describe('act two: the answer', () => {
 
   test('The Original Contract: drain the stacks and recover the charter', () => {
     const harness = createHarness({
-      prepare: veteranAt({ zoneId: 'meridian-atrium', position: { x: 37, y: 25 } }, { 'dead-air': completed('dead-air'), 'original-contract': active('original-contract') }, ['clearance.drowned-archive']),
+      prepare: veteranAt(at('meridian-atrium', { x: 37, y: 25 }), { 'dead-air': completed('dead-air'), 'original-contract': active('original-contract') }, ['clearance.drowned-archive']),
     });
     const { player } = harness;
 
@@ -175,23 +175,23 @@ describe('act two: the answer', () => {
 
     travel(harness, LIFT_GALLERY);
     use(harness, 'dw-archive-lift');
-    assert.equal(player.zoneId, 'drowned-archive');
+    assert.equal(districtOf(player), 'drowned-archive');
     assert.equal(stepOf(harness, 'original-contract'), 2);
 
     talk(harness, 'da-pim');
     assert.equal(stepOf(harness, 'original-contract'), 3);
 
-    travel(harness, { zoneId: 'drowned-archive', position: { x: 36, y: 8 } });
+    travel(harness, at('drowned-archive', { x: 36, y: 8 }));
     use(harness, 'da-sealed-door-a');
-    assert.equal(player.record.location.position.y, 8, 'the reading room stays sealed until the sluices are open');
+    assert.equal(player.record.location.position.y, levelPoint('drowned-archive', { x: 36, y: 8 }).y, 'the reading room stays sealed until the sluices are open');
 
     for (const valve of ['da-sluice-a', 'da-sluice-b', 'da-sluice-c']) use(harness, valve);
     assert.equal(stepOf(harness, 'original-contract'), 4);
     assert.ok(player.hasFlag('archive.drained'));
 
-    travel(harness, { zoneId: 'drowned-archive', position: { x: 36, y: 8 } });
+    travel(harness, at('drowned-archive', { x: 36, y: 8 }));
     use(harness, 'da-sealed-door-a');
-    assert.ok(player.record.location.position.y >= 11, 'the drained door opens into the reading room');
+    assert.ok(player.record.location.position.y >= levelPoint('drowned-archive', { x: 0, y: 11 }).y, 'the drained door opens into the reading room');
 
     defeat(harness, 'da-last-archivist');
     assert.equal(stepOf(harness, 'original-contract'), 5);
@@ -213,9 +213,9 @@ describe('act two: the answer', () => {
     talk(harness, 's3-halvorsen');
     assert.equal(stepOf(harness, 'stoking-the-fire'), 1);
 
-    travel(harness, { zoneId: 'deepwatch', position: { x: 32, y: 18 } });
+    travel(harness, at('deepwatch', { x: 32, y: 18 }));
     use(harness, 'dw-furnace-lift');
-    assert.equal(player.zoneId, 'furnace');
+    assert.equal(districtOf(player), 'furnace');
     talk(harness, 'fu-brann');
     assert.equal(stepOf(harness, 'stoking-the-fire'), 3);
 
@@ -226,9 +226,9 @@ describe('act two: the answer', () => {
     assert.equal(stepOf(harness, 'stoking-the-fire'), 5);
     assert.ok(player.hasFlag('furnace.vented'));
 
-    travel(harness, { zoneId: 'furnace', position: { x: 34, y: 8 } });
+    travel(harness, at('furnace', { x: 34, y: 8 }));
     use(harness, 'fu-reactor-door-a');
-    assert.ok(player.record.location.position.y >= 11, 'the vented door opens into the reactor heart');
+    assert.ok(player.record.location.position.y >= levelPoint('furnace', { x: 0, y: 11 }).y, 'the vented door opens into the reactor heart');
 
     defeat(harness, 'fu-stoker');
     assert.equal(stepOf(harness, 'stoking-the-fire'), 6);
@@ -247,14 +247,14 @@ describe('act two: the answer', () => {
     const { player } = harness;
 
     use(harness, 's3-knock', 1);
-    assert.equal(player.zoneId, 'sector-three', 'the Knock stays shut until Halvorsen opens it');
+    assert.equal(districtOf(player), 'sector-three', 'the Knock stays shut until Halvorsen opens it');
 
     talk(harness, 's3-halvorsen', 'Open it');
     assert.ok(player.hasFlag('farside.door-open'));
     assert.equal(stepOf(harness, 'the-answer'), 1);
 
     use(harness, 's3-knock', 1);
-    assert.equal(player.zoneId, 'meridian-below');
+    assert.equal(districtOf(player), 'meridian-below');
     assert.equal(stepOf(harness, 'the-answer'), 2);
 
     talk(harness, 'mb-kessler');
@@ -281,7 +281,7 @@ describe('act two: the answer', () => {
   });
 
   test('Fenn hands out a side quest and pays for six samples of cryo gel', () => {
-    const harness = createHarness({ prepare: veteranAt({ zoneId: 'cryovault', position: { x: 31, y: 7 } }, { 'cold-storage': active('cold-storage', 2) }) });
+    const harness = createHarness({ prepare: veteranAt(at('cryovault', { x: 31, y: 7 }), { 'cold-storage': active('cold-storage', 2) }) });
     const { player } = harness;
 
     talk(harness, 'cv-fenn', 'Can I help', "I'll do it");
@@ -293,7 +293,7 @@ describe('act two: the answer', () => {
 
     player.update({ inventory: [{ itemId: 'cryo-gel', quantity: 6 }, ...player.record.inventory.slice(1)] });
     harness.gameplay.raiseQuestEvent(player, { type: 'loadoutChanged' });
-    travel(harness, { zoneId: 'cryovault', position: { x: 31, y: 7 } });
+    travel(harness, at('cryovault', { x: 31, y: 7 }));
     talk(harness, 'cv-fenn', 'Hand over');
     assert.equal(stepOf(harness, 'fenns-inventory'), 'completed');
     assert.equal(countItem(player.record.inventory, 'rimeguard-gauntlets'), 1);

@@ -10,19 +10,26 @@ import {
   type CharacterId,
   type CharacterRecord,
   type CharacterSummary,
+  type DistrictId,
   type GameContent,
   type Result,
+  type WorldLocation,
 } from '@containment/shared';
 import { createCharacterRecord } from './characterFactory.ts';
 import type { CharacterRepository } from './characterRepository.ts';
 
-export const summarizeCharacter = (record: CharacterRecord): CharacterSummary => ({
+function districtAt(location: WorldLocation, content: GameContent): DistrictId {
+  const level = content.levels.get(location.levelId);
+  return level?.layout.toLocalPoint(location.position)?.districtId ?? level?.definition.spawn.districtId ?? '';
+}
+
+export const summarizeCharacter = (record: CharacterRecord, content: GameContent): CharacterSummary => ({
   id: record.id,
   name: record.name,
   appearance: record.appearance,
   equipment: record.equipment,
   combatLevel: combatLevel(record.skills),
-  zoneId: record.location.zoneId,
+  districtId: districtAt(record.location, content),
 });
 
 export class CharacterService {
@@ -37,7 +44,7 @@ export class CharacterService {
   }
 
   roster(accountId: AccountId): CharacterSummary[] {
-    return this.repository.listForAccount(accountId).map(summarizeCharacter);
+    return this.repository.listForAccount(accountId).map((record) => summarizeCharacter(record, this.content));
   }
 
   create(accountId: AccountId, draft: CharacterDraft): Result<CharacterRecord, string[]> {

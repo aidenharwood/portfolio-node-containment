@@ -5,8 +5,6 @@ export const CRYOVAULT: DistrictDefinition = {
   name: 'The Cryovault',
   subtitle: 'Site Meridian — Cold Storage, Dormant Holdings',
   tier: 4,
-  spawn: { x: 4, y: 4 },
-  capacity: 24,
   recovery: { districtId: 'deepwatch', position: { x: 5, y: 20 } },
   ambience: { darkness: 0.6, tint: '#081420', fog: '#0c1a28', fixtures: 'failing' },
   map: [

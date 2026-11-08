@@ -10,10 +10,11 @@ import type {
   QuestId,
   TilePoint,
   DistrictId,
-  ZoneLocation,
+  WorldLocation,
 } from '@containment/shared';
+import { locate } from '@containment/shared';
 import { Player, type MessageSink } from '../world/player.ts';
-import type { ZoneInstance } from '../world/zoneInstance.ts';
+import type { LevelInstance } from '../world/levelInstance.ts';
 import { World, type WorldHooks } from '../world/world.ts';
 import { ChatController } from './chatController.ts';
 import { CombatController, type CombatHost } from './combatController.ts';
@@ -63,7 +64,7 @@ export interface GameplayOptions {
   readonly random?: () => number;
   readonly combatRandom?: () => number;
   readonly gatheringRandom?: () => number;
-  readonly zoneCapacity?: number;
+  readonly levelCapacity?: number;
 }
 
 export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHost {
@@ -90,7 +91,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
   constructor(content: GameContent, store: CharacterStore, options: GameplayOptions) {
     this.content = content;
     this.store = store;
-    this.world = new World(content, this, { tickMs: options.tickMs, random: options.random, capacityOverride: options.zoneCapacity });
+    this.world = new World(content, this, { tickMs: options.tickMs, random: options.random, capacityOverride: options.levelCapacity });
     this.effects = new EffectRunner(content, this);
     this.quests = new QuestTracker(content, (player, effects) => this.effects.apply(player, effects));
     this.dialogues = new DialogueController(content, this.world, this.effects, this);
@@ -255,7 +256,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
   }
 
   dropToGround(owner: Player, itemId: string, quantity: number, position: TilePoint): void {
-    this.groundItems.drop(this.world.zoneOf(owner), { itemId, quantity, position, ownerId: owner.entityId });
+    this.groundItems.drop(this.world.levelOf(owner), { itemId, quantity, position, ownerId: owner.entityId });
   }
 
   pickUp(player: Player, groundItemId: string): void {
@@ -266,8 +267,8 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     return this.groundItems.positionOf(player, groundItemId);
   }
 
-  combatIsMulti(zone: ZoneInstance, point: TilePoint): boolean {
-    return this.combat.isMultiCombat(zone, point);
+  combatIsMulti(level: LevelInstance, point: TilePoint): boolean {
+    return this.combat.isMultiCombat(level, point);
   }
 
   openCrafting(player: Player, station: CraftingStation): void {
@@ -300,7 +301,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     this.shops.open(player, shopId, keeperInstanceId);
   }
 
-  teleport(player: Player, location: ZoneLocation): void {
+  teleport(player: Player, location: WorldLocation): void {
     this.shops.close(player);
     this.stopActivities(player);
     this.dialogues.close(player);
@@ -314,17 +315,19 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
   }
 
   recoverIncapacitated(player: Player): void {
-    const zone = this.world.zoneOf(player).definition;
-    const recovery = zone.recovery ? { zoneId: zone.recovery.districtId, position: zone.recovery.position } : { zoneId: zone.id, position: zone.spawn };
-    const recoveryZoneName = this.content.districts.get(recovery.zoneId)?.name ?? zone.name;
+    const level = this.world.levelOf(player).definition;
+    const fallen = this.content.districts.get(this.world.districtOf(player) ?? level.definition.spawn.districtId);
+    const recoveryDistrictId = fallen?.recovery?.districtId ?? level.definition.spawn.districtId;
+    const recovery = (fallen?.recovery && locate(this.content, fallen.recovery.districtId, fallen.recovery.position)) || { levelId: level.id, position: level.spawn };
+    const recoveryName = this.content.districts.get(recoveryDistrictId)?.name ?? level.name;
     this.dialogues.close(player);
     this.world.transfer(player, recovery);
     player.setIntegrity(player.maxIntegrity);
-    this.notify(player, 'warning', `You were incapacitated. Medical recovered you to the ${recoveryZoneName}.`);
+    this.notify(player, 'warning', `You were incapacitated. Medical recovered you to the ${recoveryName}.`);
   }
 
-  onAreaEntered(player: Player, zoneId: DistrictId, areaId: AreaId): void {
-    this.quests.handle(player, { type: 'enteredArea', districtId: zoneId, areaId });
+  onAreaEntered(player: Player, districtId: DistrictId, areaId: AreaId): void {
+    this.quests.handle(player, { type: 'enteredArea', districtId, areaId });
   }
 
   onPathCompleted(player: Player): void {

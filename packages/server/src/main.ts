@@ -24,7 +24,7 @@ const database = openDatabase(config.databasePath);
 
 const sessions = new SessionRepository(database, config.sessionLifetimeMs);
 const auth = new AuthService(new AccountRepository(database), sessions, new LoginThrottle());
-const characters = new CharacterService(new CharacterRepository(database), GAME_CONTENT, config.maxCharactersPerAccount);
+const characters = new CharacterService(new CharacterRepository(database, GAME_CONTENT), GAME_CONTENT, config.maxCharactersPerAccount);
 const gameplay = new Gameplay(GAME_CONTENT, characters, {
   tickMs: config.tickMs,
   autosaveIntervalMs: config.autosaveIntervalMs,

@@ -13,7 +13,7 @@ function createServices() {
   const database = openDatabase(':memory:');
   const sessions = new SessionRepository(database, 60_000);
   const auth = new AuthService(new AccountRepository(database), sessions, new LoginThrottle({ maxFailures: 3, windowMs: 60_000 }));
-  const characters = new CharacterService(new CharacterRepository(database), GAME_CONTENT, 2);
+  const characters = new CharacterService(new CharacterRepository(database, GAME_CONTENT), GAME_CONTENT, 2);
   return { auth, characters, sessions };
 }
 

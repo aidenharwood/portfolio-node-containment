@@ -1,7 +1,7 @@
 import { areConditionsMet, isCardinallyAdjacent, samePoint, type GameContent, type TilePoint } from '@containment/shared';
 import type { PendingInteraction, Player } from '../world/player.ts';
 import type { World } from '../world/world.ts';
-import type { ZoneInstance } from '../world/zoneInstance.ts';
+import type { LevelInstance } from '../world/levelInstance.ts';
 import type { DialogueController } from './dialogueController.ts';
 import type { EffectHost, EffectRunner } from './effectRunner.ts';
 
@@ -14,8 +14,8 @@ import { conditionContextFor } from './playerContext.ts';
 
 const MAX_REPATH_ATTEMPTS = 4;
 
-export const objectUseFlag = (zoneId: string, instanceId: string, interactionIndex: number): string =>
-  `object-used:${zoneId}:${instanceId}:${interactionIndex}`;
+export const objectUseFlag = (districtId: string, instanceId: string, interactionIndex: number): string =>
+  `object-used:${districtId}:${instanceId}:${interactionIndex}`;
 
 export class InteractionController {
   private readonly content: GameContent;
@@ -61,7 +61,7 @@ export class InteractionController {
   resolveArrival(player: Player): void {
     const pending = player.pendingInteraction;
     if (!pending) return;
-    const zone = this.world.zoneOf(player);
+    const level = this.world.levelOf(player);
     const target = this.targetPosition(player, pending);
     if (!target) {
       player.pendingInteraction = null;
@@ -75,7 +75,7 @@ export class InteractionController {
     if (isCardinallyAdjacent(player.position, target)) {
       player.pendingInteraction = null;
       this.world.face(player, target);
-      this.execute(player, zone, pending);
+      this.execute(player, level, pending);
       return;
     }
     if (pending.repathAttempts >= MAX_REPATH_ATTEMPTS || !this.world.approach(player, target)) {
@@ -86,9 +86,9 @@ export class InteractionController {
     player.pendingInteraction = { ...pending, repathAttempts: pending.repathAttempts + 1 };
   }
 
-  private execute(player: Player, zone: ZoneInstance, pending: PendingInteraction): void {
+  private execute(player: Player, level: LevelInstance, pending: PendingInteraction): void {
     if (pending.kind === 'npc') {
-      const npc = zone.npcs.get(pending.instanceId);
+      const npc = level.npcs.get(pending.instanceId);
       if (!npc) return;
       if (pending.interactionIndex === 1 && npc.definition.shopId) {
         this.host.openShop(player, npc.definition.shopId, npc.placement.instanceId);
@@ -98,11 +98,11 @@ export class InteractionController {
       return;
     }
 
-    const placed = zone.objects.get(pending.instanceId);
+    const placed = level.objects.get(pending.instanceId);
     const interaction = placed?.definition.interactions[pending.interactionIndex];
     if (!placed || !interaction) return;
 
-    const useFlag = objectUseFlag(zone.id, pending.instanceId, pending.interactionIndex);
+    const useFlag = objectUseFlag(level.layout.districtAt(placed.placement.position) ?? level.id, pending.instanceId, pending.interactionIndex);
     if (interaction.oncePerCharacter && player.hasFlag(useFlag)) {
       this.host.notify(player, 'info', interaction.alreadyUsedText ?? 'Nothing more to do here.');
       return;
@@ -123,9 +123,9 @@ export class InteractionController {
   }
 
   private targetPosition(player: Player, pending: Pick<PendingInteraction, 'kind' | 'instanceId'>): TilePoint | null {
-    const zone = this.world.zoneOf(player);
+    const level = this.world.levelOf(player);
     if (pending.kind === 'groundItem') return this.host.groundItemPosition(player, pending.instanceId);
-    if (pending.kind === 'npc') return zone.npcs.get(pending.instanceId)?.position ?? null;
-    return zone.objects.get(pending.instanceId)?.placement.position ?? null;
+    if (pending.kind === 'npc') return level.npcs.get(pending.instanceId)?.position ?? null;
+    return level.objects.get(pending.instanceId)?.placement.position ?? null;
   }
 }

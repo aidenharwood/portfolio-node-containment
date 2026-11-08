@@ -160,7 +160,6 @@ export function findContentIssues(content: GameContent): string[] {
       continue;
     }
     const isWalkable = (x: number, y: number) => TILE_KINDS[layout.tileAt({ x, y })].walkable;
-    if (!isWalkable(zone.spawn.x, zone.spawn.y)) report(where, 'spawn point is not walkable');
     const instanceIds = new Set<string>();
     const occupied = new Set<string>();
     for (const placement of [...zone.npcs, ...zone.objects]) {
@@ -188,7 +187,7 @@ export function findContentIssues(content: GameContent): string[] {
   }
 
   const start = content.newCharacter.startingLocation;
-  if (!content.districts.has(start.zoneId)) report('newCharacter', `unknown starting zone "${start.zoneId}"`);
+  if (!content.levels.has(start.levelId)) report('newCharacter', `unknown starting level "${start.levelId}"`);
   checkQuest('newCharacter', content.newCharacter.startingQuestId);
 
   issues.push(...findCraftingIssues(content));
