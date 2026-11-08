@@ -26,7 +26,7 @@ const GRIPS: Readonly<Record<WeaponKind, ArmPose>> = {
   knife: pose({ rightX: -0.4, rightZ: 0.08, leftX: -0.25, weaponX: 0.15 }),
   baton: pose({ rightX: -0.35, rightZ: 0.06, weaponX: -0.95 }),
   blade: pose({ rightX: -0.45, rightZ: 0.12, leftX: -0.15, weaponX: -0.75 }),
-  maul: pose({ rightX: -0.55, rightZ: -0.3, leftX: -0.8, leftZ: 0.55, twist: 0.15, weaponX: -1.6 }),
+  maul: pose({ rightX: -0.55, rightZ: -0.35, leftX: -0.8, leftZ: 0.55, twist: 0.15, weaponX: -1.0 }),
   polearm: pose({ rightX: -0.75, rightZ: -0.2, leftX: -1.0, leftZ: 0.6, twist: 0.3, level: 1, aim: -0.08 }),
   pistol: pose({ rightX: -0.35, rightZ: 0.05, weaponX: 0.4 }),
   carbine: pose({ rightX: -0.75, rightZ: -0.2, leftX: -1.0, leftZ: 0.6, twist: 0.3, level: 1, aim: 0.4 }),
@@ -107,9 +107,9 @@ const ATTACKS: Readonly<Record<AttackMotion, readonly Keyframe[]>> = {
   ],
   slam: [
     [0, {}],
-    [0.45, { rightX: -2.0, rightZ: 0.25, leftX: -1.8, leftZ: -0.2, weaponX: 0.6, lean: -0.18, twist: -0.1 }],
-    [0.62, { rightX: -0.4, rightZ: 0.15, leftX: -0.25, leftZ: -0.1, weaponX: 2.9, lean: 0.38, lunge: 0.06, twist: -0.1 }],
-    [0.8, { rightX: -0.35, leftX: -0.2, weaponX: 2.8, lean: 0.3, lunge: 0.05 }],
+    [0.45, { rightX: -2.0, rightZ: 0.25, leftX: -1.8, leftZ: -0.2, weaponX: 0.3, lean: -0.18, twist: -0.1 }],
+    [0.62, { rightX: -0.4, rightZ: 0.15, leftX: -0.25, leftZ: -0.1, weaponX: 2.3, lean: 0.28, lunge: 0.05, twist: -0.1 }],
+    [0.8, { rightX: -0.35, leftX: -0.2, weaponX: 2.2, lean: 0.22, lunge: 0.04 }],
     [1, {}],
   ],
   lunge: [
