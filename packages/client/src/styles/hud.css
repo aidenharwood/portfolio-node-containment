@@ -879,53 +879,6 @@
   cursor: pointer;
 }
 
-.hud-notices {
-  position: absolute;
-  top: 70px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  pointer-events: none;
-}
-
-.notice {
-  padding: 8px 18px;
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 14px;
-  letter-spacing: 0.04em;
-  background: rgba(3, 8, 11, 0.88);
-  border: 1px solid var(--color-line-strong);
-  border-left-width: 3px;
-  animation: notice-in 0.25s ease;
-  transition: opacity 0.4s, transform 0.4s;
-}
-
-.notice.tone-success {
-  border-color: var(--color-success);
-  color: var(--color-success);
-}
-
-.notice.tone-warning {
-  border-color: var(--color-warning);
-  color: var(--color-warning);
-}
-
-.notice.leaving {
-  opacity: 0;
-  transform: translateY(-6px);
-}
-
-@keyframes notice-in {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-}
-
 .context-menu {
   position: fixed;
   z-index: 50;

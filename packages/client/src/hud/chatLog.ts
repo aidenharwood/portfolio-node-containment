@@ -19,6 +19,7 @@ export class ChatLog {
   readonly element: HTMLElement;
   private readonly log: HTMLElement;
   private readonly input: HTMLInputElement;
+  private readonly collapseToggle: HTMLButtonElement;
   private readonly lines: ChatLine[] = [];
   private filter: Filter = 'all';
   private readonly unsubscribers: (() => void)[];
@@ -47,17 +48,14 @@ export class ChatLog {
       }, filter[0]?.toUpperCase() + filter.slice(1)),
     );
 
-    const collapseToggle = h('button', {
+    this.collapseToggle = h('button', {
       className: 'chat-collapse',
       type: 'button',
-      ariaLabel: 'Toggle chat size',
-      onclick: () => {
-        this.element.classList.toggle('collapsed');
-        this.log.scrollTop = this.log.scrollHeight;
-      },
+      onclick: () => this.setCollapsed(!this.element.classList.contains('collapsed')),
     });
 
-    this.element = h('section', { className: `hud-chat panel${isCompactLayout() ? ' collapsed' : ''}` }, h('div', { className: 'chat-tabs' }, ...tabs, collapseToggle), this.log, form);
+    this.element = h('section', { className: 'hud-chat panel' }, h('div', { className: 'chat-tabs' }, ...tabs, this.collapseToggle), this.log, form);
+    this.setCollapsed(isCompactLayout());
     this.unsubscribers = [
       connection.on('chat.message', (message) => this.push(message)),
       connection.on('notice', ({ tone, text }) => this.push({ channel: 'notice', tone, text })),
@@ -76,7 +74,15 @@ export class ChatLog {
   }
 
   focusInput(): void {
+    this.setCollapsed(false);
     this.input.focus();
+  }
+
+  private setCollapsed(collapsed: boolean): void {
+    this.element.classList.toggle('collapsed', collapsed);
+    this.collapseToggle.ariaLabel = collapsed ? 'Show chat' : 'Hide chat';
+    this.collapseToggle.ariaExpanded = String(!collapsed);
+    if (!collapsed) this.log.scrollTop = this.log.scrollHeight;
   }
 
   isTyping(): boolean {

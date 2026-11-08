@@ -15,7 +15,6 @@ import { DialogueBox } from '../hud/dialogueBox.ts';
 import { InteractionBubble, type BubbleContent } from '../hud/interactionBubble.ts';
 import { Minimap } from '../hud/minimap.ts';
 import { ClickIndicator, type ClickTone } from '../hud/clickIndicator.ts';
-import { Notices } from '../hud/notices.ts';
 import { ObjectiveTracker } from '../hud/objectiveTracker.ts';
 import { ShopWindow } from '../hud/shopWindow.ts';
 import { ActivityBar } from '../hud/activityBar.ts';
@@ -64,7 +63,6 @@ export function createGameScreen(app: AppNavigator): Screen {
   const renderer = new GameRenderer(canvas, world);
   const menu = new ContextMenu();
   const chat = new ChatLog(connection);
-  const notices = new Notices(connection);
   const dialogue = new DialogueBox(connection);
   const questTracking = new QuestTracking();
   const objectives = new ObjectiveTracker(questTracking);
@@ -431,7 +429,6 @@ export function createGameScreen(app: AppNavigator): Screen {
     crafting.element,
     storage.element,
     activity.element,
-    notices.element,
     clickIndicator.element,
     bubble.element,
     menu.element,
@@ -455,7 +452,6 @@ export function createGameScreen(app: AppNavigator): Screen {
       unsubscribers.forEach((unsubscribe) => unsubscribe());
       chat.dispose();
       combatOverlay.dispose();
-      notices.dispose();
       dialogue.dispose();
       shop.dispose();
       crafting.dispose();

@@ -59,9 +59,13 @@ body {
   height: auto;
 }
 
-.hud-chat.collapsed .chat-log {
-  flex: none;
-  height: 64px;
+.hud-chat.collapsed .chat-log,
+.hud-chat.collapsed .chat-form {
+  display: none;
+}
+
+.hud-chat.collapsed .chat-tabs {
+  border-bottom: none;
 }
 
 @media (pointer: coarse) {
@@ -213,11 +217,6 @@ body {
   .activity-bar {
     top: calc(50% + 48px);
     bottom: auto;
-  }
-
-  .hud-notices {
-    top: calc(150px + var(--safe-top));
-    width: calc(100% - 32px);
   }
 
   .camera-hint {
