@@ -1,6 +1,6 @@
-import type { ZoneDefinition } from '../../world/zone.ts';
+import type { DistrictDefinition } from '../../world/district.ts';
 
-export const MERIDIAN_ATRIUM: ZoneDefinition = {
+export const MERIDIAN_ATRIUM: DistrictDefinition = {
   id: 'meridian-atrium',
   name: 'Meridian Atrium',
   subtitle: 'Site Meridian — Central Hub',

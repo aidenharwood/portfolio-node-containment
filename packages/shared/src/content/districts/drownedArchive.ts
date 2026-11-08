@@ -1,13 +1,13 @@
-import type { ZoneDefinition } from '../../world/zone.ts';
+import type { DistrictDefinition } from '../../world/district.ts';
 
-export const DROWNED_ARCHIVE: ZoneDefinition = {
+export const DROWNED_ARCHIVE: DistrictDefinition = {
   id: 'drowned-archive',
   name: 'The Drowned Archive',
   subtitle: 'Site Meridian — Records Division, Lower Stacks',
   tier: 6,
   spawn: { x: 4, y: 4 },
   capacity: 24,
-  recovery: { zoneId: 'deepwatch', position: { x: 5, y: 20 } },
+  recovery: { districtId: 'deepwatch', position: { x: 5, y: 20 } },
   ambience: { darkness: 0.66, tint: '#0e0a18', fog: '#0c0816', fixtures: 'failing' },
   map: [
     '############################################',

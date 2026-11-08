@@ -25,7 +25,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     model: 'tram',
     blocksMovement: true,
     light: { radius: 3, color: '#7cf29a', intensity: 0.7 },
-    interactions: [{ verb: 'Ride', effects: [{ type: 'teleport', zoneId: 'hydroponics', position: { x: 3, y: 12 } }] }],
+    interactions: [{ verb: 'Ride', effects: [{ type: 'teleport', districtId: 'hydroponics', position: { x: 3, y: 12 } }] }],
   },
   {
     id: 'hydroponics-tram',
@@ -34,7 +34,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     model: 'tram',
     blocksMovement: true,
     light: { radius: 3, color: '#ffcf4d', intensity: 0.7 },
-    interactions: [{ verb: 'Ride', effects: [{ type: 'teleport', zoneId: 'meridian-atrium', position: { x: 3, y: 26 } }] }],
+    interactions: [{ verb: 'Ride', effects: [{ type: 'teleport', districtId: 'meridian-atrium', position: { x: 3, y: 26 } }] }],
   },
   {
     id: 'seed-vault-console',
@@ -217,7 +217,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
         verb: 'Ride',
         conditions: [{ type: 'hasFlag', flag: 'clearance.atrium-transit' }],
         failureText: 'The lift panel reads: TRANSIT AUTHORISATION REQUIRED. Dr. Varga has not signed you off yet.',
-        effects: [{ type: 'teleport', zoneId: 'meridian-atrium', position: { x: 3, y: 30 } }],
+        effects: [{ type: 'teleport', districtId: 'meridian-atrium', position: { x: 3, y: 30 } }],
       },
     ],
   },
@@ -231,7 +231,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     interactions: [
       {
         verb: 'Ride',
-        effects: [{ type: 'teleport', zoneId: 'intake-wing', position: { x: 29, y: 14 } }],
+        effects: [{ type: 'teleport', districtId: 'intake-wing', position: { x: 29, y: 14 } }],
       },
     ],
   },
@@ -281,7 +281,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
         failureText: 'The bulkhead does not respond. Somewhere behind it, something knocks twice.',
         effects: [
           { type: 'notify', text: 'The override key turns. Seals hiss. The air beyond is very cold.' },
-          { type: 'teleport', zoneId: 'sector-two', position: { x: 3, y: 17 } },
+          { type: 'teleport', districtId: 'sector-two', position: { x: 3, y: 17 } },
         ],
       },
     ],
@@ -304,7 +304,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     interactions: [
       {
         verb: 'Open',
-        effects: [{ type: 'teleport', zoneId: 'meridian-atrium', position: { x: 22, y: 3 } }],
+        effects: [{ type: 'teleport', districtId: 'meridian-atrium', position: { x: 22, y: 3 } }],
       },
     ],
   },
@@ -374,7 +374,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
         verb: 'Descend',
         conditions: [{ type: 'hasFlag', flag: 'clearance.undercroft' }],
         failureText: 'The panel reads: AUTHORISATION REQUIRED — RESEARCH DIVISION.',
-        effects: [{ type: 'teleport', zoneId: 'undercroft', position: { x: 5, y: 4 } }],
+        effects: [{ type: 'teleport', districtId: 'undercroft', position: { x: 5, y: 4 } }],
       },
     ],
   },
@@ -385,7 +385,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     model: 'transitLift',
     blocksMovement: true,
     light: { radius: 3, color: '#ff9a4d', intensity: 0.6, flicker: true },
-    interactions: [{ verb: 'Ascend', effects: [{ type: 'teleport', zoneId: 'meridian-atrium', position: { x: 42, y: 28 } }] }],
+    interactions: [{ verb: 'Ascend', effects: [{ type: 'teleport', districtId: 'meridian-atrium', position: { x: 42, y: 28 } }] }],
   },
   {
     id: 'junction-box',
@@ -456,7 +456,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
         failureText: 'The seal will not budge. Something in the workshop is still drawing power from this circuit.',
         effects: [
           { type: 'notify', text: 'The seal sighs open. The air on the other side smells like rain, which is not possible.' },
-          { type: 'teleport', zoneId: 'sector-three', position: { x: 3, y: 6 } },
+          { type: 'teleport', districtId: 'sector-three', position: { x: 3, y: 6 } },
         ],
       },
     ],
@@ -468,7 +468,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     model: 'bulkhead',
     blocksMovement: true,
     light: { radius: 3, color: '#ffb347', intensity: 0.6 },
-    interactions: [{ verb: 'Open', effects: [{ type: 'teleport', zoneId: 'undercroft', position: { x: 37, y: 21 } }] }],
+    interactions: [{ verb: 'Open', effects: [{ type: 'teleport', districtId: 'undercroft', position: { x: 37, y: 21 } }] }],
   },
   {
     id: 'the-knock',
@@ -488,7 +488,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
         failureText: 'The door is shut, and Halvorsen is standing very firmly in front of it.',
         effects: [
           { type: 'notify', text: 'You put your hand on the door. It opens before you push, as if it has been expecting you for a long time.' },
-          { type: 'teleport', zoneId: 'meridian-below', position: { x: 5, y: 5 } },
+          { type: 'teleport', districtId: 'meridian-below', position: { x: 5, y: 5 } },
         ],
       },
     ],

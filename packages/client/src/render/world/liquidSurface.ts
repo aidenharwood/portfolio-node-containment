@@ -1,5 +1,5 @@
 import { BufferGeometry, Color, DoubleSide, Float32BufferAttribute, Mesh, ShaderMaterial } from 'three';
-import type { ZoneLayout } from '@containment/shared';
+import type { TileLayout } from '@containment/shared';
 
 const SURFACE_Y = -0.07;
 
@@ -75,7 +75,7 @@ export class LiquidSurface {
     this.material = material;
   }
 
-  static build(layout: ZoneLayout, kind: string): LiquidSurface | null {
+  static build(layout: TileLayout, kind: string): LiquidSurface | null {
     const positions: number[] = [];
     const edges: number[] = [];
     const locals: number[] = [];

@@ -1,13 +1,13 @@
-import type { ZoneDefinition } from '../../world/zone.ts';
+import type { DistrictDefinition } from '../../world/district.ts';
 
-export const SIGNAL_ARRAY: ZoneDefinition = {
+export const SIGNAL_ARRAY: DistrictDefinition = {
   id: 'signal-array',
   name: 'The Signal Array',
   subtitle: 'Site Meridian — Long-Range Communications',
   tier: 5,
   spawn: { x: 4, y: 4 },
   capacity: 24,
-  recovery: { zoneId: 'deepwatch', position: { x: 5, y: 20 } },
+  recovery: { districtId: 'deepwatch', position: { x: 5, y: 20 } },
   ambience: { darkness: 0.62, tint: '#16100a', fog: '#140e0a', fixtures: 'failing' },
   map: [
     '############################################',

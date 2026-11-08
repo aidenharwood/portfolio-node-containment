@@ -11,7 +11,7 @@ export const gatheringSourcesOf = (content: GameContent, objectId: string): Gath
 export function rawSourceTiers(content: GameContent): Map<ItemId, number> {
   const tiers = new Map<ItemId, number>();
   const offer = (itemId: ItemId, tier: number) => tiers.set(itemId, Math.min(tier, tiers.get(itemId) ?? Infinity));
-  for (const zone of content.zones.values()) {
+  for (const zone of content.districts.values()) {
     for (const placement of zone.objects) {
       for (const source of gatheringSourcesOf(content, placement.objectId)) offer(source.itemId, zone.tier);
     }
@@ -83,7 +83,7 @@ export function findCraftingIssues(content: GameContent): string[] {
     }
   }
 
-  for (const zone of content.zones.values()) {
+  for (const zone of content.districts.values()) {
     for (const placement of zone.objects) {
       for (const source of gatheringSourcesOf(content, placement.objectId)) {
         if (tierForLevel(source.level) > zone.tier) {

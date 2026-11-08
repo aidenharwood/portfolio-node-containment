@@ -40,7 +40,7 @@ export * from './world/geometry.ts';
 export * from './world/lineOfSight.ts';
 export * from './world/pathfinding.ts';
 export * from './world/tiles.ts';
-export * from './world/zone.ts';
+export * from './world/district.ts';
 
 export * from './protocol/clientMessages.ts';
 export * from './protocol/serverMessages.ts';

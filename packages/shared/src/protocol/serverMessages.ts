@@ -9,7 +9,7 @@ import type { EquipmentState } from '../gear/equipment.ts';
 import type { InventoryState } from '../gear/inventory.ts';
 import type { StorageState } from '../gear/storage.ts';
 import type { StatId } from '../gear/stats.ts';
-import type { CharacterId, EntityId, ItemId, NpcId, ZoneId } from '../ids.ts';
+import type { CharacterId, EntityId, ItemId, NpcId, DistrictId } from '../ids.ts';
 import type { QuestLog } from '../quests/questProgress.ts';
 import type { Facing, TilePoint } from '../world/geometry.ts';
 
@@ -88,7 +88,7 @@ export type ServerMessage =
   | { readonly type: 'character.rejected'; readonly errors: readonly string[] }
   | {
       readonly type: 'world.entered';
-      readonly zoneId: ZoneId;
+      readonly zoneId: DistrictId;
       readonly selfEntityId: EntityId;
       readonly entities: readonly EntitySnapshot[];
       readonly groundItems: readonly GroundItemSnapshot[];

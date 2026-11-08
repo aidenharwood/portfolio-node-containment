@@ -1,13 +1,13 @@
-import type { ZoneDefinition } from '../../world/zone.ts';
+import type { DistrictDefinition } from '../../world/district.ts';
 
-export const FURNACE: ZoneDefinition = {
+export const FURNACE: DistrictDefinition = {
   id: 'furnace',
   name: 'The Furnace',
   subtitle: 'Site Meridian — Primary Reactor',
   tier: 7,
   spawn: { x: 4, y: 4 },
   capacity: 24,
-  recovery: { zoneId: 'deepwatch', position: { x: 5, y: 20 } },
+  recovery: { districtId: 'deepwatch', position: { x: 5, y: 20 } },
   ambience: { darkness: 0.55, tint: '#1c0a04', fog: '#1a0c06', fixtures: 'failing' },
   map: [
     '############################################',

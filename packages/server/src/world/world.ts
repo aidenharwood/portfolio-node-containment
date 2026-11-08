@@ -6,8 +6,8 @@ import {
   type EntityMovement,
   type GameContent,
   type TilePoint,
-  type ZoneDefinition,
-  type ZoneId,
+  type DistrictDefinition,
+  type DistrictId,
   type ZoneLocation,
 } from '@containment/shared';
 import type { Creature } from './creature.ts';
@@ -16,7 +16,7 @@ import type { Player } from './player.ts';
 import { ZoneInstance } from './zoneInstance.ts';
 
 export interface WorldHooks {
-  onAreaEntered(player: Player, zoneId: ZoneId, areaId: AreaId): void;
+  onAreaEntered(player: Player, zoneId: DistrictId, areaId: AreaId): void;
   onPathCompleted(player: Player): void;
 }
 
@@ -47,7 +47,7 @@ export class World {
   private readonly hooks: WorldHooks;
   private readonly random: () => number;
   private readonly capacityOverride: number | undefined;
-  private readonly layers = new Map<ZoneId, ZoneInstance[]>();
+  private readonly layers = new Map<DistrictId, ZoneInstance[]>();
   private readonly playerLayers = new Map<string, ZoneInstance>();
   private tickCount = 0;
 
@@ -57,14 +57,14 @@ export class World {
     this.tickMs = options.tickMs;
     this.random = options.random ?? Math.random;
     this.capacityOverride = options.capacityOverride;
-    for (const definition of content.zones.values()) this.layers.set(definition.id, [new ZoneInstance(definition, content, 1)]);
+    for (const definition of content.districts.values()) this.layers.set(definition.id, [new ZoneInstance(definition, content, 1)]);
   }
 
   *instances(): Generator<ZoneInstance> {
     for (const layers of this.layers.values()) yield* layers;
   }
 
-  layersOf(zoneId: ZoneId): readonly ZoneInstance[] {
+  layersOf(zoneId: DistrictId): readonly ZoneInstance[] {
     return this.layers.get(zoneId) ?? [];
   }
 
@@ -78,12 +78,12 @@ export class World {
     return zone;
   }
 
-  capacityOf(definition: ZoneDefinition): number {
+  capacityOf(definition: DistrictDefinition): number {
     return this.capacityOverride ?? definition.capacity ?? DEFAULT_ZONE_CAPACITY;
   }
 
   spawn(player: Player): void {
-    const zone = this.chooseLayer(this.content.zones.has(player.zoneId) ? player.zoneId : this.fallbackZoneId());
+    const zone = this.chooseLayer(this.content.districts.has(player.zoneId) ? player.zoneId : this.fallbackZoneId());
     player.relocate({ zoneId: zone.id, position: zone.safeSpawnPoint(player.position) });
     zone.players.set(player.entityId, player);
     this.playerLayers.set(player.entityId, zone);
@@ -217,9 +217,9 @@ export class World {
     for (const areaId of entered) this.hooks.onAreaEntered(player, zone.id, areaId);
   }
 
-  private chooseLayer(zoneId: ZoneId): ZoneInstance {
+  private chooseLayer(zoneId: DistrictId): ZoneInstance {
     const layers = this.layers.get(zoneId) ?? [];
-    const definition = this.content.zones.get(zoneId) as ZoneDefinition;
+    const definition = this.content.districts.get(zoneId) as DistrictDefinition;
     const capacity = this.capacityOf(definition);
     const open = layers.filter((layer) => layer.players.size < capacity).sort((a, b) => b.players.size - a.players.size || a.layer - b.layer)[0];
     if (open) return open;
@@ -245,7 +245,7 @@ export class World {
     }
   }
 
-  private fallbackZoneId(): ZoneId {
+  private fallbackZoneId(): DistrictId {
     const first = this.layers.keys().next().value;
     if (!first) throw new Error('The world has no zones.');
     return first;

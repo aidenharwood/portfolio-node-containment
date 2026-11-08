@@ -57,7 +57,7 @@ export class EffectRunner {
       case 'notify':
         return this.host.notify(player, 'info', effect.text);
       case 'teleport':
-        return this.host.teleport(player, { zoneId: effect.zoneId, position: effect.position });
+        return this.host.teleport(player, { zoneId: effect.districtId, position: effect.position });
       case 'openShop':
         return this.host.openShop(player, effect.shopId, player.dialogue?.npcInstanceId ?? null);
       case 'openCrafting':

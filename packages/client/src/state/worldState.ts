@@ -1,6 +1,6 @@
 import {
   GAME_CONTENT,
-  parseZoneLayout,
+  parseTileLayout,
   type EntityId,
   type EntityVitals,
   type GroundItemSnapshot,
@@ -11,8 +11,8 @@ import {
   type ServerMessageOf,
   type CreatureId,
   type TilePoint,
-  type ZoneDefinition,
-  type ZoneLayout,
+  type DistrictDefinition,
+  type TileLayout,
 } from '@containment/shared';
 import type { GameConnection } from '../net/gameConnection.ts';
 
@@ -40,8 +40,8 @@ export interface ClientEntity {
 }
 
 export interface ActiveZone {
-  readonly definition: ZoneDefinition;
-  readonly layout: ZoneLayout;
+  readonly definition: DistrictDefinition;
+  readonly layout: TileLayout;
 }
 
 type WorldEvent = 'zoneChanged' | 'selfChanged' | 'vitalsChanged';
@@ -175,9 +175,9 @@ export class WorldState {
   }
 
   private enterZone(message: ServerMessageOf<'world.entered'>): void {
-    const definition = GAME_CONTENT.zones.get(message.zoneId);
+    const definition = GAME_CONTENT.districts.get(message.zoneId);
     if (!definition) return;
-    this.zone = { definition, layout: parseZoneLayout(definition.map) };
+    this.zone = { definition, layout: parseTileLayout(definition.map) };
     this.selfEntityId = message.selfEntityId;
     this.tickMs = message.tickMs;
     this.layer = message.layer;

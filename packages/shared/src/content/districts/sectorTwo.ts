@@ -1,13 +1,13 @@
-import type { ZoneDefinition } from '../../world/zone.ts';
+import type { DistrictDefinition } from '../../world/district.ts';
 
-export const SECTOR_TWO: ZoneDefinition = {
+export const SECTOR_TWO: DistrictDefinition = {
   id: 'sector-two',
   name: 'Sector 2',
   subtitle: 'Quarantine — Do Not Enter',
   tier: 2,
   spawn: { x: 4, y: 17 },
   capacity: 20,
-  recovery: { zoneId: 'meridian-atrium', position: { x: 20, y: 29 } },
+  recovery: { districtId: 'meridian-atrium', position: { x: 20, y: 29 } },
   ambience: { darkness: 0.74, tint: '#160709', fog: '#12090b', fixtures: 'failing' },
   map: [
     '################################',

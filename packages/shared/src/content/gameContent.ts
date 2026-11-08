@@ -20,27 +20,27 @@ import {
 } from './dialogues/deepwatchDialogues.ts';
 import { A_COUNCIL_OF_ONE, COLD_STORAGE, DEAD_AIR, ORIGINAL_CONTRACT, STOKING_THE_FIRE, THE_ANSWER } from './quests/actTwoMain.ts';
 import { ACT_TWO_SIDE_QUESTS } from './quests/actTwoSide.ts';
-import { CRYOVAULT } from './zones/cryovault.ts';
-import { DEEPWATCH } from './zones/deepwatch.ts';
-import { DROWNED_ARCHIVE } from './zones/drownedArchive.ts';
-import { FURNACE } from './zones/furnace.ts';
-import { MERIDIAN_BELOW } from './zones/meridianBelow.ts';
-import { SIGNAL_ARRAY } from './zones/signalArray.ts';
+import { CRYOVAULT } from './districts/cryovault.ts';
+import { DEEPWATCH } from './districts/deepwatch.ts';
+import { DROWNED_ARCHIVE } from './districts/drownedArchive.ts';
+import { FURNACE } from './districts/furnace.ts';
+import { MERIDIAN_BELOW } from './districts/meridianBelow.ts';
+import { SIGNAL_ARRAY } from './districts/signalArray.ts';
 import type { ShopDefinition, ShopId } from '../economy/shop.ts';
 import { SHOPS } from './shops.ts';
 import type { RecipeDefinition } from '../crafting/recipes.ts';
 import type { DialogueDefinition } from '../dialogue/dialogue.ts';
 import type { ItemCatalog, ItemDefinition } from '../gear/items.ts';
-import type { DialogueId, NpcId, QuestId, WorldObjectId, ZoneId } from '../ids.ts';
+import type { DialogueId, NpcId, QuestId, WorldObjectId, DistrictId } from '../ids.ts';
 import type { QuestDefinition } from '../quests/questDefinition.ts';
 import type { NpcDefinition, WorldObjectDefinition } from '../world/entities.ts';
-import type { ZoneDefinition } from '../world/zone.ts';
+import type { DistrictDefinition } from '../world/district.ts';
 import { AMES_DIALOGUE, KADE_DIALOGUE, LUND_DIALOGUE, OKAFOR_DIALOGUE, SEL_DIALOGUE } from './dialogues/atriumDialogues.ts';
 import { OSEI_DIALOGUE, PELL_DIALOGUE, REYES_DIALOGUE, VARGA_DIALOGUE } from './dialogues/intakeDialogues.ts';
 import { HALVORSEN_DIALOGUE, MAGS_DIALOGUE } from './dialogues/undercroftDialogues.ts';
 import { ANAND_DIALOGUE, OYELARAN_DIALOGUE } from './dialogues/hubDialogues.ts';
 import { OVERGROWTH } from './quests/overgrowth.ts';
-import { HYDROPONICS } from './zones/hydroponics.ts';
+import { HYDROPONICS } from './districts/hydroponics.ts';
 import { CRAFTING_ITEMS } from './craftingItems.ts';
 import { CRAFTING_OBJECTS } from './craftingObjects.ts';
 import { ITEMS } from './items.ts';
@@ -54,11 +54,11 @@ import { LEECH_SEASON } from './quests/leechSeason.ts';
 import { THE_FAR_SIDE } from './quests/theFarSide.ts';
 import { THE_KNOCKING } from './quests/theKnocking.ts';
 import { WORLD_OBJECTS } from './worldObjects.ts';
-import { INTAKE_WING } from './zones/intakeWing.ts';
-import { MERIDIAN_ATRIUM } from './zones/meridianAtrium.ts';
-import { SECTOR_THREE } from './zones/sectorThree.ts';
-import { SECTOR_TWO } from './zones/sectorTwo.ts';
-import { UNDERCROFT } from './zones/undercroft.ts';
+import { INTAKE_WING } from './districts/intakeWing.ts';
+import { MERIDIAN_ATRIUM } from './districts/meridianAtrium.ts';
+import { SECTOR_THREE } from './districts/sectorThree.ts';
+import { SECTOR_TWO } from './districts/sectorTwo.ts';
+import { UNDERCROFT } from './districts/undercroft.ts';
 
 export interface GameContent {
   readonly items: ItemCatalog;
@@ -66,7 +66,7 @@ export interface GameContent {
   readonly worldObjects: ReadonlyMap<WorldObjectId, WorldObjectDefinition>;
   readonly dialogues: ReadonlyMap<DialogueId, DialogueDefinition>;
   readonly quests: ReadonlyMap<QuestId, QuestDefinition>;
-  readonly zones: ReadonlyMap<ZoneId, ZoneDefinition>;
+  readonly districts: ReadonlyMap<DistrictId, DistrictDefinition>;
   readonly creatures: ReadonlyMap<CreatureId, CreatureDefinition>;
   readonly shops: ReadonlyMap<ShopId, ShopDefinition>;
   readonly recipes: ReadonlyMap<string, RecipeDefinition>;
@@ -137,7 +137,7 @@ export const GAME_CONTENT: GameContent = {
     THE_ANSWER,
     ...ACT_TWO_SIDE_QUESTS,
   ]),
-  zones: indexById([INTAKE_WING, MERIDIAN_ATRIUM, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW]),
+  districts: indexById([INTAKE_WING, MERIDIAN_ATRIUM, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW]),
   creatures: indexById([...CREATURES, ...DEEP_CREATURES]),
   shops: indexById(SHOPS),
   recipes: indexById(RECIPES),

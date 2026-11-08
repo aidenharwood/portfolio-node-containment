@@ -13,7 +13,7 @@ export const A_COUNCIL_OF_ONE: QuestDefinition = {
     {
       id: 'ride',
       journal: 'Sel has had me cleared for the Deep Line, a sealed tram that leaves from the Atrium transit bay. It runs to Deepwatch Station, the new forward base beside Sector 3.',
-      objectives: [{ type: 'enterArea', zoneId: 'deepwatch', areaId: 'platform-hall', label: 'Ride the Deep Line to Deepwatch' }],
+      objectives: [{ type: 'enterArea', districtId: 'deepwatch', areaId: 'platform-hall', label: 'Ride the Deep Line to Deepwatch' }],
     },
     {
       id: 'meet-thale',
@@ -53,7 +53,7 @@ export const COLD_STORAGE: QuestDefinition = {
     {
       id: 'descend',
       journal: 'The Cryovault lift is in the lift gallery, in the south-east of Deepwatch.',
-      objectives: [{ type: 'enterArea', zoneId: 'cryovault', areaId: 'dock', label: 'Descend to the Cryovault' }],
+      objectives: [{ type: 'enterArea', districtId: 'cryovault', areaId: 'dock', label: 'Descend to the Cryovault' }],
     },
     {
       id: 'stabilise',
@@ -109,7 +109,7 @@ export const DEAD_AIR: QuestDefinition = {
     {
       id: 'descend',
       journal: 'The Array lift is in the Deepwatch lift gallery. Sel has cleared me for it.',
-      objectives: [{ type: 'enterArea', zoneId: 'signal-array', areaId: 'uplink-lobby', label: 'Descend to the Signal Array' }],
+      objectives: [{ type: 'enterArea', districtId: 'signal-array', areaId: 'uplink-lobby', label: 'Descend to the Signal Array' }],
     },
     {
       id: 'achterberg',
@@ -170,7 +170,7 @@ export const ORIGINAL_CONTRACT: QuestDefinition = {
     {
       id: 'descend',
       journal: 'The flood stair lift is in the Deepwatch lift gallery.',
-      objectives: [{ type: 'enterArea', zoneId: 'drowned-archive', areaId: 'flood-stair', label: 'Descend to the Drowned Archive' }],
+      objectives: [{ type: 'enterArea', districtId: 'drowned-archive', areaId: 'flood-stair', label: 'Descend to the Drowned Archive' }],
     },
     {
       id: 'pim',
@@ -230,7 +230,7 @@ export const STOKING_THE_FIRE: QuestDefinition = {
     {
       id: 'descend',
       journal: 'The reactor lift is on the east wall of the Deepwatch lift gallery.',
-      objectives: [{ type: 'enterArea', zoneId: 'furnace', areaId: 'coolant-lock', label: 'Descend to the Furnace' }],
+      objectives: [{ type: 'enterArea', districtId: 'furnace', areaId: 'coolant-lock', label: 'Descend to the Furnace' }],
     },
     {
       id: 'brann',
@@ -298,7 +298,7 @@ export const THE_ANSWER: QuestDefinition = {
     {
       id: 'through',
       journal: 'The Knock is open. Step through.',
-      objectives: [{ type: 'enterArea', zoneId: 'meridian-below', areaId: 'arrival', label: 'Step through the Knock' }],
+      objectives: [{ type: 'enterArea', districtId: 'meridian-below', areaId: 'arrival', label: 'Step through the Knock' }],
     },
     {
       id: 'kessler',

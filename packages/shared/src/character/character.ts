@@ -1,4 +1,4 @@
-import type { AccountId, CharacterId, ZoneId } from '../ids.ts';
+import type { AccountId, CharacterId, DistrictId } from '../ids.ts';
 import type { EquipmentState } from '../gear/equipment.ts';
 import type { InventoryState } from '../gear/inventory.ts';
 import type { StorageState } from '../gear/storage.ts';
@@ -9,7 +9,7 @@ import type { PronounSetId } from './pronouns.ts';
 import type { SkillExperience } from './skills.ts';
 
 export interface ZoneLocation {
-  readonly zoneId: ZoneId;
+  readonly zoneId: DistrictId;
   readonly position: TilePoint;
 }
 
@@ -40,5 +40,5 @@ export interface CharacterSummary {
   readonly appearance: CharacterAppearance;
   readonly equipment: EquipmentState;
   readonly combatLevel: number;
-  readonly zoneId: ZoneId;
+  readonly zoneId: DistrictId;
 }

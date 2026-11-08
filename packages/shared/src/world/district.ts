@@ -1,5 +1,5 @@
 import type { CreatureId } from '../combat/creatures.ts';
-import type { AreaId, InstanceId, NpcId, WorldObjectId, ZoneId } from '../ids.ts';
+import type { AreaId, InstanceId, NpcId, WorldObjectId, DistrictId } from '../ids.ts';
 import { tileKey, type Facing, type TilePoint, type TileRect } from './geometry.ts';
 import type { WalkabilityGrid } from './pathfinding.ts';
 import { MAP_LEGEND, TILE_KINDS, type TileKindId } from './tiles.ts';
@@ -44,15 +44,15 @@ export interface ZoneAmbience {
   readonly fixtures?: 'working' | 'failing';
 }
 
-export interface ZoneDefinition {
-  readonly id: ZoneId;
+export interface DistrictDefinition {
+  readonly id: DistrictId;
   readonly name: string;
   readonly subtitle: string;
   readonly tier: number;
   readonly map: readonly string[];
   readonly spawn: TilePoint;
   readonly capacity?: number;
-  readonly recovery?: { readonly zoneId: ZoneId; readonly position: TilePoint };
+  readonly recovery?: { readonly districtId: DistrictId; readonly position: TilePoint };
   readonly ambience: ZoneAmbience;
   readonly areas: readonly AreaDefinition[];
   readonly npcs: readonly NpcPlacement[];
@@ -61,13 +61,13 @@ export interface ZoneDefinition {
   readonly lights: readonly ZoneLight[];
 }
 
-export interface ZoneLayout {
+export interface TileLayout {
   readonly width: number;
   readonly height: number;
   tileAt(point: TilePoint): TileKindId;
 }
 
-export function parseZoneLayout(map: readonly string[]): ZoneLayout {
+export function parseTileLayout(map: readonly string[]): TileLayout {
   const height = map.length;
   const width = map[0]?.length ?? 0;
   const tiles: TileKindId[] = [];
@@ -88,7 +88,7 @@ export function parseZoneLayout(map: readonly string[]): ZoneLayout {
   };
 }
 
-export function createWalkabilityGrid(layout: ZoneLayout, blockedTiles: Iterable<TilePoint>): WalkabilityGrid {
+export function createWalkabilityGrid(layout: TileLayout, blockedTiles: Iterable<TilePoint>): WalkabilityGrid {
   const blocked = new Set([...blockedTiles].map(tileKey));
   return {
     isWalkable: (point) => TILE_KINDS[layout.tileAt(point)].walkable && !blocked.has(tileKey(point)),

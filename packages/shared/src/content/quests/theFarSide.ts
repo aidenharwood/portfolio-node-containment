@@ -16,7 +16,7 @@ export const THE_FAR_SIDE: QuestDefinition = {
     {
       id: 'descend',
       journal: 'Varga authorised me for the service lift in the south-east corner of the Atrium. It goes down to the Undercroft.',
-      objectives: [{ type: 'enterArea', zoneId: 'undercroft', areaId: 'landing', label: 'Descend to the Undercroft' }],
+      objectives: [{ type: 'enterArea', districtId: 'undercroft', areaId: 'landing', label: 'Descend to the Undercroft' }],
     },
     {
       id: 'restore-power',
@@ -36,7 +36,7 @@ export const THE_FAR_SIDE: QuestDefinition = {
     {
       id: 'cross-threshold',
       journal: "The workshop is quiet. The seal on the workshop's east wall should open now.",
-      objectives: [{ type: 'enterArea', zoneId: 'sector-three', areaId: 'threshold', label: 'Cross into Sector 3' }],
+      objectives: [{ type: 'enterArea', districtId: 'sector-three', areaId: 'threshold', label: 'Cross into Sector 3' }],
     },
     {
       id: 'meet-halvorsen',

@@ -1,6 +1,6 @@
-import type { ZoneDefinition } from '../../world/zone.ts';
+import type { DistrictDefinition } from '../../world/district.ts';
 
-export const INTAKE_WING: ZoneDefinition = {
+export const INTAKE_WING: DistrictDefinition = {
   id: 'intake-wing',
   name: 'Intake Wing',
   subtitle: 'Site Meridian — Sublevel 4',

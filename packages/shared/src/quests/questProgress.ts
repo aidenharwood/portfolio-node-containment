@@ -1,5 +1,5 @@
 import type { CreatureId } from '../combat/creatures.ts';
-import type { AreaId, ItemId, NpcId, QuestId, WorldObjectId, ZoneId } from '../ids.ts';
+import type { AreaId, ItemId, NpcId, QuestId, WorldObjectId, DistrictId } from '../ids.ts';
 import type { QuestStanding } from '../rules/conditions.ts';
 import { objectiveGoal, type QuestDefinition, type QuestObjective, type QuestStepDefinition } from './questDefinition.ts';
 
@@ -14,7 +14,7 @@ export type QuestLog = Readonly<Record<QuestId, QuestProgress>>;
 
 export type QuestEvent =
   | { readonly type: 'talkedTo'; readonly npcId: NpcId }
-  | { readonly type: 'enteredArea'; readonly zoneId: ZoneId; readonly areaId: AreaId }
+  | { readonly type: 'enteredArea'; readonly districtId: DistrictId; readonly areaId: AreaId }
   | { readonly type: 'interactedWith'; readonly objectId: WorldObjectId }
   | { readonly type: 'signal'; readonly signal: string }
   | { readonly type: 'loadoutChanged' }
@@ -39,7 +39,7 @@ function progressFromEvent(objective: QuestObjective, current: number, event: Qu
     case 'talkTo':
       return event.type === 'talkedTo' && event.npcId === objective.npcId ? current + 1 : current;
     case 'enterArea':
-      return event.type === 'enteredArea' && event.zoneId === objective.zoneId && event.areaId === objective.areaId
+      return event.type === 'enteredArea' && event.districtId === objective.districtId && event.areaId === objective.areaId
         ? current + 1
         : current;
     case 'interactWith':

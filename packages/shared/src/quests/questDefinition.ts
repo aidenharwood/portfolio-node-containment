@@ -1,10 +1,10 @@
-import type { AreaId, ItemId, NpcId, QuestId, WorldObjectId, ZoneId } from '../ids.ts';
+import type { AreaId, ItemId, NpcId, QuestId, WorldObjectId, DistrictId } from '../ids.ts';
 import type { CreatureId } from '../combat/creatures.ts';
 import type { GameEffect } from '../rules/effects.ts';
 
 export type QuestObjective =
   | { readonly type: 'talkTo'; readonly npcId: NpcId; readonly label: string }
-  | { readonly type: 'enterArea'; readonly zoneId: ZoneId; readonly areaId: AreaId; readonly label: string }
+  | { readonly type: 'enterArea'; readonly districtId: DistrictId; readonly areaId: AreaId; readonly label: string }
   | { readonly type: 'obtainItem'; readonly itemId: ItemId; readonly count: number; readonly label: string }
   | { readonly type: 'equipItem'; readonly itemId: ItemId; readonly label: string }
   | { readonly type: 'interactWith'; readonly objectId: WorldObjectId; readonly count?: number; readonly label: string }

@@ -1,6 +1,6 @@
-import type { ZoneDefinition } from '../../world/zone.ts';
+import type { DistrictDefinition } from '../../world/district.ts';
 
-export const DEEPWATCH: ZoneDefinition = {
+export const DEEPWATCH: DistrictDefinition = {
   id: 'deepwatch',
   name: 'Deepwatch Station',
   subtitle: 'Site Meridian — Forward Base, Sector 3 Annex',

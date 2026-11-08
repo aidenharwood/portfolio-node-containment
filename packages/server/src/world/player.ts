@@ -12,7 +12,7 @@ import {
   type InstanceId,
   type ServerMessage,
   type TilePoint,
-  type ZoneId,
+  type DistrictId,
   type ZoneLocation,
 } from '@containment/shared';
 
@@ -70,7 +70,7 @@ export class Player {
     this.position = record.location.position;
   }
 
-  get zoneId(): ZoneId {
+  get zoneId(): DistrictId {
     return this.record.location.zoneId;
   }
 

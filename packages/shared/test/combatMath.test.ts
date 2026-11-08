@@ -8,12 +8,12 @@ import {
   hasLineOfSight,
   hitChance,
   isWithinAttackRange,
-  parseZoneLayout,
+  parseTileLayout,
   playerAttackProfile,
   rollAttack,
 } from '../src/index.ts';
 
-const layout = parseZoneLayout([
+const layout = parseTileLayout([
   '#######',
   '#.....#',
   '#..#..#',

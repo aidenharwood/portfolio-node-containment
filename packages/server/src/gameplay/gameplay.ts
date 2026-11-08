@@ -9,7 +9,7 @@ import type {
   QuestEvent,
   QuestId,
   TilePoint,
-  ZoneId,
+  DistrictId,
   ZoneLocation,
 } from '@containment/shared';
 import { Player, type MessageSink } from '../world/player.ts';
@@ -315,16 +315,16 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
 
   recoverIncapacitated(player: Player): void {
     const zone = this.world.zoneOf(player).definition;
-    const recovery = zone.recovery ?? { zoneId: zone.id, position: zone.spawn };
-    const recoveryZoneName = this.content.zones.get(recovery.zoneId)?.name ?? zone.name;
+    const recovery = zone.recovery ? { zoneId: zone.recovery.districtId, position: zone.recovery.position } : { zoneId: zone.id, position: zone.spawn };
+    const recoveryZoneName = this.content.districts.get(recovery.zoneId)?.name ?? zone.name;
     this.dialogues.close(player);
     this.world.transfer(player, recovery);
     player.setIntegrity(player.maxIntegrity);
     this.notify(player, 'warning', `You were incapacitated. Medical recovered you to the ${recoveryZoneName}.`);
   }
 
-  onAreaEntered(player: Player, zoneId: ZoneId, areaId: AreaId): void {
-    this.quests.handle(player, { type: 'enteredArea', zoneId, areaId });
+  onAreaEntered(player: Player, zoneId: DistrictId, areaId: AreaId): void {
+    this.quests.handle(player, { type: 'enteredArea', districtId: zoneId, areaId });
   }
 
   onPathCompleted(player: Player): void {

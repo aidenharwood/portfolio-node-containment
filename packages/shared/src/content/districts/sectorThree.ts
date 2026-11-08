@@ -1,6 +1,6 @@
-import type { ZoneDefinition } from '../../world/zone.ts';
+import type { DistrictDefinition } from '../../world/district.ts';
 
-export const SECTOR_THREE: ZoneDefinition = {
+export const SECTOR_THREE: DistrictDefinition = {
   id: 'sector-three',
   name: 'Sector 3',
   subtitle: 'The Threshold',

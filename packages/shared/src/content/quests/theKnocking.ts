@@ -21,7 +21,7 @@ export const THE_KNOCKING: QuestDefinition = {
     {
       id: 'enter-sector-2',
       journal: 'I have the override. The Sector 2 bulkhead is on the north wall of the Atrium.',
-      objectives: [{ type: 'enterArea', zoneId: 'sector-two', areaId: 'airlock', label: 'Enter Sector 2' }],
+      objectives: [{ type: 'enterArea', districtId: 'sector-two', areaId: 'airlock', label: 'Enter Sector 2' }],
     },
     {
       id: 'clear-corridor',

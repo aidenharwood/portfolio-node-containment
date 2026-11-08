@@ -1,8 +1,8 @@
 import type { TilePoint } from './geometry.ts';
 import { TILE_KINDS } from './tiles.ts';
-import type { ZoneLayout } from './zone.ts';
+import type { TileLayout } from './district.ts';
 
-export function hasLineOfSight(layout: ZoneLayout, from: TilePoint, to: TilePoint): boolean {
+export function hasLineOfSight(layout: TileLayout, from: TilePoint, to: TilePoint): boolean {
   let x = from.x;
   let y = from.y;
   const stepX = Math.sign(to.x - x);

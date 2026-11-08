@@ -33,7 +33,7 @@ export const ORIENTATION_PROTOCOL: QuestDefinition = {
     {
       id: 'observation',
       journal: 'Calibrated. Next is the observation deck in the north-east of the wing.',
-      objectives: [{ type: 'enterArea', zoneId: 'intake-wing', areaId: 'observation', label: 'Enter the observation deck' }],
+      objectives: [{ type: 'enterArea', districtId: 'intake-wing', areaId: 'observation', label: 'Enter the observation deck' }],
     },
     {
       id: 'meet-varga',
@@ -59,7 +59,7 @@ export const ORIENTATION_PROTOCOL: QuestDefinition = {
       id: 'transit',
       journal: 'Varga authorised my transit card. The lift in the south-east bay goes up to the Meridian Atrium.',
       objectives: [
-        { type: 'enterArea', zoneId: 'meridian-atrium', areaId: 'lift-bay', label: 'Ride the transit lift to the Atrium' },
+        { type: 'enterArea', districtId: 'meridian-atrium', areaId: 'lift-bay', label: 'Ride the transit lift to the Atrium' },
       ],
     },
   ],

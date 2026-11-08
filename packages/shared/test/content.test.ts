@@ -46,12 +46,12 @@ test('every quest can be started: it opens the game, follows another quest, or i
 
 test('every lift into a deep zone has a way back out', () => {
   const destinations = new Map<string, Set<string>>();
-  for (const zone of GAME_CONTENT.zones.values()) {
+  for (const zone of GAME_CONTENT.districts.values()) {
     for (const placement of zone.objects) {
       for (const interaction of GAME_CONTENT.worldObjects.get(placement.objectId)?.interactions ?? []) {
         for (const effect of interaction.effects) {
-          if (effect.type !== 'teleport' || effect.zoneId === zone.id) continue;
-          destinations.set(zone.id, (destinations.get(zone.id) ?? new Set()).add(effect.zoneId));
+          if (effect.type !== 'teleport' || effect.districtId === zone.id) continue;
+          destinations.set(zone.id, (destinations.get(zone.id) ?? new Set()).add(effect.districtId));
         }
       }
     }
@@ -59,7 +59,7 @@ test('every lift into a deep zone has a way back out', () => {
   for (const [from, targets] of destinations) {
     for (const to of targets) assert.ok(destinations.get(to)?.size, `${to} is reachable from ${from} but has no exit`);
   }
-  for (const zoneId of GAME_CONTENT.zones.keys()) {
+  for (const zoneId of GAME_CONTENT.districts.keys()) {
     if (zoneId === GAME_CONTENT.newCharacter.startingLocation.zoneId) continue;
     assert.ok([...destinations.values()].some((targets) => targets.has(zoneId)), `nothing leads into ${zoneId}`);
   }

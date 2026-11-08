@@ -1,13 +1,13 @@
-import type { ZoneDefinition } from '../../world/zone.ts';
+import type { DistrictDefinition } from '../../world/district.ts';
 
-export const CRYOVAULT: ZoneDefinition = {
+export const CRYOVAULT: DistrictDefinition = {
   id: 'cryovault',
   name: 'The Cryovault',
   subtitle: 'Site Meridian — Cold Storage, Dormant Holdings',
   tier: 4,
   spawn: { x: 4, y: 4 },
   capacity: 24,
-  recovery: { zoneId: 'deepwatch', position: { x: 5, y: 20 } },
+  recovery: { districtId: 'deepwatch', position: { x: 5, y: 20 } },
   ambience: { darkness: 0.6, tint: '#081420', fog: '#0c1a28', fixtures: 'failing' },
   map: [
     '############################################',

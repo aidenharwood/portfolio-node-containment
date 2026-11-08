@@ -1,13 +1,13 @@
-import type { ZoneDefinition } from '../../world/zone.ts';
+import type { DistrictDefinition } from '../../world/district.ts';
 
-export const UNDERCROFT: ZoneDefinition = {
+export const UNDERCROFT: DistrictDefinition = {
   id: 'undercroft',
   name: 'The Undercroft',
   subtitle: 'Site Meridian — Abandoned Maintenance Level',
   tier: 3,
   spawn: { x: 5, y: 4 },
   capacity: 24,
-  recovery: { zoneId: 'meridian-atrium', position: { x: 20, y: 29 } },
+  recovery: { districtId: 'meridian-atrium', position: { x: 20, y: 29 } },
   ambience: { darkness: 0.7, tint: '#10120c', fog: '#0d0f0a', fixtures: 'failing' },
   map: [
     '########################################',

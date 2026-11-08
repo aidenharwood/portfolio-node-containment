@@ -4,7 +4,7 @@ import type { GameEffect } from '../rules/effects.ts';
 import type { QuestObjective } from '../quests/questDefinition.ts';
 import { isShapeForSlot } from '../gear/slots.ts';
 import { TILE_KINDS } from '../world/tiles.ts';
-import { parseZoneLayout } from '../world/zone.ts';
+import { parseTileLayout } from '../world/district.ts';
 import { findCraftingIssues, rawSourceTiers } from './craftingIntegrity.ts';
 import type { GameContent } from './gameContent.ts';
 
@@ -40,9 +40,9 @@ export function findContentIssues(content: GameContent): string[] {
       if (effect.type === 'startQuest') checkQuest(where, effect.questId);
       if (effect.type === 'openShop' && !content.shops.has(effect.shopId)) report(where, `unknown shop "${effect.shopId}"`);
       if (effect.type === 'teleport') {
-        const zone = content.zones.get(effect.zoneId);
-        if (!zone) report(where, `unknown zone "${effect.zoneId}"`);
-        else if (!TILE_KINDS[parseZoneLayout(zone.map).tileAt(effect.position)].walkable) {
+        const zone = content.districts.get(effect.districtId);
+        if (!zone) report(where, `unknown zone "${effect.districtId}"`);
+        else if (!TILE_KINDS[parseTileLayout(zone.map).tileAt(effect.position)].walkable) {
           report(where, `teleport destination ${effect.position.x},${effect.position.y} is not walkable`);
         }
       }
@@ -67,9 +67,9 @@ export function findContentIssues(content: GameContent): string[] {
       report(where, `unknown object "${objective.objectId}"`);
     }
     if (objective.type === 'enterArea') {
-      const zone = content.zones.get(objective.zoneId);
+      const zone = content.districts.get(objective.districtId);
       if (!zone?.areas.some((area) => area.id === objective.areaId)) {
-        report(where, `unknown area "${objective.zoneId}/${objective.areaId}"`);
+        report(where, `unknown area "${objective.districtId}/${objective.areaId}"`);
       }
     }
   };
@@ -149,11 +149,11 @@ export function findContentIssues(content: GameContent): string[] {
     }
   }
 
-  for (const zone of content.zones.values()) {
+  for (const zone of content.districts.values()) {
     const where = `zone ${zone.id}`;
     let layout;
     try {
-      layout = parseZoneLayout(zone.map);
+      layout = parseTileLayout(zone.map);
     } catch (error) {
       report(where, (error as Error).message);
       continue;
@@ -187,7 +187,7 @@ export function findContentIssues(content: GameContent): string[] {
   }
 
   const start = content.newCharacter.startingLocation;
-  if (!content.zones.has(start.zoneId)) report('newCharacter', `unknown starting zone "${start.zoneId}"`);
+  if (!content.districts.has(start.zoneId)) report('newCharacter', `unknown starting zone "${start.zoneId}"`);
   checkQuest('newCharacter', content.newCharacter.startingQuestId);
 
   issues.push(...findCraftingIssues(content));

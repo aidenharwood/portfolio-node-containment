@@ -6,6 +6,6 @@ export type QuestId = string;
 export type NpcId = string;
 export type WorldObjectId = string;
 export type DialogueId = string;
-export type ZoneId = string;
+export type DistrictId = string;
 export type AreaId = string;
 export type InstanceId = string;

@@ -1,13 +1,13 @@
-import type { ZoneDefinition } from '../../world/zone.ts';
+import type { DistrictDefinition } from '../../world/district.ts';
 
-export const HYDROPONICS: ZoneDefinition = {
+export const HYDROPONICS: DistrictDefinition = {
   id: 'hydroponics',
   name: 'Verdance Hydroponics',
   subtitle: 'Site Meridian — Agricultural Containment Deck',
   tier: 2,
   spawn: { x: 3, y: 12 },
   capacity: 30,
-  recovery: { zoneId: 'meridian-atrium', position: { x: 20, y: 29 } },
+  recovery: { districtId: 'meridian-atrium', position: { x: 20, y: 29 } },
   ambience: { darkness: 0.62, tint: '#08160c', fog: '#0a1a10', fixtures: 'failing' },
   map: [
     '######################################',

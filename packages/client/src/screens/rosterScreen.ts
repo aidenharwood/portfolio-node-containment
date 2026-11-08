@@ -46,7 +46,7 @@ export function createRosterScreen(app: AppNavigator, roster: readonly Character
       { width: 140, height: 170, pedestal: true },
     );
     previews.push(preview);
-    const zone = GAME_CONTENT.zones.get(character.zoneId);
+    const zone = GAME_CONTENT.districts.get(character.zoneId);
     const deploy = () => app.connection.send({ type: 'character.select', characterId: character.id });
     return h(
       'article',

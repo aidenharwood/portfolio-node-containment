@@ -1,7 +1,7 @@
 import {
   createWalkabilityGrid,
   findPath,
-  parseZoneLayout,
+  parseTileLayout,
   rectContains,
   type AreaDefinition,
   type EntityId,
@@ -14,8 +14,8 @@ import {
   type TilePoint,
   type WalkabilityGrid,
   type WorldObjectDefinition,
-  type ZoneDefinition,
-  type ZoneLayout,
+  type DistrictDefinition,
+  type TileLayout,
 } from '@containment/shared';
 import { Creature } from './creature.ts';
 import { groundItemSnapshot, isGroundItemVisibleTo, type GroundItem } from './groundItem.ts';
@@ -28,8 +28,8 @@ export interface PlacedObject {
 }
 
 export class ZoneInstance {
-  readonly definition: ZoneDefinition;
-  readonly layout: ZoneLayout;
+  readonly definition: DistrictDefinition;
+  readonly layout: TileLayout;
   readonly grid: WalkabilityGrid;
   readonly players = new Map<EntityId, Player>();
   readonly npcs = new Map<InstanceId, Npc>();
@@ -41,10 +41,10 @@ export class ZoneInstance {
   readonly layer: number;
   emptySinceTick: number | null = null;
 
-  constructor(definition: ZoneDefinition, content: GameContent, layer: number) {
+  constructor(definition: DistrictDefinition, content: GameContent, layer: number) {
     this.definition = definition;
     this.layer = layer;
-    this.layout = parseZoneLayout(definition.map);
+    this.layout = parseTileLayout(definition.map);
 
     for (const placement of definition.objects) {
       const objectDefinition = content.worldObjects.get(placement.objectId);

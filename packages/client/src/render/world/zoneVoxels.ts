@@ -1,4 +1,4 @@
-import { TILE_KINDS, type TileKindId, type ZoneLayout } from '@containment/shared';
+import { TILE_KINDS, type TileKindId, type TileLayout } from '@containment/shared';
 import { DenseVolume } from '../voxel/denseVolume.ts';
 import { darken, jitter, lighten, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE, VOXEL_GLASS, VOXEL_SOLID } from '../voxel/voxelKinds.ts';
@@ -53,7 +53,7 @@ type Side = 'north' | 'south' | 'east' | 'west';
 
 const isWallKind = (kind: TileKindId): boolean => TILE_KINDS[kind].structure === 'wall';
 
-export function buildZoneVolume(layout: ZoneLayout): DenseVolume {
+export function buildZoneVolume(layout: TileLayout): DenseVolume {
   const volume = new DenseVolume(layout.width * R, ZONE_VOLUME_HEIGHT, layout.height * R);
   for (let ty = 0; ty < layout.height; ty++) {
     for (let tx = 0; tx < layout.width; tx++) {
@@ -147,7 +147,7 @@ function floorVoxel(
   }
 }
 
-function openSides(layout: ZoneLayout, tx: number, ty: number): Set<Side> {
+function openSides(layout: TileLayout, tx: number, ty: number): Set<Side> {
   const open = new Set<Side>();
   const check = (side: Side, x: number, y: number) => {
     const neighbor = layout.tileAt({ x, y });
@@ -170,7 +170,7 @@ function outerSide(lx: number, lz: number, open: Set<Side>): { side: Side; u: nu
 
 const SIDE_SALT: Readonly<Record<Side, number>> = { north: 1, south: 2, east: 3, west: 4 };
 
-function paintWall(volume: DenseVolume, layout: ZoneLayout, tx: number, ty: number): void {
+function paintWall(volume: DenseVolume, layout: TileLayout, tx: number, ty: number): void {
   const open = openSides(layout, tx, ty);
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
@@ -266,7 +266,7 @@ function paintGlass(volume: DenseVolume, tx: number, ty: number): void {
   }
 }
 
-function paintLintel(volume: DenseVolume, layout: ZoneLayout, tx: number, ty: number): void {
+function paintLintel(volume: DenseVolume, layout: TileLayout, tx: number, ty: number): void {
   const alongX = isWallKind(layout.tileAt({ x: tx - 1, y: ty })) || isWallKind(layout.tileAt({ x: tx + 1, y: ty }));
   for (let along = 0; along < R; along++) {
     for (let across = 3; across <= 4; across++) {

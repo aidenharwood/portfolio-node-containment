@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { createWalkabilityGrid, findPath, parseZoneLayout } from '../src/index.ts';
+import { createWalkabilityGrid, findPath, parseTileLayout } from '../src/index.ts';
 
-const layout = parseZoneLayout([
+const layout = parseTileLayout([
   '#######',
   '#.....#',
   '#.###.#',
