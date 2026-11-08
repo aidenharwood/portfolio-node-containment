@@ -48,7 +48,7 @@ export type WorldObjectModel =
   | 'medBed'
   | 'stranglerVine'
   | 'seedVault'
-  | 'tram'
+  | 'wallLift'
   | 'refinery'
   | 'fabricator'
   | 'synthesiser'
@@ -79,7 +79,13 @@ export type WorldObjectModel =
   | 'litterRubble'
   | 'litterGravel'
   | 'cableRun'
-  | 'cableRunEnd';
+  | 'cableRunEnd'
+  | 'officeDesk'
+  | 'wallShelf'
+  | 'filingCabinet'
+  | 'storageRack'
+  | 'noticeBoard'
+  | 'waterCooler';
 
 export interface ObjectInteraction {
   readonly verb: string;
@@ -108,5 +114,6 @@ export interface WorldObjectDefinition {
   readonly door?: DoorDefinition;
   readonly modelScale?: number;
   readonly light?: ObjectLight;
+  readonly countsAs?: WorldObjectId;
   readonly interactions: readonly ObjectInteraction[];
 }

@@ -27,6 +27,15 @@ export interface AssemblyPlacement {
 
 export const EMPTY_ASSEMBLY_CELL = ' ';
 
+const PIECE_SEPARATOR = '/';
+
+export const assemblyPieceId = (assemblyInstanceId: InstanceId, local: TilePoint): InstanceId => `${assemblyInstanceId}${PIECE_SEPARATOR}${local.x},${local.y}`;
+
+export function assemblyInstanceOf(instanceId: InstanceId): InstanceId | null {
+  const separator = instanceId.indexOf(PIECE_SEPARATOR);
+  return separator < 0 ? null : instanceId.slice(0, separator);
+}
+
 const FACINGS_BY_TURNS: readonly Facing[] = ['south', 'east', 'north', 'west'];
 
 export const turnsOf = (facing: Facing): QuarterTurns => FACINGS_BY_TURNS.indexOf(facing) as QuarterTurns;
@@ -71,7 +80,7 @@ export function expandAssembly(definition: AssemblyDefinition, placement: Assemb
   const minX = Math.min(...cells.map((cell) => cell.rotated.x));
   const minY = Math.min(...cells.map((cell) => cell.rotated.y));
   return cells.map(({ local, piece, rotated }) => ({
-    instanceId: `${placement.instanceId}/${local.x},${local.y}`,
+    instanceId: assemblyPieceId(placement.instanceId, local),
     objectId: piece.objectId,
     position: { x: placement.position.x + rotated.x - minX, y: placement.position.y + rotated.y - minY },
     facing: turnFacing(facing, piece.turns ?? 0),

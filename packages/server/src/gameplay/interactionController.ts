@@ -1,5 +1,6 @@
 import {
   areConditionsMet,
+  assemblyInstanceOf,
   countItem,
   destroyedQuantity,
   doorOpenedFlag,
@@ -7,6 +8,7 @@ import {
   interactionGrantsQuestItem,
   isCardinallyAdjacent,
   isDoorOpenFor,
+  manhattanDistance,
   pathThroughDoor,
   samePoint,
   storedCount,
@@ -28,6 +30,11 @@ export interface InteractionHost extends EffectHost {
 import { conditionContextFor, openDoorsOf } from './playerContext.ts';
 
 const MAX_REPATH_ATTEMPTS = 4;
+
+interface ApproachTarget {
+  readonly instanceId: string;
+  readonly position: TilePoint;
+}
 
 export const objectUseFlag = (districtId: string, instanceId: string, interactionIndex: number): string =>
   `object-used:${districtId}:${instanceId}:${interactionIndex}`;
@@ -62,15 +69,42 @@ export class InteractionController {
       }
       return;
     }
-    if (isCardinallyAdjacent(player.position, target)) {
-      player.path = [];
-      this.resolveArrival(player);
-      return;
-    }
-    if (!this.world.approach(player, target)) {
+    const approach = pending.kind === 'object' ? this.approachObject(player, pending.instanceId, pending.interactionIndex) : this.approachTile(player, pending.instanceId, target);
+    if (!approach) {
       player.pendingInteraction = null;
       this.host.notify(player, 'warning', "You can't reach that.");
+      return;
     }
+    player.pendingInteraction = { ...pending, instanceId: approach.instanceId, repathAttempts: 0 };
+    if (isCardinallyAdjacent(player.position, approach.position)) {
+      player.path = [];
+      this.resolveArrival(player);
+    }
+  }
+
+  private approachTile(player: Player, instanceId: string, position: TilePoint): ApproachTarget | null {
+    return isCardinallyAdjacent(player.position, position) || this.world.approach(player, position) ? { instanceId, position } : null;
+  }
+
+  private approachObject(player: Player, instanceId: string, interactionIndex: number): ApproachTarget | null {
+    for (const candidate of this.approachCandidates(this.world.levelOf(player), instanceId, interactionIndex, player.position)) {
+      if (this.approachTile(player, candidate.instanceId, candidate.position)) return candidate;
+    }
+    return null;
+  }
+
+  private approachCandidates(level: LevelInstance, instanceId: string, interactionIndex: number, from: TilePoint): ApproachTarget[] {
+    const clicked = level.objects.get(instanceId);
+    if (!clicked) return [];
+    const own = { instanceId, position: clicked.placement.position };
+    const assembly = assemblyInstanceOf(instanceId);
+    const verb = clicked.definition.interactions[interactionIndex]?.verb;
+    if (!assembly || !verb) return [own];
+    const siblings = [...level.objects.values()]
+      .filter(({ placement, definition }) => placement.instanceId !== instanceId && assemblyInstanceOf(placement.instanceId) === assembly && definition.interactions[interactionIndex]?.verb === verb)
+      .map(({ placement }) => ({ instanceId: placement.instanceId, position: placement.position }))
+      .sort((a, b) => manhattanDistance(from, a.position) - manhattanDistance(from, b.position));
+    return [own, ...siblings];
   }
 
   resolveArrival(player: Player): void {
@@ -140,7 +174,7 @@ export class InteractionController {
 
     if (interaction.oncePerCharacter) player.update({ flags: [...player.record.flags, useFlag] });
     this.effects.apply(player, interaction.effects);
-    this.host.raiseQuestEvent(player, { type: 'interactedWith', objectId: placed.definition.id });
+    this.host.raiseQuestEvent(player, { type: 'interactedWith', objectId: placed.definition.countsAs ?? placed.definition.id });
   }
 
   private passDoor(player: Player, level: LevelInstance, placed: PlacedObject, interaction: ObjectInteraction): void {

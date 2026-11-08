@@ -46,7 +46,7 @@ export const DROWNED_ARCHIVE: DistrictDefinition = {
   ],
   npcs: [{ instanceId: 'da-pim', npcId: 'clerk-pim', position: { x: 6, y: 6 } }],
   objects: [
-    { instanceId: 'da-tram-stop', objectId: 'tram-stop', position: { x: 1, y: 5 }, facing: 'east' },
+    { instanceId: 'da-tram-stop', objectId: 'tram-stop', position: { x: 1, y: 7 }, facing: 'east' },
     { instanceId: 'da-stair-storage', objectId: 'storage-locker', position: { x: 8, y: 1 } },
     { instanceId: 'da-stair-bed', objectId: 'med-bed', position: { x: 2, y: 7 } },
 
@@ -85,6 +85,7 @@ export const DROWNED_ARCHIVE: DistrictDefinition = {
     { instanceId: 'da-sealed-shelf-a', objectId: 'archive-shelf', position: { x: 31, y: 11 } },
     { instanceId: 'da-sealed-shelf-b', objectId: 'archive-shelf', position: { x: 42, y: 26 } },
   ],
+  assemblies: [{ instanceId: 'da-tram-car', assemblyId: 'tram-car', position: { x: 1, y: 1 }, facing: 'east' }],
   creatures: [
     { instanceId: 'da-eel-stacks-a', creatureId: 'ink-eel', position: { x: 13, y: 2 } },
     { instanceId: 'da-eel-stacks-b', creatureId: 'ink-eel', position: { x: 22, y: 2 } },

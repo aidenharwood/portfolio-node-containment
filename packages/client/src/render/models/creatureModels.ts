@@ -8,6 +8,7 @@ import { VoxelModel } from '../voxel/voxelModel.ts';
 import { CHARACTER_VOXEL_SIZE } from '../world/worldScale.ts';
 import { CharacterRig } from './characterModel.ts';
 import { DEEP_CREATURE_FACTORIES } from './deepCreatureModels.ts';
+import { WATERWORKS_CREATURE_FACTORIES } from './waterworksCreatureModels.ts';
 import { swingCurve, type EntityPose, type EntityRig } from './entityRig.ts';
 
 const VOXEL = CHARACTER_VOXEL_SIZE;
@@ -443,6 +444,7 @@ function buildDrifterTendrils(): VoxelModel {
 
 const FACTORIES: Readonly<Record<CreatureModel, () => EntityRig>> = {
   ...DEEP_CREATURE_FACTORIES,
+  ...WATERWORKS_CREATURE_FACTORIES,
   thornCrawler: () => new ThornCrawlerRig(),
   sporeDrifter: () => new SporeDrifterRig(),
   pipeLeech: () => new PipeLeechRig(),

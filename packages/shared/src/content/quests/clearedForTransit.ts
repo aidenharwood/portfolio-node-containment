@@ -24,12 +24,12 @@ export const CLEARED_FOR_TRANSIT: QuestDefinition = {
     },
     {
       id: 'board',
-      journal: 'The tram stop is on the platform in the Transit Bay, south-east of the concourse. Its board lists every station I have found. The world map (M) shows every line.',
-      objectives: [{ type: 'interactWith', objectId: 'tram-stop', label: 'Open the tram stop board' }],
+      journal: 'The tram waits at the platform in the Transit Bay, south-east of the concourse. Boarding it shows every station I have found. The world map (M) shows every line.',
+      objectives: [{ type: 'interactWith', objectId: 'tram-car-door', label: 'Board the tram' }],
     },
     {
       id: 'ride',
-      journal: 'Choose Atrium Transit Bay on the board and ride the tram up to the Meridian Atrium.',
+      journal: 'Choose Atrium Transit Bay from the tram destinations and ride up to the Meridian Atrium.',
       objectives: [{ type: 'enterArea', districtId: 'meridian-atrium', areaId: 'lift-bay', label: 'Ride the tram to the Atrium' }],
       onComplete: [{ type: 'takeItem', itemId: 'transit-pass' }],
     },

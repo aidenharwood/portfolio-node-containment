@@ -47,13 +47,14 @@ describe('world audit', () => {
       assert.ok(types.has(type), type);
     }
     const touched = new Set(objectives.flatMap((objective) => (objective.type === 'interactWith' ? [objective.objectId] : [])));
-    for (const objectId of ['storage-locker', 'med-bed', 'tram-stop']) assert.ok(touched.has(objectId), objectId);
+    for (const objectId of ['storage-locker', 'med-bed', 'tram-car-door']) assert.ok(touched.has(objectId), objectId);
   });
 
   test('area objectives produce beacons and object objectives produce rings', () => {
     assert.deepEqual(objectiveAreas(activeAt('orientation-protocol', 4), GAME_CONTENT.quests), [{ districtId: 'intake-wing', areaId: 'observation' }]);
     assert.deepEqual(objectiveAreas(activeAt('cleared-for-transit', 3), GAME_CONTENT.quests), [{ districtId: 'meridian-atrium', areaId: 'lift-bay' }]);
-    assert.ok(objectiveObjectIds(activeAt('cleared-for-transit', 2), GAME_CONTENT.quests).has('tram-stop'));
+    const tramRings = objectiveObjectIds(activeAt('cleared-for-transit', 2), GAME_CONTENT.quests, GAME_CONTENT.worldObjects);
+    for (const objectId of ['tram-car-door', 'tram-car-window', 'tram-car-nose-left', 'tram-car-nose-right']) assert.ok(tramRings.has(objectId), objectId);
   });
 
   test('the Atrium hub has no hostile creatures or gathering nodes', () => {

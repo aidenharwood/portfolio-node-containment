@@ -121,6 +121,7 @@ export function findContentIssues(content: GameContent): string[] {
   }
 
   for (const object of content.worldObjects.values()) {
+    if (object.countsAs && !content.worldObjects.has(object.countsAs)) report(`object ${object.id}`, `counts as unknown object "${object.countsAs}"`);
     for (const interaction of object.interactions) {
       checkConditions(`object ${object.id}`, interaction.conditions);
       checkEffects(`object ${object.id}`, interaction.effects);

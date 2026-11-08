@@ -4,7 +4,7 @@ import { VOXEL_EMISSIVE, VOXEL_GLASS } from '../voxel/voxelKinds.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 import type { ObjectModelParts } from './objectModels.ts';
 
-type HubModel = Extract<WorldObjectModel, 'medBed' | 'stranglerVine' | 'seedVault' | 'tram'>;
+type HubModel = Extract<WorldObjectModel, 'medBed' | 'stranglerVine' | 'seedVault'>;
 
 const parts = (base: VoxelModel, heightVoxels: number, animated: ObjectModelParts['animated'] = []): ObjectModelParts => ({ base, animated, heightVoxels });
 
@@ -72,34 +72,8 @@ const seedVault = (): ObjectModelParts => {
   ]);
 };
 
-const tram = (): ObjectModelParts => {
-  const model = new VoxelModel();
-  model.fill(-13, 0, -6, 12, 1, 6, 0x2a2f33);
-  for (const z of [-5, 5]) model.fill(-14, 2, z, 13, 2, z, 0x8d969e);
-  model.fill(-12, 3, -5, 11, 18, 5, (x, y, z) => {
-    if (y === 3) return 0x3a4046;
-    if (y >= 9 && y <= 14 && (z === 5 || z === -5) && Math.abs(x) % 6 !== 0) return null;
-    if (y === 7 || y === 8) return 0x46c8a8;
-    return jitter(0xd8e2e8, 0.03, noise3(x, y, z, 44));
-  });
-  for (const z of [-5, 5]) model.fill(-11, 9, z, 10, 14, z, (x) => (Math.abs(x) % 6 === 0 ? 0xd8e2e8 : lighten(0x9fd8ff, 0.2)), VOXEL_GLASS);
-  model.fill(-12, 19, -4, 11, 20, 4, 0xb8c2ca);
-  model.fill(-3, 21, -1, 2, 22, 1, 0x5d6b74);
-  for (const x of [-13, 12]) model.fill(x, 5, -4, x, 16, 4, (_x, y, z) => (y >= 9 && y <= 14 && Math.abs(z) <= 3 ? lighten(0x9fd8ff, 0.2) : 0xb8c2ca), VOXEL_GLASS);
-  const lamps = new VoxelModel().fill(-14, 5, -3, -14, 6, -2, 0xfff3c4, VOXEL_EMISSIVE).fill(-14, 5, 2, -14, 6, 3, 0xfff3c4, VOXEL_EMISSIVE).fill(-10, 15, 6, 9, 15, 6, 0x7cf29a, VOXEL_EMISSIVE);
-  return parts(model, 23, [
-    {
-      model: lamps,
-      animate: (part, time, seed) => {
-        part.visible = Math.sin(time * 0.9 + seed) > -0.95;
-      },
-    },
-  ]);
-};
-
 export const HUB_BUILDERS: Readonly<Record<HubModel, (seed: number) => ObjectModelParts>> = {
   medBed,
   stranglerVine,
   seedVault,
-  tram,
 };

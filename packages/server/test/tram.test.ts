@@ -30,9 +30,9 @@ test('standing in a station area discovers that station', () => {
   assert.ok(harness.sink.last('player.state')?.self.discoveredStations.includes('atrium-transit'));
 });
 
-test('a tram stop opens the map for its own station', () => {
+test('boarding a tram car opens the map for its own station', () => {
   const harness = createHarness({ prepare: onPlatform('meridian-atrium', ATRIUM_PLATFORM, []) });
-  harness.interactWithObject('atrium-tram-stop');
+  harness.interactWithObject('atrium-tram-car/2,0');
   assert.equal(harness.sink.last('tram.mapOpened')?.stationId, 'atrium-transit');
 });
 

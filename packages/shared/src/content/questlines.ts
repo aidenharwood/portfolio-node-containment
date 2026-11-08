@@ -30,6 +30,13 @@ export const QUESTLINES: readonly QuestlineDefinition[] = [
     questIds: ['scrap-run', 'static-in-the-vents', 'leech-season', 'overgrowth', 'familiar-faces', 'requisition-order'],
   },
   {
+    id: 'waterworks',
+    name: 'The Waterworks',
+    kind: 'side',
+    summary: "Pumpwright Ngata keeps the Site's water moving, and something in the outfall would rather it didn't.",
+    questIds: ['pressure-drop', 'bad-water', 'the-outfall'],
+  },
+  {
     id: 'duvals-workshop',
     name: "Duval's Workshop",
     kind: 'side',

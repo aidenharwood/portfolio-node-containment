@@ -27,7 +27,10 @@ export type CreatureModel =
   | 'stoker'
   | 'hollowOperative'
   | 'knockling'
-  | 'theHost';
+  | 'theHost'
+  | 'siltSkimmer'
+  | 'sumpBloat'
+  | 'sumpMother';
 
 export interface LootEntry {
   readonly itemId: ItemId;

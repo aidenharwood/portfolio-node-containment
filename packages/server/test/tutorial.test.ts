@@ -139,7 +139,7 @@ describe('cleared for transit', () => {
     assert.ok(player.hasFlag(tramStationFlag('atrium-transit')));
     assert.equal(currentStep(harness, TRANSIT), 2);
 
-    harness.interactWithObject('intake-tram-stop');
+    harness.interactWithObject('intake-tram-car/2,0');
     assert.equal(harness.sink.last('tram.mapOpened')?.stationId, 'intake-transit');
     assert.equal(currentStep(harness, TRANSIT), 3);
 

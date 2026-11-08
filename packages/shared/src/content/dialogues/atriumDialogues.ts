@@ -212,12 +212,12 @@ export const SEL_DIALOGUE: DialogueDefinition = {
     },
     councilGo: {
       speaker: 'npc',
-      text: "The Deep Line leaves from the transit bay, beside the hydroponics tram. Director Thale is... thorough. Tell her the truth, even when it's strange. Especially then.",
+      text: "The Deep Line lift is set into the west wall of the transit bay. Director Thale is... thorough. Tell her the truth, even when it's strange. Especially then.",
       next: null,
     },
     councilProgress: {
       speaker: 'npc',
-      text: 'The Deep Line is in the transit bay. Thale is waiting at Deepwatch. Try not to keep the Council waiting; it has a long memory and very little patience.',
+      text: 'The Deep Line lift is in the transit bay. Thale is waiting at Deepwatch. Try not to keep the Council waiting; it has a long memory and very little patience.',
       next: null,
     },
     deadAirIntro: {

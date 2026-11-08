@@ -1,6 +1,7 @@
 import type { DistrictId } from '../ids.ts';
 import type { TrackedObjective } from '../quests/questGuidance.ts';
 import type { DistrictDefinition } from '../world/district.ts';
+import { districtObjects } from '../world/levelLayout.ts';
 import type { GameContent } from './gameContent.ts';
 
 function districtsWhere(content: GameContent, matches: (district: DistrictDefinition) => boolean): DistrictId[] {
@@ -19,7 +20,9 @@ function districtsForObjective(content: GameContent, { objective, done }: Tracke
       return npcId ? districtsWhere(content, (district) => district.npcs.some((npc) => npc.npcId === npcId)) : [];
     }
     case 'interactWith':
-      return districtsWhere(content, (district) => district.objects.some((object) => object.objectId === objective.objectId));
+      return districtsWhere(content, (district) =>
+        districtObjects(district, content.assemblies).some((object) => (content.worldObjects.get(object.objectId)?.countsAs ?? object.objectId) === objective.objectId),
+      );
     case 'defeat':
       return districtsWhere(content, (district) => (district.creatures ?? []).some((creature) => creature.creatureId === objective.creatureId));
     case 'gather':

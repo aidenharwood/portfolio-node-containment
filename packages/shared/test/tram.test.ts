@@ -39,7 +39,7 @@ test('findTramIssues reports a station without a stop and a line with an unknown
       stations: network.stations,
       lines: new Map([...network.lines, ['ghost-line', { id: 'ghost-line', name: 'Ghost', color: '#fff', stations: ['atrium-transit', 'ghost'] }]]),
     },
-    worldObjects: new Map([...GAME_CONTENT.worldObjects].filter(([id]) => id !== 'tram-stop')),
+    worldObjects: new Map([...GAME_CONTENT.worldObjects].filter(([id]) => !id.startsWith('tram-car-'))),
   };
   const issues = findTramIssues(content);
   assert.ok(issues.some((issue) => issue.includes('"atrium-transit" has no tram stop')));

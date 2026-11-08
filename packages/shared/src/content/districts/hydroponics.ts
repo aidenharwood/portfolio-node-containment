@@ -46,7 +46,7 @@ export const HYDROPONICS: DistrictDefinition = {
   npcs: [{ instanceId: 'hydro-oyelaran', npcId: 'botanist-oyelaran', position: { x: 5, y: 10 } }],
   objects: [
     { instanceId: 'hydro-fold-anomaly', objectId: 'verdance-anomaly', position: { x: 29, y: 19 } },
-    { instanceId: 'hydro-tram-stop', objectId: 'tram-stop', position: { x: 1, y: 12 }, facing: 'east' },
+    { instanceId: 'hydro-tram-stop', objectId: 'tram-stop', position: { x: 1, y: 14 }, facing: 'east' },
     { instanceId: 'hydro-platform-sign', objectId: 'warning-sign', position: { x: 7, y: 8 } },
     { instanceId: 'hydro-platform-storage', objectId: 'storage-locker', position: { x: 1, y: 15 }, facing: 'east' },
     { instanceId: 'hydro-seed-vault', objectId: 'seed-vault-console', position: { x: 4, y: 24 }, facing: 'north' },
@@ -71,6 +71,7 @@ export const HYDROPONICS: DistrictDefinition = {
     { instanceId: 'hydro-heart-planter-a', objectId: 'planter', position: { x: 26, y: 17 } },
     { instanceId: 'hydro-heart-planter-b', objectId: 'planter', position: { x: 31, y: 22 } },
   ],
+  assemblies: [{ instanceId: 'hydro-tram-car', assemblyId: 'tram-car', position: { x: 1, y: 8 }, facing: 'east' }],
   creatures: [
     { instanceId: 'hydro-crawler-nursery-a', creatureId: 'thorn-crawler', position: { x: 13, y: 5 } },
     { instanceId: 'hydro-crawler-nursery-b', creatureId: 'thorn-crawler', position: { x: 16, y: 10 } },

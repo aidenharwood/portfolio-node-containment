@@ -13,6 +13,7 @@ export const MAIN_FLOOR: LevelDefinition = {
     { districtId: 'meridian-atrium', origin: { x: 56, y: 30 } },
     { districtId: 'service-concourse', origin: { x: 108, y: 51 } },
     { districtId: 'service-yards', origin: { x: 122, y: 40 } },
+    { districtId: 'waterworks', origin: { x: 162, y: 46 } },
     { districtId: 'sector-two', origin: { x: 77, y: 8 } },
     { districtId: 'intake-wing', origin: { x: 56, y: 76 } },
   ],

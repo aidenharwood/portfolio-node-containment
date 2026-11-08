@@ -1,10 +1,10 @@
 import type { WorldObjectModel } from '@containment/shared';
-import { jitter, noise3 } from '../voxel/palette.ts';
+import { darken, jitter, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE, VOXEL_GLASS } from '../voxel/voxelKinds.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 import type { ObjectModelParts } from './objectModels.ts';
 
-type TransitModel = Extract<WorldObjectModel, 'tramStop' | 'anomaly'>;
+type TransitModel = Extract<WorldObjectModel, 'tramStop' | 'anomaly' | 'wallLift'>;
 
 const parts = (base: VoxelModel, heightVoxels: number, animated: ObjectModelParts['animated'] = []): ObjectModelParts => ({ base, animated, heightVoxels });
 
@@ -35,6 +35,50 @@ const tramStop = (seed: number): ObjectModelParts => {
         const flip = Math.sin(time * 0.7 + phase) > 0.97;
         part.scale.y = flip ? 0.4 : 1;
         part.position.y = flip ? 1.1 : 0;
+      },
+    },
+  ]);
+};
+
+const LIFT_STEEL = 0x46525a;
+const LIFT_DOOR = 0x8d969e;
+const LIFT_GLOW = 0x4fd8ff;
+
+const wallLift = (seed: number): ObjectModelParts => {
+  const model = new VoxelModel();
+  model.fill(-8, 0, -8, 7, 31, -7, (x, y, z) => jitter(0x1b2228, 0.04, noise3(x, y, z, seed)));
+  for (const [x0, x1] of [[-8, -6], [5, 7]] as const) {
+    model.fill(x0, 0, -6, x1, 25, 7, (x, y, z) => {
+      if (z >= 6 && (x === -6 || x === 5) && (y + 40) % 4 < 2) return 0xc99a1c;
+      return jitter(LIFT_STEEL, 0.03, noise3(x, y, z, seed + 1));
+    });
+  }
+  model.fill(-8, 26, -6, 7, 31, 7, (x, y, z) => (z === 7 && y >= 27 && y <= 30 && x >= -3 && x <= 2 ? null : jitter(darken(LIFT_STEEL, 0.15), 0.03, noise3(x, y, z, seed + 2))));
+  model.fill(-3, 27, 6, 2, 30, 6, 0x0b1014);
+  model.fill(-5, 1, -5, 4, 25, -5, (x, y) => {
+    if (x === -1 || x === 0) return x === -1 ? darken(LIFT_DOOR, 0.45) : darken(LIFT_DOOR, 0.25);
+    if (y >= 16 && y <= 21 && (x === -3 || x === 2)) return 0x9fd8ff;
+    return jitter(LIFT_DOOR, 0.025, noise3(x, y, 0, seed + 3));
+  });
+  model.fill(-5, 0, -6, 4, 0, 7, (x, _y, z) => {
+    if (z === -4) return (x + 10) % 2 === 0 ? 0xc99a1c : 0x17170f;
+    return (x + z) % 3 === 0 ? 0x5d6b74 : 0x2b3a44;
+  });
+  model.fill(-5, 1, -4, 4, 1, -4, 0x2a3036);
+  model.fill(6, 11, 8, 6, 14, 8, 0x2a3036);
+  model.set(6, 13, 9, LIFT_GLOW, VOXEL_EMISSIVE).set(6, 12, 9, 0xffb347, VOXEL_EMISSIVE);
+  const strips = new VoxelModel();
+  for (const x of [-5, 4]) strips.fill(x, 2, 6, x, 24, 6, LIFT_GLOW, VOXEL_EMISSIVE);
+  const arrow = new VoxelModel();
+  for (let row = 0; row < 3; row++) arrow.fill(row - 2, 29 - row, 7, 1 - row, 29 - row, 7, LIFT_GLOW, VOXEL_EMISSIVE);
+  return parts(model, 32, [
+    { model: strips, animate: (part, time, phase) => (part.visible = Math.sin(time * 0.8 + phase) > -0.97) },
+    {
+      model: arrow,
+      animate: (part, time, phase) => {
+        const travel = (time * 0.9 + phase) % 1;
+        part.position.y = -travel * 0.06;
+        part.visible = travel < 0.85;
       },
     },
   ]);
@@ -80,4 +124,5 @@ const anomaly = (seed: number): ObjectModelParts => {
 export const TRANSIT_BUILDERS: Readonly<Record<TransitModel, (seed: number) => ObjectModelParts>> = {
   tramStop,
   anomaly,
+  wallLift,
 };

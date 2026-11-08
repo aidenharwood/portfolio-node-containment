@@ -82,6 +82,7 @@ export const SIGNAL_ARRAY: DistrictDefinition = {
     { instanceId: 'sa-gantry-sign', objectId: 'warning-sign', position: { x: 42, y: 15 } },
     { instanceId: 'sa-patch-gantry', objectId: 'patch-point', position: { x: 11, y: 26 } },
   ],
+  assemblies: [{ instanceId: 'sa-tram-car', assemblyId: 'tram-car', position: { x: 1, y: 1 }, facing: 'east' }],
   creatures: [
     { instanceId: 'sa-sentinel-a', creatureId: 'relay-sentinel', position: { x: 14, y: 3 } },
     { instanceId: 'sa-sentinel-b', creatureId: 'relay-sentinel', position: { x: 22, y: 3 } },

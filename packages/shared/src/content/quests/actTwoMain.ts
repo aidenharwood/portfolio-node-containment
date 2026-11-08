@@ -12,7 +12,7 @@ export const A_COUNCIL_OF_ONE: QuestDefinition = {
   steps: [
     {
       id: 'ride',
-      journal: 'Sel has had me cleared for the Deep Line, a sealed tram that leaves from the Atrium transit bay. It runs to Deepwatch Station, the new forward base beside Sector 3.',
+      journal: 'Sel has had me cleared for the Deep Line, a sealed express lift set into the wall of the Atrium transit bay. It runs to Deepwatch Station, the new forward base beside Sector 3.',
       objectives: [{ type: 'enterArea', districtId: 'deepwatch', areaId: 'platform-hall', label: 'Ride the Deep Line to Deepwatch' }],
     },
     {

@@ -6,6 +6,7 @@ import { VoxelModel } from '../voxel/voxelModel.ts';
 import { ASSEMBLY_BUILDERS } from './assemblyModels.ts';
 import { CRAFTING_BUILDERS } from './craftingModels.ts';
 import { DEEP_OBJECT_BUILDERS } from './deepObjectModels.ts';
+import { FURNITURE_BUILDERS } from './furnitureModels.ts';
 import { HUB_BUILDERS } from './hubModels.ts';
 import { LITTER_BUILDERS } from './litterModels.ts';
 import { TRANSIT_BUILDERS } from './transitModels.ts';
@@ -337,6 +338,7 @@ const BUILDERS: Readonly<Record<WorldObjectModel, ObjectBuilder>> = {
   ...DEEP_OBJECT_BUILDERS,
   ...ASSEMBLY_BUILDERS,
   ...LITTER_BUILDERS,
+  ...FURNITURE_BUILDERS,
   junctionBox,
   pipeCluster,
   pumpHousing,

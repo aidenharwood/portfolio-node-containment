@@ -48,9 +48,9 @@ export const CRYOVAULT: DistrictDefinition = {
   ],
   npcs: [{ instanceId: 'cv-fenn', npcId: 'orderly-fenn', position: { x: 31, y: 5 } }],
   objects: [
-    { instanceId: 'cv-tram-stop', objectId: 'tram-stop', position: { x: 1, y: 6 }, facing: 'east' },
+    { instanceId: 'cv-tram-stop', objectId: 'tram-stop', position: { x: 1, y: 1 }, facing: 'east' },
     { instanceId: 'cv-dock-sign', objectId: 'warning-sign', position: { x: 9, y: 1 } },
-    { instanceId: 'cv-dock-crate-a', objectId: 'supply-crate', position: { x: 2, y: 8 } },
+    { instanceId: 'cv-dock-crate-a', objectId: 'supply-crate', position: { x: 7, y: 8 } },
     { instanceId: 'cv-dock-crate-b', objectId: 'supply-crate', position: { x: 8, y: 8 } },
 
     { instanceId: 'cv-pod-a', objectId: 'cryo-pod', position: { x: 12, y: 2 } },
@@ -90,6 +90,7 @@ export const CRYOVAULT: DistrictDefinition = {
     { instanceId: 'cv-office-pod-b', objectId: 'cold-pod', position: { x: 42, y: 26 } },
     { instanceId: 'cv-office-sign', objectId: 'warning-sign', position: { x: 34, y: 14 } },
   ],
+  assemblies: [{ instanceId: 'cv-tram-car', assemblyId: 'tram-car', position: { x: 1, y: 2 }, facing: 'east' }],
   creatures: [
     { instanceId: 'cv-moth-hall-a', creatureId: 'frost-moth', position: { x: 14, y: 3 } },
     { instanceId: 'cv-moth-hall-b', creatureId: 'frost-moth', position: { x: 22, y: 6 } },

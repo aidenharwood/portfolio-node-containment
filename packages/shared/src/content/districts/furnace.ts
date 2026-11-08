@@ -75,6 +75,7 @@ export const FURNACE: DistrictDefinition = {
     { instanceId: 'fu-reactor-pipes-a', objectId: 'pipe-cluster', position: { x: 42, y: 11 } },
     { instanceId: 'fu-reactor-pipes-b', objectId: 'pipe-cluster', position: { x: 42, y: 26 } },
   ],
+  assemblies: [{ instanceId: 'fu-tram-car', assemblyId: 'tram-car', position: { x: 2, y: 1 } }],
   creatures: [
     { instanceId: 'fu-wisp-a', creatureId: 'cinder-wisp', position: { x: 14, y: 2 } },
     { instanceId: 'fu-wisp-b', creatureId: 'cinder-wisp', position: { x: 25, y: 2 } },

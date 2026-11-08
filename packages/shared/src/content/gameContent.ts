@@ -42,6 +42,12 @@ import { UNDERCROFT_LEVEL } from './levels/undercroftLevel.ts';
 import type { QuestDefinition } from '../quests/questDefinition.ts';
 import type { QuestlineDefinition, QuestlineId } from '../quests/questline.ts';
 import { QUESTLINES } from './questlines.ts';
+import { WATERWORKS } from './districts/waterworks.ts';
+import { NGATA_DIALOGUE } from './dialogues/waterworksDialogues.ts';
+import { WATERWORKS_QUESTS } from './quests/waterworks.ts';
+import { WATERWORKS_CREATURES } from './waterworksCreatures.ts';
+import { WATERWORKS_NPCS } from './waterworksNpcs.ts';
+import { WATERWORKS_OBJECTS } from './waterworksObjects.ts';
 import type { NpcDefinition, WorldObjectDefinition } from '../world/entities.ts';
 import type { DistrictDefinition } from '../world/district.ts';
 import { AMES_DIALOGUE, KADE_DIALOGUE, LUND_DIALOGUE, OKAFOR_DIALOGUE, SEL_DIALOGUE } from './dialogues/atriumDialogues.ts';
@@ -120,7 +126,7 @@ function indexById<T extends { readonly id: string }>(entries: readonly T[]): Re
   return index;
 }
 
-const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([INTAKE_WING, MERIDIAN_ATRIUM, VERDANCE_CONCOURSE, SERVICE_CONCOURSE, SERVICE_YARDS, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, DEEP_CONCOURSE, FURNACE_CAUSEWAY, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW, VERDANT_FOLD]);
+const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([INTAKE_WING, MERIDIAN_ATRIUM, VERDANCE_CONCOURSE, SERVICE_CONCOURSE, SERVICE_YARDS, WATERWORKS, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, DEEP_CONCOURSE, FURNACE_CAUSEWAY, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW, VERDANT_FOLD]);
 const ASSEMBLY_INDEX: ReadonlyMap<AssemblyId, AssemblyDefinition> = indexById(ASSEMBLIES);
 const LEVEL_INDEX: LevelIndex = buildLevelIndex([MAIN_FLOOR, UNDERCROFT_LEVEL, THE_DEEP, THE_THRESHOLD, MERIDIAN_BELOW_LEVEL, VERDANT_FOLD_LEVEL], DISTRICTS, ASSEMBLY_INDEX);
 
@@ -132,8 +138,8 @@ function startingLocation(): WorldLocation {
 
 export const GAME_CONTENT: GameContent = {
   items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS]),
-  npcs: indexById([...NPCS, ...DEEP_NPCS]),
-  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS]),
+  npcs: indexById([...NPCS, ...DEEP_NPCS, ...WATERWORKS_NPCS]),
+  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS]),
   assemblies: ASSEMBLY_INDEX,
   dialogues: indexById([
     REYES_DIALOGUE,
@@ -161,6 +167,7 @@ export const GAME_CONTENT: GameContent = {
     BRANN_DIALOGUE,
     KESSLER_DIALOGUE,
     GUEST_DIALOGUE,
+    NGATA_DIALOGUE,
   ]),
   quests: indexById([
     ORIENTATION_PROTOCOL,
@@ -180,13 +187,14 @@ export const GAME_CONTENT: GameContent = {
     STOKING_THE_FIRE,
     THE_ANSWER,
     ...ACT_TWO_SIDE_QUESTS,
+    ...WATERWORKS_QUESTS,
   ]),
   questlines: indexById(QUESTLINES),
   districts: DISTRICTS,
   levels: LEVEL_INDEX.levels,
   levelOfDistrict: LEVEL_INDEX.levelOfDistrict,
   tram: buildTramNetwork(TRAM_STATIONS, TRAM_LINES, DISTRICTS, LEVEL_INDEX),
-  creatures: indexById([...CREATURES, ...DEEP_CREATURES]),
+  creatures: indexById([...CREATURES, ...DEEP_CREATURES, ...WATERWORKS_CREATURES]),
   shops: indexById(SHOPS),
   recipes: indexById(RECIPES),
   newCharacter: {

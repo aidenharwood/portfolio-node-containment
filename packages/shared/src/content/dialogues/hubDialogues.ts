@@ -121,7 +121,7 @@ export const QUILL_DIALOGUE: DialogueDefinition = {
     },
     safety: {
       speaker: 'npc',
-      text: "This office is. Nothing past those doors will follow you in here, so if it goes badly, run back and breathe. Tram stop's behind me if you'd rather leave properly.",
+      text: "This office is. Nothing past those doors will follow you in here, so if it goes badly, run back and breathe. Tram's behind me if you'd rather leave properly.",
       next: 'greeting',
     },
     offer: {

@@ -103,7 +103,9 @@ export function objectIdsForObjective(
   objects: ReadonlyMap<WorldObjectId, WorldObjectDefinition>,
   recipes: ReadonlyMap<string, RecipeDefinition>,
 ): Set<WorldObjectId> {
-  if (objective.type === 'interactWith') return new Set([objective.objectId]);
+  if (objective.type === 'interactWith') {
+    return new Set([objective.objectId, ...[...objects.values()].filter((object) => object.countsAs === objective.objectId).map((object) => object.id)]);
+  }
   if (objective.type !== 'gather' && objective.type !== 'craft') return new Set();
   const station = [...recipes.values()].find((recipe) => recipe.output.itemId === objective.itemId)?.station;
   const ids = new Set<WorldObjectId>();

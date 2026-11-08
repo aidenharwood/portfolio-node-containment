@@ -331,7 +331,7 @@ export const OSEI_DIALOGUE: DialogueDefinition = {
     },
     transit: {
       speaker: 'npc',
-      text: 'Hale sells the pass. The tram stop is in the Transit Bay, east end of the concourse. Go on.',
+      text: 'Hale sells the pass. The tram is in the Transit Bay, east end of the concourse. Go on.',
       next: null,
     },
     idle: {
@@ -378,7 +378,7 @@ export const HALE_DIALOGUE: DialogueDefinition = {
     },
     board: {
       speaker: 'npc',
-      text: "Tram stop's in the Transit Bay, east end. Click the board, pick the Atrium. Don't lean on the doors.",
+      text: "Tram's in the Transit Bay, east end. Climb aboard, pick the Atrium. Don't lean on the doors.",
       next: null,
     },
     greeting: {
