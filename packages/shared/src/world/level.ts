@@ -1,4 +1,4 @@
-import type { ConnectorId, DistrictId, LevelId } from '../ids.ts';
+import type { ConnectorId, DistrictId, LevelId, SiteId } from '../ids.ts';
 import type { ZoneAmbience, ZoneLight } from './district.ts';
 import type { TilePoint } from './geometry.ts';
 
@@ -19,6 +19,7 @@ export interface ConnectorDefinition {
 export interface LevelDefinition {
   readonly id: LevelId;
   readonly name: string;
+  readonly site: SiteId;
   readonly kind: 'floor' | 'pocket';
   readonly depth: number;
   readonly districts: readonly DistrictPlacement[];

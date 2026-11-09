@@ -57,8 +57,14 @@ interface PointerTrack {
   readonly startY: number;
 }
 
+const SITE_ORDER = [...GAME_CONTENT.sites.keys()];
+
+const siteName = (level: ResolvedLevel): string => GAME_CONTENT.sites.get(level.definition.site)?.name ?? 'Unknown Site';
+
 const levelOrder = (a: ResolvedLevel, b: ResolvedLevel): number =>
-  (a.definition.kind === b.definition.kind ? 0 : a.definition.kind === 'floor' ? -1 : 1) || b.definition.depth - a.definition.depth;
+  SITE_ORDER.indexOf(a.definition.site) - SITE_ORDER.indexOf(b.definition.site) ||
+  (a.definition.kind === b.definition.kind ? 0 : a.definition.kind === 'floor' ? -1 : 1) ||
+  b.definition.depth - a.definition.depth;
 
 const levelDepthLabel = (level: ResolvedLevel): string => (level.definition.kind === 'pocket' ? 'Pocket' : `Level ${level.definition.depth}`);
 
@@ -182,7 +188,7 @@ export class WorldMap {
       this.element,
       h('header', { className: 'world-map-bar' },
         h('div', { className: 'world-map-title' },
-          h('h3', {}, transit ? 'Site Meridian Transit' : 'Site Meridian'),
+          h('h3', {}, transit ? `${siteName(shown)} Transit` : siteName(shown)),
           h('p', { className: 'world-map-hint' }, transit && boarding ? `On the platform at ${boarding.name}` : 'Drag to pan, pinch or scroll to zoom'),
         ),
         this.levelPicker(shown, objectives),
@@ -203,6 +209,21 @@ export class WorldMap {
     this.queuePaint();
   }
 
+  private levelOptions(shown: ResolvedLevel, objectives: ReadonlySet<DistrictId>): HTMLElement[] {
+    const visible = this.visibleLevels();
+    const option = ({ level, charted }: { readonly level: ResolvedLevel; readonly charted: boolean }) => {
+      const hasObjective = charted && level.districts.some(({ districtId }) => objectives.has(districtId));
+      return h('option', { value: level.id, disabled: !charted, selected: level.id === shown.id },
+        `${charted ? level.name : 'Uncharted'} · ${levelDepthLabel(level)}${hasObjective ? ' · ◆ objective' : ''}`,
+      );
+    };
+    const sites = [...new Set(visible.map(({ level }) => level.definition.site))];
+    if (sites.length < 2) return visible.map(option);
+    return sites.map((site) =>
+      h('optgroup', { label: GAME_CONTENT.sites.get(site)?.name ?? site }, ...visible.filter(({ level }) => level.definition.site === site).map(option)),
+    );
+  }
+
   private levelPicker(shown: ResolvedLevel, objectives: ReadonlySet<DistrictId>): HTMLElement {
     const select = h('select', {
       className: 'world-map-level',
@@ -213,12 +234,7 @@ export class WorldMap {
         this.render();
       },
     },
-      ...this.visibleLevels().map(({ level, charted }) => {
-        const hasObjective = charted && level.districts.some(({ districtId }) => objectives.has(districtId));
-        return h('option', { value: level.id, disabled: !charted, selected: level.id === shown.id },
-          `${charted ? level.name : 'Uncharted'} · ${levelDepthLabel(level)}${hasObjective ? ' · ◆ objective' : ''}`,
-        );
-      }),
+      ...this.levelOptions(shown, objectives),
     );
     return h('label', { className: 'world-map-level-field' }, h('span', { className: 'eyebrow' }, 'Level'), select);
   }
@@ -583,7 +599,8 @@ export class WorldMap {
 
   private paintLevelLink(context: CanvasRenderingContext2D, from: { x: number; y: number }, away: TramStation, color: string, shown: ResolvedLevel): void {
     const awayLevel = GAME_CONTENT.levels.get(away.levelId);
-    const goesDown = (awayLevel?.definition.depth ?? 0) < shown.definition.depth;
+    const relay = awayLevel !== undefined && awayLevel.definition.site !== shown.definition.site;
+    const goesDown = !relay && (awayLevel?.definition.depth ?? 0) < shown.definition.depth;
     const dy = goesDown ? 28 : -28;
     context.beginPath();
     context.moveTo(from.x, from.y);
@@ -597,7 +614,7 @@ export class WorldMap {
     context.font = '600 11px "Chakra Petch", sans-serif';
     context.textAlign = 'left';
     context.fillStyle = color;
-    context.fillText(`${goesDown ? 'Down' : 'Up'} to ${awayLevel?.name ?? 'elsewhere'}`, from.x + 8, from.y + dy);
+    context.fillText(relay ? `Relay to ${siteName(awayLevel)}` : `${goesDown ? 'Down' : 'Up'} to ${awayLevel?.name ?? 'elsewhere'}`, from.x + 8, from.y + dy);
     context.textAlign = 'center';
   }
 

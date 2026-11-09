@@ -9,6 +9,7 @@ import {
   type DistrictId,
   type GameContent,
   type GameEffect,
+  type MarketAccess,
   type NoticeTone,
   type QuestEvent,
   type QuestId,
@@ -26,7 +27,7 @@ export interface EffectHost {
   dropToGround(owner: Player, itemId: string, quantity: number, position: TilePoint): void;
   openCrafting(player: Player, station: CraftingStation): void;
   openStorage(player: Player): void;
-  openMarket(player: Player): void;
+  openMarket(player: Player, access: MarketAccess): void;
   openContracts(player: Player): void;
   openTramMap(player: Player): void;
   discoverStation(player: Player, stationId: string): void;
@@ -71,7 +72,7 @@ export class EffectRunner {
       case 'openStorage':
         return this.host.openStorage(player);
       case 'openMarket':
-        return this.host.openMarket(player);
+        return this.host.openMarket(player, effect.access ?? 'trade');
       case 'openContracts':
         return this.host.openContracts(player);
       case 'restoreIntegrity':

@@ -45,6 +45,14 @@ The world is a handful of continuous **levels** (`content/levels/`): the main fl
 - `findLevelIssues` (`content/levelIntegrity.ts`) rejects overlapping placements, walkable tiles that cannot be reached from the level spawn (walking, through a same-level teleport, or by tram between platforms on the same level), duplicate instance ids on a level, and spawns, teleports or recoveries that land on an unwalkable tile.
 - Legacy character records saved with `{ zoneId, position }` are upgraded on load by `upgradeLegacyLocation`.
 
+### Sites
+
+Meridian is one of nine deep Sites. A **Site** (`content/sites.ts`) groups levels: every `LevelDefinition` names its `site`, and `depth` counts within that Site. A Site names a `hubDistrictId`. The home Site is the one holding the new-character start.
+
+- `findSiteIssues` (`content/siteIntegrity.ts`) requires every level to belong to a known Site, every Site to have a floor level, and every hub to be on its own Site with a storage locker and a shopkeeper in a safe area. A Site away from home also needs an exchange mailbox in its hub and a relay arriving from another Site: any object on another Site's level whose interaction teleports onto it.
+- The player marketplace posts orders only at the Atrium exchange (`openMarket`, access `trade`). An exchange mailbox (`market-mailbox`, access `collect`) may stand only in a Site hub; it collects and withdraws orders but cannot post them. The server checks both.
+- The world map groups level tabs by Site and titles itself with the shown level's Site. A tram link to a level on another Site is labelled as a relay.
+
 ### World structure
 
 - **Intake Wing** (tutorial, tier 1) is self-contained and reached only by tram (the Intake Shuttle). Its quests teach every system in order, each step marked in the world: Orientation Protocol (gear, area travel, dialogue), Field Fabrication (gathering, refining, assembly, storage), Live Fire (combat, consumables, containment, resting) and Cleared for Transit (trading, trams). The last one ends on the tram to the Atrium and hands over to The Knocking.

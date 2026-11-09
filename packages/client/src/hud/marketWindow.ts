@@ -10,6 +10,7 @@ import {
   remainingQuantity,
   tradableItems,
   type ItemDefinition,
+  type MarketAccess,
   type MarketOrder,
   type MarketQuote,
   type MarketSide,
@@ -41,6 +42,7 @@ export class MarketWindow {
   private readonly world: WorldState;
   private open = false;
   private tab: MarketTab = 'orders';
+  private access: MarketAccess = 'trade';
   private orders: readonly MarketOrder[] = [];
   private quotes = new Map<string, MarketQuote>();
   private search = '';
@@ -53,7 +55,7 @@ export class MarketWindow {
     this.connection = connection;
     this.world = world;
     this.unsubscribers = [
-      connection.on('market.opened', () => this.show()),
+      connection.on('market.opened', ({ access }) => this.show(access)),
       connection.on('market.closed', () => this.hide()),
       connection.on('market.state', ({ orders, quotes }) => {
         this.orders = orders;
@@ -77,8 +79,10 @@ export class MarketWindow {
     this.unsubscribers.forEach((unsubscribe) => unsubscribe());
   }
 
-  private show(): void {
+  private show(access: MarketAccess): void {
     this.open = true;
+    this.access = access;
+    if (access === 'collect') this.tab = 'orders';
     this.element.hidden = false;
     this.render();
   }
@@ -113,13 +117,15 @@ export class MarketWindow {
         this.element,
         h('header', { className: 'shop-header' },
           h('div', {},
-            h('h3', {}, 'Site Exchange'),
-            h('p', { className: 'shop-greeting' }, 'Buy orders fill from the cheapest seller, sell orders from the highest bidder. Your price is the limit.'),
+            h('h3', {}, this.access === 'collect' ? 'Exchange Mailbox' : 'Site Exchange'),
+            h('p', { className: 'shop-greeting' }, this.access === 'collect'
+              ? 'Collect what your orders have earned, or withdraw them. New orders are posted at the exchange in the Meridian Atrium.'
+              : 'Buy orders fill from the cheapest seller, sell orders from the highest bidder. Your price is the limit.'),
           ),
           h('button', { className: 'dialogue-close', type: 'button', ariaLabel: 'Close exchange', onclick: () => this.requestClose() }, '×'),
         ),
         h('nav', { className: 'tabs market-tabs', role: 'tablist' },
-          ...(Object.keys(TAB_LABELS) as MarketTab[]).map((tab) =>
+          ...(Object.keys(TAB_LABELS) as MarketTab[]).filter((tab) => this.access === 'trade' || tab === 'orders').map((tab) =>
             h('button', {
               className: `tab${this.tab === tab ? ' active' : ''}`,
               type: 'button',

@@ -6,6 +6,7 @@ import type {
   CraftingStation,
   FriendEntry,
   GameContent,
+  MarketAccess,
   NoticeTone,
   QuestEvent,
   QuestId,
@@ -434,11 +435,11 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     this.storage.open(player);
   }
 
-  openMarket(player: Player): void {
+  openMarket(player: Player, access: MarketAccess = 'trade'): void {
     this.shops.close(player);
     this.crafting.close(player);
     this.storage.close(player);
-    this.market.open(player);
+    this.market.open(player, access);
   }
 
   forgetCharacter(characterId: CharacterId): void {

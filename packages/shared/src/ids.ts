@@ -10,6 +10,7 @@ export type DistrictId = string;
 export type AreaId = string;
 export type InstanceId = string;
 export type LevelId = string;
+export type SiteId = string;
 export type ConnectorId = string;
 export type TramStationId = string;
 export type TramLineId = string;

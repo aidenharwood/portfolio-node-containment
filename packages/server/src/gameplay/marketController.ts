@@ -3,12 +3,14 @@ import {
   cancelOrder,
   collectOrder,
   isSettled,
+  isSiteHub,
   MARKET_DISTRICT_ID,
   marketQuotes,
   matchOrder,
   placeOrder,
   type CharacterId,
   type GameContent,
+  type MarketAccess,
   type MarketFill,
   type MarketOrder,
   type MarketOrderId,
@@ -33,7 +35,7 @@ export class MarketController {
   private readonly store: MarketStore;
   private readonly onlinePlayer: (characterId: CharacterId) => Player | undefined;
   private readonly orders = new Map<MarketOrderId, MarketOrder>();
-  private readonly browsing = new Set<Player>();
+  private readonly browsing = new Map<Player, MarketAccess>();
   private nextSequence: number;
 
   constructor(
@@ -52,13 +54,18 @@ export class MarketController {
     this.nextSequence = Math.max(0, ...[...this.orders.values()].map((order) => order.sequence)) + 1;
   }
 
-  open(player: Player): void {
-    if (this.world.districtOf(player) !== MARKET_DISTRICT_ID) {
+  open(player: Player, access: MarketAccess): void {
+    const district = this.world.districtOf(player);
+    if (access === 'trade' && district !== MARKET_DISTRICT_ID) {
       this.host.notify(player, 'warning', 'The exchange is only reachable from the Meridian Atrium.');
       return;
     }
-    this.browsing.add(player);
-    player.send({ type: 'market.opened' });
+    if (access === 'collect' && !isSiteHub(this.content.sites, district)) {
+      this.host.notify(player, 'warning', 'The exchange mailbox only connects from a Site hub.');
+      return;
+    }
+    this.browsing.set(player, access);
+    player.send({ type: 'market.opened', access });
     this.sendState(player);
   }
 
@@ -85,7 +92,7 @@ export class MarketController {
   }
 
   place(player: Player, request: MarketOrderRequest): void {
-    if (!this.browsing.has(player)) return;
+    if (this.browsing.get(player) !== 'trade') return;
     const placed = placeOrder(player.record.inventory, this.content.items, this.ordersOf(player.record.id), request, {
       id: randomUUID(),
       ownerId: player.record.id,
@@ -188,7 +195,7 @@ export class MarketController {
   }
 
   private broadcastState(): void {
-    for (const player of this.browsing) this.sendState(player);
+    for (const player of this.browsing.keys()) this.sendState(player);
   }
 
   private sendState(player: Player): void {

@@ -135,4 +135,14 @@ export const MARKET_TERMINAL: WorldObjectDefinition = {
   interactions: [{ verb: 'Trade', effects: [{ type: 'openMarket' }] }],
 };
 
-export const CRAFTING_OBJECTS: readonly WorldObjectDefinition[] = [...RESOURCE_NODES, ...CRAFTING_STATIONS_OBJECTS, STORAGE_LOCKER, MARKET_TERMINAL];
+export const MARKET_MAILBOX: WorldObjectDefinition = {
+  id: 'market-mailbox',
+  name: 'Exchange Mailbox',
+  examine: 'A relay drop wired to the exchange at Meridian. It cannot post orders, but it delivers whatever your orders have earned and lets you withdraw them.',
+  model: 'terminal',
+  blocksMovement: true,
+  light: { radius: 1.8, color: '#e3c35a', intensity: 0.45 },
+  interactions: [{ verb: 'Collect', effects: [{ type: 'openMarket', access: 'collect' }] }],
+};
+
+export const CRAFTING_OBJECTS: readonly WorldObjectDefinition[] = [...RESOURCE_NODES, ...CRAFTING_STATIONS_OBJECTS, STORAGE_LOCKER, MARKET_TERMINAL, MARKET_MAILBOX];

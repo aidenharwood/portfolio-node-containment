@@ -3,6 +3,7 @@ import type { LevelDefinition } from '../../world/level.ts';
 export const THE_THRESHOLD: LevelDefinition = {
   id: 'the-threshold',
   name: 'The Threshold',
+  site: 'meridian',
   kind: 'pocket',
   depth: -2,
   capacity: 16,

@@ -70,4 +70,28 @@ describe('market', () => {
     harness.send({ type: 'market.cancel', orderId: 'not-mine' });
     assert.deepEqual(harness.sink.last('market.state')?.orders, []);
   });
+
+  test('a Site mailbox collects and withdraws orders but cannot post them', () => {
+    const harness = createHarness({ prepare: atExchange });
+    harness.interactWithObject('atrium-exchange');
+    harness.send({ type: 'market.place', side: 'sell', itemId: 'scrap-alloy', price: 5, quantity: 10 });
+    const order = harness.sink.last('market.state')!.orders[0]!;
+    harness.send({ type: 'market.close' });
+
+    harness.gameplay.openMarket(harness.player, 'collect');
+    assert.deepEqual(harness.sink.last('market.opened'), { type: 'market.opened', access: 'collect' });
+    harness.send({ type: 'market.place', side: 'sell', itemId: 'scrap-alloy', price: 5, quantity: 10 });
+    assert.equal(countItem(harness.player.record.inventory, 'scrap-alloy'), 10);
+    assert.equal(harness.sink.last('market.state')?.orders.length, 1);
+
+    harness.send({ type: 'market.cancel', orderId: order.id });
+    assert.equal(countItem(harness.player.record.inventory, 'scrap-alloy'), 20);
+    assert.deepEqual(harness.sink.last('market.state')?.orders, []);
+  });
+
+  test('a Site mailbox only connects from a Site hub', () => {
+    const harness = createHarness({ prepare: (record) => ({ ...atExchange(record), location: at('hydroponics', { x: 4, y: 13 }) }) });
+    harness.gameplay.openMarket(harness.player, 'collect');
+    assert.equal(harness.sink.last('market.opened'), undefined);
+  });
 });

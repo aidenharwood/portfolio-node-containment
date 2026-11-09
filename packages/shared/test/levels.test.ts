@@ -57,6 +57,7 @@ function fixtureContent(levels: readonly LevelDefinition[], districts: readonly 
 const level = (districts: LevelDefinition['districts']): LevelDefinition => ({
   id: 'fixture',
   name: 'Fixture',
+  site: 'meridian',
   kind: 'floor',
   depth: 0,
   districts,

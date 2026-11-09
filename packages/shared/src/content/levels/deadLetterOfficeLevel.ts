@@ -3,6 +3,7 @@ import type { LevelDefinition } from '../../world/level.ts';
 export const DEAD_LETTER_OFFICE_LEVEL: LevelDefinition = {
   id: 'dead-letter-office',
   name: 'The Dead Letter Office',
+  site: 'meridian',
   kind: 'pocket',
   depth: -3,
   capacity: 24,

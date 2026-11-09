@@ -9,7 +9,7 @@ import type { SkillExperience } from '../character/skills.ts';
 import type { EquipmentState } from '../gear/equipment.ts';
 import type { InventoryState } from '../gear/inventory.ts';
 import type { StorageState } from '../gear/storage.ts';
-import type { MarketOrder, MarketQuote } from '../economy/market.ts';
+import type { MarketAccess, MarketOrder, MarketQuote } from '../economy/market.ts';
 import type { ContractLedger } from '../contracts/contractLedger.ts';
 import type { FriendView } from '../social/friends.ts';
 import type { PartyView } from '../social/party.ts';
@@ -142,7 +142,7 @@ export type ServerMessage =
   | { readonly type: 'crafting.closed' }
   | { readonly type: 'storage.opened' }
   | { readonly type: 'storage.closed' }
-  | { readonly type: 'market.opened' }
+  | { readonly type: 'market.opened'; readonly access: MarketAccess }
   | { readonly type: 'market.state'; readonly orders: readonly MarketOrder[]; readonly quotes: readonly MarketQuote[] }
   | { readonly type: 'market.closed' }
   | { readonly type: 'player.activity'; readonly activity: PlayerActivityView | null }

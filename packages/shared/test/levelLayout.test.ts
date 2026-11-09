@@ -35,6 +35,7 @@ const districts = new Map<string, DistrictDefinition>([
 const level: LevelDefinition = {
   id: 'fixture',
   name: 'Fixture Level',
+  site: 'meridian',
   kind: 'floor',
   depth: 0,
   districts: [
