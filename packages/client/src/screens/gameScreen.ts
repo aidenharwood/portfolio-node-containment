@@ -28,6 +28,7 @@ import { setTooltipEquipment } from '../ui/itemTooltip.ts';
 import { SidePanel } from '../hud/sidePanel.ts';
 import { SpeechLayer } from '../hud/speechLayer.ts';
 import { VitalsPanel } from '../hud/vitalsPanel.ts';
+import { createBestiaryTab } from '../hud/tabs/bestiaryTab.ts';
 import { createDossierTab } from '../hud/tabs/dossierTab.ts';
 import { createEquipmentTab } from '../hud/tabs/equipmentTab.ts';
 import { createInventoryTab } from '../hud/tabs/inventoryTab.ts';
@@ -133,6 +134,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     createEquipmentTab(connection, world),
     createSkillsTab(),
     createQuestsTab(menu, questTracking),
+    createBestiaryTab(),
     createDossierTab(connection, world),
   ]);
 

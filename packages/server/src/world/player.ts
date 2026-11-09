@@ -32,6 +32,7 @@ export interface PendingInteraction {
 
 export type PlayerActivity =
   | { readonly kind: 'gather'; readonly instanceId: InstanceId; readonly interactionIndex: number; readonly nextTick: number }
+  | { readonly kind: 'study'; readonly creatureEntityId: EntityId; readonly dueTick: number | null; readonly lastApproach: TilePoint | null }
   | { readonly kind: 'craft'; readonly recipeId: string; readonly remaining: number; readonly nextTick: number }
   | {
       readonly kind: 'tram';

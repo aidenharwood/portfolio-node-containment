@@ -1,3 +1,4 @@
+import { SKILL_LEVEL_CAP } from '../character/skills.ts';
 import type { DialogueDefinition } from '../dialogue/dialogue.ts';
 import type { Condition } from '../rules/conditions.ts';
 import type { GameEffect } from '../rules/effects.ts';
@@ -28,6 +29,9 @@ export function findContentIssues(content: GameContent): string[] {
   };
   const checkConditions = (where: string, conditions: readonly Condition[] | undefined) => {
     for (const condition of conditions ?? []) {
+      if (condition.type === 'skillLevel' && (!Number.isInteger(condition.atLeast) || condition.atLeast < 1 || condition.atLeast > SKILL_LEVEL_CAP)) {
+        report(where, `skill level ${condition.atLeast} for ${condition.skill} is outside 1-${SKILL_LEVEL_CAP}`);
+      }
       if (condition.type === 'hasItem' || condition.type === 'lacksItem') checkItem(where, condition.itemId);
       if (condition.type === 'questActive' || condition.type === 'questCompleted' || condition.type === 'questNotStarted') {
         checkQuest(where, condition.questId);

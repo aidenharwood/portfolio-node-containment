@@ -65,6 +65,7 @@ export interface SelfState {
   readonly discoveredStations: readonly TramStationId[];
   readonly visitedLevels: readonly LevelId[];
   readonly openDoors: readonly WorldObjectId[];
+  readonly studiedCreatures: readonly CreatureId[];
 }
 
 export interface DialogueView {

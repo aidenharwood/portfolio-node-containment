@@ -16,6 +16,8 @@ import {
   sealTierFor,
   ignoresOutclassedPlayer,
   defeatExperience,
+  effectiveDefence,
+  studiedFlag,
   scaledRespawnTicks,
   creatureAttackProfile,
   deriveCombatProfile,
@@ -173,7 +175,8 @@ export class CombatController {
       this.world.face(player, creature.position);
       player.nextAttackTick = tick + attack.speedTicks;
       player.lastCombatTick = tick;
-      const outcome = rollAttack(attack, creature.definition.defence, this.random);
+      const studied = player.hasFlag(studiedFlag(creature.definition.id));
+      const outcome = rollAttack(attack, effectiveDefence(creature.definition, attack.style, studied), this.random);
       const damage = restrained ? Math.min(outcome.damage, creature.integrity - 1) : outcome.damage;
       creature.integrity = Math.max(0, creature.integrity - damage);
       if (damage > 0) creature.contributors.add(player.entityId);
