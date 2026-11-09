@@ -86,6 +86,18 @@ export function startQuest(definition: QuestDefinition, probe: QuestStateProbe):
   return advanceQuest(definition, progress, null, probe);
 }
 
+export function awaitsContainment(log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>, creatureId: CreatureId): boolean {
+  return Object.values(log).some((progress) => {
+    if (progress.status !== 'active') return false;
+    const step = quests.get(progress.questId)?.steps[progress.stepIndex];
+    return (
+      step?.objectives.some(
+        (objective, index) => objective.type === 'contain' && objective.creatureId === creatureId && (progress.objectiveProgress[index] ?? 0) < objective.count,
+      ) ?? false
+    );
+  });
+}
+
 export function advanceQuest(
   definition: QuestDefinition,
   progress: QuestProgress,

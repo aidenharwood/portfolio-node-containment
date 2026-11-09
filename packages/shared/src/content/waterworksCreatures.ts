@@ -69,6 +69,7 @@ export const WATERWORKS_CREATURES: readonly CreatureDefinition[] = [
     ],
     containment: {
       containmentClass: 'euclid',
+      requiredLevel: 7,
       procedures: 'ANM-2604-P is the parent organism of the ANM-2604 colony and cannot be moved without draining the outfall. A sealed specimen stops budding within the hour. Keep the seal above body temperature; she sulks when it is cold.',
       experience: 760,
       loot: [

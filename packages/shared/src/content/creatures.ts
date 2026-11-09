@@ -148,6 +148,7 @@ export const CREATURES: readonly CreatureDefinition[] = [
     ],
     containment: {
       containmentClass: 'euclid',
+      requiredLevel: 3,
       procedures: 'ANM-1180-B keeps to its patrol route and is to be left on it. When re-housing, close the seal while it faces away from the bulkhead. It will not resist a locked door; it only checks them.',
       experience: 300,
       loot: [
@@ -249,6 +250,7 @@ export const CREATURES: readonly CreatureDefinition[] = [
     ],
     containment: {
       containmentClass: 'euclid',
+      requiredLevel: 5,
       procedures: 'ANM-1180-D is never to be shown an incomplete work order. Personnel re-housing it should carry signed paperwork. Once sealed it continues to audit the seal, and it has never yet found a fault.',
       experience: 650,
       loot: [

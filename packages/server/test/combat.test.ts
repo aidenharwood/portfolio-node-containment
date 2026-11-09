@@ -11,6 +11,7 @@ import {
 } from '@containment/shared';
 import { PLAYER_RECOVERY_TICKS } from '../src/gameplay/combatController.ts';
 import { CONSUMABLE_COOLDOWN_MESSAGE } from '../src/gameplay/gearController.ts';
+import { containSpecimen } from './support/containment.ts';
 import { createHarness, finishDialogue, type Harness, at, districtOf, levelPoint } from './support/testHarness.ts';
 
 const ATRIUM_NEAR_KADE: WorldLocation = at('meridian-atrium', { x: 42, y: 13 });
@@ -155,7 +156,7 @@ describe('combat', () => {
     harness.ticksUntil(() => countItem(player.record.inventory, 'expedition-log') === 1, 400);
     assert.equal(stepOf(harness, 'the-knocking'), 6);
 
-    defeat(harness, 's2-warden', 4000);
+    containSpecimen(harness, 's2-warden', 4000);
     assert.equal(stepOf(harness, 'the-knocking'), 7);
 
     harness.ticksUntil(() => player.combatTargetId === null, 600);
@@ -375,7 +376,7 @@ describe('the far side', () => {
     harness.interactWithObject('uc-sector-three-seal-a');
     assert.equal(districtOf(player), 'undercroft', 'the seal stays shut while the Foreman stands');
 
-    defeat(harness, 'uc-foreman', 6000);
+    containSpecimen(harness, 'uc-foreman', 6000);
     assert.equal(stepOf(harness, 'the-far-side'), 4);
     harness.ticksUntil(() => player.combatTargetId === null, 2000);
 

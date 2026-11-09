@@ -3,6 +3,7 @@ import { describe, test } from 'node:test';
 import {
   addItem,
   containmentBlocker,
+  containmentLevelFor,
   containmentReadiness,
   containmentThreshold,
   createEmptyInventory,
@@ -44,12 +45,12 @@ describe('containment rules', () => {
   test('containment needs the level, the right seal and a weakened specimen', () => {
     const warden = creature('hollow-warden');
     const tier = sealTierFor(warden);
-    assert.equal(tier, tierForLevel(warden.level));
+    assert.equal(tier, tierForLevel(containmentLevelFor(warden)));
     const seal = carrying(`containment-seal-${tier}`);
     const novice = createStartingSkills();
-    const qualified = createStartingSkills({ containment: experienceForLevel(warden.level) });
+    const qualified = createStartingSkills({ containment: experienceForLevel(containmentLevelFor(warden)) });
 
-    assert.match(containmentReadiness(warden, novice, seal, GAME_CONTENT.items) ?? '', /Containment level 4/);
+    assert.match(containmentReadiness(warden, novice, seal, GAME_CONTENT.items) ?? '', /Containment level 3/);
     assert.match(containmentReadiness(warden, qualified, createEmptyInventory(), GAME_CONTENT.items) ?? '', /Mk\.I\b/);
     assert.equal(containmentReadiness(warden, qualified, seal, GAME_CONTENT.items), null);
     assert.match(containmentBlocker(warden, warden.integrity, qualified, seal, GAME_CONTENT.items) ?? '', /too strong/);
@@ -67,8 +68,23 @@ describe('containment rules', () => {
   });
 
   test('integrity flags a containable specimen with no seal for its tier', () => {
-    const items = new Map([...GAME_CONTENT.items].filter(([id]) => id !== 'containment-seal-9'));
+    const items = new Map([...GAME_CONTENT.items].filter(([id]) => id !== 'containment-seal-5'));
     const issues = findContentIssues({ ...GAME_CONTENT, items });
-    assert.ok(issues.some((issue) => issue.startsWith('creature the-host') && issue.includes('tier 9')));
+    assert.ok(issues.some((issue) => issue.startsWith('creature the-host') && issue.includes('tier 5')));
+  });
+
+  test('story bosses can be contained at a story pace, below their combat level', () => {
+    const host = creature('the-host');
+    assert.ok(containmentLevelFor(host) < host.level);
+    assert.equal(sealTierFor(host), tierForLevel(containmentLevelFor(host)));
+    assert.equal(containmentLevelFor(creature('the-understudy')), creature('the-understudy').level);
+  });
+
+  test('integrity flags a required containment level above the specimen level', () => {
+    const warden = creature('hollow-warden');
+    const creatures = new Map(GAME_CONTENT.creatures);
+    creatures.set(warden.id, { ...warden, containment: warden.containment ? { ...warden.containment, requiredLevel: warden.level + 1 } : undefined });
+    const issues = findContentIssues({ ...GAME_CONTENT, creatures });
+    assert.ok(issues.some((issue) => issue.startsWith('creature hollow-warden') && issue.includes('required containment level')));
   });
 });

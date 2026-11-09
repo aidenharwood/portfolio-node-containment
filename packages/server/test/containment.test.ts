@@ -37,6 +37,13 @@ function operative(containmentLevel: number, seals: readonly string[]) {
 }
 
 
+function onTheWardenStep(prepare: (record: CharacterRecord) => CharacterRecord) {
+  return (record: CharacterRecord): CharacterRecord => {
+    const prepared = prepare(record);
+    return { ...prepared, quests: { ...prepared.quests, 'the-knocking': { questId: 'the-knocking', status: 'active', stepIndex: 6, objectiveProgress: [0] } } };
+  };
+}
+
 function warden(harness: Harness) {
   const creature = harness.gameplay.world.levelOf(harness.player).creatureByInstance('s2-warden');
   assert.ok(creature);
@@ -71,17 +78,8 @@ describe('containment', () => {
     assert.ok(harness.sink.messages.some((message) => message.type === 'combat.death' && message.containedBy === harness.player.entityId));
   });
 
-  test('containing a storyline boss advances its defeat objective', () => {
-    const prepare = operative(6, ['containment-seal-2']);
-    const harness = createHarness({
-      prepare: (record) => {
-        const prepared = prepare(record);
-        return {
-          ...prepared,
-          quests: { ...prepared.quests, 'the-knocking': { questId: 'the-knocking', status: 'active', stepIndex: 6, objectiveProgress: [0] } },
-        };
-      },
-    });
+  test('containing a storyline boss advances its contain objective', () => {
+    const harness = createHarness({ prepare: onTheWardenStep(operative(6, ['containment-seal-2'])) });
     const creature = warden(harness);
     harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-warden', interactionIndex: 0 });
     harness.ticksUntil(() => harness.player.heldFireOn === creature.entityId, 2000);
@@ -91,12 +89,22 @@ describe('containment', () => {
     assert.equal(harness.player.record.quests['the-knocking']?.stepIndex, 7);
   });
 
+  test('an operative ordered to contain a boss holds back even without a seal', () => {
+    const harness = createHarness({ prepare: onTheWardenStep(operative(6, [])) });
+    const creature = warden(harness);
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-warden', interactionIndex: 0 });
+    harness.ticksUntil(() => harness.player.heldFireOn === creature.entityId, 2000);
+    assert.ok(creature.isAlive);
+    assert.ok(notices(harness).some((text) => text.includes('your orders are to contain it') && text.includes('Mk.I')));
+    assert.equal(harness.player.record.quests['the-knocking']?.stepIndex, 6);
+  });
+
   test('containment is refused below the specimen level', () => {
-    const harness = createHarness({ prepare: operative(3, ['containment-seal-2']) });
+    const harness = createHarness({ prepare: operative(2, ['containment-seal-2']) });
     const creature = warden(harness);
     creature.integrity = 1;
     harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-warden', interactionIndex: 1 });
-    assert.ok(notices(harness).some((text) => text.includes('Containment level 4')));
+    assert.ok(notices(harness).some((text) => text.includes('Containment level 3')));
     assert.equal(harness.player.containTargetId, null);
   });
 

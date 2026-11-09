@@ -29,8 +29,8 @@ export const THE_FAR_SIDE: QuestDefinition = {
     },
     {
       id: 'the-foreman',
-      journal: "Power is flowing, but the Sector 3 seal won't open while the workshop is drawing on the circuit. The Foreman is still at his post. If I'm not ready, Mags sells better kit.",
-      objectives: [{ type: 'defeat', creatureId: 'the-foreman', count: 1, label: 'Contain or put down the Foreman' }],
+      journal: "Power is flowing, but the Sector 3 seal won't open while the workshop is drawing on the circuit. The Foreman is still at his post. He has to be contained, and that takes a Containment Seal Mk.II or better. If I'm not ready, Mags sells better kit.",
+      objectives: [{ type: 'contain', creatureId: 'the-foreman', count: 1, label: 'Contain the Foreman' }],
       onComplete: [{ type: 'setFlag', flag: 'undercroft.foreman-down' }],
     },
     {

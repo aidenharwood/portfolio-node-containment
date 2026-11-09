@@ -12,8 +12,8 @@ export const FAMILIAR_FACES: QuestDefinition = {
   steps: [
     {
       id: 'wardens',
-      journal: 'Kade wants the Hollow Warden put down twice more, so that it stays down a little longer each time.',
-      objectives: [{ type: 'defeat', creatureId: 'hollow-warden', count: 2, label: 'Contain or put down the Hollow Warden again' }],
+      journal: 'Kade wants the Hollow Warden sealed twice more, so that it stays still a little longer each time. I will need two Containment Seals Mk.I or better.',
+      objectives: [{ type: 'contain', creatureId: 'hollow-warden', count: 2, label: 'Contain the Hollow Warden again' }],
     },
     {
       id: 'wraiths',

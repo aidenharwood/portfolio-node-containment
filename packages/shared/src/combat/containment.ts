@@ -28,7 +28,9 @@ export const containmentThreshold = (maxIntegrity: number): number => Math.max(1
 export const isWeakenedForContainment = (integrity: number, maxIntegrity: number): boolean =>
   integrity > 0 && integrity <= containmentThreshold(maxIntegrity);
 
-export const sealTierFor = (creature: CreatureDefinition): number => tierForLevel(creature.level);
+export const containmentLevelFor = (creature: CreatureDefinition): number => creature.containment?.requiredLevel ?? creature.level;
+
+export const sealTierFor = (creature: CreatureDefinition): number => tierForLevel(containmentLevelFor(creature));
 
 export const isWithinContainmentReach = (from: TilePoint, to: TilePoint, hasSightline: (from: TilePoint, to: TilePoint) => boolean): boolean =>
   chebyshevDistance(from, to) <= CONTAINMENT_REACH && hasSightline(from, to);
@@ -53,7 +55,8 @@ const sealNameFor = (catalog: ItemCatalog, tier: number): string =>
 
 export function containmentReadiness(creature: CreatureDefinition, skills: SkillExperience, inventory: InventoryState, catalog: ItemCatalog): string | null {
   if (!isContainable(creature)) return `${creature.name} cannot be contained.`;
-  if (levelForExperience(skills.containment) < creature.level) return `You need Containment level ${creature.level} to contain ${creature.name}.`;
+  const required = containmentLevelFor(creature);
+  if (levelForExperience(skills.containment) < required) return `You need Containment level ${required} to contain ${creature.name}.`;
   const tier = sealTierFor(creature);
   if (!sealFor(inventory, catalog, tier)) return `You need ${sealNameFor(catalog, tier)} or better to contain ${creature.name}.`;
   return null;

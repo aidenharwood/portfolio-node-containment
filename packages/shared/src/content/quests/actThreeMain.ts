@@ -59,12 +59,12 @@ export const DEAD_LETTER_OFFICE: QuestDefinition = {
     },
     {
       id: 'postmaster',
-      journal: 'Every pigeonhole is stamped with the same initials: P.M. The Postmaster is in Dispatch, south of the Sorting Floor, signing.',
-      objectives: [{ type: 'defeat', creatureId: 'the-postmaster', count: 1, label: 'Contain or destroy the Postmaster' }],
+      journal: 'Every pigeonhole is stamped with the same initials: P.M. The Postmaster is in Dispatch, south of the Sorting Floor, signing. A Containment Seal Mk.V or better will hold it.',
+      objectives: [{ type: 'contain', creatureId: 'the-postmaster', count: 1, label: 'Contain the Postmaster' }],
     },
     {
       id: 'engine',
-      journal: 'The Postmaster is gone, but the franking engine in Dispatch is still stamping letters in my handwriting.',
+      journal: 'The Postmaster is sealed, but the franking engine in Dispatch is still stamping letters in my handwriting.',
       objectives: [{ type: 'interactWith', objectId: 'franking-engine', label: 'Stop the franking engine' }],
     },
     {

@@ -10,6 +10,7 @@ import {
   type QuestProgress,
   type WorldLocation,
 } from '@containment/shared';
+import { containSpecimen } from './support/containment.ts';
 import { createHarness, finishDialogue, type Harness, at, districtOf, levelPoint } from './support/testHarness.ts';
 
 const active = (questId: string, stepIndex = 0): QuestProgress => ({ questId, status: 'active', stepIndex, objectiveProgress: [0, 0, 0] });
@@ -117,7 +118,7 @@ describe('act two: the answer', () => {
     for (const moth of ['cv-moth-hall-a', 'cv-moth-hall-b', 'cv-moth-hall-c', 'cv-moth-corridor-a', 'cv-moth-corridor-b', 'cv-moth-corridor-c']) defeat(harness, moth);
     assert.equal(stepOf(harness, 'cold-storage'), 3);
 
-    defeat(harness, 'cv-curator');
+    containSpecimen(harness, 'cv-curator');
     assert.equal(stepOf(harness, 'cold-storage'), 4);
 
     use(harness, 'cv-ledger');
@@ -153,7 +154,7 @@ describe('act two: the answer', () => {
     use(harness, 'sa-outbox');
     assert.equal(stepOf(harness, 'dead-air'), 5);
 
-    defeat(harness, 'sa-choir');
+    containSpecimen(harness, 'sa-choir');
     assert.equal(stepOf(harness, 'dead-air'), 6);
 
     use(harness, 'sa-array-core');
@@ -196,7 +197,7 @@ describe('act two: the answer', () => {
     use(harness, 'da-sealed-door-a');
     assert.ok(player.position.y >= levelPoint('drowned-archive', { x: 0, y: 11 }).y, 'the drained door opens into the reading room');
 
-    defeat(harness, 'da-last-archivist');
+    containSpecimen(harness, 'da-last-archivist');
     assert.equal(stepOf(harness, 'original-contract'), 5);
 
     use(harness, 'da-lectern');
@@ -233,7 +234,7 @@ describe('act two: the answer', () => {
     use(harness, 'fu-reactor-door-a');
     assert.ok(player.position.y >= levelPoint('furnace', { x: 0, y: 11 }).y, 'the vented door opens into the reactor heart');
 
-    defeat(harness, 'fu-stoker');
+    containSpecimen(harness, 'fu-stoker');
     assert.equal(stepOf(harness, 'stoking-the-fire'), 6);
 
     use(harness, 'fu-reactor-console');
@@ -269,7 +270,7 @@ describe('act two: the answer', () => {
     for (const lantern of ['mb-lantern-medbay', 'mb-lantern-workshop', 'mb-lantern-plaza']) use(harness, lantern);
     assert.equal(stepOf(harness, 'the-answer'), 5);
 
-    defeat(harness, 'mb-host');
+    containSpecimen(harness, 'mb-host');
     assert.equal(stepOf(harness, 'the-answer'), 6);
 
     talk(harness, 'mb-guest', 'Yes. Come in');

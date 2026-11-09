@@ -10,6 +10,7 @@ import {
   type QuestProgress,
   type WorldLocation,
 } from '@containment/shared';
+import { containSpecimen } from './support/containment.ts';
 import { at, createHarness, finishDialogue, type Harness } from './support/testHarness.ts';
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
@@ -113,7 +114,7 @@ describe('the waterworks', () => {
     assert.equal(stepOf(harness, 'the-outfall'), 1);
 
     travel(harness, OUTFALL);
-    defeat(harness, 'ww-outfall-mother');
+    containSpecimen(harness, 'ww-outfall-mother');
     assert.equal(stepOf(harness, 'the-outfall'), 2);
     use(harness, 'ww-outfall-pump');
     assert.equal(stepOf(harness, 'the-outfall'), 3);

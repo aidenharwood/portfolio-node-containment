@@ -6,6 +6,7 @@ import {
   type ChunkKey,
   combatExperience,
   combatLevel,
+  awaitsContainment,
   CONTAINMENT_CLASS_INFO,
   containmentBlocker,
   containmentReadiness,
@@ -215,6 +216,7 @@ export class CombatController {
 
   private pullsBlows(player: Player, creature: Creature): boolean {
     if (!creature.definition.containment || player.finishingTargetId === creature.entityId) return false;
+    if (this.questAwaitsContainment(player, creature)) return true;
     return containmentReadiness(creature.definition, player.record.skills, player.record.inventory, this.content.items) === null;
   }
 
@@ -222,7 +224,17 @@ export class CombatController {
     player.path = [];
     if (player.heldFireOn === creature.entityId) return;
     player.heldFireOn = creature.entityId;
-    this.host.notify(player, 'info', `${creature.definition.name} is weakened. Contain it now, or attack it again to finish it.`);
+    const name = creature.definition.name;
+    const readiness = containmentReadiness(creature.definition, player.record.skills, player.record.inventory, this.content.items);
+    if (readiness && this.questAwaitsContainment(player, creature)) {
+      this.host.notify(player, 'warning', `${name} is weakened, and your orders are to contain it. ${readiness} Attack it again only if you mean to finish it.`);
+      return;
+    }
+    this.host.notify(player, 'info', `${name} is weakened. Contain it now, or attack it again to finish it.`);
+  }
+
+  private questAwaitsContainment(player: Player, creature: Creature): boolean {
+    return awaitsContainment(player.record.quests, this.content.quests, creature.definition.id);
   }
 
   private containCreature(player: Player, creature: Creature, level: LevelInstance, tick: number): void {

@@ -46,8 +46,8 @@ export const THE_KNOCKING: QuestDefinition = {
     },
     {
       id: 'the-warden',
-      journal: 'The log mentions the warden on duty, Corporal Avis, who "stayed at post". Something in a warden uniform is still walking the inner chamber, north-east. Osei taught me to wear a specimen down and seal it. If I carry a seal rated for it, that counts as well as a kill.',
-      objectives: [{ type: 'defeat', creatureId: 'hollow-warden', count: 1, label: 'Contain or put down the Hollow Warden' }],
+      journal: 'The log mentions the warden on duty, Corporal Avis, who "stayed at post". Something in a warden uniform is still walking the inner chamber, north-east. The Directorate wants it contained, not destroyed: wear it down, then close a Containment Seal Mk.I or better on it, as Osei taught me.',
+      objectives: [{ type: 'contain', creatureId: 'hollow-warden', count: 1, label: 'Contain the Hollow Warden' }],
     },
     {
       id: 'return-to-sel',

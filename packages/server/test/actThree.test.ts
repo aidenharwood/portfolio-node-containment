@@ -11,6 +11,7 @@ import {
   type QuestProgress,
   type WorldLocation,
 } from '@containment/shared';
+import { containSpecimen } from './support/containment.ts';
 import { createHarness, finishDialogue, type Harness, at, districtOf } from './support/testHarness.ts';
 
 const active = (questId: string, stepIndex = 0): QuestProgress => ({ questId, status: 'active', stepIndex, objectiveProgress: [0, 0, 0] });
@@ -117,7 +118,7 @@ describe('act three: return to sender', () => {
     use(harness, 'dlo-engine');
     assert.equal(stepOf(harness, 'dead-letter-office'), 2, 'the engine keeps stamping while the Postmaster signs');
 
-    defeat(harness, 'dlo-postmaster');
+    containSpecimen(harness, 'dlo-postmaster');
     assert.equal(stepOf(harness, 'dead-letter-office'), 3);
 
     use(harness, 'dlo-engine');

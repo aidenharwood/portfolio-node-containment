@@ -73,6 +73,7 @@ export const CRYOVAULT_CREATURES: readonly CreatureDefinition[] = [
     ],
     containment: {
       containmentClass: 'euclid',
+      requiredLevel: 9,
       procedures: 'ANM-0233-C must be catalogued before it is sealed: speak its own inventory number aloud as the seal closes. Uncatalogued, it will try to add the operative to the manifest.',
       experience: 1020,
       loot: [
@@ -159,6 +160,7 @@ export const SIGNAL_ARRAY_CREATURES: readonly CreatureDefinition[] = [
     ],
     containment: {
       containmentClass: 'keter',
+      requiredLevel: 11,
       procedures: 'ANM-3310-C answers any open channel. All radios within forty metres are to be powered down before re-housing. The seal must be closed on the downbeat; otherwise forty-one voices answer.',
       experience: 1540,
       loot: [
@@ -245,6 +247,7 @@ export const ARCHIVE_CREATURES: readonly CreatureDefinition[] = [
     ],
     containment: {
       containmentClass: 'euclid',
+      requiredLevel: 13,
       procedures: 'ANM-4471-C will surrender the Knock file to no one and must be sealed with it. Do not attempt to read the file during re-housing. Personnel who did are now filed under it.',
       experience: 1670,
       loot: [
@@ -330,6 +333,7 @@ export const FURNACE_CREATURES: readonly CreatureDefinition[] = [
     ],
     containment: {
       containmentClass: 'keter',
+      requiredLevel: 15,
       procedures: 'ANM-5502-C must be given fuel at all times, including inside the seal. A sealed Stoker that runs out of fuel begins to shovel whatever is nearest. Re-housing teams should bring coal and not stand nearest.',
       experience: 2230,
       loot: [
@@ -416,6 +420,7 @@ export const FAR_SIDE_CREATURES: readonly CreatureDefinition[] = [
     ],
     containment: {
       containmentClass: 'keter',
+      requiredLevel: 16,
       procedures: 'ANM-1180 cannot enter a space unless invited. The seal is not an invitation, and the re-housing operative must say so, clearly, before closing it. It will thank you. Do not reply.',
       experience: 2840,
       loot: [

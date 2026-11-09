@@ -101,6 +101,7 @@ export const OFFICE_CREATURES: readonly CreatureDefinition[] = [
     ],
     containment: {
       containmentClass: 'keter',
+      requiredLevel: 19,
       procedures: 'ANM-1180-P must be sealed in a franked container addressed to no one. Any seal bearing a return address will be delivered back to the sender, opened.',
       experience: 3400,
       loot: [
