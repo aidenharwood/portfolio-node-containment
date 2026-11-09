@@ -27,7 +27,7 @@ export function createSkillsTab(): PanelTab {
 
   const total = h('span', { className: 'tab-hint' });
   const list = h('div', { className: 'skill-grid' });
-  const element = h('div', { className: 'tab-skills' }, h('header', { className: 'tab-header' }, h('h3', {}, 'Proficiencies'), total), list);
+  const element = h('div', { className: 'tab-skills' }, h('header', { className: 'tab-header' }, total), list);
   const details = h('div', { className: 'item-tooltip skill-tooltip panel', hidden: true, role: 'tooltip' });
   document.body.append(details);
 

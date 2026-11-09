@@ -28,12 +28,12 @@ export class SidePanel {
           type: 'button',
           role: 'tab',
           title: `${tab.label} (${index + 1})`,
+          ariaLabel: tab.label,
           ariaKeyShortcuts: `${index + 1} F${index + 1}`,
           onclick: () => this.toggle(tab.id),
         },
         h('span', { className: 'panel-tab-key', ariaHidden: 'true' }, String(index + 1)),
-        h('span', { className: 'panel-tab-glyph' }, tab.glyph),
-        h('span', { className: 'panel-tab-label' }, tab.label));
+        h('span', { className: 'panel-tab-glyph', ariaHidden: 'true' }, tab.glyph));
         this.buttons.set(tab.id, button);
         return button;
       }),

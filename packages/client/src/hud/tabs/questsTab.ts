@@ -31,7 +31,7 @@ export function createQuestsTab(menu: ContextMenu, tracking: QuestTracking): Pan
   let self: SelfState | null = null;
   const toggled = new Set<QuestlineId>();
   const body = h('div', { className: 'quest-body' });
-  const element = h('div', { className: 'tab-quests' }, h('header', { className: 'tab-header' }, h('h3', {}, 'Journal')), body);
+  const element = h('div', { className: 'tab-quests' }, body);
 
   const stateOf = (quest: QuestDefinition): QuestState | null => {
     const progress = self?.quests[quest.id];

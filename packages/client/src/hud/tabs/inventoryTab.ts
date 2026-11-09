@@ -15,7 +15,7 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
   const scrip = h('span', { className: 'scrip-amount' }, '0');
   const grid = h('div', { className: 'inventory-grid' });
   const element = h('div', { className: 'tab-inventory' },
-    h('header', { className: 'tab-header' }, h('h3', {}, 'Inventory'), h('span', { className: 'scrip' }, 'Scrip ', scrip)),
+    h('header', { className: 'tab-header' }, h('span', { className: 'scrip' }, 'Scrip ', scrip)),
     grid,
   );
 

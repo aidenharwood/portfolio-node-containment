@@ -22,7 +22,6 @@ export function createEquipmentTab(connection: GameConnection, world: WorldState
   let self: SelfState | null = null;
   let preview: AvatarPreview | null = null;
   const figure = h('div', { className: 'loadout-figure' });
-  const summary = h('p', { className: 'loadout-summary' });
 
   const slots = new Map<EquipmentSlot, HTMLButtonElement>(
     EQUIPMENT_SLOTS.map((slot) => {
@@ -49,9 +48,9 @@ export function createEquipmentTab(connection: GameConnection, world: WorldState
     }));
 
   const element = h('div', { className: 'tab-equipment' },
-    h('header', { className: 'tab-header' }, h('h3', {}, 'Loadout'), h('span', { className: 'tab-hint' }, `${primaryGesture()} a slot to remove`)),
+    h('header', { className: 'tab-header' }, h('span', { className: 'tab-hint' }, `${primaryGesture()} a slot to remove`)),
     h('div', { className: 'loadout' }, column(LEFT_COLUMN, 'left'), figure, column(RIGHT_COLUMN, 'right')),
-    summary,
+    h('p', { className: 'loadout-summary' }, 'Combat profile on the Dossier'),
   );
 
   return {
@@ -75,7 +74,6 @@ export function createEquipmentTab(connection: GameConnection, world: WorldState
         button.ariaLabel = item ? `${EQUIPMENT_SLOT_LABELS[slot]}: ${item.name}` : `${EQUIPMENT_SLOT_LABELS[slot]}: empty`;
         replaceChildren(button, item ? h('img', { src: itemIconUrl(item), alt: '' }) : h('span', { className: 'slot-label' }, EQUIPMENT_SLOT_LABELS[slot]));
       }
-      replaceChildren(summary, `${equipped.length} of ${EQUIPMENT_SLOTS.length} slots filled · combat profile on the Dossier`);
     },
     dispose() {
       preview?.dispose();

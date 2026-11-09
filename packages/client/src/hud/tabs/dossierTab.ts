@@ -12,7 +12,6 @@ export function createDossierTab(connection: GameConnection, world: WorldState):
   const profile = h('tbody');
   const element = h('div', { className: 'tab-dossier' },
     h('header', { className: 'tab-header dossier-header' },
-      h('h3', {}, 'Dossier'),
       h('div', { className: 'dossier-actions' },
         h('button', { className: 'button ghost small', type: 'button', onclick: () => connection.send({ type: 'character.leaveWorld' }) }, 'Personnel files'),
         h('button', { className: 'button ghost small', type: 'button', onclick: () => connection.send({ type: 'auth.logout' }) }, 'Sign out'),

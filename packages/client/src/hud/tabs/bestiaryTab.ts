@@ -49,7 +49,7 @@ export function createBestiaryTab(): PanelTab {
   let studied = new Set<CreatureId>();
   const count = h('span', { className: 'tab-hint' });
   const body = h('div', { className: 'bestiary-body' });
-  const element = h('div', { className: 'tab-bestiary' }, h('header', { className: 'tab-header' }, h('h3', {}, 'Bestiary'), count), body);
+  const element = h('div', { className: 'tab-bestiary' }, h('header', { className: 'tab-header' }, count), body);
 
   const open = (creatureId: CreatureId | null) => {
     selected = creatureId;

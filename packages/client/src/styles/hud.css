@@ -243,19 +243,24 @@
   width: 248px;
   height: min(440px, calc(100% - 200px));
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
 }
 
 .panel-tabs {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  border-bottom: 1px solid var(--color-line);
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  border-top: 1px solid var(--color-line);
+}
+
+.hud-side.collapsed .panel-tabs {
+  border-top: none;
 }
 
 .panel-tab {
   background: none;
   border: none;
-  border-bottom: 2px solid transparent;
+  border-top: 2px solid transparent;
   padding: 8px 0 6px;
   cursor: pointer;
   display: flex;
@@ -282,14 +287,6 @@
   font-size: 16px;
 }
 
-.panel-tab-label {
-  font-family: var(--font-display);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-}
-
 .panel-tab.attention {
   color: var(--color-gold);
 }
@@ -307,7 +304,7 @@
 
 .panel-tab.active {
   color: var(--color-accent);
-  border-bottom-color: var(--color-accent);
+  border-top-color: var(--color-accent);
   background: var(--color-accent-dim);
 }
 
@@ -325,12 +322,6 @@
   justify-content: space-between;
   gap: 2px 10px;
   margin-bottom: 10px;
-}
-
-.tab-header h3 {
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
 }
 
 .tab-hint {
