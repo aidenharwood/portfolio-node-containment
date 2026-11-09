@@ -67,6 +67,12 @@ const SHADOW_LIGHT_COUNT = 4;
 const LIGHT_CONE_ANGLE = MathUtils.degToRad(55);
 const LIGHT_INTENSITY_SCALE = 4;
 const LIGHT_REACH = 1.5;
+const AMBIENT_BASE = 2.5;
+const AMBIENT_DARKNESS_WEIGHT = 2.4;
+const AMBIENT_FLOOR = 0.45;
+const KEY_BASE = 1;
+const KEY_DARKNESS_WEIGHT = 0.9;
+const KEY_FLOOR = 0.2;
 const LIGHT_REASSIGN_SECONDS = 0.25;
 const HURT_ANIMATION_MS = 300;
 const MUZZLE_REACH = 0.5;
@@ -174,8 +180,8 @@ export class GameRenderer {
     const tint = ambience.tint.getHex();
     this.hemisphere.color.setHex(lighten(tint, 0.68));
     this.hemisphere.groundColor.setHex(tint);
-    this.hemisphere.intensity = 0.5 + (1 - ambience.darkness) * 0.5;
-    this.keyLight.intensity = 0.25 + (1 - ambience.darkness) * 0.3;
+    this.hemisphere.intensity = Math.max(AMBIENT_FLOOR, AMBIENT_BASE - ambience.darkness * AMBIENT_DARKNESS_WEIGHT);
+    this.keyLight.intensity = Math.max(KEY_FLOOR, KEY_BASE - ambience.darkness * KEY_DARKNESS_WEIGHT);
   }
 
   private followAmbience(focus: Vector3, delta: number, snap: boolean): void {
