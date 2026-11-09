@@ -2434,3 +2434,7 @@
     animation: none;
   }
 }
+
+.game-screen .panel {
+  background: linear-gradient(180deg, rgba(16, 27, 34, 0.68), rgba(9, 16, 21, 0.6));
+}
