@@ -33,7 +33,7 @@ export function createDossierTab(connection: GameConnection, world: WorldState):
 ${STAT_INFO[info.gearStat].name}: ${STAT_INFO[info.gearStat].summary}` : info.derivation;
     return h('tr', { title },
       h('th', { scope: 'row' }, info.name),
-      h('td', { className: `dossier-gear${gear ? ' active' : ''}` }, gear === null ? '—' : `${gear > 0 ? '+' : ''}${gear}`),
+      h('td', { className: `dossier-gear${gear ? ' active' : ''}` }, gear === null ? 'â€”' : `${gear > 0 ? '+' : ''}${gear}`),
       h('td', { className: 'dossier-total' }, String(self.profile[id])),
     );
   };
