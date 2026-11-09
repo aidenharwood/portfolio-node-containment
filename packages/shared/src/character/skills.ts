@@ -68,7 +68,7 @@ export const SKILL_INFO: Readonly<Record<SkillId, SkillInfo>> = {
   },
 };
 
-export const SKILL_LEVEL_CAP = 99;
+export const SKILL_LEVEL_CAP = 100;
 
 export function experienceForLevel(level: number): number {
   const clamped = Math.max(1, Math.min(SKILL_LEVEL_CAP, Math.floor(level)));
