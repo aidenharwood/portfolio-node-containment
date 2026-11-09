@@ -247,7 +247,7 @@ export const DEEP_QUEST_OBJECTS: readonly WorldObjectDefinition[] = [
   {
     id: 'outbox-terminal',
     name: 'Array Outbox',
-    examine: 'The terminal that sorts the Array\'s post. Forty years of letters to the other eight Sites, and every one marked DELIVERED.',
+    examine: 'The terminal that sorts the Array\'s post. Forty years of letters to the other eight Sites, and every one marked DELIVERED. A return chute in the wall is stamped DEAD LETTERS, but nothing has ever come back up it.',
     model: 'terminal',
     blocksMovement: true,
     light: { radius: 2, color: '#8afff0', intensity: 0.6 },

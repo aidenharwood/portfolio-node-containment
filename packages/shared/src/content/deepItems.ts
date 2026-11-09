@@ -73,10 +73,10 @@ export const DEEP_REFINED_PARTS: readonly ItemDefinition[] = [
 
 export const DEEP_QUEST_ITEMS: readonly ItemDefinition[] = [
   questItem('stasis-core', 'Stasis Core', "The Curator's own stasis core, still cold enough to burn. It holds a second of time perfectly still.", 'cell', ['#c8f0ff', '#4fd8ff']),
-  questItem('choir-recording', 'Choir Recording', 'A data chip holding the last transmission of the Signal Array. It plays forty voices at once, all of them saying "received".', 'chip', ['#8afff0', '#1a5a5a']),
+  questItem('choir-recording', 'Choir Recording', 'A data chip holding the last transmission of the Signal Array. It plays forty voices at once, all of them saying "received". Under them, one patient voice keeps asking whether the host is home.', 'chip', ['#8afff0', '#1a5a5a']),
   questItem('sluice-key', 'Archive Sluice Key', "A brass key stamped RECORDS — FLOOD CONTROL. Lund kept it for 'sentimental reasons'.", 'keycard', ['#c9a227', '#5a4a1a']),
   questItem('founding-charter', 'Founding Charter', 'The original Meridian charter, signed in a hand that shakes. Clause one is a single line: "We answered: not yet."', 'sheet', ['#e8dcc0', '#b57cff']),
-  questItem('reactor-log', 'Reactor Log', "The Stoker's handwritten log. Forty years of output figures, and beside every one: FED THE DOOR.", 'sheet', ['#ff8a4a', '#3a2018']),
+  questItem('reactor-log', 'Reactor Log', "The Stoker's handwritten log. Forty years of output figures, and beside every one: FED THE DOOR. The last page reads: HOST AT THE FRONT DOOR. STILL WAITING. KEEP SHOVELLING.", 'sheet', ['#ff8a4a', '#3a2018']),
   questItem('signed-letter', 'Unsent Letter', 'A Directorate letter addressed to Site Meridian, signed by every other Site. The postmark is from the far side.', 'sheet', ['#e8f0ff', '#8a7aba']),
   questItem('ninth-letter', 'The Ninth Letter', 'Addressed to you, care of Records. The handwriting is yours. You did not write it. The frank says SIGNAL ARRAY, and the date is this morning.', 'sheet', ['#f2e6c8', '#c9a227']),
   questItem('founders-letter', "The Founder's Letter", 'Sealed forty years ago and addressed to all eight Sites. On the envelope: URGENT. On the back, in a different hand: HELD FOR COUNTERSIGNATURE.', 'sheet', ['#e8dcc0', '#7a3a0a']),

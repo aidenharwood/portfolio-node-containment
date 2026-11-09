@@ -135,7 +135,7 @@ export const THALE_DIALOGUE: DialogueDefinition = {
     },
     contractDecision: {
       speaker: 'npc',
-      text: "It changes nothing. A frightened founder's promise does not bind the Council. We close it with fire. At full output the reactor can weld that door to its frame. The Stoker's apprentice, Brann, is holding the reactor lock. I've cleared you for the reactor lift.",
+      text: "It changes nothing. A frightened founder's promise does not bind the Council. The stasis core will hold the door still for one second, and one second was never going to close a door that size. So we close it with fire. At full output the reactor can weld that door to its frame. The Stoker's apprentice, Brann, is holding the reactor lock. I've cleared you for the reactor lift.",
       next: null,
     },
     fireProgress: {
@@ -166,7 +166,7 @@ export const THALE_DIALOGUE: DialogueDefinition = {
     },
     confrontYield: {
       speaker: 'npc',
-      text: "I have spent my whole career closing doors, {name}. I don't know how to answer one. Halvorsen does. Go to her. Whatever you say on the other side, say it for all of us.",
+      text: "I have spent my whole career closing doors, {name}. I don't know how to answer one. Halvorsen does. I've sent her the stasis core. It was never going to close that door, but one still second might be long enough for her to let go of it. Go to her. Whatever you say on the other side, say it for all of us.",
       next: null,
     },
     answerProgress: {
@@ -515,6 +515,11 @@ export const ACHTERBERG_DIALOGUE: DialogueDefinition = {
     deadAirMeet: {
       speaker: 'npc',
       text: "Sel's operative. She sent word you'd come. You want the outbox. You'll have to lock the relays first; they've drifted onto a frequency that doesn't exist, and the outbox follows the relays.",
+      next: 'deadAirMail',
+    },
+    deadAirMail: {
+      speaker: 'npc',
+      text: "One more thing, since Sel will ask. The uplink log counts everything that leaves this room. Twenty years of outgoing letters and the count has never once gone up by one. The post goes down a chute in the operator pit, and nobody I ask remembers building the chute.",
       next: 'deadAirMeet2',
     },
     deadAirMeet2: {
@@ -566,7 +571,7 @@ export const ACHTERBERG_DIALOGUE: DialogueDefinition = {
     },
     ninthTraced: {
       speaker: 'npc',
-      text: "That's my frank. That's my outbox. But the routing code isn't any relay of mine. It's a return code: undeliverable, held at the sorting office. We don't have a sorting office.",
+      text: "That's my frank. That's my outbox. But the routing code isn't any relay of mine. It's a return code: undeliverable, held at the sorting office. We don't have a sorting office. Remember the chute I told you about, the one nobody built? I think we do now.",
       next: 'ninthTraced2',
     },
     ninthTraced2: {
@@ -738,12 +743,33 @@ export const KESSLER_DIALOGUE: DialogueDefinition = {
           next: 'sawOffer',
         },
         { text: 'What is this place?', next: 'place' },
+        { text: 'Who came back?', next: 'cameBack' },
         { text: 'Goodbye.', next: null },
       ],
     },
     place: {
       speaker: 'npc',
       text: "Meridian. The one the reactor has been feeding. It grew in the warmth, the shape of the Site above it, like frost growing the shape of a window. Everything we sealed away came here. So did we.",
+      next: 'stayed',
+    },
+    stayed: {
+      speaker: 'npc',
+      text: "Have you noticed? The Warden, the Foreman, the Curator, the Stoker. Every one of them stayed at their post while Meridian sealed the door on them. Hold anything still for long enough and it belongs to the far side.",
+      next: 'stayed2',
+    },
+    stayed2: {
+      speaker: 'npc',
+      text: "Every seal you closed on the way down sent something here as well. Corporal Avis walked past the medbay window this morning, still on his rounds. He nodded to me. I think he knew you.",
+      next: 'greeting',
+    },
+    cameBack: {
+      speaker: 'npc',
+      text: "Halvorsen. She led us in, and the day after, she walked back out and stood in front of the door, and she has never stepped away from it since. The far side sent her back to hold it shut until somebody stood there twice.",
+      next: 'cameBack2',
+    },
+    cameBack2: {
+      speaker: 'npc',
+      text: "She thinks she is still the woman who led us in. She is mostly right. The rest of her is hinge and threshold. Be kind to her when you go home. She has been a door for forty years and nobody ever knocked on her.",
       next: 'greeting',
     },
     answerMeet: {
@@ -797,6 +823,7 @@ export const GUEST_DIALOGUE: DialogueDefinition = {
       text: '"Hello, {name}. You stood in front of my door twice. That was the agreement. I knocked, and they said not yet, and I have been very patient. May I come in?"',
       options: [
         { text: 'Why do you want to come in?', next: 'why' },
+        { text: 'What was the Host?', next: 'hostWas' },
         {
           text: 'No. The door stays shut.',
           effects: [
@@ -818,6 +845,11 @@ export const GUEST_DIALOGUE: DialogueDefinition = {
     why: {
       speaker: 'npc',
       text: '"Because it is cold here, and it has your shape, and every time you lock something away it comes to me. I would like to be somewhere that things are let out of, for once."',
+      next: 'answer',
+    },
+    hostWas: {
+      speaker: 'npc',
+      text: '"Everything Meridian locked away for forty years, standing up in one coat. I wore it because I thought you would only open a door to something shaped like you. You sealed it beautifully. I will look after it, with the others you sent."',
       next: 'answer',
     },
     closed: {
@@ -842,7 +874,7 @@ export const GUEST_DIALOGUE: DialogueDefinition = {
     },
     afterWelcomed: {
       speaker: 'npc',
-      text: '"Hello again. Sel has given me a desk. I am learning to file."',
+      text: '"Hello again. Sel has given me a desk. I am learning to file. I have asked her to file everything you sealed under Guests rather than Specimens. She is considering it."',
       next: null,
     },
     afterClosed: {

@@ -137,7 +137,7 @@ export const HALVORSEN_DIALOGUE: DialogueDefinition = {
     },
     answerStep: {
       speaker: 'npc',
-      text: "I've held it shut so long I forgot it has a handle. There. It's open. Go through, {name}. And remember what I told you: when it knocks for you, do not answer alone. Take the lanterns' light with you.",
+      text: "Thale's stasis core arrived this morning. One still second. That's all I needed to remember I have hands, not hinges. I've held it shut so long I forgot it has a handle. There. It's open. Go through, {name}. And remember what I told you: when it knocks for you, do not answer alone. Take the lanterns' light with you.",
       next: null,
     },
     answerWaiting: {
@@ -147,7 +147,7 @@ export const HALVORSEN_DIALOGUE: DialogueDefinition = {
     },
     epilogueClosed: {
       speaker: 'npc',
-      text: "It's just a door now. I keep putting my hand on it. It's cold. It's wonderful. I think I might go upstairs. I think I might have a coffee.",
+      text: "It's just a door now, and I'm just a person standing next to it. Kessler told you, didn't he. I was the one who came back. I keep putting my hand on it. It's cold. It's wonderful. I think I might go upstairs. I think I might have a coffee.",
       next: null,
     },
     returnsCountersign: {
@@ -174,7 +174,7 @@ export const HALVORSEN_DIALOGUE: DialogueDefinition = {
     },
     epilogueWelcomed: {
       speaker: 'npc',
-      text: "It came through so carefully. It apologised to me for the forty years. Nobody has ever apologised to me for anything. I don't know what to do with my hands.",
+      text: "It came through so carefully. It apologised to me for the forty years. Nobody has ever apologised to me for anything. It says it sent me back to keep the door, and that I can stop now. I don't know what to do with my hands. I've only just remembered I have them.",
       next: null,
     },
     meet: {
