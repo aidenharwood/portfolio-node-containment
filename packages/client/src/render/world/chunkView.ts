@@ -31,6 +31,7 @@ export interface LightSource {
   readonly intensity: number;
   readonly radius: number;
   readonly flicker: boolean;
+  readonly shadow: boolean;
   readonly seed: number;
 }
 
@@ -112,6 +113,7 @@ export class ChunkView {
         intensity: light.intensity,
         radius: light.radius,
         flicker: false,
+        shadow: true,
         seed: light.position.x * 13 + light.position.y + index,
       });
     });
@@ -203,6 +205,7 @@ export class ChunkView {
         intensity: definition.light.intensity,
         radius: definition.light.radius,
         flicker: definition.light.flicker ?? false,
+        shadow: false,
         seed,
       });
     }
@@ -231,6 +234,7 @@ export class ChunkView {
       intensity: failing ? 1.05 : 1.2,
       radius: failing ? 6.5 : 6,
       flicker: failing ? index % 3 === 0 : noise3(position.x, position.y, 0, 77) > 0.93,
+      shadow: true,
       seed: position.x * 7 + position.y,
     });
   }

@@ -9,9 +9,9 @@ import {
   MathUtils,
   Plane,
   PCFSoftShadowMap,
-  PointLight,
   Raycaster,
   Scene,
+  SpotLight,
   SRGBColorSpace,
   Vector2,
   Vector3,
@@ -63,6 +63,10 @@ interface EntityView {
 }
 
 const LIGHT_POOL_SIZE = 12;
+const SHADOW_LIGHT_COUNT = 4;
+const LIGHT_CONE_ANGLE = MathUtils.degToRad(55);
+const LIGHT_INTENSITY_SCALE = 4;
+const LIGHT_REACH = 1.5;
 const LIGHT_REASSIGN_SECONDS = 0.25;
 const HURT_ANIMATION_MS = 300;
 const MUZZLE_REACH = 0.5;
@@ -87,7 +91,7 @@ export class GameRenderer {
   private readonly scene = new Scene();
   private readonly hemisphere = new HemisphereLight(0x9fc6d6, 0x05080a, 0.6);
   private readonly keyLight = new DirectionalLight(0xcfe8ff, 0.7);
-  private readonly lightPool: PointLight[] = [];
+  private readonly lightPool: SpotLight[] = [];
   private readonly entities = new Map<EntityId, EntityView>();
   private readonly hoverRing = createGroundRing(0xffd23f, 0.34, 0.42);
   private readonly selfRing = createGroundRing(0x4fd8ff, 0.3, 0.36);
@@ -105,7 +109,7 @@ export class GameRenderer {
   private readonly projectiles = new ProjectileLayer();
   private readonly route = new RouteLayer();
   private readonly stopHitListener: () => void;
-  private assignedLights: LightSource[] = [];
+  private assignedLights: (LightSource | undefined)[] = [];
   private lightTimer = 0;
   private lastFrame = performance.now();
 
@@ -134,14 +138,21 @@ export class GameRenderer {
     this.scene.add(this.projectiles.root, this.groundItems.root, this.hemisphere, this.keyLight, this.keyLight.target, this.hoverRing, this.selfRing, this.click.group, this.route.mesh);
 
     for (let index = 0; index < LIGHT_POOL_SIZE; index++) {
-      const light = new PointLight(0xffffff, 0, 6, 2);
+      const light = new SpotLight(0xffffff, 0, 6, LIGHT_CONE_ANGLE, 0.7, 0);
+      if (index < SHADOW_LIGHT_COUNT) {
+        light.castShadow = true;
+        light.shadow.mapSize.set(512, 512);
+        light.shadow.camera.near = 0.3;
+        light.shadow.bias = -0.0006;
+        light.shadow.normalBias = 0.03;
+      }
       this.lightPool.push(light);
-      this.scene.add(light);
+      this.scene.add(light, light.target);
     }
 
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene, this.cameraRig.camera));
-    this.bloom = new UnrealBloomPass(new Vector2(256, 256), 0.7, 0.5, 0.62);
+    this.bloom = new UnrealBloomPass(new Vector2(256, 256), 0.5, 0.4, 0.9);
     this.composer.addPass(this.bloom);
     this.composer.addPass(new OutputPass());
   }
@@ -163,8 +174,8 @@ export class GameRenderer {
     const tint = ambience.tint.getHex();
     this.hemisphere.color.setHex(lighten(tint, 0.68));
     this.hemisphere.groundColor.setHex(tint);
-    this.hemisphere.intensity = 1.45 + (1 - ambience.darkness) * 1.1;
-    this.keyLight.intensity = 0.5 + (1 - ambience.darkness) * 0.55;
+    this.hemisphere.intensity = 0.5 + (1 - ambience.darkness) * 0.5;
+    this.keyLight.intensity = 0.25 + (1 - ambience.darkness) * 0.3;
   }
 
   private followAmbience(focus: Vector3, delta: number, snap: boolean): void {
@@ -443,9 +454,7 @@ export class GameRenderer {
     this.lightTimer -= delta;
     if (this.lightTimer <= 0) {
       this.lightTimer = LIGHT_REASSIGN_SECONDS;
-      this.assignedLights = [...this.zone.lights]
-        .sort((a, b) => a.position.distanceToSquared(focus) - b.position.distanceToSquared(focus))
-        .slice(0, LIGHT_POOL_SIZE);
+      this.assignedLights = assignLightSlots(this.zone.lights, focus);
     }
     this.lightPool.forEach((light, index) => {
       const source = this.assignedLights[index];
@@ -455,9 +464,11 @@ export class GameRenderer {
       }
       const flicker = source.flicker ? 0.78 + 0.22 * (Math.sin(time * 7.3 + source.seed) * 0.5 + Math.sin(time * 17.1 + source.seed * 3) * 0.5) : 1;
       light.position.copy(source.position);
+      light.target.position.set(source.position.x, 0, source.position.z);
       light.color.setHex(source.color);
-      light.distance = source.radius * 1.9;
-      light.intensity = source.intensity * 5 * flicker;
+      light.distance = source.radius * LIGHT_REACH;
+      light.shadow.camera.far = light.distance;
+      light.intensity = source.intensity * LIGHT_INTENSITY_SCALE * flicker;
     });
   }
 
@@ -495,6 +506,15 @@ export class GameRenderer {
     this.click.material.color.setHex(marker.tone === 'walk' ? 0xffd23f : 0xff5e3a);
     this.click.material.opacity = 1 - age;
   }
+}
+
+function assignLightSlots(lights: readonly LightSource[], focus: Vector3): (LightSource | undefined)[] {
+  const nearest = [...lights].sort((a, b) => a.position.distanceToSquared(focus) - b.position.distanceToSquared(focus)).slice(0, LIGHT_POOL_SIZE);
+  const shadowed = nearest.filter((light) => light.shadow).slice(0, SHADOW_LIGHT_COUNT);
+  const rest = nearest.filter((light) => !shadowed.includes(light));
+  const slots: (LightSource | undefined)[] = [...shadowed];
+  while (slots.length < SHADOW_LIGHT_COUNT) slots.push(undefined);
+  return [...slots, ...rest];
 }
 
 function shortestAngle(from: number, to: number): number {
