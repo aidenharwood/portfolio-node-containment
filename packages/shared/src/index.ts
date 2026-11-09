@@ -12,6 +12,7 @@ export * from './character/startingKit.ts';
 export * from './combat/combatMath.ts';
 export * from './combat/containment.ts';
 export * from './combat/creatures.ts';
+export * from './combat/study.ts';
 export * from './combat/weapons.ts';
 
 export * from './crafting/gathering.ts';

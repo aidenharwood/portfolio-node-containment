@@ -1,4 +1,4 @@
-import { CONTAIN_INTERACTION, CONTAINMENT_CLASS_INFO, GAME_CONTENT, type CreatureDefinition, type TilePoint } from '@containment/shared';
+import { CONTAIN_INTERACTION, CONTAINMENT_CLASS_INFO, GAME_CONTENT, STUDY_INTERACTION, type CreatureDefinition, type TilePoint } from '@containment/shared';
 import type { MenuAction } from '../hud/contextMenu.ts';
 import type { GameConnection } from '../net/gameConnection.ts';
 import type { PickTarget } from '../render/pickTarget.ts';
@@ -45,6 +45,15 @@ export function actionsForTarget(target: PickTarget | null, context: ActionConte
             },
           });
         }
+        actions.push({
+          verb: 'Study',
+          subject,
+          subjectTone: 'creature',
+          run: () => {
+            context.markClick(entity.to, 'interact');
+            context.connection.send({ type: 'world.interact', targetKind: 'creature', instanceId, interactionIndex: STUDY_INTERACTION });
+          },
+        });
         actions.push({ verb: 'Examine', subject: entity.name, subjectTone: 'creature', run: () => context.examine(creature ? creatureExamine(creature) : entity.name) });
         return actions;
       }

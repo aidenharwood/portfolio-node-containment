@@ -72,6 +72,7 @@ export interface CreatureDefinition {
   readonly integrity: number;
   readonly defence: number;
   readonly attack: CreatureAttack;
+  readonly weakness: CombatStyle;
   readonly aggressive?: boolean;
   readonly aggroRadius: number;
   readonly leashRadius: number;

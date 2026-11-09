@@ -28,7 +28,7 @@ export const PROFILE_STAT_INFO: Readonly<Record<ProfileStatId, ProfileStatInfo>>
   defence: { name: 'Defence', derivation: 'Half Fortitude level + Armor.', gearStat: 'armor' },
   hazardResistance: { name: 'Hazard Resistance', derivation: 'Half Fortitude level + Hazard Shielding.', gearStat: 'hazardShielding' },
   cognitiveResistance: { name: 'Cognitive Resistance', derivation: 'Half Containment level + Cognitive Ward.', gearStat: 'cognitiveWard' },
-  analysis: { name: 'Analysis', derivation: 'Research level + Insight.', gearStat: 'insight' },
+  analysis: { name: 'Analysis', derivation: 'Research level + Insight. Study anomalies whose level is at or below it.', gearStat: 'insight' },
 };
 
 export const maxIntegrityFor = (skills: SkillExperience): number => 20 + levelForExperience(skills.fortitude) * 4;

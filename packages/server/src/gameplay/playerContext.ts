@@ -13,6 +13,7 @@ import {
   isStationKnown,
   isDoorOpenFor,
   visitedLevelFlag,
+  studiedCreaturesOf,
   type WorldObjectId,
 } from '@containment/shared';
 import type { Player } from '../world/player.ts';
@@ -21,6 +22,9 @@ export const conditionContextFor = (player: Player, content: GameContent): Condi
   countItem: (itemId) => countItem(player.record.inventory, itemId),
   questStanding: (questId) => questStanding(player.record.quests, content.quests.get(questId), questId),
   hasFlag: (flag) => player.hasFlag(flag),
+  get skills() {
+    return player.record.skills;
+  },
 });
 
 export const questProbeFor = (player: Player): QuestStateProbe => ({
@@ -56,6 +60,7 @@ export const selfStateOf = (player: Player, content: GameContent): SelfState => 
     discoveredStations: [...content.tram.stations.keys()].filter((stationId) => isStationKnown(content.tram, stationId, (flag) => player.hasFlag(flag))),
     visitedLevels: [...content.levels.keys()].filter((levelId) => player.hasFlag(visitedLevelFlag(levelId))),
     openDoors: [...openDoorsOf(player, content)],
+    studiedCreatures: studiedCreaturesOf(player.record.flags),
   };
 };
 

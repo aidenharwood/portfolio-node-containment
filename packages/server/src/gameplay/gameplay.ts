@@ -14,7 +14,7 @@ import type {
   WorldLocation,
   WorldObjectId,
 } from '@containment/shared';
-import { CONTAIN_INTERACTION, locate, visitedLevelFlag } from '@containment/shared';
+import { CONTAIN_INTERACTION, locate, STUDY_INTERACTION, visitedLevelFlag } from '@containment/shared';
 import { returnUnfinishedTrainee } from '../characters/traineePlacement.ts';
 import { Player, type MessageSink } from '../world/player.ts';
 import type { LevelInstance } from '../world/levelInstance.ts';
@@ -30,6 +30,7 @@ import { GroundItemController } from './groundItemController.ts';
 import { InteractionController } from './interactionController.ts';
 import { openDoorsOf, selfStateOf } from './playerContext.ts';
 import { QuestTracker } from './questTracker.ts';
+import { ResearchController } from './researchController.ts';
 import { ShopController } from './shopController.ts';
 import { StorageController } from './storageController.ts';
 import { TramController, type TramHost } from './tramController.ts';
@@ -91,6 +92,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
   private readonly crafting: CraftingController;
   private readonly storage: StorageController;
   private readonly trams: TramController;
+  private readonly research: ResearchController;
   private tickNumber = 0;
   private readonly autosaveEveryTicks: number;
   private ticksSinceAutosave = 0;
@@ -111,6 +113,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     this.crafting = new CraftingController(content, this.effects, this);
     this.storage = new StorageController(content, this);
     this.trams = new TramController(content, this.world, this);
+    this.research = new ResearchController(content, this.world, this.effects, this);
     this.combat = new CombatController(content, this.world, this.effects, this, options.combatRandom ?? options.random ?? Math.random);
     this.autosaveEveryTicks = Math.max(1, Math.round(options.autosaveIntervalMs / options.tickMs));
   }
@@ -167,7 +170,10 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
         this.stopActivities(player);
         if (message.targetKind === 'creature') {
           this.dialogues.close(player);
-          if (message.interactionIndex === CONTAIN_INTERACTION) this.combat.contain(player, message.instanceId, this.tickNumber);
+          if (message.interactionIndex === STUDY_INTERACTION) {
+            this.combat.disengage(player);
+            this.research.study(player, message.instanceId);
+          } else if (message.interactionIndex === CONTAIN_INTERACTION) this.combat.contain(player, message.instanceId, this.tickNumber);
           else this.combat.engage(player, message.instanceId, this.tickNumber);
           break;
         }
@@ -258,6 +264,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     this.combat.tick(++this.tickNumber);
     this.groundItems.tick(this.tickNumber);
     this.gathering.tick(this.tickNumber);
+    this.research.tick(this.tickNumber);
     this.crafting.tick(this.tickNumber, this.online.values());
     this.trams.tick(this.tickNumber);
     for (const player of this.online.values()) this.flush(player);
@@ -318,6 +325,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
   private stopActivities(player: Player): void {
     this.trams.cancelBoarding(player);
     this.gathering.stop(player);
+    this.research.stop(player);
     this.crafting.close(player);
     this.storage.close(player);
   }
