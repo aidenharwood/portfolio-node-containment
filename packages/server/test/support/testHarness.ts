@@ -59,7 +59,7 @@ export function districtOf(player: Player): DistrictId | undefined {
 
 export function createHarness(options: HarnessOptions = {}): Harness {
   const saved: CharacterRecord[] = [];
-  const gameplay = new Gameplay(GAME_CONTENT, { save: (record) => saved.push(record) }, {
+  const gameplay = new Gameplay(GAME_CONTENT, { save: (record) => saved.push(record), findByName: () => null }, {
     tickMs: 300,
     autosaveIntervalMs: 60_000,
     random: () => 0.99,

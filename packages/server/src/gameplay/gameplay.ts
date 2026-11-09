@@ -4,6 +4,7 @@ import type {
   CharacterRecord,
   ClientMessageOf,
   CraftingStation,
+  FriendEntry,
   GameContent,
   NoticeTone,
   QuestEvent,
@@ -19,8 +20,8 @@ import { returnUnfinishedTrainee } from '../characters/traineePlacement.ts';
 import { Player, type MessageSink } from '../world/player.ts';
 import type { LevelInstance } from '../world/levelInstance.ts';
 import { World, type WorldHooks } from '../world/world.ts';
-import { ChatController } from './chatController.ts';
 import { CombatController, type CombatHost } from './combatController.ts';
+import { ContractController } from './contractController.ts';
 import { CraftingController } from './craftingController.ts';
 import { GatheringController, type GatheringHost } from './gatheringController.ts';
 import { DialogueController } from './dialogueController.ts';
@@ -33,6 +34,7 @@ import { openDoorsOf, selfStateOf } from './playerContext.ts';
 import { QuestTracker } from './questTracker.ts';
 import { ResearchController } from './researchController.ts';
 import { ShopController } from './shopController.ts';
+import { SocialController, type SocialHost } from './socialController.ts';
 import { StorageController } from './storageController.ts';
 import { TramController, type TramHost } from './tramController.ts';
 
@@ -50,6 +52,17 @@ export type GameplayMessage = ClientMessageOf<
   | 'inventory.swap'
   | 'equipment.unequip'
   | 'chat.say'
+  | 'chat.whisper'
+  | 'party.invite'
+  | 'party.accept'
+  | 'party.decline'
+  | 'party.leave'
+  | 'party.kick'
+  | 'party.promote'
+  | 'friends.add'
+  | 'friends.remove'
+  | 'contracts.claim'
+  | 'contracts.close'
   | 'shop.buy'
   | 'shop.sell'
   | 'shop.close'
@@ -66,8 +79,13 @@ export type GameplayMessage = ClientMessageOf<
   | 'tram.board'
 >;
 
+const CONTRACT_REFRESH_TICKS = 200;
+
+const SOCIAL_MESSAGE_TYPES = new Set<GameplayMessage['type']>(['chat.say', 'chat.whisper', 'party.invite', 'party.accept', 'party.decline', 'party.leave', 'party.kick', 'party.promote', 'friends.add', 'friends.remove']);
+
 export interface CharacterStore {
   save(record: CharacterRecord): void;
+  findByName(name: string): FriendEntry | null;
 }
 
 export interface GameplayOptions {
@@ -78,9 +96,10 @@ export interface GameplayOptions {
   readonly gatheringRandom?: () => number;
   readonly levelCapacity?: number;
   readonly market?: MarketStore;
+  readonly now?: () => number;
 }
 
-export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHost, TramHost {
+export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHost, TramHost, SocialHost {
   readonly world: World;
   private readonly content: GameContent;
   private readonly store: CharacterStore;
@@ -90,7 +109,9 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
   private readonly dialogues: DialogueController;
   private readonly interactions: InteractionController;
   private readonly gear: GearController;
-  private readonly chat: ChatController;
+  private readonly social: SocialController;
+  private readonly contracts: ContractController;
+  private readonly now: () => number;
   private readonly combat: CombatController;
   private readonly shops: ShopController;
   private readonly groundItems: GroundItemController;
@@ -113,7 +134,9 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     this.dialogues = new DialogueController(content, this.world, this.effects, this);
     this.interactions = new InteractionController(content, this.world, this.dialogues, this.effects, this);
     this.gear = new GearController(content, this.world, this);
-    this.chat = new ChatController(this.world);
+    this.now = options.now ?? Date.now;
+    this.social = new SocialController(content, this.world, this);
+    this.contracts = new ContractController(content, this.effects, this, this.now);
     this.shops = new ShopController(content, this.world, this);
     this.groundItems = new GroundItemController(content, this.world, this);
     this.gathering = new GatheringController(content, this.world, this.effects, this, options.gatheringRandom ?? options.random ?? Math.random);
@@ -145,6 +168,8 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     this.world.spawn(player);
     this.quests.handle(player, { type: 'loadoutChanged' });
     this.quests.resumeFollowUps(player);
+    this.contracts.refresh(player, true);
+    this.social.arrive(player);
     this.flush(player);
     player.send({ type: 'chat.message', channel: 'system', text: `Welcome to Site Meridian, ${player.record.name}.` });
     return player;
@@ -158,14 +183,14 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     this.stopActivities(player);
     this.world.despawn(player);
     if (tramArrival) player.relocate(tramArrival);
-    this.chat.forget(player);
     this.market.forget(player);
     this.online.delete(player.record.id);
+    this.social.depart(player);
     this.store.save(player.persistableRecord());
   }
 
   handle(player: Player, message: GameplayMessage): void {
-    if ((player.incapacitatedAtTick !== null || player.isRidingTram) && message.type !== 'chat.say') return;
+    if ((player.incapacitatedAtTick !== null || player.isRidingTram) && !SOCIAL_MESSAGE_TYPES.has(message.type)) return;
     switch (message.type) {
       case 'world.walk':
         this.dialogues.close(player);
@@ -227,7 +252,41 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
         this.gear.unequip(player, message.slot);
         break;
       case 'chat.say':
-        this.chat.say(player, message.text);
+        this.social.say(player, message.text, message.channel ?? 'local', this.now());
+        break;
+      case 'chat.whisper':
+        this.social.whisper(player, message.to, message.text, this.now());
+        break;
+      case 'party.invite':
+        this.social.invite(player, message.name);
+        break;
+      case 'party.accept':
+        this.social.acceptInvite(player, message.inviterId);
+        break;
+      case 'party.decline':
+        this.social.declineInvite(player, message.inviterId);
+        break;
+      case 'party.leave':
+        this.social.leave(player);
+        break;
+      case 'party.kick':
+        this.social.kick(player, message.characterId);
+        break;
+      case 'party.promote':
+        this.social.promote(player, message.characterId);
+        break;
+      case 'friends.add':
+        this.social.addFriend(player, message.name);
+        break;
+      case 'friends.remove':
+        this.social.removeFriend(player, message.characterId);
+        break;
+      case 'contracts.claim':
+        this.contracts.claim(player, message.cadence, message.contractId);
+        this.store.save(player.persistableRecord());
+        break;
+      case 'contracts.close':
+        this.contracts.close(player);
         break;
       case 'shop.buy':
         this.shops.buy(player, message.itemId, message.quantity);
@@ -291,6 +350,8 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     this.research.tick(this.tickNumber);
     this.crafting.tick(this.tickNumber, this.online.values());
     this.trams.tick(this.tickNumber);
+    this.social.tick(this.tickNumber);
+    if (this.tickNumber % CONTRACT_REFRESH_TICKS === 0) for (const player of this.online.values()) this.contracts.refresh(player, true);
     for (const player of this.online.values()) this.flush(player);
     if (++this.ticksSinceAutosave >= this.autosaveEveryTicks) {
       this.ticksSinceAutosave = 0;
@@ -308,7 +369,33 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
 
   raiseQuestEvent(player: Player, event: QuestEvent): void {
     this.quests.handle(player, event);
+    this.contracts.handle(player, event);
   }
+
+  onlinePlayer(characterId: CharacterId): Player | undefined {
+    return this.online.get(characterId);
+  }
+
+  onlinePlayers(): Iterable<Player> {
+    return this.online.values();
+  }
+
+  findCharacter(name: string): FriendEntry | null {
+    return this.store.findByName(name);
+  }
+
+  partyMatesOf(player: Player): readonly Player[] {
+    return this.social.partyMatesOf(player);
+  }
+
+  openContracts(player: Player): void {
+    this.shops.close(player);
+    this.crafting.close(player);
+    this.storage.close(player);
+    this.market.close(player);
+    this.contracts.open(player);
+  }
+
 
   dropToGround(owner: Player, itemId: string, quantity: number, position: TilePoint): void {
     this.groundItems.drop(this.world.levelOf(owner), { itemId, quantity, position, ownerId: owner.entityId });
@@ -365,6 +452,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     this.crafting.close(player);
     this.storage.close(player);
     this.market.close(player);
+    this.contracts.close(player);
   }
 
   openShop(player: Player, shopId: string, keeperInstanceId: string | null): void {

@@ -1,4 +1,4 @@
-import { chebyshevDistance, purchase, sale, type GameContent, type InstanceId, type ItemId, type ShopId } from '@containment/shared';
+import { chebyshevDistance, purchase, sale, shopCurrencyLabel, type GameContent, type InstanceId, type ItemId, type ShopId } from '@containment/shared';
 import type { Player } from '../world/player.ts';
 import type { World } from '../world/world.ts';
 import type { EffectHost } from './effectRunner.ts';
@@ -38,7 +38,7 @@ export class ShopController {
     }
     player.update({ inventory: result.value.inventory });
     const name = this.content.items.get(itemId)?.name ?? itemId;
-    player.send({ type: 'chat.message', channel: 'system', text: `Bought ${quantity} × ${name} for ${-result.value.scripDelta} scrip.` });
+    player.send({ type: 'chat.message', channel: 'system', text: `Bought ${quantity} × ${name} for ${-result.value.scripDelta} ${shopCurrencyLabel(shop)}.` });
     this.host.raiseQuestEvent(player, { type: 'loadoutChanged' });
   }
 

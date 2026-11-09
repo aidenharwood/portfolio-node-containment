@@ -10,6 +10,9 @@ import type { EquipmentState } from '../gear/equipment.ts';
 import type { InventoryState } from '../gear/inventory.ts';
 import type { StorageState } from '../gear/storage.ts';
 import type { MarketOrder, MarketQuote } from '../economy/market.ts';
+import type { ContractLedger } from '../contracts/contractLedger.ts';
+import type { FriendView } from '../social/friends.ts';
+import type { PartyView } from '../social/party.ts';
 import type { StatId } from '../gear/stats.ts';
 import type { CharacterId, EntityId, ItemId, LevelId, NpcId, TramStationId, WorldObjectId } from '../ids.ts';
 import type { ChunkKey } from '../world/chunks.ts';
@@ -68,6 +71,7 @@ export interface SelfState {
   readonly openDoors: readonly WorldObjectId[];
   readonly openPassages: readonly WorldObjectId[];
   readonly studiedCreatures: readonly CreatureId[];
+  readonly contracts: ContractLedger;
 }
 
 export interface DialogueView {
@@ -84,7 +88,7 @@ export interface PlayerActivityView {
   readonly remaining: number | null;
 }
 
-export type ChatChannel = 'local' | 'system' | 'quest';
+export type ChatChannel = 'local' | 'party' | 'site' | 'whisper' | 'system' | 'quest';
 
 export type NoticeTone = 'info' | 'success' | 'warning';
 
@@ -148,7 +152,12 @@ export type ServerMessage =
   | { readonly type: 'tram.arrived'; readonly stationId: TramStationId }
   | { readonly type: 'dialogue.opened'; readonly view: DialogueView }
   | { readonly type: 'dialogue.closed' }
-  | { readonly type: 'chat.message'; readonly channel: ChatChannel; readonly author?: string; readonly text: string }
+  | { readonly type: 'chat.message'; readonly channel: ChatChannel; readonly author?: string; readonly recipient?: string; readonly text: string }
+  | { readonly type: 'party.invited'; readonly inviterId: CharacterId; readonly inviterName: string }
+  | { readonly type: 'party.state'; readonly party: PartyView | null }
+  | { readonly type: 'friends.state'; readonly friends: readonly FriendView[] }
+  | { readonly type: 'contracts.opened' }
+  | { readonly type: 'contracts.closed' }
   | { readonly type: 'notice'; readonly tone: NoticeTone; readonly text: string }
   | { readonly type: 'error'; readonly message: string };
 

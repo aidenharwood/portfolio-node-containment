@@ -1,11 +1,11 @@
-import { maxIntegrityFor, normalizeAppearance, normalizeSkills, type AccountId, type CharacterId, type CharacterRecord, type GameContent } from '@containment/shared';
+import { emptyContractLedger, maxIntegrityFor, normalizeAppearance, normalizeSkills, type AccountId, type FriendEntry, type CharacterId, type CharacterRecord, type GameContent } from '@containment/shared';
 import { upgradeLegacyLocation } from './legacyLocation.ts';
 import type { Database } from '../persistence/database.ts';
 
 function parseRecord(json: string, content: GameContent): CharacterRecord {
-  const stored = JSON.parse(json) as Omit<CharacterRecord, 'vitals' | 'storage' | 'location'> & Partial<Pick<CharacterRecord, 'vitals' | 'storage'>> & { readonly location: unknown };
+  const stored = JSON.parse(json) as Omit<CharacterRecord, 'vitals' | 'storage' | 'location' | 'friends' | 'contracts'> & Partial<Pick<CharacterRecord, 'vitals' | 'storage' | 'friends' | 'contracts'>> & { readonly location: unknown };
   const skills = normalizeSkills(stored.skills);
-  return { ...stored, location: upgradeLegacyLocation(stored.location, content), appearance: normalizeAppearance(stored.appearance), storage: stored.storage ?? [], skills, vitals: stored.vitals ?? { integrity: maxIntegrityFor(skills) } };
+  return { ...stored, location: upgradeLegacyLocation(stored.location, content), appearance: normalizeAppearance(stored.appearance), storage: stored.storage ?? [], friends: stored.friends ?? [], contracts: stored.contracts ?? emptyContractLedger(), skills, vitals: stored.vitals ?? { integrity: maxIntegrityFor(skills) } };
 }
 
 export class CharacterRepository {
@@ -36,6 +36,11 @@ export class CharacterRepository {
       .prepare('SELECT record FROM characters WHERE id = ? AND account_id = ?')
       .get(characterId, accountId) as { record: string } | undefined;
     return row ? parseRecord(row.record, this.content) : null;
+  }
+
+  findEntryByName(name: string): FriendEntry | null {
+    const row = this.database.prepare('SELECT id, name FROM characters WHERE name = ?').get(name) as { id: string; name: string } | undefined;
+    return row ? { characterId: row.id, name: row.name } : null;
   }
 
   isNameTaken(name: string): boolean {

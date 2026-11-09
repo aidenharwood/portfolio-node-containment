@@ -23,6 +23,7 @@ export interface WorldHooks {
   onPathCompleted(player: Player): void;
   onLevelEntered(player: Player, levelId: LevelId): void;
   openDoorsFor(player: Player): ReadonlySet<WorldObjectId>;
+  partyMatesOf(player: Player): readonly Player[];
 }
 
 interface Walker {
@@ -92,7 +93,7 @@ export class World {
   }
 
   spawn(player: Player): void {
-    const level = this.chooseLayer(this.content.levels.has(player.levelId) ? player.levelId : this.fallbackLevelId());
+    const level = this.chooseLayer(this.content.levels.has(player.levelId) ? player.levelId : this.fallbackLevelId(), this.hooks.partyMatesOf(player));
     player.relocate({ levelId: level.id, position: level.safeSpawnPoint(player.position) });
     level.players.set(player.entityId, player);
     this.playerLayers.set(player.entityId, level);
@@ -269,11 +270,14 @@ export class World {
     for (const area of entered) this.hooks.onAreaEntered(player, area.districtId, area.id);
   }
 
-  private chooseLayer(levelId: LevelId): LevelInstance {
+  private chooseLayer(levelId: LevelId, companions: readonly Player[]): LevelInstance {
     const layers = this.layers.get(levelId) ?? [];
     const definition = this.content.levels.get(levelId) as ResolvedLevel;
     const capacity = this.capacityOf(definition);
-    const open = layers.filter((layer) => layer.players.size < capacity).sort((a, b) => b.players.size - a.players.size || a.layer - b.layer)[0];
+    const companionsIn = (layer: LevelInstance) => companions.filter((companion) => layer.players.get(companion.entityId) === companion).length;
+    const open = layers
+      .filter((layer) => layer.players.size < capacity)
+      .sort((a, b) => companionsIn(b) - companionsIn(a) || b.players.size - a.players.size || a.layer - b.layer)[0];
     if (open) return open;
     const used = new Set(layers.map((layer) => layer.layer));
     let next = 1;

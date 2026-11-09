@@ -18,7 +18,7 @@ interface Operative {
 }
 
 function deep(placements: readonly Placement[], random: () => number = () => 0.99) {
-  const gameplay = new Gameplay(GAME_CONTENT, { save: () => undefined }, {
+  const gameplay = new Gameplay(GAME_CONTENT, { save: () => undefined, findByName: () => null }, {
     tickMs: 300,
     autosaveIntervalMs: 60_000,
     random,

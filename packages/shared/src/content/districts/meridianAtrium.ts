@@ -112,6 +112,7 @@ export const MERIDIAN_ATRIUM: DistrictDefinition = {
 
     { instanceId: 'atrium-core', objectId: 'atrium-core', position: { x: 25, y: 18 } },
     { instanceId: 'plaza-pillar-nw', objectId: 'light-pillar', position: { x: 14, y: 10 } },
+    { instanceId: 'atrium-contract-board', objectId: 'contract-board', position: { x: 17, y: 10 } },
     { instanceId: 'plaza-pillar-ne', objectId: 'light-pillar', position: { x: 37, y: 10 } },
     { instanceId: 'plaza-pillar-sw', objectId: 'light-pillar', position: { x: 14, y: 27 } },
     { instanceId: 'plaza-pillar-se', objectId: 'light-pillar', position: { x: 37, y: 27 } },

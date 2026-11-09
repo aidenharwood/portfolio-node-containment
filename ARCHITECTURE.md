@@ -270,6 +270,27 @@ The Site exchange is a player order book. The pure rules live in `shared/src/eco
 - **Collection:** proceeds wait on the order (`uncollectedItems`, `uncollectedScrip`) until the owner collects them at the exchange, so offline traders and full packs lose nothing. Cancelling returns the unfilled escrow the same way. An order disappears once it is closed and fully collected.
 - **Persistence:** orders live in the `market_orders` table (`persistence/marketRepository.ts`) and are loaded at boot. The trader's character is saved after every market action, so escrow and the order book never disagree after a crash.
 
+### Contracts
+
+Repeatable daily and weekly work. The pure rules live in `shared/src/contracts`, the pool in `content/contracts.ts`, and `ContractController` (`server/src/gameplay/contractController.ts`) applies them.
+
+- **Definitions:** a `ContractDefinition` has a cadence, a tier, `requires` conditions (usually `questCompleted` for district access plus `combatLevel` or `skillLevel`), one objective (`defeat`, `contain`, `gather` or `craft` over a list of creature or item ids) and reward effects. The `contract` helper derives scrip, XP and commendations from the cadence and tier.
+- **Periods:** daily boards turn over at midnight UTC and weekly ones at Monday 00:00 UTC (`contractPeriod`, `contractPeriodEndsAt`). The server clock is injectable through `GameplayOptions.now`.
+- **Boards:** each character keeps a `ContractLedger` on its record. `refreshContractLedger` rolls `CONTRACTS_OFFERED` contracts per cadence (3 daily, 2 weekly) from those the character is eligible for, seeded by character and period so a board never changes within its period. Rolls favour the top two tiers the character qualifies for. The server refreshes on login, on opening a board and every 200 ticks, and announces new boards.
+- **Progress:** every quest event also goes to `advanceContracts`, so kills, containments, gathering and crafting count anywhere. Completed contracts are paid only at a board (`contracts.claim` needs a session opened by the `openContracts` effect). Clearing a whole board pays `SWEEP_BONUS_COMMENDATIONS`.
+- **Commendations:** `directorate-commendation` is a currency item, so it cannot be traded on the market. The Contract Board's second interaction opens the `contracts-office` shop, whose `currency` is commendations (`shopCurrencyOf`).
+- **Integrity:** `findContractIssues` checks ids, that creatures are placed (and containable for `contain`), that `gather` items have a node and `craft` items a recipe, that a board is placed, and that a character fresh out of Induction qualifies for a full board of each cadence.
+
+### Social: parties, contacts and chat channels
+
+`SocialController` (`server/src/gameplay/socialController.ts`) owns chat, parties and contacts. Pure rules live in `shared/src/social`.
+
+- **Chat:** `chat.say` takes a `channel` (`local` near the speaker, `party`, or `site` to everyone online, limited to one message every five seconds). `chat.whisper` resolves the recipient by name among online players and, failing that, tries longer prefixes of `to + text` so unquoted multi-word names work. The client parses slash commands with `parseChatInput` (`/p`, `/s`, `/w`, `/r`, `/invite`, `/friend`, `/leave`, `/help`).
+- **Parties:** held in memory, up to `PARTY_SIZE_LIMIT` (5). The leader invites by name, invites expire after `PARTY_INVITE_TICKS`, and a party disbands below two members. Leaving the world leaves the party. Members get `party.state` (name, combat level, district and integrity) whenever it changes.
+- **Shared credit:** when a creature dies, `CombatController.creditPartyMates` raises a `defeated` event for every party mate of a credited player who is on the same layer with the kill inside their interest set. They get quest and contract credit, not XP or loot.
+- **Layers:** `World.spawn` prefers the layer holding the most of a player's party mates, so a party moving between levels lands together.
+- **Contacts:** `CharacterRecord.friends` persists a list of `{ characterId, name }`, found by name online or through `CharacterStore.findByName`. `friends.state` reports who is online and in which district, refreshed on login, logout and every 20 ticks when it changes.
+
 ### Item sprites
 
 `render/items/itemModels.ts` builds a voxel model per `ItemIconShape`, colored from the item's gear visual where it has one. `render/items/itemSprites.ts` renders each model once, in an offscreen WebGL context, into a cached data URL. That URL becomes the inventory, loadout, shop and creator icon.

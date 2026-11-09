@@ -1,4 +1,6 @@
+import type { ContractLedger } from '../contracts/contractLedger.ts';
 import type { AccountId, CharacterId, DistrictId } from '../ids.ts';
+import type { FriendEntry } from '../social/friends.ts';
 import type { EquipmentState } from '../gear/equipment.ts';
 import type { InventoryState } from '../gear/inventory.ts';
 import type { StorageState } from '../gear/storage.ts';
@@ -25,6 +27,8 @@ export interface CharacterRecord {
   readonly equipment: EquipmentState;
   readonly quests: QuestLog;
   readonly flags: readonly string[];
+  readonly friends: readonly FriendEntry[];
+  readonly contracts: ContractLedger;
   readonly location: WorldLocation;
   readonly createdAt: number;
 }

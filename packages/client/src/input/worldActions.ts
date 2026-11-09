@@ -8,6 +8,7 @@ export interface ActionContext {
   readonly selfEntityId: string | null;
   examine(text: string): void;
   markClick(tile: TilePoint, tone: 'walk' | 'interact'): void;
+  whisper(name: string): void;
 }
 
 export function actionsForTarget(target: PickTarget | null, context: ActionContext): MenuAction[] {
@@ -60,6 +61,9 @@ export function actionsForTarget(target: PickTarget | null, context: ActionConte
       if (entity.kind === 'player') {
         return [
           walkHere(entity.to, context),
+          { verb: 'Whisper', subject: entity.name, subjectTone: 'player', run: () => context.whisper(entity.name) },
+          { verb: 'Invite to party', subject: entity.name, subjectTone: 'player', run: () => context.connection.send({ type: 'party.invite', name: entity.name }) },
+          { verb: 'Add contact', subject: entity.name, subjectTone: 'player', run: () => context.connection.send({ type: 'friends.add', name: entity.name }) },
           { verb: 'Examine', subject: entity.name, subjectTone: 'player', run: () => context.examine(`${entity.name}, a fellow Directorate operative.`) },
         ];
       }

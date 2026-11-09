@@ -27,6 +27,7 @@ export interface EffectHost {
   openCrafting(player: Player, station: CraftingStation): void;
   openStorage(player: Player): void;
   openMarket(player: Player): void;
+  openContracts(player: Player): void;
   openTramMap(player: Player): void;
   discoverStation(player: Player, stationId: string): void;
 }
@@ -71,6 +72,8 @@ export class EffectRunner {
         return this.host.openStorage(player);
       case 'openMarket':
         return this.host.openMarket(player);
+      case 'openContracts':
+        return this.host.openContracts(player);
       case 'restoreIntegrity':
         return player.setIntegrity(player.maxIntegrity);
       case 'openTramMap':

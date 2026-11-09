@@ -128,6 +128,10 @@ Creatures are passive by default. Set `aggressive: true` only for creatures that
 
 Add a `ShopDefinition` to `content/shops.ts` (listings, which item categories it buys, and its sell rate). Then either set `shopId` on the NPC, which adds a right-click "Trade" option, or add an `openShop` effect to a dialogue option.
 
+### Add a contract
+
+Add an entry to `CONTRACTS` in `content/contracts.ts` with `daily(...)` or `weekly(...)`: a short id, a name and brief, a tier, `requires` conditions that keep it off boards until the player can reach the district, and an objective built with `defeat`, `contain`, `gather` or `craft`. Rewards come from the cadence and tier. Run `npm test`; `findContractIssues` rejects unknown or unplaced targets and a pool that cannot fill a new player's board.
+
 ### Balancing
 
 `packages/shared/test/balance.test.ts` simulates hundreds of fights between a player whose skills match what the storyline has paid out so far and each creature. Keep these targets when tuning creatures, XP rewards or gear:

@@ -11,6 +11,7 @@ import {
   type CharacterRecord,
   type CharacterSummary,
   type DistrictId,
+  type FriendEntry,
   type GameContent,
   type Result,
   type WorldLocation,
@@ -78,6 +79,10 @@ export class CharacterService {
 
   load(accountId: AccountId, characterId: CharacterId): CharacterRecord | null {
     return this.repository.findOwned(accountId, characterId);
+  }
+
+  findByName(name: string): FriendEntry | null {
+    return this.repository.findEntryByName(normalizeCharacterName(name));
   }
 
   save(record: CharacterRecord): void {

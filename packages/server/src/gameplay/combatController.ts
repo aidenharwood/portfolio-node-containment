@@ -47,6 +47,7 @@ export interface CombatHost {
   onIncapacitated(player: Player): void;
   onDamaged(player: Player): void;
   dropToGround(owner: Player, itemId: string, quantity: number, position: TilePoint): void;
+  partyMatesOf(player: Player): readonly Player[];
 }
 
 const DEATH_ANIMATION_TICKS = 3;
@@ -371,7 +372,22 @@ export class CombatController {
       const player = level.players.get(entityId);
       if (player) this.rewardDefeat(player, creature, creature.position);
     }
+    this.creditPartyMates(credited, creature, level);
     if (container) this.rewardContainment(container, creature, creature.position);
+  }
+
+  private creditPartyMates(credited: ReadonlySet<string>, creature: Creature, level: LevelInstance): void {
+    const shared = new Set<string>();
+    for (const entityId of credited) {
+      const player = level.players.get(entityId);
+      if (!player) continue;
+      for (const mate of this.host.partyMatesOf(player)) {
+        if (credited.has(mate.entityId) || shared.has(mate.entityId)) continue;
+        if (level.players.get(mate.entityId) !== mate || !level.isInterestOf(mate, creature.position)) continue;
+        shared.add(mate.entityId);
+        this.host.raiseQuestEvent(mate, { type: 'defeated', creatureId: creature.definition.id });
+      }
+    }
   }
 
   private rewardContainment(player: Player, creature: Creature, position: TilePoint): void {

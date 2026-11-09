@@ -3,6 +3,7 @@ import {
   countItem,
   createEmptyInventory,
   createStartingSkills,
+  emptyContractLedger,
   isEquipped,
   maxIntegrityFor,
   normalizeCharacterName,
@@ -52,6 +53,8 @@ export function createCharacterRecord(
     equipment,
     quests: startingQuest ? { [startingQuest.id]: startQuest(startingQuest, probe).progress } : {},
     flags: [],
+    friends: [],
+    contracts: emptyContractLedger(),
     location: startingLocation,
     createdAt: Date.now(),
   };

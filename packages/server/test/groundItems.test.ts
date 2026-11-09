@@ -7,7 +7,7 @@ import { OWNER_PRIVACY_TICKS, GROUND_LIFETIME_TICKS } from '../src/gameplay/grou
 import { RecordingSink, at, levelPoint } from './support/testHarness.ts';
 
 function setup() {
-  const gameplay = new Gameplay(GAME_CONTENT, { save: () => undefined }, {
+  const gameplay = new Gameplay(GAME_CONTENT, { save: () => undefined, findByName: () => null }, {
     tickMs: 300,
     autosaveIntervalMs: 60_000,
     random: () => 0.99,

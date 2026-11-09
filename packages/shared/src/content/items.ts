@@ -13,6 +13,17 @@ export const ITEMS: readonly ItemDefinition[] = [
     value: 1,
   },
   {
+    id: 'directorate-commendation',
+    name: 'Directorate Commendation',
+    examine: 'A stamped commendation chit for contract work. The Contracts Office trades them for supplies. Nobody else will take them.',
+    category: 'currency',
+    rarity: 'issued',
+    icon: 'keycard',
+    iconColors: ['#ffcf4d', '#7a3a8a'],
+    maxStack: 1_000_000,
+    value: 0,
+  },
+  {
     id: 'clearance-card-l1',
     name: 'Clearance Card (L1)',
     examine: 'A Level 1 access card. The photo on it is already out of date.',

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { AUGMENTS, BODY_TYPES, FACE_MARKS, HAIR_STYLES, PHYSIQUES } from '../character/appearance.ts';
 import { PRONOUN_SET_IDS } from '../character/pronouns.ts';
+import { CONTRACT_CADENCES } from '../contracts/contract.ts';
 import { EQUIPMENT_SLOTS } from '../gear/slots.ts';
 
 export const CREDENTIAL_RULES = {
@@ -63,7 +64,18 @@ export const clientMessageSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('world.pickup'), groundItemId: z.string().max(64) }),
   z.object({ type: z.literal('inventory.swap'), from: z.number().int().min(0).max(64), to: z.number().int().min(0).max(64) }),
   z.object({ type: z.literal('equipment.unequip'), slot: z.enum(EQUIPMENT_SLOTS) }),
-  z.object({ type: z.literal('chat.say'), text: z.string().min(1).max(160) }),
+  z.object({ type: z.literal('chat.say'), text: z.string().min(1).max(160), channel: z.enum(['local', 'party', 'site']).optional() }),
+  z.object({ type: z.literal('chat.whisper'), to: z.string().min(1).max(64), text: z.string().min(1).max(160) }),
+  z.object({ type: z.literal('party.invite'), name: z.string().min(1).max(64) }),
+  z.object({ type: z.literal('party.accept'), inviterId: z.string().max(64) }),
+  z.object({ type: z.literal('party.decline'), inviterId: z.string().max(64) }),
+  z.object({ type: z.literal('party.leave') }),
+  z.object({ type: z.literal('party.kick'), characterId: z.string().max(64) }),
+  z.object({ type: z.literal('party.promote'), characterId: z.string().max(64) }),
+  z.object({ type: z.literal('friends.add'), name: z.string().min(1).max(64) }),
+  z.object({ type: z.literal('friends.remove'), characterId: z.string().max(64) }),
+  z.object({ type: z.literal('contracts.claim'), cadence: z.enum(CONTRACT_CADENCES), contractId: z.string().max(64) }),
+  z.object({ type: z.literal('contracts.close') }),
   z.object({ type: z.literal('shop.open'), shopId: z.string().max(64), keeperInstanceId: z.string().max(64).nullable() }),
   z.object({ type: z.literal('shop.buy'), itemId: z.string().max(64), quantity: z.number().int().min(1).max(1000) }),
   z.object({ type: z.literal('shop.sell'), slotIndex: z.number().int().min(0).max(64), quantity: z.number().int().min(1).max(10000) }),

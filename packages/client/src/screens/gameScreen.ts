@@ -8,6 +8,7 @@ import {
   relativeThreat,
   type NpcQuestMarker,
   type TilePoint,
+  whisperPrefix,
 } from '@containment/shared';
 import type { AppNavigator } from '../app.ts';
 import { ChatLog } from '../hud/chatLog.ts';
@@ -17,6 +18,7 @@ import { DialogueBox } from '../hud/dialogueBox.ts';
 import { InteractionBubble, bubbleMeta, type BubbleContent } from '../hud/interactionBubble.ts';
 import { Minimap } from '../hud/minimap.ts';
 import { ClickIndicator, type ClickTone } from '../hud/clickIndicator.ts';
+import { ContractBoardWindow } from '../hud/contractBoardWindow.ts';
 import { ObjectiveTracker } from '../hud/objectiveTracker.ts';
 import { MarketWindow } from '../hud/marketWindow.ts';
 import { ShopWindow } from '../hud/shopWindow.ts';
@@ -30,12 +32,15 @@ import { SidePanel } from '../hud/sidePanel.ts';
 import { SpeechLayer } from '../hud/speechLayer.ts';
 import { VitalsPanel } from '../hud/vitalsPanel.ts';
 import { createBestiaryTab } from '../hud/tabs/bestiaryTab.ts';
+import { createContractsTab } from '../hud/tabs/contractsTab.ts';
+import { createSocialTab } from '../hud/tabs/socialTab.ts';
 import { createDossierTab } from '../hud/tabs/dossierTab.ts';
 import { createEquipmentTab } from '../hud/tabs/equipmentTab.ts';
 import { createInventoryTab } from '../hud/tabs/inventoryTab.ts';
 import { createQuestsTab } from '../hud/tabs/questsTab.ts';
 import { GuidanceRoute } from '../state/guidanceRoute.ts';
 import { QuestTracking } from '../state/questTracking.ts';
+import { SocialState } from '../state/socialState.ts';
 import { createSkillsTab } from '../hud/tabs/skillsTab.ts';
 import { actionsForTarget, type ActionContext } from '../input/worldActions.ts';
 import { GameRenderer } from '../render/gameRenderer.ts';
@@ -69,7 +74,9 @@ export function createGameScreen(app: AppNavigator): Screen {
   const canvas = h('canvas', { className: 'world-canvas' });
   const renderer = new GameRenderer(canvas, world);
   const menu = new ContextMenu();
-  const chat = new ChatLog(connection);
+  const social = new SocialState(connection);
+  const chat = new ChatLog(connection, social);
+  const whisper = (name: string) => chat.focusInput(whisperPrefix(name));
   const dialogue = new DialogueBox(connection);
   const questTracking = new QuestTracking();
   const objectives = new ObjectiveTracker(questTracking);
@@ -84,6 +91,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   const shop = new ShopWindow(connection, world, menu);
   const storage = new StorageWindow(connection, world, menu);
   const market = new MarketWindow(connection, world);
+  const contractBoard = new ContractBoardWindow(connection, world);
   const crafting = new CraftingWindow(connection, world);
   const activity = new ActivityBar(connection, world);
   const clickIndicator = new ClickIndicator();
@@ -112,6 +120,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     selfEntityId: world.selfEntityId,
     examine,
     markClick: (tile, tone) => markDestination(tile, tone),
+    whisper,
   });
 
   const markDestination = (tile: TilePoint, tone: ClickTone) => {
@@ -136,6 +145,8 @@ export function createGameScreen(app: AppNavigator): Screen {
     createEquipmentTab(connection, world),
     createSkillsTab(),
     createQuestsTab(menu, questTracking),
+    createContractsTab(),
+    createSocialTab(connection, social, { whisper }),
     createBestiaryTab(),
     createDossierTab(connection, world),
   ]);
@@ -394,6 +405,10 @@ export function createGameScreen(app: AppNavigator): Screen {
       market.requestClose();
       return;
     }
+    if (event.key === 'Escape' && contractBoard.isOpen) {
+      contractBoard.requestClose();
+      return;
+    }
     if (event.key === 'Escape' && worldMap.isOpen) {
       worldMap.requestClose();
       return;
@@ -425,7 +440,7 @@ export function createGameScreen(app: AppNavigator): Screen {
       chat.focusInput();
       return;
     }
-    const panelKey = event.ctrlKey || event.altKey || event.metaKey ? null : /^F?([1-5])$/.exec(event.key);
+    const panelKey = event.ctrlKey || event.altKey || event.metaKey ? null : /^F?([1-8])$/.exec(event.key);
     if (panelKey) {
       event.preventDefault();
       sidePanel.toggleByIndex(Number(panelKey[1]) - 1);
@@ -475,6 +490,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     crafting.element,
     storage.element,
     market.element,
+    contractBoard.element,
     worldMap.element,
     activity.element,
     tramRide.element,
@@ -510,6 +526,8 @@ export function createGameScreen(app: AppNavigator): Screen {
       crafting.dispose();
       storage.dispose();
       market.dispose();
+      contractBoard.dispose();
+      social.dispose();
       worldMap.dispose();
       tramRide.dispose();
       activity.dispose();

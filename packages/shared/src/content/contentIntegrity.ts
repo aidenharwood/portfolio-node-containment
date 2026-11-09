@@ -10,6 +10,7 @@ import { TILE_KINDS } from '../world/tiles.ts';
 import { parseTileLayout } from '../world/district.ts';
 import { districtObjectsOf, findAssemblyIssues } from './assemblyIntegrity.ts';
 import { findContainmentIssues } from './containmentIntegrity.ts';
+import { findContractIssues } from './contractIntegrity.ts';
 import { findCraftingIssues, rawSourceTiers } from './craftingIntegrity.ts';
 import type { GameContent } from './gameContent.ts';
 import { findLevelIssues } from './levelIntegrity.ts';
@@ -234,5 +235,6 @@ export function findContentIssues(content: GameContent): string[] {
   issues.push(...findAssemblyIssues(content));
   issues.push(...findSafetyIssues(content));
   issues.push(...findContainmentIssues(content));
+  issues.push(...findContractIssues(content));
   return issues;
 }

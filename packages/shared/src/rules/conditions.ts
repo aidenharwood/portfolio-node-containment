@@ -1,4 +1,4 @@
-import { levelForExperience, type SkillExperience, type SkillId } from '../character/skills.ts';
+import { combatLevel, levelForExperience, type SkillExperience, type SkillId } from '../character/skills.ts';
 import type { ItemId, QuestId } from '../ids.ts';
 
 export type Condition =
@@ -9,7 +9,8 @@ export type Condition =
   | { readonly type: 'questCompleted'; readonly questId: QuestId }
   | { readonly type: 'hasFlag'; readonly flag: string }
   | { readonly type: 'lacksFlag'; readonly flag: string }
-  | { readonly type: 'skillLevel'; readonly skill: SkillId; readonly atLeast: number };
+  | { readonly type: 'skillLevel'; readonly skill: SkillId; readonly atLeast: number }
+  | { readonly type: 'combatLevel'; readonly atLeast: number };
 
 export type QuestStanding =
   | { readonly status: 'notStarted' }
@@ -43,6 +44,8 @@ export function isConditionMet(condition: Condition, context: ConditionContext):
       return !context.hasFlag(condition.flag);
     case 'skillLevel':
       return levelForExperience(context.skills[condition.skill]) >= condition.atLeast;
+    case 'combatLevel':
+      return combatLevel(context.skills) >= condition.atLeast;
   }
 }
 

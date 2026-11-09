@@ -19,7 +19,12 @@ export interface ShopDefinition {
   readonly listings: readonly ShopListing[];
   readonly buysCategories: readonly ItemCategory[];
   readonly sellRate: number;
+  readonly currency?: { readonly itemId: ItemId; readonly label: string };
 }
+
+export const shopCurrencyOf = (shop: ShopDefinition): ItemId => shop.currency?.itemId ?? CURRENCY_ITEM_ID;
+
+export const shopCurrencyLabel = (shop: ShopDefinition): string => shop.currency?.label ?? 'scrip';
 
 export interface TradeOutcome {
   readonly inventory: InventoryState;
@@ -44,9 +49,10 @@ export function purchase(
   if (!listing) return failure('That is not for sale here.');
   if (!Number.isInteger(quantity) || quantity < 1 || quantity > MAX_TRADE_QUANTITY) return failure('Invalid quantity.');
   const cost = listing.price * quantity;
-  if (countItem(inventory, CURRENCY_ITEM_ID) < cost) return failure(`You need ${cost} scrip for that.`);
+  const currency = shopCurrencyOf(shop);
+  if (countItem(inventory, currency) < cost) return failure(`You need ${cost} ${shopCurrencyLabel(shop)} for that.`);
 
-  const paid = removeItem(inventory, CURRENCY_ITEM_ID, cost);
+  const paid = removeItem(inventory, currency, cost);
   if (!paid.ok) return paid;
   const received = addItem(paid.value, catalog, itemId, quantity);
   if (received.overflow > 0) return failure('You do not have room for that.');

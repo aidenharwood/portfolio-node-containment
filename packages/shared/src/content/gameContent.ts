@@ -84,6 +84,9 @@ import { DEAD_LETTER_OFFICE_LEVEL } from './levels/deadLetterOfficeLevel.ts';
 import { ASSEMBLY_OBJECTS } from './assemblyObjects.ts';
 import { LITTER_OBJECTS } from './litterObjects.ts';
 import { FURNITURE_OBJECTS } from './furnitureObjects.ts';
+import { CONTRACT_OBJECTS } from './contractObjects.ts';
+import { CONTRACTS } from './contracts.ts';
+import type { ContractDefinition, ContractId } from '../contracts/contract.ts';
 import { ASSEMBLIES } from './assemblies.ts';
 import type { AssemblyDefinition } from '../world/assemblies.ts';
 import { VERDANT_FOLD } from './districts/verdantFold.ts';
@@ -114,6 +117,7 @@ export interface GameContent {
   readonly creatures: ReadonlyMap<CreatureId, CreatureDefinition>;
   readonly shops: ReadonlyMap<ShopId, ShopDefinition>;
   readonly recipes: ReadonlyMap<string, RecipeDefinition>;
+  readonly contracts: ReadonlyMap<ContractId, ContractDefinition>;
   readonly newCharacter: {
     readonly startingLocation: WorldLocation;
     readonly startingQuestId: QuestId;
@@ -148,7 +152,7 @@ function startingLocation(): WorldLocation {
 export const GAME_CONTENT: GameContent = {
   items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS, ...UNIQUE_GEAR, ...CONTAINMENT_SEALS]),
   npcs: indexById([...NPCS, ...DEEP_NPCS, ...WATERWORKS_NPCS, ...OFFICE_NPCS]),
-  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...FURNITURE_OBJECTS, ...OFFICE_OBJECTS]),
+  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...FURNITURE_OBJECTS, ...OFFICE_OBJECTS, ...CONTRACT_OBJECTS]),
   assemblies: ASSEMBLY_INDEX,
   dialogues: indexById([
     REYES_DIALOGUE,
@@ -208,6 +212,7 @@ export const GAME_CONTENT: GameContent = {
   creatures: indexById([...CREATURES, ...DEEP_CREATURES, ...WATERWORKS_CREATURES, ...OFFICE_CREATURES]),
   shops: indexById(SHOPS),
   recipes: indexById([...RECIPES, ...CONTAINMENT_SEAL_RECIPES]),
+  contracts: indexById(CONTRACTS),
   newCharacter: {
     startingLocation: startingLocation(),
     startingQuestId: ORIENTATION_PROTOCOL.id,

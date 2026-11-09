@@ -69,6 +69,8 @@ export class Player {
   activity: PlayerActivity | null = null;
   craftingStation: CraftingStation | null = null;
   storageOpen = false;
+  contractsOpen = false;
+  lastWhisperFrom: string | null = null;
   engagedWith: EntityId | null = null;
   engagedUntilTick = 0;
   nextAttackTick = 0;

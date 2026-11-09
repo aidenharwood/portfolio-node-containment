@@ -221,7 +221,8 @@ body {
   .shop-window,
   .crafting-window,
   .storage-window,
-  .market-window {
+  .market-window,
+  .contract-window {
     width: calc(100% - 16px - var(--safe-left) - var(--safe-right));
     height: auto;
     max-height: calc(100% - 16px - var(--safe-top) - var(--safe-bottom));

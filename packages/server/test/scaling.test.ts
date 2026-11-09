@@ -8,7 +8,7 @@ import type { Player } from '../src/world/player.ts';
 import { RecordingSink, at } from './support/testHarness.ts';
 
 function crowd(count: number, options: { capacity: number; districtId: string; position: { x: number; y: number } }) {
-  const gameplay = new Gameplay(GAME_CONTENT, { save: () => undefined }, {
+  const gameplay = new Gameplay(GAME_CONTENT, { save: () => undefined, findByName: () => null }, {
     tickMs: 300,
     autosaveIntervalMs: 60_000,
     random: () => 0.99,

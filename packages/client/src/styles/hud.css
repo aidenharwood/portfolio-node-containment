@@ -866,7 +866,7 @@
 .chat-tab {
   background: none;
   border: none;
-  padding: 5px 12px;
+  padding: 5px 8px;
   font-size: 11px;
   color: var(--color-text-muted);
   cursor: pointer;
@@ -2828,4 +2828,293 @@
   .market-body {
     overflow: visible;
   }
+}
+
+.chat-line.channel-party {
+  color: #8fd8ff;
+}
+
+.chat-line.channel-site {
+  color: #c9b6ff;
+}
+
+.chat-line.channel-whisper {
+  color: #ff9ad5;
+}
+
+.chat-actions {
+  display: inline-flex;
+  gap: 6px;
+  margin-left: 8px;
+}
+
+.chat-action {
+  background: var(--color-accent-dim);
+  color: var(--color-text);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius);
+  padding: 0 8px;
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.chat-action:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.social-body,
+.contracts-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.social-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.social-list,
+.contract-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.social-member,
+.social-friend,
+.social-invite {
+  background: var(--color-surface-inset);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.social-member.self {
+  border-color: var(--color-line-strong);
+}
+
+.social-member-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.social-name {
+  color: var(--color-text);
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.social-meta {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
+.social-integrity {
+  height: 4px;
+  background: rgba(255, 94, 94, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.social-integrity span {
+  display: block;
+  height: 100%;
+  background: var(--color-success);
+}
+
+.social-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.social-form {
+  display: flex;
+  gap: 6px;
+}
+
+.social-input {
+  flex: 1;
+  min-width: 0;
+  background: var(--color-surface-inset);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
+.social-leave {
+  align-self: flex-start;
+}
+
+.presence-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-text-faint);
+}
+
+.social-friend.online .presence-dot {
+  background: var(--color-success);
+  box-shadow: 0 0 6px var(--color-success);
+}
+
+.social-invites .social-invite {
+  border-color: var(--color-gold);
+}
+
+.contract-window {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(640px, calc(100% - 32px));
+  max-height: calc(100% - 120px);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 20px 14px;
+  z-index: 30;
+  border-color: var(--color-line-strong);
+}
+
+.contract-window-body {
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.contract-board {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contract-summary {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.contract-summary strong {
+  color: var(--color-gold);
+}
+
+.contract-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.contract-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.contract-card {
+  background: var(--color-surface-inset);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.contract-card.complete {
+  border-color: var(--color-gold);
+}
+
+.contract-card.claimed {
+  opacity: 0.55;
+}
+
+.contract-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.contract-name {
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 13px;
+}
+
+.contract-tier {
+  color: var(--color-accent);
+  font-size: 11px;
+}
+
+.contract-brief,
+.contract-objective,
+.contract-reward,
+.contract-status {
+  margin: 0;
+  font-size: 11px;
+}
+
+.contract-brief {
+  color: var(--color-text-muted);
+}
+
+.contract-objective {
+  color: var(--color-text);
+}
+
+.contract-reward {
+  color: var(--color-gold);
+}
+
+.contract-status {
+  color: var(--color-success);
+}
+
+.contract-progress {
+  position: relative;
+  height: 14px;
+  background: rgba(79, 216, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.contract-progress span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--color-accent-dim);
+}
+
+.contract-card.complete .contract-progress span {
+  background: rgba(255, 210, 63, 0.35);
+}
+
+.contract-progress em {
+  position: relative;
+  display: block;
+  text-align: center;
+  font-style: normal;
+  font-size: 10px;
+  line-height: 14px;
+  color: var(--color-text);
+}
+
+.contract-card .button {
+  align-self: flex-start;
 }

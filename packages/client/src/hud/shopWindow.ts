@@ -1,4 +1,4 @@
-import { countItem, CURRENCY_ITEM_ID, GAME_CONTENT, sellPrice, type InventoryState, type ItemDefinition, type SelfState, type ShopDefinition } from '@containment/shared';
+import { countItem, GAME_CONTENT, sellPrice, shopCurrencyLabel, shopCurrencyOf, type InventoryState, type ItemDefinition, type SelfState, type ShopDefinition } from '@containment/shared';
 import type { GameConnection } from '../net/gameConnection.ts';
 import { itemIconUrl } from '../render/items/itemSprites.ts';
 import type { WorldState } from '../state/worldState.ts';
@@ -66,7 +66,7 @@ export class ShopWindow {
     const shop = this.shop;
     const self = this.world.self;
     if (!shop || !self) return;
-    const scrip = countItem(self.inventory, CURRENCY_ITEM_ID);
+    const scrip = countItem(self.inventory, shopCurrencyOf(shop));
     preserveScroll(this.element, ['.shop-column:first-child', '.shop-column:last-child'], () => replaceChildren(
       this.element,
       h('header', { className: 'shop-header' },
@@ -78,7 +78,7 @@ export class ShopWindow {
         h('div', { className: 'shop-column' }, h('p', { className: 'eyebrow' }, 'Sell from inventory'), this.renderSellables(shop, self)),
       ),
       h('footer', { className: 'shop-footer' },
-        h('span', {}, 'Scrip ', h('strong', { className: 'scrip-amount' }, scrip.toLocaleString())),
+        h('span', {}, `${shopCurrencyLabel(shop).replace(/^./, (letter) => letter.toUpperCase())} `, h('strong', { className: 'scrip-amount' }, scrip.toLocaleString())),
         h('span', { className: 'tab-hint' }, `${primaryGesture()} for one · ${secondaryGesture()} to buy or sell more`),
       ),
     ));
