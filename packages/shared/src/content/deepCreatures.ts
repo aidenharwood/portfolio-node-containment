@@ -43,7 +43,6 @@ export const CRYOVAULT_CREATURES: readonly CreatureDefinition[] = [
     experience: 155,
     loot: [
       { itemId: 'cryo-gel', count: 1, chance: 0.6 },
-      { itemId: 'meridian-scrip', count: 12, chance: 0.5 },
       { itemId: 'rime-salve', count: 1, chance: 0.08 },
       { itemId: 'frozen-clipboard', count: 1, chance: 0.02 },
     ],
@@ -67,7 +66,7 @@ export const CRYOVAULT_CREATURES: readonly CreatureDefinition[] = [
     experience: 510,
     loot: [
       { itemId: 'rime-salve', count: 2, chance: 1 },
-      { itemId: 'meridian-scrip', count: 120, chance: 1 },
+      { itemId: 'meridian-scrip', count: 30, chance: 1 },
       { itemId: 'cryo-gel', count: 3, chance: 1 },
       { itemId: 'stasis-implant', count: 1, chance: 0.05 },
       { itemId: 'curators-ledger', count: 1, chance: 0.1 },
@@ -80,7 +79,7 @@ export const CRYOVAULT_CREATURES: readonly CreatureDefinition[] = [
       procedures: 'ANM-0233-C must be catalogued before it is sealed: speak its own inventory number aloud as the seal closes. Uncatalogued, it will try to add the operative to the manifest.',
       experience: 1020,
       loot: [
-        { itemId: 'meridian-scrip', count: 200, chance: 1 },
+        { itemId: 'meridian-scrip', count: 50, chance: 1 },
         { itemId: 'cryo-gel', count: 4, chance: 1 },
         { itemId: 'curators-ledger', count: 1, chance: 0.2 },
         { itemId: 'cold-hands', count: 1, chance: 0.2 },
@@ -134,7 +133,6 @@ export const SIGNAL_ARRAY_CREATURES: readonly CreatureDefinition[] = [
     experience: 235,
     loot: [
       { itemId: 'echo-residue', count: 1, chance: 0.55 },
-      { itemId: 'meridian-scrip', count: 18, chance: 0.4 },
       { itemId: 'echo-stim', count: 1, chance: 0.06 },
       { itemId: 'operators-headset', count: 1, chance: 0.02 },
     ],
@@ -158,7 +156,7 @@ export const SIGNAL_ARRAY_CREATURES: readonly CreatureDefinition[] = [
     experience: 770,
     loot: [
       { itemId: 'echo-stim', count: 2, chance: 1 },
-      { itemId: 'meridian-scrip', count: 200, chance: 1 },
+      { itemId: 'meridian-scrip', count: 50, chance: 1 },
       { itemId: 'echo-residue', count: 4, chance: 1 },
       { itemId: 'choir-visor', count: 1, chance: 0.05 },
       { itemId: 'choirmasters-collar', count: 1, chance: 0.1 },
@@ -170,7 +168,7 @@ export const SIGNAL_ARRAY_CREATURES: readonly CreatureDefinition[] = [
       procedures: 'ANM-3310-C answers any open channel. All radios within forty metres are to be powered down before re-housing. The seal must be closed on the downbeat; otherwise forty-one voices answer.',
       experience: 1540,
       loot: [
-        { itemId: 'meridian-scrip', count: 320, chance: 1 },
+        { itemId: 'meridian-scrip', count: 80, chance: 1 },
         { itemId: 'echo-residue', count: 5, chance: 1 },
         { itemId: 'choirmasters-collar', count: 1, chance: 0.2 },
         { itemId: 'choir-visor', count: 1, chance: 0.1 },
@@ -224,7 +222,6 @@ export const ARCHIVE_CREATURES: readonly CreatureDefinition[] = [
     loot: [
       { itemId: 'redaction-strip', count: 1, chance: 0.55 },
       { itemId: 'archival-vellum', count: 1, chance: 0.3 },
-      { itemId: 'meridian-scrip', count: 25, chance: 0.4 },
       { itemId: 'ink-tonic', count: 1, chance: 0.06 },
       { itemId: 'redactors-wraps', count: 1, chance: 0.01 },
     ],
@@ -248,7 +245,7 @@ export const ARCHIVE_CREATURES: readonly CreatureDefinition[] = [
     experience: 835,
     loot: [
       { itemId: 'ink-tonic', count: 2, chance: 1 },
-      { itemId: 'meridian-scrip', count: 320, chance: 1 },
+      { itemId: 'meridian-scrip', count: 80, chance: 1 },
       { itemId: 'archival-vellum', count: 4, chance: 1 },
       { itemId: 'palimpsest-implant', count: 1, chance: 0.05 },
       { itemId: 'the-knock-file', count: 1, chance: 0.1 },
@@ -260,7 +257,7 @@ export const ARCHIVE_CREATURES: readonly CreatureDefinition[] = [
       procedures: 'ANM-4471-C will surrender the Knock file to no one and must be sealed with it. Do not attempt to read the file during re-housing. Personnel who did are now filed under it.',
       experience: 1670,
       loot: [
-        { itemId: 'meridian-scrip', count: 480, chance: 1 },
+        { itemId: 'meridian-scrip', count: 120, chance: 1 },
         { itemId: 'archival-vellum', count: 5, chance: 1 },
         { itemId: 'the-knock-file', count: 1, chance: 0.2 },
         { itemId: 'palimpsest-implant', count: 1, chance: 0.1 },
@@ -314,7 +311,6 @@ export const FURNACE_CREATURES: readonly CreatureDefinition[] = [
     loot: [
       { itemId: 'golem-core', count: 1, chance: 0.45 },
       { itemId: 'ember-ore', count: 2, chance: 0.4 },
-      { itemId: 'meridian-scrip', count: 40, chance: 0.4 },
       { itemId: 'slag-heart', count: 1, chance: 0.01 },
     ],
   },
@@ -337,7 +333,7 @@ export const FURNACE_CREATURES: readonly CreatureDefinition[] = [
     experience: 1115,
     loot: [
       { itemId: 'cinder-draught', count: 2, chance: 1 },
-      { itemId: 'meridian-scrip', count: 500, chance: 1 },
+      { itemId: 'meridian-scrip', count: 125, chance: 1 },
       { itemId: 'golem-core', count: 2, chance: 1 },
       { itemId: 'stoker-maul', count: 1, chance: 0.05 },
       { itemId: 'stokers-apron', count: 1, chance: 0.1 },
@@ -349,7 +345,7 @@ export const FURNACE_CREATURES: readonly CreatureDefinition[] = [
       procedures: 'ANM-5502-C must be given fuel at all times, including inside the seal. A sealed Stoker that runs out of fuel begins to shovel whatever is nearest. Re-housing teams should bring coal and not stand nearest.',
       experience: 2230,
       loot: [
-        { itemId: 'meridian-scrip', count: 750, chance: 1 },
+        { itemId: 'meridian-scrip', count: 190, chance: 1 },
         { itemId: 'golem-core', count: 3, chance: 1 },
         { itemId: 'stokers-apron', count: 1, chance: 0.2 },
         { itemId: 'stoker-maul', count: 1, chance: 0.1 },
@@ -403,7 +399,6 @@ export const FAR_SIDE_CREATURES: readonly CreatureDefinition[] = [
     loot: [
       { itemId: 'knock-splinter', count: 1, chance: 0.45 },
       { itemId: 'mirror-glass', count: 1, chance: 0.3 },
-      { itemId: 'meridian-scrip', count: 60, chance: 0.4 },
       { itemId: 'peephole-lens', count: 1, chance: 0.01 },
     ],
   },
@@ -426,7 +421,7 @@ export const FAR_SIDE_CREATURES: readonly CreatureDefinition[] = [
     experience: 1420,
     loot: [
       { itemId: 'threshold-elixir', count: 3, chance: 1 },
-      { itemId: 'meridian-scrip', count: 1000, chance: 1 },
+      { itemId: 'meridian-scrip', count: 250, chance: 1 },
       { itemId: 'knock-splinter', count: 3, chance: 1 },
       { itemId: 'the-knocker', count: 1, chance: 0.04 },
       { itemId: 'last-word', count: 1, chance: 0.04 },
@@ -439,7 +434,7 @@ export const FAR_SIDE_CREATURES: readonly CreatureDefinition[] = [
       procedures: 'ANM-1180 cannot enter a space unless invited. The seal is not an invitation, and the re-housing operative must say so, clearly, before closing it. It will thank you. Do not reply.',
       experience: 2840,
       loot: [
-        { itemId: 'meridian-scrip', count: 1500, chance: 1 },
+        { itemId: 'meridian-scrip', count: 375, chance: 1 },
         { itemId: 'knock-splinter', count: 4, chance: 1 },
         { itemId: 'the-knocker', count: 1, chance: 0.08 },
         { itemId: 'last-word', count: 1, chance: 0.08 },

@@ -150,7 +150,7 @@ export const CREATURES: readonly CreatureDefinition[] = [
     experience: 140,
     loot: [
       { itemId: 'medgel', count: 2, chance: 1 },
-      { itemId: 'meridian-scrip', count: 25, chance: 1 },
+      { itemId: 'meridian-scrip', count: 5, chance: 1 },
       { itemId: 'wardens-lamp', count: 1, chance: 0.15 },
     ],
     containment: {
@@ -159,7 +159,7 @@ export const CREATURES: readonly CreatureDefinition[] = [
       procedures: 'ANM-1180-B keeps to its patrol route and is to be left on it. When re-housing, close the seal while it faces away from the bulkhead. It will not resist a locked door; it only checks them.',
       experience: 300,
       loot: [
-        { itemId: 'meridian-scrip', count: 40, chance: 1 },
+        { itemId: 'meridian-scrip', count: 10, chance: 1 },
         { itemId: 'medgel', count: 2, chance: 1 },
         { itemId: 'wardens-lamp', count: 1, chance: 0.3 },
       ],
@@ -254,7 +254,7 @@ export const CREATURES: readonly CreatureDefinition[] = [
     experience: 320,
     loot: [
       { itemId: 'medgel', count: 2, chance: 1 },
-      { itemId: 'meridian-scrip', count: 60, chance: 1 },
+      { itemId: 'meridian-scrip', count: 15, chance: 1 },
       { itemId: 'shock-maul', count: 1, chance: 0.08 },
       { itemId: 'foremans-hardhat', count: 1, chance: 0.15 },
       { itemId: 'overtime', count: 1, chance: 0.06 },
@@ -265,7 +265,7 @@ export const CREATURES: readonly CreatureDefinition[] = [
       procedures: 'ANM-1180-D is never to be shown an incomplete work order. Personnel re-housing it should carry signed paperwork. Once sealed it continues to audit the seal, and it has never yet found a fault.',
       experience: 650,
       loot: [
-        { itemId: 'meridian-scrip', count: 100, chance: 1 },
+        { itemId: 'meridian-scrip', count: 25, chance: 1 },
         { itemId: 'hardened-steel', count: 2, chance: 1 },
         { itemId: 'foremans-hardhat', count: 1, chance: 0.3 },
         { itemId: 'shock-maul', count: 1, chance: 0.16 },

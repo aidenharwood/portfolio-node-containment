@@ -73,7 +73,7 @@ describe('containment', () => {
     assert.ok(harness.player.record.skills.containment >= containmentBefore + 300);
     const ground = [...harness.gameplay.world.levelOf(harness.player).groundItems.values()];
     const scrip = ground.filter((item) => item.itemId === 'meridian-scrip' && item.ownerId === harness.player.entityId).reduce((total, item) => total + item.quantity, 0);
-    assert.equal(scrip, 25 + 40, 'the regular drop and the containment bonus both land');
+    assert.equal(scrip, 5 + 10, 'the regular drop and the containment bonus both land');
     assert.ok(harness.sink.messages.some((message) => message.type === 'chat.message' && message.text.startsWith('Containment bonus:')));
     assert.ok(harness.sink.messages.some((message) => message.type === 'combat.death' && message.containedBy === harness.player.entityId));
   });

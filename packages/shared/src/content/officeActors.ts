@@ -46,7 +46,6 @@ export const OFFICE_CREATURES: readonly CreatureDefinition[] = [
     loot: [
       { itemId: 'franking-wax', count: 1, chance: 0.55 },
       { itemId: 'hollow-thread', count: 1, chance: 0.3 },
-      { itemId: 'meridian-scrip', count: 80, chance: 0.45 },
       { itemId: 'threshold-elixir', count: 1, chance: 0.05 },
       { itemId: 'franking-stamp', count: 1, chance: 0.02 },
     ],
@@ -72,7 +71,6 @@ export const OFFICE_CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'dead-letter', count: 1, chance: 0.55 },
       { itemId: 'knock-splinter', count: 1, chance: 0.3 },
       { itemId: 'mirror-glass', count: 1, chance: 0.3 },
-      { itemId: 'meridian-scrip', count: 80, chance: 0.4 },
       { itemId: 'return-address', count: 1, chance: 0.01 },
     ],
   },
@@ -95,7 +93,7 @@ export const OFFICE_CREATURES: readonly CreatureDefinition[] = [
     experience: 1700,
     loot: [
       { itemId: 'threshold-elixir', count: 3, chance: 1 },
-      { itemId: 'meridian-scrip', count: 1500, chance: 1 },
+      { itemId: 'meridian-scrip', count: 375, chance: 1 },
       { itemId: 'franking-wax', count: 3, chance: 1 },
       { itemId: 'dead-letter', count: 3, chance: 1 },
       { itemId: 'knock-splinter', count: 3, chance: 1 },
@@ -109,7 +107,7 @@ export const OFFICE_CREATURES: readonly CreatureDefinition[] = [
       procedures: 'ANM-1180-P must be sealed in a franked container addressed to no one. Any seal bearing a return address will be delivered back to the sender, opened.',
       experience: 3400,
       loot: [
-        { itemId: 'meridian-scrip', count: 2200, chance: 1 },
+        { itemId: 'meridian-scrip', count: 550, chance: 1 },
         { itemId: 'franking-wax', count: 4, chance: 1 },
         { itemId: 'dead-letter', count: 4, chance: 1 },
         { itemId: 'sorting-gloves', count: 1, chance: 0.2 },
