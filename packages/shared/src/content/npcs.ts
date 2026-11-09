@@ -40,6 +40,7 @@ export const NPCS: readonly NpcDefinition[] = [
     },
     gear: ['lab-coat', 'intake-trousers', 'work-boots', 'thornweave-gloves', 'filter-respirator'],
     dialogueId: 'oyelaran',
+    shopId: 'hydroponics-exchange',
     wanderRadius: 1,
   },
   {

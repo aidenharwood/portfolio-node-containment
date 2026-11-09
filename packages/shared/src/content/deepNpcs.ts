@@ -121,6 +121,7 @@ export const DEEP_NPCS: readonly NpcDefinition[] = [
     },
     gear: ['field-vest-mk1', 'intake-trousers', 'work-boots', 'research-datapad', 'hazard-visor'],
     dialogueId: 'achterberg',
+    shopId: 'array-locker',
     wanderRadius: 1,
   },
   {
@@ -141,6 +142,7 @@ export const DEEP_NPCS: readonly NpcDefinition[] = [
     },
     gear: ['lab-coat', 'intake-trousers', 'work-boots', 'research-datapad'],
     dialogueId: 'pim',
+    shopId: 'flood-division-stores',
     wanderRadius: 1,
   },
   {
@@ -182,6 +184,7 @@ export const DEEP_NPCS: readonly NpcDefinition[] = [
     },
     gear: ['lab-coat', 'intake-trousers', 'work-boots', 'field-scanner'],
     dialogueId: 'kessler',
+    shopId: 'kessler-cache',
     wanderRadius: 0,
   },
   {

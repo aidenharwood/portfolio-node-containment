@@ -20,6 +20,7 @@ export const OFFICE_NPCS: readonly NpcDefinition[] = [
     },
     gear: ['field-vest-mk1', 'intake-trousers', 'work-boots', 'operative-badge'],
     dialogueId: 'oduya',
+    shopId: 'undeliverables',
     wanderRadius: 1,
   },
 ];
