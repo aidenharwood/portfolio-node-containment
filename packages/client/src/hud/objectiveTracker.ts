@@ -6,6 +6,7 @@ export class ObjectiveTracker {
   readonly element = h('aside', { className: 'hud-objectives' });
   private collapsed = false;
   private log: QuestLog = {};
+  private via: string | null = null;
   private readonly tracking: QuestTracking;
 
   constructor(tracking: QuestTracking) {
@@ -15,6 +16,12 @@ export class ObjectiveTracker {
 
   update(log: QuestLog): void {
     this.log = log;
+    this.render();
+  }
+
+  setVia(via: string | null): void {
+    if (via === this.via) return;
+    this.via = via;
     this.render();
   }
 
@@ -46,6 +53,7 @@ export class ObjectiveTracker {
                 ),
               ),
             ),
+            this.via && h('p', { className: 'objective-via' }, `Next: ${this.via}`),
           ),
         ),
     );

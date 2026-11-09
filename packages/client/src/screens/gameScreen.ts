@@ -446,6 +446,7 @@ export function createGameScreen(app: AppNavigator): Screen {
 
   const loop = (now: number) => {
     renderer.render(now, { hover, clickMarker, objectiveObjectIds: objectiveObjects, npcMarkers, objectiveCreatureIds: objectiveCreatures, objectiveBeacons, guidanceRoute: guidanceRoute.current(now, questTracking.questId) });
+    objectives.setVia(guidanceRoute.via);
     refreshHover();
     speech.update(world, renderer, now);
     combatOverlay.update(world, renderer, now);

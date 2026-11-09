@@ -12,6 +12,7 @@ import {
   type SelfState,
   isStationKnown,
   isDoorOpenFor,
+  isPassageOpenFor,
   visitedLevelFlag,
   studiedCreaturesOf,
   type WorldObjectId,
@@ -60,6 +61,7 @@ export const selfStateOf = (player: Player, content: GameContent): SelfState => 
     discoveredStations: [...content.tram.stations.keys()].filter((stationId) => isStationKnown(content.tram, stationId, (flag) => player.hasFlag(flag))),
     visitedLevels: [...content.levels.keys()].filter((levelId) => player.hasFlag(visitedLevelFlag(levelId))),
     openDoors: [...openDoorsOf(player, content)],
+    openPassages: openPassagesOf(player, content),
     studiedCreatures: studiedCreaturesOf(player.record.flags),
   };
 };
@@ -71,4 +73,9 @@ export function openDoorsOf(player: Player, content: GameContent): Set<WorldObje
     if (definition.door && isDoorOpenFor(definition.id, definition.door, context)) open.add(definition.id);
   }
   return open;
+}
+
+export function openPassagesOf(player: Player, content: GameContent): WorldObjectId[] {
+  const context = conditionContextFor(player, content);
+  return [...content.worldObjects.values()].filter((definition) => isPassageOpenFor(definition, context)).map((definition) => definition.id);
 }
