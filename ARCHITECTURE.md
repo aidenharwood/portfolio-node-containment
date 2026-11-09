@@ -197,7 +197,7 @@ Each `LevelInstance` holds a `groundItems` map. `GroundItemController` creates t
 - **Shared rules** live in `shared/src/crafting`:
   - `GatheringSource` and `gatherChance`;
   - `RecipeDefinition`, `craftingBlocker`, `craftOnce` and `STATION_INFO`;
-  - `tierForLevel`, which maps a skill level to a world tier (1, 5, 8, 12, 16, 20, 25 and 30 start tiers 1–8).
+  - `tierForLevel`, which maps a skill level to a world tier (1, 5, 8, 12, 16, 20, 25, 30 and 35 start tiers 1–9).
 - **Content:** a resource node is a world object whose interaction carries `gather`. A station is a world object whose interaction runs the `openCrafting` effect. Recipes live in `content/recipes.ts`, keyed `station:output`.
 - **Server:**
   - `GatheringController` and `CraftingController` drive a repeating `player.activity` on the tick.
@@ -205,7 +205,7 @@ Each `LevelInstance` holds a `groundItems` map. `GroundItemController` creates t
   - Node charges and depletion are per `LevelInstance` layer, broadcast near the node as `world.objectDepleted` and included in `world.entered` and `world.chunksEntered`.
   - The server re-validates the open station, skill level and materials on every craft.
 - **Quests** use `gather` and `craft` objectives. The matching `gathered` and `crafted` events carry counts.
-- **Integrity:** `findCraftingIssues` (`content/craftingIntegrity.ts`) enforces the crafting rule. Every equipment and consumable item needs a recipe at the right station, at or above the item's equip requirement. Every ingredient must trace back to a node or creature drop placed in a district whose `tier` is no deeper than the item's tier. A node must not need more Salvage than its district's tier allows.
+- **Integrity:** `findCraftingIssues` (`content/craftingIntegrity.ts`) enforces the crafting rule. Every equipment and consumable item needs a recipe at the right station, at or above the item's equip requirement. Every ingredient must trace back to a node or creature drop placed in a district whose `tier` is no deeper than the item's tier. A node must not need more Salvage than its district's tier allows. Items marked `unique` (`content/uniqueGear.ts`) are the exception: they must have no recipe and must be a rare (chance below 1) drop from a placed creature at or above their equip requirement.
 
 ### Trams and the world map
 

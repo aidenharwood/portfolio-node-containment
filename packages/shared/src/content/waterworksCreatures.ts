@@ -64,6 +64,8 @@ export const WATERWORKS_CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'medgel', count: 2, chance: 1 },
       { itemId: 'meridian-scrip', count: 70, chance: 1 },
       { itemId: 'polymer-resin', count: 3, chance: 0.6 },
+      { itemId: 'sump-waders', count: 1, chance: 0.15 },
+      { itemId: 'brood-lance', count: 1, chance: 0.06 },
     ],
   },
 ];

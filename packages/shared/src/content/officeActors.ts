@@ -42,9 +42,11 @@ export const OFFICE_CREATURES: readonly CreatureDefinition[] = [
     respawnTicks: 80,
     experience: 420,
     loot: [
-      { itemId: 'hollow-thread', count: 1, chance: 0.5 },
+      { itemId: 'franking-wax', count: 1, chance: 0.55 },
+      { itemId: 'hollow-thread', count: 1, chance: 0.3 },
       { itemId: 'meridian-scrip', count: 80, chance: 0.45 },
       { itemId: 'threshold-elixir', count: 1, chance: 0.05 },
+      { itemId: 'franking-stamp', count: 1, chance: 0.02 },
     ],
   },
   {
@@ -64,9 +66,11 @@ export const OFFICE_CREATURES: readonly CreatureDefinition[] = [
     respawnTicks: 80,
     experience: 440,
     loot: [
-      { itemId: 'knock-splinter', count: 1, chance: 0.45 },
+      { itemId: 'dead-letter', count: 1, chance: 0.55 },
+      { itemId: 'knock-splinter', count: 1, chance: 0.3 },
       { itemId: 'mirror-glass', count: 1, chance: 0.3 },
       { itemId: 'meridian-scrip', count: 80, chance: 0.4 },
+      { itemId: 'return-address', count: 1, chance: 0.01 },
     ],
   },
   {
@@ -88,8 +92,12 @@ export const OFFICE_CREATURES: readonly CreatureDefinition[] = [
     loot: [
       { itemId: 'threshold-elixir', count: 3, chance: 1 },
       { itemId: 'meridian-scrip', count: 1500, chance: 1 },
-      { itemId: 'hollow-thread', count: 3, chance: 1 },
+      { itemId: 'franking-wax', count: 3, chance: 1 },
+      { itemId: 'dead-letter', count: 3, chance: 1 },
       { itemId: 'knock-splinter', count: 3, chance: 1 },
+      { itemId: 'sorting-gloves', count: 1, chance: 0.1 },
+      { itemId: 'postmasters-seal', count: 1, chance: 0.03 },
+      { itemId: 'final-notice', count: 1, chance: 0.03 },
     ],
   },
 ];

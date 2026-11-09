@@ -82,6 +82,7 @@ export interface ItemDefinition {
   readonly iconColors: readonly [primary: string, secondary: string];
   readonly maxStack: number;
   readonly value: number;
+  readonly unique?: boolean;
   readonly equipment?: EquipmentProperties;
   readonly consumable?: ConsumableProperties;
 }

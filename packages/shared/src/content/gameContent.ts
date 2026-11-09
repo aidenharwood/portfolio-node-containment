@@ -3,6 +3,7 @@ import type { CreatureDefinition, CreatureId } from '../combat/creatures.ts';
 import { CREATURES } from './creatures.ts';
 import { DEEP_CREATURES } from './deepCreatures.ts';
 import { DEEP_ITEMS } from './deepItems.ts';
+import { UNIQUE_GEAR } from './uniqueGear.ts';
 import { DEEP_NPCS } from './deepNpcs.ts';
 import { DEEP_OBJECTS } from './deepObjects.ts';
 import {
@@ -144,7 +145,7 @@ function startingLocation(): WorldLocation {
 }
 
 export const GAME_CONTENT: GameContent = {
-  items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS]),
+  items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS, ...UNIQUE_GEAR]),
   npcs: indexById([...NPCS, ...DEEP_NPCS, ...WATERWORKS_NPCS, ...OFFICE_NPCS]),
   worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...FURNITURE_OBJECTS, ...OFFICE_OBJECTS]),
   assemblies: ASSEMBLY_INDEX,

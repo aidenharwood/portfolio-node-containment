@@ -110,7 +110,7 @@ function renderTooltip(item: ItemDefinition): void {
   replaceChildren(
     tooltip,
     h('p', { className: `tooltip-name rarity-${item.rarity}` }, item.name),
-    h('p', { className: 'tooltip-meta' }, `${item.rarity}${equipment ? ` · ${EQUIPMENT_SLOT_LABELS[equipment.slot]}` : ` · ${item.category}`}`),
+    h('p', { className: 'tooltip-meta' }, `${item.rarity}${item.unique ? ' unique' : ''}${equipment ?` · ${EQUIPMENT_SLOT_LABELS[equipment.slot]}` : ` · ${item.category}`}`),
     equipment?.weapon && h('p', { className: 'tooltip-meta' }, weaponSummary(equipment.weapon)),
     equipment && renderStats(item),
     requirementLines.length > 0 && h('p', { className: 'tooltip-requirements' }, `Requires ${requirementLines.join(', ')}`),

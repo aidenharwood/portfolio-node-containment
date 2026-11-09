@@ -28,6 +28,37 @@ test('every piece of gear and medicine has a recipe fed from tier-appropriate so
   assert.ok(findContentIssues({ ...GAME_CONTENT, recipes: underLevelled }).some((issue) => issue.includes('below the item')));
 });
 
+test('unique gear is never crafted and is a rare drop from a creature strong enough to justify it', () => {
+  const uniques = [...GAME_CONTENT.items.values()].filter((item) => item.unique);
+  assert.ok(uniques.length >= 20);
+  assert.ok(new Set(uniques.map((item) => item.rarity)).size >= 3, 'unique drops span several rarities');
+
+  const recipes = new Map(GAME_CONTENT.recipes);
+  recipes.set('fabricator:final-notice', { ...GAME_CONTENT.recipes.get('fabricator:franking-hammer')!, id: 'fabricator:final-notice', output: { itemId: 'final-notice', count: 1 } });
+  assert.ok(findContentIssues({ ...GAME_CONTENT, recipes }).some((issue) => issue.startsWith('item final-notice') && issue.includes('no crafting recipe')));
+
+  const creatures = new Map(GAME_CONTENT.creatures);
+  const postmaster = GAME_CONTENT.creatures.get('the-postmaster')!;
+  creatures.set(postmaster.id, { ...postmaster, loot: postmaster.loot.filter((entry) => entry.itemId !== 'final-notice') });
+  assert.ok(findContentIssues({ ...GAME_CONTENT, creatures }).some((issue) => issue.startsWith('item final-notice') && issue.includes('placed creature')));
+
+  const weakened = new Map(GAME_CONTENT.creatures);
+  weakened.set(postmaster.id, { ...postmaster, level: 30 });
+  assert.ok(findContentIssues({ ...GAME_CONTENT, creatures: weakened }).some((issue) => issue.startsWith('item final-notice') && issue.includes('above the level')));
+});
+
+test('there is craftable gear for every tier up to the Dead Letter Office', () => {
+  const slots = ['head', 'torso', 'hands', 'legs', 'feet', 'primary'] as const;
+  for (const level of [30, 35]) {
+    for (const slot of slots) {
+      const found = [...GAME_CONTENT.items.values()].some(
+        (item) => !item.unique && item.equipment?.slot === slot && Math.max(...Object.values(item.equipment.requirements?.skills ?? {}).map((value) => value ?? 0)) === level,
+      );
+      assert.ok(found, `no craftable ${slot} gear at level ${level}`);
+    }
+  }
+});
+
 test('every quest can be started: it opens the game, follows another quest, or is offered in dialogue', () => {
   const startedInDialogue = new Set<string>();
   for (const dialogue of GAME_CONTENT.dialogues.values()) {

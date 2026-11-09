@@ -1,4 +1,4 @@
-export const TIER_LEVEL_FLOORS = [1, 5, 8, 12, 16, 20, 25, 30] as const;
+export const TIER_LEVEL_FLOORS = [1, 5, 8, 12, 16, 20, 25, 30, 35] as const;
 
 export function tierForLevel(level: number): number {
   let tier = 1;

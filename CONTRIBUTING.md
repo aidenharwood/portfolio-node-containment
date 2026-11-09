@@ -43,7 +43,7 @@ Characters differ only in how they look. There are no classes, origins or attrib
 
 ### Add a craftable item
 
-**Rule: every piece of gear and every consumable is craftable, from materials found in an appropriately tiered area.** `npm test` enforces it.
+**Rule: every piece of gear and every consumable is craftable, from materials found in an appropriately tiered area.** The one exception is unique drops (see below). `npm test` enforces it.
 
 1. Add the item.
 2. Add a recipe in `content/recipes.ts`:
@@ -51,6 +51,14 @@ Characters differ only in how they look. There are no classes, origins or attrib
    - its level must be at least the item's highest equip requirement.
 3. Make sure every ingredient can be sourced, either refined on the `refinery` or gathered raw. A raw source is a resource node or a creature drop placed in a district with `tier ≤ tierForLevel(recipe level)`.
 4. For new raw stock, add a node with `resourceNode(...)` in `content/craftingObjects.ts` and place it in a district of the right tier. Give its model a builder in `client/src/render/models/craftingModels.ts`.
+
+### Add a unique drop
+
+Unique gear is never crafted. It only comes from the loot of a boss or a select regular creature, and the tooltip labels it "unique".
+
+1. Add it to `content/uniqueGear.ts` with `unique(...)`, which sets `unique: true`.
+2. Add a loot entry to one or more creatures that are placed in a district. Pick the chance by rarity: about 10–15% for a boss's `restricted` or `classified` drop, 3–6% for a boss's `anomalous` drop, and 1–2% from regular creatures.
+3. `findCraftingIssues` rejects a unique item that has a recipe, that no placed creature drops, that a creature always drops (chance 1), or whose equip requirement is above the level of every creature that drops it.
 
 ### Add a quest
 
@@ -149,8 +157,10 @@ Act II is tuned against level-matched operatives (Close Quarters and Fortitude a
 | Each of those bosses for an operative one tier early | < 30% |
 | Act III: Franking Clerks at 34 and Courier Echoes at 35 in Threshold gear | ≥ 85% |
 | Act III: the Postmaster at 38 in Threshold gear (melee 50–85%, ranged 50–90%), and at 33 | < 30% at 33 |
+| Act III: Courier Echoes at 36 in Dispatch gear | ≥ 90% |
+| Act III: the Postmaster at 38 in Dispatch gear, melee and ranged | better than Threshold, ≤ 92% |
 
-The Act II tiers are Rimeguard (12), Relay (16), Archive (20), Furnace (25) and Threshold (30). Each is crafted from the district of the same tier: frost crystal, signal copper, vellum and ink, ember ore, and mirror glass.
+The Act II tiers are Rimeguard (12), Relay (16), Archive (20), Furnace (25) and Threshold (30). Each is crafted from the district of the same tier: frost crystal, signal copper, vellum and ink, ember ore, and mirror glass. Act III adds Dispatch (35), crafted from the Dead Letter Office's franking wax and dead letters.
 
 The test fails if a change breaks this curve. Quests can declare a `recommendedRating`; the journal shows it next to the player's own rating.
 

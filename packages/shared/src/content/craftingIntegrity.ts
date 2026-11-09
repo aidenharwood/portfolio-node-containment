@@ -1,3 +1,4 @@
+import type { CreatureDefinition } from '../combat/creatures.ts';
 import type { GatheringSource } from '../crafting/gathering.ts';
 import type { RecipeDefinition } from '../crafting/recipes.ts';
 import { tierForLevel } from '../crafting/tiers.ts';
@@ -45,7 +46,19 @@ export function availabilityTiers(content: GameContent): Map<ItemId, number> {
   return resolved;
 }
 
-const highestRequirement = (item: ItemDefinition | undefined): number =>
+function placedDroppers(content: GameContent): Map<ItemId, CreatureDefinition[]> {
+  const droppers = new Map<ItemId, CreatureDefinition[]>();
+  const placed = new Set([...content.districts.values()].flatMap((zone) => (zone.creatures ?? []).map((placement) => placement.creatureId)));
+  for (const creatureId of placed) {
+    const creature = content.creatures.get(creatureId);
+    for (const entry of creature?.loot ?? []) {
+      if (creature) droppers.set(entry.itemId, [...(droppers.get(entry.itemId) ?? []), creature]);
+    }
+  }
+  return droppers;
+}
+
+const highestRequirement =(item: ItemDefinition | undefined): number =>
   Math.max(1, ...Object.values(item?.equipment?.requirements?.skills ?? {}).map((level) => level ?? 1));
 
 export function findCraftingIssues(content: GameContent): string[] {
@@ -70,8 +83,23 @@ export function findCraftingIssues(content: GameContent): string[] {
     }
   }
 
+  const droppers = placedDroppers(content);
   for (const item of content.items.values()) {
-    if ((item.equipment || item.consumable) && !outputs.has(item.id)) {
+    if (item.unique) {
+      const where = `item ${item.id}`;
+      if (!item.equipment) report(where, 'only gear can be a unique drop');
+      if (outputs.has(item.id)) report(where, 'a unique drop has no crafting recipe');
+      const sources = droppers.get(item.id) ?? [];
+      if (sources.length === 0) report(where, 'a unique drop must be in the loot of a placed creature');
+      const strongest = Math.max(0, ...sources.map((source) => source.level));
+      if (sources.length > 0 && highestRequirement(item) > strongest) {
+        report(where, `equip requirement ${highestRequirement(item)} is above the level ${strongest} of any creature that drops it`);
+      }
+      for (const source of sources) {
+        const chance = source.loot.find((entry) => entry.itemId === item.id)?.chance ?? 0;
+        if (chance >= 1) report(where, `${source.id} always drops it, so it is not a rare drop`);
+      }
+    } else if ((item.equipment || item.consumable) && !outputs.has(item.id)) {
       report(`item ${item.id}`, 'every piece of gear and every consumable needs a crafting recipe');
     }
   }

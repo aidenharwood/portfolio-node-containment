@@ -50,6 +50,8 @@ export const DEEP_RAW_MATERIALS: readonly ItemDefinition[] = [
   material('mirror-glass', 'Mirror Glass', 'A pane from the far side. Your reflection in it is a half-second late and does not blink.', 'shard', ['#e8f0ff', '#8a7aba'], 80),
   material('hollow-thread', 'Hollow Thread', 'Thread unravelled from a hollow operative\'s uniform. It is exactly the colour of your own.', 'fibre', ['#b0b8c8', '#3a3a5a'], 84),
   material('knock-splinter', 'Knock Splinter', 'A splinter of door. Not wood, not stone. When you tap it, something taps back.', 'shard', ['#b57cff', '#2a1b40'], 90),
+  material('franking-wax', 'Franking Wax', 'A gobbet of sealing wax scraped off a franking clerk. It is still warm, and it is still trying to seal something.', 'gel', ['#a8321e', '#3a0e08'], 104),
+  material('dead-letter', 'Dead Letter', 'An undeliverable letter, forty years overdue. The address keeps changing to wherever you are standing.', 'sheet', ['#f2e6c8', '#7a6a3a'], 110),
 ];
 
 export const DEEP_REFINED_PARTS: readonly ItemDefinition[] = [
@@ -65,6 +67,8 @@ export const DEEP_REFINED_PARTS: readonly ItemDefinition[] = [
   material('cinder-salt', 'Cinder Salt', 'Crystallised cinder motes. A pinch in a compound and the compound gets ideas.', 'moss', ['#ffcf4d', '#7a3a0a'], 160),
   material('mirror-alloy', 'Mirror Alloy', 'Mirror glass fused into furnace steel. Blows that land on it seem to land somewhere else.', 'ingot', ['#e8f0ff', '#b57cff'], 240),
   material('hollow-weave', 'Hollow Weave', 'Hollow thread rewoven into a cloth that is not quite here.', 'fibre', ['#b0b8c8', '#7a5aff'], 230),
+  material('seal-alloy', 'Seal Alloy', 'Mirror alloy cast under a skin of franking wax. Whatever it is fastened to stays closed until it is meant to open.', 'ingot', ['#c9a227', '#a8321e'], 300),
+  material('letter-weave', 'Letter Weave', 'Dead letters pulped and spun with hollow thread. The cloth is covered in addresses, all of them yours.', 'sheet', ['#f2e6c8', '#4a3a6a'], 290),
 ];
 
 export const DEEP_QUEST_ITEMS: readonly ItemDefinition[] = [
@@ -92,6 +96,7 @@ const RELAY = { primary: '#5a5048', secondary: '#2a2420', emissive: '#ffb87a' };
 const ARCHIVE = { primary: '#2a2438', secondary: '#120f1c', emissive: '#b57cff' };
 const FURNACE = { primary: '#4a3028', secondary: '#1a100c', emissive: '#ff7a2a' };
 const THRESHOLD = { primary: '#d8d8e8', secondary: '#4a3a6a', emissive: '#b57cff' };
+const DISPATCH = { primary: '#c9b48a', secondary: '#3a2a14', emissive: '#c9a227' };
 
 export const RIMEGUARD_GEAR: readonly ItemDefinition[] = [
   gear({ id: 'rimeguard-helm', name: 'Rimeguard Helm', examine: 'A cryo-rated helmet with a frost-proof visor. Your breath fogs it from the inside instead.', rarity: 'restricted', icon: 'helmet', slot: 'head', stats: { armor: 7, hazardShielding: 3 }, requires: { fortitude: 12 }, visual: RIME, value: 380 }),
@@ -161,6 +166,20 @@ export const THRESHOLD_GEAR: readonly ItemDefinition[] = [
   gear({ id: 'meridian-sigil', name: 'Meridian Sigil', examine: 'The founder\'s sigil, recast from the charter seal. It marks you as the one who stood before the door twice.', rarity: 'anomalous', icon: 'badge', slot: 'utility', stats: { armor: 3, power: 3, accuracy: 3, cognitiveWard: 3, insight: 3 }, requires: { containment: 25 }, visual: THRESHOLD, value: 2500 }),
 ];
 
+export const DISPATCH_GEAR: readonly ItemDefinition[] = [
+  gear({ id: 'dispatch-helm', name: 'Dispatch Helm', examine: 'A courier\'s helm with a brass seal-alloy crown. Stamped inside the brim: DELIVER BY HAND.', rarity: 'anomalous', icon: 'helmet', slot: 'head', stats: { armor: 17, hazardShielding: 8, cognitiveWard: 7 }, requires: { fortitude: 35 }, visual: DISPATCH, value: 5600 }),
+  gear({ id: 'dispatch-plate', name: 'Dispatch Plate', examine: 'Seal-alloy plate over a letter-weave liner. Every blow that lands on it is returned to sender, eventually.', rarity: 'anomalous', icon: 'plate', slot: 'torso', stats: { armor: 34, hazardShielding: 8, cognitiveWard: 7 }, requires: { fortitude: 35 }, visual: DISPATCH, value: 7400 }),
+  gear({ id: 'dispatch-gloves', name: 'Dispatch Gloves', examine: 'Sorting gloves with seal-alloy knuckles. They know, before you do, which pigeonhole a thing belongs in.', rarity: 'anomalous', icon: 'gloves', slot: 'hands', stats: { armor: 10, power: 10, accuracy: 10 }, requires: { fortitude: 35 }, visual: DISPATCH, value: 5000 }),
+  gear({ id: 'dispatch-trousers', name: 'Dispatch Trousers', examine: 'Letter-weave trousers with a seal-alloy guard down each shin. The pockets are full of stamps that were never licked.', rarity: 'anomalous', icon: 'trousers', slot: 'legs', stats: { armor: 15, hazardShielding: 5 }, requires: { fortitude: 35 }, visual: DISPATCH, value: 4800 }),
+  gear({ id: 'dispatch-boots', name: 'Dispatch Boots', examine: 'Courier\'s boots, resoled on the far side. They always know the shortest round.', rarity: 'anomalous', icon: 'boots', slot: 'feet', stats: { armor: 14, hazardShielding: 6 }, requires: { fortitude: 35 }, visual: DISPATCH, value: 4700 }),
+  gear({ id: 'sorter-visor', name: 'Sorter\'s Visor', examine: 'A brass-rimmed reading visor from the Sorting Floor. It reads every address at a glance, including the ones written on people.', rarity: 'anomalous', icon: 'visor', slot: 'eyes', stats: { hazardShielding: 13, cognitiveWard: 8, armor: 4, accuracy: 3 }, requires: { fortitude: 35 }, visual: DISPATCH, value: 5200 }),
+  gear({ id: 'franking-hammer', name: 'Franking Hammer', examine: 'A franking engine\'s hammer, unbolted and re-hafted. Whatever it strikes is marked PAID.', rarity: 'anomalous', icon: 'maul', slot: 'primary', stats: { power: 44, accuracy: 14 }, requires: { closeQuarters: 35 }, visual: DISPATCH, value: 8000, weapon: { kind: 'maul', range: 1, speedTicks: 5 } }),
+  gear({ id: 'return-to-sender', name: 'Return to Sender', examine: 'A seal-alloy carbine that fires folded dead letters. Each one arrives exactly where it was always going.', rarity: 'anomalous', icon: 'carbine', slot: 'primary', stats: { power: 28, accuracy: 44 }, requires: { marksmanship: 35 }, visual: DISPATCH, value: 8000, weapon: { kind: 'carbine', range: 8, speedTicks: 5 } }),
+  gear({ id: 'letter-opener', name: 'Letter Opener', examine: 'A seal-alloy letter opener as long as your forearm. It opens envelopes, and anything else that is sealed.', rarity: 'anomalous', icon: 'knife', slot: 'primary', stats: { power: 26, accuracy: 16 }, requires: { closeQuarters: 35 }, visual: DISPATCH, value: 7200, weapon: { kind: 'knife', range: 1, speedTicks: 3 } }),
+  gear({ id: 'long-haul-rifle', name: 'Long Haul Rifle', examine: 'A rifle with a dead-letter wad for every round. It never misses a delivery, however far.', rarity: 'anomalous', icon: 'rifle', slot: 'primary', stats: { power: 14, accuracy: 43 }, requires: { marksmanship: 35 }, visual: DISPATCH, value: 7800, weapon: { kind: 'rifle', range: 9, speedTicks: 7 } }),
+  gear({ id: 'postmark-implant', name: 'Postmark Implant', examine: 'A wax-sealed filament behind the ear. Intrusive thoughts arrive stamped RETURN UNOPENED.', rarity: 'anomalous', icon: 'implant', slot: 'implant', stats: { cognitiveWard: 20, armor: 4, insight: 4 }, requires: { containment: 35 }, visual: DISPATCH, value: 6600 }),
+];
+
 export const DEEP_ITEMS: readonly ItemDefinition[] = [
   ...DEEP_RAW_MATERIALS,
   ...DEEP_REFINED_PARTS,
@@ -171,4 +190,5 @@ export const DEEP_ITEMS: readonly ItemDefinition[] = [
   ...ARCHIVE_GEAR,
   ...FURNACE_GEAR,
   ...THRESHOLD_GEAR,
+  ...DISPATCH_GEAR,
 ];

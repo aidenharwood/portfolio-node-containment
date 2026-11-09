@@ -43,6 +43,7 @@ export const CRYOVAULT_CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'cryo-gel', count: 1, chance: 0.6 },
       { itemId: 'meridian-scrip', count: 12, chance: 0.5 },
       { itemId: 'rime-salve', count: 1, chance: 0.08 },
+      { itemId: 'frozen-clipboard', count: 1, chance: 0.02 },
     ],
   },
   {
@@ -66,6 +67,9 @@ export const CRYOVAULT_CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'meridian-scrip', count: 120, chance: 1 },
       { itemId: 'cryo-gel', count: 3, chance: 1 },
       { itemId: 'stasis-implant', count: 1, chance: 0.05 },
+      { itemId: 'curators-ledger', count: 1, chance: 0.1 },
+      { itemId: 'cold-hands', count: 1, chance: 0.1 },
+      { itemId: 'stasis-lance', count: 1, chance: 0.03 },
     ],
   },
 ];
@@ -113,6 +117,7 @@ export const SIGNAL_ARRAY_CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'echo-residue', count: 1, chance: 0.55 },
       { itemId: 'meridian-scrip', count: 18, chance: 0.4 },
       { itemId: 'echo-stim', count: 1, chance: 0.06 },
+      { itemId: 'operators-headset', count: 1, chance: 0.02 },
     ],
   },
   {
@@ -136,6 +141,8 @@ export const SIGNAL_ARRAY_CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'meridian-scrip', count: 200, chance: 1 },
       { itemId: 'echo-residue', count: 4, chance: 1 },
       { itemId: 'choir-visor', count: 1, chance: 0.05 },
+      { itemId: 'choirmasters-collar', count: 1, chance: 0.1 },
+      { itemId: 'chorus-rifle', count: 1, chance: 0.03 },
     ],
   },
 ];
@@ -184,6 +191,7 @@ export const ARCHIVE_CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'archival-vellum', count: 1, chance: 0.3 },
       { itemId: 'meridian-scrip', count: 25, chance: 0.4 },
       { itemId: 'ink-tonic', count: 1, chance: 0.06 },
+      { itemId: 'redactors-wraps', count: 1, chance: 0.01 },
     ],
   },
   {
@@ -207,6 +215,8 @@ export const ARCHIVE_CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'meridian-scrip', count: 320, chance: 1 },
       { itemId: 'archival-vellum', count: 4, chance: 1 },
       { itemId: 'palimpsest-implant', count: 1, chance: 0.05 },
+      { itemId: 'the-knock-file', count: 1, chance: 0.1 },
+      { itemId: 'wens-last-pen', count: 1, chance: 0.03 },
     ],
   },
 ];
@@ -254,6 +264,7 @@ export const FURNACE_CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'golem-core', count: 1, chance: 0.45 },
       { itemId: 'ember-ore', count: 2, chance: 0.4 },
       { itemId: 'meridian-scrip', count: 40, chance: 0.4 },
+      { itemId: 'slag-heart', count: 1, chance: 0.01 },
     ],
   },
   {
@@ -277,6 +288,8 @@ export const FURNACE_CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'meridian-scrip', count: 500, chance: 1 },
       { itemId: 'golem-core', count: 2, chance: 1 },
       { itemId: 'stoker-maul', count: 1, chance: 0.05 },
+      { itemId: 'stokers-apron', count: 1, chance: 0.1 },
+      { itemId: 'firebox', count: 1, chance: 0.03 },
     ],
   },
 ];
@@ -324,6 +337,7 @@ export const FAR_SIDE_CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'knock-splinter', count: 1, chance: 0.45 },
       { itemId: 'mirror-glass', count: 1, chance: 0.3 },
       { itemId: 'meridian-scrip', count: 60, chance: 0.4 },
+      { itemId: 'peephole-lens', count: 1, chance: 0.01 },
     ],
   },
   {
@@ -348,6 +362,8 @@ export const FAR_SIDE_CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'knock-splinter', count: 3, chance: 1 },
       { itemId: 'the-knocker', count: 1, chance: 0.04 },
       { itemId: 'last-word', count: 1, chance: 0.04 },
+      { itemId: 'hosts-coat', count: 1, chance: 0.03 },
+      { itemId: 'polite-refusal', count: 1, chance: 0.03 },
     ],
   },
 ];

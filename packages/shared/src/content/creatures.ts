@@ -121,6 +121,7 @@ export const CREATURES: readonly CreatureDefinition[] = [
     loot: [
       { itemId: 'medgel', count: 2, chance: 1 },
       { itemId: 'meridian-scrip', count: 25, chance: 1 },
+      { itemId: 'wardens-lamp', count: 1, chance: 0.15 },
     ],
   },
   {
@@ -143,6 +144,7 @@ export const CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'static-residue', count: 1, chance: 0.6 },
       { itemId: 'medgel', count: 1, chance: 0.3 },
       { itemId: 'ward-lattice', count: 1, chance: 0.02 },
+      { itemId: 'static-veil', count: 1, chance: 0.01 },
     ],
   },
   {
@@ -186,6 +188,7 @@ export const CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'hound-fang', count: 1, chance: 0.5 },
       { itemId: 'scrap-alloy', count: 2, chance: 0.5 },
       { itemId: 'medgel', count: 1, chance: 0.15 },
+      { itemId: 'hound-collar', count: 1, chance: 0.02 },
     ],
   },
   {
@@ -208,6 +211,8 @@ export const CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'medgel', count: 2, chance: 1 },
       { itemId: 'meridian-scrip', count: 60, chance: 1 },
       { itemId: 'shock-maul', count: 1, chance: 0.08 },
+      { itemId: 'foremans-hardhat', count: 1, chance: 0.15 },
+      { itemId: 'overtime', count: 1, chance: 0.06 },
     ],
   },
 ];

@@ -85,6 +85,8 @@ export const DEEP_REFINING_RECIPES: readonly RecipeDefinition[] = [
   recipe('refinery', 'cinder-salt', 26, { 'cinder-mote': 2 }, { experience: 220 }),
   recipe('refinery', 'mirror-alloy', 30, { 'mirror-glass': 2, 'furnace-steel': 1 }, { experience: 290 }),
   recipe('refinery', 'hollow-weave', 31, { 'hollow-thread': 2 }, { experience: 300 }),
+  recipe('refinery', 'seal-alloy', 35, { 'franking-wax': 2, 'mirror-alloy': 1 }, { experience: 380 }),
+  recipe('refinery', 'letter-weave', 35, { 'dead-letter': 2, 'hollow-weave': 1 }, { experience: 380 }),
 ];
 
 export const DEEP_MEDICAL_RECIPES: readonly RecipeDefinition[] = [
@@ -156,6 +158,18 @@ export const DEEP_FABRICATION_RECIPES: readonly RecipeDefinition[] = [
   fabricate('farsight-rifle', 33, { 'mirror-alloy': 2, 'knock-splinter': 2, 'hollow-weave': 1 }, 1800),
   fabricate('threshold-implant', 32, { 'knock-splinter': 3, 'ink-essence': 2, 'hollow-weave': 1 }, 1600),
   fabricate('meridian-sigil', 30, { 'mirror-alloy': 1, 'knock-splinter': 1, 'furnace-steel': 1 }, 1200),
+
+  fabricate('dispatch-helm', 35, { 'seal-alloy': 2, 'letter-weave': 1 }, 2000),
+  fabricate('dispatch-plate', 36, { 'seal-alloy': 4, 'letter-weave': 2 }, 2400),
+  fabricate('dispatch-gloves', 35, { 'letter-weave': 2, 'golem-core': 1 }, 1900),
+  fabricate('dispatch-trousers', 35, { 'letter-weave': 3, 'seal-alloy': 1 }, 1900),
+  fabricate('dispatch-boots', 35, { 'seal-alloy': 2, 'letter-weave': 1 }, 1900),
+  fabricate('sorter-visor', 35, { 'seal-alloy': 1, 'letter-weave': 1, 'polymer-sheet': 2 }, 1900),
+  fabricate('franking-hammer', 37, { 'seal-alloy': 3, 'knock-splinter': 2, 'golem-core': 2 }, 2700),
+  fabricate('return-to-sender', 37, { 'seal-alloy': 3, 'dead-letter': 2, 'cinder-salt': 2 }, 2700),
+  fabricate('letter-opener', 36, { 'seal-alloy': 2, 'letter-weave': 1 }, 2400),
+  fabricate('long-haul-rifle', 37, { 'seal-alloy': 2, 'dead-letter': 2, 'hollow-weave': 1 }, 2700),
+  fabricate('postmark-implant', 36, { 'dead-letter': 3, 'ink-essence': 2, 'letter-weave': 1 }, 2400),
 ];
 
 export const RECIPES: readonly RecipeDefinition[] = [

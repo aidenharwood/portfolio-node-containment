@@ -122,6 +122,7 @@ describe('act two difficulty curve', () => {
     archive: { torso: 'archivist-coat', eyes: 'choir-visor', primary: 'censor-maul', head: 'inkproof-helm', hands: 'vellum-gloves', legs: 'ink-trousers', feet: 'ink-boots' },
     furnace: { torso: 'furnace-plate', eyes: 'furnace-respirator', primary: 'stoker-maul', head: 'furnace-helm', hands: 'furnace-gauntlets', legs: 'furnace-greaves', feet: 'furnace-boots' },
     threshold: { torso: 'threshold-plate', eyes: 'furnace-respirator', primary: 'the-knocker', head: 'threshold-helm', hands: 'threshold-gloves', legs: 'threshold-trousers', feet: 'threshold-boots' },
+    dispatch: { torso: 'dispatch-plate', eyes: 'sorter-visor', primary: 'franking-hammer', head: 'dispatch-helm', hands: 'dispatch-gloves', legs: 'dispatch-trousers', feet: 'dispatch-boots' },
   };
   const rate = (level: number, kit: string, creature: string) => duelWinRate(at(level), kits[kit]!, creature);
 
@@ -172,6 +173,16 @@ describe('act two difficulty curve', () => {
     assert.ok(ready >= 0.5 && ready <= 0.85, `postmaster ready ${ready}`);
     assert.ok(ranged >= 0.5 && ranged <= 0.9, `postmaster ranged ${ranged}`);
     assert.ok(early < 0.3, `postmaster early ${early}`);
+  });
+
+  test('Dispatch gear crafted from the Office is a real upgrade without trivialising the Postmaster', () => {
+    assert.ok(rate(36, 'dispatch', 'courier-echo') >= 0.9);
+    const threshold = rate(38, 'threshold', 'the-postmaster');
+    const dispatch = rate(38, 'dispatch', 'the-postmaster');
+    const ranged = duelWinRate(at(38, 'marksmanship'), { ...kits.dispatch!, primary: 'return-to-sender' }, 'the-postmaster');
+    assert.ok(dispatch > threshold, `dispatch ${dispatch} vs threshold ${threshold}`);
+    assert.ok(dispatch <= 0.92, `postmaster in dispatch ${dispatch}`);
+    assert.ok(ranged >= 0.6 && ranged <= 0.92, `postmaster ranged in dispatch ${ranged}`);
   });
 
   test('melee and ranged training reach every boss on comparable terms', () => {
