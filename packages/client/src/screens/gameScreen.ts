@@ -444,6 +444,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     frameHandle = requestAnimationFrame(loop);
   };
 
+  chat.element.prepend(vitals.element);
   const element = h(
     'div',
     { className: 'screen game-screen' },
@@ -455,7 +456,6 @@ export function createGameScreen(app: AppNavigator): Screen {
     cameraHint,
     h('div', { className: 'hud-top-left' }, vitals.targetElement, objectives.element),
     minimap.element,
-    vitals.element,
     sidePanel.element,
     chat.element,
     dialogue.element,

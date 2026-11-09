@@ -15,7 +15,7 @@ export class VitalsPanel {
   private targetSignature = '';
 
   constructor() {
-    this.element = h('section', { className: 'hud-vitals panel' },
+    this.element = h('section', { className: 'hud-vitals' },
       h('div', { className: 'vitals-header' }, h('span', { className: 'vitals-label' }, 'Integrity'), this.integrityText),
       h('div', { className: 'vitals-bar' }, this.integrityFill),
     );

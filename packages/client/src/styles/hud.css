@@ -793,7 +793,17 @@
   height: 200px;
   display: flex;
   flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
   --bevel: 8px;
+}
+
+.chat-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
 }
 
 .chat-tabs {
@@ -1399,12 +1409,13 @@
 }
 
 .hud-vitals {
-  position: absolute;
-  top: 268px;
-  right: 12px;
-  width: 248px;
-  padding: 8px 10px 9px;
-  --bevel: 6px;
+  flex: none;
+  padding: 6px 10px 7px;
+  background: rgba(6, 12, 16, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  opacity: 0.75;
+  pointer-events: none;
+  user-select: none;
 }
 
 .hud-target {

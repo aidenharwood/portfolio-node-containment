@@ -54,7 +54,7 @@ export class ChatLog {
       onclick: () => this.setCollapsed(!this.element.classList.contains('collapsed')),
     });
 
-    this.element = h('section', { className: 'hud-chat panel' }, h('div', { className: 'chat-tabs' }, ...tabs, this.collapseToggle), this.log, form);
+    this.element = h('section', { className: 'hud-chat' }, h('div', { className: 'chat-panel panel' }, h('div', { className: 'chat-tabs' }, ...tabs, this.collapseToggle), this.log, form));
     this.setCollapsed(isCompactLayout());
     this.unsubscribers = [
       connection.on('chat.message', (message) => this.push(message)),

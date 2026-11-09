@@ -144,9 +144,6 @@ body {
   }
 
   .hud-vitals {
-    top: calc(136px + var(--safe-top));
-    right: calc(8px + var(--safe-right));
-    width: 122px;
     padding: 5px 8px 6px;
   }
 
@@ -262,11 +259,6 @@ body {
   .hud-side {
     width: min(380px, calc(100% - 380px));
     max-height: calc(100% - 144px - var(--safe-top) - var(--safe-bottom));
-  }
-
-  .hud-vitals {
-    top: calc(8px + var(--safe-top));
-    right: calc(136px + var(--safe-right));
   }
 
   .hud-dialogue {
