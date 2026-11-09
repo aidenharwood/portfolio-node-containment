@@ -131,7 +131,7 @@ export const CREATURES: readonly CreatureDefinition[] = [
     designation: 'ANM-1180-B',
     examine: 'This was a Directorate warden once. It still wears the uniform. It still walks the patrol route.',
     model: 'hollowWarden',
-    level: 6,
+    level: 4,
     integrity: 38,
     defence: 5,
     attack: { style: 'melee', accuracy: 7, maxHit: 3, range: 1, speedTicks: 5 },

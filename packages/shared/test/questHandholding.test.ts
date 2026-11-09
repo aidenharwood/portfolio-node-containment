@@ -6,6 +6,7 @@ import {
   npcQuestMarker,
   objectiveAreas,
   routeGoals,
+  objectiveDistricts,
   activeQuests,
   type QuestLog,
   type RouteScene,
@@ -65,6 +66,37 @@ describe('quest handholding', () => {
     assert.ok(levelId);
     assert.ok(routeGoals(tracked, sceneOf(levelId), GAME_CONTENT).length > 0);
   });
+
+  test('a fetch step routes to the object that hands out the item', () => {
+    const quest = GAME_CONTENT.quests.get('orientation-protocol');
+    const stepIndex = quest?.steps.findIndex((step) => step.id === 'retrieve-sample') ?? -1;
+    const tracked = trackedQuest(activeAt('orientation-protocol', stepIndex), GAME_CONTENT.quests, null);
+    assert.ok(tracked);
+    const levelId = [...GAME_CONTENT.levels.values()].find((resolved) => resolved.objects.some((object) => object.objectId === 'sample-cabinet'))?.id;
+    assert.ok(levelId);
+    const cabinets = level(levelId).objects.filter((object) => object.objectId === 'sample-cabinet').map((object) => object.position);
+    const goals = routeGoals(tracked, sceneOf(levelId), GAME_CONTENT);
+    assert.ok(goals.length > 0);
+    assert.ok(goals.every((goal) => cabinets.some((point) => point.x === goal.point.x && point.y === goal.point.y)));
+  });
+
+  for (const [questId, stepId] of [
+    ['the-knocking', 'override'],
+    ['original-contract', 'key'],
+  ] as const) {
+    test(`a fetch step for ${questId} routes to the NPC whose dialogue hands it over`, () => {
+      const quest = GAME_CONTENT.quests.get(questId);
+      const stepIndex = quest?.steps.findIndex((step) => step.id === stepId) ?? -1;
+      assert.ok(stepIndex >= 0);
+      const tracked = trackedQuest(activeAt(questId, stepIndex), GAME_CONTENT.quests, questId);
+      assert.ok(tracked);
+      const levelId = [...GAME_CONTENT.levels.values()].find((resolved) => resolved.npcs.some((npc) => npc.npcId === 'engineer-lund'))?.id;
+      assert.ok(levelId);
+      const live = routeGoals(tracked, { ...sceneOf(levelId), npcPositions: new Map([['engineer-lund', { x: 7, y: 9 }]]) }, GAME_CONTENT);
+      assert.deepEqual(live, [{ point: { x: 7, y: 9 }, arriveAdjacent: true }]);
+      assert.ok(objectiveDistricts(tracked.objectives, GAME_CONTENT).size > 0);
+    });
+  }
 
   test('an area step routes to the middle of the area', () => {
     const log = activeAt('orientation-protocol', 4);

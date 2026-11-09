@@ -49,8 +49,8 @@ describe('containment rules', () => {
     const novice = createStartingSkills();
     const qualified = createStartingSkills({ containment: experienceForLevel(warden.level) });
 
-    assert.match(containmentReadiness(warden, novice, seal, GAME_CONTENT.items) ?? '', /Containment level 6/);
-    assert.match(containmentReadiness(warden, qualified, createEmptyInventory(), GAME_CONTENT.items) ?? '', /Mk\.II/);
+    assert.match(containmentReadiness(warden, novice, seal, GAME_CONTENT.items) ?? '', /Containment level 4/);
+    assert.match(containmentReadiness(warden, qualified, createEmptyInventory(), GAME_CONTENT.items) ?? '', /Mk\.I\b/);
     assert.equal(containmentReadiness(warden, qualified, seal, GAME_CONTENT.items), null);
     assert.match(containmentBlocker(warden, warden.integrity, qualified, seal, GAME_CONTENT.items) ?? '', /too strong/);
     assert.equal(containmentBlocker(warden, 1, qualified, seal, GAME_CONTENT.items), null);

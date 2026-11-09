@@ -72,11 +72,11 @@ describe('containment', () => {
   });
 
   test('containment is refused below the specimen level', () => {
-    const harness = createHarness({ prepare: operative(5, ['containment-seal-2']) });
+    const harness = createHarness({ prepare: operative(3, ['containment-seal-2']) });
     const creature = warden(harness);
     creature.integrity = 1;
     harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-warden', interactionIndex: 1 });
-    assert.ok(notices(harness).some((text) => text.includes('Containment level 6')));
+    assert.ok(notices(harness).some((text) => text.includes('Containment level 4')));
     assert.equal(harness.player.containTargetId, null);
   });
 

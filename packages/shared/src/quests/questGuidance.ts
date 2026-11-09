@@ -1,6 +1,8 @@
 import type { RecipeDefinition } from '../crafting/recipes.ts';
-import type { AreaId, DistrictId, NpcId, QuestId, WorldObjectId } from '../ids.ts';
-import type { WorldObjectDefinition } from '../world/entities.ts';
+import type { DialogueDefinition } from '../dialogue/dialogue.ts';
+import type { AreaId, DialogueId, DistrictId, ItemId, NpcId, QuestId, WorldObjectId } from '../ids.ts';
+import type { GameEffect } from '../rules/effects.ts';
+import type { NpcDefinition, WorldObjectDefinition } from '../world/entities.ts';
 import { objectiveGoal, type QuestDefinition, type QuestObjective, type QuestStepDefinition } from './questDefinition.ts';
 import type { QuestLog } from './questProgress.ts';
 
@@ -96,6 +98,14 @@ export function objectIdsForObjective(
   if (objective.type === 'interactWith') {
     return new Set([objective.objectId, ...[...objects.values()].filter((object) => object.countsAs === objective.objectId).map((object) => object.id)]);
   }
+  if (objective.type === 'obtainItem') {
+    const itemId = objective.itemId;
+    return new Set(
+      [...objects.values()]
+        .filter((object) => object.interactions.some((interaction) => interaction.gather?.itemId === itemId || givesItem(interaction.effects, itemId)))
+        .map((object) => object.id),
+    );
+  }
   if (objective.type !== 'gather' && objective.type !== 'craft') return new Set();
   const station = [...recipes.values()].find((recipe) => recipe.output.itemId === objective.itemId)?.station;
   const ids = new Set<WorldObjectId>();
@@ -108,6 +118,31 @@ export function objectIdsForObjective(
     if (matches) ids.add(object.id);
   }
   return ids;
+}
+
+const givesItem = (effects: readonly GameEffect[] | undefined, itemId: ItemId): boolean =>
+  (effects ?? []).some((effect) => effect.type === 'giveItem' && effect.itemId === itemId);
+
+const dialogueGivesItem = (dialogue: DialogueDefinition, itemId: ItemId): boolean =>
+  Object.values(dialogue.nodes).some((node) => givesItem(node.effects, itemId) || (node.options ?? []).some((option) => givesItem(option.effects, itemId)));
+
+export function npcIdsForObjective(
+  objective: QuestObjective,
+  npcs: ReadonlyMap<NpcId, NpcDefinition>,
+  dialogues: ReadonlyMap<DialogueId, DialogueDefinition>,
+): Set<NpcId> {
+  if (objective.type === 'talkTo') return new Set([objective.npcId]);
+  if (objective.type === 'signal') return new Set(objective.npcId ? [objective.npcId] : []);
+  if (objective.type !== 'obtainItem') return new Set();
+  const itemId = objective.itemId;
+  return new Set(
+    [...npcs.values()]
+      .filter((npc) => {
+        const dialogue = npc.dialogueId ? dialogues.get(npc.dialogueId) : undefined;
+        return dialogue !== undefined && dialogueGivesItem(dialogue, itemId);
+      })
+      .map((npc) => npc.id),
+  );
 }
 
 export function objectiveObjectIds(

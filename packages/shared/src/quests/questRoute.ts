@@ -1,11 +1,12 @@
 import type { CreatureId } from '../combat/creatures.ts';
 import type { RecipeDefinition } from '../crafting/recipes.ts';
-import type { NpcId, WorldObjectId } from '../ids.ts';
-import type { WorldObjectDefinition } from '../world/entities.ts';
+import type { DialogueDefinition } from '../dialogue/dialogue.ts';
+import type { DialogueId, NpcId, WorldObjectId } from '../ids.ts';
+import type { NpcDefinition, WorldObjectDefinition } from '../world/entities.ts';
 import type { TilePoint } from '../world/geometry.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
 import type { QuestObjective } from './questDefinition.ts';
-import { objectIdsForObjective, type ActiveQuest } from './questGuidance.ts';
+import { npcIdsForObjective, objectIdsForObjective, type ActiveQuest } from './questGuidance.ts';
 
 export interface RouteGoal {
   readonly point: TilePoint;
@@ -27,6 +28,8 @@ export interface RouteScene {
 export interface RouteContent {
   readonly worldObjects: ReadonlyMap<WorldObjectId, WorldObjectDefinition>;
   readonly recipes: ReadonlyMap<string, RecipeDefinition>;
+  readonly npcs: ReadonlyMap<NpcId, NpcDefinition>;
+  readonly dialogues: ReadonlyMap<DialogueId, DialogueDefinition>;
 }
 
 const adjacentTo = (point: TilePoint): RouteGoal => ({ point, arriveAdjacent: true });
@@ -53,9 +56,13 @@ function objectGoals(objective: QuestObjective, scene: RouteScene, content: Rout
 function goalsForObjective(objective: QuestObjective, scene: RouteScene, content: RouteContent): RouteGoal[] {
   switch (objective.type) {
     case 'talkTo':
-      return npcGoals(objective.npcId, scene);
     case 'signal':
-      return objective.npcId ? npcGoals(objective.npcId, scene) : [];
+      return [...npcIdsForObjective(objective, content.npcs, content.dialogues)].flatMap((npcId) => npcGoals(npcId, scene));
+    case 'obtainItem':
+      return [
+        ...objectGoals(objective, scene, content),
+        ...[...npcIdsForObjective(objective, content.npcs, content.dialogues)].flatMap((npcId) => npcGoals(npcId, scene)),
+      ];
     case 'defeat':
     case 'contain':
       return creatureGoals(objective.creatureId, scene);
