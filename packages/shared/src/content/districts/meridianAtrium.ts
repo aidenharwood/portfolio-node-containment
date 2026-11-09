@@ -73,6 +73,7 @@ export const MERIDIAN_ATRIUM: DistrictDefinition = {
     { instanceId: 'atrium-kiosk', objectId: 'intake-kiosk', position: { x: 1, y: 2 }, facing: 'east' },
     { instanceId: 'atrium-storage-a', objectId: 'storage-locker', position: { x: 10, y: 1 } },
     { instanceId: 'atrium-storage-c', objectId: 'storage-locker', position: { x: 11, y: 1 } },
+    { instanceId: 'atrium-exchange', objectId: 'market-terminal', position: { x: 12, y: 6 }, facing: 'west' },
     { instanceId: 'commissary-planter', objectId: 'planter', position: { x: 12, y: 8 } },
     { instanceId: 'commissary-bench', objectId: 'briefing-bench', position: { x: 3, y: 7 } },
     { instanceId: 'commissary-papers', objectId: 'litter-papers', position: { x: 8, y: 6 } },

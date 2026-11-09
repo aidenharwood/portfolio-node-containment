@@ -259,6 +259,17 @@ An equipped item is drawn on the character from its `icon` shape. The inventory 
 
 `shared/src/economy/shop.ts` holds the pure buy and sell rules (`purchase`, `sale`, `sellPrice`). Shops are content (`content/shops.ts`), and an NPC gets a "Trade" action through `shopId`. Dialogue can open a shop with the `openShop` effect. `ShopController` holds one session per player, checks that the keeper is still close by, and closes the session when the player walks or teleports.
 
+### Market
+
+The Site exchange is a player order book. The pure rules live in `shared/src/economy/market.ts`, and `MarketController` (`server/src/gameplay/marketController.ts`) holds the live book.
+
+- **Access:** the `openMarket` effect opens a session, like storage. Only the `market-terminal` object runs it, and `findContentIssues` refuses one placed outside `MARKET_DISTRICT_ID` (the Meridian Atrium). The server also refuses to open the market anywhere else. Walking, interacting or teleporting closes it.
+- **Tradable items:** anything that is not a quest item or currency. Every item's default price is its `value` (at least 1); players may post any whole price.
+- **Escrow:** placing an order takes its escrow from the inventory straight away: the items for a sell order, `price × quantity` scrip for a buy order. Each character holds at most `MARKET_ORDER_LIMIT` orders.
+- **Matching:** `matchOrder` runs when an order is placed. A buy fills from the cheapest sell orders at or below its price, and a sell fills from the highest buy orders at or above its price; ties go to the older order. Trades happen at the resting order's price, so a buyer who bid high gets the difference back. A player's own orders never match each other.
+- **Collection:** proceeds wait on the order (`uncollectedItems`, `uncollectedScrip`) until the owner collects them at the exchange, so offline traders and full packs lose nothing. Cancelling returns the unfilled escrow the same way. An order disappears once it is closed and fully collected.
+- **Persistence:** orders live in the `market_orders` table (`persistence/marketRepository.ts`) and are loaded at boot. The trader's character is saved after every market action, so escrow and the order book never disagree after a crash.
+
 ### Item sprites
 
 `render/items/itemModels.ts` builds a voxel model per `ItemIconShape`, colored from the item's gear visual where it has one. `render/items/itemSprites.ts` renders each model once, in an offscreen WebGL context, into a cached data URL. That URL becomes the inventory, loadout, shop and creator icon.

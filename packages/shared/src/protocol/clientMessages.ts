@@ -74,6 +74,16 @@ export const clientMessageSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('storage.depositAll') }),
   z.object({ type: z.literal('storage.withdraw'), itemId: z.string().max(64), quantity: z.number().int().min(1).max(2_000_000_000) }),
   z.object({ type: z.literal('storage.close') }),
+  z.object({
+    type: z.literal('market.place'),
+    side: z.enum(['buy', 'sell']),
+    itemId: z.string().max(64),
+    price: z.number().int().min(1).max(1_000_000_000),
+    quantity: z.number().int().min(1).max(1_000_000),
+  }),
+  z.object({ type: z.literal('market.cancel'), orderId: z.string().max(64) }),
+  z.object({ type: z.literal('market.collect'), orderId: z.string().max(64).nullable() }),
+  z.object({ type: z.literal('market.close') }),
   z.object({ type: z.literal('tram.board'), destinationStationId: z.string().max(64) }),
 ]);
 

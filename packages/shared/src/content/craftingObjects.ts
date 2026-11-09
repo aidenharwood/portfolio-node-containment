@@ -125,4 +125,14 @@ export const STORAGE_LOCKER: WorldObjectDefinition = {
   interactions: [{ verb: 'Open', effects: [{ type: 'openStorage' }] }],
 };
 
-export const CRAFTING_OBJECTS: readonly WorldObjectDefinition[] = [...RESOURCE_NODES, ...CRAFTING_STATIONS_OBJECTS, STORAGE_LOCKER];
+export const MARKET_TERMINAL: WorldObjectDefinition = {
+  id: 'market-terminal',
+  name: 'Exchange Terminal',
+  examine: 'The Site exchange. Operatives post buy and sell orders here, and the terminal matches them against everyone else on site.',
+  model: 'terminal',
+  blocksMovement: true,
+  light: { radius: 2, color: '#e3c35a', intensity: 0.6 },
+  interactions: [{ verb: 'Trade', effects: [{ type: 'openMarket' }] }],
+};
+
+export const CRAFTING_OBJECTS: readonly WorldObjectDefinition[] = [...RESOURCE_NODES, ...CRAFTING_STATIONS_OBJECTS, STORAGE_LOCKER, MARKET_TERMINAL];

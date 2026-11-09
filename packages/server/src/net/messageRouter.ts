@@ -27,6 +27,10 @@ const GAMEPLAY_MESSAGE_TYPES = new Set<ClientMessage['type']>([
   'storage.depositAll',
   'storage.withdraw',
   'storage.close',
+  'market.place',
+  'market.cancel',
+  'market.collect',
+  'market.close',
   'tram.board',
 ]);
 
@@ -123,6 +127,7 @@ export class MessageRouter {
       session.send({ type: 'character.rejected', errors: [result.error] });
       return;
     }
+    this.gameplay.forgetCharacter(message.characterId);
     this.sendRoster(session);
   }
 

@@ -15,6 +15,7 @@ export type GameEffect =
   | { readonly type: 'openShop'; readonly shopId: string }
   | { readonly type: 'openCrafting'; readonly station: CraftingStation }
   | { readonly type: 'openStorage' }
+  | { readonly type: 'openMarket' }
   | { readonly type: 'restoreIntegrity' }
   | { readonly type: 'openTramMap' }
   | { readonly type: 'discoverStation'; readonly stationId: TramStationId };

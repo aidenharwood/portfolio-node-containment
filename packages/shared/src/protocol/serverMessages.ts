@@ -9,6 +9,7 @@ import type { SkillExperience } from '../character/skills.ts';
 import type { EquipmentState } from '../gear/equipment.ts';
 import type { InventoryState } from '../gear/inventory.ts';
 import type { StorageState } from '../gear/storage.ts';
+import type { MarketOrder, MarketQuote } from '../economy/market.ts';
 import type { StatId } from '../gear/stats.ts';
 import type { CharacterId, EntityId, ItemId, LevelId, NpcId, TramStationId, WorldObjectId } from '../ids.ts';
 import type { ChunkKey } from '../world/chunks.ts';
@@ -136,6 +137,9 @@ export type ServerMessage =
   | { readonly type: 'crafting.closed' }
   | { readonly type: 'storage.opened' }
   | { readonly type: 'storage.closed' }
+  | { readonly type: 'market.opened' }
+  | { readonly type: 'market.state'; readonly orders: readonly MarketOrder[]; readonly quotes: readonly MarketQuote[] }
+  | { readonly type: 'market.closed' }
   | { readonly type: 'player.activity'; readonly activity: PlayerActivityView | null }
   | { readonly type: 'world.objectDepleted'; readonly instanceId: string; readonly depleted: boolean }
   | { readonly type: 'tram.mapOpened'; readonly stationId: TramStationId }

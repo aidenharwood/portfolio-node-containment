@@ -28,6 +28,7 @@ import { EffectRunner, type EffectHost } from './effectRunner.ts';
 import { GearController } from './gearController.ts';
 import { GroundItemController } from './groundItemController.ts';
 import { InteractionController } from './interactionController.ts';
+import { createMemoryMarketStore, MarketController, type MarketStore } from './marketController.ts';
 import { openDoorsOf, selfStateOf } from './playerContext.ts';
 import { QuestTracker } from './questTracker.ts';
 import { ResearchController } from './researchController.ts';
@@ -58,6 +59,10 @@ export type GameplayMessage = ClientMessageOf<
   | 'storage.depositAll'
   | 'storage.withdraw'
   | 'storage.close'
+  | 'market.place'
+  | 'market.cancel'
+  | 'market.collect'
+  | 'market.close'
   | 'tram.board'
 >;
 
@@ -72,6 +77,7 @@ export interface GameplayOptions {
   readonly combatRandom?: () => number;
   readonly gatheringRandom?: () => number;
   readonly levelCapacity?: number;
+  readonly market?: MarketStore;
 }
 
 export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHost, TramHost {
@@ -91,6 +97,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
   private readonly gathering: GatheringController;
   private readonly crafting: CraftingController;
   private readonly storage: StorageController;
+  private readonly market: MarketController;
   private readonly trams: TramController;
   private readonly research: ResearchController;
   private tickNumber = 0;
@@ -112,6 +119,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     this.gathering = new GatheringController(content, this.world, this.effects, this, options.gatheringRandom ?? options.random ?? Math.random);
     this.crafting = new CraftingController(content, this.effects, this);
     this.storage = new StorageController(content, this);
+    this.market = new MarketController(content, this.world, this, options.market ?? createMemoryMarketStore(), (characterId) => this.online.get(characterId));
     this.trams = new TramController(content, this.world, this);
     this.research = new ResearchController(content, this.world, this.effects, this);
     this.combat = new CombatController(content, this.world, this.effects, this, options.combatRandom ?? options.random ?? Math.random);
@@ -151,6 +159,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     this.world.despawn(player);
     if (tramArrival) player.relocate(tramArrival);
     this.chat.forget(player);
+    this.market.forget(player);
     this.online.delete(player.record.id);
     this.store.save(player.persistableRecord());
   }
@@ -248,6 +257,21 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
       case 'storage.close':
         this.storage.close(player);
         break;
+      case 'market.place':
+        this.market.place(player, { side: message.side, itemId: message.itemId, price: message.price, quantity: message.quantity });
+        this.store.save(player.persistableRecord());
+        break;
+      case 'market.cancel':
+        this.market.cancel(player, message.orderId);
+        this.store.save(player.persistableRecord());
+        break;
+      case 'market.collect':
+        this.market.collect(player, message.orderId);
+        this.store.save(player.persistableRecord());
+        break;
+      case 'market.close':
+        this.market.close(player);
+        break;
       case 'tram.board':
         this.dialogues.close(player);
         this.shops.close(player);
@@ -319,7 +343,19 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
   openStorage(player: Player): void {
     this.shops.close(player);
     this.crafting.close(player);
+    this.market.close(player);
     this.storage.open(player);
+  }
+
+  openMarket(player: Player): void {
+    this.shops.close(player);
+    this.crafting.close(player);
+    this.storage.close(player);
+    this.market.open(player);
+  }
+
+  forgetCharacter(characterId: CharacterId): void {
+    this.market.removeOwner(characterId);
   }
 
   private stopActivities(player: Player): void {
@@ -328,6 +364,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     this.research.stop(player);
     this.crafting.close(player);
     this.storage.close(player);
+    this.market.close(player);
   }
 
   openShop(player: Player, shopId: string, keeperInstanceId: string | null): void {

@@ -19,6 +19,7 @@ export * from './crafting/gathering.ts';
 export * from './crafting/recipes.ts';
 export * from './crafting/tiers.ts';
 
+export * from './economy/market.ts';
 export * from './economy/shop.ts';
 
 export * from './gear/equipment.ts';

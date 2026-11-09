@@ -12,6 +12,7 @@ import { MessageRouter } from './net/messageRouter.ts';
 import { createStaticFileHandler } from './net/staticFiles.ts';
 import { attachWebSocketGateway } from './net/webSocketGateway.ts';
 import { openDatabase } from './persistence/database.ts';
+import { MarketRepository } from './persistence/marketRepository.ts';
 
 const contentIssues = findContentIssues(GAME_CONTENT);
 if (contentIssues.length > 0) {
@@ -28,6 +29,7 @@ const characters = new CharacterService(new CharacterRepository(database, GAME_C
 const gameplay = new Gameplay(GAME_CONTENT, characters, {
   tickMs: config.tickMs,
   autosaveIntervalMs: config.autosaveIntervalMs,
+  market: new MarketRepository(database),
 });
 const router = new MessageRouter(auth, characters, gameplay);
 

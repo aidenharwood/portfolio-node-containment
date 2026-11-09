@@ -26,6 +26,7 @@ export interface EffectHost {
   dropToGround(owner: Player, itemId: string, quantity: number, position: TilePoint): void;
   openCrafting(player: Player, station: CraftingStation): void;
   openStorage(player: Player): void;
+  openMarket(player: Player): void;
   openTramMap(player: Player): void;
   discoverStation(player: Player, stationId: string): void;
 }
@@ -68,6 +69,8 @@ export class EffectRunner {
         return this.host.openCrafting(player, effect.station);
       case 'openStorage':
         return this.host.openStorage(player);
+      case 'openMarket':
+        return this.host.openMarket(player);
       case 'restoreIntegrity':
         return player.setIntegrity(player.maxIntegrity);
       case 'openTramMap':

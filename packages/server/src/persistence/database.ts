@@ -26,6 +26,14 @@ const MIGRATIONS: readonly string[] = [
   );
   CREATE INDEX characters_by_account ON characters(account_id);
   `,
+  `
+  CREATE TABLE market_orders (
+    id TEXT PRIMARY KEY,
+    owner_id TEXT NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+    record TEXT NOT NULL
+  );
+  CREATE INDEX market_orders_by_owner ON market_orders(owner_id);
+  `,
 ];
 
 export type Database = DatabaseSync;

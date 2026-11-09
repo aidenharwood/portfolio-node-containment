@@ -18,6 +18,7 @@ import { InteractionBubble, bubbleMeta, type BubbleContent } from '../hud/intera
 import { Minimap } from '../hud/minimap.ts';
 import { ClickIndicator, type ClickTone } from '../hud/clickIndicator.ts';
 import { ObjectiveTracker } from '../hud/objectiveTracker.ts';
+import { MarketWindow } from '../hud/marketWindow.ts';
 import { ShopWindow } from '../hud/shopWindow.ts';
 import { ActivityBar } from '../hud/activityBar.ts';
 import { CraftingWindow } from '../hud/craftingWindow.ts';
@@ -82,6 +83,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   });
   const shop = new ShopWindow(connection, world, menu);
   const storage = new StorageWindow(connection, world, menu);
+  const market = new MarketWindow(connection, world);
   const crafting = new CraftingWindow(connection, world);
   const activity = new ActivityBar(connection, world);
   const clickIndicator = new ClickIndicator();
@@ -388,6 +390,10 @@ export function createGameScreen(app: AppNavigator): Screen {
       storage.requestClose();
       return;
     }
+    if (event.key === 'Escape' && market.isOpen) {
+      market.requestClose();
+      return;
+    }
     if (event.key === 'Escape' && worldMap.isOpen) {
       worldMap.requestClose();
       return;
@@ -467,6 +473,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     shop.element,
     crafting.element,
     storage.element,
+    market.element,
     worldMap.element,
     activity.element,
     tramRide.element,
@@ -501,6 +508,7 @@ export function createGameScreen(app: AppNavigator): Screen {
       shop.dispose();
       crafting.dispose();
       storage.dispose();
+      market.dispose();
       worldMap.dispose();
       tramRide.dispose();
       activity.dispose();
