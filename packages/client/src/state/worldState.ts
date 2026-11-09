@@ -41,6 +41,7 @@ export interface ClientEntity {
   attackWeapon: WeaponKind | null;
   hurtAt: number;
   dyingAt: number | null;
+  contained: boolean;
   gear: readonly ItemId[];
   facing: Facing;
   from: TilePoint;
@@ -139,9 +140,12 @@ export class WorldState {
         if (depleted) this.depletedObjects.add(instanceId);
         else this.depletedObjects.delete(instanceId);
       }),
-      connection.on('combat.death', ({ entityId }) => {
+      connection.on('combat.death', ({ entityId, containedBy }) => {
         const entity = this.entities.get(entityId);
-        if (entity) entity.dyingAt = performance.now();
+        if (entity) {
+          entity.dyingAt = performance.now();
+          entity.contained = containedBy !== undefined;
+        }
         if (entityId === this.combatTargetId) this.combatTargetId = null;
       }),
     );
@@ -294,6 +298,7 @@ function toClientEntity(snapshot: EntitySnapshot): ClientEntity {
     attackWeapon: null,
     hurtAt: -Infinity,
     dyingAt: null,
+    contained: false,
     gear: snapshot.gear,
     facing: snapshot.facing,
     from: snapshot.position,

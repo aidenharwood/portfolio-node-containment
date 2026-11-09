@@ -65,6 +65,8 @@ export const INTAKE_WING: DistrictDefinition = {
     { instanceId: 'range-drone-c', creatureId: 'training-drone', position: { x: 40, y: 23 } },
     { instanceId: 'range-drone-d', creatureId: 'training-drone', position: { x: 33, y: 27 } },
     { instanceId: 'range-drone-e', creatureId: 'training-drone', position: { x: 42, y: 27 } },
+    { instanceId: 'range-understudy-a', creatureId: 'the-understudy', position: { x: 38, y: 27 } },
+    { instanceId: 'range-understudy-b', creatureId: 'the-understudy', position: { x: 44, y: 22 } },
   ],
   objects: [
     { instanceId: 'arrival-kiosk', objectId: 'intake-kiosk', position: { x: 1, y: 2 }, facing: 'east' },

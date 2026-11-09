@@ -71,6 +71,19 @@ export const CRYOVAULT_CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'cold-hands', count: 1, chance: 0.1 },
       { itemId: 'stasis-lance', count: 1, chance: 0.03 },
     ],
+    containment: {
+      containmentClass: 'euclid',
+      procedures: 'ANM-0233-C must be catalogued before it is sealed: speak its own inventory number aloud as the seal closes. Uncatalogued, it will try to add the operative to the manifest.',
+      experience: 1020,
+      loot: [
+        { itemId: 'meridian-scrip', count: 200, chance: 1 },
+        { itemId: 'cryo-gel', count: 4, chance: 1 },
+        { itemId: 'curators-ledger', count: 1, chance: 0.2 },
+        { itemId: 'cold-hands', count: 1, chance: 0.2 },
+        { itemId: 'stasis-implant', count: 1, chance: 0.1 },
+        { itemId: 'stasis-lance', count: 1, chance: 0.06 },
+      ],
+    },
   },
 ];
 
@@ -144,6 +157,18 @@ export const SIGNAL_ARRAY_CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'choirmasters-collar', count: 1, chance: 0.1 },
       { itemId: 'chorus-rifle', count: 1, chance: 0.03 },
     ],
+    containment: {
+      containmentClass: 'keter',
+      procedures: 'ANM-3310-C answers any open channel. All radios within forty metres are to be powered down before re-housing. The seal must be closed on the downbeat; otherwise forty-one voices answer.',
+      experience: 1540,
+      loot: [
+        { itemId: 'meridian-scrip', count: 320, chance: 1 },
+        { itemId: 'echo-residue', count: 5, chance: 1 },
+        { itemId: 'choirmasters-collar', count: 1, chance: 0.2 },
+        { itemId: 'choir-visor', count: 1, chance: 0.1 },
+        { itemId: 'chorus-rifle', count: 1, chance: 0.06 },
+      ],
+    },
   },
 ];
 
@@ -218,6 +243,18 @@ export const ARCHIVE_CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'the-knock-file', count: 1, chance: 0.1 },
       { itemId: 'wens-last-pen', count: 1, chance: 0.03 },
     ],
+    containment: {
+      containmentClass: 'euclid',
+      procedures: 'ANM-4471-C will surrender the Knock file to no one and must be sealed with it. Do not attempt to read the file during re-housing. Personnel who did are now filed under it.',
+      experience: 1670,
+      loot: [
+        { itemId: 'meridian-scrip', count: 480, chance: 1 },
+        { itemId: 'archival-vellum', count: 5, chance: 1 },
+        { itemId: 'the-knock-file', count: 1, chance: 0.2 },
+        { itemId: 'palimpsest-implant', count: 1, chance: 0.1 },
+        { itemId: 'wens-last-pen', count: 1, chance: 0.06 },
+      ],
+    },
   },
 ];
 
@@ -291,6 +328,18 @@ export const FURNACE_CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'stokers-apron', count: 1, chance: 0.1 },
       { itemId: 'firebox', count: 1, chance: 0.03 },
     ],
+    containment: {
+      containmentClass: 'keter',
+      procedures: 'ANM-5502-C must be given fuel at all times, including inside the seal. A sealed Stoker that runs out of fuel begins to shovel whatever is nearest. Re-housing teams should bring coal and not stand nearest.',
+      experience: 2230,
+      loot: [
+        { itemId: 'meridian-scrip', count: 750, chance: 1 },
+        { itemId: 'golem-core', count: 3, chance: 1 },
+        { itemId: 'stokers-apron', count: 1, chance: 0.2 },
+        { itemId: 'stoker-maul', count: 1, chance: 0.1 },
+        { itemId: 'firebox', count: 1, chance: 0.06 },
+      ],
+    },
   },
 ];
 
@@ -365,6 +414,19 @@ export const FAR_SIDE_CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'hosts-coat', count: 1, chance: 0.03 },
       { itemId: 'polite-refusal', count: 1, chance: 0.03 },
     ],
+    containment: {
+      containmentClass: 'keter',
+      procedures: 'ANM-1180 cannot enter a space unless invited. The seal is not an invitation, and the re-housing operative must say so, clearly, before closing it. It will thank you. Do not reply.',
+      experience: 2840,
+      loot: [
+        { itemId: 'meridian-scrip', count: 1500, chance: 1 },
+        { itemId: 'knock-splinter', count: 4, chance: 1 },
+        { itemId: 'the-knocker', count: 1, chance: 0.08 },
+        { itemId: 'last-word', count: 1, chance: 0.08 },
+        { itemId: 'hosts-coat', count: 1, chance: 0.06 },
+        { itemId: 'polite-refusal', count: 1, chance: 0.06 },
+      ],
+    },
   },
 ];
 

@@ -28,7 +28,7 @@ import { CameraRig } from './cameraRig.ts';
 import { CharacterRig } from './models/characterModel.ts';
 import { createCreatureRig } from './models/creatureModels.ts';
 import { attackDurationMs, type EntityRig } from './models/entityRig.ts';
-import { createAreaBeacon, createClickMarker, createGroundRing, createQuestMarker, type QuestMarkerKind } from './models/markerModels.ts';
+import { createAreaBeacon, createClickMarker, createContainmentField, createGroundRing, createQuestMarker, setContainmentFieldOpacity, type QuestMarkerKind } from './models/markerModels.ts';
 import { GroundItemLayer } from './items/groundItemLayer.ts';
 import { ProjectileLayer } from './projectileLayer.ts';
 import { RouteLayer } from './routeLayer.ts';
@@ -62,6 +62,7 @@ interface EntityView {
   markerKind: QuestMarkerKind | null;
 }
 
+const CONTAINMENT_FIELD = 'containment-field';
 const LIGHT_POOL_SIZE = 12;
 const SHADOW_LIGHT_COUNT = 4;
 const LIGHT_CONE_ANGLE = MathUtils.degToRad(55);
@@ -400,11 +401,34 @@ export class GameRenderer {
         hurtProgress: animationProgress(entity.hurtAt, HURT_ANIMATION_MS, now),
       });
       const dying = entity.dyingAt === null ? 0 : Math.min(1, (now - entity.dyingAt) / DEATH_ANIMATION_MS);
-      view.rig.root.rotation.z = -dying * 1.4;
-      view.rig.root.position.y = -dying * 0.15;
+      if (entity.contained) {
+        view.rig.root.rotation.y += dying * dying * 9;
+        view.rig.root.scale.setScalar(Math.max(0.01, 1 - dying));
+        view.rig.root.position.y = dying * 0.6;
+        this.updateContainmentField(view, dying);
+      } else {
+        view.rig.root.rotation.z = -dying * 1.4;
+        view.rig.root.position.y = -dying * 0.15;
+      }
 
       this.updateQuestMarker(view, this.markerFor(entity, overlay), now);
     }
+  }
+
+  private updateContainmentField(view: EntityView, progress: number): void {
+    const root = view.rig.root;
+    let field = root.getObjectByName(CONTAINMENT_FIELD) as Group | undefined;
+    if (!field) {
+      field = createContainmentField();
+      field.name = CONTAINMENT_FIELD;
+      root.add(field);
+    }
+    const rootScale = Math.max(0.01, root.scale.x);
+    const size = Math.max(0.15, Math.max(1, view.rig.height * 0.8) * (1.15 - progress));
+    field.scale.setScalar(size / rootScale);
+    field.position.y = (view.rig.height * 0.5) / rootScale;
+    field.rotation.y = -progress * 6;
+    setContainmentFieldOpacity(field, 1 - progress ** 4);
   }
 
   private createEntityView(entity: ClientEntity): EntityView {

@@ -253,6 +253,9 @@ export const OSEI_DIALOGUE: DialogueDefinition = {
     { node: 'armUp', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'arm-up' }] },
     { node: 'drill', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'drill' }] },
     { node: 'patchUp', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'patch-up' }] },
+    { node: 'containBrief', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'containment-brief' }] },
+    { node: 'makeSeal', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'make-seal' }] },
+    { node: 'contain', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'contain' }] },
     { node: 'rest', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'rest' }] },
     { node: 'debrief', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'debrief' }] },
     { node: 'transit', conditions: [{ type: 'questActive', questId: TRANSIT }] },
@@ -313,7 +316,67 @@ export const OSEI_DIALOGUE: DialogueDefinition = {
     },
     armUp: { speaker: 'npc', text: "Baton's in your inventory. Click it to wield. I'll wait. I'm very good at waiting.", next: null },
     drill: { speaker: 'npc', text: "Three drones. The red markers are yours. Click one to engage. If you're hurting, step back into the gallery and breathe.", next: null },
-    patchUp: { speaker: 'npc', text: 'Medgel. Inventory. Click it to apply. Into the wound, not the eyes.', next: null },
+    patchUp: { speaker: 'npc', text: 'Medgel. Inventory. Click it to apply. Into the wound, not the eyes. Then come back. We are not finished.', next: null },
+    containBrief: {
+      speaker: 'npc',
+      text: "Drones are furniture. What comes through the bulkheads is not. The Directorate does not kill what it can keep. We contain it: wear it down, then seal it while it's too weak to argue.",
+      next: 'containRules',
+    },
+    containRules: {
+      speaker: 'npc',
+      text: "Three rules. One: a specimen must be down to a tenth of its integrity before a seal will close. Two: your Containment level must be at least the specimen's level. Three: the seal must be rated for its tier, Mk.I for tier one and up from there. Higher marks hold lower specimens too.",
+      next: 'containWhy',
+    },
+    containWhy: {
+      speaker: 'npc',
+      text: 'Do it right and you learn more than any kill teaches you, and the Site pays out for a specimen in one piece. Take this seal stock to the fabricator in the Workshop. Then meet ANM-0031 on the range.',
+      next: null,
+    },
+    makeSeal: {
+      speaker: 'npc',
+      text: 'Fabricator, Workshop. Alloy plate and synthweave bolt make a Mk.I seal. It trains Containment, so do not let Pell tell you it is engineering.',
+      options: [
+        {
+          text: 'I need more seal stock.',
+          conditions: [
+            { type: 'lacksItem', itemId: 'alloy-plate' },
+            { type: 'lacksItem', itemId: 'containment-seal-1' },
+          ],
+          next: 'spareStock',
+        },
+        { text: 'On my way.', next: null },
+      ],
+    },
+    spareStock: {
+      speaker: 'npc',
+      text: 'Range spare. That is the last one I am signing for.',
+      effects: [
+        { type: 'giveItem', itemId: 'alloy-plate', count: 1 },
+        { type: 'giveItem', itemId: 'synthweave-bolt', count: 1 },
+      ],
+      next: null,
+    },
+    contain: {
+      speaker: 'npc',
+      text: "The mannequin. ANM-0031, the Understudy. Hit it until it slumps. While you carry a seal you'll pull your blows instead of breaking it. When it's at a tenth, right-click it and Contain, or use the button on your target panel. Do it before it rehearses getting up.",
+      options: [
+        {
+          text: 'I need another seal.',
+          conditions: [
+            { type: 'lacksItem', itemId: 'containment-seal-1' },
+            { type: 'lacksItem', itemId: 'alloy-plate' },
+          ],
+          next: 'spareSeal',
+        },
+        { text: 'Understood.', next: null },
+      ],
+    },
+    spareSeal: {
+      speaker: 'npc',
+      text: 'Lost one already? Here. Training stock. Try not to seal yourself.',
+      effects: [{ type: 'giveItem', itemId: 'containment-seal-1', count: 1 }],
+      next: null,
+    },
     rest: {
       speaker: 'npc',
       text: "Medgel costs scrip. Beds don't. Supply Office, north-east, two of them by the window. Lie down, let the canopy work, then come back.",
@@ -321,7 +384,7 @@ export const OSEI_DIALOGUE: DialogueDefinition = {
     },
     debrief: {
       speaker: 'npc',
-      text: "Not bad for a first live drill. That's everything Intake can teach you. The rest of the Site is learned the hard way.",
+      text: "Not bad for a first live drill, and you brought the mannequin back in one piece. Take two more Mk.I seals. Every boss out there is a specimen somebody failed to keep. That's everything Intake can teach you. The rest of the Site is learned the hard way.",
       next: 'leaving',
     },
     leaving: {

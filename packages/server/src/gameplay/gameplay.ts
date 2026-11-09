@@ -14,7 +14,7 @@ import type {
   WorldLocation,
   WorldObjectId,
 } from '@containment/shared';
-import { locate, visitedLevelFlag } from '@containment/shared';
+import { CONTAIN_INTERACTION, locate, visitedLevelFlag } from '@containment/shared';
 import { returnUnfinishedTrainee } from '../characters/traineePlacement.ts';
 import { Player, type MessageSink } from '../world/player.ts';
 import type { LevelInstance } from '../world/levelInstance.ts';
@@ -167,7 +167,8 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
         this.stopActivities(player);
         if (message.targetKind === 'creature') {
           this.dialogues.close(player);
-          this.combat.engage(player, message.instanceId, this.tickNumber);
+          if (message.interactionIndex === CONTAIN_INTERACTION) this.combat.contain(player, message.instanceId, this.tickNumber);
+          else this.combat.engage(player, message.instanceId, this.tickNumber);
           break;
         }
         this.combat.disengage(player);

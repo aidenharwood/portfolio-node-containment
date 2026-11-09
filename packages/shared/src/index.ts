@@ -10,6 +10,7 @@ export * from './character/skills.ts';
 export * from './character/startingKit.ts';
 
 export * from './combat/combatMath.ts';
+export * from './combat/containment.ts';
 export * from './combat/creatures.ts';
 export * from './combat/weapons.ts';
 
@@ -65,3 +66,4 @@ export * from './content/tramIntegrity.ts';
 export * from './content/safetyIntegrity.ts';
 export * from './content/tramNetwork.ts';
 export * from './content/questLocations.ts';
+export * from './content/containmentIntegrity.ts';

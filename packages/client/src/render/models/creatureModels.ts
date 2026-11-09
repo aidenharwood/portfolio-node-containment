@@ -342,6 +342,39 @@ class ForemanRig implements EntityRig {
   }
 }
 
+const UNDERSTUDY_APPEARANCE: CharacterAppearance = {
+  physique: 'female',
+  bodyType: 'slight',
+  height: 1.05,
+  skinTone: '#e8e2d8',
+  hairStyle: 'shaved',
+  hairColor: '#e8e2d8',
+  eyeColor: '#e8e2d8',
+  faceMark: 'none',
+  augment: 'none',
+};
+
+const UNDERSTUDY_FRAME_RATE = 5;
+
+class UnderstudyRig implements EntityRig {
+  readonly root = new Group();
+  private readonly character = new CharacterRig(UNDERSTUDY_APPEARANCE, []);
+
+  constructor() {
+    this.root.add(this.character.root);
+  }
+
+  get height(): number {
+    return this.character.height;
+  }
+
+  animate(pose: EntityPose): void {
+    const stutter = (value: number) => Math.floor(value * UNDERSTUDY_FRAME_RATE) / UNDERSTUDY_FRAME_RATE;
+    this.character.animate({ ...pose, walkPhase: stutter(pose.walkPhase), time: stutter(pose.time) });
+    this.character.root.rotation.z = Math.sin(stutter(pose.time) * 0.7) * 0.04;
+  }
+}
+
 class ThornCrawlerRig implements EntityRig {
   readonly root = new Group();
   readonly height = 0.7;
@@ -450,6 +483,7 @@ const FACTORIES: Readonly<Record<CreatureModel, () => EntityRig>> = {
   pipeLeech: () => new PipeLeechRig(),
   rustHound: () => new RustHoundRig(),
   foreman: () => new ForemanRig(),
+  understudy: () => new UnderstudyRig(),
   trainingDrone: () => new TrainingDroneRig(),
   gloamMite: () => new GloamMiteRig(),
   hollowWarden: () => new HollowWardenRig(),

@@ -72,7 +72,7 @@ export function npcQuestMarker(
 export function objectiveCreatureIds(log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>, preferred: QuestId | null): Set<string> {
   const ids = new Set<string>();
   for (const objective of openObjectives(log, quests, preferred)) {
-    if (objective.type === 'defeat') ids.add(objective.creatureId);
+    if (objective.type === 'defeat' || objective.type === 'contain') ids.add(objective.creatureId);
   }
   return ids;
 }

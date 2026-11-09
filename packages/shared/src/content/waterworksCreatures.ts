@@ -48,7 +48,7 @@ export const WATERWORKS_CREATURES: readonly CreatureDefinition[] = [
     id: 'sump-mother',
     name: 'The Sump Mother',
     designation: 'ANM-2604-P',
-    examine: 'The bloats come from somewhere. She fills the outfall from wall to wall, and the water around her is warm.',
+    examine: 'The parent organism of the ANM-2604 colony. Every bloat in the Waterworks budded from her. She fills the outfall from wall to wall, and the water around her stays at body temperature.',
     model: 'sumpMother',
     level: 11,
     integrity: 96,
@@ -67,5 +67,16 @@ export const WATERWORKS_CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'sump-waders', count: 1, chance: 0.15 },
       { itemId: 'brood-lance', count: 1, chance: 0.06 },
     ],
+    containment: {
+      containmentClass: 'euclid',
+      procedures: 'ANM-2604-P is the parent organism of the ANM-2604 colony and cannot be moved without draining the outfall. A sealed specimen stops budding within the hour. Keep the seal above body temperature; she sulks when it is cold.',
+      experience: 760,
+      loot: [
+        { itemId: 'meridian-scrip', count: 120, chance: 1 },
+        { itemId: 'polymer-resin', count: 4, chance: 1 },
+        { itemId: 'sump-waders', count: 1, chance: 0.3 },
+        { itemId: 'brood-lance', count: 1, chance: 0.12 },
+      ],
+    },
   },
 ];

@@ -1,10 +1,27 @@
 import type { NpcQuestMarker } from '@containment/shared';
-import { AdditiveBlending, BoxGeometry, CylinderGeometry, DoubleSide, Group, Mesh, MeshBasicMaterial, RingGeometry } from 'three';
+import { AdditiveBlending, BoxGeometry, CylinderGeometry, DoubleSide, EdgesGeometry, Group, LineBasicMaterial, LineSegments, Mesh, MeshBasicMaterial, RingGeometry } from 'three';
 import { VOXEL_EMISSIVE } from '../voxel/voxelKinds.ts';
 import { createVoxelObject } from '../voxel/voxelMaterials.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 
 export type QuestMarkerKind = NonNullable<NpcQuestMarker> | 'target';
+
+const CONTAINMENT_FIELD_GEOMETRY = new EdgesGeometry(new BoxGeometry(1, 1.4, 1));
+
+export function createContainmentField(): Group {
+  const field = new Group();
+  const outer = new LineSegments(CONTAINMENT_FIELD_GEOMETRY, new LineBasicMaterial({ color: 0x4fd8ff, transparent: true, depthWrite: false, blending: AdditiveBlending }));
+  const inner = new LineSegments(CONTAINMENT_FIELD_GEOMETRY, new LineBasicMaterial({ color: 0xffcf4d, transparent: true, depthWrite: false, blending: AdditiveBlending }));
+  inner.scale.setScalar(0.82);
+  field.add(outer, inner);
+  return field;
+}
+
+export function setContainmentFieldOpacity(field: Group, opacity: number): void {
+  for (const child of field.children) {
+    if (child instanceof LineSegments && child.material instanceof LineBasicMaterial) child.material.opacity = opacity;
+  }
+}
 
 const MARKER_COLORS: Readonly<Record<QuestMarkerKind, readonly [number, number]>> = {
   available: [0xffd23f, 0xfff1a8],

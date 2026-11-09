@@ -10,6 +10,7 @@ export type QuestObjective =
   | { readonly type: 'interactWith'; readonly objectId: WorldObjectId; readonly count?: number; readonly label: string }
   | { readonly type: 'signal'; readonly signal: string; readonly label: string; readonly npcId?: NpcId }
   | { readonly type: 'defeat'; readonly creatureId: CreatureId; readonly count: number; readonly label: string }
+  | { readonly type: 'contain'; readonly creatureId: CreatureId; readonly count: number; readonly label: string }
   | { readonly type: 'useItem'; readonly itemId: ItemId; readonly label: string }
   | { readonly type: 'gather'; readonly itemId: ItemId; readonly count: number; readonly label: string }
   | { readonly type: 'craft'; readonly itemId: ItemId; readonly count: number; readonly label: string };
@@ -44,6 +45,7 @@ export const objectiveGoal = (objective: QuestObjective): number => {
     case 'interactWith':
       return objective.count ?? 1;
     case 'defeat':
+    case 'contain':
     case 'gather':
     case 'craft':
       return objective.count;

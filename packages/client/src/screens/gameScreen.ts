@@ -1,4 +1,5 @@
 import {
+  CONTAIN_INTERACTION,
   GAME_CONTENT,
   npcQuestMarker,
   objectiveAreas,
@@ -75,7 +76,9 @@ export function createGameScreen(app: AppNavigator): Screen {
   const bubble = new InteractionBubble();
   const speech = new SpeechLayer();
   const combatOverlay = new CombatOverlay(world);
-  const vitals = new VitalsPanel();
+  const vitals = new VitalsPanel((entityId) => {
+    connection.send({ type: 'world.interact', targetKind: 'creature', instanceId: entityId.replace(/^creature:/, ''), interactionIndex: CONTAIN_INTERACTION });
+  });
   const shop = new ShopWindow(connection, world, menu);
   const storage = new StorageWindow(connection, world, menu);
   const crafting = new CraftingWindow(connection, world);

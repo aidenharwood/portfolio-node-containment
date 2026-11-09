@@ -61,6 +61,9 @@ export class Player {
   dialogue: DialogueSession | null = null;
   occupiedAreas = new Set<AreaId>();
   combatTargetId: EntityId | null = null;
+  containTargetId: EntityId | null = null;
+  finishingTargetId: EntityId | null = null;
+  heldFireOn: EntityId | null = null;
   shopSession: { readonly shopId: string; readonly keeperInstanceId: InstanceId | null } | null = null;
   activity: PlayerActivity | null = null;
   craftingStation: CraftingStation | null = null;

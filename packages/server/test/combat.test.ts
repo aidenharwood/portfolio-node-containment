@@ -80,13 +80,39 @@ describe('combat', () => {
     assert.ok(player.integrity > integrityBefore);
     assert.equal(stepOf(harness, 'live-fire'), 4);
 
+    harness.talkTo('intake-osei');
+    finishDialogue(harness);
+    assert.equal(countItem(player.record.inventory, 'alloy-plate'), 1);
+    assert.equal(countItem(player.record.inventory, 'synthweave-bolt'), 1);
+    assert.equal(stepOf(harness, 'live-fire'), 5);
+
+    const containmentBefore = player.record.skills.containment;
+    harness.interactWithObject('intake-fabricator');
+    harness.send({ type: 'crafting.make', recipeId: 'fabricator:containment-seal-1', quantity: 1 });
+    harness.ticksUntil(() => player.activity === null, 400);
+    assert.equal(countItem(player.record.inventory, 'containment-seal-1'), 1);
+    assert.ok(player.record.skills.containment > containmentBefore, 'assembling a seal trains Containment');
+    assert.equal(stepOf(harness, 'live-fire'), 6);
+
+    const understudy = harness.gameplay.world.levelOf(player).creatureByInstance('range-understudy-a');
+    assert.ok(understudy);
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'range-understudy-a', interactionIndex: 0 });
+    harness.ticksUntil(() => player.heldFireOn === understudy.entityId, 600);
+    assert.ok(understudy.isAlive, 'a trainee carrying a seal pulls their blows instead of breaking the specimen');
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'range-understudy-a', interactionIndex: 1 });
+    harness.ticksUntil(() => !understudy.isAlive, 50);
+    assert.equal(countItem(player.record.inventory, 'containment-seal-1'), 0);
+    assert.ok(harness.sink.messages.some((message) => message.type === 'combat.death' && message.containedBy === player.entityId));
+    assert.equal(stepOf(harness, 'live-fire'), 7);
+
     harness.interactWithObject('intake-bed-a');
     assert.equal(player.integrity, player.maxIntegrity);
-    assert.equal(stepOf(harness, 'live-fire'), 5);
+    assert.equal(stepOf(harness, 'live-fire'), 8);
 
     harness.talkTo('intake-osei');
     finishDialogue(harness);
     assert.equal(stepOf(harness, 'live-fire'), 'completed');
+    assert.equal(countItem(player.record.inventory, 'containment-seal-1'), 2);
     assert.equal(stepOf(harness, 'cleared-for-transit'), 0);
   });
 

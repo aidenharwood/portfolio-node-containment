@@ -33,12 +33,24 @@ export type CreatureModel =
   | 'sumpMother'
   | 'frankingClerk'
   | 'courierEcho'
-  | 'postmaster';
+  | 'postmaster'
+  | 'understudy';
 
 export interface LootEntry {
   readonly itemId: ItemId;
   readonly count: number;
   readonly chance: number;
+}
+
+export const CONTAINMENT_CLASSES = ['safe', 'euclid', 'keter'] as const;
+
+export type ContainmentClass = (typeof CONTAINMENT_CLASSES)[number];
+
+export interface ContainmentProfile {
+  readonly containmentClass: ContainmentClass;
+  readonly procedures: string;
+  readonly experience: number;
+  readonly loot: readonly LootEntry[];
 }
 
 export interface CreatureAttack {
@@ -66,4 +78,5 @@ export interface CreatureDefinition {
   readonly respawnTicks: number;
   readonly experience: number;
   readonly loot: readonly LootEntry[];
+  readonly containment?: ContainmentProfile;
 }

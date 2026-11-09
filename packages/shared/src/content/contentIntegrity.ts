@@ -7,6 +7,7 @@ import { isShapeForSlot } from '../gear/slots.ts';
 import { TILE_KINDS } from '../world/tiles.ts';
 import { parseTileLayout } from '../world/district.ts';
 import { districtObjectsOf, findAssemblyIssues } from './assemblyIntegrity.ts';
+import { findContainmentIssues } from './containmentIntegrity.ts';
 import { findCraftingIssues, rawSourceTiers } from './craftingIntegrity.ts';
 import type { GameContent } from './gameContent.ts';
 import { findLevelIssues } from './levelIntegrity.ts';
@@ -63,7 +64,7 @@ export function findContentIssues(content: GameContent): string[] {
     }
     if (objective.type === 'gather' && !gatherable.has(objective.itemId)) report(where, `nothing in the world yields "${objective.itemId}"`);
     if (objective.type === 'craft' && !craftable.has(objective.itemId)) report(where, `no recipe makes "${objective.itemId}"`);
-    if (objective.type === 'defeat' && !content.creatures.has(objective.creatureId)) {
+    if ((objective.type === 'defeat' || objective.type === 'contain') && !content.creatures.has(objective.creatureId)) {
       report(where, `unknown creature "${objective.creatureId}"`);
     }
     if (objective.type === 'signal' && objective.npcId && !content.npcs.has(objective.npcId)) {
@@ -223,5 +224,6 @@ export function findContentIssues(content: GameContent): string[] {
   issues.push(...findTramIssues(content));
   issues.push(...findAssemblyIssues(content));
   issues.push(...findSafetyIssues(content));
+  issues.push(...findContainmentIssues(content));
   return issues;
 }

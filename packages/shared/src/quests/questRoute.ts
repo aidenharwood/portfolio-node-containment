@@ -57,6 +57,7 @@ function goalsForObjective(objective: QuestObjective, scene: RouteScene, content
     case 'signal':
       return objective.npcId ? npcGoals(objective.npcId, scene) : [];
     case 'defeat':
+    case 'contain':
       return creatureGoals(objective.creatureId, scene);
     case 'interactWith':
     case 'gather':

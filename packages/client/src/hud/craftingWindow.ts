@@ -74,13 +74,13 @@ export class CraftingWindow {
     const info = STATION_INFO[station];
     const recipes = this.recipes();
     const selected = recipes.find((recipe) => recipe.id === this.selectedRecipeId) ?? recipes.find((recipe) => !craftingBlocker(recipe, self.skills, self.inventory, GAME_CONTENT.items)) ?? recipes[0];
-    const skill = recipes[0]?.skill;
+    const skills = [...new Set(recipes.map((recipe) => recipe.skill))];
     preserveScroll(this.element, ['.crafting-list'], () => replaceChildren(
       this.element,
       h('header', { className: 'shop-header' },
         h('div', {},
           h('h3', {}, info.name),
-          h('p', { className: 'shop-greeting' }, info.summary, skill ? ` · ${SKILL_INFO[skill].name} ${levelForExperience(self.skills[skill])}` : ''),
+          h('p', { className: 'shop-greeting' }, info.summary, ...skills.map((skill) => ` · ${SKILL_INFO[skill].name} ${levelForExperience(self.skills[skill])}`)),
         ),
         h('button', { className: 'dialogue-close', type: 'button', ariaLabel: 'Close station', onclick: () => this.requestClose() }, '×'),
       ),

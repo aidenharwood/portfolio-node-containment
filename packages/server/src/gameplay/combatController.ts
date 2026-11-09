@@ -6,6 +6,14 @@ import {
   type ChunkKey,
   combatExperience,
   combatLevel,
+  CONTAINMENT_CLASS_INFO,
+  containmentBlocker,
+  containmentReadiness,
+  isWeakenedForContainment,
+  isWithinContainmentReach,
+  removeItem,
+  sealFor,
+  sealTierFor,
   ignoresOutclassedPlayer,
   defeatExperience,
   scaledRespawnTicks,
@@ -75,11 +83,37 @@ export class CombatController {
     }
     player.pendingInteraction = null;
     player.combatTargetId = creature.entityId;
+    player.containTargetId = null;
+    player.heldFireOn = null;
+    player.finishingTargetId = isWeakenedForContainment(creature.integrity, creature.definition.integrity) ? creature.entityId : null;
+    player.lastChaseTarget = null;
+    player.sendVitals();
+  }
+
+  contain(player: Player, instanceId: InstanceId, tick: number): void {
+    const level = this.world.levelOf(player);
+    const creature = level.creatureByInstance(instanceId);
+    if (!creature?.isAlive || !level.isInterestOf(player, creature.position)) return;
+    const blocker = containmentBlocker(creature.definition, creature.integrity, player.record.skills, player.record.inventory, this.content.items);
+    if (blocker) {
+      this.host.notify(player, 'warning', blocker);
+      return;
+    }
+    const refusal = this.singleWayRefusal(player, creature, level, tick);
+    if (refusal) {
+      this.host.notify(player, 'warning', refusal);
+      return;
+    }
+    player.pendingInteraction = null;
+    player.combatTargetId = creature.entityId;
+    player.containTargetId = creature.entityId;
     player.lastChaseTarget = null;
     player.sendVitals();
   }
 
   disengage(player: Player): void {
+    player.containTargetId = null;
+    player.heldFireOn = null;
     if (player.combatTargetId === null) return;
     player.combatTargetId = null;
     player.lastChaseTarget = null;
@@ -109,8 +143,17 @@ export class CombatController {
       return;
     }
 
-    const attack = playerAttackProfile(player.record.skills, player.record.equipment, this.content.items);
     const sightline = (from: TilePoint, to: TilePoint) => hasLineOfSight(level.layout, from, to);
+    if (player.containTargetId === creature.entityId) {
+      if (isWithinContainmentReach(player.position, creature.position, sightline) && !level.isSafe(player.position)) {
+        player.path = [];
+        player.lastChaseTarget = null;
+        this.containCreature(player, creature, level, tick);
+      } else this.chase(player, creature);
+      return;
+    }
+
+    const attack = playerAttackProfile(player.record.skills, player.record.equipment, this.content.items);
     if (isWithinAttackRange(attack, player.position, creature.position, sightline) && !level.isSafe(player.position)) {
       player.path = [];
       player.lastChaseTarget = null;
@@ -121,24 +164,30 @@ export class CombatController {
         this.disengage(player);
         return;
       }
+      const restrained = this.pullsBlows(player, creature);
+      if (restrained && isWeakenedForContainment(creature.integrity, creature.definition.integrity)) {
+        this.holdFire(player, creature);
+        return;
+      }
       this.engageBoth(player, creature, tick);
       this.world.face(player, creature.position);
       player.nextAttackTick = tick + attack.speedTicks;
       player.lastCombatTick = tick;
       const outcome = rollAttack(attack, creature.definition.defence, this.random);
-      creature.integrity = Math.max(0, creature.integrity - outcome.damage);
-      if (outcome.damage > 0) creature.contributors.add(player.entityId);
+      const damage = restrained ? Math.min(outcome.damage, creature.integrity - 1) : outcome.damage;
+      creature.integrity = Math.max(0, creature.integrity - damage);
+      if (damage > 0) creature.contributors.add(player.entityId);
       level.broadcastNear(creature.position, {
         type: 'combat.hit',
         attackerId: player.entityId,
         targetId: creature.entityId,
         outcome: outcome.hit ? 'hit' : 'miss',
-        damage: outcome.damage,
+        damage,
         style: attack.style,
         ...(attack.weapon ? { weapon: attack.weapon } : {}),
         vitals: creature.vitals(),
       });
-      for (const award of combatExperience(attack.style, outcome.damage)) {
+      for (const award of combatExperience(attack.style, damage)) {
         this.effects.awardExperience(player, award.skill, award.amount, false);
       }
       if (creature.targetId === null) {
@@ -149,6 +198,10 @@ export class CombatController {
       return;
     }
 
+    this.chase(player, creature);
+  }
+
+  private chase(player: Player, creature: Creature): void {
     const chaseStale = !player.lastChaseTarget || !samePoint(player.lastChaseTarget, creature.position);
     if (player.path.length === 0 || chaseStale) {
       if (!this.world.approach(player, creature.position)) {
@@ -158,6 +211,34 @@ export class CombatController {
       }
       player.lastChaseTarget = creature.position;
     }
+  }
+
+  private pullsBlows(player: Player, creature: Creature): boolean {
+    if (!creature.definition.containment || player.finishingTargetId === creature.entityId) return false;
+    return containmentReadiness(creature.definition, player.record.skills, player.record.inventory, this.content.items) === null;
+  }
+
+  private holdFire(player: Player, creature: Creature): void {
+    player.path = [];
+    if (player.heldFireOn === creature.entityId) return;
+    player.heldFireOn = creature.entityId;
+    this.host.notify(player, 'info', `${creature.definition.name} is weakened. Contain it now, or attack it again to finish it.`);
+  }
+
+  private containCreature(player: Player, creature: Creature, level: LevelInstance, tick: number): void {
+    player.containTargetId = null;
+    const blocker = containmentBlocker(creature.definition, creature.integrity, player.record.skills, player.record.inventory, this.content.items);
+    const sealId = blocker ? null : sealFor(player.record.inventory, this.content.items, sealTierFor(creature.definition));
+    const removed = sealId ? removeItem(player.record.inventory, sealId, 1) : null;
+    if (!removed?.ok) {
+      this.host.notify(player, 'warning', blocker ?? 'You have no seal to close.');
+      this.disengage(player);
+      return;
+    }
+    player.update({ inventory: removed.value });
+    this.world.face(player, creature.position);
+    player.lastCombatTick = tick;
+    this.defeatCreature(creature, level, player, tick, player);
   }
 
   private updateCreature(creature: Creature, level: LevelInstance, tick: number, watched: ReadonlySet<ChunkKey>): void {
@@ -251,17 +332,22 @@ export class CombatController {
     }
   }
 
-  private defeatCreature(creature: Creature, level: LevelInstance, killer: Player, tick: number): void {
+  private defeatCreature(creature: Creature, level: LevelInstance, killer: Player, tick: number, container: Player | null = null): void {
     creature.state = 'dying';
     creature.diedAtTick = tick;
     creature.respawnDelayTicks = scaledRespawnTicks(creature.definition.respawnTicks, level.players.size);
     creature.targetId = null;
     creature.engagedWith = null;
     creature.path = [];
-    level.broadcastNear(creature.position, { type: 'combat.death', entityId: creature.entityId });
+    level.broadcastNear(creature.position, {
+      type: 'combat.death',
+      entityId: creature.entityId,
+      ...(container ? { containedBy: container.entityId } : {}),
+    });
 
     for (const player of level.players.values()) {
       if (player.combatTargetId === creature.entityId) this.disengage(player);
+      if (player.finishingTargetId === creature.entityId) player.finishingTargetId = null;
     }
 
     const credited = new Set([...creature.contributors, killer.entityId]);
@@ -270,6 +356,22 @@ export class CombatController {
       const player = level.players.get(entityId);
       if (player) this.rewardDefeat(player, creature, creature.position);
     }
+    if (container) this.rewardContainment(container, creature, creature.position);
+  }
+
+  private rewardContainment(player: Player, creature: Creature, position: TilePoint): void {
+    const profile = creature.definition.containment;
+    if (!profile) return;
+    const label = creature.definition.designation ? `${creature.definition.designation} (${creature.definition.name})` : creature.definition.name;
+    this.host.notify(player, 'success', `${label} contained. Class: ${CONTAINMENT_CLASS_INFO[profile.containmentClass].name}.`);
+    this.effects.awardExperience(player, 'containment', profile.experience, true);
+    const loot = profile.loot.filter((entry) => this.random() < entry.chance);
+    if (loot.length > 0) {
+      for (const entry of loot) this.host.dropToGround(player, entry.itemId, entry.count, position);
+      const names = loot.map((entry) => `${entry.count > 1 ? `${entry.count} × ` : ''}${this.content.items.get(entry.itemId)?.name ?? entry.itemId}`);
+      player.send({ type: 'chat.message', channel: 'system', text: `Containment bonus: ${names.join(', ')}` });
+    }
+    this.host.raiseQuestEvent(player, { type: 'contained', creatureId: creature.definition.id });
   }
 
   private rewardDefeat(player: Player, creature: Creature, position: TilePoint): void {

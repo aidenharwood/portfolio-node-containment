@@ -57,6 +57,7 @@ import { HALVORSEN_DIALOGUE, MAGS_DIALOGUE } from './dialogues/undercroftDialogu
 import { ANAND_DIALOGUE, OYELARAN_DIALOGUE, QUILL_DIALOGUE } from './dialogues/hubDialogues.ts';
 import { OVERGROWTH } from './quests/overgrowth.ts';
 import { HYDROPONICS } from './districts/hydroponics.ts';
+import { CONTAINMENT_SEAL_RECIPES, CONTAINMENT_SEALS } from './containmentSeals.ts';
 import { CRAFTING_ITEMS } from './craftingItems.ts';
 import { CRAFTING_OBJECTS } from './craftingObjects.ts';
 import { ITEMS } from './items.ts';
@@ -145,7 +146,7 @@ function startingLocation(): WorldLocation {
 }
 
 export const GAME_CONTENT: GameContent = {
-  items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS, ...UNIQUE_GEAR]),
+  items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS, ...UNIQUE_GEAR, ...CONTAINMENT_SEALS]),
   npcs: indexById([...NPCS, ...DEEP_NPCS, ...WATERWORKS_NPCS, ...OFFICE_NPCS]),
   worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...FURNITURE_OBJECTS, ...OFFICE_OBJECTS]),
   assemblies: ASSEMBLY_INDEX,
@@ -206,7 +207,7 @@ export const GAME_CONTENT: GameContent = {
   tram: buildTramNetwork(TRAM_STATIONS, TRAM_LINES, DISTRICTS, LEVEL_INDEX),
   creatures: indexById([...CREATURES, ...DEEP_CREATURES, ...WATERWORKS_CREATURES, ...OFFICE_CREATURES]),
   shops: indexById(SHOPS),
-  recipes: indexById(RECIPES),
+  recipes: indexById([...RECIPES, ...CONTAINMENT_SEAL_RECIPES]),
   newCharacter: {
     startingLocation: startingLocation(),
     startingQuestId: ORIENTATION_PROTOCOL.id,

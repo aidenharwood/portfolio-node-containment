@@ -99,5 +99,18 @@ export const OFFICE_CREATURES: readonly CreatureDefinition[] = [
       { itemId: 'postmasters-seal', count: 1, chance: 0.03 },
       { itemId: 'final-notice', count: 1, chance: 0.03 },
     ],
+    containment: {
+      containmentClass: 'keter',
+      procedures: 'ANM-1180-P must be sealed in a franked container addressed to no one. Any seal bearing a return address will be delivered back to the sender, opened.',
+      experience: 3400,
+      loot: [
+        { itemId: 'meridian-scrip', count: 2200, chance: 1 },
+        { itemId: 'franking-wax', count: 4, chance: 1 },
+        { itemId: 'dead-letter', count: 4, chance: 1 },
+        { itemId: 'sorting-gloves', count: 1, chance: 0.2 },
+        { itemId: 'postmasters-seal', count: 1, chance: 0.06 },
+        { itemId: 'final-notice', count: 1, chance: 0.06 },
+      ],
+    },
   },
 ];

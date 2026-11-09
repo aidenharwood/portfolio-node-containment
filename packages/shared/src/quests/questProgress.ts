@@ -19,6 +19,7 @@ export type QuestEvent =
   | { readonly type: 'signal'; readonly signal: string }
   | { readonly type: 'loadoutChanged' }
   | { readonly type: 'defeated'; readonly creatureId: CreatureId }
+  | { readonly type: 'contained'; readonly creatureId: CreatureId }
   | { readonly type: 'usedItem'; readonly itemId: ItemId }
   | { readonly type: 'gathered'; readonly itemId: ItemId; readonly count: number }
   | { readonly type: 'crafted'; readonly itemId: ItemId; readonly count: number };
@@ -48,6 +49,8 @@ function progressFromEvent(objective: QuestObjective, current: number, event: Qu
       return event.type === 'signal' && event.signal === objective.signal ? current + 1 : current;
     case 'defeat':
       return event.type === 'defeated' && event.creatureId === objective.creatureId ? current + 1 : current;
+    case 'contain':
+      return event.type === 'contained' && event.creatureId === objective.creatureId ? current + 1 : current;
     case 'useItem':
       return event.type === 'usedItem' && event.itemId === objective.itemId ? current + 1 : current;
     case 'gather':

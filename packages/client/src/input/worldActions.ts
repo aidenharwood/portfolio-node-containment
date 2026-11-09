@@ -1,4 +1,4 @@
-import { GAME_CONTENT, type TilePoint } from '@containment/shared';
+import { CONTAIN_INTERACTION, CONTAINMENT_CLASS_INFO, GAME_CONTENT, type CreatureDefinition, type TilePoint } from '@containment/shared';
 import type { MenuAction } from '../hud/contextMenu.ts';
 import type { GameConnection } from '../net/gameConnection.ts';
 import type { PickTarget } from '../render/pickTarget.ts';
@@ -23,7 +23,7 @@ export function actionsForTarget(target: PickTarget | null, context: ActionConte
         const creature = entity.creatureId ? GAME_CONTENT.creatures.get(entity.creatureId) : undefined;
         const instanceId = entity.id.replace(/^creature:/, '');
         const subject = creature ? `${entity.name} (level ${creature.level})` : entity.name;
-        return [
+        const actions: MenuAction[] = [
           {
             verb: 'Attack',
             subject,
@@ -33,8 +33,20 @@ export function actionsForTarget(target: PickTarget | null, context: ActionConte
               context.connection.send({ type: 'world.interact', targetKind: 'creature', instanceId, interactionIndex: 0 });
             },
           },
-          { verb: 'Examine', subject: entity.name, subjectTone: 'creature', run: () => context.examine(creature?.examine ?? entity.name) },
         ];
+        if (creature?.containment) {
+          actions.push({
+            verb: 'Contain',
+            subject,
+            subjectTone: 'creature',
+            run: () => {
+              context.markClick(entity.to, 'interact');
+              context.connection.send({ type: 'world.interact', targetKind: 'creature', instanceId, interactionIndex: CONTAIN_INTERACTION });
+            },
+          });
+        }
+        actions.push({ verb: 'Examine', subject: entity.name, subjectTone: 'creature', run: () => context.examine(creature ? creatureExamine(creature) : entity.name) });
+        return actions;
       }
       if (entity.kind === 'player') {
         return [
@@ -105,6 +117,12 @@ export function actionsForTarget(target: PickTarget | null, context: ActionConte
       ];
     }
   }
+}
+
+function creatureExamine(creature: CreatureDefinition): string {
+  const profile = creature.containment;
+  if (!profile) return creature.examine;
+  return `${creature.examine} Object class: ${CONTAINMENT_CLASS_INFO[profile.containmentClass].name}. Special containment procedures: ${profile.procedures}`;
 }
 
 function walkHere(tile: TilePoint, context: ActionContext): MenuAction {

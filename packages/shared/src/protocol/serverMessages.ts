@@ -126,7 +126,7 @@ export type ServerMessage =
       readonly weapon?: WeaponKind;
       readonly vitals: EntityVitals;
     }
-  | { readonly type: 'combat.death'; readonly entityId: EntityId }
+  | { readonly type: 'combat.death'; readonly entityId: EntityId; readonly containedBy?: EntityId }
   | { readonly type: 'world.groundItemAdded'; readonly item: GroundItemSnapshot }
   | { readonly type: 'world.groundItemRemoved'; readonly id: string }
   | { readonly type: 'shop.opened'; readonly shopId: string }

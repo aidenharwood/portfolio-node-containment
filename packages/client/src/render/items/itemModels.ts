@@ -424,6 +424,23 @@ const cell: ItemBuilder = ({ primary, secondary }) => {
   return model;
 };
 
+const seal: ItemBuilder = ({ primary, secondary }) => {
+  const model = new VoxelModel();
+  const frame = darken(primary, 0.35);
+  for (let x = -4; x <= 4; x++) {
+    for (let y = 0; y <= 8; y++) {
+      for (let z = -4; z <= 4; z++) {
+        const edges = Number(Math.abs(x) === 4) + Number(y === 0 || y === 8) + Number(Math.abs(z) === 4);
+        if (edges >= 2) model.set(x, y, z, frame);
+        else if (edges === 1) model.set(x, y, z, lighten(primary, 0.35), VOXEL_GLASS);
+      }
+    }
+  }
+  model.fill(-1, 3, -1, 1, 5, 1, secondary, VOXEL_EMISSIVE);
+  model.fill(-4, 4, -5, 4, 4, -5, (x) => (x % 2 === 0 ? secondary : 0x1a1a1a));
+  return model;
+};
+
 const BUILDERS: Readonly<Record<ItemIconShape, ItemBuilder>> = {
   fibre,
   moss,
@@ -432,6 +449,7 @@ const BUILDERS: Readonly<Record<ItemIconShape, ItemBuilder>> = {
   ingot,
   sheet,
   cell,
+  seal,
   maul,
   carbine,
   knife,

@@ -47,7 +47,7 @@ The world is a handful of continuous **levels** (`content/levels/`): the main fl
 
 ### World structure
 
-- **Intake Wing** (tutorial, tier 1) is self-contained and reached only by tram (the Intake Shuttle). Its quests teach every system in order, each step marked in the world: Orientation Protocol (gear, area travel, dialogue), Field Fabrication (gathering, refining, assembly, storage), Live Fire (combat, consumables, resting) and Cleared for Transit (trading, trams). The last one ends on the tram to the Atrium and hands over to The Knocking.
+- **Intake Wing** (tutorial, tier 1) is self-contained and reached only by tram (the Intake Shuttle). Its quests teach every system in order, each step marked in the world: Orientation Protocol (gear, area travel, dialogue), Field Fabrication (gathering, refining, assembly, storage), Live Fire (combat, consumables, containment, resting) and Cleared for Transit (trading, trams). The last one ends on the tram to the Atrium and hands over to The Knocking.
 - **Meridian Atrium** is the hub: Requisitions and storage, a Fabrication Hall (stations only, no nodes), the medbay, storyline quest givers, the transit hall and the gates out. Every area is safe and nothing hostile lives there.
 - **Beyond the Atrium**, wide concourses lead west to Hydroponics and east to the Service Yards, and the quarantine bulkhead opens north straight into the Sector 2 airlock. The Service Yards' Moss Culverts open east into the Waterworks, a tier 3 district with its own Pump House outpost and the Waterworks side questline. On the Deep, the Deep Concourse and Furnace Causeway join Deepwatch to every district on foot; story clearance gates the pressure doors at the far end of each corridor, and each door opens directly into its district. The Deep Line is a lift, not a tram: it joins the Atrium transit hall to Deepwatch. Only the Undercroft (a lift) and the pockets sit off the walking, lift and tram network.
 - **Outposts and hostile ground:** each district beyond the hub keeps its friendly NPCs and tram stop in a safe area, and its gathering nodes and creatures outside it.
@@ -149,6 +149,17 @@ The pure rules live in `shared/src/combat/combatMath.ts`: attack profiles, hit c
 - **Regeneration and auto-retaliate:** integrity regenerates 1 point every 20 ticks once out of combat. A player who is idle when attacked fights back automatically.
 
 Creatures are content (`content/creatures.ts`) placed through `DistrictDefinition.creatures`. Consumables are `item.consumable`. Quests use `defeat` and `useItem` objectives.
+
+### Containment
+
+Bosses are anomalous specimens. A creature with `containment` (a `ContainmentProfile`: object class Safe, Euclid or Keter, special containment procedures, containment XP and bonus loot) can be contained instead of killed. The pure rules live in `shared/src/combat/containment.ts`.
+
+- **Seals:** an item with `containmentSeal: { tier }` (`content/containmentSeals.ts`, Mk.I to Mk.IX). Each is assembled at a fabricator from two refined parts of its tier and trains Containment. A seal holds a specimen of its tier or lower, and `sealFor` spends the lowest one that fits.
+- **Rules:** `containmentBlocker` needs Containment at or above the specimen's level, a seal rated for `tierForLevel(level)`, and the specimen at or below a tenth of its integrity (`containmentThreshold`).
+- **Server:** `world.interact` on a creature with `CONTAIN_INTERACTION` calls `CombatController.contain`, which validates, chases into `CONTAINMENT_REACH` with line of sight, spends the seal and defeats the creature with `containedBy`. Everyone credited gets the normal defeat rewards; the container also gets the profile's XP and loot and a `contained` quest event (the `contain` objective).
+- **Pulled blows:** while a player could contain their target, their hits never take it below 1 integrity, and once it is weakened they hold fire with a notice. Attacking a weakened specimen again (`finishingTargetId`) finishes it normally.
+- **Client:** the context menu adds Contain, examine shows the object class and procedures, and the target panel shows the class, a threshold tick and a Contain button gated by the same shared rule. A contained creature spins down inside a shrinking field instead of falling.
+- **Integrity:** `findContainmentIssues` requires a seal for every tier, seal recipes that train Containment with inputs found by their tier, and a seal for every containable creature's tier. A unique item in containment loot must also be a rare regular drop.
 
 ### Weapons
 
