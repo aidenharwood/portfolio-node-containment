@@ -402,16 +402,41 @@
   text-shadow: 1px 1px 0 #000;
 }
 
-.paper-doll {
+.loadout {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-areas:
-    'implant head utility'
-    'primary torso secondary'
-    'hands legs eyes'
-    '. feet .';
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
   gap: 6px;
-  padding: 0 14px;
+}
+
+.loadout-column {
+  display: grid;
+  grid-auto-rows: auto;
+  gap: 6px;
+}
+
+.loadout-column .equipment-slot {
+  width: 100%;
+  max-width: 52px;
+}
+
+.loadout-column.left .equipment-slot {
+  justify-self: end;
+}
+
+.loadout-figure {
+  display: grid;
+  place-items: center;
+  min-width: 104px;
+  min-height: 236px;
+  background: radial-gradient(ellipse at 50% 85%, rgba(79, 216, 255, 0.1), transparent 70%);
+}
+
+.loadout-summary {
+  margin: 10px 0 0;
+  font-size: 11px;
+  color: var(--color-text-faint);
+  text-align: center;
 }
 
 .slot-label {
@@ -429,25 +454,54 @@
   margin: 14px 0 6px;
 }
 
-.equipment-stats,
-.dossier-attributes {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 3px 10px;
-  margin: 0;
+.dossier-stats {
+  width: 100%;
+  border-collapse: collapse;
   font-size: 12px;
 }
 
-.equipment-stats dt,
-.dossier-attributes dt {
+.dossier-stats th,
+.dossier-stats td {
+  padding: 3px 0;
+  font-weight: normal;
+}
+
+.dossier-stats thead th {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-faint);
+  text-align: right;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.dossier-stats thead th:first-child,
+.dossier-stats tbody th {
+  text-align: left;
+}
+
+.dossier-stats tbody th {
   color: var(--color-text-muted);
 }
 
-.equipment-stats dd,
-.dossier-attributes dd {
-  margin: 0;
+.dossier-stats tbody tr + tr {
+  border-top: 1px solid rgba(79, 216, 255, 0.06);
+}
+
+.dossier-gear {
+  text-align: right;
+  color: var(--color-text-faint);
+  width: 48px;
+}
+
+.dossier-gear.active {
+  color: var(--color-text);
+}
+
+.dossier-total {
   text-align: right;
   color: var(--color-accent);
+  width: 48px;
 }
 
 .skill-grid {
@@ -766,10 +820,6 @@
   color: var(--color-text-muted);
 }
 
-.dossier-attributes {
-  margin-top: 6px;
-}
-
 .dossier-notes {
   margin: 10px 0 0;
   font-size: 11px;
@@ -779,10 +829,14 @@
   grid-column: 1 / -1;
 }
 
+.dossier-header {
+  align-items: center;
+}
+
 .dossier-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
-  margin-top: 14px;
 }
 
 .hud-chat {

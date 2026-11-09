@@ -71,6 +71,26 @@ describe('containment', () => {
     assert.ok(harness.sink.messages.some((message) => message.type === 'combat.death' && message.containedBy === harness.player.entityId));
   });
 
+  test('containing a storyline boss advances its defeat objective', () => {
+    const prepare = operative(6, ['containment-seal-2']);
+    const harness = createHarness({
+      prepare: (record) => {
+        const prepared = prepare(record);
+        return {
+          ...prepared,
+          quests: { ...prepared.quests, 'the-knocking': { questId: 'the-knocking', status: 'active', stepIndex: 6, objectiveProgress: [0] } },
+        };
+      },
+    });
+    const creature = warden(harness);
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-warden', interactionIndex: 0 });
+    harness.ticksUntil(() => harness.player.heldFireOn === creature.entityId, 2000);
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-warden', interactionIndex: 1 });
+    harness.ticksUntil(() => !creature.isAlive, 50);
+    assert.ok(harness.sink.messages.some((message) => message.type === 'combat.death' && message.containedBy === harness.player.entityId));
+    assert.equal(harness.player.record.quests['the-knocking']?.stepIndex, 7);
+  });
+
   test('containment is refused below the specimen level', () => {
     const harness = createHarness({ prepare: operative(3, ['containment-seal-2']) });
     const creature = warden(harness);

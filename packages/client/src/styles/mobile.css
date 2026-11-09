@@ -249,6 +249,20 @@ body {
   }
 }
 
+@media (max-width: 760px) and (min-height: 521px) {
+  .hud-chat {
+    bottom: calc(16px + var(--side-panel-height, 50px) + var(--safe-bottom));
+  }
+
+  .hud-side:not(.collapsed) {
+    max-height: min(460px, calc(100% - 188px - 156px - var(--safe-top) - var(--safe-bottom)));
+  }
+
+  .game-screen:has(.hud-side:not(.collapsed)) .hud-chat:not(.collapsed) {
+    height: 140px;
+  }
+}
+
 @media (max-height: 520px) and (orientation: landscape) {
   .hud-chat {
     bottom: calc(8px + var(--safe-bottom));
@@ -305,10 +319,9 @@ body {
     font-size: 9px;
   }
 
-  .hud-side .paper-doll {
-    max-width: 236px;
+  .hud-side .loadout {
+    max-width: 300px;
     margin: 0 auto;
-    padding: 0;
   }
 
   .roster-layout {

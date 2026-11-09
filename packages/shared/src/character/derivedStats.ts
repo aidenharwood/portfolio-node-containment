@@ -18,16 +18,17 @@ export type CombatProfile = Readonly<Record<ProfileStatId, number>>;
 export interface ProfileStatInfo {
   readonly name: string;
   readonly derivation: string;
+  readonly gearStat?: StatId;
 }
 
 export const PROFILE_STAT_INFO: Readonly<Record<ProfileStatId, ProfileStatInfo>> = {
   integrity: { name: 'Integrity', derivation: 'Maximum health. 20 + 4 per Fortitude level.' },
-  meleeRating: { name: 'Melee Rating', derivation: 'Close Quarters level + weapon Power.' },
-  rangedRating: { name: 'Ranged Rating', derivation: 'Marksmanship level + weapon Accuracy.' },
-  defence: { name: 'Defence', derivation: 'Half Fortitude level + Armor.' },
-  hazardResistance: { name: 'Hazard Resistance', derivation: 'Half Fortitude level + Hazard Shielding.' },
-  cognitiveResistance: { name: 'Cognitive Resistance', derivation: 'Half Containment level + Cognitive Ward.' },
-  analysis: { name: 'Analysis', derivation: 'Research level + Insight.' },
+  meleeRating: { name: 'Melee Rating', derivation: 'Close Quarters level + weapon Power.', gearStat: 'power' },
+  rangedRating: { name: 'Ranged Rating', derivation: 'Marksmanship level + weapon Accuracy.', gearStat: 'accuracy' },
+  defence: { name: 'Defence', derivation: 'Half Fortitude level + Armor.', gearStat: 'armor' },
+  hazardResistance: { name: 'Hazard Resistance', derivation: 'Half Fortitude level + Hazard Shielding.', gearStat: 'hazardShielding' },
+  cognitiveResistance: { name: 'Cognitive Resistance', derivation: 'Half Containment level + Cognitive Ward.', gearStat: 'cognitiveWard' },
+  analysis: { name: 'Analysis', derivation: 'Research level + Insight.', gearStat: 'insight' },
 };
 
 export const maxIntegrityFor = (skills: SkillExperience): number => 20 + levelForExperience(skills.fortitude) * 4;

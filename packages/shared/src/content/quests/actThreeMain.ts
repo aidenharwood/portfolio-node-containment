@@ -60,7 +60,7 @@ export const DEAD_LETTER_OFFICE: QuestDefinition = {
     {
       id: 'postmaster',
       journal: 'Every pigeonhole is stamped with the same initials: P.M. The Postmaster is in Dispatch, south of the Sorting Floor, signing.',
-      objectives: [{ type: 'defeat', creatureId: 'the-postmaster', count: 1, label: 'Face the Postmaster' }],
+      objectives: [{ type: 'defeat', creatureId: 'the-postmaster', count: 1, label: 'Contain or destroy the Postmaster' }],
     },
     {
       id: 'engine',

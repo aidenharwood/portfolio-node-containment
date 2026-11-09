@@ -93,11 +93,11 @@ export const THE_OUTFALL: QuestDefinition = {
     {
       id: 'mother',
       journal: 'The Outfall lies east of the tanks. Whatever feeds there is big enough that Ngata suggested I bring friends.',
-      objectives: [{ type: 'defeat', creatureId: 'sump-mother', count: 1, label: 'Defeat the Sump Mother' }],
+      objectives: [{ type: 'defeat', creatureId: 'sump-mother', count: 1, label: 'Contain or destroy the Sump Mother' }],
     },
     {
       id: 'restart',
-      journal: 'She is dead, and a good deal of her is in the outfall pump. It needs clearing and restarting.',
+      journal: 'Sealed or dead, she has left a good deal of herself in the outfall pump. It needs clearing and restarting.',
       objectives: [{ type: 'interactWith', objectId: 'waterworks-outfall-pump', label: 'Restart the outfall pump' }],
     },
     {

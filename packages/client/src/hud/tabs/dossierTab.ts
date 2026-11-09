@@ -1,4 +1,4 @@
-import { equippedItemIds, PROFILE_STAT_IDS, PROFILE_STAT_INFO, PRONOUN_SETS, type SelfState } from '@containment/shared';
+import { equippedItemIds, PROFILE_STAT_IDS, PROFILE_STAT_INFO, PRONOUN_SETS, STAT_INFO, type ProfileStatId, type SelfState } from '@containment/shared';
 import type { GameConnection } from '../../net/gameConnection.ts';
 import type { WorldState } from '../../state/worldState.ts';
 import { AvatarPreview } from '../../ui/avatarPreview.ts';
@@ -9,17 +9,34 @@ export function createDossierTab(connection: GameConnection, world: WorldState):
   let preview: AvatarPreview | null = null;
   const portrait = h('div', { className: 'dossier-portrait' });
   const details = h('div', { className: 'dossier-details' });
-  const profile = h('dl', { className: 'dossier-attributes' });
+  const profile = h('tbody');
   const element = h('div', { className: 'tab-dossier' },
-    h('header', { className: 'tab-header' }, h('h3', {}, 'Dossier')),
+    h('header', { className: 'tab-header dossier-header' },
+      h('h3', {}, 'Dossier'),
+      h('div', { className: 'dossier-actions' },
+        h('button', { className: 'button ghost small', type: 'button', onclick: () => connection.send({ type: 'character.leaveWorld' }) }, 'Personnel files'),
+        h('button', { className: 'button ghost small', type: 'button', onclick: () => connection.send({ type: 'auth.logout' }) }, 'Sign out'),
+      ),
+    ),
     h('div', { className: 'dossier-top' }, portrait, details),
     h('h4', { className: 'subheading', title: 'Derived from trained skills and equipped gear' }, 'Combat profile'),
-    profile,
-    h('div', { className: 'dossier-actions' },
-      h('button', { className: 'button ghost small', type: 'button', onclick: () => connection.send({ type: 'character.leaveWorld' }) }, 'Personnel files'),
-      h('button', { className: 'button ghost small', type: 'button', onclick: () => connection.send({ type: 'auth.logout' }) }, 'Sign out'),
+    h('table', { className: 'dossier-stats' },
+      h('thead', {}, h('tr', {}, h('th', { scope: 'col' }, 'Stat'), h('th', { scope: 'col', title: 'Contribution from equipped gear' }, 'Gear'), h('th', { scope: 'col' }, 'Total'))),
+      profile,
     ),
   );
+
+  const profileRow = (self: SelfState, id: ProfileStatId) => {
+    const info = PROFILE_STAT_INFO[id];
+    const gear = info.gearStat ? self.stats[info.gearStat] : null;
+    const title = info.gearStat ? `${info.derivation}
+${STAT_INFO[info.gearStat].name}: ${STAT_INFO[info.gearStat].summary}` : info.derivation;
+    return h('tr', { title },
+      h('th', { scope: 'row' }, info.name),
+      h('td', { className: `dossier-gear${gear ? ' active' : ''}` }, gear === null ? '—' : `${gear > 0 ? '+' : ''}${gear}`),
+      h('td', { className: 'dossier-total' }, String(self.profile[id])),
+    );
+  };
 
   return {
     id: 'dossier',
@@ -41,7 +58,7 @@ export function createDossierTab(connection: GameConnection, world: WorldState):
       );
       replaceChildren(
         profile,
-        ...PROFILE_STAT_IDS.flatMap((id) => [h('dt', { title: PROFILE_STAT_INFO[id].derivation }, PROFILE_STAT_INFO[id].name), h('dd', {}, String(self.profile[id]))]),
+        ...PROFILE_STAT_IDS.map((id) => profileRow(self, id)),
       );
     },
     dispose() {

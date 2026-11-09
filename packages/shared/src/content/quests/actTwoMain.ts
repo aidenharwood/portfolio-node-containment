@@ -68,7 +68,7 @@ export const COLD_STORAGE: QuestDefinition = {
     {
       id: 'curator',
       journal: "The stasis core is in the Curator's office, south-east of the cold corridor. The Curator is still at his desk. Orderly Fenn in the nook can tell me more, and the Rimeguard kit Duval can fabricate would help.",
-      objectives: [{ type: 'defeat', creatureId: 'the-curator', count: 1, label: 'Put the Curator to rest' }],
+      objectives: [{ type: 'defeat', creatureId: 'the-curator', count: 1, label: 'Contain or put down the Curator' }],
     },
     {
       id: 'recover-core',
@@ -129,7 +129,7 @@ export const DEAD_AIR: QuestDefinition = {
     {
       id: 'choir',
       journal: 'The replies came from below. Whatever answered them is still on the dish gantry, south of the relay floor, singing "received".',
-      objectives: [{ type: 'defeat', creatureId: 'the-choir', count: 1, label: 'Silence the Choir' }],
+      objectives: [{ type: 'defeat', creatureId: 'the-choir', count: 1, label: 'Contain or silence the Choir' }],
     },
     {
       id: 'recording',
@@ -189,7 +189,7 @@ export const ORIGINAL_CONTRACT: QuestDefinition = {
     {
       id: 'archivist',
       journal: 'The sealed reading room is off the east end of the stacks. Archivist Wen is still inside, still holding the file.',
-      objectives: [{ type: 'defeat', creatureId: 'last-archivist', count: 1, label: 'Lay the Last Archivist to rest' }],
+      objectives: [{ type: 'defeat', creatureId: 'last-archivist', count: 1, label: 'Contain or lay the Last Archivist to rest' }],
     },
     {
       id: 'charter',
@@ -254,7 +254,7 @@ export const STOKING_THE_FIRE: QuestDefinition = {
     {
       id: 'stoker',
       journal: 'The reactor heart door, at the east end of the galleries, will open now. The Stoker is inside.',
-      objectives: [{ type: 'defeat', creatureId: 'the-stoker', count: 1, label: 'Stop the Stoker' }],
+      objectives: [{ type: 'defeat', creatureId: 'the-stoker', count: 1, label: 'Contain or stop the Stoker' }],
     },
     {
       id: 'console',
@@ -318,7 +318,7 @@ export const THE_ANSWER: QuestDefinition = {
     {
       id: 'host',
       journal: 'The lanterns all show the same hour: the front door, south of the plaza, and the Host standing on its welcome mat.',
-      objectives: [{ type: 'defeat', creatureId: 'the-host', count: 1, label: 'Face the Host' }],
+      objectives: [{ type: 'defeat', creatureId: 'the-host', count: 1, label: 'Contain or destroy the Host' }],
     },
     {
       id: 'answer',

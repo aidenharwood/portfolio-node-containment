@@ -30,7 +30,7 @@ export const THE_FAR_SIDE: QuestDefinition = {
     {
       id: 'the-foreman',
       journal: "Power is flowing, but the Sector 3 seal won't open while the workshop is drawing on the circuit. The Foreman is still at his post. If I'm not ready, Mags sells better kit.",
-      objectives: [{ type: 'defeat', creatureId: 'the-foreman', count: 1, label: 'Put down the Foreman' }],
+      objectives: [{ type: 'defeat', creatureId: 'the-foreman', count: 1, label: 'Contain or put down the Foreman' }],
       onComplete: [{ type: 'setFlag', flag: 'undercroft.foreman-down' }],
     },
     {

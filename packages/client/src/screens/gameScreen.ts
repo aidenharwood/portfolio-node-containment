@@ -130,7 +130,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   const minimap = new Minimap(world, walkTo, () => worldMap.toggle());
   const sidePanel = new SidePanel([
     createInventoryTab(connection, menu, { examine }),
-    createEquipmentTab(connection),
+    createEquipmentTab(connection, world),
     createSkillsTab(),
     createQuestsTab(menu, questTracking),
     createDossierTab(connection, world),
@@ -473,6 +473,9 @@ export function createGameScreen(app: AppNavigator): Screen {
     menu.element,
   );
 
+  const panelObserver = new ResizeObserver(() => element.style.setProperty('--side-panel-height', `${sidePanel.element.offsetHeight}px`));
+  panelObserver.observe(sidePanel.element);
+
   requestAnimationFrame(() => {
     renderer.resize();
     if (world.zone) onZoneChanged();
@@ -489,6 +492,7 @@ export function createGameScreen(app: AppNavigator): Screen {
       window.removeEventListener('blur', onBlur);
       window.removeEventListener('resize', onResize);
       unsubscribers.forEach((unsubscribe) => unsubscribe());
+      panelObserver.disconnect();
       chat.dispose();
       combatOverlay.dispose();
       dialogue.dispose();
