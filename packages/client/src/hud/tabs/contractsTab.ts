@@ -25,7 +25,7 @@ export function createContractsTab(): PanelTab {
   return {
     id: 'contracts',
     label: 'Contracts',
-    glyph: '✎',
+    icon: 'contracts',
     element,
     update(current: SelfState) {
       self = current;

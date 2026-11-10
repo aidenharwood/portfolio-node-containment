@@ -171,7 +171,7 @@ export function createQuestsTab(menu: ContextMenu, tracking: QuestTracking): Pan
   return {
     id: 'quests',
     label: 'Journal',
-    glyph: '✎',
+    icon: 'quests',
     element,
     update(next) {
       self = next;

@@ -1,11 +1,12 @@
 import { emptyContractLedger, maxIntegrityFor, normalizeAppearance, normalizeSkills, type AccountId, type FriendEntry, type CharacterId, type CharacterRecord, type GameContent } from '@containment/shared';
+import { retireContainmentSeals } from './retiredSeals.ts';
 import { restoreLocation, storeLocation } from './storedLocation.ts';
 import type { Database } from '../persistence/database.ts';
 
 function parseRecord(json: string, content: GameContent): CharacterRecord {
   const stored = JSON.parse(json) as Omit<CharacterRecord, 'vitals' | 'storage' | 'location' | 'friends' | 'contracts'> & Partial<Pick<CharacterRecord, 'vitals' | 'storage' | 'friends' | 'contracts'>> & { readonly location: unknown };
   const skills = normalizeSkills(stored.skills);
-  return { ...stored, location: restoreLocation(stored.location, content), appearance: normalizeAppearance(stored.appearance), storage: stored.storage ?? [], friends: stored.friends ?? [], contracts: stored.contracts ?? emptyContractLedger(), skills, vitals: stored.vitals ?? { integrity: maxIntegrityFor(skills) } };
+  return retireContainmentSeals({ ...stored, location: restoreLocation(stored.location, content), appearance: normalizeAppearance(stored.appearance), storage: stored.storage ?? [], friends: stored.friends ?? [], contracts: stored.contracts ?? emptyContractLedger(), skills, vitals: stored.vitals ?? { integrity: maxIntegrityFor(skills) } }, content);
 }
 
 export class CharacterRepository {

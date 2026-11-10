@@ -1,6 +1,7 @@
 import type { MarketOrder, MarketOrderId } from '@containment/shared';
 import type { MarketStore } from '../gameplay/marketController.ts';
 import type { Database } from './database.ts';
+import { retireSealOrder } from '../characters/retiredSeals.ts';
 
 export class MarketRepository implements MarketStore {
   private readonly database: Database;
@@ -11,7 +12,7 @@ export class MarketRepository implements MarketStore {
 
   load(): MarketOrder[] {
     const rows = this.database.prepare('SELECT record FROM market_orders').all() as { record: string }[];
-    return rows.map((row) => JSON.parse(row.record) as MarketOrder);
+    return rows.map((row) => retireSealOrder(JSON.parse(row.record) as MarketOrder));
   }
 
   save(order: MarketOrder): void {

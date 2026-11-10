@@ -73,10 +73,6 @@ export interface ConsumableProperties {
   readonly heal: number;
 }
 
-export interface ContainmentSealProperties {
-  readonly tier: number;
-}
-
 export interface ItemDefinition {
   readonly id: ItemId;
   readonly name: string;
@@ -90,7 +86,6 @@ export interface ItemDefinition {
   readonly unique?: boolean;
   readonly equipment?: EquipmentProperties;
   readonly consumable?: ConsumableProperties;
-  readonly containmentSeal?: ContainmentSealProperties;
 }
 
 export type ItemCatalog = ReadonlyMap<ItemId, ItemDefinition>;

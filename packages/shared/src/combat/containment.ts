@@ -1,8 +1,5 @@
 import { levelForExperience, type SkillExperience } from '../character/skills.ts';
-import { tierForLevel } from '../crafting/tiers.ts';
-import { countItem, type InventoryState } from '../gear/inventory.ts';
-import type { ItemCatalog, ItemDefinition } from '../gear/items.ts';
-import type { ItemId } from '../ids.ts';
+import { TIER_LEVEL_FLOORS, tierForLevel } from '../crafting/tiers.ts';
 import { chebyshevDistance, type TilePoint } from '../world/geometry.ts';
 import type { ContainmentClass, CreatureDefinition } from './creatures.ts';
 
@@ -30,46 +27,55 @@ export const isWeakenedForContainment = (integrity: number, maxIntegrity: number
 
 export const containmentLevelFor = (creature: CreatureDefinition): number => creature.containment?.requiredLevel ?? creature.level;
 
-export const sealTierFor = (creature: CreatureDefinition): number => tierForLevel(containmentLevelFor(creature));
+export const clearanceTierFor = (creature: CreatureDefinition): number => tierForLevel(containmentLevelFor(creature));
 
 export const isWithinContainmentReach = (from: TilePoint, to: TilePoint, hasSightline: (from: TilePoint, to: TilePoint) => boolean): boolean =>
   chebyshevDistance(from, to) <= CONTAINMENT_REACH && hasSightline(from, to);
 
-const sealsByCatalog = new WeakMap<ItemCatalog, readonly ItemDefinition[]>();
+export const CLEARANCE_TIERS = TIER_LEVEL_FLOORS.length;
 
-export function containmentSeals(catalog: ItemCatalog): readonly ItemDefinition[] {
-  const cached = sealsByCatalog.get(catalog);
-  if (cached) return cached;
-  const seals = [...catalog.values()].filter((item) => item.containmentSeal !== undefined).sort((a, b) => (a.containmentSeal?.tier ?? 0) - (b.containmentSeal?.tier ?? 0));
-  sealsByCatalog.set(catalog, seals);
-  return seals;
+const CLEARANCE_NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'] as const;
+
+export const clearanceFlag = (tier: number): string => `containment-clearance-${tier}`;
+
+export const clearanceName = (tier: number): string => `Clearance ${CLEARANCE_NUMERALS[tier - 1] ?? tier}`;
+
+export const clearancePrice = (tier: number): number => 25 * tier * tier;
+
+export const clearanceLevelFor = (tier: number): number => TIER_LEVEL_FLOORS[tier - 1] ?? 1;
+
+export function clearanceTierOf(flags: readonly string[]): number {
+  let tier = 0;
+  while (tier < CLEARANCE_TIERS && flags.includes(clearanceFlag(tier + 1))) tier += 1;
+  return tier;
 }
 
-export function sealFor(inventory: InventoryState, catalog: ItemCatalog, tier: number): ItemId | null {
-  const seal = containmentSeals(catalog).find((item) => (item.containmentSeal?.tier ?? 0) >= tier && countItem(inventory, item.id) > 0);
-  return seal?.id ?? null;
+export function nextClearanceTier(flags: readonly string[]): number | null {
+  const tier = clearanceTierOf(flags) + 1;
+  return tier <= CLEARANCE_TIERS ? tier : null;
 }
 
-const sealNameFor = (catalog: ItemCatalog, tier: number): string =>
-  containmentSeals(catalog).find((item) => item.containmentSeal?.tier === tier)?.name ?? `a tier ${tier} containment seal`;
-
-export function containmentReadiness(creature: CreatureDefinition, skills: SkillExperience, inventory: InventoryState, catalog: ItemCatalog): string | null {
-  if (!isContainable(creature)) return `${creature.name} cannot be contained.`;
-  const required = containmentLevelFor(creature);
-  if (levelForExperience(skills.containment) < required) return `You need Containment level ${required} to contain ${creature.name}.`;
-  const tier = sealTierFor(creature);
-  if (!sealFor(inventory, catalog, tier)) return `You need ${sealNameFor(catalog, tier)} or better to contain ${creature.name}.`;
+export function clearanceRefusal(flags: readonly string[], skills: SkillExperience, scrip: number): string | null {
+  const tier = nextClearanceTier(flags);
+  if (tier === null) return 'You already hold the highest containment clearance.';
+  const level = clearanceLevelFor(tier);
+  if (levelForExperience(skills.containment) < level) return `${clearanceName(tier)} requires Containment level ${level}.`;
+  const price = clearancePrice(tier);
+  if (scrip < price) return `${clearanceName(tier)} costs ${price} scrip.`;
   return null;
 }
 
-export function containmentBlocker(
-  creature: CreatureDefinition,
-  integrity: number,
-  skills: SkillExperience,
-  inventory: InventoryState,
-  catalog: ItemCatalog,
-): string | null {
-  const readiness = containmentReadiness(creature, skills, inventory, catalog);
+export function containmentReadiness(creature: CreatureDefinition, skills: SkillExperience, clearance: number): string | null {
+  if (!isContainable(creature)) return `${creature.name} cannot be contained.`;
+  const required = containmentLevelFor(creature);
+  if (levelForExperience(skills.containment) < required) return `You need Containment level ${required} to contain ${creature.name}.`;
+  const tier = clearanceTierFor(creature);
+  if (clearance < tier) return `You need containment ${clearanceName(tier)} to contain ${creature.name}. The Registrar in the Intake Wing issues it.`;
+  return null;
+}
+
+export function containmentBlocker(creature: CreatureDefinition, integrity: number, skills: SkillExperience, clearance: number): string | null {
+  const readiness = containmentReadiness(creature, skills, clearance);
   if (readiness) return readiness;
   if (!isWeakenedForContainment(integrity, creature.integrity)) {
     return `${creature.name} is too strong to contain. Wear it down to ${containmentThreshold(creature.integrity)} integrity first.`;

@@ -91,7 +91,7 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
   return {
     id: 'inventory',
     label: 'Inventory',
-    glyph: '▦',
+    icon: 'inventory',
     element,
     update(next) {
       self = next;

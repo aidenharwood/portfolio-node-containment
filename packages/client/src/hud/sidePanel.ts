@@ -1,11 +1,12 @@
 import type { SelfState } from '@containment/shared';
 import { h } from '../ui/dom.ts';
 import { isCompactLayout } from '../ui/viewport.ts';
+import { panelIcon, type PanelIconId } from './panelIcons.ts';
 
 export interface PanelTab {
   readonly id: string;
   readonly label: string;
-  readonly glyph: string;
+  readonly icon: PanelIconId;
   readonly element: HTMLElement;
   update(self: SelfState): void;
   bindAttention?(signal: () => void): void;
@@ -33,7 +34,7 @@ export class SidePanel {
           onclick: () => this.toggle(tab.id),
         },
         h('span', { className: 'panel-tab-key', ariaHidden: 'true' }, String(index + 1)),
-        h('span', { className: 'panel-tab-glyph', ariaHidden: 'true' }, tab.glyph));
+        panelIcon(tab.icon));
         this.buttons.set(tab.id, button);
         return button;
       }),

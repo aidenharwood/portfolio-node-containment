@@ -14,15 +14,19 @@ const SKILL_ICON_PATHS: Readonly<Record<SkillId, readonly string[]>> = {
   biochemistry: ['M9 3h6', 'M10 3v6l-5 10a1.5 1.5 0 0 0 1.3 2h11.4a1.5 1.5 0 0 0 1.3-2l-5-10V3', 'M7.5 15h9'],
 };
 
-export function skillIcon(id: SkillId): SVGSVGElement {
+export function lineIcon(paths: readonly string[], className: string): SVGSVGElement {
   const svg = document.createElementNS(SVG_NAMESPACE, 'svg');
   svg.setAttribute('viewBox', '0 0 24 24');
-  svg.setAttribute('class', 'skill-icon');
+  svg.setAttribute('class', className);
   svg.setAttribute('aria-hidden', 'true');
-  for (const d of SKILL_ICON_PATHS[id]) {
+  for (const d of paths) {
     const path = document.createElementNS(SVG_NAMESPACE, 'path');
     path.setAttribute('d', d);
     svg.append(path);
   }
   return svg;
+}
+
+export function skillIcon(id: SkillId): SVGSVGElement {
+  return lineIcon(SKILL_ICON_PATHS[id], 'skill-icon');
 }
