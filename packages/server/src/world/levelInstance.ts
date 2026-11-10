@@ -45,6 +45,24 @@ export interface InterestChange {
 }
 
 const NO_CHUNKS: ReadonlySet<ChunkKey> = new Set();
+
+interface IndexedMove {
+  readonly move: EntityMove;
+  readonly order: number;
+  readonly fromKey: ChunkKey;
+  readonly toKey: ChunkKey;
+}
+
+function groupByChunk(moves: readonly IndexedMove[], keyOf: (move: IndexedMove) => ChunkKey): Map<ChunkKey, IndexedMove[]> {
+  const groups = new Map<ChunkKey, IndexedMove[]>();
+  for (const move of moves) {
+    const key = keyOf(move);
+    const group = groups.get(key);
+    if (group) group.push(move);
+    else groups.set(key, [move]);
+  }
+  return groups;
+}
 const NO_CHANGE: InterestChange = { entered: NO_CHUNKS, left: NO_CHUNKS };
 
 export interface PlacedObject {
@@ -167,18 +185,25 @@ export class LevelInstance {
   }
 
   publishMoves(moves: readonly EntityMove[], interestBefore: ReadonlyMap<EntityId, ReadonlySet<ChunkKey>>, changes: ReadonlyMap<EntityId, InterestChange>): void {
+    const indexed = moves.map((move, order): IndexedMove => ({ move, order, fromKey: chunkKeyOf(move.from), toKey: chunkKeyOf(move.movement.position) }));
+    const arrivingIn = groupByChunk(indexed, (move) => move.toKey);
+    const leavingFrom = groupByChunk(indexed, (move) => move.fromKey);
+    const ownMove = new Map(indexed.map((move) => [move.move.movement.entityId, move]));
     for (const observer of this.players.values()) {
       const before = interestBefore.get(observer.entityId) ?? NO_CHUNKS;
       const after = this.interestOf(observer);
       const change = changes.get(observer.entityId) ?? NO_CHANGE;
+      const nearby = new Map<number, IndexedMove>();
+      const own = ownMove.get(observer.entityId);
+      if (own) nearby.set(own.order, own);
+      for (const key of after) for (const move of arrivingIn.get(key) ?? []) nearby.set(move.order, move);
+      for (const key of before) for (const move of leavingFrom.get(key) ?? []) nearby.set(move.order, move);
       const visible: EntityMovement[] = [];
-      for (const move of moves) {
+      for (const { move, fromKey, toKey } of [...nearby.values()].sort((left, right) => left.order - right.order)) {
         if (move.movement.entityId === observer.entityId) {
           visible.push(move.movement);
           continue;
         }
-        const fromKey = chunkKeyOf(move.from);
-        const toKey = chunkKeyOf(move.movement.position);
         const clientKnows = (before.has(fromKey) && !change.left.has(fromKey)) || change.entered.has(toKey);
         if (after.has(toKey)) {
           if (clientKnows) visible.push(move.movement);
