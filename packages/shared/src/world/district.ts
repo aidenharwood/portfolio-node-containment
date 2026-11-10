@@ -2,6 +2,7 @@ import type { CreatureId } from '../combat/creatures.ts';
 import type { AreaId, InstanceId, NpcId, WorldObjectId, DistrictId, RegionId } from '../ids.ts';
 import { tileKey, type Facing, type TilePoint, type TileRect } from './geometry.ts';
 import type { AssemblyPlacement } from './assemblies.ts';
+import type { DistrictExit } from './blueprint.ts';
 import type { WorldObjectDefinition } from './entities.ts';
 import type { WalkabilityGrid } from './pathfinding.ts';
 import { MAP_LEGEND, TILE_KINDS, type TileKindId } from './tiles.ts';
@@ -54,6 +55,10 @@ export interface DistrictDefinition {
   readonly tier: number;
   readonly region: RegionId;
   readonly reachedOnlyByTram?: boolean;
+  readonly deadEnd?: boolean;
+  readonly rooms?: Readonly<Record<string, TileRect>>;
+  readonly exits?: Readonly<Record<string, DistrictExit>>;
+  readonly anchors?: Readonly<Record<string, TilePoint>>;
   readonly map: readonly string[];
   readonly recovery?: { readonly districtId: DistrictId; readonly position: TilePoint };
   readonly ambience: ZoneAmbience;

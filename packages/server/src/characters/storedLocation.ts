@@ -39,5 +39,8 @@ export function restoreLocation(stored: unknown, content: GameContent): WorldLoc
   }
   const local = isDistrictLocation(stored) ? stored : isLegacyZoneLocation(stored) ? { districtId: stored.zoneId, position: stored.position } : undefined;
   const located = local && locate(content, local.districtId, local.position);
-  return located && isWalkable(located, content) ? located : mainFloorSpawn(content);
+  if (located && isWalkable(located, content)) return located;
+  const recovery = local && content.districts.get(local.districtId)?.recovery;
+  const recovered = recovery && locate(content, recovery.districtId, recovery.position);
+  return recovered && isWalkable(recovered, content) ? recovered : mainFloorSpawn(content);
 }

@@ -6,6 +6,7 @@
 - **TypeScript only erasable syntax.** The server runs `.ts` directly on Node 24, so there are no `enum`s, no `namespace`s and no constructor parameter properties. Imports use explicit `.ts` extensions.
 - **Domain logic goes in `shared`, and stays pure.** No I/O, no `Date.now()`, no `Math.random()` unless injected. If the client and server both need a rule, it lives there.
 - **Content is data.** Before writing engine code for a feature, check whether a new `Condition` or `GameEffect` variant would express it.
+- **World changes follow `WORLD_DESIGN.md`.** It sets how districts are drawn, joined and populated, and `findWorldDesignIssues` enforces most of it.
 - **Every change keeps these green:** `npm run typecheck` and `npm test`.
 - `findContentIssues` (in `shared/src/content/contentIntegrity.ts`) validates every cross-reference in the content: item ids, quest steps, dialogue nodes, district placements, teleport destinations, and level layouts (`findLevelIssues`). The server refuses to boot if it reports anything, and the test suite runs it.
 

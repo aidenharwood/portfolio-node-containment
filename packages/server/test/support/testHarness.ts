@@ -120,6 +120,22 @@ export function at(districtId: DistrictId, local: TilePoint): WorldLocation {
   return location;
 }
 
+export function localInRoom(districtId: DistrictId, roomId: string, offset?: TilePoint): TilePoint {
+  const rect = GAME_CONTENT.districts.get(districtId)?.rooms?.[roomId];
+  if (!rect) throw new Error(`District "${districtId}" has no room "${roomId}".`);
+  return offset ? { x: rect.x + offset.x, y: rect.y + offset.y } : { x: rect.x + Math.floor(rect.width / 2), y: rect.y + Math.floor(rect.height / 2) };
+}
+
+export function inRoom(districtId: DistrictId, roomId: string, offset?: TilePoint): WorldLocation {
+  return at(districtId, localInRoom(districtId, roomId, offset));
+}
+
+export function anchor(districtId: DistrictId, anchorId: string): WorldLocation {
+  const point = GAME_CONTENT.districts.get(districtId)?.anchors?.[anchorId];
+  if (!point) throw new Error(`District "${districtId}" has no anchor "${anchorId}".`);
+  return at(districtId, point);
+}
+
 export function levelPoint(districtId: DistrictId, local: TilePoint): TilePoint {
   return at(districtId, local).position;
 }

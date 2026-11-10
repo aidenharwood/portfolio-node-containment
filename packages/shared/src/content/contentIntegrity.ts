@@ -19,6 +19,7 @@ import { findOverworldIssues } from './overworldIntegrity.ts';
 import { findRegionIssues } from './regionIntegrity.ts';
 import { findSafetyIssues } from './safetyIntegrity.ts';
 import { findTramIssues } from './tramIntegrity.ts';
+import { findWorldDesignIssues } from './worldDesignIntegrity.ts';
 
 export function findContentIssues(content: GameContent): string[] {
   const issues: string[] = [];
@@ -240,6 +241,7 @@ export function findContentIssues(content: GameContent): string[] {
   issues.push(...findTramIssues(content));
   issues.push(...findAssemblyIssues(content));
   issues.push(...findSafetyIssues(content));
+  issues.push(...findWorldDesignIssues(content));
   issues.push(...findContainmentIssues(content));
   issues.push(...findContractIssues(content));
   return issues;
