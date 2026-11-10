@@ -6,8 +6,6 @@ import { TILE_KINDS } from '../world/tiles.ts';
 import type { GameContent } from './gameContent.ts';
 import { overworldLevelOf } from './overworldIntegrity.ts';
 
-export const LEGACY_DISTRICTS: ReadonlySet<DistrictId> = new Set<DistrictId>([]);
-
 export const MIN_EXIT_WIDTH = 9;
 export const MIN_CREATURES_PER_THOUSAND_TILES = 3;
 export const MAX_CREATURES_PER_THOUSAND_TILES = 14;
@@ -191,10 +189,10 @@ function findTierIssues(content: GameContent, level: ResolvedLevel, rebuilt: Rea
   }
 }
 
-export function findWorldDesignIssues(content: GameContent, legacy: ReadonlySet<DistrictId> = LEGACY_DISTRICTS): string[] {
+export function findWorldDesignIssues(content: GameContent): string[] {
   const issues: string[] = [];
   for (const level of content.levels.values()) {
-    const rebuilt = new Set(level.definition.districts.map((placement) => placement.districtId).filter((districtId) => !legacy.has(districtId)));
+    const rebuilt = new Set(level.definition.districts.map((placement) => placement.districtId));
     for (const districtId of rebuilt) {
       const district = content.districts.get(districtId);
       if (!district) continue;
