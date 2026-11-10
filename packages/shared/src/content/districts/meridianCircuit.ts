@@ -1,4 +1,5 @@
-import { drawBlueprint, exit, hollow, link, patch, pillars, room } from '../../world/blueprint.ts';
+import type { AssemblyPlacement } from '../../world/assemblies.ts';
+import { drawBlueprint, exit, hollow, link, patch, pillars, room, track } from '../../world/blueprint.ts';
 import type { DistrictDefinition, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
@@ -38,6 +39,7 @@ const plan = drawBlueprint({ width: 204, height: 206 }, [
   link('east-barracks', 'mess-hall', 3),
   link('mess-hall', 'east-stores', 3),
   patch(26, 205, 152, 1, 'glass'),
+  track([70, 192], [70, 204]),
   pillars('north-boulevard', 8, 6, 3),
   pillars('south-boulevard', 8, 6, 3),
   pillars('west-boulevard', 6, 8, 3),
@@ -60,6 +62,14 @@ const landmarks: ObjectPlacement[] = [
   { instanceId: 'circuit-tallow-seal-b', objectId: 'warning-sign', position: plan.at('north-boulevard', 77, 0) },
   { instanceId: 'circuit-chasm-rail-sign', objectId: 'warning-sign', position: plan.at('south-boulevard', 76, 12) },
 ];
+
+const assemblies: AssemblyPlacement[] = [0, 4, 7, 11].map((dy, index) => ({
+  instanceId: `circuit-line-bridge-${index + 1}`,
+  assemblyId: 'bridge',
+  position: plan.spot('south-boulevard', 43, dy),
+  facing: 'east',
+  span: 2,
+}));
 
 const furnishings = scatterGroups(plan, landmarks, [
   ['north-boulevard', 'circuit-north-prop', CIVIC_PROPS, 12],
@@ -115,6 +125,7 @@ export const MERIDIAN_CIRCUIT: DistrictDefinition = {
   ],
   npcs: [],
   objects: [...landmarks, ...furnishings],
+  assemblies,
   lights: [
     { position: plan.center('signal-court'), radius: 10, color: '#9fd8ff', intensity: 0.6 },
     { position: plan.center('pump-court'), radius: 10, color: '#ffb347', intensity: 0.6 },

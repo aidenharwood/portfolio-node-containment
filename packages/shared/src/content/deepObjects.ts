@@ -1,9 +1,11 @@
 import type { GatheringSource } from '../crafting/gathering.ts';
 import { ATRIUM_ANCHORS } from './districts/meridianAtrium.ts';
+import { SECTOR_THREE_ANCHORS } from './districts/sectorThree.ts';
 import type { DistrictId } from '../ids.ts';
 import type { Condition } from '../rules/conditions.ts';
 import type { TilePoint } from '../world/geometry.ts';
 import type { ObjectLight, WorldObjectDefinition, WorldObjectModel } from '../world/entities.ts';
+import { DEEPWATCH_ANCHORS } from './districts/deepwatch.ts';
 
 const passage = (
   id: string,
@@ -92,13 +94,13 @@ export const DEEP_PASSAGES: readonly WorldObjectDefinition[] = [
     'A freight lift set deep into the wall, with no floor indicator, only a down arrow. Somebody has written DEEPWATCH on the doors in grease pencil.',
     'wallLift',
     'Ride',
-    { districtId: 'deepwatch', position: { x: 3, y: 10 } },
+    { districtId: 'deepwatch', position: DEEPWATCH_ANCHORS.liftArrival },
     TRAM_LIGHT,
     { conditions: [{ type: 'hasFlag', flag: 'clearance.deepwatch' }], failureText: 'The lift doors stay shut. A placard reads: COUNCIL AUTHORISATION ONLY.' },
   ),
   passage('deepwatch-deep-line', 'Deep Line Lift', 'The express lift back up to the Meridian Atrium. It smells of coffee, which is the most normal thing at Deepwatch.', 'wallLift', 'Ride', { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.deepLineArrival }, TRAM_LIGHT),
-  passage('deepwatch-threshold-door', 'Threshold Passage', 'A short pressure corridor bored through to the Sector 3 threshold. The far end is always colder.', 'bulkhead', 'Enter', { districtId: 'sector-three', position: { x: 16, y: 6 } }, SEAL_LIGHT),
-  passage('sector-three-deepwatch-door', 'Deepwatch Passage', 'A freshly bored pressure corridor, still smelling of cut stone. Deepwatch Station is on the other side.', 'bulkhead', 'Enter', { districtId: 'deepwatch', position: { x: 17, y: 3 } }, LIFT_LIGHT),
+  passage('deepwatch-threshold-door', 'Threshold Passage', 'A short pressure corridor bored through to the Sector 3 threshold. The far end is always colder.', 'bulkhead', 'Enter', { districtId: 'sector-three', position: SECTOR_THREE_ANCHORS.deepwatchArrival }, SEAL_LIGHT),
+  passage('sector-three-deepwatch-door', 'Deepwatch Passage', 'A freshly bored pressure corridor, still smelling of cut stone. Deepwatch Station is on the other side.', 'bulkhead', 'Enter', { districtId: 'deepwatch', position: DEEPWATCH_ANCHORS.thresholdLanding }, LIFT_LIGHT),
   door(
     'cryovault-door',
     'Cryovault Pressure Door',
@@ -135,7 +137,7 @@ export const DEEP_PASSAGES: readonly WorldObjectDefinition[] = [
     { radius: 3, color: '#ff7a2a', intensity: 0.7, flicker: true },
     { conditions: [{ type: 'hasFlag', flag: 'clearance.furnace' }], failureText: 'The lift panel reads: REACTOR ACCESS REQUIRES DIRECTOR AUTHORISATION.' },
   ),
-  passage('far-side-return', 'The Way Back', 'The back of the Knock. From this side it is a perfectly ordinary door, which is the most frightening thing about it.', 'knockDoor', 'Go back', { districtId: 'sector-three', position: { x: 10, y: 9 } }, SEAL_LIGHT),
+  passage('far-side-return', 'The Way Back', 'The back of the Knock. From this side it is a perfectly ordinary door, which is the most frightening thing about it.', 'knockDoor', 'Go back', { districtId: 'sector-three', position: SECTOR_THREE_ANCHORS.knockReturn }, SEAL_LIGHT),
   door(
     'sealed-reading-door',
     'Sealed Reading Room',

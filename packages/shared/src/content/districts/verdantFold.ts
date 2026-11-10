@@ -1,4 +1,40 @@
-import type { DistrictDefinition } from '../../world/district.ts';
+import { drawBlueprint, link, patch, room } from '../../world/blueprint.ts';
+import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
+import type { TilePoint } from '../../world/geometry.ts';
+import { scatterGroups } from './populate.ts';
+
+const plan = drawBlueprint({ width: 46, height: 30 }, [
+  room('grove', 10, 1, 26, 28, 'soil', 'round'),
+  room('west-crease', 1, 9, 8, 12, 'soil', 'round'),
+  room('east-crease', 37, 9, 8, 12, 'soil', 'round'),
+  patch(14, 7, 5, 3, 'coolant'),
+  patch(28, 20, 5, 3, 'coolant'),
+  patch(20, 11, 7, 6, 'concrete'),
+  link('west-crease', 'grove', 3, 'soil'),
+  link('grove', 'east-crease', 3, 'soil'),
+]);
+
+export const VERDANT_FOLD_ANCHORS = {
+  arrival: plan.at('grove', 13, 24),
+} satisfies Record<string, TilePoint>;
+
+const npcs: NpcPlacement[] = [];
+
+const fixtures: ObjectPlacement[] = [
+  { instanceId: 'fold-exit', objectId: 'verdant-fold-exit', position: plan.at('grove', 13, 27), facing: 'north' },
+  { instanceId: 'fold-heartwood', objectId: 'fold-heartwood', position: plan.at('grove', 13, 13) },
+    { instanceId: 'fold-planter-a', objectId: 'planter', position: plan.at('grove', 3, 17) },
+    { instanceId: 'fold-planter-b', objectId: 'planter', position: plan.at('grove', 23, 21) },
+  ];
+
+const placed = [...npcs, ...fixtures];
+
+const furnishings = scatterGroups(plan, placed, [
+  ['grove', 'vf-grove-planter', ['planter'], 6],
+  ['grove', 'vf-grove-litter', ['litter-gravel', 'litter-puddle'], 4],
+  ['west-crease', 'vf-west-prop', ['planter', 'litter-puddle'], 2],
+  ['east-crease', 'vf-east-prop', ['planter', 'litter-puddle'], 2],
+]);
 
 export const VERDANT_FOLD: DistrictDefinition = {
   id: 'verdant-fold',
@@ -7,34 +43,22 @@ export const VERDANT_FOLD: DistrictDefinition = {
   tier: 2,
   region: 'meridian-core',
   ambience: { darkness: 0.55, tint: '#140a1e', fog: '#0c1a12' },
-  map: [
-    '     ##########     ',
-    '   ###::::::::###   ',
-    '  ##::::::::::::##  ',
-    ' ##:::~~~::::::::## ',
-    ' #:::~~~~~:::,,:::# ',
-    '##::::~~~:::,,,,::##',
-    '#:::::::::::,,,,:::#',
-    '#::::::::::::,,::::#',
-    '#::::::::::::::::::#',
-    '##::::::::::::::::##',
-    ' #::::::::::~~~:::# ',
-    ' ##:::::::::~~~::## ',
-    '  ##::::::::::::##  ',
-    '   ###::::::::###   ',
-    '     ##########     ',
+  map: plan.map,
+  rooms: plan.rooms,
+  exits: plan.exits,
+  anchors: VERDANT_FOLD_ANCHORS,
+  areas: [
+    plan.area('grove', 'The Folded Grove'),
+    plan.area('west-crease', 'The Left Crease'),
+    plan.area('east-crease', 'The Right Crease'),
   ],
-  areas: [{ id: 'grove', name: 'The Folded Grove', rect: { x: 1, y: 1, width: 18, height: 13 } }],
-  npcs: [],
-  objects: [
-    { instanceId: 'fold-exit', objectId: 'verdant-fold-exit', position: { x: 9, y: 13 }, facing: 'north' },
-    { instanceId: 'fold-heartwood', objectId: 'fold-heartwood', position: { x: 13, y: 6 } },
-    { instanceId: 'fold-planter-a', objectId: 'planter', position: { x: 4, y: 8 } },
-    { instanceId: 'fold-planter-b', objectId: 'planter', position: { x: 15, y: 9 } },
-  ],
+  npcs,
+  objects: [...fixtures, ...furnishings],
   lights: [
-    { position: { x: 13, y: 6 }, radius: 6, color: '#7cf29a', intensity: 0.8 },
-    { position: { x: 6, y: 4 }, radius: 5, color: '#b57cff', intensity: 0.6 },
-    { position: { x: 12, y: 11 }, radius: 5, color: '#9fd8ff', intensity: 0.5 },
+    { position: plan.center('west-crease'), radius: 5, color: '#b57cff', intensity: 0.5 },
+    { position: plan.center('east-crease'), radius: 5, color: '#b57cff', intensity: 0.5 },
+    { position: plan.spot('grove', 19, 10), radius: 11, color: '#7cf29a', intensity: 0.8 },
+    { position: plan.spot('grove', 6, 3), radius: 9, color: '#b57cff', intensity: 0.6 },
+    { position: plan.spot('grove', 17, 25), radius: 9, color: '#9fd8ff', intensity: 0.5 },
   ],
 };

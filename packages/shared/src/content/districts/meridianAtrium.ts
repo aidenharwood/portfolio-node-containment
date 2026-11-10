@@ -20,6 +20,7 @@ const plan = drawBlueprint({ width: 126, height: 104 }, [
   patch(55, 16, 16, 1, 'hazard'),
   patch(1, 100, 30, 1, 'hazard'),
   patch(1, 101, 30, 2, 'track'),
+  patch(31, 103, 2, 1, 'track'),
   link('requisitions', 'quarantine-gate', 3),
   link('archives', 'quarantine-gate', 3),
   link('quarantine-gate', 'plaza', 22, 'concrete'),

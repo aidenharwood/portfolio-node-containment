@@ -1,5 +1,6 @@
 import type { ObjectLight, WorldObjectDefinition } from '../world/entities.ts';
 import { HYDROPONICS_ANCHORS } from './districts/hydroponics.ts';
+import { VERDANT_FOLD_ANCHORS } from './districts/verdantFold.ts';
 
 const ANOMALY_LIGHT: ObjectLight = { radius: 3.5, color: '#b57cff', intensity: 0.85, flicker: true };
 
@@ -16,7 +17,7 @@ export const POCKET_OBJECTS: readonly WorldObjectDefinition[] = [
         verb: 'Step through',
         conditions: [{ type: 'questCompleted', questId: 'overgrowth' }],
         failureText: 'The crease flinches away from your hand. Whatever grows on the other side is still fighting the Heart Bed.',
-        effects: [{ type: 'teleport', districtId: 'verdant-fold', position: { x: 9, y: 11 } }],
+        effects: [{ type: 'teleport', districtId: 'verdant-fold', position: VERDANT_FOLD_ANCHORS.arrival }],
       },
     ],
   },

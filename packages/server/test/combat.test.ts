@@ -396,7 +396,7 @@ describe('the far side', () => {
   });
 
   test('Mags trades, and Leech Season pays out a respirator for five sacs', () => {
-    const harness = createHarness({ prepare: prepared(at('undercroft', { x: 7, y: 12 }), {}) });
+    const harness = createHarness({ prepare: prepared(at('undercroft', localInRoom('undercroft', 'camp', { x: 18, y: 3 })), {}) });
     const { player } = harness;
     harness.talkTo('undercroft-mags');
     finishDialogue(harness, (text) => text.startsWith('Need any work') || text.startsWith("I'll get"));

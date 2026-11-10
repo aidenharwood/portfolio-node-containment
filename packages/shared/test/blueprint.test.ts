@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { drawBlueprint, exit, joinDistricts, link, patch, pillars, room, type DistrictDefinition } from '../src/index.ts';
+import { drawBlueprint, exit, joinDistricts, link, patch, pillars, room, track, trackBed, type DistrictDefinition } from '../src/index.ts';
 
 const plan = drawBlueprint({ width: 24, height: 12 }, [
   room('hall', 1, 1, 10, 10, 'plating'),
@@ -28,6 +28,14 @@ const districtFrom = (id: string, blueprint: typeof plan): DistrictDefinition =>
 });
 
 describe('drawBlueprint', () => {
+  test('track lays a two-wide bed along a bent route and walls it through the rock', () => {
+    const cut = drawBlueprint({ width: 10, height: 8 }, [track([0, 1], [5, 1], [5, 5])]);
+    assert.deepEqual(cut.map, ['########  ', 'TTTTTTT#  ', 'TTTTTTT#  ', '#####TT#  ', '    #TT#  ', '    #TT#  ', '    #TT#  ', '    ####  ']);
+    assert.deepEqual(trackBed([{ x: 2, y: 3 }, { x: 2, y: 0 }]), [{ x: 2, y: 0, width: 2, height: 5 }]);
+    assert.throws(() => trackBed([{ x: 0, y: 0 }, { x: 3, y: 2 }]), /not straight/);
+  });
+
+
   test('walls every floor tile in and leaves the rest void', () => {
     assert.equal(plan.map.length, 12);
     assert.equal(plan.map[0], `${'#'.repeat(12)}${' '.repeat(12)}`);

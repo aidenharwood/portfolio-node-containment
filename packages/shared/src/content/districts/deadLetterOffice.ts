@@ -1,4 +1,93 @@
-import type { DistrictDefinition } from '../../world/district.ts';
+import { drawBlueprint, link, patch, pillars, room } from '../../world/blueprint.ts';
+import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
+import type { TilePoint } from '../../world/geometry.ts';
+import { scatterGroups, scatterPacks } from './populate.ts';
+
+const plan = drawBlueprint({ width: 72, height: 52 }, [
+  room('dead-letter-stacks', 1, 1, 23, 16, 'rust'),
+  room('franking-hall', 26, 1, 20, 16, 'carpet'),
+  room('returned-stacks', 48, 1, 23, 16, 'rust'),
+  room('sorting-floor', 1, 18, 70, 18, 'concrete'),
+  room('dispatch', 14, 37, 44, 14, 'grate', 'octagon'),
+  patch(20, 46, 32, 1, 'hazard'),
+  patch(30, 26, 12, 2, 'carpet'),
+  link('dead-letter-stacks', 'franking-hall', 3),
+  link('franking-hall', 'returned-stacks', 3),
+  link('franking-hall', 'sorting-floor', 4),
+  link('dead-letter-stacks', 'sorting-floor', 5, 'rust'),
+  link('returned-stacks', 'sorting-floor', 5, 'rust'),
+  link('sorting-floor', 'dispatch', 4),
+  pillars('sorting-floor', 8, 6, 4),
+]);
+
+export const DEAD_LETTER_OFFICE_ANCHORS = {
+  spawn: plan.at('franking-hall', 4, 6),
+  chuteArrival: plan.at('franking-hall', 3, 2),
+} satisfies Record<string, TilePoint>;
+
+const npcs: NpcPlacement[] = [
+    { instanceId: 'dlo-oduya', npcId: 'courier-oduya', position: plan.at('franking-hall', 12, 2) },
+  ];
+
+const fixtures: ObjectPlacement[] = [
+  
+    { instanceId: 'dlo-return', objectId: 'office-return-chute', position: plan.at('franking-hall', 0, 1), facing: 'east' },
+    { instanceId: 'dlo-hall-desk', objectId: 'franking-counter', position: plan.at('franking-hall', 12, 0) },
+    { instanceId: 'dlo-hall-cabinet-a', objectId: 'filing-cabinet', position: plan.at('franking-hall', 19, 0) },
+    { instanceId: 'dlo-hall-cabinet-b', objectId: 'filing-cabinet', position: plan.at('franking-hall', 0, 15) },
+    { instanceId: 'dlo-hall-board', objectId: 'notice-board', position: plan.at('franking-hall', 2, 0) },
+    { instanceId: 'dlo-hall-storage', objectId: 'storage-locker', position: plan.at('franking-hall', 19, 15) },
+    { instanceId: 'dlo-hall-bed', objectId: 'med-bed', position: plan.at('franking-hall', 17, 15) },
+    { instanceId: 'dlo-sorting-pigeonhole-a', objectId: 'pigeonhole-thale', position: plan.at('sorting-floor', 7, 0) },
+    { instanceId: 'dlo-sorting-pigeonhole-b', objectId: 'pigeonhole-achterberg', position: plan.at('sorting-floor', 62, 0) },
+    { instanceId: 'dlo-sorting-rack-a', objectId: 'letter-rack', position: plan.at('sorting-floor', 23, 0) },
+    { instanceId: 'dlo-sorting-rack-b', objectId: 'letter-rack', position: plan.at('sorting-floor', 46, 0) },
+    { instanceId: 'dlo-sorting-rack-c', objectId: 'letter-rack', position: plan.at('sorting-floor', 3, 10) },
+    { instanceId: 'dlo-sorting-rack-d', objectId: 'letter-rack', position: plan.at('sorting-floor', 66, 10) },
+    { instanceId: 'dlo-sorting-sign', objectId: 'warning-sign', position: plan.at('sorting-floor', 69, 17) },
+    { instanceId: 'dlo-stacks-pigeonhole-a', objectId: 'pigeonhole-halvorsen', position: plan.at('dead-letter-stacks', 0, 3), facing: 'east' },
+    { instanceId: 'dlo-stacks-pigeonhole-b', objectId: 'pigeonhole-sel', position: plan.at('dead-letter-stacks', 22, 14) },
+    { instanceId: 'dlo-stacks-shelf-a', objectId: 'letter-rack', position: plan.at('dead-letter-stacks', 3, 8) },
+    { instanceId: 'dlo-stacks-shelf-b', objectId: 'letter-rack', position: plan.at('dead-letter-stacks', 19, 8) },
+    { instanceId: 'dlo-stacks-cabinet', objectId: 'filing-cabinet', position: plan.at('dead-letter-stacks', 0, 15) },
+    { instanceId: 'dlo-engine', objectId: 'franking-engine', position: plan.at('dispatch', 22, 13) },
+    { instanceId: 'dlo-dispatch-pillar-west', objectId: 'light-pillar', position: plan.at('dispatch', 1, 11) },
+    { instanceId: 'dlo-dispatch-pillar-east', objectId: 'light-pillar', position: plan.at('dispatch', 42, 11) },
+    { instanceId: 'dlo-dispatch-rack-a', objectId: 'letter-rack', position: plan.at('dispatch', 3, 0) },
+    { instanceId: 'dlo-dispatch-rack-b', objectId: 'letter-rack', position: plan.at('dispatch', 40, 0) },
+  ];
+
+const residents: CreaturePlacement[] = [
+    { instanceId: 'dlo-clerk-a', creatureId: 'franking-clerk', position: plan.at('sorting-floor', 2, 2) },
+    { instanceId: 'dlo-clerk-b', creatureId: 'franking-clerk', position: plan.at('sorting-floor', 31, 3) },
+    { instanceId: 'dlo-clerk-c', creatureId: 'franking-clerk', position: plan.at('sorting-floor', 62, 3) },
+    { instanceId: 'dlo-clerk-d', creatureId: 'franking-clerk', position: plan.at('sorting-floor', 11, 15) },
+    { instanceId: 'dlo-clerk-e', creatureId: 'franking-clerk', position: plan.at('sorting-floor', 38, 14) },
+    { instanceId: 'dlo-clerk-f', creatureId: 'franking-clerk', position: plan.at('sorting-floor', 66, 16) },
+    { instanceId: 'dlo-echo-a', creatureId: 'courier-echo', position: plan.at('dead-letter-stacks', 2, 2) },
+    { instanceId: 'dlo-echo-b', creatureId: 'courier-echo', position: plan.at('dead-letter-stacks', 20, 3) },
+    { instanceId: 'dlo-echo-c', creatureId: 'courier-echo', position: plan.at('dead-letter-stacks', 2, 12) },
+    { instanceId: 'dlo-echo-d', creatureId: 'courier-echo', position: plan.at('dead-letter-stacks', 20, 13) },
+    { instanceId: 'dlo-postmaster', creatureId: 'the-postmaster', position: plan.at('dispatch', 22, 7) },
+    { instanceId: 'dlo-postmaster-add-clerk', creatureId: 'franking-clerk', position: plan.at('dispatch', 5, 11) },
+    { instanceId: 'dlo-postmaster-add-echo', creatureId: 'courier-echo', position: plan.at('dispatch', 38, 11) },
+  ];
+
+const placed = [...npcs, ...fixtures, ...residents];
+
+const furnishings = scatterGroups(plan, placed, [
+  ['sorting-floor', 'dlo-sorting-prop', ['letter-rack', 'filing-cabinet', 'office-desk'], 10],
+  ['sorting-floor', 'dlo-sorting-litter', ['litter-papers'], 8],
+  ['returned-stacks', 'dlo-returned-prop', ['letter-rack', 'filing-cabinet', 'storage-rack'], 8],
+  ['dead-letter-stacks', 'dlo-stacks-prop', ['letter-rack', 'storage-rack'], 6],
+  ['franking-hall', 'dlo-hall-prop', ['planter', 'briefing-bench'], 3],
+  ['dispatch', 'dlo-dispatch-litter', ['litter-papers'], 6],
+]);
+
+const packs = scatterPacks(plan, [...placed, ...furnishings], [
+  ['sorting-floor', 'dlo-clerk-sorting-pack', 'franking-clerk', 4],
+  ['returned-stacks', 'dlo-echo-returned-pack', 'courier-echo', 4],
+]);
 
 export const DEAD_LETTER_OFFICE: DistrictDefinition = {
   id: 'dead-letter-office',
@@ -6,90 +95,28 @@ export const DEAD_LETTER_OFFICE: DistrictDefinition = {
   subtitle: 'Where the Post Went Instead',
   tier: 9,
   region: 'meridian-core',
-  recovery: { districtId: 'dead-letter-office', position: { x: 4, y: 5 } },
+  recovery: { districtId: 'dead-letter-office', position: DEAD_LETTER_OFFICE_ANCHORS.spawn },
   ambience: { darkness: 0.64, tint: '#1a1408', fog: '#18120a', fixtures: 'failing' },
-  map: [
-    '####################################',
-    '#__________#,,,,,,,,,,,,,,,,,,,,,,,#',
-    '#__________#,,,,,,,,,,,,,,,,,,,,,,,#',
-    '#__________#,,,,,,,,,,,,,,,,,,,,,,,#',
-    '#__________D,,,,,,,,,,,,,,,,,,,,,,,#',
-    '#__________D,,,,,,,,,,,,,,,,,,,,,,,#',
-    '#__________#,,,,,,,,,,,,,,,,,,,,,,,#',
-    '#__________#,,,,,,,,,,,,,,,,,,,,,,,#',
-    '#__________#,,,,,,,,,,,,,,,,,,,,,,,#',
-    '#####DD#####,,,,,,,,,,,,,,,,,,,,,,,#',
-    '#%%%%%%%%%%#,,,,,,,,,,,,,,,,,,,,,,,#',
-    '#%%%%%%%%%%#,,,,,,,,,,,,,,,,,,,,,,,#',
-    '#%%%%%%%%%%#,,,,,,,,,,,,,,,,,,,,,,,#',
-    '#%%%%%%%%%%##########DD#############',
-    '#%%%%%%%%%%#=======================#',
-    '#%%%%%%%%%%#=======================#',
-    '#%%%%%%%%%%#=======================#',
-    '#%%%%%%%%%%D=======================#',
-    '#%%%%%%%%%%D=======================#',
-    '#%%%%%%%%%%#=======================#',
-    '#%%%%%%%%%%#=====!!!!!!!!!!!!!=====#',
-    '#%%%%%%%%%%#=======================#',
-    '#%%%%%%%%%%#=======================#',
-    '####################################',
-  ],
+  map: plan.map,
+  rooms: plan.rooms,
+  exits: plan.exits,
+  anchors: DEAD_LETTER_OFFICE_ANCHORS,
   areas: [
-    { id: 'franking-hall', name: 'The Franking Hall', rect: { x: 1, y: 1, width: 10, height: 8 }, safe: true },
-    { id: 'sorting-floor', name: 'The Sorting Floor', rect: { x: 12, y: 1, width: 23, height: 12 } },
-    { id: 'dead-letter-stacks', name: 'The Dead Letter Stacks', rect: { x: 1, y: 10, width: 10, height: 13 } },
-    { id: 'dispatch', name: 'Dispatch', rect: { x: 12, y: 14, width: 23, height: 9 }, multiCombat: true },
+    plan.area('franking-hall', 'The Franking Hall', { safe: true }),
+    plan.area('sorting-floor', 'The Sorting Floor'),
+    plan.area('dead-letter-stacks', 'The Dead Letter Stacks'),
+    plan.area('dispatch', 'Dispatch', { multiCombat: true }),
+    plan.area('returned-stacks', 'The Returned Stacks'),
   ],
-  npcs: [{ instanceId: 'dlo-oduya', npcId: 'courier-oduya', position: { x: 6, y: 3 } }],
-  objects: [
-    { instanceId: 'dlo-return', objectId: 'office-return-chute', position: { x: 1, y: 2 }, facing: 'east' },
-    { instanceId: 'dlo-hall-desk', objectId: 'franking-counter', position: { x: 6, y: 1 } },
-    { instanceId: 'dlo-hall-cabinet-a', objectId: 'filing-cabinet', position: { x: 10, y: 1 } },
-    { instanceId: 'dlo-hall-cabinet-b', objectId: 'filing-cabinet', position: { x: 1, y: 8 } },
-    { instanceId: 'dlo-hall-board', objectId: 'notice-board', position: { x: 3, y: 1 } },
-    { instanceId: 'dlo-hall-storage', objectId: 'storage-locker', position: { x: 10, y: 8 } },
-    { instanceId: 'dlo-hall-bed', objectId: 'med-bed', position: { x: 8, y: 8 } },
-
-    { instanceId: 'dlo-sorting-pigeonhole-a', objectId: 'pigeonhole-thale', position: { x: 16, y: 1 } },
-    { instanceId: 'dlo-sorting-pigeonhole-b', objectId: 'pigeonhole-achterberg', position: { x: 30, y: 1 } },
-    { instanceId: 'dlo-sorting-rack-a', objectId: 'letter-rack', position: { x: 20, y: 1 } },
-    { instanceId: 'dlo-sorting-rack-b', objectId: 'letter-rack', position: { x: 26, y: 1 } },
-    { instanceId: 'dlo-sorting-rack-c', objectId: 'letter-rack', position: { x: 15, y: 7 } },
-    { instanceId: 'dlo-sorting-rack-d', objectId: 'letter-rack', position: { x: 31, y: 7 } },
-    { instanceId: 'dlo-sorting-sign', objectId: 'warning-sign', position: { x: 34, y: 12 } },
-
-    { instanceId: 'dlo-stacks-pigeonhole-a', objectId: 'pigeonhole-halvorsen', position: { x: 1, y: 13 }, facing: 'east' },
-    { instanceId: 'dlo-stacks-pigeonhole-b', objectId: 'pigeonhole-sel', position: { x: 10, y: 21 } },
-    { instanceId: 'dlo-stacks-shelf-a', objectId: 'letter-rack', position: { x: 4, y: 16 } },
-    { instanceId: 'dlo-stacks-shelf-b', objectId: 'letter-rack', position: { x: 7, y: 16 } },
-    { instanceId: 'dlo-stacks-cabinet', objectId: 'filing-cabinet', position: { x: 1, y: 22 } },
-
-    { instanceId: 'dlo-engine', objectId: 'franking-engine', position: { x: 23, y: 22 } },
-    { instanceId: 'dlo-dispatch-pillar-west', objectId: 'light-pillar', position: { x: 12, y: 22 } },
-    { instanceId: 'dlo-dispatch-pillar-east', objectId: 'light-pillar', position: { x: 34, y: 22 } },
-    { instanceId: 'dlo-dispatch-rack-a', objectId: 'letter-rack', position: { x: 15, y: 14 } },
-    { instanceId: 'dlo-dispatch-rack-b', objectId: 'letter-rack', position: { x: 31, y: 14 } },
-  ],
-  creatures: [
-    { instanceId: 'dlo-clerk-a', creatureId: 'franking-clerk', position: { x: 14, y: 3 } },
-    { instanceId: 'dlo-clerk-b', creatureId: 'franking-clerk', position: { x: 22, y: 4 } },
-    { instanceId: 'dlo-clerk-c', creatureId: 'franking-clerk', position: { x: 30, y: 4 } },
-    { instanceId: 'dlo-clerk-d', creatureId: 'franking-clerk', position: { x: 17, y: 10 } },
-    { instanceId: 'dlo-clerk-e', creatureId: 'franking-clerk', position: { x: 24, y: 9 } },
-    { instanceId: 'dlo-clerk-f', creatureId: 'franking-clerk', position: { x: 31, y: 11 } },
-    { instanceId: 'dlo-echo-a', creatureId: 'courier-echo', position: { x: 3, y: 12 } },
-    { instanceId: 'dlo-echo-b', creatureId: 'courier-echo', position: { x: 8, y: 13 } },
-    { instanceId: 'dlo-echo-c', creatureId: 'courier-echo', position: { x: 3, y: 19 } },
-    { instanceId: 'dlo-echo-d', creatureId: 'courier-echo', position: { x: 8, y: 20 } },
-    { instanceId: 'dlo-postmaster', creatureId: 'the-postmaster', position: { x: 23, y: 18 } },
-    { instanceId: 'dlo-postmaster-add-clerk', creatureId: 'franking-clerk', position: { x: 16, y: 20 } },
-    { instanceId: 'dlo-postmaster-add-echo', creatureId: 'courier-echo', position: { x: 30, y: 20 } },
-  ],
+  npcs,
+  objects: [...fixtures, ...furnishings],
+  creatures: [...residents, ...packs],
   lights: [
-    { position: { x: 5, y: 4 }, radius: 6, color: '#ffcf8a', intensity: 0.55 },
-    { position: { x: 18, y: 5 }, radius: 7, color: '#e8d8a8', intensity: 0.4 },
-    { position: { x: 29, y: 8 }, radius: 7, color: '#b57cff', intensity: 0.4 },
-    { position: { x: 5, y: 16 }, radius: 7, color: '#c9a227', intensity: 0.35 },
-    { position: { x: 23, y: 19 }, radius: 9, color: '#ff8a4a', intensity: 0.6 },
+    { position: plan.center('returned-stacks'), radius: 8, color: '#b57cff', intensity: 0.5 },
+    { position: plan.spot('franking-hall', 7, 3), radius: 11, color: '#ffcf8a', intensity: 0.55 },
+    { position: plan.spot('sorting-floor', 15, 5), radius: 13, color: '#e8d8a8', intensity: 0.4 },
+    { position: plan.spot('sorting-floor', 58, 12), radius: 13, color: '#b57cff', intensity: 0.4 },
+    { position: plan.spot('dead-letter-stacks', 8, 8), radius: 12, color: '#c9a227', intensity: 0.35 },
+    { position: plan.spot('dispatch', 22, 10), radius: 14, color: '#ff8a4a', intensity: 0.6 },
   ],
 };

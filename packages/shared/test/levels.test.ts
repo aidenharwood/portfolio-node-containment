@@ -125,8 +125,8 @@ describe('levels', () => {
     const deep = GAME_CONTENT.levels.get('the-deep');
     assert.ok(deep);
     const reachable = reachableFrom(GAME_CONTENT, 'the-deep', deep.spawn);
-    for (const [districtId, local] of [['deep-concourse', { x: 7, y: 4 }], ['furnace-causeway', { x: 45, y: 3 }]] as const) {
-      const point = locate(GAME_CONTENT, districtId, local);
+    for (const [districtId, anchorId] of [['deep-concourse', 'cryovaultDoor'], ['furnace-causeway', 'furnaceGate']] as const) {
+      const point = locate(GAME_CONTENT, districtId, GAME_CONTENT.districts.get(districtId)?.anchors?.[anchorId] ?? { x: 0, y: 0 });
       assert.ok(point && reachable.has(tileKey(point.position)), districtId);
     }
   });

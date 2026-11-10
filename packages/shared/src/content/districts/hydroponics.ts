@@ -1,4 +1,4 @@
-import { drawBlueprint, exit, link, patch, room } from '../../world/blueprint.ts';
+import { drawBlueprint, exit, link, patch, room, track } from '../../world/blueprint.ts';
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
@@ -13,6 +13,7 @@ const plan = drawBlueprint({ width: 105, height: 68 }, [
   room('grow-hall', 60, 1, 44, 65, 'soil'),
   patch(1, 14, 2, 26, 'track'),
   patch(3, 14, 1, 26, 'hazard'),
+  track([0, 1], [1, 1], [1, 11]),
   patch(31, 7, 20, 2, 'coolant'),
   patch(31, 15, 20, 2, 'coolant'),
   patch(31, 23, 20, 2, 'coolant'),

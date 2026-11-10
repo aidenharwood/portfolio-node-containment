@@ -21,9 +21,9 @@ const VETERAN = createStartingSkills({ closeQuarters: experienceForLevel(99), fo
 const KIT: EquipmentState = { torso: 'threshold-plate', legs: 'threshold-trousers', feet: 'threshold-boots', primary: 'the-knocker' };
 
 const NEAR_SEL: WorldLocation = at('meridian-atrium', localInRoom('meridian-atrium', 'archives', { x: 8, y: 16 }));
-const NEAR_ACHTERBERG: WorldLocation = at('signal-array', { x: 6, y: 5 });
-const NEAR_CHUTE: WorldLocation = at('signal-array', { x: 41, y: 3 });
-const NEAR_HALVORSEN: WorldLocation = at('sector-three', { x: 10, y: 8 });
+const NEAR_ACHTERBERG: WorldLocation = at('signal-array', localInRoom('signal-array', 'uplink-lobby', { x: 18, y: 14 }));
+const NEAR_CHUTE: WorldLocation = at('signal-array', localInRoom('signal-array', 'operator-pit', { x: 22, y: 2 }));
+const NEAR_HALVORSEN: WorldLocation = at('sector-three', localInRoom('sector-three', 'threshold', { x: 16, y: 15 }));
 
 const PRIOR_QUESTS = ['orientation-protocol', 'field-fabrication', 'live-fire', 'the-knocking', 'the-far-side', 'a-council-of-one', 'cold-storage', 'dead-air', 'original-contract', 'stoking-the-fire', 'the-answer'];
 
@@ -101,7 +101,7 @@ describe('act three: return to sender', () => {
 
   test('The Dead Letter Office: clerks, pigeonholes, the Postmaster and the founder\'s letter', () => {
     const harness = createHarness({
-      prepare: veteranAt(at('dead-letter-office', { x: 4, y: 5 }), { 'the-ninth-letter': completed('the-ninth-letter'), 'dead-letter-office': active('dead-letter-office') }),
+      prepare: veteranAt(at('dead-letter-office', localInRoom('dead-letter-office', 'franking-hall', { x: 3, y: 12 })), { 'the-ninth-letter': completed('the-ninth-letter'), 'dead-letter-office': active('dead-letter-office') }),
     });
     const { player } = harness;
 

@@ -1,4 +1,4 @@
-import { drawBlueprint, exit, patch, pillars, room } from '../../world/blueprint.ts';
+import { drawBlueprint, exit, patch, pillars, room, track } from '../../world/blueprint.ts';
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
@@ -9,6 +9,7 @@ const plan = drawBlueprint({ width: 60, height: 46 }, [
   patch(1, 42, 58, 1, 'hazard'),
   patch(1, 43, 58, 2, 'track'),
   pillars('gatehouse', 9, 9, 6),
+  track([3, 0], [3, 41]),
   exit('west', 'gatehouse', 'west', 2, { gate: true, floor: 'door' }),
   exit('east', 'gatehouse', 'east', 13),
 ]);
@@ -38,6 +39,7 @@ const fixtures: ObjectPlacement[] = [
 const assemblies: AssemblyPlacement[] = [
   
     { instanceId: 'cg-tram-car', assemblyId: 'tram-car', position: plan.spot('gatehouse', 3, 42), facing: 'north' },
+    { instanceId: 'cg-line-bridge', assemblyId: 'bridge', position: plan.spot('gatehouse', 1, 21), facing: 'east', span: 2 },
   ];
 
 const placed = [...npcs, ...fixtures, ...assemblies];

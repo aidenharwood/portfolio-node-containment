@@ -1,4 +1,5 @@
-import { drawBlueprint, exit, link, patch, pillars, room } from '../../world/blueprint.ts';
+import type { AssemblyPlacement } from '../../world/assemblies.ts';
+import { drawBlueprint, exit, link, patch, pillars, room, track } from '../../world/blueprint.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { WATERWORKS_ANCHORS } from './waterworks.ts';
@@ -13,6 +14,7 @@ const plan = drawBlueprint({ width: 67, height: 70 }, [
   patch(16, 30, 20, 1, 'hazard'),
   patch(16, 40, 20, 1, 'hazard'),
   pillars('causeway', 8, 6, 3),
+  track([0, 52], [65, 52]),
   exit('west', 'causeway', 'west', 13),
   exit('south', 'salt-road', 'south', 13),
 ]);
@@ -32,6 +34,14 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'cc-rubble', objectId: 'litter-rubble', position: plan.at('causeway', 59, 1) },
     { instanceId: 'cc-gravel', objectId: 'litter-gravel', position: plan.at('causeway', 9, 3) },
   ];
+
+const assemblies: AssemblyPlacement[] = [1, 4, 7, 10].map((dx, index) => ({
+  instanceId: `cc-line-bridge-${index + 1}`,
+  assemblyId: 'bridge',
+  position: plan.spot('salt-road', dx, 37),
+  facing: 'south',
+  span: 2,
+}));
 
 const placed = [...npcs, ...fixtures];
 
@@ -61,6 +71,7 @@ export const CALDER_CAUSEWAY: DistrictDefinition = {
   ],
   npcs,
   objects: [...fixtures, ...furnishings],
+  assemblies,
   lights: [
     { position: plan.center('salt-road'), radius: 9, color: '#ffd27f', intensity: 0.5 },
     { position: plan.center('weighbridge'), radius: 9, color: '#ffb347', intensity: 0.5 },

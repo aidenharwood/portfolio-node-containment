@@ -53,7 +53,7 @@ test('a ride departs, keeps the rider still and arrives on the destination platf
 });
 
 test('the Abyssal Circuit runs between the Deep districts', () => {
-  const harness = createHarness({ prepare: onPlatform('deepwatch', { x: 30, y: 11 }, ['furnace-lock']) });
+  const harness = createHarness({ prepare: onPlatform('deepwatch', localInRoom('deepwatch', 'platform-hall', { x: 60, y: 3 }), ['furnace-lock']) });
   boardAndDepart(harness, 'furnace-lock');
   assert.equal(harness.sink.last('tram.departed')?.rideTicks, 10);
   harness.ticksUntil(() => harness.sink.last('tram.arrived') !== undefined, 12);

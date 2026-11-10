@@ -11,7 +11,7 @@ import {
   type WorldLocation,
 } from '@containment/shared';
 import { containSpecimen } from './support/containment.ts';
-import { createHarness, finishDialogue, type Harness, at, districtOf, levelPoint, localInRoom } from './support/testHarness.ts';
+import { anchor, createHarness, finishDialogue, type Harness, at, districtOf, levelPoint, localInRoom } from './support/testHarness.ts';
 
 const active = (questId: string, stepIndex = 0): QuestProgress => ({ questId, status: 'active', stepIndex, objectiveProgress: [0, 0, 0] });
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
@@ -20,12 +20,12 @@ const VETERAN = createStartingSkills({ closeQuarters: experienceForLevel(99), fo
 const KIT: EquipmentState = { torso: 'composite-plate', legs: 'intake-trousers', feet: 'work-boots', primary: 'the-knocker' };
 
 const NEAR_SEL: WorldLocation = at('meridian-atrium', localInRoom('meridian-atrium', 'archives', { x: 8, y: 16 }));
-const NEAR_THALE: WorldLocation = at('deepwatch', { x: 4, y: 4 });
-const NEAR_HALVORSEN: WorldLocation = at('sector-three', { x: 10, y: 8 });
-const CRYOVAULT_DOOR: WorldLocation = at('deep-concourse', { x: 5, y: 4 });
-const ARRAY_DOOR: WorldLocation = at('deep-concourse', { x: 52, y: 4 });
-const ARCHIVE_DOOR: WorldLocation = at('deep-concourse', { x: 100, y: 4 });
-const FURNACE_DOOR: WorldLocation = at('furnace-causeway', { x: 46, y: 3 });
+const NEAR_THALE: WorldLocation = at('deepwatch', localInRoom('deepwatch', 'command-post', { x: 3, y: 3 }));
+const NEAR_HALVORSEN: WorldLocation = at('sector-three', localInRoom('sector-three', 'threshold', { x: 16, y: 15 }));
+const CRYOVAULT_DOOR: WorldLocation = anchor('deep-concourse', 'cryovaultDoor');
+const ARRAY_DOOR: WorldLocation = anchor('deep-concourse', 'arrayDoor');
+const ARCHIVE_DOOR: WorldLocation = anchor('deep-concourse', 'archiveDoor');
+const FURNACE_DOOR: WorldLocation = anchor('furnace-causeway', 'furnaceGate');
 
 const PRIOR_QUESTS = ['orientation-protocol', 'field-fabrication', 'live-fire', 'the-knocking', 'the-far-side'];
 
@@ -90,7 +90,7 @@ describe('act two: the answer', () => {
     talk(harness, 'dw-thale');
     assert.equal(stepOf(harness, 'a-council-of-one'), 2);
 
-    travel(harness, at('deepwatch', { x: 17, y: 3 }));
+    travel(harness, at('deepwatch', localInRoom('deepwatch', 'concourse', { x: 14, y: 2 })));
     use(harness, 'dw-threshold-a');
     assert.equal(districtOf(player), 'sector-three');
     talk(harness, 's3-halvorsen');
@@ -186,17 +186,17 @@ describe('act two: the answer', () => {
     talk(harness, 'da-pim');
     assert.equal(stepOf(harness, 'original-contract'), 3);
 
-    travel(harness, at('drowned-archive', { x: 36, y: 8 }));
+    travel(harness, anchor('drowned-archive', 'sealedApproach'));
     use(harness, 'da-sealed-door-a');
-    assert.equal(player.position.y, levelPoint('drowned-archive', { x: 36, y: 8 }).y, 'the reading room stays sealed until the sluices are open');
+    assert.equal(player.position.y, anchor('drowned-archive', 'sealedApproach').position.y, 'the reading room stays sealed until the sluices are open');
 
     for (const valve of ['da-sluice-a', 'da-sluice-b', 'da-sluice-c']) use(harness, valve);
     assert.equal(stepOf(harness, 'original-contract'), 4);
     assert.ok(player.hasFlag('archive.drained'));
 
-    travel(harness, at('drowned-archive', { x: 36, y: 8 }));
+    travel(harness, anchor('drowned-archive', 'sealedApproach'));
     use(harness, 'da-sealed-door-a');
-    assert.ok(player.position.y >= levelPoint('drowned-archive', { x: 0, y: 11 }).y, 'the drained door opens into the reading room');
+    assert.ok(player.position.y >= levelPoint('drowned-archive', localInRoom('drowned-archive', 'sealed-room', { x: 0, y: 0 })).y, 'the drained door opens into the reading room');
 
     containSpecimen(harness, 'da-last-archivist');
     assert.equal(stepOf(harness, 'original-contract'), 5);
@@ -231,9 +231,9 @@ describe('act two: the answer', () => {
     assert.equal(stepOf(harness, 'stoking-the-fire'), 5);
     assert.ok(player.hasFlag('furnace.vented'));
 
-    travel(harness, at('furnace', { x: 34, y: 8 }));
+    travel(harness, anchor('furnace', 'reactorApproach'));
     use(harness, 'fu-reactor-door-a');
-    assert.ok(player.position.y >= levelPoint('furnace', { x: 0, y: 11 }).y, 'the vented door opens into the reactor heart');
+    assert.ok(player.position.y >= levelPoint('furnace', localInRoom('furnace', 'reactor-heart', { x: 0, y: 0 })).y, 'the vented door opens into the reactor heart');
 
     containSpecimen(harness, 'fu-stoker');
     assert.equal(stepOf(harness, 'stoking-the-fire'), 6);
@@ -286,7 +286,7 @@ describe('act two: the answer', () => {
   });
 
   test('Fenn hands out a side quest and pays for six samples of cryo gel', () => {
-    const harness = createHarness({ prepare: veteranAt(at('cryovault', { x: 31, y: 7 }), { 'cold-storage': active('cold-storage', 2) }) });
+    const harness = createHarness({ prepare: veteranAt(at('cryovault', localInRoom('cryovault', 'fenn-nook', { x: 3, y: 12 })), { 'cold-storage': active('cold-storage', 2) }) });
     const { player } = harness;
 
     talk(harness, 'cv-fenn', 'Can I help', "I'll do it");
@@ -298,7 +298,7 @@ describe('act two: the answer', () => {
 
     player.update({ inventory: [{ itemId: 'cryo-gel', quantity: 6 }, ...player.record.inventory.slice(1)] });
     harness.gameplay.raiseQuestEvent(player, { type: 'loadoutChanged' });
-    travel(harness, at('cryovault', { x: 31, y: 7 }));
+    travel(harness, at('cryovault', localInRoom('cryovault', 'fenn-nook', { x: 3, y: 12 })));
     talk(harness, 'cv-fenn', 'Hand over');
     assert.equal(stepOf(harness, 'fenns-inventory'), 'completed');
     assert.equal(countItem(player.record.inventory, 'rimeguard-gauntlets'), 1);

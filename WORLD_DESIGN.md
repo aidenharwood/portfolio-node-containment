@@ -41,7 +41,11 @@ Site Meridian is **one large facility you can walk across**, not a set of rooms 
 
 ### Transit
 
-17. **Track is drawn.** A tram platform has `track` tiles within six tiles of it, and on the overworld the line's track runs through the filler between its stations, crossed by `bridge` assemblies. **Checked** for the platform.
+17. **Track is drawn.** Every platform has `track` tiles within six tiles of it (**checked**), and on the overworld each line's track runs unbroken from every station to the next (**checked**: track tiles touching, including diagonally, or a single wall tile between two track tiles in a straight line). The bed is two tiles wide.
+    - **Platforms.** The car's run ends in a wall at both ends and is walled along its far side (`findTramIssues`). The line leaves through a tunnel mouth: past the end wall, or past the corner where the end wall meets the far wall, the bed carries on beyond it. A line may also curve into the run from the platform side.
+    - **Inside a district** draw the bed with `track(...)` in the blueprint. Through void it becomes a tunnel, since the rock beside it is walled. Where it must cross walkable floor, cross at right angles and put `bridge` assemblies over it (`facing: 'south'` over a bed running east–west, `'east'` over one running north–south), several side by side on a boulevard. Otherwise keep the bed out of rooms; a trench along the edge of a boulevard is acceptable.
+    - **Between districts** the bed runs through the rock and the chasms as a level connector made by `drawTrackway` (`world/trackway.ts`), with waypoints given relative to placed districts. It may only cross void; when it would run into a district, that stretch belongs in that district's blueprint, ending at the district's edge where the connector picks it up.
+    - **The main floor** has one trunk along the Intake chasm, south of the Circuit. The Lodge, the Atrium, the Yards, the Intake Wing and the Calder Gatehouse each reach it by a spur, and Verdance by a branch across the Sanatorium Rise. The Calder spur crosses the Salt Road and comes down the Gatehouse's west wall, bridged at its gate.
 
 ## Shape language
 

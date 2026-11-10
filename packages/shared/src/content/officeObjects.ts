@@ -1,4 +1,6 @@
 import type { ObjectLight, WorldObjectDefinition } from '../world/entities.ts';
+import { DEAD_LETTER_OFFICE_ANCHORS } from './districts/deadLetterOffice.ts';
+import { SIGNAL_ARRAY_ANCHORS } from './districts/signalArray.ts';
 
 const CHUTE_LIGHT: ObjectLight = { radius: 3.5, color: '#c9a227', intensity: 0.8, flicker: true };
 const SORT = { type: 'questActive', questId: 'dead-letter-office', stepId: 'sort' } as const;
@@ -41,7 +43,7 @@ export const OFFICE_OBJECTS: readonly WorldObjectDefinition[] = [
         failureText: 'The wall behind the outbox is cold, and there is a draught coming out of it that smells of old paper.',
         effects: [
           { type: 'notify', text: 'You fold yourself into the chute. It is a long way down, and every inch of it is lined with stamps.' },
-          { type: 'teleport', districtId: 'dead-letter-office', position: { x: 3, y: 2 } },
+          { type: 'teleport', districtId: 'dead-letter-office', position: DEAD_LETTER_OFFICE_ANCHORS.chuteArrival },
         ],
       },
     ],
@@ -53,7 +55,7 @@ export const OFFICE_OBJECTS: readonly WorldObjectDefinition[] = [
     model: 'anomaly',
     blocksMovement: true,
     light: CHUTE_LIGHT,
-    interactions: [{ verb: 'Climb up', effects: [{ type: 'teleport', districtId: 'signal-array', position: { x: 41, y: 3 } }] }],
+    interactions: [{ verb: 'Climb up', effects: [{ type: 'teleport', districtId: 'signal-array', position: SIGNAL_ARRAY_ANCHORS.chuteLanding }] }],
   },
   {
     id: 'franking-counter',

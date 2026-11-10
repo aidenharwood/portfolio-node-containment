@@ -53,7 +53,14 @@ export interface HollowStep {
   readonly rect: TileRect;
 }
 
-export type BlueprintStep = RoomStep | LinkStep | ExitStep | PatchStep | PillarsStep | HollowStep;
+export interface TrackStep {
+  readonly kind: 'track';
+  readonly points: readonly TilePoint[];
+}
+
+export type BlueprintStep = RoomStep | LinkStep | ExitStep | PatchStep | PillarsStep | HollowStep | TrackStep;
+
+export const TRACK_GAUGE = 2;
 
 export interface DistrictExit {
   readonly side: ExitSide;
@@ -115,6 +122,19 @@ export const patch = (x: number, y: number, width: number, height: number, tile:
 });
 
 export const pillars = (roomId: string, everyX: number, everyY: number, inset = 3): PillarsStep => ({ kind: 'pillars', room: roomId, everyX, everyY, inset });
+
+export const track = (...points: readonly (readonly [number, number])[]): TrackStep => ({ kind: 'track', points: points.map(([x, y]) => ({ x, y })) });
+
+export function trackBed(points: readonly TilePoint[]): TileRect[] {
+  if (points.length < 2) throw new Error('A track needs at least two points.');
+  return points.slice(1).map((to, index) => {
+    const from = points[index] as TilePoint;
+    if (from.x !== to.x && from.y !== to.y) throw new Error(`Track from ${from.x},${from.y} to ${to.x},${to.y} is not straight.`);
+    const x = Math.min(from.x, to.x);
+    const y = Math.min(from.y, to.y);
+    return { x, y, width: Math.abs(to.x - from.x) + TRACK_GAUGE, height: Math.abs(to.y - from.y) + TRACK_GAUGE };
+  });
+}
 
 export const hollow = (x: number, y: number, width: number, height: number): HollowStep => ({ kind: 'hollow', rect: { x, y, width, height } });
 
@@ -288,6 +308,7 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
     else if (step.kind === 'exit') drawExit(step);
     else if (step.kind === 'patch') drawPatch(step);
     else if (step.kind === 'hollow') hollows.push(step.rect);
+    else if (step.kind === 'track') for (const rect of trackBed(step.points)) drawPatch({ kind: 'patch', rect, tile: 'track' });
     else drawPillars(step);
   }
 

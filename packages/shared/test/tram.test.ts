@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { findTramIssues, GAME_CONTENT, linesThrough, stationAt, tramLineBetween, tramBoardingRefusal, tramRideTicks, tramStops, TRAM_MIN_RIDE_TICKS, type GameContent } from '../src/index.ts';
+import { findTramIssues, findWorldDesignIssues, GAME_CONTENT, linesThrough, stationAt, tramLineBetween, tramBoardingRefusal, tramRideTicks, tramStops, TRAM_MIN_RIDE_TICKS, type GameContent, type TileKindId, type TilePoint } from '../src/index.ts';
 
 const network = GAME_CONTENT.tram;
 
@@ -72,4 +72,19 @@ test('every station car sits on a track that runs into tunnels, with a platform 
     assert.ok(car.length > 0, station.id);
     for (const piece of car) assert.equal(level.layout.tileAt(piece.position), 'track', `${station.id} ${piece.instanceId}`);
   }
+});
+
+test('the overworld lines run on drawn track from each station to the next', () => {
+  assert.deepEqual(findWorldDesignIssues(GAME_CONTENT).filter((issue) => issue.startsWith('tram line')), []);
+});
+
+test('a gap in the track between two stations is reported', () => {
+  const level = GAME_CONTENT.levels.get('main-floor');
+  assert.ok(level);
+  const gap = new Set([0, 1].flatMap((dx) => [45, 46].map((y) => level.layout.toLevelPoint('service-concourse', { x: 98 + dx, y }))).map((point) => `${point.x},${point.y}`));
+  const tileAt = (point: TilePoint): TileKindId => (gap.has(`${point.x},${point.y}`) ? 'wall' : level.layout.tileAt(point));
+  const layout = { ...level.layout, tileAt };
+  const content: GameContent = { ...GAME_CONTENT, levels: new Map([...GAME_CONTENT.levels, ['main-floor', { ...level, layout }]]) };
+  const issues = findWorldDesignIssues(content).filter((issue) => issue.startsWith('tram line'));
+  assert.deepEqual(issues.map((issue) => issue.match(/"[^"]+" to "[^"]+"/)?.[0]), ['"atrium-transit" to "yards-depot"', '"yards-depot" to "calder-platform"']);
 });

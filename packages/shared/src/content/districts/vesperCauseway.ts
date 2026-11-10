@@ -1,4 +1,5 @@
-import { drawBlueprint, exit, link, pillars, room } from '../../world/blueprint.ts';
+import type { AssemblyPlacement } from '../../world/assemblies.ts';
+import { drawBlueprint, exit, link, pillars, room, track } from '../../world/blueprint.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { HYDROPONICS_ANCHORS } from './hydroponics.ts';
@@ -11,6 +12,7 @@ const plan = drawBlueprint({ width: 80, height: 71 }, [
   link('walk', 'porters-yard', 7, 'concrete'),
   link('sanatorium-rise', 'porters-yard', 5, 'concrete'),
   pillars('walk', 8, 6, 3),
+  track([0, 16], [78, 16]),
   exit('east', 'walk', 'east', 13),
   exit('north', 'sanatorium-rise', 'north', 13),
 ]);
@@ -30,6 +32,14 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'vsw-debris', objectId: 'litter-debris', position: plan.at('walk', 6, 1) },
     { instanceId: 'vsw-puddle', objectId: 'litter-puddle', position: plan.at('walk', 56, 3) },
   ];
+
+const assemblies: AssemblyPlacement[] = [1, 4, 7, 10].map((dx, index) => ({
+  instanceId: `vsw-line-bridge-${index + 1}`,
+  assemblyId: 'bridge',
+  position: plan.spot('sanatorium-rise', dx, 15),
+  facing: 'south',
+  span: 2,
+}));
 
 const placed = [...npcs, ...fixtures];
 
@@ -59,6 +69,7 @@ export const VESPER_CAUSEWAY: DistrictDefinition = {
   ],
   npcs,
   objects: [...fixtures, ...furnishings],
+  assemblies,
   lights: [
     { position: plan.center('sanatorium-rise'), radius: 9, color: '#d8e7ef', intensity: 0.5 },
     { position: plan.center('porters-yard'), radius: 9, color: '#c8ffe0', intensity: 0.5 },

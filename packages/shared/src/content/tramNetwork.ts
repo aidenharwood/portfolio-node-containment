@@ -9,6 +9,11 @@ import type { DistrictDefinition } from '../world/district.ts';
 import type { TramLineDefinition, TramNetwork, TramStation, TramStationDefinition } from '../world/tram.ts';
 import type { LocatableContent } from './levelIndex.ts';
 import { locate } from './levelIndex.ts';
+import { CRYOVAULT_ANCHORS } from './districts/cryovault.ts';
+import { DEEPWATCH_ANCHORS } from './districts/deepwatch.ts';
+import { DROWNED_ARCHIVE_ANCHORS } from './districts/drownedArchive.ts';
+import { FURNACE_ANCHORS } from './districts/furnace.ts';
+import { SIGNAL_ARRAY_ANCHORS } from './districts/signalArray.ts';
 
 export const TRAM_STATIONS: readonly TramStationDefinition[] = [
   { id: 'intake-transit', name: 'Intake Transit Bay', districtId: 'intake-wing', areaId: 'transit-bay', platform: INTAKE_WING_ANCHORS.tramPlatform, alwaysKnown: true },
@@ -17,11 +22,11 @@ export const TRAM_STATIONS: readonly TramStationDefinition[] = [
   { id: 'verdance-platform', name: 'Verdance Platform', districtId: 'hydroponics', areaId: 'platform', platform: HYDROPONICS_ANCHORS.tramPlatform },
   { id: 'calder-platform', name: 'Calder Gatehouse Platform', districtId: 'calder-gatehouse', areaId: 'gatehouse', platform: CALDER_GATEHOUSE_ANCHORS.tramPlatform },
   { id: 'vesper-platform', name: "Vesper Porter's Lodge Platform", districtId: 'vesper-lodge', areaId: 'lodge', platform: VESPER_LODGE_ANCHORS.tramPlatform },
-  { id: 'deepwatch-platform', name: 'Deepwatch Platform Hall', districtId: 'deepwatch', areaId: 'platform-hall', platform: { x: 4, y: 11 } },
-  { id: 'cryovault-dock', name: 'Cryovault Receiving Dock', districtId: 'cryovault', areaId: 'dock', platform: { x: 4, y: 5 } },
-  { id: 'array-lobby', name: 'Signal Array Uplink Lobby', districtId: 'signal-array', areaId: 'uplink-lobby', platform: { x: 4, y: 5 } },
-  { id: 'archive-stair', name: 'Archive Flood Stair', districtId: 'drowned-archive', areaId: 'flood-stair', platform: { x: 4, y: 4 } },
-  { id: 'furnace-lock', name: 'Furnace Coolant Lock', districtId: 'furnace', areaId: 'coolant-lock', platform: { x: 4, y: 5 } },
+  { id: 'deepwatch-platform', name: 'Deepwatch Platform Hall', districtId: 'deepwatch', areaId: 'platform-hall', platform: DEEPWATCH_ANCHORS.tramPlatform },
+  { id: 'cryovault-dock', name: 'Cryovault Receiving Dock', districtId: 'cryovault', areaId: 'dock', platform: CRYOVAULT_ANCHORS.tramPlatform },
+  { id: 'array-lobby', name: 'Signal Array Uplink Lobby', districtId: 'signal-array', areaId: 'uplink-lobby', platform: SIGNAL_ARRAY_ANCHORS.tramPlatform },
+  { id: 'archive-stair', name: 'Archive Flood Stair', districtId: 'drowned-archive', areaId: 'flood-stair', platform: DROWNED_ARCHIVE_ANCHORS.tramPlatform },
+  { id: 'furnace-lock', name: 'Furnace Coolant Lock', districtId: 'furnace', areaId: 'coolant-lock', platform: FURNACE_ANCHORS.tramPlatform },
 ];
 
 export const TRAM_LINES: readonly TramLineDefinition[] = [

@@ -1,5 +1,8 @@
 import type { WorldObjectDefinition } from '../world/entities.ts';
 import { ATRIUM_ANCHORS } from './districts/meridianAtrium.ts';
+import { MERIDIAN_BELOW_ANCHORS } from './districts/meridianBelow.ts';
+import { SECTOR_THREE_ANCHORS } from './districts/sectorThree.ts';
+import { UNDERCROFT_ANCHORS } from './districts/undercroft.ts';
 
 export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
   {
@@ -310,7 +313,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
         verb: 'Descend',
         conditions: [{ type: 'hasFlag', flag: 'clearance.undercroft' }],
         failureText: 'The panel reads: AUTHORISATION REQUIRED — RESEARCH DIVISION.',
-        effects: [{ type: 'teleport', districtId: 'undercroft', position: { x: 5, y: 4 } }],
+        effects: [{ type: 'teleport', districtId: 'undercroft', position: UNDERCROFT_ANCHORS.liftArrival }],
       },
     ],
   },
@@ -392,7 +395,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
         failureText: 'The seal will not budge. Something in the workshop is still drawing power from this circuit.',
         effects: [
           { type: 'notify', text: 'The seal sighs open. The air on the other side smells like rain, which is not possible.' },
-          { type: 'teleport', districtId: 'sector-three', position: { x: 3, y: 6 } },
+          { type: 'teleport', districtId: 'sector-three', position: SECTOR_THREE_ANCHORS.arrival },
         ],
       },
     ],
@@ -404,7 +407,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     model: 'bulkhead',
     blocksMovement: true,
     light: { radius: 3, color: '#ffb347', intensity: 0.6 },
-    interactions: [{ verb: 'Open', effects: [{ type: 'teleport', districtId: 'undercroft', position: { x: 37, y: 21 } }] }],
+    interactions: [{ verb: 'Open', effects: [{ type: 'teleport', districtId: 'undercroft', position: UNDERCROFT_ANCHORS.sealLanding }] }],
   },
   {
     id: 'the-knock',
@@ -424,7 +427,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
         failureText: 'The door is shut, and Halvorsen is standing very firmly in front of it.',
         effects: [
           { type: 'notify', text: 'You put your hand on the door. It opens before you push, as if it has been expecting you for a long time.' },
-          { type: 'teleport', districtId: 'meridian-below', position: { x: 5, y: 5 } },
+          { type: 'teleport', districtId: 'meridian-below', position: MERIDIAN_BELOW_ANCHORS.arrival },
         ],
       },
     ],

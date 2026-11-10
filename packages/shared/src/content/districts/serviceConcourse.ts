@@ -1,4 +1,4 @@
-import { drawBlueprint, exit, link, patch, pillars, room } from '../../world/blueprint.ts';
+import { drawBlueprint, exit, link, patch, pillars, room, track } from '../../world/blueprint.ts';
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
@@ -18,6 +18,7 @@ const plan = drawBlueprint({ width: 100, height: 47 }, [
   patch(46, 17, 8, 1, 'hazard'),
   patch(46, 29, 8, 1, 'hazard'),
   pillars('concourse', 8, 6, 3),
+  track([98, 36], [98, 45]),
   exit('west', 'concourse', 'west', 13),
   exit('east', 'concourse', 'east', 13),
 ]);

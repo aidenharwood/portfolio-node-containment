@@ -1,24 +1,12 @@
 import type { DistrictId } from '../ids.ts';
 import { parseTileLayout, type DistrictDefinition, type TileLayout } from '../world/district.ts';
-import { CARDINAL_OFFSETS, chebyshevDistance, rectContains, type TilePoint } from '../world/geometry.ts';
+import { CARDINAL_OFFSETS, chebyshevDistance, rectContains, tileKey, type TilePoint } from '../world/geometry.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
 import { TILE_KINDS } from '../world/tiles.ts';
 import type { GameContent } from './gameContent.ts';
+import { overworldLevelOf } from './overworldIntegrity.ts';
 
-export const LEGACY_DISTRICTS: ReadonlySet<DistrictId> = new Set([
-  'undercroft',
-  'sector-three',
-  'deepwatch',
-  'deep-concourse',
-  'furnace-causeway',
-  'cryovault',
-  'signal-array',
-  'drowned-archive',
-  'furnace',
-  'meridian-below',
-  'verdant-fold',
-  'dead-letter-office',
-]);
+export const LEGACY_DISTRICTS: ReadonlySet<DistrictId> = new Set<DistrictId>([]);
 
 export const MIN_EXIT_WIDTH = 9;
 export const MIN_CREATURES_PER_THOUSAND_TILES = 3;
@@ -101,6 +89,54 @@ function findSeamIssues(level: ResolvedLevel, rebuilt: ReadonlySet<DistrictId>, 
   }
 }
 
+function trackNear(layout: ResolvedLevel['layout'], platform: TilePoint): TilePoint[] {
+  const reach = MAX_PLATFORM_DISTANCE_FROM_TRACK;
+  const tiles: TilePoint[] = [];
+  for (let y = platform.y - reach; y <= platform.y + reach; y++) {
+    for (let x = platform.x - reach; x <= platform.x + reach; x++) {
+      if (layout.tileAt({ x, y }) === 'track') tiles.push({ x, y });
+    }
+  }
+  return tiles;
+}
+
+function trackReachableFrom(layout: ResolvedLevel['layout'], start: readonly TilePoint[]): Set<string> {
+  const seen = new Set(start.map(tileKey));
+  const queue = [...start];
+  const visit = (point: TilePoint) => {
+    if (layout.tileAt(point) !== 'track' || seen.has(tileKey(point))) return;
+    seen.add(tileKey(point));
+    queue.push(point);
+  };
+  for (let index = 0; index < queue.length; index++) {
+    const here = queue[index] as TilePoint;
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dx = -1; dx <= 1; dx++) visit({ x: here.x + dx, y: here.y + dy });
+    }
+    for (const offset of CARDINAL_OFFSETS) {
+      if (layout.tileAt({ x: here.x + offset.x, y: here.y + offset.y }) === 'wall') visit({ x: here.x + 2 * offset.x, y: here.y + 2 * offset.y });
+    }
+  }
+  return seen;
+}
+
+function findLineIssues(content: GameContent, issues: string[]): void {
+  const level = overworldLevelOf(content);
+  if (!level) return;
+  for (const line of content.tram.lines.values()) {
+    const stations = line.stations.map((stationId) => content.tram.stations.get(stationId)).filter((station) => station?.levelId === level.id);
+    for (let index = 1; index < stations.length; index++) {
+      const from = stations[index - 1];
+      const to = stations[index];
+      if (!from || !to) continue;
+      const reached = trackReachableFrom(level.layout, trackNear(level.layout, from.platformPoint));
+      if (!trackNear(level.layout, to.platformPoint).some((tile) => reached.has(tileKey(tile)))) {
+        issues.push(`tram line ${line.id}: no drawn track runs from "${from.id}" to "${to.id}" on ${level.id}; lay track between them, through a tunnel mouth at each platform`);
+      }
+    }
+  }
+}
+
 interface DistrictGraph {
   readonly hops: ReadonlyMap<DistrictId, number>;
   readonly neighbours: ReadonlyMap<DistrictId, ReadonlySet<DistrictId>>;
@@ -177,5 +213,6 @@ export function findWorldDesignIssues(content: GameContent, legacy: ReadonlySet<
     findSeamIssues(level, rebuilt, issues);
     findTierIssues(content, level, rebuilt, issues);
   }
+  findLineIssues(content, issues);
   return issues;
 }

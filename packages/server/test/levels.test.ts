@@ -62,8 +62,8 @@ describe('levels', () => {
   });
 
   test('locations are stored district-local and restored to level coordinates', () => {
-    const current = at('deepwatch', { x: 3, y: 10 });
-    assert.deepEqual(storeLocation(current, GAME_CONTENT), { districtId: 'deepwatch', position: { x: 3, y: 10 } });
+    const current = at('deepwatch', localInRoom('deepwatch', 'platform-hall', { x: 2, y: 2 }));
+    assert.deepEqual(storeLocation(current, GAME_CONTENT), { districtId: 'deepwatch', position: localInRoom('deepwatch', 'platform-hall', { x: 2, y: 2 }) });
     assert.deepEqual(restoreLocation(storeLocation(current, GAME_CONTENT), GAME_CONTENT), current);
   });
 
@@ -84,7 +84,7 @@ describe('levels', () => {
   });
 
   test('level-coordinate locations from before district-local storage pass through unchanged', () => {
-    const current = at('deepwatch', { x: 3, y: 10 });
+    const current = at('deepwatch', localInRoom('deepwatch', 'platform-hall', { x: 2, y: 2 }));
     assert.deepEqual(restoreLocation(current, GAME_CONTENT), current);
   });
 
@@ -126,8 +126,13 @@ describe('levels', () => {
   });
 
   test('Deepwatch opens onto the Deep Concourse on foot, and a gated pressure door leads on', () => {
-    const harness = createHarness({ prepare: placedAt(at('deepwatch', { x: 29, y: 21 }), ['clearance.signal-array']) });
-    walkTo(harness, levelPoint('deep-concourse', { x: 70, y: 3 }));
+    const harness = createHarness({ prepare: placedAt(at('deepwatch', localInRoom('deepwatch', 'stores', { x: 12, y: 12 })), ['clearance.signal-array']) });
+    walkAlong(harness, [
+      exitPoint('deepwatch', 'south'),
+      levelPoint('deep-concourse', localInRoom('deep-concourse', 'south-span', { x: 6, y: 18 })),
+      levelPoint('deep-concourse', localInRoom('deep-concourse', 'south-span', { x: 6, y: 33 })),
+      anchor('deep-concourse', 'arrayDoor').position,
+    ]);
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'deep-concourse');
     harness.interactWithObject('dc-array-door-a');
     harness.ticksUntil(() => harness.player.path.length === 0);
@@ -136,36 +141,42 @@ describe('levels', () => {
   });
 
   test('a pressure door stays shut without clearance', () => {
-    const harness = createHarness({ prepare: placedAt(at('deep-concourse', { x: 7, y: 4 })) });
+    const harness = createHarness({ prepare: placedAt(anchor('deep-concourse', 'cryovaultDoor')) });
     harness.interactWithObject('dc-cryovault-door-a');
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'deep-concourse');
     assert.match(harness.sink.last('notice')?.text ?? '', /COLD STORAGE SEALED/);
   });
 
   test('a cleared player walks straight through a joined pressure door, and it stays open for them alone', () => {
-    const harness = createHarness({ prepare: placedAt(at('deep-concourse', { x: 5, y: 3 }), ['clearance.cryovault']) });
-    walkTo(harness, levelPoint('cryovault', { x: 5, y: 3 }));
+    const harness = createHarness({ prepare: placedAt(anchor('deep-concourse', 'cryovaultDoor'), ['clearance.cryovault']) });
+    walkTo(harness, anchor('cryovault', 'entrance').position);
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'cryovault');
     assert.ok(harness.sink.last('player.state')?.self.openDoors.includes('cryovault-door'));
 
     const level = harness.gameplay.world.levelOf(harness.player);
-    const door = levelPoint('deep-concourse', { x: 5, y: 6 });
+    const door = exitPoint('deep-concourse', 'cryovault');
     assert.equal(level.grid.isWalkable(door), false, 'the shared grid keeps the door shut for everyone else');
     assert.equal(level.creatureGrid.isWalkable(door), false, 'creatures never pass a door');
   });
 
   test('a door you have opened stays open after the key is gone', () => {
-    const harness = createHarness({ prepare: placedAt(at('deep-concourse', { x: 5, y: 4 }), ['clearance.cryovault']) });
+    const harness = createHarness({ prepare: placedAt(anchor('deep-concourse', 'cryovaultDoor'), ['clearance.cryovault']) });
     harness.interactWithObject('dc-cryovault-door-a');
     harness.ticksUntil(() => harness.player.path.length === 0);
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'cryovault');
     harness.player.update({ flags: harness.player.record.flags.filter((flag) => flag !== 'clearance.cryovault') });
-    walkTo(harness, levelPoint('deep-concourse', { x: 5, y: 3 }));
+    walkTo(harness, anchor('deep-concourse', 'cryovaultDoor').position);
   });
 
   test('Deepwatch reaches the Furnace Causeway on foot', () => {
-    const harness = createHarness({ prepare: placedAt(at('deepwatch', { x: 30, y: 18 })) });
-    walkTo(harness, levelPoint('furnace-causeway', { x: 10, y: 3 }));
+    const harness = createHarness({ prepare: placedAt(at('deepwatch', localInRoom('deepwatch', 'concourse', { x: 15, y: 3 }))) });
+    walkAlong(harness, [
+      exitPoint('deepwatch', 'north'),
+      levelPoint('deep-concourse', localInRoom('deep-concourse', 'north-span', { x: 6, y: 18 })),
+      levelPoint('deep-concourse', localInRoom('deep-concourse', 'north-span', { x: 6, y: 2 })),
+      anchor('deep-concourse', 'causewayGate').position,
+      levelPoint('furnace-causeway', localInRoom('furnace-causeway', 'causeway', { x: 6, y: 20 })),
+    ]);
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'furnace-causeway');
   });
 
