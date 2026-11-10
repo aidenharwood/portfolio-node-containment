@@ -1,10 +1,10 @@
 import {
   CONTAINMENT_CLASS_INFO,
-  containmentSeals,
+  clearanceName,
+  clearanceTierFor,
   containmentThreshold,
   EXPLOITED_DEFENCE_FACTOR,
   GAME_CONTENT,
-  sealTierFor,
   type CreatureDefinition,
   type CreatureId,
   type LootEntry,
@@ -26,9 +26,6 @@ const habitatsByCreature = (): ReadonlyMap<CreatureId, readonly string[]> => {
   }
   return habitats;
 };
-
-const sealName = (tier: number): string =>
-  containmentSeals(GAME_CONTENT.items).find((item) => item.containmentSeal?.tier === tier)?.name ?? `Tier ${tier} seal`;
 
 const percent = (chance: number): string => (chance >= 1 ? 'Always' : `${Math.max(1, Math.round(chance * 100))}%`);
 
@@ -113,7 +110,7 @@ export function createBestiaryTab(): PanelTab {
         containment && h('table', { className: 'dossier-stats bestiary-stats' },
           h('tbody', {},
             statRow('Object class', CONTAINMENT_CLASS_INFO[containment.containmentClass].name, CONTAINMENT_CLASS_INFO[containment.containmentClass].summary),
-            statRow('Requires', `Containment ${creature.level}, ${sealName(sealTierFor(creature))}`),
+            statRow('Requires', `Containment ${creature.level}, ${clearanceName(clearanceTierFor(creature))}`),
             statRow('Weakened at', `${containmentThreshold(creature.integrity)} integrity`),
             ...lootRows(containment.loot),
           ),

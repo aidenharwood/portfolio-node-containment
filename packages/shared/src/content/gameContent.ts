@@ -2,6 +2,7 @@ import type { StartingKit } from '../character/startingKit.ts';
 import type { CreatureDefinition, CreatureId } from '../combat/creatures.ts';
 import { CREATURES } from './creatures.ts';
 import { DEEP_CREATURES } from './deepCreatures.ts';
+import { TRAINING_CREATURES } from './trainingCreatures.ts';
 import { DEEP_ITEMS } from './deepItems.ts';
 import { UNIQUE_GEAR } from './uniqueGear.ts';
 import { DEEP_NPCS } from './deepNpcs.ts';
@@ -52,12 +53,11 @@ import { WATERWORKS_OBJECTS } from './waterworksObjects.ts';
 import type { NpcDefinition, WorldObjectDefinition } from '../world/entities.ts';
 import type { DistrictDefinition } from '../world/district.ts';
 import { AMES_DIALOGUE, KADE_DIALOGUE, LUND_DIALOGUE, OKAFOR_DIALOGUE, SEL_DIALOGUE } from './dialogues/atriumDialogues.ts';
-import { HALE_DIALOGUE, OSEI_DIALOGUE, PELL_DIALOGUE, REYES_DIALOGUE, VARGA_DIALOGUE } from './dialogues/intakeDialogues.ts';
+import { HALE_DIALOGUE, OSEI_DIALOGUE, PELL_DIALOGUE, REGISTRAR_DIALOGUE, REYES_DIALOGUE, VARGA_DIALOGUE } from './dialogues/intakeDialogues.ts';
 import { HALVORSEN_DIALOGUE, MAGS_DIALOGUE } from './dialogues/undercroftDialogues.ts';
 import { ANAND_DIALOGUE, OYELARAN_DIALOGUE, QUILL_DIALOGUE } from './dialogues/hubDialogues.ts';
 import { OVERGROWTH } from './quests/overgrowth.ts';
 import { HYDROPONICS } from './districts/hydroponics.ts';
-import { CONTAINMENT_SEAL_RECIPES, CONTAINMENT_SEALS } from './containmentSeals.ts';
 import { CRAFTING_ITEMS } from './craftingItems.ts';
 import { CRAFTING_OBJECTS } from './craftingObjects.ts';
 import { ITEMS } from './items.ts';
@@ -150,7 +150,7 @@ function startingLocation(): WorldLocation {
 }
 
 export const GAME_CONTENT: GameContent = {
-  items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS, ...UNIQUE_GEAR, ...CONTAINMENT_SEALS]),
+  items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS, ...UNIQUE_GEAR]),
   npcs: indexById([...NPCS, ...DEEP_NPCS, ...WATERWORKS_NPCS, ...OFFICE_NPCS]),
   worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...FURNITURE_OBJECTS, ...OFFICE_OBJECTS, ...CONTRACT_OBJECTS]),
   assemblies: ASSEMBLY_INDEX,
@@ -159,6 +159,7 @@ export const GAME_CONTENT: GameContent = {
     VARGA_DIALOGUE,
     PELL_DIALOGUE,
     OSEI_DIALOGUE,
+    REGISTRAR_DIALOGUE,
     HALE_DIALOGUE,
     QUILL_DIALOGUE,
     LUND_DIALOGUE,
@@ -209,9 +210,9 @@ export const GAME_CONTENT: GameContent = {
   levels: LEVEL_INDEX.levels,
   levelOfDistrict: LEVEL_INDEX.levelOfDistrict,
   tram: buildTramNetwork(TRAM_STATIONS, TRAM_LINES, DISTRICTS, LEVEL_INDEX),
-  creatures: indexById([...CREATURES, ...DEEP_CREATURES, ...WATERWORKS_CREATURES, ...OFFICE_CREATURES]),
+  creatures: indexById([...CREATURES, ...DEEP_CREATURES, ...WATERWORKS_CREATURES, ...OFFICE_CREATURES, ...TRAINING_CREATURES]),
   shops: indexById(SHOPS),
-  recipes: indexById([...RECIPES, ...CONTAINMENT_SEAL_RECIPES]),
+  recipes: indexById(RECIPES),
   contracts: indexById(CONTRACTS),
   newCharacter: {
     startingLocation: startingLocation(),

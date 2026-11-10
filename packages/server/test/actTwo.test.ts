@@ -264,7 +264,7 @@ describe('act two: the answer', () => {
     talk(harness, 'mb-kessler');
     assert.equal(stepOf(harness, 'the-answer'), 3);
 
-    for (const hollow of ['mb-hollow-workshop-a', 'mb-hollow-workshop-b', 'mb-hollow-plaza-a', 'mb-hollow-plaza-b', 'mb-hollow-plaza-c', 'mb-hollow-engineering']) defeat(harness, hollow);
+    for (const hollow of ['mb-hollow-workshop-a', 'mb-hollow-workshop-b', 'mb-hollow-plaza-a', 'mb-hollow-plaza-b', 'mb-hollow-plaza-c', 'mb-hollow-workshop-c']) defeat(harness, hollow);
     assert.equal(stepOf(harness, 'the-answer'), 4);
 
     for (const lantern of ['mb-lantern-medbay', 'mb-lantern-workshop', 'mb-lantern-plaza']) use(harness, lantern);

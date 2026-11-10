@@ -1,5 +1,6 @@
 import {
   addItem,
+  depletionChance,
   gatherChance,
   isCardinallyAdjacent,
   levelForExperience,
@@ -83,7 +84,7 @@ export class GatheringController {
     this.host.raiseQuestEvent(player, { type: 'gathered', itemId: source.itemId, count: 1 });
     this.host.raiseQuestEvent(player, { type: 'loadoutChanged' });
 
-    if (level.spendNodeCharge(instanceId, source.charges)) {
+    if (this.random() < depletionChance(source) && level.spendNodeCharge(instanceId, source.charges)) {
       level.depletedUntil.set(instanceId, tick + source.respawnTicks);
       level.broadcastNear(placed.placement.position, { type: 'world.objectDepleted', instanceId, depleted: true });
       this.host.notify(player, 'info', `The ${placed.definition.name} is exhausted for now.`);
@@ -96,9 +97,14 @@ export class GatheringController {
   }
 
   stop(player: Player): void {
-    if (player.activity?.kind !== 'gather') return;
+    this.interrupt(player);
+  }
+
+  interrupt(player: Player): boolean {
+    if (player.activity?.kind !== 'gather') return false;
     player.activity = null;
     this.host.sendActivity(player, null);
+    return true;
   }
 
   private refusal(player: Player, level: LevelInstance, placed: PlacedObject, source: GatheringSource): string | null {

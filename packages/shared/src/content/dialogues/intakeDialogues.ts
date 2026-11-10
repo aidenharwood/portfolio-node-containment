@@ -1,4 +1,4 @@
-import type { DialogueDefinition } from '../../dialogue/dialogue.ts';
+import type { DialogueDefinition, DialogueOption } from '../../dialogue/dialogue.ts';
 
 const ORIENTATION = 'orientation-protocol';
 
@@ -254,7 +254,7 @@ export const OSEI_DIALOGUE: DialogueDefinition = {
     { node: 'drill', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'drill' }] },
     { node: 'patchUp', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'patch-up' }] },
     { node: 'containBrief', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'containment-brief' }] },
-    { node: 'makeSeal', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'make-seal' }] },
+    { node: 'clearance', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'clearance' }] },
     { node: 'contain', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'contain' }] },
     { node: 'rest', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'rest' }] },
     { node: 'debrief', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'debrief' }] },
@@ -324,57 +324,22 @@ export const OSEI_DIALOGUE: DialogueDefinition = {
     },
     containRules: {
       speaker: 'npc',
-      text: "Three rules. One: a specimen must be down to a tenth of its integrity before a seal will close. Two: your Containment level must be at least the specimen's level. Three: the seal must be rated for its tier, Mk.I for tier one and up from there. Higher marks hold lower specimens too.",
+      text: "Three rules. One: a specimen must be down to a tenth of its integrity before a seal will close. Two: your Containment level must be at least the specimen's level. Three: you need the clearance for its tier, Clearance I for tier one and up from there. Higher clearance covers lower specimens too.",
       next: 'containWhy',
     },
     containWhy: {
       speaker: 'npc',
-      text: 'Do it right and you learn more than any kill teaches you, and the Site pays out for a specimen in one piece. Take this seal stock to the fabricator in the Workshop. Then meet ANM-0031 on the range.',
+      text: 'Do it right and you learn more than any kill teaches you, and the Site pays out for a specimen in one piece. Talk to me again and I will sign off your Clearance I. Then meet ANM-0031 on the range.',
       next: null,
     },
-    makeSeal: {
+    clearance: {
       speaker: 'npc',
-      text: 'Fabricator, Workshop. Alloy plate and synthweave bolt make a Mk.I seal. It trains Containment, so do not let Pell tell you it is engineering.',
-      options: [
-        {
-          text: 'I need more seal stock.',
-          conditions: [
-            { type: 'lacksItem', itemId: 'alloy-plate' },
-            { type: 'lacksItem', itemId: 'containment-seal-1' },
-          ],
-          next: 'spareStock',
-        },
-        { text: 'On my way.', next: null },
-      ],
-    },
-    spareStock: {
-      speaker: 'npc',
-      text: 'Range spare. That is the last one I am signing for.',
-      effects: [
-        { type: 'giveItem', itemId: 'alloy-plate', count: 1 },
-        { type: 'giveItem', itemId: 'synthweave-bolt', count: 1 },
-      ],
+      text: 'Clearance I, signed and stamped. The field kit is the Site\'s problem now, not yours. When you outgrow tier one, Registrar Lind in Diagnostics issues the higher clearances. She charges for the paperwork.',
       next: null,
     },
     contain: {
       speaker: 'npc',
-      text: "The mannequin. ANM-0031, the Understudy. Hit it until it slumps. While you carry a seal you'll pull your blows instead of breaking it. When it's at a tenth, right-click it and Contain, or use the button on your target panel. Do it before it rehearses getting up.",
-      options: [
-        {
-          text: 'I need another seal.',
-          conditions: [
-            { type: 'lacksItem', itemId: 'containment-seal-1' },
-            { type: 'lacksItem', itemId: 'alloy-plate' },
-          ],
-          next: 'spareSeal',
-        },
-        { text: 'Understood.', next: null },
-      ],
-    },
-    spareSeal: {
-      speaker: 'npc',
-      text: 'Lost one already? Here. Training stock. Try not to seal yourself.',
-      effects: [{ type: 'giveItem', itemId: 'containment-seal-1', count: 1 }],
+      text: "The mannequin. ANM-0031, the Understudy. Hit it until it slumps. While you hold the clearance you'll pull your blows instead of breaking it. When it's at a tenth, right-click it and Contain, or use the button on your target panel. Do it before it rehearses getting up.",
       next: null,
     },
     rest: {
@@ -384,7 +349,7 @@ export const OSEI_DIALOGUE: DialogueDefinition = {
     },
     debrief: {
       speaker: 'npc',
-      text: "Not bad for a first live drill, and you brought the mannequin back in one piece. Take two more Mk.I seals. Every boss out there is a specimen somebody failed to keep. That's everything Intake can teach you. The rest of the Site is learned the hard way.",
+      text: "Not bad for a first live drill, and you brought the mannequin back in one piece. Every boss out there is a specimen somebody failed to keep. That's everything Intake can teach you. The rest of the Site is learned the hard way.",
       next: 'leaving',
     },
     leaving: {
@@ -451,6 +416,46 @@ export const HALE_DIALOGUE: DialogueDefinition = {
         { text: 'Show me what you have.', effects: [{ type: 'openShop', shopId: 'intake-supply' }], next: null },
         { text: 'Goodbye.', next: null },
       ],
+    },
+  },
+};
+
+const HIGHEST_CLEARANCE = 'containment-clearance-9';
+
+const registrarOptions: readonly DialogueOption[] = [
+  {
+    text: 'Apply for {nextClearance}. ({nextClearancePrice} scrip, Containment {nextClearanceLevel})',
+    conditions: [{ type: 'lacksFlag', flag: HIGHEST_CLEARANCE }],
+    effects: [{ type: 'purchaseClearance' }],
+    next: 'filed',
+  },
+  { text: 'What does clearance cover?', next: 'explain' },
+  { text: 'Goodbye.', next: null },
+];
+
+export const REGISTRAR_DIALOGUE: DialogueDefinition = {
+  id: 'registrar',
+  entries: [{ node: 'unregistered', conditions: [{ type: 'lacksFlag', flag: 'containment-clearance-1' }] }, { node: 'greeting' }],
+  nodes: {
+    unregistered: {
+      speaker: 'npc',
+      text: 'Containment Registry. You have no clearance on file, {name}. Warden Osei signs off Clearance I at the end of range training, or I can file it for you now.',
+      options: registrarOptions,
+    },
+    greeting: {
+      speaker: 'npc',
+      text: 'Containment Registry. Your file reads {clearance}.',
+      options: registrarOptions,
+    },
+    filed: {
+      speaker: 'npc',
+      text: 'Stamped, or not stamped. Check your notices. Your file now reads {clearance}.',
+      options: registrarOptions,
+    },
+    explain: {
+      speaker: 'npc',
+      text: 'Each clearance lets you close a seal on specimens of that tier and below. The Site supplies the seals; you supply the paperwork, the Containment level and the fee. Clearances are issued in order, one tier at a time.',
+      options: registrarOptions,
     },
   },
 };

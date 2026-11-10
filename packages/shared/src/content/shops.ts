@@ -6,7 +6,6 @@ export const SHOPS: readonly ShopDefinition[] = [
     name: 'Intake Supply',
     greeting: 'Scrip up front. Everything here is new, which in Site Meridian means nobody has died in it yet.',
     listings: [
-      { itemId: 'containment-seal-1', price: 15 },
       { itemId: 'transit-pass', price: 10 },
       { itemId: 'medgel', price: 6 },
       { itemId: 'utility-knife', price: 30 },
@@ -32,8 +31,6 @@ export const SHOPS: readonly ShopDefinition[] = [
     name: 'Meridian Requisitions',
     greeting: 'Sign here, here and here. Scrip up front. No refunds on anything that has been inside a breach.',
     listings: [
-      { itemId: 'containment-seal-1', price: 15 },
-      { itemId: 'containment-seal-2', price: 42 },
       { itemId: 'medgel', price: 6 },
       { itemId: 'stun-baton', price: 45 },
       { itemId: 'dart-pistol', price: 35 },
@@ -53,8 +50,6 @@ export const SHOPS: readonly ShopDefinition[] = [
     name: 'Undercroft Swap',
     greeting: "Everything here fell off something. Some of it was still attached at the time. Scrip or salvage, I'm not fussy.",
     listings: [
-      { itemId: 'containment-seal-2', price: 42 },
-      { itemId: 'containment-seal-3', price: 88 },
       { itemId: 'medgel', price: 7 },
       { itemId: 'filter-respirator', price: 120 },
       { itemId: 'shock-maul', price: 260 },
@@ -71,8 +66,6 @@ export const SHOPS: readonly ShopDefinition[] = [
     name: 'Deepwatch Stores',
     greeting: 'Everything here came down the Deep Line in a crate. The crate is extra.',
     listings: [
-      { itemId: 'containment-seal-3', price: 88 },
-      { itemId: 'containment-seal-4', price: 150 },
       { itemId: 'medgel', price: 7 },
       { itemId: 'rime-salve', price: 70 },
       { itemId: 'echo-stim', price: 110 },
@@ -109,8 +102,6 @@ export const SHOPS: readonly ShopDefinition[] = [
     name: "Brann's Lockbox",
     greeting: "The Stoker never threw anything away. I've been selling it, one piece at a time, to anyone who makes it down here alive.",
     listings: [
-      { itemId: 'containment-seal-6', price: 330 },
-      { itemId: 'containment-seal-7', price: 450 },
       { itemId: 'ink-tonic', price: 150 },
       { itemId: 'cinder-draught', price: 215 },
       { itemId: 'furnace-helm', price: 2480 },
@@ -130,8 +121,6 @@ export const SHOPS: readonly ShopDefinition[] = [
     name: 'Hydroponics Exchange',
     greeting: 'We grow food, not weapons. But the Directorate keeps sending both, and only one of them spoils.',
     listings: [
-      { itemId: 'containment-seal-1', price: 15 },
-      { itemId: 'containment-seal-2', price: 42 },
       { itemId: 'medgel', price: 7 },
       { itemId: 'sap-poultice', price: 16 },
       { itemId: 'thornweave-gloves', price: 85 },
@@ -147,8 +136,6 @@ export const SHOPS: readonly ShopDefinition[] = [
     name: 'Array Locker',
     greeting: 'The relay crews left their kit when they stopped answering. Take it. They will not be calling for it.',
     listings: [
-      { itemId: 'containment-seal-4', price: 150 },
-      { itemId: 'containment-seal-5', price: 230 },
       { itemId: 'medgel', price: 7 },
       { itemId: 'echo-stim', price: 110 },
       { itemId: 'relay-helm', price: 900 },
@@ -169,8 +156,6 @@ export const SHOPS: readonly ShopDefinition[] = [
     name: 'Flood Division Stores',
     greeting: 'Everything is catalogued, dried and only slightly haunted. Please sign the ledger. In pencil. Ink is not safe here.',
     listings: [
-      { itemId: 'containment-seal-5', price: 230 },
-      { itemId: 'containment-seal-6', price: 330 },
       { itemId: 'medgel', price: 7 },
       { itemId: 'ink-tonic', price: 155 },
       { itemId: 'inkproof-helm', price: 1540 },
@@ -191,8 +176,6 @@ export const SHOPS: readonly ShopDefinition[] = [
     name: "Kessler's Cache",
     greeting: 'Six of us came through with full kit. I am the only one still wearing mine. Scrip is meaningless here, but I find I still like counting it.',
     listings: [
-      { itemId: 'containment-seal-7', price: 450 },
-      { itemId: 'containment-seal-8', price: 580 },
       { itemId: 'cinder-draught', price: 220 },
       { itemId: 'threshold-helm', price: 4250 },
       { itemId: 'threshold-plate', price: 5660 },
@@ -210,8 +193,6 @@ export const SHOPS: readonly ShopDefinition[] = [
     name: 'Undeliverables',
     greeting: 'Parcels nobody signed for. Regulations say they go to whoever is standing here. That appears to be you.',
     listings: [
-      { itemId: 'containment-seal-8', price: 580 },
-      { itemId: 'containment-seal-9', price: 735 },
       { itemId: 'cinder-draught', price: 225 },
       { itemId: 'dispatch-helm', price: 6600 },
       { itemId: 'dispatch-plate', price: 8730 },
@@ -236,14 +217,6 @@ export const SHOPS: readonly ShopDefinition[] = [
       { itemId: 'ink-tonic', price: 7 },
       { itemId: 'cinder-draught', price: 9 },
       { itemId: 'threshold-elixir', price: 12 },
-      { itemId: 'containment-seal-2', price: 3 },
-      { itemId: 'containment-seal-3', price: 5 },
-      { itemId: 'containment-seal-4', price: 8 },
-      { itemId: 'containment-seal-5', price: 11 },
-      { itemId: 'containment-seal-6', price: 15 },
-      { itemId: 'containment-seal-7', price: 19 },
-      { itemId: 'containment-seal-8', price: 24 },
-      { itemId: 'containment-seal-9', price: 30 },
     ],
     buysCategories: [],
     sellRate: 0,

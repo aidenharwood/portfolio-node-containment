@@ -479,6 +479,10 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     this.combat.disengage(player);
   }
 
+  onAttacked(player: Player): void {
+    if (this.gathering.interrupt(player)) this.notify(player, 'warning', 'You were attacked, so you stopped gathering.');
+  }
+
   onDamaged(player: Player): void {
     if (this.trams.cancelBoarding(player)) this.notify(player, 'warning', 'You were hit, so you stepped back from the tram.');
   }

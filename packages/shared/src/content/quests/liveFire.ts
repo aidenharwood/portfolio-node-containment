@@ -36,22 +36,21 @@ export const LIVE_FIRE: QuestDefinition = {
       id: 'containment-brief',
       journal: 'Osei says knocking an anomaly down is only half the job. The Directorate contains what it can. I should hear her out in the range gallery.',
       objectives: [{ type: 'talkTo', npcId: 'warden-osei', label: 'Ask Osei about containment' }],
-      onComplete: [
-        { type: 'giveItem', itemId: 'alloy-plate', count: 1 },
-        { type: 'giveItem', itemId: 'synthweave-bolt', count: 1 },
-        { type: 'notify', text: 'Osei hands you an Alloy Plate and a Synthweave Bolt. "Seal stock. Do not lose it."' },
-      ],
     },
     {
-      id: 'make-seal',
+      id: 'clearance',
       journal:
-        'Every containment needs a seal rated for the specimen. The fabricator in the Intake Workshop assembles an Alloy Plate and a Synthweave Bolt into a Containment Seal Mk.I. Seals train Containment, not Engineering.',
-      objectives: [{ type: 'craft', itemId: 'containment-seal-1', count: 1, label: 'Assemble a Containment Seal Mk.I' }],
+        'Every containment needs clearance for the specimen\'s tier. Osei will sign off my Clearance I. Higher clearances come from Registrar Lind in Diagnostics, for a fee.',
+      objectives: [{ type: 'talkTo', npcId: 'warden-osei', label: 'Collect Clearance I from Osei' }],
+      onComplete: [
+        { type: 'setFlag', flag: 'containment-clearance-1' },
+        { type: 'notify', text: 'Osei signs your containment Clearance I.' },
+      ],
     },
     {
       id: 'contain',
       journal:
-        'The Understudy (ANM-0031) stands in the training range. I wear it down until its integrity is at a tenth or less. While I carry a seal I pull my blows so I never break a containable specimen. Then I right-click it and choose Contain, or press Contain on the target panel. My Containment level must be at least the specimen level.',
+        'The Understudy (ANM-0031) stands in the training range. I wear it down until its integrity is at a tenth or less. While I hold the clearance I pull my blows so I never break a containable specimen. Then I right-click it and choose Contain, or press Contain on the target panel. My Containment level must be at least the specimen level.',
       objectives: [{ type: 'contain', creatureId: 'the-understudy', count: 1, label: 'Contain the Understudy' }],
     },
     {
@@ -69,10 +68,9 @@ export const LIVE_FIRE: QuestDefinition = {
     { type: 'grantExperience', skill: 'closeQuarters', amount: 150 },
     { type: 'grantExperience', skill: 'fortitude', amount: 100 },
     { type: 'grantExperience', skill: 'containment', amount: 100 },
-    { type: 'giveItem', itemId: 'containment-seal-1', count: 2 },
     { type: 'giveItem', itemId: 'medgel', count: 3 },
     { type: 'giveItem', itemId: 'meridian-scrip', count: 30 },
   ],
-  rewardSummary: ['150 Close Quarters XP', '100 Fortitude XP', '100 Containment XP', '2 Containment Seal Mk.I', '3 Medgel', '30 Meridian Scrip'],
+  rewardSummary: ['150 Close Quarters XP', '100 Fortitude XP', '100 Containment XP', '3 Medgel', '30 Meridian Scrip'],
   followUpQuestId: 'cleared-for-transit',
 };

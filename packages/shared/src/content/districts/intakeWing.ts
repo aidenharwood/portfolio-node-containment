@@ -58,6 +58,7 @@ export const INTAKE_WING: DistrictDefinition = {
     { instanceId: 'intake-hale', npcId: 'supply-clerk-hale', position: { x: 52, y: 3 } },
     { instanceId: 'intake-pell', npcId: 'technician-pell', position: { x: 18, y: 21 } },
     { instanceId: 'intake-osei', npcId: 'warden-osei', position: { x: 38, y: 17 } },
+    { instanceId: 'intake-registrar', npcId: 'registrar-lind', position: { x: 23, y: 5 } },
   ],
   creatures: [
     { instanceId: 'range-drone-a', creatureId: 'training-drone', position: { x: 31, y: 23 } },

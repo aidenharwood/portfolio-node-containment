@@ -54,8 +54,8 @@ describe('contract board', () => {
 
     harness.interactWithObject('atrium-contract-board', 1);
     assert.equal(harness.sink.last('shop.opened')?.shopId, 'contracts-office');
-    harness.send({ type: 'shop.buy', itemId: 'containment-seal-2', quantity: 1 });
-    assert.equal(countItem(player.record.inventory, 'containment-seal-2'), 1);
-    assert.equal(countItem(player.record.inventory, COMMENDATION_ITEM_ID), contract.commendations - 3);
+    harness.send({ type: 'shop.buy', itemId: 'trauma-foam', quantity: 1 });
+    assert.equal(countItem(player.record.inventory, 'trauma-foam'), 1);
+    assert.equal(countItem(player.record.inventory, COMMENDATION_ITEM_ID), contract.commendations - 2);
   });
 });

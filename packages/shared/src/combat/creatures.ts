@@ -74,6 +74,7 @@ export interface CreatureDefinition {
   readonly attack: CreatureAttack;
   readonly weakness: CombatStyle;
   readonly aggressive?: boolean;
+  readonly relentless?: boolean;
   readonly aggroRadius: number;
   readonly leashRadius: number;
   readonly wanderRadius: number;

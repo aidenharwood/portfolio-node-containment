@@ -80,7 +80,7 @@ export class VitalsPanel {
     this.targetClass.dataset.class = profile?.containmentClass ?? '';
     if (!creature || !profile || !self) return;
     this.targetThreshold.style.left = `${(containmentThreshold(target.vitals.maxIntegrity) / target.vitals.maxIntegrity) * 100}%`;
-    const blocker = containmentBlocker(creature, target.vitals.integrity, self.skills, self.inventory, GAME_CONTENT.items);
+    const blocker = containmentBlocker(creature, target.vitals.integrity, self.skills, self.containmentClearance);
     this.containButton.disabled = blocker !== null;
     this.containButton.title = blocker ?? `Seal ${target.name} now.`;
     this.containHint.textContent = blocker ?? 'Weakened. Seal it now.';

@@ -49,6 +49,7 @@ export interface Harness {
 export interface HarnessOptions {
   readonly prepare?: (record: CharacterRecord) => CharacterRecord;
   readonly combatRandom?: () => number;
+  readonly gatheringRandom?: () => number;
 }
 
 const harnessWorlds = new WeakMap<Player, Gameplay>();
@@ -64,7 +65,7 @@ export function createHarness(options: HarnessOptions = {}): Harness {
     autosaveIntervalMs: 60_000,
     random: () => 0.99,
     combatRandom: options.combatRandom ?? (() => 0.01),
-    gatheringRandom: () => 0.01,
+    gatheringRandom: options.gatheringRandom ?? (() => 0.01),
   });
   const created = createCharacterRecord(
     { ...createDefaultDraft(), name: 'Test Operative' },

@@ -1,6 +1,13 @@
 import {
   addItem,
+  clearanceFlag,
+  clearanceName,
+  clearancePrice,
+  clearanceRefusal,
+  countItem,
+  CURRENCY_ITEM_ID,
   locate,
+  nextClearanceTier,
   levelForExperience,
   removeItem,
   SKILL_INFO,
@@ -80,7 +87,24 @@ export class EffectRunner {
         return this.host.openTramMap(player);
       case 'discoverStation':
         return this.host.discoverStation(player, effect.stationId);
+      case 'purchaseClearance':
+        return this.purchaseClearance(player);
     }
+  }
+
+  private purchaseClearance(player: Player): void {
+    const tier = nextClearanceTier(player.record.flags);
+    const refusal = clearanceRefusal(player.record.flags, player.record.skills, countItem(player.record.inventory, CURRENCY_ITEM_ID));
+    if (refusal || tier === null) {
+      this.host.notify(player, 'warning', refusal ?? 'You already hold the highest containment clearance.');
+      return;
+    }
+    const paid = removeItem(player.record.inventory, CURRENCY_ITEM_ID, clearancePrice(tier));
+    if (!paid.ok) return;
+    player.update({ inventory: paid.value });
+    player.addFlag(clearanceFlag(tier));
+    this.host.notify(player, 'success', `You are granted containment ${clearanceName(tier)}.`);
+    this.host.raiseQuestEvent(player, { type: 'loadoutChanged' });
   }
 
   private teleport(player: Player, districtId: DistrictId, position: TilePoint): void {

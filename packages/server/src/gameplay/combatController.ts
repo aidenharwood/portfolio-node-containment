@@ -12,9 +12,7 @@ import {
   containmentReadiness,
   isWeakenedForContainment,
   isWithinContainmentReach,
-  removeItem,
-  sealFor,
-  sealTierFor,
+  clearanceTierOf,
   ignoresOutclassedPlayer,
   defeatExperience,
   effectiveDefence,
@@ -45,6 +43,7 @@ export interface CombatHost {
   notify(player: Player, tone: NoticeTone, text: string): void;
   recoverIncapacitated(player: Player): void;
   onIncapacitated(player: Player): void;
+  onAttacked(player: Player): void;
   onDamaged(player: Player): void;
   dropToGround(owner: Player, itemId: string, quantity: number, position: TilePoint): void;
   partyMatesOf(player: Player): readonly Player[];
@@ -98,7 +97,7 @@ export class CombatController {
     const level = this.world.levelOf(player);
     const creature = level.creatureByInstance(instanceId);
     if (!creature?.isAlive || !level.isInterestOf(player, creature.position)) return;
-    const blocker = containmentBlocker(creature.definition, creature.integrity, player.record.skills, player.record.inventory, this.content.items);
+    const blocker = containmentBlocker(creature.definition, creature.integrity, player.record.skills, clearanceTierOf(player.record.flags));
     if (blocker) {
       this.host.notify(player, 'warning', blocker);
       return;
@@ -221,7 +220,7 @@ export class CombatController {
   private pullsBlows(player: Player, creature: Creature): boolean {
     if (!creature.definition.containment || player.finishingTargetId === creature.entityId) return false;
     if (this.questAwaitsContainment(player, creature)) return true;
-    return containmentReadiness(creature.definition, player.record.skills, player.record.inventory, this.content.items) === null;
+    return containmentReadiness(creature.definition, player.record.skills, clearanceTierOf(player.record.flags)) === null;
   }
 
   private holdFire(player: Player, creature: Creature): void {
@@ -229,7 +228,7 @@ export class CombatController {
     if (player.heldFireOn === creature.entityId) return;
     player.heldFireOn = creature.entityId;
     const name = creature.definition.name;
-    const readiness = containmentReadiness(creature.definition, player.record.skills, player.record.inventory, this.content.items);
+    const readiness = containmentReadiness(creature.definition, player.record.skills, clearanceTierOf(player.record.flags));
     if (readiness && this.questAwaitsContainment(player, creature)) {
       this.host.notify(player, 'warning', `${name} is weakened, and your orders are to contain it. ${readiness} Attack it again only if you mean to finish it.`);
       return;
@@ -243,15 +242,12 @@ export class CombatController {
 
   private containCreature(player: Player, creature: Creature, level: LevelInstance, tick: number): void {
     player.containTargetId = null;
-    const blocker = containmentBlocker(creature.definition, creature.integrity, player.record.skills, player.record.inventory, this.content.items);
-    const sealId = blocker ? null : sealFor(player.record.inventory, this.content.items, sealTierFor(creature.definition));
-    const removed = sealId ? removeItem(player.record.inventory, sealId, 1) : null;
-    if (!removed?.ok) {
-      this.host.notify(player, 'warning', blocker ?? 'You have no seal to close.');
+    const blocker = containmentBlocker(creature.definition, creature.integrity, player.record.skills, clearanceTierOf(player.record.flags));
+    if (blocker) {
+      this.host.notify(player, 'warning', blocker);
       this.disengage(player);
       return;
     }
-    player.update({ inventory: removed.value });
     this.world.face(player, creature.position);
     player.lastCombatTick = tick;
     this.defeatCreature(creature, level, player, tick, player);
@@ -326,6 +322,7 @@ export class CombatController {
     this.engageBoth(player, creature, tick);
     player.lastCombatTick = tick;
     player.setIntegrity(player.integrity - outcome.damage);
+    this.host.onAttacked(player);
     if (outcome.damage > 0) this.host.onDamaged(player);
     level.broadcastNear(player.position, {
       type: 'combat.hit',
@@ -496,7 +493,7 @@ export class CombatController {
     const creatureBusy = creature.engagedWith !== null && tick < creature.engagedUntilTick && !this.isMultiCombat(level, creature.position);
     for (const player of level.players.values()) {
       if (player.isIncapacitated || player.isRidingTram || level.isSafe(player.position)) continue;
-      if (ignoresOutclassedPlayer(creature.definition.level, combatLevel(player.record.skills))) continue;
+      if (!creature.definition.relentless && ignoresOutclassedPlayer(creature.definition.level, combatLevel(player.record.skills))) continue;
       if (creatureBusy && creature.engagedWith !== player.entityId) continue;
       if (this.playerBusyElsewhere(player, creature, level, tick)) continue;
       const distance = chebyshevDistance(creature.position, player.position);
