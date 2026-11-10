@@ -115,7 +115,7 @@ export function createSocialTab(connection: GameConnection, social: SocialState,
   return {
     id: 'social',
     label: 'Social',
-    glyph: '☍',
+    icon: 'social',
     element,
     update(self: SelfState) {
       if (selfId === self.characterId) return;

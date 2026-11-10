@@ -290,21 +290,27 @@
   color: var(--color-text-faint);
 }
 
-.panel-tab-glyph {
-  font-size: 16px;
+.panel-tab-icon {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .panel-tab.attention {
   color: var(--color-gold);
 }
 
-.panel-tab.attention .panel-tab-glyph {
+.panel-tab.attention .panel-tab-icon {
   animation: tab-attention 1.2s ease-in-out 3;
 }
 
 @keyframes tab-attention {
   50% {
-    text-shadow: 0 0 10px var(--color-gold);
+    filter: drop-shadow(0 0 6px var(--color-gold));
     transform: scale(1.25);
   }
 }
@@ -2139,7 +2145,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .panel-tab.attention .panel-tab-glyph,
+  .panel-tab.attention .panel-tab-icon,
   .skill-tile.levelled {
     animation: none;
   }

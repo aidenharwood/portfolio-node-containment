@@ -40,7 +40,7 @@ ${STAT_INFO[info.gearStat].name}: ${STAT_INFO[info.gearStat].summary}` : info.de
   return {
     id: 'dossier',
     label: 'Dossier',
-    glyph: '☰',
+    icon: 'dossier',
     element,
     update(self: SelfState) {
       const appearance = world.selfEntity?.appearance;

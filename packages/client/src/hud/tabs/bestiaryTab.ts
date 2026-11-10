@@ -134,7 +134,7 @@ export function createBestiaryTab(): PanelTab {
   return {
     id: 'bestiary',
     label: 'Bestiary',
-    glyph: '❖',
+    icon: 'bestiary',
     element,
     update(current: SelfState) {
       self = current;

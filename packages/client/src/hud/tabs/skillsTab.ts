@@ -126,7 +126,7 @@ export function createSkillsTab(): PanelTab {
   return {
     id: 'skills',
     label: 'Skills',
-    glyph: '◈',
+    icon: 'skills',
     element,
     bindAttention(signal) {
       signalAttention = signal;

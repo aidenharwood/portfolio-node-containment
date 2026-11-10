@@ -56,7 +56,7 @@ export function createEquipmentTab(connection: GameConnection, world: WorldState
   return {
     id: 'equipment',
     label: 'Loadout',
-    glyph: '⛨',
+    icon: 'equipment',
     element,
     update(next) {
       self = next;
