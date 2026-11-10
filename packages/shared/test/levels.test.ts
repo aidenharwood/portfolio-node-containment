@@ -88,7 +88,7 @@ describe('levels', () => {
   });
 
   test('locate translates district-local points into level points', () => {
-    assert.deepEqual(locate(GAME_CONTENT, 'meridian-atrium', { x: 5, y: 28 }), { levelId: 'main-floor', position: { x: 61, y: 58 } });
+    assert.deepEqual(locate(GAME_CONTENT, 'meridian-atrium', { x: 5, y: 28 }), { levelId: 'main-floor', position: { x: 187, y: 58 } });
   });
 
   test('locate is undefined for an unknown district', () => {

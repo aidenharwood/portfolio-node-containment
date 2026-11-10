@@ -70,6 +70,12 @@ describe('levels', () => {
     assert.equal(harness.sink.messages.filter((message) => message.type === 'world.entered').length, 1);
   });
 
+  test('main-floor locations saved in level coordinates before the floor grew west are shifted with it', () => {
+    const atriumLocal = { x: 6, y: 31 };
+    const oldLevelPoint = { x: atriumLocal.x + 56, y: atriumLocal.y + 30 };
+    assert.deepEqual(restoreLocation({ levelId: 'main-floor', position: oldLevelPoint }, GAME_CONTENT), at('meridian-atrium', atriumLocal));
+  });
+
   test('walking into a district charts it on the world map', () => {
     const harness = createHarness({ prepare: placedAt(at('meridian-atrium', { x: 3, y: 24 })) });
     const charted = () => harness.sink.last('player.state')?.self.visitedDistricts ?? [];
