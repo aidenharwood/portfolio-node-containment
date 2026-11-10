@@ -76,19 +76,21 @@ Object models face south (+y on the map) by default. Wall-mounted or doorway obj
 
 ### Add a district
 
-A district is one hand-built map. It becomes part of the world when a level places it.
+Read `WORLD_DESIGN.md` first: it holds the rules, and `findWorldDesignIssues` enforces most of them. A district is drawn from a blueprint and becomes part of the world when a level places it. `content/districts/brineGalleries.ts` is a full example.
 
-1. Give it a `tier` (1 is the Intake Wing and Atrium, 4 is Sector 3, Deepwatch and the Cryovault, 8 is Meridian Below, 9 is the Dead Letter Office, 10 is the Brine Galleries, 11 is the Salt Cathedral, 12 is the Vesper Wards and 13 is the Vesper Pharmacy). Crafting checks use it to decide which gear its materials may feed.
+1. Give it a `tier` (1 is the Intake Wing and Atrium, 4 is Sector 3, Deepwatch and the Cryovault, 8 is Meridian Below, 9 is the Dead Letter Office, 10 is the Brine Galleries, 11 is the Salt Cathedral, 12 is the Vesper Wards and 13 is the Vesper Pharmacy). Crafting checks use it to decide which gear its materials may feed, and tier may not fall with distance from the level spawn.
    Also give it a `region` (`content/regions.ts`). Overworld districts must be reachable on foot from the Atrium; mark one `reachedOnlyByTram` only if it is meant to be.
-2. Draw the map as an array of equal-length strings using `MAP_LEGEND` (`shared/src/world/tiles.ts`): `#` wall, `W` glass, `D` door, `.` plating, `,` concrete, `=` grate, `%` rust, `_` carpet, `!` hazard, `~` coolant, `:` soil, `T` tram track.
-3. Define `areas` (rectangles that `enterArea` objectives can use), `npcs`, `objects`, `lights` and `ambience`. Combat is single-way by default; set `multiCombat: true` on an area for boss fights with adds. Mark outposts, camps and hubs `safe: true`: friendly NPCs on a floor level must stand in one, creatures must be placed outside one, and gathering nodes belong in the hostile areas around it.
-4. Register it in `DISTRICTS` in `content/gameContent.ts`.
-5. Place it on a level (`content/levels/*.ts`) with an `origin` in level coordinates. Districts on one level must not overlap.
-6. Connect it:
-   - **Walking:** open a doorway at least five tiles wide in its outer wall and add a corridor district (see `content/districts/concourses.ts`) whose floor lines up with the doors on both sides. Dress it with litter, cable runs and bridges over coolant culverts.
-   - **Gated:** end the corridor at the district wall with a pressure door: a `passage` object with conditions and a `teleport` inside, plus a return door that teleports back onto the corridor.
-   - **Across levels:** use an object whose interaction has conditions and a `teleport` effect, or a tram line. A teleport targets `{ districtId, position }` in district-local coordinates.
-7. Run `npm test`. `findLevelIssues` flags overlaps, walkable tiles nothing can reach, duplicate instance ids, and spawns, teleports or recoveries on unwalkable tiles.
+2. Draw it with `drawBlueprint` (`shared/src/world/blueprint.ts`): `room` for each named space (`rect`, `octagon` or `round`), `link` for the passages and doorways between rooms, `exit` for each way out of the district, `patch` for pools, track, partitions and floor strips, `pillars` for colonnades, `track` for a tram bed. Never draw walls; they appear around every floor tile. Set `map`, `rooms` and `exits` from the result.
+3. Declare areas with `plan.area(room, name, options)`. Combat is single-way by default; set `multiCombat: true` for boss fights with adds. Mark outposts, camps and hubs `safe: true`: friendly NPCs on a floor level must stand in one, creatures must be placed outside one, and gathering nodes belong in the hostile areas around it.
+4. Place `npcs`, `objects`, `assemblies` and `creatures` with `plan.at(room, dx, dy)`, which throws at load if the point is not floor. Use `plan.spot` for things on unwalkable tiles (a tram car on its track), `plan.linkTile` or `plan.exits` for doors, and `scatterGroups` and `scatterPacks` (`content/districts/populate.ts`) for bulk props, litter, nodes and creature packs.
+5. Export the points other content needs (tram platform, teleport landings, spawn, recovery) as the district's `anchors`. Other files and tests read the anchor.
+6. Register it in `DISTRICTS` in `content/gameContent.ts`.
+7. Place it on a level (`content/levels/*.ts`) with `joinDistricts` (`shared/src/world/levelPlan.ts`): name the exit it attaches by and the neighbour's exit it meets. Exits must face each other and be the same width.
+8. Connect it:
+   - **Walking:** open exits are at least nine tiles wide and meet a neighbour's floor. Put a filler district between places (see `content/districts/verdanceConcourse.ts`) and give the new district two ways in unless it is a deliberate `deadEnd`.
+   - **Gated:** a two-wide `exit` or `link` marked `gate` with a door object (`door: { conditions }`) on its tiles. See Doors in `ARCHITECTURE.md`.
+   - **Across levels:** use an object whose interaction has conditions and a `teleport` effect, or a tram line. A teleport targets `{ districtId, position }`, with the position read from the destination's `anchors`.
+9. Run `npm test`. `findLevelIssues` flags overlaps, walkable tiles nothing can reach, duplicate instance ids, and spawns, teleports or recoveries on unwalkable tiles; `findWorldDesignIssues` flags the rest.
 
 ### Add a pocket dimension
 
@@ -98,9 +100,9 @@ A district is one hand-built map. It becomes part of the world when a level plac
 
 ### Add a tram station
 
-1. Pick an area in the district to act as the platform. Lay a two-tile-wide strip of `T` track against one wall, running wall to wall so both ends meet a wall (the tunnel mouths), and keep the wall behind it solid. Edge the platform side with `!` hazard tiles.
+1. Pick a room in the district to act as the platform. `patch` a two-tile-wide strip of `track` against one wall, running wall to wall so both ends meet a wall (the tunnel mouths), and keep the wall behind it solid. Edge the platform side with a `hazard` strip. On the overworld, continue the line beyond the tunnel mouth to the next station (`WORLD_DESIGN.md`, rule 17).
    Place exactly one `tram-car` assembly on the track, facing `north` or `south` for a track along x and `east` or `west` for one along y. Its pieces open the transit map; a `tram-stop` pylon on the platform is optional scenery.
-2. Add a `TramStationDefinition` to `TRAM_STATIONS` in `content/tramNetwork.ts`, with an arrival `platform` tile inside that area, in district-local coordinates.
+2. Add a `TramStationDefinition` to `TRAM_STATIONS` in `content/tramNetwork.ts`, with an arrival `platform` tile inside that area, read from the district's `anchors`.
 3. Add the station to a line in `TRAM_LINES`. Neighbours in a line's list are one stop apart. A station's car serves every line through it, and only those, so riders change lines by getting off at a shared station.
 4. Run `npm test`. `findTramIssues` checks the area, the platform, the car and its track, and the line.
 

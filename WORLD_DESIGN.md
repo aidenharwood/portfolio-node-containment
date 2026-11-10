@@ -1,6 +1,6 @@
 # World design guide
 
-Read this before adding or changing a district, a level or anything placed in one. It applies to humans and AI agents alike. The rules marked **checked** are enforced by `findWorldDesignIssues` (`packages/shared/src/content/worldDesignIntegrity.ts`), which runs inside `findContentIssues`: the server will not boot and `npm test` fails when one is broken. The rest is judgement, and reviewers hold changes to it.
+Read this before adding or changing a district, a level or anything placed in one. It applies to humans and AI agents alike. Every district in the game follows these rules; there is no exemption list. The rules marked **checked** are enforced by `findWorldDesignIssues` (`packages/shared/src/content/worldDesignIntegrity.ts`), which runs inside `findContentIssues`: the server will not boot and `npm test` fails when one is broken. The rest is judgement, and reviewers hold changes to it.
 
 ## What the world should feel like
 
@@ -77,7 +77,3 @@ Do not build on these; later wings attach here (see `docs/superpowers/specs/2026
 4. Attach it in the level file with `joinDistricts`, and attach filler districts so it has two ways in.
 5. Register it in `gameContent.ts`. Run `npm run typecheck` and `npm test` and fix what `findContentIssues` reports.
 6. Look at it: run the game and walk it end to end.
-
-## Districts not yet rebuilt
-
-`LEGACY_DISTRICTS` in `worldDesignIntegrity.ts` lists districts that predate these rules and are skipped by the checks. Remove a district from the list in the same change that rebuilds it. Never add to the list.

@@ -113,3 +113,35 @@ Each phase leaves `npm run typecheck` and `npm test` green.
 4. The Deep and the Undercroft.
 5. Pockets.
 6. Benchmark, world map polish, `ARCHITECTURE.md` and `CONTRIBUTING.md`, removal of `LEGACY_DISTRICTS`.
+
+## Outcome
+
+All six phases are done. Every district on every level is drawn from a blueprint and `LEGACY_DISTRICTS` is gone.
+
+| Level | Before | After |
+| ----- | ------ | ----- |
+| Main floor | 454 × 106 | 1283 × 295 |
+| The Deep | 188 × 59 | 340 × 342 |
+| Undercroft | 40 × 26 | 110 × 80 |
+| Calder Deeps, Cold Ward | 40 × 30 | 110 × 84 |
+| Meridian Below | 46 × 34 | 100 × 75 |
+| Dead Letter Office | 36 × 24 | 72 × 52 |
+| Verdant Fold | 20 × 15 | 46 × 30 |
+| The Threshold | 20 × 14 | 38 × 33 |
+
+Where the result differs from section 1:
+
+- The main floor is wider and flatter than planned. The wings still run mostly outward along the east–west axis before turning north (Vesper) and south (Calder).
+- Sector Two sits inside the Circuit and is reached only through the Atrium bulkhead, so the ring does not join it or the Waterworks to their neighbours.
+- The Meridian Line is a trunk through the chasm with a spur to each station, because most platforms back onto a room at one end. Trams reverse at stations.
+- On the Deep, track is drawn at each platform, not around the ring.
+
+`npm run bench:tick` on the rebuilt main floor (one layer, players wandering):
+
+| Players | Tick mean | Tick p95 | Budget used at p95 | Per-player traffic |
+| ------- | --------- | -------- | ------------------ | ------------------ |
+| 100 | 27.6ms | 53.5ms | 18% | ~2.7 KB/s |
+| 300 | 145.0ms | 175.9ms | 59% | ~6.0 KB/s |
+| 600 | 317.8ms | 379.0ms | 126% | ~11.1 KB/s |
+
+Traffic per player fell about sixfold, since players are spread far thinner. Tick time rose about threefold at 300 players against the old floor (54ms p95): more chunks are watched, so more creatures are awake, and paths cross larger open rooms. The cap stays at 300. The tick cost is worth profiling before the next wing lands.
