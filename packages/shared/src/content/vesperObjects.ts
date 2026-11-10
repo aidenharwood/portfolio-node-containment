@@ -1,4 +1,6 @@
 import type { GatheringSource } from '../crafting/gathering.ts';
+import { VESPER_CELLARS_ANCHORS } from './districts/vesperCellars.ts';
+import { VESPER_LODGE_ANCHORS } from './districts/vesperLodge.ts';
 import type { Condition } from '../rules/conditions.ts';
 import type { WorldObjectDefinition, WorldObjectModel } from '../world/entities.ts';
 
@@ -122,7 +124,7 @@ export const VESPER_OBJECTS: readonly WorldObjectDefinition[] = [
         verb: 'Descend',
         conditions: [{ type: 'questCompleted', questId: 'night-rounds' }],
         failureText: 'Matron Ashby has locked the cold ward lift. Nobody goes down until the night rounds are done.',
-        effects: [{ type: 'teleport', districtId: 'vesper-cellars', position: { x: 35, y: 4 } }],
+        effects: [{ type: 'teleport', districtId: 'vesper-cellars', position: VESPER_CELLARS_ANCHORS.liftArrival }],
       },
     ],
   },
@@ -133,7 +135,7 @@ export const VESPER_OBJECTS: readonly WorldObjectDefinition[] = [
     model: 'transitLift',
     blocksMovement: true,
     light: { radius: 3, color: '#6ad8b8', intensity: 0.6, flicker: true },
-    interactions: [{ verb: 'Ascend', effects: [{ type: 'teleport', districtId: 'vesper-lodge', position: { x: 3, y: 5 } }] }],
+    interactions: [{ verb: 'Ascend', effects: [{ type: 'teleport', districtId: 'vesper-lodge', position: VESPER_LODGE_ANCHORS.liftArrival }] }],
   },
   {
     id: 'cellar-ledger',

@@ -32,7 +32,7 @@ const plan = drawBlueprint({ width: 105, height: 68 }, [
   link('nursery', 'grow-hall', 9, 'concrete'),
   link('greenhouse', 'grow-hall', 9, 'concrete'),
   exit('east', 'grow-hall', 'east', 13),
-  exit('west', 'seed-vault', 'west', 5, { gate: true }),
+  exit('west', 'seed-vault', 'west', 13, { offset: 0 }),
 ]);
 
 export const HYDROPONICS_ANCHORS = {

@@ -1,4 +1,46 @@
-import type { DistrictDefinition } from '../../world/district.ts';
+import { drawBlueprint, exit, link, patch, pillars, room } from '../../world/blueprint.ts';
+import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
+import type { TilePoint } from '../../world/geometry.ts';
+import { WATERWORKS_ANCHORS } from './waterworks.ts';
+import { INDUSTRIAL_PROPS, LITTER, scatterGroups } from './populate.ts';
+
+const plan = drawBlueprint({ width: 67, height: 70 }, [
+  room('causeway', 0, 1, 66, 13, 'concrete'),
+  room('salt-road', 53, 14, 13, 56, 'concrete'),
+  room('weighbridge', 6, 20, 40, 30, 'rust'),
+  link('causeway', 'weighbridge', 7, 'concrete'),
+  link('weighbridge', 'salt-road', 5, 'concrete'),
+  patch(16, 30, 20, 1, 'hazard'),
+  patch(16, 40, 20, 1, 'hazard'),
+  pillars('causeway', 8, 6, 3),
+  exit('west', 'causeway', 'west', 13),
+  exit('south', 'salt-road', 'south', 13),
+]);
+
+export const CALDER_CAUSEWAY_ANCHORS = {
+  
+} satisfies Record<string, TilePoint>;
+
+const npcs: NpcPlacement[] = [];
+
+const fixtures: ObjectPlacement[] = [
+  
+    { instanceId: 'cc-sign', objectId: 'warning-sign', position: plan.at('causeway', 2, 0) },
+    { instanceId: 'cc-pipes-a', objectId: 'pipe-cluster', position: plan.at('causeway', 19, 0) },
+    { instanceId: 'cc-pipes-b', objectId: 'pipe-cluster', position: plan.at('causeway', 50, 12) },
+    { instanceId: 'cc-puddle', objectId: 'litter-puddle', position: plan.at('causeway', 28, 2) },
+    { instanceId: 'cc-rubble', objectId: 'litter-rubble', position: plan.at('causeway', 59, 1) },
+    { instanceId: 'cc-gravel', objectId: 'litter-gravel', position: plan.at('causeway', 9, 3) },
+  ];
+
+const placed = [...npcs, ...fixtures];
+
+const furnishings = scatterGroups(plan, placed, [
+  ['causeway', 'cc-prop', INDUSTRIAL_PROPS, 8],
+  ['causeway', 'cc-litter', LITTER, 6],
+  ['salt-road', 'cc-road-litter', LITTER, 8],
+  ['weighbridge', 'cc-weighbridge-prop', ['storage-rack', 'pipe-cluster', 'wall-locker', 'litter-gravel'], 10],
+]);
 
 export const CALDER_CAUSEWAY: DistrictDefinition = {
   id: 'calder-causeway',
@@ -6,32 +48,24 @@ export const CALDER_CAUSEWAY: DistrictDefinition = {
   subtitle: 'Calder Wing — Sealed Salt Road',
   tier: 10,
   region: 'calder',
-  recovery: { districtId: 'waterworks', position: { x: 4, y: 18 } },
+  recovery: { districtId: 'waterworks', position: WATERWORKS_ANCHORS.recovery },
   ambience: { darkness: 0.62, tint: '#1a1210', fog: '#20160f', fixtures: 'failing' },
-  map: [
-    '##########################',
-    ',,,,,,,,,,,,,,,,,,,,,,,,,,',
-    ',,,,,,,,,,,,,,,,,,,,,,,,,,',
-    ',,,,,,,,,,,,,,,,,,,,,,,,,,',
-    ',,,,,,,,,,,,,,,,,,,,,,,,,,',
-    ',,,,,,,,,,,,,,,,,,,,,,,,,,',
-    '##########################',
-  ],
+  map: plan.map,
+  rooms: plan.rooms,
+  exits: plan.exits,
+  anchors: CALDER_CAUSEWAY_ANCHORS,
   areas: [
-    { id: 'causeway', name: 'Calder Causeway', rect: { x: 0, y: 1, width: 26, height: 5 } },
+    plan.area('causeway', 'Calder Causeway'),
+    plan.area('salt-road', 'Salt Road'),
+    plan.area('weighbridge', 'Weighbridge'),
   ],
-  npcs: [],
-  objects: [
-    { instanceId: 'cc-sign', objectId: 'warning-sign', position: { x: 2, y: 1 } },
-    { instanceId: 'cc-pipes-a', objectId: 'pipe-cluster', position: { x: 8, y: 1 } },
-    { instanceId: 'cc-pipes-b', objectId: 'pipe-cluster', position: { x: 18, y: 5 } },
-    { instanceId: 'cc-puddle', objectId: 'litter-puddle', position: { x: 11, y: 3 } },
-    { instanceId: 'cc-rubble', objectId: 'litter-rubble', position: { x: 21, y: 2 } },
-    { instanceId: 'cc-gravel', objectId: 'litter-gravel', position: { x: 5, y: 4 } },
-  ],
+  npcs,
+  objects: [...fixtures, ...furnishings],
   lights: [
-    { position: { x: 4, y: 3 }, radius: 5, color: '#ff9a6a', intensity: 0.4 },
-    { position: { x: 13, y: 3 }, radius: 5, color: '#ffd27f', intensity: 0.35 },
-    { position: { x: 22, y: 3 }, radius: 5, color: '#ff9a6a', intensity: 0.45 },
+    { position: plan.center('salt-road'), radius: 9, color: '#ffd27f', intensity: 0.5 },
+    { position: plan.center('weighbridge'), radius: 9, color: '#ffb347', intensity: 0.5 },
+    { position: plan.spot('causeway', 6, 2), radius: 9, color: '#ff9a6a', intensity: 0.4 },
+    { position: plan.spot('causeway', 34, 2), radius: 9, color: '#ffd27f', intensity: 0.35 },
+    { position: plan.spot('causeway', 62, 2), radius: 9, color: '#ff9a6a', intensity: 0.45 },
   ],
 };

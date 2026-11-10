@@ -18,16 +18,6 @@ export const LEGACY_DISTRICTS: ReadonlySet<DistrictId> = new Set([
   'meridian-below',
   'verdant-fold',
   'dead-letter-office',
-  'calder-causeway',
-  'brine-galleries',
-  'calder-gatehouse',
-  'salt-cathedral',
-  'calder-deeps',
-  'vesper-causeway',
-  'vesper-wards',
-  'vesper-lodge',
-  'vesper-pharmacy',
-  'vesper-cellars',
 ]);
 
 export const MIN_EXIT_WIDTH = 9;

@@ -1,4 +1,6 @@
 import type { DistrictId, TramStationId } from '../ids.ts';
+import { CALDER_GATEHOUSE_ANCHORS } from './districts/calderGatehouse.ts';
+import { VESPER_LODGE_ANCHORS } from './districts/vesperLodge.ts';
 import { HYDROPONICS_ANCHORS } from './districts/hydroponics.ts';
 import { INTAKE_WING_ANCHORS } from './districts/intakeWing.ts';
 import { ATRIUM_ANCHORS } from './districts/meridianAtrium.ts';
@@ -13,8 +15,8 @@ export const TRAM_STATIONS: readonly TramStationDefinition[] = [
   { id: 'atrium-transit', name: 'Atrium Transit Bay', districtId: 'meridian-atrium', areaId: 'lift-bay', platform: ATRIUM_ANCHORS.transit },
   { id: 'yards-depot', name: 'Service Yards Depot', districtId: 'service-yards', areaId: 'yard-office', platform: SERVICE_YARDS_ANCHORS.tramPlatform },
   { id: 'verdance-platform', name: 'Verdance Platform', districtId: 'hydroponics', areaId: 'platform', platform: HYDROPONICS_ANCHORS.tramPlatform },
-  { id: 'calder-platform', name: 'Calder Gatehouse Platform', districtId: 'calder-gatehouse', areaId: 'gatehouse', platform: { x: 8, y: 17 } },
-  { id: 'vesper-platform', name: "Vesper Porter's Lodge Platform", districtId: 'vesper-lodge', areaId: 'lodge', platform: { x: 8, y: 17 } },
+  { id: 'calder-platform', name: 'Calder Gatehouse Platform', districtId: 'calder-gatehouse', areaId: 'gatehouse', platform: CALDER_GATEHOUSE_ANCHORS.tramPlatform },
+  { id: 'vesper-platform', name: "Vesper Porter's Lodge Platform", districtId: 'vesper-lodge', areaId: 'lodge', platform: VESPER_LODGE_ANCHORS.tramPlatform },
   { id: 'deepwatch-platform', name: 'Deepwatch Platform Hall', districtId: 'deepwatch', areaId: 'platform-hall', platform: { x: 4, y: 11 } },
   { id: 'cryovault-dock', name: 'Cryovault Receiving Dock', districtId: 'cryovault', areaId: 'dock', platform: { x: 4, y: 5 } },
   { id: 'array-lobby', name: 'Signal Array Uplink Lobby', districtId: 'signal-array', areaId: 'uplink-lobby', platform: { x: 4, y: 5 } },

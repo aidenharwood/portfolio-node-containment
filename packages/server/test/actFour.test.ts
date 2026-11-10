@@ -85,23 +85,23 @@ describe('act four: postmarked', () => {
     assert.equal(stepOf(harness, 'postmarked'), 1);
 
     travel(harness, at('waterworks', localInRoom('waterworks', 'filtration-beds', { x: 111, y: 16 })));
-    walkTo(harness, levelPoint('calder-causeway', { x: 5, y: 3 }));
+    walkTo(harness, levelPoint('calder-causeway', localInRoom('calder-causeway', 'causeway', { x: 9, y: 2 })));
     assert.equal(districtOf(player), 'calder-causeway', 'the Waterworks east wall opens onto the causeway on foot');
     assert.equal(stepOf(harness, 'postmarked'), 2);
 
-    travel(harness, at('brine-galleries', { x: 8, y: 6 }));
+    travel(harness, at('brine-galleries', localInRoom('brine-galleries', 'brine-pans', { x: 16, y: 15 })));
     for (const suffix of ['a', 'b', 'c', 'd', 'e', 'f']) defeat(harness, `bg-pans-crawler-${suffix}`);
     assert.equal(stepOf(harness, 'postmarked'), 3);
 
-    travel(harness, at('brine-galleries', { x: 40, y: 16 }));
-    walkTo(harness, levelPoint('calder-gatehouse', { x: 3, y: 9 }));
+    travel(harness, at('brine-galleries', localInRoom('brine-galleries', 'gate-approach', { x: 52, y: 3 })));
+    walkTo(harness, levelPoint('calder-gatehouse', localInRoom('calder-gatehouse', 'gatehouse', { x: 2, y: 17 })));
     assert.equal(districtOf(player), 'brine-galleries', 'the gatehouse door stays shut until the intercom is answered');
 
     use(harness, 'bg-intercom');
     assert.ok(player.hasFlag(CALDER_GATE_FLAG));
     assert.equal(stepOf(harness, 'postmarked'), 4);
 
-    walkTo(harness, levelPoint('calder-gatehouse', { x: 3, y: 9 }));
+    walkTo(harness, levelPoint('calder-gatehouse', localInRoom('calder-gatehouse', 'gatehouse', { x: 2, y: 17 })));
     assert.equal(districtOf(player), 'calder-gatehouse');
     talk(harness, 'cg-brandt', 'We are Meridian');
     assert.equal(stepOf(harness, 'postmarked'), 'completed');
@@ -109,7 +109,7 @@ describe('act four: postmarked', () => {
   });
 
   test('Salt of the Earth ends the lost shifts and Cathedral of Salt silences the Bishop', () => {
-    const harness = createHarness({ prepare: veteranAt(at('calder-gatehouse', { x: 7, y: 6 }), ['postmarked'], [CALDER_GATE_FLAG]) });
+    const harness = createHarness({ prepare: veteranAt(at('calder-gatehouse', localInRoom('calder-gatehouse', 'gatehouse', { x: 25, y: 9 })), ['postmarked'], [CALDER_GATE_FLAG]) });
     const { player } = harness;
 
     talk(harness, 'cg-brandt', 'Is there anything Calder needs?', "I'll end the shift.");
@@ -121,11 +121,11 @@ describe('act four: postmarked', () => {
     }
     assert.equal(stepOf(harness, 'salt-of-the-earth'), 1);
 
-    travel(harness, at('brine-galleries', { x: 16, y: 27 }));
+    travel(harness, at('brine-galleries', localInRoom('brine-galleries', 'wight-drifts', { x: 21, y: 13 })));
     for (const suffix of ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']) defeat(harness, `bg-drifts-wight-${suffix}`);
     assert.equal(stepOf(harness, 'salt-of-the-earth'), 2);
 
-    travel(harness, at('calder-gatehouse', { x: 7, y: 6 }));
+    travel(harness, at('calder-gatehouse', localInRoom('calder-gatehouse', 'gatehouse', { x: 25, y: 9 })));
     talk(harness, 'cg-brandt', 'Take your time.');
     assert.equal(stepOf(harness, 'salt-of-the-earth'), 'completed');
 
@@ -133,15 +133,15 @@ describe('act four: postmarked', () => {
     assert.equal(stepOf(harness, 'cathedral-of-salt'), 0);
     assert.ok(player.hasFlag(CALDER_NAVE_FLAG));
 
-    travel(harness, at('calder-gatehouse', { x: 13, y: 9 }));
-    walkTo(harness, levelPoint('salt-cathedral', { x: 5, y: 18 }));
+    travel(harness, at('calder-gatehouse', localInRoom('calder-gatehouse', 'gatehouse', { x: 56, y: 17 })));
+    walkTo(harness, levelPoint('salt-cathedral', localInRoom('salt-cathedral', 'nave-steps', { x: 8, y: 15 })));
     assert.equal(stepOf(harness, 'cathedral-of-salt'), 1);
 
-    walkTo(harness, levelPoint('salt-cathedral', { x: 16, y: 18 }));
+    walkTo(harness, levelPoint('salt-cathedral', localInRoom('salt-cathedral', 'the-nave', { x: 2, y: 25 })));
     defeat(harness, 'sc-nave-bishop');
     assert.equal(stepOf(harness, 'cathedral-of-salt'), 2);
 
-    travel(harness, at('calder-gatehouse', { x: 7, y: 6 }));
+    travel(harness, at('calder-gatehouse', localInRoom('calder-gatehouse', 'gatehouse', { x: 25, y: 9 })));
     talk(harness, 'cg-brandt', 'We will be expecting you.');
     assert.equal(stepOf(harness, 'cathedral-of-salt'), 'completed');
     assert.ok(player.hasFlag('storyline.act-four-calder-complete'));
@@ -149,7 +149,7 @@ describe('act four: postmarked', () => {
 
   test('the Calder Gatehouse side quests run from the commissary down to the lowest gallery', () => {
     const stocked = (record: CharacterRecord): CharacterRecord => {
-      const prepared = veteranAt(at('calder-gatehouse', { x: 7, y: 6 }), ['postmarked', 'salt-of-the-earth'], [CALDER_GATE_FLAG])(record);
+      const prepared = veteranAt(at('calder-gatehouse', localInRoom('calder-gatehouse', 'gatehouse', { x: 25, y: 9 })), ['postmarked', 'salt-of-the-earth'], [CALDER_GATE_FLAG])(record);
       const withSalt = addItem(prepared.inventory, GAME_CONTENT.items, 'rock-salt', 6).inventory;
       return { ...prepared, inventory: addItem(withSalt, GAME_CONTENT.items, 'crawler-carapace', 4).inventory };
     };
@@ -168,14 +168,14 @@ describe('act four: postmarked', () => {
     assert.equal(player.levelId, 'calder-deeps');
     assert.equal(stepOf(harness, 'the-lowest-gallery'), 1);
 
-    travel(harness, at('calder-deeps', { x: 20, y: 9 }));
+    travel(harness, at('calder-deeps', localInRoom('calder-deeps', 'old-workings', { x: 28, y: 21 })));
     for (const suffix of ['a', 'b', 'c', 'd', 'e', 'f']) defeat(harness, `cd-workings-wight-${suffix}`);
     assert.equal(stepOf(harness, 'the-lowest-gallery'), 2);
-    travel(harness, at('calder-deeps', { x: 22, y: 22 }));
+    travel(harness, at('calder-deeps', localInRoom('calder-deeps', 'foremans-office', { x: 18, y: 2 })));
     defeat(harness, 'cd-office-foreman');
     assert.equal(stepOf(harness, 'the-lowest-gallery'), 3);
 
-    travel(harness, at('calder-deeps', { x: 3, y: 3 }));
+    travel(harness, at('calder-deeps', localInRoom('calder-deeps', 'lift-landing', { x: 2, y: 2 })));
     use(harness, 'cd-lift');
     assert.equal(districtOf(player), 'calder-gatehouse');
     talk(harness, 'cg-brandt', 'He can rest now.');
@@ -184,11 +184,11 @@ describe('act four: postmarked', () => {
     talk(harness, 'cg-brandt', 'Is the log closed?', "I'll clock him off.");
     assert.equal(countItem(player.record.inventory, 'foremans-card'), 1);
     use(harness, 'cg-lift');
-    travel(harness, at('calder-deeps', { x: 35, y: 27 }));
+    travel(harness, at('calder-deeps', localInRoom('calder-deeps', 'foremans-office', { x: 58, y: 30 })));
     use(harness, 'cd-time-clock');
     assert.equal(stepOf(harness, 'clocking-off'), 1);
     assert.equal(countItem(player.record.inventory, 'foremans-card'), 0);
-    travel(harness, at('calder-gatehouse', { x: 7, y: 6 }));
+    travel(harness, at('calder-gatehouse', localInRoom('calder-gatehouse', 'gatehouse', { x: 25, y: 9 })));
     talk(harness, 'cg-brandt', 'Close the log.');
     assert.equal(stepOf(harness, 'clocking-off'), 'completed');
   });

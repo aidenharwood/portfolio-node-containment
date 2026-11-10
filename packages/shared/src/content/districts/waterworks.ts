@@ -33,7 +33,7 @@ const plan = drawBlueprint({ width: 116, height: 91 }, [
   link('settling-tanks', 'intake-screens', 5, 'concrete'),
   link('intake-screens', 'outfall', 5, 'grate'),
   exit('south', 'pump-house', 'south', 13),
-  exit('east', 'outfall', 'east', 5, { gate: true }),
+  exit('east', 'outfall', 'east', 13),
 ]);
 
 export const WATERWORKS_ANCHORS = {

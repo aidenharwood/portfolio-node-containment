@@ -1,4 +1,6 @@
 import type { GatheringSource } from '../crafting/gathering.ts';
+import { CALDER_DEEPS_ANCHORS } from './districts/calderDeeps.ts';
+import { CALDER_GATEHOUSE_ANCHORS } from './districts/calderGatehouse.ts';
 import type { Condition } from '../rules/conditions.ts';
 import type { WorldObjectDefinition, WorldObjectModel } from '../world/entities.ts';
 
@@ -119,7 +121,7 @@ export const CALDER_OBJECTS: readonly WorldObjectDefinition[] = [
         verb: 'Descend',
         conditions: [{ type: 'questCompleted', questId: 'salt-of-the-earth' }],
         failureText: 'Warden Brandt has the lift on a key. She will not send anyone down until the lost shifts are accounted for.',
-        effects: [{ type: 'teleport', districtId: 'calder-deeps', position: { x: 4, y: 4 } }],
+        effects: [{ type: 'teleport', districtId: 'calder-deeps', position: CALDER_DEEPS_ANCHORS.liftArrival }],
       },
     ],
   },
@@ -130,7 +132,7 @@ export const CALDER_OBJECTS: readonly WorldObjectDefinition[] = [
     model: 'transitLift',
     blocksMovement: true,
     light: { radius: 3, color: '#ff9a6a', intensity: 0.6, flicker: true },
-    interactions: [{ verb: 'Ascend', effects: [{ type: 'teleport', districtId: 'calder-gatehouse', position: { x: 12, y: 5 } }] }],
+    interactions: [{ verb: 'Ascend', effects: [{ type: 'teleport', districtId: 'calder-gatehouse', position: CALDER_GATEHOUSE_ANCHORS.liftArrival }] }],
   },
   {
     id: 'deeps-time-clock',

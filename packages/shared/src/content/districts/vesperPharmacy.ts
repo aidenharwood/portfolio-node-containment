@@ -1,4 +1,76 @@
-import type { DistrictDefinition } from '../../world/district.ts';
+import { drawBlueprint, exit, link, patch, pillars, room } from '../../world/blueprint.ts';
+import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
+import type { TilePoint } from '../../world/geometry.ts';
+import { VESPER_LODGE_ANCHORS } from './vesperLodge.ts';
+import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
+
+const plan = drawBlueprint({ width: 108, height: 101 }, [
+  room('stockroom', 1, 1, 106, 23, 'plating'),
+  room('dispensary', 77, 36, 30, 30, 'concrete'),
+  room('surgery', 1, 26, 74, 50, 'carpet'),
+  room('cold-store', 1, 78, 106, 22, 'plating'),
+  patch(14, 34, 10, 6, 'coolant'),
+  patch(50, 34, 10, 6, 'coolant'),
+  patch(14, 62, 10, 6, 'coolant'),
+  patch(50, 62, 10, 6, 'coolant'),
+  link('dispensary', 'surgery', 2),
+  link('dispensary', 'stockroom', 7, 'concrete'),
+  link('dispensary', 'cold-store', 7, 'concrete'),
+  pillars('surgery', 12, 10, 5),
+  pillars('cold-store', 13, 8, 4),
+  pillars('stockroom', 13, 8, 4),
+  exit('east', 'dispensary', 'east', 13),
+]);
+
+export const VESPER_PHARMACY_ANCHORS = {
+  
+} satisfies Record<string, TilePoint>;
+
+const npcs: NpcPlacement[] = [];
+
+const fixtures: ObjectPlacement[] = [
+  { instanceId: 'vp-surgery-door-a', objectId: 'surgery-door', position: plan.linkTile('dispensary', 'surgery', 0), facing: 'west' },
+  { instanceId: 'vp-surgery-door-b', objectId: 'surgery-door', position: plan.linkTile('dispensary', 'surgery', 1), facing: 'west' },
+    { instanceId: 'vp-still-a', objectId: 'tincture-still', position: plan.at('stockroom', 104, 0) },
+    { instanceId: 'vp-still-b', objectId: 'tincture-still', position: plan.at('stockroom', 51, 8) },
+    { instanceId: 'vp-still-c', objectId: 'tincture-still', position: plan.at('stockroom', 1, 21) },
+    { instanceId: 'vp-still-d', objectId: 'tincture-still', position: plan.at('cold-store', 104, 20) },
+    { instanceId: 'vp-still-e', objectId: 'tincture-still', position: plan.at('cold-store', 51, 11) },
+    { instanceId: 'vp-still-f', objectId: 'tincture-still', position: plan.at('cold-store', 1, 1) },
+    { instanceId: 'vp-dispensary-papers', objectId: 'litter-papers', position: plan.at('dispensary', 17, 2) },
+    { instanceId: 'vp-stockroom-debris', objectId: 'litter-debris', position: plan.at('stockroom', 25, 14) },
+    { instanceId: 'vp-cold-puddle', objectId: 'litter-puddle', position: plan.at('cold-store', 64, 2) },
+  ];
+
+const residents: CreaturePlacement[] = [
+    { instanceId: 'vp-stock-wraith-a', creatureId: 'prescription-wraith', position: plan.at('stockroom', 96, 2) },
+    { instanceId: 'vp-stock-wraith-b', creatureId: 'prescription-wraith', position: plan.at('stockroom', 70, 19) },
+    { instanceId: 'vp-stock-wraith-c', creatureId: 'prescription-wraith', position: plan.at('stockroom', 32, 2) },
+    { instanceId: 'vp-stock-wraith-d', creatureId: 'prescription-wraith', position: plan.at('stockroom', 13, 20) },
+    { instanceId: 'vp-cold-wraith-a', creatureId: 'prescription-wraith', position: plan.at('cold-store', 89, 3) },
+    { instanceId: 'vp-cold-wraith-b', creatureId: 'prescription-wraith', position: plan.at('cold-store', 64, 18) },
+    { instanceId: 'vp-cold-wraith-c', creatureId: 'prescription-wraith', position: plan.at('cold-store', 29, 2) },
+    { instanceId: 'vp-cold-wraith-d', creatureId: 'prescription-wraith', position: plan.at('cold-store', 6, 16) },
+    { instanceId: 'vp-surgery-wraith-a', creatureId: 'prescription-wraith', position: plan.at('surgery', 44, 3) },
+    { instanceId: 'vp-surgery-wraith-b', creatureId: 'prescription-wraith', position: plan.at('surgery', 44, 46) },
+    { instanceId: 'vp-surgery-physician', creatureId: 'the-chief-physician', position: plan.at('surgery', 22, 25) },
+  ];
+
+const placed = [...npcs, ...fixtures, ...residents];
+
+const furnishings = scatterGroups(plan, placed, [
+  ['stockroom', 'vp-stockroom-node', ['tincture-still'], 3],
+  ['cold-store', 'vp-cold-node', ['tincture-still'], 3],
+  ['stockroom', 'vp-stockroom-prop', ['storage-rack', 'wall-locker', 'litter-papers'], 10],
+  ['cold-store', 'vp-cold-prop', ['storage-rack', 'wall-locker', 'litter-puddle'], 10],
+  ['dispensary', 'vp-dispensary-litter', LITTER, 5],
+]);
+
+const packs = scatterPacks(plan, [...placed, ...furnishings], [
+  ['stockroom', 'vp-wraith-stockroom-pack', 'prescription-wraith', 12],
+  ['cold-store', 'vp-wraith-cold-pack', 'prescription-wraith', 12],
+  ['surgery', 'vp-wraith-surgery-pack', 'prescription-wraith', 4],
+]);
 
 export const VESPER_PHARMACY: DistrictDefinition = {
   id: 'vesper-pharmacy',
@@ -6,90 +78,29 @@ export const VESPER_PHARMACY: DistrictDefinition = {
   subtitle: 'Vesper Wing — Dispensary and Surgery',
   tier: 13,
   region: 'vesper',
-  recovery: { districtId: 'vesper-lodge', position: { x: 8, y: 12 } },
+  deadEnd: true,
+  recovery: { districtId: 'vesper-lodge', position: VESPER_LODGE_ANCHORS.recovery },
   ambience: { darkness: 0.6, tint: '#140f18', fog: '#18131c', fixtures: 'failing' },
-  map: [
-    '########################################',
-    '#......................................#',
-    '#......................................#',
-    '#......................................#',
-    '#......................................#',
-    '#......................................#',
-    '#......................................#',
-    '#......................................#',
-    '#......................................#',
-    '#......................................#',
-    '#......................................#',
-    '################################DDDDD###',
-    '#_________________________#,,,,,,,,,,,,#',
-    '#_________________________#,,,,,,,,,,,,#',
-    '#_________________________#,,,,,,,,,,,,#',
-    '#_________________________#,,,,,,,,,,,,#',
-    '#_________________________#,,,,,,,,,,,,D',
-    '#_________________________D,,,,,,,,,,,,D',
-    '#_________________________D,,,,,,,,,,,,D',
-    '#_________________________#,,,,,,,,,,,,D',
-    '#_________________________#,,,,,,,,,,,,D',
-    '#_________________________#,,,,,,,,,,,,#',
-    '#_________________________#,,,,,,,,,,,,#',
-    '#_________________________#,,,,,,,,,,,,#',
-    '#_________________________#,,,,,,,,,,,,#',
-    '################################DDDDD###',
-    '#......................................#',
-    '#......................................#',
-    '#......................................#',
-    '#........#.............................#',
-    '#........#.................#...........#',
-    '#..........................#...........#',
-    '#......................................#',
-    '#..............#.......................#',
-    '#..............#.......................#',
-    '#......................................#',
-    '#......................................#',
-    '#......................................#',
-    '#......................................#',
-    '########################################',
-  ],
+  map: plan.map,
+  rooms: plan.rooms,
+  exits: plan.exits,
+  anchors: VESPER_PHARMACY_ANCHORS,
   areas: [
-    { id: 'stockroom', name: 'Stockroom', rect: { x: 1, y: 1, width: 38, height: 10 } },
-    { id: 'dispensary', name: 'Dispensary', rect: { x: 27, y: 12, width: 12, height: 13 } },
-    { id: 'surgery', name: 'The Surgery', rect: { x: 1, y: 12, width: 25, height: 13 }, multiCombat: true },
-    { id: 'cold-store', name: 'Cold Store', rect: { x: 1, y: 26, width: 38, height: 13 } },
+    plan.area('stockroom', 'Stockroom'),
+    plan.area('dispensary', 'Dispensary'),
+    plan.area('surgery', 'The Surgery', { multiCombat: true }),
+    plan.area('cold-store', 'Cold Store'),
   ],
-  npcs: [],
-  objects: [
-    { instanceId: 'vp-surgery-door-a', objectId: 'surgery-door', position: { x: 26, y: 17 }, facing: 'west' },
-    { instanceId: 'vp-surgery-door-b', objectId: 'surgery-door', position: { x: 26, y: 18 }, facing: 'west' },
-    { instanceId: 'vp-still-a', objectId: 'tincture-still', position: { x: 37, y: 1 } },
-    { instanceId: 'vp-still-b', objectId: 'tincture-still', position: { x: 19, y: 5 } },
-    { instanceId: 'vp-still-c', objectId: 'tincture-still', position: { x: 2, y: 9 } },
-    { instanceId: 'vp-still-d', objectId: 'tincture-still', position: { x: 37, y: 37 } },
-    { instanceId: 'vp-still-e', objectId: 'tincture-still', position: { x: 19, y: 32 } },
-    { instanceId: 'vp-still-f', objectId: 'tincture-still', position: { x: 2, y: 27 } },
-    { instanceId: 'vp-dispensary-papers', objectId: 'litter-papers', position: { x: 33, y: 14 } },
-    { instanceId: 'vp-stockroom-debris', objectId: 'litter-debris', position: { x: 11, y: 6 } },
-    { instanceId: 'vp-cold-puddle', objectId: 'litter-puddle', position: { x: 23, y: 28 } },
-  ],
-  creatures: [
-    { instanceId: 'vp-stock-wraith-a', creatureId: 'prescription-wraith', position: { x: 33, y: 3 } },
-    { instanceId: 'vp-stock-wraith-b', creatureId: 'prescription-wraith', position: { x: 25, y: 7 } },
-    { instanceId: 'vp-stock-wraith-c', creatureId: 'prescription-wraith', position: { x: 13, y: 3 } },
-    { instanceId: 'vp-stock-wraith-d', creatureId: 'prescription-wraith', position: { x: 7, y: 8 } },
-    { instanceId: 'vp-cold-wraith-a', creatureId: 'prescription-wraith', position: { x: 31, y: 29 } },
-    { instanceId: 'vp-cold-wraith-b', creatureId: 'prescription-wraith', position: { x: 23, y: 35 } },
-    { instanceId: 'vp-cold-wraith-c', creatureId: 'prescription-wraith', position: { x: 12, y: 28 } },
-    { instanceId: 'vp-cold-wraith-d', creatureId: 'prescription-wraith', position: { x: 5, y: 34 } },
-    { instanceId: 'vp-surgery-wraith-a', creatureId: 'prescription-wraith', position: { x: 15, y: 15 } },
-    { instanceId: 'vp-surgery-wraith-b', creatureId: 'prescription-wraith', position: { x: 15, y: 21 } },
-    { instanceId: 'vp-surgery-physician', creatureId: 'the-chief-physician', position: { x: 9, y: 18 } },
-  ],
+  npcs,
+  objects: [...fixtures, ...furnishings],
+  creatures: [...residents, ...packs],
   lights: [
-    { position: { x: 33, y: 18 }, radius: 6, color: '#ffe8b8', intensity: 0.5 },
-    { position: { x: 29, y: 5 }, radius: 7, color: '#c88ad8', intensity: 0.45 },
-    { position: { x: 11, y: 5 }, radius: 8, color: '#c88ad8', intensity: 0.45 },
-    { position: { x: 19, y: 18 }, radius: 7, color: '#ffe8b8', intensity: 0.55 },
-    { position: { x: 8, y: 18 }, radius: 8, color: '#ff6a7a', intensity: 0.65 },
-    { position: { x: 29, y: 32 }, radius: 7, color: '#c88ad8', intensity: 0.4 },
-    { position: { x: 9, y: 33 }, radius: 8, color: '#ffe8b8', intensity: 0.4 },
+    { position: plan.spot('dispensary', 17, 15), radius: 11, color: '#ffe8b8', intensity: 0.5 },
+    { position: plan.spot('stockroom', 83, 8), radius: 13, color: '#c88ad8', intensity: 0.45 },
+    { position: plan.spot('stockroom', 25, 8), radius: 14, color: '#c88ad8', intensity: 0.45 },
+    { position: plan.spot('surgery', 59, 25), radius: 13, color: '#ffe8b8', intensity: 0.55 },
+    { position: plan.spot('surgery', 18, 25), radius: 14, color: '#ff6a7a', intensity: 0.65 },
+    { position: plan.spot('cold-store', 83, 11), radius: 13, color: '#c88ad8', intensity: 0.4 },
+    { position: plan.spot('cold-store', 19, 13), radius: 14, color: '#ffe8b8', intensity: 0.4 },
   ],
 };
