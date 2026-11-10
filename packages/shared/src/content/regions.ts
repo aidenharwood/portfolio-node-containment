@@ -12,4 +12,10 @@ export const CALDER_WING: RegionDefinition = {
   hubDistrictId: 'calder-gatehouse',
 };
 
-export const REGIONS: readonly RegionDefinition[] = [MERIDIAN_CORE, CALDER_WING];
+export const VESPER_WING: RegionDefinition = {
+  id: 'vesper',
+  name: 'Vesper Wing',
+  hubDistrictId: 'vesper-lodge',
+};
+
+export const REGIONS: readonly RegionDefinition[] = [MERIDIAN_CORE, CALDER_WING, VESPER_WING];

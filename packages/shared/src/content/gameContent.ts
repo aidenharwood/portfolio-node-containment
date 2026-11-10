@@ -95,6 +95,18 @@ import { SALT_CATHEDRAL } from './districts/saltCathedral.ts';
 import { CALDER_DEEPS } from './districts/calderDeeps.ts';
 import { CALDER_DEEPS_LEVEL } from './levels/calderDeepsLevel.ts';
 import { CALDER_SIDE_QUESTS } from './quests/calderSide.ts';
+import { ACT_FOUR_VESPER_QUESTS, VESPER_SIDE_QUESTS } from './quests/actFourVesper.ts';
+import { VESPER_CREATURES } from './vesperCreatures.ts';
+import { PHYSICIAN_GEAR, VESPER_MATERIALS, VESPER_MEDICINE, VESPER_QUEST_ITEMS, VESPER_UNIQUE_GEAR, WARD_GEAR } from './vesperItems.ts';
+import { VESPER_NPCS } from './vesperNpcs.ts';
+import { VESPER_OBJECTS } from './vesperObjects.ts';
+import { ASHBY_DIALOGUE, LOWE_DIALOGUE } from './dialogues/vesperDialogues.ts';
+import { VESPER_CAUSEWAY } from './districts/vesperCauseway.ts';
+import { VESPER_WARDS } from './districts/vesperWards.ts';
+import { VESPER_LODGE } from './districts/vesperLodge.ts';
+import { VESPER_PHARMACY } from './districts/vesperPharmacy.ts';
+import { VESPER_CELLARS } from './districts/vesperCellars.ts';
+import { VESPER_CELLARS_LEVEL } from './levels/vesperCellarsLevel.ts';
 import { DEAD_LETTER_OFFICE } from './districts/deadLetterOffice.ts';
 import { DEAD_LETTER_OFFICE_LEVEL } from './levels/deadLetterOfficeLevel.ts';
 import { ASSEMBLY_OBJECTS } from './assemblyObjects.ts';
@@ -156,9 +168,9 @@ function indexById<T extends { readonly id: string }>(entries: readonly T[]): Re
   return index;
 }
 
-const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([INTAKE_WING, MERIDIAN_ATRIUM, VERDANCE_CONCOURSE, SERVICE_CONCOURSE, SERVICE_YARDS, WATERWORKS, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, DEEP_CONCOURSE, FURNACE_CAUSEWAY, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW, VERDANT_FOLD, DEAD_LETTER_OFFICE, CALDER_CAUSEWAY, BRINE_GALLERIES, CALDER_GATEHOUSE, SALT_CATHEDRAL, CALDER_DEEPS]);
+const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([INTAKE_WING, MERIDIAN_ATRIUM, VERDANCE_CONCOURSE, SERVICE_CONCOURSE, SERVICE_YARDS, WATERWORKS, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, DEEP_CONCOURSE, FURNACE_CAUSEWAY, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW, VERDANT_FOLD, DEAD_LETTER_OFFICE, CALDER_CAUSEWAY, BRINE_GALLERIES, CALDER_GATEHOUSE, SALT_CATHEDRAL, CALDER_DEEPS, VESPER_CAUSEWAY, VESPER_WARDS, VESPER_LODGE, VESPER_PHARMACY, VESPER_CELLARS]);
 const ASSEMBLY_INDEX: ReadonlyMap<AssemblyId, AssemblyDefinition> = indexById(ASSEMBLIES);
-const LEVEL_INDEX: LevelIndex = buildLevelIndex([MAIN_FLOOR, UNDERCROFT_LEVEL, THE_DEEP, THE_THRESHOLD, MERIDIAN_BELOW_LEVEL, VERDANT_FOLD_LEVEL, DEAD_LETTER_OFFICE_LEVEL, CALDER_DEEPS_LEVEL], DISTRICTS, ASSEMBLY_INDEX);
+const LEVEL_INDEX: LevelIndex = buildLevelIndex([MAIN_FLOOR, UNDERCROFT_LEVEL, THE_DEEP, THE_THRESHOLD, MERIDIAN_BELOW_LEVEL, VERDANT_FOLD_LEVEL, DEAD_LETTER_OFFICE_LEVEL, CALDER_DEEPS_LEVEL, VESPER_CELLARS_LEVEL], DISTRICTS, ASSEMBLY_INDEX);
 
 function startingLocation(): WorldLocation {
   const location = locate(LEVEL_INDEX, INTAKE_WING.id, { x: 4, y: 5 });
@@ -167,9 +179,9 @@ function startingLocation(): WorldLocation {
 }
 
 export const GAME_CONTENT: GameContent = {
-  items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS, ...UNIQUE_GEAR, ...CALDER_MATERIALS, ...CALDER_MEDICINE, ...CALDER_QUEST_ITEMS, ...SALTWORKS_GEAR, ...CATHEDRAL_GEAR, ...CALDER_UNIQUE_GEAR]),
-  npcs: indexById([...NPCS, ...DEEP_NPCS, ...WATERWORKS_NPCS, ...OFFICE_NPCS, ...CALDER_NPCS]),
-  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...FURNITURE_OBJECTS, ...OFFICE_OBJECTS, ...CONTRACT_OBJECTS, ...CALDER_OBJECTS]),
+  items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS, ...UNIQUE_GEAR, ...CALDER_MATERIALS, ...CALDER_MEDICINE, ...CALDER_QUEST_ITEMS, ...SALTWORKS_GEAR, ...CATHEDRAL_GEAR, ...CALDER_UNIQUE_GEAR, ...VESPER_MATERIALS, ...VESPER_MEDICINE, ...VESPER_QUEST_ITEMS, ...WARD_GEAR, ...PHYSICIAN_GEAR, ...VESPER_UNIQUE_GEAR]),
+  npcs: indexById([...NPCS, ...DEEP_NPCS, ...WATERWORKS_NPCS, ...OFFICE_NPCS, ...CALDER_NPCS, ...VESPER_NPCS]),
+  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...FURNITURE_OBJECTS, ...OFFICE_OBJECTS, ...CONTRACT_OBJECTS, ...CALDER_OBJECTS, ...VESPER_OBJECTS]),
   assemblies: ASSEMBLY_INDEX,
   dialogues: indexById([
     REYES_DIALOGUE,
@@ -202,6 +214,8 @@ export const GAME_CONTENT: GameContent = {
     ODUYA_DIALOGUE,
     BRANDT_DIALOGUE,
     SORREL_DIALOGUE,
+    ASHBY_DIALOGUE,
+    LOWE_DIALOGUE,
   ]),
   quests: indexById([
     ORIENTATION_PROTOCOL,
@@ -225,6 +239,8 @@ export const GAME_CONTENT: GameContent = {
     ...ACT_THREE_MAIN_QUESTS,
     ...ACT_FOUR_CALDER_QUESTS,
     ...CALDER_SIDE_QUESTS,
+    ...ACT_FOUR_VESPER_QUESTS,
+    ...VESPER_SIDE_QUESTS,
   ]),
   questlines: indexById(QUESTLINES),
   districts: DISTRICTS,
@@ -232,7 +248,7 @@ export const GAME_CONTENT: GameContent = {
   levelOfDistrict: LEVEL_INDEX.levelOfDistrict,
   regions: indexById(REGIONS),
   tram: buildTramNetwork(TRAM_STATIONS, TRAM_LINES, DISTRICTS, LEVEL_INDEX),
-  creatures: indexById([...CREATURES, ...DEEP_CREATURES, ...WATERWORKS_CREATURES, ...OFFICE_CREATURES, ...TRAINING_CREATURES, ...CALDER_CREATURES]),
+  creatures: indexById([...CREATURES, ...DEEP_CREATURES, ...WATERWORKS_CREATURES, ...OFFICE_CREATURES, ...TRAINING_CREATURES, ...CALDER_CREATURES, ...VESPER_CREATURES]),
   shops: indexById(SHOPS),
   recipes: indexById(RECIPES),
   contracts: indexById(CONTRACTS),

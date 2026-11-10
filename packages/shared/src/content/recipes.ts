@@ -203,6 +203,36 @@ export const CALDER_RECIPES: readonly RecipeDefinition[] = [
   fabricate('relic-implant', 46, { 'halite-glass': 2, 'vestment-weave': 2, 'halite-geode': 2 }, 3000),
 ];
 
+export const VESPER_RECIPES: readonly RecipeDefinition[] = [
+  recipe('refinery', 'ward-steel', 50, { 'bedframe-iron': 2, 'physic-herb': 1 }, { experience: 520 }),
+  recipe('refinery', 'sterile-weave', 50, { 'starched-linen': 2, 'physic-herb': 1 }, { experience: 520 }),
+  recipe('refinery', 'tonic-glass', 55, { 'vesper-tincture': 2, 'ward-steel': 1 }, { experience: 580 }),
+  recipe('refinery', 'prescription-weave', 55, { 'prescription-sheaf': 2, 'sterile-weave': 1 }, { experience: 580 }),
+  recipe('synthesiser', 'vesper-tonic', 52, { 'physic-herb': 2, 'gel-base': 1 }, { experience: 460 }),
+  fabricate('ward-helm', 50, { 'ward-steel': 2, 'sterile-weave': 1 }, 3400),
+  fabricate('ward-plate', 51, { 'ward-steel': 4, 'sterile-weave': 2 }, 3900),
+  fabricate('ward-gloves', 50, { 'sterile-weave': 2, 'bedframe-iron': 1 }, 3300),
+  fabricate('ward-trousers', 50, { 'sterile-weave': 3, 'ward-steel': 1 }, 3300),
+  fabricate('ward-boots', 50, { 'ward-steel': 2, 'sterile-weave': 1 }, 3300),
+  fabricate('ward-visor', 50, { 'ward-steel': 1, 'sterile-weave': 1, 'starched-linen': 2 }, 3300),
+  fabricate('bonesetter-maul', 52, { 'ward-steel': 3, 'bedframe-iron': 2 }, 4300),
+  fabricate('ward-scalpel', 51, { 'ward-steel': 2, 'sterile-weave': 1 }, 3900),
+  fabricate('ward-carbine', 52, { 'ward-steel': 3, 'starched-linen': 2 }, 4300),
+  fabricate('quarantine-rifle', 52, { 'ward-steel': 2, 'sterile-weave': 1, 'bedframe-iron': 2 }, 4300),
+  fabricate('ward-implant', 51, { 'ward-steel': 1, 'sterile-weave': 2, 'physic-herb': 2 }, 3900),
+  fabricate('physician-helm', 55, { 'tonic-glass': 2, 'prescription-weave': 1 }, 3800),
+  fabricate('physician-plate', 56, { 'tonic-glass': 4, 'prescription-weave': 2 }, 4500),
+  fabricate('physician-gloves', 55, { 'prescription-weave': 2, 'ward-steel': 1 }, 3700),
+  fabricate('physician-trousers', 55, { 'prescription-weave': 3, 'tonic-glass': 1 }, 3700),
+  fabricate('physician-boots', 55, { 'tonic-glass': 2, 'prescription-weave': 1 }, 3700),
+  fabricate('physician-loupe', 55, { 'tonic-glass': 2, 'prescription-weave': 1 }, 3700),
+  fabricate('amputation-maul', 57, { 'tonic-glass': 3, 'ward-steel': 2 }, 4900),
+  fabricate('tourniquet-glaive', 56, { 'tonic-glass': 3, 'prescription-weave': 1 }, 4500),
+  fabricate('physician-carbine', 57, { 'tonic-glass': 3, 'vesper-tincture': 2 }, 4900),
+  fabricate('triage-rifle', 57, { 'tonic-glass': 2, 'prescription-weave': 1, 'vesper-tincture': 2 }, 4900),
+  fabricate('physician-implant', 56, { 'tonic-glass': 2, 'prescription-weave': 2, 'prescription-sheaf': 2 }, 4500),
+];
+
 export const RECIPES: readonly RecipeDefinition[] = [
   ...REFINING_RECIPES,
   ...MEDICAL_RECIPES,
@@ -211,4 +241,5 @@ export const RECIPES: readonly RecipeDefinition[] = [
   ...DEEP_MEDICAL_RECIPES,
   ...DEEP_FABRICATION_RECIPES,
   ...CALDER_RECIPES,
+  ...VESPER_RECIPES,
 ];

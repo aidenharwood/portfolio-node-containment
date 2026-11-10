@@ -39,6 +39,12 @@ export type CreatureModel =
   | 'cathedralAcolyte'
   | 'saltBishop'
   | 'shiftForeman'
+  | 'wardOrderly'
+  | 'nightNurse'
+  | 'prescriptionWraith'
+  | 'chiefPhysician'
+  | 'morgueAttendant'
+  | 'almoner'
   | 'understudy';
 
 export interface LootEntry {

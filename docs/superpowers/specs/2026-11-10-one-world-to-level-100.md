@@ -187,6 +187,13 @@ Delivery step 2 is done:
 - **Tram**: the Calder Gatehouse Platform is the fourth stop on the Meridian Line, after the Service Yards Depot.
 - **Side questline** `calder-gatehouse`: Short Rations (Sorrel), The Lowest Gallery and Clocking Off (Brandt), covered by the Act IV integration test.
 
+Delivery step 3 is done:
+
+- **Room to grow west**: every main-floor district moved 126 tiles east. Saves already district-local are unaffected, and main-floor saves still in level coordinates are shifted on load.
+- **Vesper Wing** (region `vesper`): the Hydroponics seed vault opens onto the Sanatorium Walk and the Vesper Wards (tier 12); the Porter's Lodge outpost (Matron Ashby, Apothecary Lowe's dispensary, locker, mailbox, contract board, Meridian Line platform) sits behind a story door; the Vesper Pharmacy (tier 13) has a story-gated surgery; the Cold Ward (`vesper-cellars`) is its dungeon floor.
+- **Tiers 12–13**: `TIER_LEVEL_FLOORS` gains 50 and 55 (Clearance XII and XIII). Ward orderlies, night nurses, prescription wraiths, morgue attendants, the Almoner and the Chief Physician (keter); physic cabinets and tincture stills; the Ward and Physician sets, the Vesper Tonic and three uniques.
+- **Act IV part 2**: Referral (Anand), Night Rounds and Second Opinion (Ashby), ending on `storyline.act-four-complete`. **Side questline** `porters-lodge`: Prescription for One (Lowe), The Cold Ward and Discharged (Ashby). Covered by `server/test/actFourVesper.test.ts`.
+
 ## Decisions
 
 - **One continuous world.** The other Sites are wings of Meridian, joined on foot. Trams and lifts are shortcuts, never the only way in, apart from the Intake Wing tutorial and the pocket dimensions.

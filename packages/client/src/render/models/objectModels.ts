@@ -5,6 +5,7 @@ import { VOXEL_EMISSIVE } from '../voxel/voxelKinds.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 import { ASSEMBLY_BUILDERS } from './assemblyModels.ts';
 import { CALDER_OBJECT_BUILDERS } from './calderObjectModels.ts';
+import { VESPER_OBJECT_BUILDERS } from './vesperObjectModels.ts';
 import { CRAFTING_BUILDERS } from './craftingModels.ts';
 import { DEEP_OBJECT_BUILDERS } from './deepObjectModels.ts';
 import { FURNITURE_BUILDERS } from './furnitureModels.ts';
@@ -335,6 +336,7 @@ const knockDoor: ObjectBuilder = () => {
 const BUILDERS: Readonly<Record<WorldObjectModel, ObjectBuilder>> = {
   ...CRAFTING_BUILDERS,
   ...CALDER_OBJECT_BUILDERS,
+  ...VESPER_OBJECT_BUILDERS,
   ...HUB_BUILDERS,
   ...TRANSIT_BUILDERS,
   ...DEEP_OBJECT_BUILDERS,

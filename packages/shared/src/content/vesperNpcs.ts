@@ -1,0 +1,45 @@
+import type { NpcDefinition } from '../world/entities.ts';
+
+export const VESPER_NPCS: readonly NpcDefinition[] = [
+  {
+    id: 'matron-ashby',
+    name: 'Matron Ashby',
+    title: "Vesper Porter's Lodge",
+    examine: "Vesper's matron: starched cap, upside-down watch, and a voice that has sent forty years of patients back to bed. She has never once raised it.",
+    appearance: {
+      physique: 'female',
+      bodyType: 'broad',
+      height: 0.97,
+      skinTone: '#8d5a3b',
+      hairStyle: 'bun',
+      hairColor: '#3a3430',
+      eyeColor: '#2a3a2a',
+      faceMark: 'none',
+      augment: 'ocularImplant',
+    },
+    gear: ['ward-plate', 'ward-trousers', 'ward-boots', 'ward-gloves'],
+    dialogueId: 'ashby',
+    wanderRadius: 1,
+  },
+  {
+    id: 'apothecary-lowe',
+    name: 'Apothecary Lowe',
+    title: 'Vesper Dispensary',
+    examine: "Vesper's apothecary, who stopped trusting the pharmacy the day it started writing its own prescriptions, and has dispensed everything by hand since.",
+    appearance: {
+      physique: 'male',
+      bodyType: 'slight',
+      height: 1.02,
+      skinTone: '#e2b896',
+      hairStyle: 'swept',
+      hairColor: '#8a7a6a',
+      eyeColor: '#4a6a8a',
+      faceMark: 'freckles',
+      augment: 'none',
+    },
+    gear: ['ward-plate', 'ward-trousers', 'ward-boots'],
+    dialogueId: 'lowe',
+    shopId: 'vesper-dispensary',
+    wanderRadius: 1,
+  },
+];

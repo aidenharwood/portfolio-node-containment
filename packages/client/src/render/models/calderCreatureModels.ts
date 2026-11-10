@@ -145,7 +145,7 @@ const ACOLYTE_APPEARANCE: CharacterAppearance = {
   augment: 'none',
 };
 
-class HumanoidRig implements EntityRig {
+export class HumanoidRig implements EntityRig {
   readonly root = new Group();
   private readonly character: CharacterRig;
   private readonly scale: number;

@@ -20,6 +20,10 @@ export const MAIN_FLOOR: LevelDefinition = {
     { districtId: 'brine-galleries', origin: { x: 354, y: 34 } },
     { districtId: 'calder-gatehouse', origin: { x: 398, y: 40 } },
     { districtId: 'salt-cathedral', origin: { x: 414, y: 31 } },
+    { districtId: 'vesper-causeway', origin: { x: 100, y: 52 } },
+    { districtId: 'vesper-wards', origin: { x: 56, y: 36 } },
+    { districtId: 'vesper-lodge', origin: { x: 40, y: 42 } },
+    { districtId: 'vesper-pharmacy', origin: { x: 0, y: 33 } },
   ],
   connectors: [],
 };

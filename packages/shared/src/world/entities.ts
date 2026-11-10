@@ -45,6 +45,8 @@ export type WorldObjectModel =
   | 'slagHeap'
   | 'saltSeam'
   | 'geodeCluster'
+  | 'herbCabinet'
+  | 'tinctureStill'
   | 'resinDrum'
   | 'storageLocker'
   | 'medBed'

@@ -13,8 +13,27 @@ export const ANAND_DIALOGUE: DialogueDefinition = {
         { text: 'Patch me up, please.', effects: [{ type: 'restoreIntegrity' }], next: 'patched' },
         { text: 'I need supplies.', effects: [{ type: 'openShop', shopId: 'medbay' }], next: null },
         { text: 'Can I make my own medicine?', next: 'craft' },
+        {
+          text: 'You look worried, Doc.',
+          conditions: [{ type: 'questCompleted', questId: 'cathedral-of-salt' }, { type: 'questNotStarted', questId: 'referral' }],
+          next: 'referralOffer',
+        },
+        { text: 'About that referral.', conditions: [{ type: 'questActive', questId: 'referral' }], next: 'referralProgress' },
         { text: 'Thanks, Doc.', next: null },
       ],
+    },
+    referralOffer: {
+      speaker: 'npc',
+      text: "This came up the pneumatic tube this morning. Vesper Sanatorium letterhead. PATIENT: MERIDIAN. CONDITION: UNKNOWN. PLEASE ATTEND. The tube runs to Hydroponics and then somewhere it shouldn't. After Calder, I'm not laughing. Would you go?",
+      options: [
+        { text: "I'll attend.", effects: [{ type: 'startQuest', questId: 'referral' }, { type: 'giveItem', itemId: 'vesper-referral' }], next: null },
+        { text: 'Not yet.', next: 'greeting' },
+      ],
+    },
+    referralProgress: {
+      speaker: 'npc',
+      text: "The tube comes up through the Hydroponics seed vault. Ask Oyelaran. And take the slip; a sanatorium will want to see paperwork.",
+      next: 'greeting',
     },
     patched: {
       speaker: 'npc',
@@ -32,6 +51,7 @@ export const ANAND_DIALOGUE: DialogueDefinition = {
 export const OYELARAN_DIALOGUE: DialogueDefinition = {
   id: 'oyelaran',
   entries: [
+    { node: 'vesperAsk', conditions: [{ type: 'questActive', questId: 'referral', stepId: 'oyelaran' }] },
     { node: 'report', conditions: [{ type: 'questActive', questId: OVERGROWTH, stepId: 'report' }] },
     { node: 'progress', conditions: [{ type: 'questActive', questId: OVERGROWTH }] },
     { node: 'thanks', conditions: [{ type: 'questCompleted', questId: OVERGROWTH }] },
@@ -47,6 +67,11 @@ export const OYELARAN_DIALOGUE: DialogueDefinition = {
         { text: 'What can I gather here?', next: 'gather' },
         { text: 'Goodbye.', next: null },
       ],
+    },
+    vesperAsk: {
+      speaker: 'npc',
+      text: "The seed vault's back wall? It has been warm for weeks, and it smells of carbolic. I assumed the seeds were sulking. The pneumatic tube runs straight through it. It is not really a wall, it is a door, and it was never locked. There is a walk behind it heading west. I have been very carefully not going through it.",
+      options: [{ text: "I'll open it.", effects: [{ type: 'emitSignal', signal: 'vesper.oyelaran-asked' }], next: null }],
     },
     history: {
       speaker: 'npc',

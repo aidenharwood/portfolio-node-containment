@@ -33,8 +33,8 @@ export const QUESTLINES: readonly QuestlineDefinition[] = [
     id: 'act-four',
     name: 'Act IV · Postmarked',
     kind: 'main',
-    summary: 'The other Sites were never far away. Calder is behind the Waterworks wall, and it wants to know who we are.',
-    questIds: ['postmarked', 'salt-of-the-earth', 'cathedral-of-salt'],
+    summary: 'The other Sites were never far away. Calder is behind the Waterworks wall and Vesper behind the seed vault, and both want to know who we are.',
+    questIds: ['postmarked', 'salt-of-the-earth', 'cathedral-of-salt', 'referral', 'night-rounds', 'second-opinion'],
   },
   {
     id: 'calder-gatehouse',
@@ -42,6 +42,13 @@ export const QUESTLINES: readonly QuestlineDefinition[] = [
     kind: 'side',
     summary: 'Calder has lasted forty years on rations and patience. Its gatehouse would like to stop doing both.',
     questIds: ['short-rations', 'the-lowest-gallery', 'clocking-off'],
+  },
+  {
+    id: 'porters-lodge',
+    name: "The Porter's Lodge",
+    kind: 'side',
+    summary: 'Vesper kept its patients for forty years. Its lodge would like to send them home.',
+    questIds: ['prescription-for-one', 'the-cold-ward', 'discharged'],
   },
   {
     id: 'meridian-proper',

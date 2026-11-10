@@ -1,0 +1,187 @@
+import assert from 'node:assert/strict';
+import { describe, test } from 'node:test';
+import {
+  addItem,
+  countItem,
+  createStartingSkills,
+  experienceForLevel,
+  GAME_CONTENT,
+  maxIntegrityFor,
+  VESPER_GATE_FLAG,
+  VESPER_SURGERY_FLAG,
+  type CharacterRecord,
+  type EquipmentState,
+  type QuestProgress,
+  type TilePoint,
+  type WorldLocation,
+} from '@containment/shared';
+import { at, createHarness, districtOf, finishDialogue, levelPoint, type Harness } from './support/testHarness.ts';
+
+const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
+
+const VETERAN = createStartingSkills({ closeQuarters: experienceForLevel(99), fortitude: experienceForLevel(99), containment: experienceForLevel(60) });
+const KIT: EquipmentState = { head: 'physician-helm', torso: 'physician-plate', hands: 'physician-gloves', legs: 'physician-trousers', feet: 'physician-boots', primary: 'amputation-maul' };
+
+const PRIOR_QUESTS = [
+  'orientation-protocol', 'field-fabrication', 'live-fire', 'the-knocking', 'the-far-side', 'a-council-of-one', 'cold-storage', 'dead-air',
+  'original-contract', 'stoking-the-fire', 'the-answer', 'the-ninth-letter', 'dead-letter-office', 'return-to-sender',
+  'postmarked', 'salt-of-the-earth', 'cathedral-of-salt',
+];
+
+function veteranAt(location: WorldLocation, extraCompleted: readonly string[] = [], flags: readonly string[] = []) {
+  return (record: CharacterRecord): CharacterRecord => ({
+    ...record,
+    location,
+    quests: Object.fromEntries([...PRIOR_QUESTS, ...extraCompleted].map((id) => [id, completed(id)])),
+    flags: [...record.flags, 'storyline.act-two-complete', 'storyline.act-three-complete', 'ending.closed', ...flags],
+    skills: VETERAN,
+    vitals: { integrity: maxIntegrityFor(VETERAN) },
+    equipment: KIT,
+  });
+}
+
+function stepOf(harness: Harness, questId: string): number | 'completed' | undefined {
+  const progress = harness.player.record.quests[questId];
+  return progress?.status === 'completed' ? 'completed' : progress?.stepIndex;
+}
+
+function defeat(harness: Harness, instanceId: string): void {
+  const creature = harness.gameplay.world.levelOf(harness.player).creatureByInstance(instanceId);
+  assert.ok(creature, `missing creature ${instanceId}`);
+  const keepFighting = () => harness.player.update({ vitals: { integrity: maxIntegrityFor(harness.player.record.skills) } });
+  keepFighting();
+  harness.send({ type: 'world.interact', targetKind: 'creature', instanceId, interactionIndex: 0 });
+  harness.ticksUntil(() => {
+    keepFighting();
+    return !creature.isAlive;
+  }, 8000);
+  harness.ticksUntil(() => harness.player.combatTargetId === null, 2000);
+}
+
+function use(harness: Harness, instanceId: string): void {
+  harness.interactWithObject(instanceId);
+  harness.ticksUntil(() => harness.player.path.length === 0, 2000);
+}
+
+function talk(harness: Harness, instanceId: string, ...choices: string[]): void {
+  harness.talkTo(instanceId);
+  finishDialogue(harness, choices.length ? (text) => choices.some((choice) => text.startsWith(choice)) : undefined);
+}
+
+function walkTo(harness: Harness, target: TilePoint): void {
+  harness.send({ type: 'world.walk', target });
+  harness.ticksUntil(() => harness.player.path.length === 0, 2000);
+}
+
+const travel = (harness: Harness, location: WorldLocation) => harness.gameplay.teleport(harness.player, location);
+const LODGE = at('vesper-lodge', { x: 8, y: 7 });
+
+describe('act four: the Vesper Wing', () => {
+  test('Referral leads from the Medbay through the seed vault to the Porter\'s Lodge', () => {
+    const harness = createHarness({ prepare: veteranAt(at('meridian-atrium', { x: 6, y: 31 })) });
+    const { player } = harness;
+
+    talk(harness, 'atrium-anand', 'You look worried, Doc.', "I'll attend.");
+    assert.equal(stepOf(harness, 'referral'), 0);
+    assert.equal(countItem(player.record.inventory, 'vesper-referral'), 1);
+
+    travel(harness, at('hydroponics', { x: 5, y: 13 }));
+    talk(harness, 'hydro-oyelaran', "I'll open it.");
+    assert.equal(stepOf(harness, 'referral'), 1);
+
+    travel(harness, at('hydroponics', { x: 4, y: 22 }));
+    walkTo(harness, levelPoint('vesper-causeway', { x: 20, y: 3 }));
+    assert.equal(districtOf(player), 'vesper-causeway', 'the seed vault opens west onto the Sanatorium Walk on foot');
+    assert.equal(stepOf(harness, 'referral'), 2);
+
+    travel(harness, at('vesper-wards', { x: 20, y: 7 }));
+    for (const suffix of ['a', 'b', 'c', 'd', 'e', 'f']) defeat(harness, `vw-north-orderly-${suffix}`);
+    assert.equal(stepOf(harness, 'referral'), 3);
+
+    travel(harness, at('vesper-wards', { x: 3, y: 16 }));
+    walkTo(harness, levelPoint('vesper-lodge', { x: 12, y: 9 }));
+    assert.equal(districtOf(player), 'vesper-wards', 'the lodge door stays shut until the bell is answered');
+    use(harness, 'vw-bell');
+    assert.ok(player.hasFlag(VESPER_GATE_FLAG));
+    walkTo(harness, levelPoint('vesper-lodge', { x: 12, y: 9 }));
+    assert.equal(districtOf(player), 'vesper-lodge');
+
+    talk(harness, 'vl-ashby', 'Meridian, reporting');
+    assert.equal(stepOf(harness, 'referral'), 'completed');
+    assert.equal(countItem(player.record.inventory, 'vesper-referral'), 0);
+  });
+
+  test('Night Rounds relieves the night nurses and Second Opinion ends the Chief Physician\'s surgery', () => {
+    const harness = createHarness({ prepare: veteranAt(LODGE, ['referral'], [VESPER_GATE_FLAG]) });
+    const { player } = harness;
+
+    talk(harness, 'vl-ashby', 'What do the patients need?', "I'll do the rounds.");
+    for (const [instanceId, position] of [['vw-chart-a', { x: 37, y: 26 }], ['vw-chart-b', { x: 21, y: 29 }], ['vw-chart-c', { x: 5, y: 26 }]] as const) {
+      travel(harness, at('vesper-wards', position));
+      use(harness, instanceId);
+    }
+    assert.equal(stepOf(harness, 'night-rounds'), 1);
+    travel(harness, at('vesper-wards', { x: 20, y: 26 }));
+    for (const suffix of ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']) defeat(harness, `vw-south-nurse-${suffix}`);
+    assert.equal(stepOf(harness, 'night-rounds'), 2);
+    travel(harness, LODGE);
+    talk(harness, 'vl-ashby', 'They will want to hear it.');
+    assert.equal(stepOf(harness, 'night-rounds'), 'completed');
+
+    talk(harness, 'vl-ashby', 'Who wrote the charts?', "I'll give him one.");
+    assert.ok(player.hasFlag(VESPER_SURGERY_FLAG));
+    travel(harness, at('vesper-lodge', { x: 2, y: 9 }));
+    walkTo(harness, levelPoint('vesper-pharmacy', { x: 33, y: 18 }));
+    assert.equal(stepOf(harness, 'second-opinion'), 1);
+    walkTo(harness, levelPoint('vesper-pharmacy', { x: 23, y: 18 }));
+    defeat(harness, 'vp-surgery-physician');
+    assert.equal(stepOf(harness, 'second-opinion'), 2);
+
+    travel(harness, LODGE);
+    talk(harness, 'vl-ashby', 'We will write back.');
+    assert.equal(stepOf(harness, 'second-opinion'), 'completed');
+    assert.ok(player.hasFlag('storyline.act-four-complete'));
+  });
+
+  test("the Porter's Lodge side quests run from the dispensary down to the cold ward", () => {
+    const stocked = (record: CharacterRecord): CharacterRecord => {
+      const prepared = veteranAt(LODGE, ['referral', 'night-rounds'], [VESPER_GATE_FLAG])(record);
+      const withHerbs = addItem(prepared.inventory, GAME_CONTENT.items, 'physic-herb', 6).inventory;
+      return { ...prepared, inventory: addItem(withHerbs, GAME_CONTENT.items, 'starched-linen', 4).inventory };
+    };
+    const harness = createHarness({ prepare: stocked });
+    const { player } = harness;
+    assert.ok(harness.sink.last('player.state')?.self.discoveredStations.includes('vesper-platform'));
+
+    talk(harness, 'vl-lowe', 'Are you short of anything?', "I'll bring it.");
+    assert.equal(stepOf(harness, 'prescription-for-one'), 1);
+    talk(harness, 'vl-lowe', 'Glad to help.');
+    assert.equal(stepOf(harness, 'prescription-for-one'), 'completed');
+
+    talk(harness, 'vl-ashby', 'What is down the bed lift?', "I'll go down.");
+    use(harness, 'vl-lift');
+    assert.equal(player.levelId, 'vesper-cellars');
+    assert.equal(stepOf(harness, 'the-cold-ward'), 1);
+    travel(harness, at('vesper-cellars', { x: 15, y: 8 }));
+    for (const suffix of ['a', 'b', 'c', 'd', 'e', 'f']) defeat(harness, `vcl-mortuary-attendant-${suffix}`);
+    assert.equal(stepOf(harness, 'the-cold-ward'), 2);
+    travel(harness, at('vesper-cellars', { x: 14, y: 22 }));
+    defeat(harness, 'vcl-office-almoner');
+    assert.equal(stepOf(harness, 'the-cold-ward'), 3);
+    travel(harness, at('vesper-cellars', { x: 36, y: 3 }));
+    use(harness, 'vcl-lift');
+    assert.equal(districtOf(player), 'vesper-lodge');
+    talk(harness, 'vl-ashby', 'They can.');
+    assert.equal(stepOf(harness, 'the-cold-ward'), 'completed');
+
+    talk(harness, 'vl-ashby', 'Is anyone still admitted?', "I'll file them.");
+    assert.equal(countItem(player.record.inventory, 'discharge-papers'), 1);
+    use(harness, 'vl-lift');
+    travel(harness, at('vesper-cellars', { x: 4, y: 26 }));
+    use(harness, 'vcl-ledger');
+    assert.equal(stepOf(harness, 'discharged'), 1);
+    travel(harness, LODGE);
+    talk(harness, 'vl-ashby', 'Leave it on.');
+    assert.equal(stepOf(harness, 'discharged'), 'completed');
+  });
+});

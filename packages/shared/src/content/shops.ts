@@ -223,6 +223,23 @@ export const SHOPS: readonly ShopDefinition[] = [
     sellRate: 0.55,
   },
   {
+    id: 'vesper-dispensary',
+    name: 'Vesper Dispensary',
+    greeting: "Everything here was dispensed by hand, by me, and checked twice. Not one thing on these shelves came out of that pharmacy.",
+    listings: [
+      { itemId: 'vesper-tonic', price: 310 },
+      { itemId: 'ward-helm', price: 11300 },
+      { itemId: 'ward-plate', price: 15000 },
+      { itemId: 'ward-trousers', price: 9900 },
+      { itemId: 'ward-gloves', price: 10150 },
+      { itemId: 'ward-boots', price: 9450 },
+      { itemId: 'bonesetter-maul', price: 16300 },
+      { itemId: 'quarantine-rifle', price: 15800 },
+    ],
+    buysCategories: ['material', 'equipment', 'consumable'],
+    sellRate: 0.55,
+  },
+  {
     id: 'contracts-office',
     name: 'Contracts Office',
     greeting: 'Commendations only. Scrip is for people who do not finish their contracts.',

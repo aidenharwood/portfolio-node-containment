@@ -10,6 +10,7 @@ export const TRAM_STATIONS: readonly TramStationDefinition[] = [
   { id: 'yards-depot', name: 'Service Yards Depot', districtId: 'service-yards', areaId: 'yard-office', platform: { x: 6, y: 14 } },
   { id: 'verdance-platform', name: 'Verdance Platform', districtId: 'hydroponics', areaId: 'platform', platform: { x: 4, y: 13 } },
   { id: 'calder-platform', name: 'Calder Gatehouse Platform', districtId: 'calder-gatehouse', areaId: 'gatehouse', platform: { x: 8, y: 17 } },
+  { id: 'vesper-platform', name: "Vesper Porter's Lodge Platform", districtId: 'vesper-lodge', areaId: 'lodge', platform: { x: 8, y: 17 } },
   { id: 'deepwatch-platform', name: 'Deepwatch Platform Hall', districtId: 'deepwatch', areaId: 'platform-hall', platform: { x: 4, y: 11 } },
   { id: 'cryovault-dock', name: 'Cryovault Receiving Dock', districtId: 'cryovault', areaId: 'dock', platform: { x: 4, y: 5 } },
   { id: 'array-lobby', name: 'Signal Array Uplink Lobby', districtId: 'signal-array', areaId: 'uplink-lobby', platform: { x: 4, y: 5 } },
@@ -19,7 +20,7 @@ export const TRAM_STATIONS: readonly TramStationDefinition[] = [
 
 export const TRAM_LINES: readonly TramLineDefinition[] = [
   { id: 'intake-shuttle', name: 'Intake Shuttle', color: '#d8e7ef', stations: ['intake-transit', 'atrium-transit'] },
-  { id: 'meridian-line', name: 'Meridian Line', color: '#7cf29a', stations: ['verdance-platform', 'atrium-transit', 'yards-depot', 'calder-platform'] },
+  { id: 'meridian-line', name: 'Meridian Line', color: '#7cf29a', stations: ['vesper-platform', 'verdance-platform', 'atrium-transit', 'yards-depot', 'calder-platform'] },
   {
     id: 'abyssal-circuit',
     name: 'Abyssal Circuit',

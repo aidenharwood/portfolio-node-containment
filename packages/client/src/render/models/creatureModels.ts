@@ -7,6 +7,7 @@ import type { VoxelMeshes } from '../voxel/voxelMesher.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 import { CHARACTER_VOXEL_SIZE } from '../world/worldScale.ts';
 import { CALDER_CREATURE_FACTORIES } from './calderCreatureModels.ts';
+import { VESPER_CREATURE_FACTORIES } from './vesperCreatureModels.ts';
 import { CharacterRig } from './characterModel.ts';
 import { DEEP_CREATURE_FACTORIES } from './deepCreatureModels.ts';
 import { WATERWORKS_CREATURE_FACTORIES } from './waterworksCreatureModels.ts';
@@ -480,6 +481,7 @@ const FACTORIES: Readonly<Record<CreatureModel, () => EntityRig>> = {
   ...DEEP_CREATURE_FACTORIES,
   ...WATERWORKS_CREATURE_FACTORIES,
   ...CALDER_CREATURE_FACTORIES,
+  ...VESPER_CREATURE_FACTORIES,
   thornCrawler: () => new ThornCrawlerRig(),
   sporeDrifter: () => new SporeDrifterRig(),
   pipeLeech: () => new PipeLeechRig(),
