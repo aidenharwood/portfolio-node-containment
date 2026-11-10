@@ -16,11 +16,11 @@ import {
   type WorldLocation,
 } from '@containment/shared';
 import { retireContainmentSeals, retireSealOrder } from '../src/characters/retiredSeals.ts';
-import { createHarness, at, type Harness } from './support/testHarness.ts';
+import { createHarness, at, type Harness, localInRoom } from './support/testHarness.ts';
 
-const DIAGNOSTICS: WorldLocation = at('intake-wing', { x: 23, y: 6 });
-const COLD_STORE_RESIN: WorldLocation = at('service-yards', { x: 3, y: 22 });
-const WORKSHOP: WorldLocation = at('intake-wing', { x: 14, y: 18 });
+const DIAGNOSTICS: WorldLocation = at('intake-wing', localInRoom('intake-wing', 'diagnostics', { x: 3, y: 15 }));
+const COLD_STORE_RESIN: WorldLocation = at('service-yards', localInRoom('service-yards', 'cold-store', { x: 2, y: 1 }));
+const WORKSHOP: WorldLocation = at('intake-wing', localInRoom('intake-wing', 'workshop', { x: 3, y: 2 }));
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 

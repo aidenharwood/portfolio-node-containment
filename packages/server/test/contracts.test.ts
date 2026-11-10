@@ -8,13 +8,13 @@ import {
   type CharacterRecord,
   type QuestProgress,
 } from '@containment/shared';
-import { at, createHarness } from './support/testHarness.ts';
+import { at, createHarness, localInRoom } from './support/testHarness.ts';
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 
 const inductionDone = (record: CharacterRecord): CharacterRecord => ({
   ...record,
-  location: at('meridian-atrium', { x: 17, y: 12 }),
+  location: at('meridian-atrium', localInRoom('meridian-atrium', 'plaza', { x: 7, y: 5 })),
   quests: Object.fromEntries(['orientation-protocol', 'field-fabrication', 'live-fire', 'cleared-for-transit'].map((questId) => [questId, completed(questId)])),
 });
 

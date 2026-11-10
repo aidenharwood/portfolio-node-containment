@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import type { CharacterRecord } from '@containment/shared';
-import { at, createHarness, levelPoint } from './support/testHarness.ts';
+import { at, createHarness, levelPoint, localInRoom } from './support/testHarness.ts';
 
-const inYardOffice = (record: CharacterRecord): CharacterRecord => ({ ...record, location: at('service-yards', { x: 5, y: 9 }) });
+const inYardOffice = (record: CharacterRecord): CharacterRecord => ({ ...record, location: at('service-yards', localInRoom('service-yards', 'yard-office', { x: 8, y: 0 })) });
 
 describe('safe areas', () => {
   test('a creature drops a target who stands in a safe area, without landing a hit', () => {
@@ -12,7 +12,7 @@ describe('safe areas', () => {
     const drone = level.creatureByInstance('yd-dock-drone-a');
     assert.ok(drone);
     assert.ok(level.isSafe(harness.player.position));
-    drone.position = levelPoint('service-yards', { x: 5, y: 7 });
+    drone.position = levelPoint('service-yards', localInRoom('service-yards', 'loading-dock', { x: 8, y: 24 }));
     drone.targetId = harness.player.entityId;
     const integrity = harness.player.integrity;
     for (let tick = 0; tick < 20; tick++) harness.gameplay.tick();
@@ -23,8 +23,8 @@ describe('safe areas', () => {
   test('creatures never path into a safe area', () => {
     const harness = createHarness({ prepare: inYardOffice });
     const level = harness.gameplay.world.levelOf(harness.player);
-    const from = levelPoint('service-yards', { x: 5, y: 6 });
-    const into = levelPoint('service-yards', { x: 5, y: 12 });
+    const from = levelPoint('service-yards', localInRoom('service-yards', 'loading-dock', { x: 8, y: 23 }));
+    const into = levelPoint('service-yards', localInRoom('service-yards', 'yard-office', { x: 8, y: 3 }));
     assert.equal(level.creaturePathBetween(from, into, false), null);
     assert.ok(level.pathBetween(from, into, false));
   });
@@ -34,7 +34,7 @@ describe('safe areas', () => {
     const level = harness.gameplay.world.levelOf(harness.player);
     const drone = level.creatureByInstance('yd-dock-drone-a');
     assert.ok(drone);
-    drone.position = levelPoint('service-yards', { x: 5, y: 7 });
+    drone.position = levelPoint('service-yards', localInRoom('service-yards', 'loading-dock', { x: 8, y: 24 }));
     for (let tick = 0; tick < 10; tick++) harness.gameplay.tick();
     assert.equal(drone.targetId, null);
   });

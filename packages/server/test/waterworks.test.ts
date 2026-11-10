@@ -11,7 +11,7 @@ import {
   type WorldLocation,
 } from '@containment/shared';
 import { containSpecimen } from './support/containment.ts';
-import { at, createHarness, finishDialogue, type Harness } from './support/testHarness.ts';
+import { at, createHarness, finishDialogue, type Harness, localInRoom } from './support/testHarness.ts';
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 
@@ -19,11 +19,11 @@ const FIGHTER = createStartingSkills({ closeQuarters: experienceForLevel(60), fo
 const KIT: EquipmentState = { torso: 'composite-plate', legs: 'intake-trousers', feet: 'work-boots', primary: 'stun-baton' };
 const TUTORIAL = ['orientation-protocol', 'field-fabrication', 'live-fire', 'cleared-for-transit'];
 
-const PUMP_HOUSE: WorldLocation = at('waterworks', { x: 5, y: 18 });
-const VALVE_GALLERY: WorldLocation = at('waterworks', { x: 5, y: 6 });
-const FILTRATION_BEDS: WorldLocation = at('waterworks', { x: 24, y: 11 });
-const SETTLING_TANKS: WorldLocation = at('waterworks', { x: 19, y: 22 });
-const OUTFALL: WorldLocation = at('waterworks', { x: 30, y: 20 });
+const PUMP_HOUSE: WorldLocation = at('waterworks', localInRoom('waterworks', 'pump-house', { x: 13, y: 21 }));
+const VALVE_GALLERY: WorldLocation = at('waterworks', localInRoom('waterworks', 'valve-gallery', { x: 13, y: 17 }));
+const FILTRATION_BEDS: WorldLocation = at('waterworks', localInRoom('waterworks', 'filtration-beds', { x: 54, y: 30 }));
+const SETTLING_TANKS: WorldLocation = at('waterworks', localInRoom('waterworks', 'settling-tanks', { x: 25, y: 12 }));
+const OUTFALL: WorldLocation = at('waterworks', localInRoom('waterworks', 'outfall', { x: 1, y: 13 }));
 
 function graduateAt(location: WorldLocation) {
   return (record: CharacterRecord): CharacterRecord => ({
@@ -55,6 +55,7 @@ function defeat(harness: Harness, instanceId: string): void {
   const creature = harness.gameplay.world.levelOf(harness.player).creatureByInstance(instanceId);
   assert.ok(creature, `missing creature ${instanceId}`);
   harness.player.update({ vitals: { integrity: maxIntegrityFor(harness.player.record.skills) } });
+  harness.approach(instanceId);
   harness.send({ type: 'world.interact', targetKind: 'creature', instanceId, interactionIndex: 0 });
   harness.ticksUntil(() => !creature.isAlive, 8000);
   harness.ticksUntil(() => harness.player.combatTargetId === null, 2000);

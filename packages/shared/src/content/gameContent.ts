@@ -121,9 +121,11 @@ import { VERDANT_FOLD } from './districts/verdantFold.ts';
 import { VERDANT_FOLD_LEVEL } from './levels/verdantFoldLevel.ts';
 import { buildTramNetwork, TRAM_LINES, TRAM_STATIONS } from './tramNetwork.ts';
 import type { TramNetwork } from '../world/tram.ts';
-import { INTAKE_WING } from './districts/intakeWing.ts';
+import { INTAKE_WING, INTAKE_WING_ANCHORS } from './districts/intakeWing.ts';
 import { SERVICE_YARDS } from './districts/serviceYards.ts';
-import { SERVICE_CONCOURSE, VERDANCE_CONCOURSE } from './districts/concourses.ts';
+import { SERVICE_CONCOURSE } from './districts/serviceConcourse.ts';
+import { VERDANCE_CONCOURSE } from './districts/verdanceConcourse.ts';
+import { MERIDIAN_CIRCUIT } from './districts/meridianCircuit.ts';
 import { DEEP_CONCOURSE, FURNACE_CAUSEWAY } from './districts/deepCorridors.ts';
 import { MERIDIAN_ATRIUM } from './districts/meridianAtrium.ts';
 import { SECTOR_THREE } from './districts/sectorThree.ts';
@@ -168,12 +170,12 @@ function indexById<T extends { readonly id: string }>(entries: readonly T[]): Re
   return index;
 }
 
-const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([INTAKE_WING, MERIDIAN_ATRIUM, VERDANCE_CONCOURSE, SERVICE_CONCOURSE, SERVICE_YARDS, WATERWORKS, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, DEEP_CONCOURSE, FURNACE_CAUSEWAY, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW, VERDANT_FOLD, DEAD_LETTER_OFFICE, CALDER_CAUSEWAY, BRINE_GALLERIES, CALDER_GATEHOUSE, SALT_CATHEDRAL, CALDER_DEEPS, VESPER_CAUSEWAY, VESPER_WARDS, VESPER_LODGE, VESPER_PHARMACY, VESPER_CELLARS]);
+const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([INTAKE_WING, MERIDIAN_ATRIUM, MERIDIAN_CIRCUIT, VERDANCE_CONCOURSE, SERVICE_CONCOURSE, SERVICE_YARDS, WATERWORKS, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, DEEP_CONCOURSE, FURNACE_CAUSEWAY, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW, VERDANT_FOLD, DEAD_LETTER_OFFICE, CALDER_CAUSEWAY, BRINE_GALLERIES, CALDER_GATEHOUSE, SALT_CATHEDRAL, CALDER_DEEPS, VESPER_CAUSEWAY, VESPER_WARDS, VESPER_LODGE, VESPER_PHARMACY, VESPER_CELLARS]);
 const ASSEMBLY_INDEX: ReadonlyMap<AssemblyId, AssemblyDefinition> = indexById(ASSEMBLIES);
 const LEVEL_INDEX: LevelIndex = buildLevelIndex([MAIN_FLOOR, UNDERCROFT_LEVEL, THE_DEEP, THE_THRESHOLD, MERIDIAN_BELOW_LEVEL, VERDANT_FOLD_LEVEL, DEAD_LETTER_OFFICE_LEVEL, CALDER_DEEPS_LEVEL, VESPER_CELLARS_LEVEL], DISTRICTS, ASSEMBLY_INDEX);
 
 function startingLocation(): WorldLocation {
-  const location = locate(LEVEL_INDEX, INTAKE_WING.id, { x: 4, y: 5 });
+  const location = locate(LEVEL_INDEX, INTAKE_WING.id, INTAKE_WING_ANCHORS.start);
   if (!location) throw new Error("The Intake Wing is not placed on a level.");
   return location;
 }

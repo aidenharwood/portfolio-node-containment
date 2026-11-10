@@ -5,7 +5,7 @@ import { SINGLE_WAY_TARGET_TAKEN } from '../src/gameplay/combatController.ts';
 import { createCharacterRecord } from '../src/characters/characterFactory.ts';
 import { Gameplay } from '../src/gameplay/gameplay.ts';
 import type { Player } from '../src/world/player.ts';
-import { RecordingSink, at } from './support/testHarness.ts';
+import { RecordingSink, at, localInRoom } from './support/testHarness.ts';
 
 function crowd(count: number, options: { capacity: number; districtId: string; position: { x: number; y: number } }) {
   const gameplay = new Gameplay(GAME_CONTENT, { save: () => undefined, findByName: () => null }, {
@@ -26,7 +26,7 @@ function crowd(count: number, options: { capacity: number; districtId: string; p
 
 describe('scaling for crowds', () => {
   test('a full level overflows into a new layer, and players share layers until capacity', () => {
-    const { gameplay, players } = crowd(5, { capacity: 2, districtId: 'meridian-atrium', position: { x: 12, y: 16 } });
+    const { gameplay, players } = crowd(5, { capacity: 2, districtId: 'meridian-atrium', position: localInRoom('meridian-atrium', 'workshop', { x: 29, y: 24 }) });
     const layers = gameplay.world.layersOf('main-floor');
     assert.equal(layers.length, 3);
     assert.deepEqual(layers.map((layer) => layer.players.size), [2, 2, 1]);
@@ -36,7 +36,7 @@ describe('scaling for crowds', () => {
   });
 
   test('empty overflow layers are retired', () => {
-    const { gameplay, players } = crowd(3, { capacity: 2, districtId: 'meridian-atrium', position: { x: 12, y: 16 } });
+    const { gameplay, players } = crowd(3, { capacity: 2, districtId: 'meridian-atrium', position: localInRoom('meridian-atrium', 'workshop', { x: 29, y: 24 }) });
     const overflowPlayer = players[2];
     assert.ok(overflowPlayer);
     gameplay.leaveWorld(overflowPlayer);
@@ -45,7 +45,7 @@ describe('scaling for crowds', () => {
   });
 
   test('outside multi-combat areas, a creature fights one operative at a time', () => {
-    const { gameplay, players } = crowd(2, { capacity: 10, districtId: 'sector-two', position: { x: 9, y: 11 } });
+    const { gameplay, players } = crowd(2, { capacity: 10, districtId: 'sector-two', position: localInRoom('sector-two', 'corridor', { x: 23, y: 2 }) });
     const [first, second] = players as [Player, Player];
     const mite = gameplay.world.levelOf(first).creatureByInstance('s2-mite-corridor-a');
     assert.ok(mite);

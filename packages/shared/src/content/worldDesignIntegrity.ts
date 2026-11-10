@@ -6,16 +6,8 @@ import { TILE_KINDS } from '../world/tiles.ts';
 import type { GameContent } from './gameContent.ts';
 
 export const LEGACY_DISTRICTS: ReadonlySet<DistrictId> = new Set([
-  'intake-wing',
-  'meridian-atrium',
-  'verdance-concourse',
-  'service-concourse',
-  'service-yards',
-  'waterworks',
-  'sector-two',
   'undercroft',
   'sector-three',
-  'hydroponics',
   'deepwatch',
   'deep-concourse',
   'furnace-causeway',

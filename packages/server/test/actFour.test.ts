@@ -15,7 +15,7 @@ import {
   type TilePoint,
   type WorldLocation,
 } from '@containment/shared';
-import { at, createHarness, districtOf, finishDialogue, levelPoint, type Harness } from './support/testHarness.ts';
+import { at, createHarness, districtOf, finishDialogue, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 
@@ -48,6 +48,7 @@ function defeat(harness: Harness, instanceId: string): void {
   const creature = harness.gameplay.world.levelOf(harness.player).creatureByInstance(instanceId);
   assert.ok(creature, `missing creature ${instanceId}`);
   harness.player.update({ vitals: { integrity: maxIntegrityFor(harness.player.record.skills) } });
+  harness.approach(instanceId);
   harness.send({ type: 'world.interact', targetKind: 'creature', instanceId, interactionIndex: 0 });
   harness.ticksUntil(() => !creature.isAlive, 8000);
   harness.ticksUntil(() => harness.player.combatTargetId === null, 2000);
@@ -72,18 +73,18 @@ const travel = (harness: Harness, location: WorldLocation) => harness.gameplay.t
 
 describe('act four: postmarked', () => {
   test('Postmarked leads from Sel through the Waterworks wall to the Calder gatehouse', () => {
-    const harness = createHarness({ prepare: veteranAt(at('meridian-atrium', { x: 43, y: 5 })) });
+    const harness = createHarness({ prepare: veteranAt(at('meridian-atrium', localInRoom('meridian-atrium', 'archives', { x: 8, y: 16 }))) });
     const { player } = harness;
 
     talk(harness, 'atrium-sel', 'Did every Site reply by relay?', "I'll go and introduce us.");
     assert.equal(stepOf(harness, 'postmarked'), 0);
     assert.equal(countItem(player.record.inventory, 'calder-letter'), 1);
 
-    travel(harness, at('waterworks', { x: 5, y: 17 }));
+    travel(harness, at('waterworks', localInRoom('waterworks', 'pump-house', { x: 13, y: 20 })));
     talk(harness, 'ww-ngata', "I'll follow the road.");
     assert.equal(stepOf(harness, 'postmarked'), 1);
 
-    travel(harness, at('waterworks', { x: 36, y: 7 }));
+    travel(harness, at('waterworks', localInRoom('waterworks', 'filtration-beds', { x: 111, y: 16 })));
     walkTo(harness, levelPoint('calder-causeway', { x: 5, y: 3 }));
     assert.equal(districtOf(player), 'calder-causeway', 'the Waterworks east wall opens onto the causeway on foot');
     assert.equal(stepOf(harness, 'postmarked'), 2);

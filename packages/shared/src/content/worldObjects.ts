@@ -1,4 +1,5 @@
 import type { WorldObjectDefinition } from '../world/entities.ts';
+import { ATRIUM_ANCHORS } from './districts/meridianAtrium.ts';
 
 export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
   {
@@ -320,7 +321,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     model: 'transitLift',
     blocksMovement: true,
     light: { radius: 3, color: '#ff9a4d', intensity: 0.6, flicker: true },
-    interactions: [{ verb: 'Ascend', effects: [{ type: 'teleport', districtId: 'meridian-atrium', position: { x: 49, y: 34 } }] }],
+    interactions: [{ verb: 'Ascend', effects: [{ type: 'teleport', districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.serviceLiftArrival }] }],
   },
   {
     id: 'junction-box',

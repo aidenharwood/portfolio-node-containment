@@ -14,10 +14,10 @@ import {
 import { createCharacterRecord } from '../src/characters/characterFactory.ts';
 import type { GameplayMessage } from '../src/gameplay/gameplay.ts';
 import type { Player } from '../src/world/player.ts';
-import { at, createHarness, RecordingSink, type Harness } from './support/testHarness.ts';
+import { at, createHarness, RecordingSink, type Harness, localInRoom } from './support/testHarness.ts';
 
-const PLAZA = at('meridian-atrium', { x: 22, y: 12 });
-const DOCKS = at('service-yards', { x: 5, y: 6 });
+const PLAZA = at('meridian-atrium', localInRoom('meridian-atrium', 'plaza', { x: 19, y: 3 }));
+const DOCKS = at('service-yards', localInRoom('service-yards', 'loading-dock', { x: 8, y: 23 }));
 
 const placed = (location: WorldLocation) => (record: CharacterRecord): CharacterRecord => ({ ...record, location });
 

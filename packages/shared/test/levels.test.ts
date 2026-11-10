@@ -88,7 +88,9 @@ describe('levels', () => {
   });
 
   test('locate translates district-local points into level points', () => {
-    assert.deepEqual(locate(GAME_CONTENT, 'meridian-atrium', { x: 5, y: 28 }), { levelId: 'main-floor', position: { x: 187, y: 58 } });
+    const origin = GAME_CONTENT.levels.get('main-floor')?.definition.districts.find((placement) => placement.districtId === 'meridian-atrium')?.origin;
+    assert.ok(origin);
+    assert.deepEqual(locate(GAME_CONTENT, 'meridian-atrium', { x: 5, y: 28 }), { levelId: 'main-floor', position: { x: origin.x + 5, y: origin.y + 28 } });
   });
 
   test('locate is undefined for an unknown district', () => {
@@ -98,7 +100,7 @@ describe('levels', () => {
   test('the Verdance Concourse joins the Atrium and Hydroponics', () => {
     const mainFloor = GAME_CONTENT.levels.get('main-floor');
     assert.ok(mainFloor);
-    const target = locate(GAME_CONTENT, 'hydroponics', { x: 3, y: 12 });
+    const target = locate(GAME_CONTENT, 'hydroponics', GAME_CONTENT.districts.get('hydroponics')?.anchors?.tramPlatform ?? { x: 0, y: 0 });
     assert.ok(target);
     assert.ok(reachableFrom(GAME_CONTENT, 'main-floor', mainFloor.spawn).has(tileKey(target.position)));
   });
@@ -106,14 +108,14 @@ describe('levels', () => {
   test('the Service Concourse joins the Atrium and the Service Yards', () => {
     const mainFloor = GAME_CONTENT.levels.get('main-floor');
     assert.ok(mainFloor);
-    const target = locate(GAME_CONTENT, 'service-yards', { x: 29, y: 27 });
+    const target = locate(GAME_CONTENT, 'service-yards', GAME_CONTENT.districts.get('service-yards')?.anchors?.tramPlatform ?? { x: 0, y: 0 });
     assert.ok(target);
     assert.ok(reachableFrom(GAME_CONTENT, 'main-floor', mainFloor.spawn).has(tileKey(target.position)));
   });
 
   test('the Intake Wing is reached by tram, not on foot', () => {
     const mainFloor = GAME_CONTENT.levels.get('main-floor');
-    const intake = locate(GAME_CONTENT, 'intake-wing', { x: 4, y: 5 });
+    const intake = locate(GAME_CONTENT, 'intake-wing', GAME_CONTENT.districts.get('intake-wing')?.anchors?.start ?? { x: 0, y: 0 });
     assert.ok(mainFloor && intake);
     assert.ok(!reachableFrom(GAME_CONTENT, 'main-floor', mainFloor.spawn).has(tileKey(intake.position)));
     assert.ok([...GAME_CONTENT.tram.stations.values()].some((station) => station.districtId === 'intake-wing'));

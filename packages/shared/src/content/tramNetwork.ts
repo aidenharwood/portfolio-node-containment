@@ -1,14 +1,18 @@
 import type { DistrictId, TramStationId } from '../ids.ts';
+import { HYDROPONICS_ANCHORS } from './districts/hydroponics.ts';
+import { INTAKE_WING_ANCHORS } from './districts/intakeWing.ts';
+import { ATRIUM_ANCHORS } from './districts/meridianAtrium.ts';
+import { SERVICE_YARDS_ANCHORS } from './districts/serviceYards.ts';
 import type { DistrictDefinition } from '../world/district.ts';
 import type { TramLineDefinition, TramNetwork, TramStation, TramStationDefinition } from '../world/tram.ts';
 import type { LocatableContent } from './levelIndex.ts';
 import { locate } from './levelIndex.ts';
 
 export const TRAM_STATIONS: readonly TramStationDefinition[] = [
-  { id: 'intake-transit', name: 'Intake Transit Bay', districtId: 'intake-wing', areaId: 'transit-bay', platform: { x: 52, y: 19 }, alwaysKnown: true },
-  { id: 'atrium-transit', name: 'Atrium Transit Bay', districtId: 'meridian-atrium', areaId: 'lift-bay', platform: { x: 6, y: 31 } },
-  { id: 'yards-depot', name: 'Service Yards Depot', districtId: 'service-yards', areaId: 'yard-office', platform: { x: 6, y: 14 } },
-  { id: 'verdance-platform', name: 'Verdance Platform', districtId: 'hydroponics', areaId: 'platform', platform: { x: 4, y: 13 } },
+  { id: 'intake-transit', name: 'Intake Transit Bay', districtId: 'intake-wing', areaId: 'transit-bay', platform: INTAKE_WING_ANCHORS.tramPlatform, alwaysKnown: true },
+  { id: 'atrium-transit', name: 'Atrium Transit Bay', districtId: 'meridian-atrium', areaId: 'lift-bay', platform: ATRIUM_ANCHORS.transit },
+  { id: 'yards-depot', name: 'Service Yards Depot', districtId: 'service-yards', areaId: 'yard-office', platform: SERVICE_YARDS_ANCHORS.tramPlatform },
+  { id: 'verdance-platform', name: 'Verdance Platform', districtId: 'hydroponics', areaId: 'platform', platform: HYDROPONICS_ANCHORS.tramPlatform },
   { id: 'calder-platform', name: 'Calder Gatehouse Platform', districtId: 'calder-gatehouse', areaId: 'gatehouse', platform: { x: 8, y: 17 } },
   { id: 'vesper-platform', name: "Vesper Porter's Lodge Platform", districtId: 'vesper-lodge', areaId: 'lodge', platform: { x: 8, y: 17 } },
   { id: 'deepwatch-platform', name: 'Deepwatch Platform Hall', districtId: 'deepwatch', areaId: 'platform-hall', platform: { x: 4, y: 11 } },

@@ -12,7 +12,7 @@ import {
   type CharacterRecord,
   type QuestProgress,
 } from '@containment/shared';
-import { at, createHarness, type Harness } from './support/testHarness.ts';
+import { at, createHarness, type Harness, localInRoom } from './support/testHarness.ts';
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 
@@ -21,7 +21,7 @@ function researcher(researchLevel: number, flags: readonly string[] = []) {
     const skills = createStartingSkills({ fortitude: experienceForLevel(40), research: experienceForLevel(researchLevel) });
     return {
       ...record,
-      location: at('sector-two', { x: 25, y: 9 }),
+      location: at('sector-two', localInRoom('sector-two', 'corridor', { x: 88, y: 0 })),
       quests: { 'live-fire': completed('live-fire') },
       skills,
       vitals: { integrity: maxIntegrityFor(skills) },

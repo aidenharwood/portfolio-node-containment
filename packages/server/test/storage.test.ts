@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { countItem, storedCount, type CharacterRecord } from '@containment/shared';
-import { createHarness, at, levelPoint } from './support/testHarness.ts';
+import { createHarness, at, levelPoint, localInRoom } from './support/testHarness.ts';
 
 const nearLocker = (record: CharacterRecord): CharacterRecord => ({
   ...record,
-  location: at('meridian-atrium', { x: 9, y: 2 }),
+  location: at('meridian-atrium', localInRoom('meridian-atrium', 'requisitions', { x: 26, y: 1 })),
   inventory: [{ itemId: 'scrap-alloy', quantity: 30 }, { itemId: 'stun-baton', quantity: 1 }, { itemId: 'clearance-card-l1', quantity: 1 }, ...record.inventory.slice(3)],
 });
 
@@ -31,7 +31,7 @@ describe('personal storage', () => {
     assert.equal(countItem(player.record.inventory, 'scrap-alloy'), 30);
     assert.equal(storedCount(player.record.storage, 'scrap-alloy'), 0);
 
-    harness.send({ type: 'world.walk', target: levelPoint('meridian-atrium', { x: 8, y: 10 }) });
+    harness.send({ type: 'world.walk', target: levelPoint('meridian-atrium', localInRoom('meridian-atrium', 'workshop', { x: 21, y: 0 })) });
     assert.equal(player.storageOpen, false);
     assert.equal(harness.sink.last('storage.closed')?.type, 'storage.closed');
   });

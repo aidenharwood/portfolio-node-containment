@@ -2,11 +2,11 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { addItem, countItem, createDefaultDraft, CURRENCY_ITEM_ID, GAME_CONTENT, type CharacterRecord } from '@containment/shared';
 import { createCharacterRecord } from '../src/characters/characterFactory.ts';
-import { createHarness, at, levelPoint, RecordingSink } from './support/testHarness.ts';
+import { createHarness, at, levelPoint, RecordingSink, localInRoom } from './support/testHarness.ts';
 
 const atExchange = (record: CharacterRecord): CharacterRecord => ({
   ...record,
-  location: at('meridian-atrium', { x: 11, y: 6 }),
+  location: at('meridian-atrium', localInRoom('meridian-atrium', 'requisitions', { x: 28, y: 17 })),
   inventory: addItem(addItem(record.inventory, GAME_CONTENT.items, 'scrap-alloy', 20).inventory, GAME_CONTENT.items, CURRENCY_ITEM_ID, 500).inventory,
 });
 
@@ -58,7 +58,7 @@ describe('market', () => {
     assert.equal(countItem(seller.record.inventory, 'scrap-alloy'), 14);
     assert.deepEqual(harness.sink.last('market.state')?.orders, []);
 
-    harness.send({ type: 'world.walk', target: levelPoint('meridian-atrium', { x: 8, y: 10 }) });
+    harness.send({ type: 'world.walk', target: levelPoint('meridian-atrium', localInRoom('meridian-atrium', 'workshop', { x: 21, y: 0 })) });
     assert.equal(harness.sink.last('market.closed')?.type, 'market.closed');
   });
 
@@ -90,7 +90,7 @@ describe('market', () => {
   });
 
   test('an outpost mailbox only connects from a regional outpost', () => {
-    const harness = createHarness({ prepare: (record) => ({ ...atExchange(record), location: at('hydroponics', { x: 4, y: 13 }) }) });
+    const harness = createHarness({ prepare: (record) => ({ ...atExchange(record), location: at('hydroponics', localInRoom('hydroponics', 'platform', { x: 3, y: 16 })) }) });
     harness.gameplay.openMarket(harness.player, 'collect');
     assert.equal(harness.sink.last('market.opened'), undefined);
   });

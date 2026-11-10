@@ -11,7 +11,7 @@ import {
   type WorldLocation,
 } from '@containment/shared';
 import { containSpecimen } from './support/containment.ts';
-import { createHarness, finishDialogue, type Harness, at, districtOf, levelPoint } from './support/testHarness.ts';
+import { createHarness, finishDialogue, type Harness, at, districtOf, levelPoint, localInRoom } from './support/testHarness.ts';
 
 const active = (questId: string, stepIndex = 0): QuestProgress => ({ questId, status: 'active', stepIndex, objectiveProgress: [0, 0, 0] });
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
@@ -19,7 +19,7 @@ const completed = (questId: string): QuestProgress => ({ questId, status: 'compl
 const VETERAN = createStartingSkills({ closeQuarters: experienceForLevel(99), fortitude: experienceForLevel(99), containment: experienceForLevel(40) });
 const KIT: EquipmentState = { torso: 'composite-plate', legs: 'intake-trousers', feet: 'work-boots', primary: 'the-knocker' };
 
-const NEAR_SEL: WorldLocation = at('meridian-atrium', { x: 43, y: 5 });
+const NEAR_SEL: WorldLocation = at('meridian-atrium', localInRoom('meridian-atrium', 'archives', { x: 8, y: 16 }));
 const NEAR_THALE: WorldLocation = at('deepwatch', { x: 4, y: 4 });
 const NEAR_HALVORSEN: WorldLocation = at('sector-three', { x: 10, y: 8 });
 const CRYOVAULT_DOOR: WorldLocation = at('deep-concourse', { x: 5, y: 4 });
@@ -54,6 +54,7 @@ function defeat(harness: Harness, instanceId: string): void {
   const creature = harness.gameplay.world.levelOf(harness.player).creatureByInstance(instanceId);
   assert.ok(creature, `missing creature ${instanceId}`);
   heal(harness);
+  harness.approach(instanceId);
   harness.send({ type: 'world.interact', targetKind: 'creature', instanceId, interactionIndex: 0 });
   harness.ticksUntil(() => !creature.isAlive, 8000);
   harness.ticksUntil(() => harness.player.combatTargetId === null, 2000);
@@ -80,7 +81,7 @@ describe('act two: the answer', () => {
     assert.equal(stepOf(harness, 'a-council-of-one'), 0);
     assert.ok(player.hasFlag('clearance.deepwatch'));
 
-    travel(harness, at('meridian-atrium', { x: 3, y: 31 }));
+    travel(harness, at('meridian-atrium', localInRoom('meridian-atrium', 'lift-bay', { x: 2, y: 2 })));
     use(harness, 'atrium-deep-line');
     assert.equal(districtOf(player), 'deepwatch');
     assert.equal(stepOf(harness, 'a-council-of-one'), 1);
@@ -169,7 +170,7 @@ describe('act two: the answer', () => {
 
   test('The Original Contract: drain the stacks and recover the charter', () => {
     const harness = createHarness({
-      prepare: veteranAt(at('meridian-atrium', { x: 43, y: 33 }), { 'dead-air': completed('dead-air'), 'original-contract': active('original-contract') }, ['clearance.drowned-archive']),
+      prepare: veteranAt(at('meridian-atrium', localInRoom('meridian-atrium', 'engineering', { x: 8, y: 11 })), { 'dead-air': completed('dead-air'), 'original-contract': active('original-contract') }, ['clearance.drowned-archive']),
     });
     const { player } = harness;
 

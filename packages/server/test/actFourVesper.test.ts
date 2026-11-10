@@ -15,7 +15,7 @@ import {
   type TilePoint,
   type WorldLocation,
 } from '@containment/shared';
-import { at, createHarness, districtOf, finishDialogue, levelPoint, type Harness } from './support/testHarness.ts';
+import { at, createHarness, districtOf, finishDialogue, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 
@@ -50,6 +50,7 @@ function defeat(harness: Harness, instanceId: string): void {
   assert.ok(creature, `missing creature ${instanceId}`);
   const keepFighting = () => harness.player.update({ vitals: { integrity: maxIntegrityFor(harness.player.record.skills) } });
   keepFighting();
+  harness.approach(instanceId);
   harness.send({ type: 'world.interact', targetKind: 'creature', instanceId, interactionIndex: 0 });
   harness.ticksUntil(() => {
     keepFighting();
@@ -78,18 +79,18 @@ const LODGE = at('vesper-lodge', { x: 8, y: 7 });
 
 describe('act four: the Vesper Wing', () => {
   test('Referral leads from the Medbay through the seed vault to the Porter\'s Lodge', () => {
-    const harness = createHarness({ prepare: veteranAt(at('meridian-atrium', { x: 6, y: 31 })) });
+    const harness = createHarness({ prepare: veteranAt(at('meridian-atrium', localInRoom('meridian-atrium', 'lift-bay', { x: 12, y: 2 }))) });
     const { player } = harness;
 
     talk(harness, 'atrium-anand', 'You look worried, Doc.', "I'll attend.");
     assert.equal(stepOf(harness, 'referral'), 0);
     assert.equal(countItem(player.record.inventory, 'vesper-referral'), 1);
 
-    travel(harness, at('hydroponics', { x: 5, y: 13 }));
+    travel(harness, at('hydroponics', localInRoom('hydroponics', 'platform', { x: 19, y: 16 })));
     talk(harness, 'hydro-oyelaran', "I'll open it.");
     assert.equal(stepOf(harness, 'referral'), 1);
 
-    travel(harness, at('hydroponics', { x: 4, y: 22 }));
+    travel(harness, at('hydroponics', localInRoom('hydroponics', 'seed-vault', { x: 3, y: 3 })));
     walkTo(harness, levelPoint('vesper-causeway', { x: 20, y: 3 }));
     assert.equal(districtOf(player), 'vesper-causeway', 'the seed vault opens west onto the Sanatorium Walk on foot');
     assert.equal(stepOf(harness, 'referral'), 2);

@@ -19,6 +19,7 @@ export function containSpecimen(harness: Harness, instanceId: string, limit = 80
   assert.ok(creature, `missing creature ${instanceId}`);
   equipForContainment(harness, instanceId);
   player.update({ vitals: { integrity: maxIntegrityFor(player.record.skills) } });
+  harness.approach(instanceId);
   harness.send({ type: 'world.interact', targetKind: 'creature', instanceId, interactionIndex: 0 });
   harness.ticksUntil(() => player.heldFireOn === creature.entityId, limit);
   harness.send({ type: 'world.interact', targetKind: 'creature', instanceId, interactionIndex: 1 });

@@ -1,4 +1,5 @@
 import type { ObjectLight, WorldObjectDefinition } from '../world/entities.ts';
+import { HYDROPONICS_ANCHORS } from './districts/hydroponics.ts';
 
 const ANOMALY_LIGHT: ObjectLight = { radius: 3.5, color: '#b57cff', intensity: 0.85, flicker: true };
 
@@ -26,7 +27,7 @@ export const POCKET_OBJECTS: readonly WorldObjectDefinition[] = [
     model: 'anomaly',
     blocksMovement: true,
     light: ANOMALY_LIGHT,
-    interactions: [{ verb: 'Step through', effects: [{ type: 'teleport', districtId: 'hydroponics', position: { x: 29, y: 21 } }] }],
+    interactions: [{ verb: 'Step through', effects: [{ type: 'teleport', districtId: 'hydroponics', position: HYDROPONICS_ANCHORS.foldReturn }] }],
   },
   {
     id: 'fold-heartwood',

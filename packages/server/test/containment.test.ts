@@ -10,9 +10,9 @@ import {
   type CharacterRecord,
   type QuestProgress,
 } from '@containment/shared';
-import { createHarness, at, type Harness } from './support/testHarness.ts';
+import { createHarness, at, type Harness, localInRoom } from './support/testHarness.ts';
 
-const NEAR_WARDEN = at('sector-two', { x: 25, y: 7 });
+const NEAR_WARDEN = at('sector-two', localInRoom('sector-two', 'inner-chamber', { x: 22, y: 23 }));
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 

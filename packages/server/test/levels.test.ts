@@ -5,14 +5,41 @@ import { createCharacterRecord } from '../src/characters/characterFactory.ts';
 import { CharacterRepository } from '../src/characters/characterRepository.ts';
 import { openDatabase } from '../src/persistence/database.ts';
 import { restoreLocation, storeLocation } from '../src/characters/storedLocation.ts';
-import { at, createHarness, levelPoint, type Harness } from './support/testHarness.ts';
+import { anchor, at, createHarness, exitPoint, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
 
-const MAIN_FLOOR_SPAWN = { levelId: 'main-floor', position: levelPoint('meridian-atrium', { x: 6, y: 31 }) };
+const MAIN_FLOOR_SPAWN = anchor('meridian-atrium', 'transit');
+
+const WEST_GATE = at('meridian-atrium', localInRoom('meridian-atrium', 'west-gate', { x: 2, y: 2 }));
+const EAST_GATE = at('meridian-atrium', localInRoom('meridian-atrium', 'east-gate', { x: 27, y: 2 }));
+
+const ROUTE_TO_HYDROPONICS: readonly TilePoint[] = [
+  levelPoint('meridian-circuit', localInRoom('meridian-circuit', 'west-boulevard', { x: 6, y: 135 })),
+  exitPoint('meridian-circuit', 'west'),
+  levelPoint('verdance-concourse', localInRoom('verdance-concourse', 'concourse', { x: 90, y: 6 })),
+  levelPoint('verdance-concourse', localInRoom('verdance-concourse', 'concourse', { x: 62, y: 2 })),
+  levelPoint('verdance-concourse', localInRoom('verdance-concourse', 'concourse', { x: 38, y: 2 })),
+  levelPoint('verdance-concourse', localInRoom('verdance-concourse', 'concourse', { x: 10, y: 6 })),
+  levelPoint('hydroponics', localInRoom('hydroponics', 'grow-hall', { x: 40, y: 32 })),
+];
+
+const ROUTE_TO_SERVICE_YARDS: readonly TilePoint[] = [
+  levelPoint('meridian-circuit', localInRoom('meridian-circuit', 'east-boulevard', { x: 6, y: 135 })),
+  exitPoint('meridian-circuit', 'east'),
+  levelPoint('service-concourse', localInRoom('service-concourse', 'concourse', { x: 10, y: 6 })),
+  levelPoint('service-concourse', localInRoom('service-concourse', 'concourse', { x: 40, y: 6 })),
+  levelPoint('service-concourse', localInRoom('service-concourse', 'concourse', { x: 70, y: 6 })),
+  levelPoint('service-concourse', localInRoom('service-concourse', 'concourse', { x: 95, y: 6 })),
+  levelPoint('service-yards', localInRoom('service-yards', 'yard-office', { x: 4, y: 12 })),
+];
 
 function walkTo(harness: Harness, target: TilePoint): void {
   harness.send({ type: 'world.walk', target });
   harness.ticksUntil(() => harness.player.path.length === 0);
   assert.deepEqual(harness.player.position, target);
+}
+
+function walkAlong(harness: Harness, route: readonly TilePoint[]): void {
+  for (const waypoint of route) walkTo(harness, waypoint);
 }
 
 const placedAt = (location: CharacterRecord['location'], flags: readonly string[] = []) => (record: CharacterRecord): CharacterRecord => ({
@@ -23,7 +50,7 @@ const placedAt = (location: CharacterRecord['location'], flags: readonly string[
 
 describe('levels', () => {
   test('legacy locations convert to level coordinates', () => {
-    assert.deepEqual(restoreLocation({ zoneId: 'hydroponics', position: { x: 4, y: 10 } }, GAME_CONTENT), at('hydroponics', { x: 4, y: 10 }));
+    assert.deepEqual(restoreLocation({ zoneId: 'hydroponics', position: localInRoom('hydroponics', 'platform', { x: 3, y: 2 }) }, GAME_CONTENT), at('hydroponics', localInRoom('hydroponics', 'platform', { x: 3, y: 2 })));
   });
 
   test('legacy locations convert to the main-floor spawn when the zone is gone', () => {
@@ -45,10 +72,10 @@ describe('levels', () => {
     database.exec('PRAGMA foreign_keys = OFF;');
     const repository = new CharacterRepository(database, GAME_CONTENT);
     const created = createCharacterRecord({ ...createDefaultDraft(), name: 'Stored Operative' }, { id: 'character-9', accountId: 'account-9' }, GAME_CONTENT);
-    const record = { ...created, location: at('hydroponics', { x: 4, y: 10 }) };
+    const record = { ...created, location: at('hydroponics', localInRoom('hydroponics', 'platform', { x: 3, y: 2 })) };
     repository.insert(record);
     const row = database.prepare('SELECT record FROM characters WHERE id = ?').get('character-9') as { record: string };
-    assert.deepEqual(JSON.parse(row.record).location, { districtId: 'hydroponics', position: { x: 4, y: 10 } });
+    assert.deepEqual(JSON.parse(row.record).location, { districtId: 'hydroponics', position: localInRoom('hydroponics', 'platform', { x: 3, y: 2 }) });
     assert.deepEqual(repository.findOwned('account-9', 'character-9')?.location, record.location);
   });
 
@@ -62,43 +89,38 @@ describe('levels', () => {
   });
 
   test('walking from the Atrium into Hydroponics needs no teleport', () => {
-    const harness = createHarness({ prepare: placedAt(at('meridian-atrium', { x: 3, y: 24 })) });
-    walkTo(harness, levelPoint('verdance-concourse', { x: 9, y: 2 }));
-    walkTo(harness, levelPoint('hydroponics', { x: 30, y: 23 }));
-    walkTo(harness, levelPoint('hydroponics', { x: 3, y: 12 }));
+    const harness = createHarness({ prepare: placedAt(WEST_GATE) });
+    walkAlong(harness, ROUTE_TO_HYDROPONICS);
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'hydroponics');
     assert.equal(harness.sink.messages.filter((message) => message.type === 'world.entered').length, 1);
   });
 
-  test('main-floor locations saved in level coordinates before the floor grew west are shifted with it', () => {
-    const atriumLocal = { x: 6, y: 31 };
-    const oldLevelPoint = { x: atriumLocal.x + 56, y: atriumLocal.y + 30 };
-    assert.deepEqual(restoreLocation({ levelId: 'main-floor', position: oldLevelPoint }, GAME_CONTENT), at('meridian-atrium', atriumLocal));
+  test('a level-coordinate location that is no longer floor falls back to the main-floor spawn', () => {
+    assert.deepEqual(restoreLocation({ levelId: 'main-floor', position: { x: 0, y: 0 } }, GAME_CONTENT), MAIN_FLOOR_SPAWN);
   });
 
   test('walking into a district charts it on the world map', () => {
-    const harness = createHarness({ prepare: placedAt(at('meridian-atrium', { x: 3, y: 24 })) });
+    const harness = createHarness({ prepare: placedAt(WEST_GATE) });
     const charted = () => harness.sink.last('player.state')?.self.visitedDistricts ?? [];
     assert.ok(charted().includes('meridian-atrium'));
     assert.ok(!charted().includes('hydroponics'));
-    walkTo(harness, levelPoint('verdance-concourse', { x: 9, y: 2 }));
-    walkTo(harness, levelPoint('hydroponics', { x: 30, y: 23 }));
+    walkAlong(harness, ROUTE_TO_HYDROPONICS);
+    assert.ok(charted().includes('meridian-circuit'));
     assert.ok(charted().includes('verdance-concourse'));
     assert.ok(charted().includes('hydroponics'));
     assert.ok(!charted().includes('service-yards'));
   });
 
   test('characters saved before district tracking keep every district of the levels they had visited', () => {
-    const harness = createHarness({ prepare: placedAt(at('meridian-atrium', { x: 3, y: 24 }), ['visited:main-floor', 'visited:the-deep']) });
+    const harness = createHarness({ prepare: placedAt(WEST_GATE, ['visited:main-floor', 'visited:the-deep']) });
     const charted = harness.sink.last('player.state')?.self.visitedDistricts ?? [];
     for (const districtId of ['hydroponics', 'waterworks', 'deepwatch', 'furnace']) assert.ok(charted.includes(districtId), districtId);
     assert.ok(!charted.includes('undercroft'));
   });
 
   test('walking from the Atrium out to the Service Yards needs no teleport', () => {
-    const harness = createHarness({ prepare: placedAt(at('meridian-atrium', { x: 45, y: 24 })) });
-    walkTo(harness, levelPoint('service-concourse', { x: 7, y: 3 }));
-    walkTo(harness, levelPoint('service-yards', { x: 6, y: 13 }));
+    const harness = createHarness({ prepare: placedAt(EAST_GATE) });
+    walkAlong(harness, ROUTE_TO_SERVICE_YARDS);
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'service-yards');
     assert.equal(harness.sink.messages.filter((message) => message.type === 'world.entered').length, 1);
   });
@@ -148,16 +170,17 @@ describe('levels', () => {
   });
 
   test('a saved position on an unwalkable tile spawns nearby in the same district', () => {
-    const harness = createHarness({ prepare: placedAt(at('intake-wing', { x: 27, y: 5 })) });
+    const inTheTank = localInRoom('intake-wing', 'observation', { x: 9, y: 8 });
+    const harness = createHarness({ prepare: placedAt(at('intake-wing', inTheTank)) });
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'intake-wing');
-    const target = levelPoint('intake-wing', { x: 27, y: 5 });
+    const target = levelPoint('intake-wing', inTheTank);
     assert.ok(Math.max(Math.abs(harness.player.position.x - target.x), Math.abs(harness.player.position.y - target.y)) <= 3);
   });
 
   test('incapacitation in the Intake Wing recovers in the Intake Wing', () => {
-    const harness = createHarness({ prepare: placedAt(at('intake-wing', { x: 27, y: 5 })) });
+    const harness = createHarness({ prepare: placedAt(at('intake-wing', localInRoom('intake-wing', 'observation', { x: 2, y: 2 }))) });
     harness.gameplay.recoverIncapacitated(harness.player);
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'intake-wing');
-    assert.deepEqual(harness.player.position, levelPoint('intake-wing', { x: 4, y: 5 }));
+    assert.deepEqual(harness.player.position, anchor('intake-wing', 'start').position);
   });
 });

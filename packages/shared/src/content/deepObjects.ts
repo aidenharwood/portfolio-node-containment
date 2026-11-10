@@ -1,4 +1,5 @@
 import type { GatheringSource } from '../crafting/gathering.ts';
+import { ATRIUM_ANCHORS } from './districts/meridianAtrium.ts';
 import type { DistrictId } from '../ids.ts';
 import type { Condition } from '../rules/conditions.ts';
 import type { TilePoint } from '../world/geometry.ts';
@@ -95,7 +96,7 @@ export const DEEP_PASSAGES: readonly WorldObjectDefinition[] = [
     TRAM_LIGHT,
     { conditions: [{ type: 'hasFlag', flag: 'clearance.deepwatch' }], failureText: 'The lift doors stay shut. A placard reads: COUNCIL AUTHORISATION ONLY.' },
   ),
-  passage('deepwatch-deep-line', 'Deep Line Lift', 'The express lift back up to the Meridian Atrium. It smells of coffee, which is the most normal thing at Deepwatch.', 'wallLift', 'Ride', { districtId: 'meridian-atrium', position: { x: 3, y: 31 } }, TRAM_LIGHT),
+  passage('deepwatch-deep-line', 'Deep Line Lift', 'The express lift back up to the Meridian Atrium. It smells of coffee, which is the most normal thing at Deepwatch.', 'wallLift', 'Ride', { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.deepLineArrival }, TRAM_LIGHT),
   passage('deepwatch-threshold-door', 'Threshold Passage', 'A short pressure corridor bored through to the Sector 3 threshold. The far end is always colder.', 'bulkhead', 'Enter', { districtId: 'sector-three', position: { x: 16, y: 6 } }, SEAL_LIGHT),
   passage('sector-three-deepwatch-door', 'Deepwatch Passage', 'A freshly bored pressure corridor, still smelling of cut stone. Deepwatch Station is on the other side.', 'bulkhead', 'Enter', { districtId: 'deepwatch', position: { x: 17, y: 3 } }, LIFT_LIGHT),
   door(

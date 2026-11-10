@@ -8,7 +8,7 @@ import {
   type CharacterRecord,
   type WorldLocation,
 } from '@containment/shared';
-import { createHarness, finishDialogue, type Harness, at, districtOf } from './support/testHarness.ts';
+import { createHarness, finishDialogue, type Harness, at, districtOf, localInRoom } from './support/testHarness.ts';
 
 const placed = (location: WorldLocation, changes: Partial<CharacterRecord> = {}) => (record: CharacterRecord): CharacterRecord => ({
   ...record,
@@ -32,13 +32,14 @@ function defeat(harness: Harness, instanceId: string): void {
   const creature = harness.gameplay.world.levelOf(harness.player).creatureByInstance(instanceId);
   assert.ok(creature, `missing creature ${instanceId}`);
   harness.ticksUntil(() => creature.isAlive && harness.player.combatTargetId === null, 1200);
+  harness.approach(instanceId);
   harness.send({ type: 'world.interact', targetKind: 'creature', instanceId, interactionIndex: 0 });
   harness.ticksUntil(() => !creature.isAlive, 2000);
 }
 
 describe('the Atrium hub', () => {
   test('the medbay patches operatives up, by the medic or by resting on a bed', () => {
-    const harness = createHarness({ prepare: placed(at('meridian-atrium', { x: 22, y: 27 }), { vitals: { integrity: 3 } }) });
+    const harness = createHarness({ prepare: placed(at('meridian-atrium', localInRoom('meridian-atrium', 'plaza', { x: 19, y: 49 })), { vitals: { integrity: 3 } }) });
     harness.talkTo('atrium-anand');
     finishDialogue(harness, (text) => text.startsWith('Patch me up'));
     assert.equal(harness.player.integrity, harness.player.maxIntegrity);
@@ -52,7 +53,7 @@ describe('the Atrium hub', () => {
 
 describe('Verdance Hydroponics', () => {
   test('Overgrowth: crawlers, fibre, the seed vault and a report to Dr. Oyelaran', () => {
-    const harness = createHarness({ prepare: placed(at('hydroponics', { x: 4, y: 10 }), veteran()) });
+    const harness = createHarness({ prepare: placed(at('hydroponics', localInRoom('hydroponics', 'platform', { x: 3, y: 2 })), veteran()) });
     harness.talkTo('hydro-oyelaran');
     finishDialogue(harness, (text) => text === 'Can I help?' || text === "I'll do it.");
     assert.equal(harness.player.record.quests.overgrowth?.status, 'active');
@@ -77,7 +78,7 @@ describe('Verdance Hydroponics', () => {
   });
 
   test('strangler fibre needs Salvage 4', () => {
-    const harness = createHarness({ prepare: placed(at('hydroponics', { x: 4, y: 10 })) });
+    const harness = createHarness({ prepare: placed(at('hydroponics', localInRoom('hydroponics', 'platform', { x: 3, y: 2 }))) });
     harness.interactWithObject('hydro-vine-nursery-a');
     assert.equal(harness.player.activity, null);
     assert.match(harness.sink.last('notice')?.text ?? '', /Salvage level 4/);

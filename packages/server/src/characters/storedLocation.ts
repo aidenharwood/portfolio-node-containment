@@ -1,6 +1,4 @@
-import { createObjectWalkabilityGrid, locate, type DistrictId, type GameContent, type LevelId, type TilePoint, type WorldLocation } from '@containment/shared';
-
-const LEVEL_SHIFTS_SINCE_LEVEL_COORDINATE_SAVES: Readonly<Partial<Record<LevelId, TilePoint>>> = { 'main-floor': { x: 126, y: 0 } };
+import { createObjectWalkabilityGrid, locate, type DistrictId, type GameContent, type TilePoint, type WorldLocation } from '@containment/shared';
 
 export interface DistrictLocation {
   readonly districtId: DistrictId;
@@ -34,8 +32,7 @@ export function storeLocation(location: WorldLocation, content: GameContent): Di
 
 export function restoreLocation(stored: unknown, content: GameContent): WorldLocation {
   if (isLevelLocation(stored)) {
-    const shift = LEVEL_SHIFTS_SINCE_LEVEL_COORDINATE_SAVES[stored.levelId];
-    return shift ? { levelId: stored.levelId, position: { x: stored.position.x + shift.x, y: stored.position.y + shift.y } } : stored;
+    return isWalkable(stored, content) ? stored : mainFloorSpawn(content);
   }
   const local = isDistrictLocation(stored) ? stored : isLegacyZoneLocation(stored) ? { districtId: stored.zoneId, position: stored.position } : undefined;
   const located = local && locate(content, local.districtId, local.position);

@@ -12,7 +12,7 @@ import {
   type WorldLocation,
 } from '@containment/shared';
 import { containSpecimen } from './support/containment.ts';
-import { createHarness, finishDialogue, type Harness, at, districtOf } from './support/testHarness.ts';
+import { createHarness, finishDialogue, type Harness, at, districtOf, localInRoom } from './support/testHarness.ts';
 
 const active = (questId: string, stepIndex = 0): QuestProgress => ({ questId, status: 'active', stepIndex, objectiveProgress: [0, 0, 0] });
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
@@ -20,7 +20,7 @@ const completed = (questId: string): QuestProgress => ({ questId, status: 'compl
 const VETERAN = createStartingSkills({ closeQuarters: experienceForLevel(99), fortitude: experienceForLevel(99), containment: experienceForLevel(40) });
 const KIT: EquipmentState = { torso: 'threshold-plate', legs: 'threshold-trousers', feet: 'threshold-boots', primary: 'the-knocker' };
 
-const NEAR_SEL: WorldLocation = at('meridian-atrium', { x: 43, y: 5 });
+const NEAR_SEL: WorldLocation = at('meridian-atrium', localInRoom('meridian-atrium', 'archives', { x: 8, y: 16 }));
 const NEAR_ACHTERBERG: WorldLocation = at('signal-array', { x: 6, y: 5 });
 const NEAR_CHUTE: WorldLocation = at('signal-array', { x: 41, y: 3 });
 const NEAR_HALVORSEN: WorldLocation = at('sector-three', { x: 10, y: 8 });
@@ -48,6 +48,7 @@ function defeat(harness: Harness, instanceId: string): void {
   const creature = harness.gameplay.world.levelOf(harness.player).creatureByInstance(instanceId);
   assert.ok(creature, `missing creature ${instanceId}`);
   harness.player.update({ vitals: { integrity: maxIntegrityFor(harness.player.record.skills) } });
+  harness.approach(instanceId);
   harness.send({ type: 'world.interact', targetKind: 'creature', instanceId, interactionIndex: 0 });
   harness.ticksUntil(() => !creature.isAlive, 8000);
   harness.ticksUntil(() => harness.player.combatTargetId === null, 2000);

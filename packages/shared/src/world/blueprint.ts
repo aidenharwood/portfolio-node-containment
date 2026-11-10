@@ -48,7 +48,12 @@ export interface PillarsStep {
   readonly inset: number;
 }
 
-export type BlueprintStep = RoomStep | LinkStep | ExitStep | PatchStep | PillarsStep;
+export interface HollowStep {
+  readonly kind: 'hollow';
+  readonly rect: TileRect;
+}
+
+export type BlueprintStep = RoomStep | LinkStep | ExitStep | PatchStep | PillarsStep | HollowStep;
 
 export interface DistrictExit {
   readonly side: ExitSide;
@@ -110,6 +115,8 @@ export const patch = (x: number, y: number, width: number, height: number, tile:
 });
 
 export const pillars = (roomId: string, everyX: number, everyY: number, inset = 3): PillarsStep => ({ kind: 'pillars', room: roomId, everyX, everyY, inset });
+
+export const hollow = (x: number, y: number, width: number, height: number): HollowStep => ({ kind: 'hollow', rect: { x, y, width, height } });
 
 const SYMBOL_OF = new Map<TileKindId, string>(Object.entries(MAP_LEGEND).map(([symbol, kind]) => [kind, symbol]));
 
@@ -173,6 +180,8 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
   const rooms: Record<string, TileRect> = {};
   const exits: Record<string, DistrictExit> = {};
   const links: Record<string, TilePoint[]> = {};
+  const hollows: TileRect[] = [];
+  const floors: Record<string, TileKindId> = {};
 
   const inBounds = ({ x, y }: TilePoint): boolean => x >= 0 && y >= 0 && x < width && y < height;
   const tileAt = (point: TilePoint): TileKindId => (inBounds(point) ? (tiles[point.y * width + point.x] as TileKindId) : 'void');
@@ -196,6 +205,7 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
 
   const drawRoom = (step: RoomStep): void => {
     rooms[step.id] = step.rect;
+    floors[step.id] = step.floor;
     for (let y = step.rect.y; y < step.rect.y + step.rect.height; y++) {
       for (let x = step.rect.x; x < step.rect.x + step.rect.width; x++) {
         if (isInsideShape(step.shape, step.rect, { x, y })) setTile({ x, y }, step.floor);
@@ -242,7 +252,7 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
     const vertical = step.side === 'north' || step.side === 'south';
     const span = vertical ? rect.width : rect.height;
     const start = (vertical ? rect.x : rect.y) + (step.offset ?? Math.floor((span - step.width) / 2));
-    const floor = step.floor ?? tileAt({ x: rect.x + Math.floor(rect.width / 2), y: rect.y + Math.floor(rect.height / 2) });
+    const floor = step.floor ?? (floors[step.room] as TileKindId);
     const into = STEP_INTO[step.side];
     const edgeTiles: TilePoint[] = [];
     for (let along = start; along < start + step.width; along++) {
@@ -277,10 +287,12 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
     else if (step.kind === 'link') drawLink(step);
     else if (step.kind === 'exit') drawExit(step);
     else if (step.kind === 'patch') drawPatch(step);
+    else if (step.kind === 'hollow') hollows.push(step.rect);
     else drawPillars(step);
   }
 
   const needsWall = (point: TilePoint): boolean =>
+    !hollows.some((rect) => rectContains(rect, point)) &&
     NEIGHBOURS.some((offset) => {
       const neighbour = tileAt({ x: point.x + offset.x, y: point.y + offset.y });
       return neighbour !== 'void' && TILE_KINDS[neighbour].structure !== 'wall';

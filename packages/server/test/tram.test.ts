@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { GAME_CONTENT, TRAM_BOARDING_TICKS, tramStationFlag, type CharacterRecord } from '@containment/shared';
-import { at, createHarness, districtOf, levelPoint, type Harness } from './support/testHarness.ts';
+import { at, createHarness, districtOf, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
 
 const onPlatform = (districtId: string, local: { x: number; y: number }, stations: readonly string[]) => (record: CharacterRecord): CharacterRecord => ({
   ...record,
@@ -9,7 +9,7 @@ const onPlatform = (districtId: string, local: { x: number; y: number }, station
   flags: [...record.flags, ...stations.map(tramStationFlag)],
 });
 
-const ATRIUM_PLATFORM = { x: 6, y: 30 };
+const ATRIUM_PLATFORM = GAME_CONTENT.districts.get('meridian-atrium')?.anchors?.transit ?? { x: 0, y: 0 };
 
 function stationPoint(stationId: string) {
   const station = GAME_CONTENT.tram.stations.get(stationId);
@@ -62,7 +62,7 @@ test('the Abyssal Circuit runs between the Deep districts', () => {
 });
 
 test('a tram does not run to stations off its own lines', () => {
-  const harness = createHarness({ prepare: onPlatform('intake-wing', { x: 52, y: 19 }, ['verdance-platform', 'deepwatch-platform']) });
+  const harness = createHarness({ prepare: onPlatform('intake-wing', localInRoom('intake-wing', 'transit-bay', { x: 14, y: 3 }), ['verdance-platform', 'deepwatch-platform']) });
   for (const destinationStationId of ['verdance-platform', 'deepwatch-platform']) {
     harness.send({ type: 'tram.board', destinationStationId });
     assert.equal(harness.player.activity, null);
@@ -78,7 +78,7 @@ test('an undiscovered destination is refused', () => {
 });
 
 test('boarding away from a platform is refused', () => {
-  const harness = createHarness({ prepare: onPlatform('meridian-atrium', { x: 22, y: 18 }, ['atrium-transit', 'verdance-platform']) });
+  const harness = createHarness({ prepare: onPlatform('meridian-atrium', localInRoom('meridian-atrium', 'plaza', { x: 19, y: 25 }), ['atrium-transit', 'verdance-platform']) });
   harness.send({ type: 'tram.board', destinationStationId: 'verdance-platform' });
   assert.equal(harness.player.activity, null);
   assert.match(harness.sink.last('notice')?.text ?? '', /tram platform/);

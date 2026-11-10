@@ -1,4 +1,5 @@
 import type { DistrictDefinition } from '../../world/district.ts';
+import { HYDROPONICS_ANCHORS } from './hydroponics.ts';
 
 export const VESPER_WARDS: DistrictDefinition = {
   id: 'vesper-wards',
@@ -6,7 +7,7 @@ export const VESPER_WARDS: DistrictDefinition = {
   subtitle: 'Vesper Wing — General Wards',
   tier: 12,
   region: 'vesper',
-  recovery: { districtId: 'hydroponics', position: { x: 5, y: 13 } },
+  recovery: { districtId: 'hydroponics', position: HYDROPONICS_ANCHORS.tramPlatform },
   ambience: { darkness: 0.6, tint: '#0f1614', fog: '#121a18', fixtures: 'failing' },
   map: [
     '############################################',

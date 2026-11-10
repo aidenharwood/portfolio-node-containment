@@ -4,7 +4,7 @@ import { addItem, createDefaultDraft, GAME_CONTENT, type CharacterRecord, type D
 import { createCharacterRecord } from '../src/characters/characterFactory.ts';
 import { Gameplay } from '../src/gameplay/gameplay.ts';
 import type { Player } from '../src/world/player.ts';
-import { at, levelPoint, RecordingSink } from './support/testHarness.ts';
+import { at, levelPoint, RecordingSink, localInRoom } from './support/testHarness.ts';
 
 interface Placement {
   readonly districtId: DistrictId;
@@ -213,14 +213,14 @@ describe('dormancy and interest-bounded intents', () => {
   });
 
   test('walking to a tile outside the interest set is refused', () => {
-    const { gameplay, operatives } = deep([{ districtId: 'hydroponics', position: { x: 30, y: 23 } }]);
+    const { gameplay, operatives } = deep([{ districtId: 'hydroponics', position: localInRoom('hydroponics', 'grow-hall', { x: 28, y: 63 }) }]);
     const [a] = operatives;
     assert.ok(a);
-    assert.equal(gameplay.world.walk(a.player, levelPoint('meridian-atrium', { x: 16, y: 12 })), false);
+    assert.equal(gameplay.world.walk(a.player, levelPoint('meridian-atrium', localInRoom('meridian-atrium', 'plaza', { x: 7, y: 5 }))), false);
   });
 
   test('interacting with an npc outside the interest set is refused', () => {
-    const { gameplay, operatives } = deep([{ districtId: 'hydroponics', position: { x: 30, y: 23 } }]);
+    const { gameplay, operatives } = deep([{ districtId: 'hydroponics', position: localInRoom('hydroponics', 'grow-hall', { x: 28, y: 63 }) }]);
     const [a] = operatives;
     assert.ok(a);
     gameplay.handle(a.player, { type: 'world.interact', targetKind: 'npc', instanceId: 'atrium-sel', interactionIndex: 0 });

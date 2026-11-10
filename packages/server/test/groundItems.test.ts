@@ -4,7 +4,7 @@ import { addItem, countItem, createDefaultDraft, GAME_CONTENT, type GroundItemSn
 import { createCharacterRecord } from '../src/characters/characterFactory.ts';
 import { Gameplay } from '../src/gameplay/gameplay.ts';
 import { OWNER_PRIVACY_TICKS, GROUND_LIFETIME_TICKS } from '../src/gameplay/groundItemController.ts';
-import { RecordingSink, at, levelPoint } from './support/testHarness.ts';
+import { RecordingSink, at, levelPoint, localInRoom } from './support/testHarness.ts';
 
 function setup() {
   const gameplay = new Gameplay(GAME_CONTENT, { save: () => undefined, findByName: () => null }, {
@@ -62,7 +62,7 @@ describe('ground items', () => {
     gameplay.handle(owner.player, { type: 'inventory.drop', slotIndex: slot });
     const [dropped] = [...gameplay.world.levelOf(owner.player).groundItems.values()];
     assert.ok(dropped);
-    gameplay.handle(owner.player, { type: 'world.walk', target: levelPoint('meridian-atrium', { x: 16, y: 16 }) });
+    gameplay.handle(owner.player, { type: 'world.walk', target: levelPoint('meridian-atrium', localInRoom('meridian-atrium', 'plaza', { x: 2, y: 17 })) });
     for (let tick = 0; tick < 10; tick++) gameplay.tick();
     gameplay.handle(owner.player, { type: 'world.pickup', groundItemId: dropped.id });
     for (let tick = 0; tick < 20 && countItem(owner.player.record.inventory, 'medgel') === 0; tick++) gameplay.tick();
@@ -77,7 +77,7 @@ describe('ground items', () => {
     for (let tick = 0; tick < OWNER_PRIVACY_TICKS + 1; tick++) gameplay.tick();
     const record = createCharacterRecord({ ...createDefaultDraft(), name: 'Late Operative' }, { id: 'late', accountId: 'late' }, GAME_CONTENT);
     const sink = new RecordingSink();
-    gameplay.enterWorld({ ...record, location: at('meridian-atrium', { x: 10, y: 16 }) }, sink);
+    gameplay.enterWorld({ ...record, location: at('meridian-atrium', localInRoom('meridian-atrium', 'workshop', { x: 27, y: 24 })) }, sink);
     const entered = sink.last('world.entered');
     assert.ok(entered?.groundItems.some((item: GroundItemSnapshot) => item.itemId === 'medgel' && !item.owned));
   });
