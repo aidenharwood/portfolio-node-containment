@@ -1,11 +1,11 @@
 import { emptyContractLedger, maxIntegrityFor, normalizeAppearance, normalizeSkills, type AccountId, type FriendEntry, type CharacterId, type CharacterRecord, type GameContent } from '@containment/shared';
-import { upgradeLegacyLocation } from './legacyLocation.ts';
+import { restoreLocation, storeLocation } from './storedLocation.ts';
 import type { Database } from '../persistence/database.ts';
 
 function parseRecord(json: string, content: GameContent): CharacterRecord {
   const stored = JSON.parse(json) as Omit<CharacterRecord, 'vitals' | 'storage' | 'location' | 'friends' | 'contracts'> & Partial<Pick<CharacterRecord, 'vitals' | 'storage' | 'friends' | 'contracts'>> & { readonly location: unknown };
   const skills = normalizeSkills(stored.skills);
-  return { ...stored, location: upgradeLegacyLocation(stored.location, content), appearance: normalizeAppearance(stored.appearance), storage: stored.storage ?? [], friends: stored.friends ?? [], contracts: stored.contracts ?? emptyContractLedger(), skills, vitals: stored.vitals ?? { integrity: maxIntegrityFor(skills) } };
+  return { ...stored, location: restoreLocation(stored.location, content), appearance: normalizeAppearance(stored.appearance), storage: stored.storage ?? [], friends: stored.friends ?? [], contracts: stored.contracts ?? emptyContractLedger(), skills, vitals: stored.vitals ?? { integrity: maxIntegrityFor(skills) } };
 }
 
 export class CharacterRepository {
@@ -50,7 +50,7 @@ export class CharacterRepository {
   insert(record: CharacterRecord): void {
     this.database
       .prepare('INSERT INTO characters (id, account_id, name, record, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)')
-      .run(record.id, record.accountId, record.name, JSON.stringify(record), record.createdAt, Date.now());
+      .run(record.id, record.accountId, record.name, this.serialize(record), record.createdAt, Date.now());
   }
 
   delete(accountId: AccountId, characterId: CharacterId): boolean {
@@ -61,6 +61,10 @@ export class CharacterRepository {
   save(record: CharacterRecord): void {
     this.database
       .prepare('UPDATE characters SET record = ?, updated_at = ? WHERE id = ?')
-      .run(JSON.stringify(record), Date.now(), record.id);
+      .run(this.serialize(record), Date.now(), record.id);
+  }
+
+  private serialize(record: CharacterRecord): string {
+    return JSON.stringify({ ...record, location: storeLocation(record.location, this.content) });
   }
 }

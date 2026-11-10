@@ -5,7 +5,7 @@ import type { GameEffect } from '../rules/effects.ts';
 import type { QuestObjective } from '../quests/questDefinition.ts';
 import { questlineKindFor } from '../quests/questline.ts';
 import { MARKET_DISTRICT_ID } from '../economy/market.ts';
-import { isSiteHub } from '../world/site.ts';
+import { isRegionHub } from '../world/region.ts';
 import { isShapeForSlot } from '../gear/slots.ts';
 import { TILE_KINDS } from '../world/tiles.ts';
 import { parseTileLayout } from '../world/district.ts';
@@ -15,7 +15,8 @@ import { findContractIssues } from './contractIntegrity.ts';
 import { findCraftingIssues, rawSourceTiers } from './craftingIntegrity.ts';
 import type { GameContent } from './gameContent.ts';
 import { findLevelIssues } from './levelIntegrity.ts';
-import { findSiteIssues } from './siteIntegrity.ts';
+import { findOverworldIssues } from './overworldIntegrity.ts';
+import { findRegionIssues } from './regionIntegrity.ts';
 import { findSafetyIssues } from './safetyIntegrity.ts';
 import { findTramIssues } from './tramIntegrity.ts';
 
@@ -202,7 +203,7 @@ export function findContentIssues(content: GameContent): string[] {
     for (const placement of objects) {
       const marketEffects = (content.worldObjects.get(placement.objectId)?.interactions ?? []).flatMap((interaction) => interaction.effects).filter((effect) => effect.type === 'openMarket');
       if (marketEffects.some((effect) => (effect.access ?? 'trade') === 'trade') && zone.id !== MARKET_DISTRICT_ID) report(where, `"${placement.instanceId}" opens the market outside the main hub`);
-      if (marketEffects.some((effect) => effect.access === 'collect') && !isSiteHub(content.sites, zone.id)) report(where, `"${placement.instanceId}" opens the exchange mailbox outside a Site hub`);
+      if (marketEffects.some((effect) => effect.access === 'collect') && !isRegionHub(content.regions, zone.id)) report(where, `"${placement.instanceId}" opens the exchange mailbox outside a regional outpost`);
     }
     for (const placement of [...zone.npcs, ...objects]) {
       if (instanceIds.has(placement.instanceId)) report(where, `duplicate instance id "${placement.instanceId}"`);
@@ -234,7 +235,8 @@ export function findContentIssues(content: GameContent): string[] {
 
   issues.push(...findCraftingIssues(content));
   issues.push(...findLevelIssues(content));
-  issues.push(...findSiteIssues(content));
+  issues.push(...findRegionIssues(content));
+  issues.push(...findOverworldIssues(content));
   issues.push(...findTramIssues(content));
   issues.push(...findAssemblyIssues(content));
   issues.push(...findSafetyIssues(content));

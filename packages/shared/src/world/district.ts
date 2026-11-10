@@ -1,5 +1,5 @@
 import type { CreatureId } from '../combat/creatures.ts';
-import type { AreaId, InstanceId, NpcId, WorldObjectId, DistrictId } from '../ids.ts';
+import type { AreaId, InstanceId, NpcId, WorldObjectId, DistrictId, RegionId } from '../ids.ts';
 import { tileKey, type Facing, type TilePoint, type TileRect } from './geometry.ts';
 import type { AssemblyPlacement } from './assemblies.ts';
 import type { WorldObjectDefinition } from './entities.ts';
@@ -52,6 +52,8 @@ export interface DistrictDefinition {
   readonly name: string;
   readonly subtitle: string;
   readonly tier: number;
+  readonly region: RegionId;
+  readonly reachedOnlyByTram?: boolean;
   readonly map: readonly string[];
   readonly recovery?: { readonly districtId: DistrictId; readonly position: TilePoint };
   readonly ambience: ZoneAmbience;

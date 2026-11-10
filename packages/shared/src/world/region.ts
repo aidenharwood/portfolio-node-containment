@@ -1,10 +1,10 @@
-import type { DistrictId, SiteId } from '../ids.ts';
+import type { DistrictId, RegionId } from '../ids.ts';
 
-export interface SiteDefinition {
-  readonly id: SiteId;
+export interface RegionDefinition {
+  readonly id: RegionId;
   readonly name: string;
   readonly hubDistrictId: DistrictId;
 }
 
-export const isSiteHub = (sites: ReadonlyMap<SiteId, SiteDefinition>, districtId: DistrictId | undefined): boolean =>
-  [...sites.values()].some((site) => site.hubDistrictId === districtId);
+export const isRegionHub = (regions: ReadonlyMap<RegionId, RegionDefinition>, districtId: DistrictId | undefined): boolean =>
+  [...regions.values()].some((region) => region.hubDistrictId === districtId);

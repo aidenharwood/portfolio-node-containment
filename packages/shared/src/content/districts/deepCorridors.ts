@@ -5,6 +5,7 @@ export const DEEP_CONCOURSE: DistrictDefinition = {
   name: 'Deep Concourse',
   subtitle: 'The Deep — Station Ring',
   tier: 4,
+  region: 'meridian-core',
   recovery: { districtId: 'deepwatch', position: { x: 5, y: 20 } },
   ambience: { darkness: 0.66, tint: '#06101a', fog: '#08141e', fixtures: 'failing' },
   map: [
@@ -74,6 +75,7 @@ export const FURNACE_CAUSEWAY: DistrictDefinition = {
   name: 'Furnace Causeway',
   subtitle: 'The Deep — Reactor Approach',
   tier: 4,
+  region: 'meridian-core',
   recovery: { districtId: 'deepwatch', position: { x: 5, y: 20 } },
   ambience: { darkness: 0.62, tint: '#1a0a04', fog: '#200c06', fixtures: 'failing' },
   map: [

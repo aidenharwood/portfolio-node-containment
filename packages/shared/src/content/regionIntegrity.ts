@@ -1,66 +1,50 @@
-import type { DistrictId, SiteId } from '../ids.ts';
+import type { DistrictId, RegionId } from '../ids.ts';
 import type { GameEffect } from '../rules/effects.ts';
 import type { DistrictDefinition } from '../world/district.ts';
 import { rectContains, type TilePoint } from '../world/geometry.ts';
-import type { SiteDefinition } from '../world/site.ts';
+import type { RegionDefinition } from '../world/region.ts';
 import { districtObjectsOf } from './assemblyIntegrity.ts';
 import type { GameContent } from './gameContent.ts';
 
 const isSafeTile = (district: DistrictDefinition, point: TilePoint): boolean =>
   district.areas.some((area) => area.safe === true && rectContains(area.rect, point));
 
-const objectEffects = (content: GameContent, districtId: DistrictId): { readonly position: TilePoint; readonly effects: readonly GameEffect[] }[] =>
-  districtObjectsOf(content, districtId).map((placement) => ({
-    position: placement.position,
-    effects: (content.worldObjects.get(placement.objectId)?.interactions ?? []).flatMap((interaction) => interaction.effects),
-  }));
+const safeObjectEffects = (content: GameContent, district: DistrictDefinition): GameEffect[] =>
+  districtObjectsOf(content, district.id)
+    .filter((placement) => isSafeTile(district, placement.position))
+    .flatMap((placement) => (content.worldObjects.get(placement.objectId)?.interactions ?? []).flatMap((interaction) => interaction.effects));
 
-const siteOfDistrict = (content: GameContent, districtId: DistrictId): SiteId | undefined => {
-  const levelId = content.levelOfDistrict.get(districtId);
-  return levelId === undefined ? undefined : content.levels.get(levelId)?.definition.site;
-};
-
-export const homeSiteOf = (content: GameContent): SiteId | undefined => content.levels.get(content.newCharacter.startingLocation.levelId)?.definition.site;
-
-function hasRelayArrival(content: GameContent, site: SiteDefinition): boolean {
-  for (const districtId of content.districts.keys()) {
-    if (siteOfDistrict(content, districtId) === site.id) continue;
-    const arrives = objectEffects(content, districtId).some(({ effects }) =>
-      effects.some((effect) => effect.type === 'teleport' && siteOfDistrict(content, effect.districtId) === site.id),
-    );
-    if (arrives) return true;
-  }
-  return false;
+export function homeRegionOf(content: GameContent): RegionId | undefined {
+  const start = content.newCharacter.startingLocation;
+  const districtId: DistrictId | undefined = content.levels.get(start.levelId)?.layout.districtAt(start.position);
+  return districtId === undefined ? undefined : content.districts.get(districtId)?.region;
 }
 
-function findHubIssues(content: GameContent, site: SiteDefinition, isHome: boolean, report: (problem: string) => void): void {
-  const hub = content.districts.get(site.hubDistrictId);
+function findOutpostIssues(content: GameContent, region: RegionDefinition, isHome: boolean, report: (problem: string) => void): void {
+  const hub = content.districts.get(region.hubDistrictId);
   if (!hub) {
-    report(`its hub district "${site.hubDistrictId}" does not exist`);
+    report(`its hub district "${region.hubDistrictId}" does not exist`);
     return;
   }
-  if (siteOfDistrict(content, hub.id) !== site.id) report(`its hub district "${hub.id}" is not on one of its levels`);
-  const safeEffects = objectEffects(content, hub.id).filter(({ position }) => isSafeTile(hub, position)).flatMap(({ effects }) => effects);
-  if (!safeEffects.some((effect) => effect.type === 'openStorage')) report('its hub has no storage locker in a safe area');
+  if (hub.region !== region.id) report(`its hub district "${hub.id}" belongs to region "${hub.region}"`);
+  const effects = safeObjectEffects(content, hub);
+  if (!effects.some((effect) => effect.type === 'openStorage')) report('its outpost has no storage locker in a safe area');
   const hasShop = hub.npcs.some((placement) => content.npcs.get(placement.npcId)?.shopId !== undefined && isSafeTile(hub, placement.position));
-  if (!hasShop) report('its hub has no shopkeeper in a safe area');
+  if (!hasShop) report('its outpost has no shopkeeper in a safe area');
   if (isHome) return;
-  if (!safeEffects.some((effect) => effect.type === 'openMarket' && effect.access === 'collect')) report('its hub has no exchange mailbox in a safe area');
-  if (!hasRelayArrival(content, site)) report('no relay from another Site arrives on any of its levels');
+  if (!effects.some((effect) => effect.type === 'openMarket' && effect.access === 'collect')) report('its outpost has no exchange mailbox in a safe area');
+  if (!effects.some((effect) => effect.type === 'openContracts')) report('its outpost has no contract board in a safe area');
 }
 
-export function findSiteIssues(content: GameContent): string[] {
+export function findRegionIssues(content: GameContent): string[] {
   const issues: string[] = [];
-  for (const level of content.levels.values()) {
-    if (!content.sites.has(level.definition.site)) issues.push(`Level "${level.id}" belongs to unknown site "${level.definition.site}".`);
+  for (const district of content.districts.values()) {
+    if (!content.regions.has(district.region)) issues.push(`District "${district.id}" belongs to unknown region "${district.region}".`);
   }
-  const home = homeSiteOf(content);
-  if (home === undefined || !content.sites.has(home)) issues.push('The new-character start is not on a known Site.');
-  for (const site of content.sites.values()) {
-    const report = (problem: string) => issues.push(`Site "${site.id}": ${problem}.`);
-    const floors = [...content.levels.values()].filter((level) => level.definition.site === site.id && level.definition.kind === 'floor');
-    if (floors.length === 0) report('it has no floor level');
-    findHubIssues(content, site, site.id === home, report);
+  const home = homeRegionOf(content);
+  if (home === undefined || !content.regions.has(home)) issues.push('The new-character start is not in a known region.');
+  for (const region of content.regions.values()) {
+    findOutpostIssues(content, region, region.id === home, (problem) => issues.push(`Region "${region.id}": ${problem}.`));
   }
   return issues;
 }

@@ -14,7 +14,7 @@ import type { ContractLedger } from '../contracts/contractLedger.ts';
 import type { FriendView } from '../social/friends.ts';
 import type { PartyView } from '../social/party.ts';
 import type { StatId } from '../gear/stats.ts';
-import type { CharacterId, EntityId, ItemId, LevelId, NpcId, TramStationId, WorldObjectId } from '../ids.ts';
+import type { CharacterId, DistrictId, EntityId, ItemId, LevelId, NpcId, TramStationId, WorldObjectId } from '../ids.ts';
 import type { ChunkKey } from '../world/chunks.ts';
 import type { QuestLog } from '../quests/questProgress.ts';
 import type { Facing, TilePoint } from '../world/geometry.ts';
@@ -68,6 +68,7 @@ export interface SelfState {
   readonly combatLevel: number;
   readonly discoveredStations: readonly TramStationId[];
   readonly visitedLevels: readonly LevelId[];
+  readonly visitedDistricts: readonly DistrictId[];
   readonly openDoors: readonly WorldObjectId[];
   readonly openPassages: readonly WorldObjectId[];
   readonly studiedCreatures: readonly CreatureId[];

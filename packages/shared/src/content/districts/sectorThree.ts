@@ -5,6 +5,7 @@ export const SECTOR_THREE: DistrictDefinition = {
   name: 'Sector 3',
   subtitle: 'The Threshold',
   tier: 4,
+  region: 'meridian-core',
   ambience: { darkness: 0.55, tint: '#120a1c', fog: '#140c22', fixtures: 'failing' },
   map: [
     '####################',

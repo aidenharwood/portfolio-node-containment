@@ -1,4 +1,4 @@
-import type { ConnectorId, DistrictId, LevelId, SiteId } from '../ids.ts';
+import type { ConnectorId, DistrictId, LevelId } from '../ids.ts';
 import type { ZoneAmbience, ZoneLight } from './district.ts';
 import type { TilePoint } from './geometry.ts';
 
@@ -19,7 +19,6 @@ export interface ConnectorDefinition {
 export interface LevelDefinition {
   readonly id: LevelId;
   readonly name: string;
-  readonly site: SiteId;
   readonly kind: 'floor' | 'pocket';
   readonly depth: number;
   readonly districts: readonly DistrictPlacement[];
@@ -29,6 +28,10 @@ export interface LevelDefinition {
 }
 
 export const visitedLevelFlag = (levelId: LevelId): string => `visited:${levelId}`;
+
+export const VISITED_DISTRICT_FLAG_PREFIX = 'visited-district:';
+
+export const visitedDistrictFlag = (districtId: DistrictId): string => `${VISITED_DISTRICT_FLAG_PREFIX}${districtId}`;
 
 export interface WorldLocation {
   readonly levelId: LevelId;

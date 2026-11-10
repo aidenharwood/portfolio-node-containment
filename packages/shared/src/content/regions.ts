@@ -1,9 +1,9 @@
-import type { SiteDefinition } from '../world/site.ts';
+import type { RegionDefinition } from '../world/region.ts';
 
-export const MERIDIAN_SITE: SiteDefinition = {
-  id: 'meridian',
-  name: 'Site Meridian',
+export const MERIDIAN_CORE: RegionDefinition = {
+  id: 'meridian-core',
+  name: 'Meridian Core',
   hubDistrictId: 'meridian-atrium',
 };
 
-export const SITES: readonly SiteDefinition[] = [MERIDIAN_SITE];
+export const REGIONS: readonly RegionDefinition[] = [MERIDIAN_CORE];

@@ -71,7 +71,7 @@ describe('market', () => {
     assert.deepEqual(harness.sink.last('market.state')?.orders, []);
   });
 
-  test('a Site mailbox collects and withdraws orders but cannot post them', () => {
+  test('an outpost mailbox collects and withdraws orders but cannot post them', () => {
     const harness = createHarness({ prepare: atExchange });
     harness.interactWithObject('atrium-exchange');
     harness.send({ type: 'market.place', side: 'sell', itemId: 'scrap-alloy', price: 5, quantity: 10 });
@@ -89,7 +89,7 @@ describe('market', () => {
     assert.deepEqual(harness.sink.last('market.state')?.orders, []);
   });
 
-  test('a Site mailbox only connects from a Site hub', () => {
+  test('an outpost mailbox only connects from a regional outpost', () => {
     const harness = createHarness({ prepare: (record) => ({ ...atExchange(record), location: at('hydroponics', { x: 4, y: 13 }) }) });
     harness.gameplay.openMarket(harness.player, 'collect');
     assert.equal(harness.sink.last('market.opened'), undefined);

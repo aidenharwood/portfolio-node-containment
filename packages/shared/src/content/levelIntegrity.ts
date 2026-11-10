@@ -58,8 +58,8 @@ function findOverlaps(content: GameContent, level: ResolvedLevel, report: (probl
   }
 }
 
-function findUnreachable(content: GameContent, level: ResolvedLevel, grid: WalkabilityGrid, report: (problem: string) => void): void {
-  const jumps = tramLinksOf(content, level);
+function sameLevelJumps(content: GameContent, level: ResolvedLevel, ridesTrams: boolean): Map<string, TilePoint[]> {
+  const jumps = ridesTrams ? tramLinksOf(content, level) : new Map<string, TilePoint[]>();
   for (const teleport of teleportsOf(content, level)) {
     const destination = locate(content, teleport.districtId, teleport.position);
     if (destination?.levelId !== level.id) continue;
@@ -68,7 +68,10 @@ function findUnreachable(content: GameContent, level: ResolvedLevel, grid: Walka
       jumps.set(key, [...(jumps.get(key) ?? []), destination.position]);
     }
   }
+  return jumps;
+}
 
+function reachableFromSpawn(level: ResolvedLevel, grid: WalkabilityGrid, jumps: ReadonlyMap<string, readonly TilePoint[]>): Set<string> {
   const seen = new Set<string>();
   const queue: TilePoint[] = [level.spawn];
   while (queue.length > 0) {
@@ -78,7 +81,14 @@ function findUnreachable(content: GameContent, level: ResolvedLevel, grid: Walka
     seen.add(key);
     queue.push(...CARDINAL_STEPS.map((offset) => step(point, offset)), ...(jumps.get(key) ?? []));
   }
+  return seen;
+}
 
+export const tilesReachableOnFoot = (content: GameContent, level: ResolvedLevel): Set<string> =>
+  reachableFromSpawn(level, gridOf(content, level), sameLevelJumps(content, level, false));
+
+function findUnreachable(content: GameContent, level: ResolvedLevel, grid: WalkabilityGrid, report: (problem: string) => void): void {
+  const seen = reachableFromSpawn(level, grid, sameLevelJumps(content, level, true));
   const unreachable: string[] = [];
   for (let y = 0; y < level.layout.height; y++) {
     for (let x = 0; x < level.layout.width; x++) {

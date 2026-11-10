@@ -5,6 +5,7 @@ export const DEAD_LETTER_OFFICE: DistrictDefinition = {
   name: 'The Dead Letter Office',
   subtitle: 'Where the Post Went Instead',
   tier: 9,
+  region: 'meridian-core',
   recovery: { districtId: 'dead-letter-office', position: { x: 4, y: 5 } },
   ambience: { darkness: 0.64, tint: '#1a1408', fog: '#18120a', fixtures: 'failing' },
   map: [

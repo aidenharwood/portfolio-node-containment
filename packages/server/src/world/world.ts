@@ -22,6 +22,7 @@ export interface WorldHooks {
   onAreaEntered(player: Player, districtId: DistrictId, areaId: AreaId): void;
   onPathCompleted(player: Player): void;
   onLevelEntered(player: Player, levelId: LevelId): void;
+  onDistrictEntered(player: Player, districtId: DistrictId): void;
   openDoorsFor(player: Player): ReadonlySet<WorldObjectId>;
   partyMatesOf(player: Player): readonly Player[];
 }
@@ -263,6 +264,9 @@ export class World {
   }
 
   private refreshAreas(player: Player, level: LevelInstance): void {
+    const district = level.layout.districtAt(player.position);
+    if (district !== undefined && district !== player.occupiedDistrict) this.hooks.onDistrictEntered(player, district);
+    player.occupiedDistrict = district ?? player.occupiedDistrict;
     const areas = level.areasAt(player.position);
     const current = new Set(areas.map((area) => `${area.districtId}/${area.id}`));
     const entered = areas.filter((area) => !player.occupiedAreas.has(`${area.districtId}/${area.id}`));

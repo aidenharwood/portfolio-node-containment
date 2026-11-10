@@ -3,7 +3,7 @@ import {
   cancelOrder,
   collectOrder,
   isSettled,
-  isSiteHub,
+  isRegionHub,
   MARKET_DISTRICT_ID,
   marketQuotes,
   matchOrder,
@@ -60,8 +60,8 @@ export class MarketController {
       this.host.notify(player, 'warning', 'The exchange is only reachable from the Meridian Atrium.');
       return;
     }
-    if (access === 'collect' && !isSiteHub(this.content.sites, district)) {
-      this.host.notify(player, 'warning', 'The exchange mailbox only connects from a Site hub.');
+    if (access === 'collect' && !isRegionHub(this.content.regions, district)) {
+      this.host.notify(player, 'warning', 'The exchange mailbox only connects from a regional outpost.');
       return;
     }
     this.browsing.set(player, access);

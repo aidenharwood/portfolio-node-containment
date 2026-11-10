@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { GAME_CONTENT, type CharacterRecord, type TilePoint } from '@containment/shared';
-import { upgradeLegacyLocation } from '../src/characters/legacyLocation.ts';
+import { createDefaultDraft, GAME_CONTENT, type CharacterRecord, type TilePoint } from '@containment/shared';
+import { createCharacterRecord } from '../src/characters/characterFactory.ts';
+import { CharacterRepository } from '../src/characters/characterRepository.ts';
+import { openDatabase } from '../src/persistence/database.ts';
+import { restoreLocation, storeLocation } from '../src/characters/storedLocation.ts';
 import { at, createHarness, levelPoint, type Harness } from './support/testHarness.ts';
 
 const MAIN_FLOOR_SPAWN = { levelId: 'main-floor', position: levelPoint('meridian-atrium', { x: 6, y: 31 }) };
@@ -20,20 +23,42 @@ const placedAt = (location: CharacterRecord['location'], flags: readonly string[
 
 describe('levels', () => {
   test('legacy locations convert to level coordinates', () => {
-    assert.deepEqual(upgradeLegacyLocation({ zoneId: 'hydroponics', position: { x: 4, y: 10 } }, GAME_CONTENT), at('hydroponics', { x: 4, y: 10 }));
+    assert.deepEqual(restoreLocation({ zoneId: 'hydroponics', position: { x: 4, y: 10 } }, GAME_CONTENT), at('hydroponics', { x: 4, y: 10 }));
   });
 
   test('legacy locations convert to the main-floor spawn when the zone is gone', () => {
-    assert.deepEqual(upgradeLegacyLocation({ zoneId: 'sector-nine', position: { x: 1, y: 1 } }, GAME_CONTENT), MAIN_FLOOR_SPAWN);
+    assert.deepEqual(restoreLocation({ zoneId: 'sector-nine', position: { x: 1, y: 1 } }, GAME_CONTENT), MAIN_FLOOR_SPAWN);
   });
 
   test('legacy locations on an unwalkable tile fall back to the main-floor spawn', () => {
-    assert.deepEqual(upgradeLegacyLocation({ zoneId: 'meridian-atrium', position: { x: 0, y: 0 } }, GAME_CONTENT), MAIN_FLOOR_SPAWN);
+    assert.deepEqual(restoreLocation({ zoneId: 'meridian-atrium', position: { x: 0, y: 0 } }, GAME_CONTENT), MAIN_FLOOR_SPAWN);
   });
 
-  test('current locations pass through unchanged', () => {
+  test('locations are stored district-local and restored to level coordinates', () => {
     const current = at('deepwatch', { x: 3, y: 10 });
-    assert.deepEqual(upgradeLegacyLocation(current, GAME_CONTENT), current);
+    assert.deepEqual(storeLocation(current, GAME_CONTENT), { districtId: 'deepwatch', position: { x: 3, y: 10 } });
+    assert.deepEqual(restoreLocation(storeLocation(current, GAME_CONTENT), GAME_CONTENT), current);
+  });
+
+  test('the character repository saves district-local locations and loads level coordinates', () => {
+    const database = openDatabase(':memory:');
+    database.exec('PRAGMA foreign_keys = OFF;');
+    const repository = new CharacterRepository(database, GAME_CONTENT);
+    const created = createCharacterRecord({ ...createDefaultDraft(), name: 'Stored Operative' }, { id: 'character-9', accountId: 'account-9' }, GAME_CONTENT);
+    const record = { ...created, location: at('hydroponics', { x: 4, y: 10 }) };
+    repository.insert(record);
+    const row = database.prepare('SELECT record FROM characters WHERE id = ?').get('character-9') as { record: string };
+    assert.deepEqual(JSON.parse(row.record).location, { districtId: 'hydroponics', position: { x: 4, y: 10 } });
+    assert.deepEqual(repository.findOwned('account-9', 'character-9')?.location, record.location);
+  });
+
+  test('a stored district location on an unwalkable tile falls back to the main-floor spawn', () => {
+    assert.deepEqual(restoreLocation({ districtId: 'meridian-atrium', position: { x: 0, y: 0 } }, GAME_CONTENT), MAIN_FLOOR_SPAWN);
+  });
+
+  test('level-coordinate locations from before district-local storage pass through unchanged', () => {
+    const current = at('deepwatch', { x: 3, y: 10 });
+    assert.deepEqual(restoreLocation(current, GAME_CONTENT), current);
   });
 
   test('walking from the Atrium into Hydroponics needs no teleport', () => {
@@ -43,6 +68,25 @@ describe('levels', () => {
     walkTo(harness, levelPoint('hydroponics', { x: 3, y: 12 }));
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'hydroponics');
     assert.equal(harness.sink.messages.filter((message) => message.type === 'world.entered').length, 1);
+  });
+
+  test('walking into a district charts it on the world map', () => {
+    const harness = createHarness({ prepare: placedAt(at('meridian-atrium', { x: 3, y: 24 })) });
+    const charted = () => harness.sink.last('player.state')?.self.visitedDistricts ?? [];
+    assert.ok(charted().includes('meridian-atrium'));
+    assert.ok(!charted().includes('hydroponics'));
+    walkTo(harness, levelPoint('verdance-concourse', { x: 9, y: 2 }));
+    walkTo(harness, levelPoint('hydroponics', { x: 30, y: 23 }));
+    assert.ok(charted().includes('verdance-concourse'));
+    assert.ok(charted().includes('hydroponics'));
+    assert.ok(!charted().includes('service-yards'));
+  });
+
+  test('characters saved before district tracking keep every district of the levels they had visited', () => {
+    const harness = createHarness({ prepare: placedAt(at('meridian-atrium', { x: 3, y: 24 }), ['visited:main-floor', 'visited:the-deep']) });
+    const charted = harness.sink.last('player.state')?.self.visitedDistricts ?? [];
+    for (const districtId of ['hydroponics', 'waterworks', 'deepwatch', 'furnace']) assert.ok(charted.includes(districtId), districtId);
+    assert.ok(!charted.includes('undercroft'));
   });
 
   test('walking from the Atrium out to the Service Yards needs no teleport', () => {

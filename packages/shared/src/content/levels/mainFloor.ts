@@ -3,7 +3,6 @@ import type { LevelDefinition } from '../../world/level.ts';
 export const MAIN_FLOOR: LevelDefinition = {
   id: 'main-floor',
   name: 'Site Meridian',
-  site: 'meridian',
   kind: 'floor',
   depth: 0,
   capacity: 300,

@@ -5,6 +5,7 @@ export const FURNACE: DistrictDefinition = {
   name: 'The Furnace',
   subtitle: 'Site Meridian — Primary Reactor',
   tier: 7,
+  region: 'meridian-core',
   recovery: { districtId: 'deepwatch', position: { x: 5, y: 20 } },
   ambience: { darkness: 0.55, tint: '#1c0a04', fog: '#1a0c06', fixtures: 'failing' },
   map: [

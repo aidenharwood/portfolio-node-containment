@@ -5,6 +5,7 @@ export const WATERWORKS: DistrictDefinition = {
   name: 'Meridian Waterworks',
   subtitle: 'Site Meridian — Reclamation and Outflow',
   tier: 3,
+  region: 'meridian-core',
   recovery: { districtId: 'waterworks', position: { x: 4, y: 18 } },
   ambience: { darkness: 0.66, tint: '#071419', fog: '#0a1a20', fixtures: 'failing' },
   map: [

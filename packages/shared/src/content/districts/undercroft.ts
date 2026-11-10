@@ -5,6 +5,7 @@ export const UNDERCROFT: DistrictDefinition = {
   name: 'The Undercroft',
   subtitle: 'Site Meridian — Abandoned Maintenance Level',
   tier: 3,
+  region: 'meridian-core',
   recovery: { districtId: 'meridian-atrium', position: { x: 20, y: 32 } },
   ambience: { darkness: 0.7, tint: '#10120c', fog: '#0d0f0a', fixtures: 'failing' },
   map: [

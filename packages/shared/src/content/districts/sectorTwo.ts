@@ -5,6 +5,7 @@ export const SECTOR_TWO: DistrictDefinition = {
   name: 'Sector 2',
   subtitle: 'Quarantine — Do Not Enter',
   tier: 2,
+  region: 'meridian-core',
   recovery: { districtId: 'meridian-atrium', position: { x: 20, y: 32 } },
   ambience: { darkness: 0.74, tint: '#160709', fog: '#12090b', fixtures: 'failing' },
   map: [

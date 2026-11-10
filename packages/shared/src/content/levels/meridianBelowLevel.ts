@@ -3,7 +3,6 @@ import type { LevelDefinition } from '../../world/level.ts';
 export const MERIDIAN_BELOW_LEVEL: LevelDefinition = {
   id: 'meridian-below',
   name: 'Meridian Below',
-  site: 'meridian',
   kind: 'pocket',
   depth: -4,
   capacity: 24,

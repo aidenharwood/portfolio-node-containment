@@ -5,6 +5,7 @@ export const SERVICE_YARDS: DistrictDefinition = {
   name: 'Service Yards',
   subtitle: 'Site Meridian — Salvage and Laundry',
   tier: 1,
+  region: 'meridian-core',
   recovery: { districtId: 'meridian-atrium', position: { x: 20, y: 32 } },
   ambience: { darkness: 0.6, tint: '#140f08', fog: '#1a140c', fixtures: 'failing' },
   map: [

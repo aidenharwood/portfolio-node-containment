@@ -5,6 +5,8 @@ export const INTAKE_WING: DistrictDefinition = {
   name: 'Intake Wing',
   subtitle: 'Site Meridian — Sublevel 4',
   tier: 1,
+  region: 'meridian-core',
+  reachedOnlyByTram: true,
   recovery: { districtId: 'intake-wing', position: { x: 4, y: 5 } },
   ambience: { darkness: 0.56, tint: '#071219', fog: '#0b1a22' },
   map: [

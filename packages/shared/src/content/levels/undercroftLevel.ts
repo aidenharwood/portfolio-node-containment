@@ -3,7 +3,6 @@ import type { LevelDefinition } from '../../world/level.ts';
 export const UNDERCROFT_LEVEL: LevelDefinition = {
   id: 'b1-undercroft',
   name: 'Undercroft',
-  site: 'meridian',
   kind: 'floor',
   depth: -1,
   capacity: 24,

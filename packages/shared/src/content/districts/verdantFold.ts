@@ -5,6 +5,7 @@ export const VERDANT_FOLD: DistrictDefinition = {
   name: 'The Verdant Fold',
   subtitle: 'A Garden Folded Out of Hydroponics',
   tier: 2,
+  region: 'meridian-core',
   ambience: { darkness: 0.55, tint: '#140a1e', fog: '#0c1a12' },
   map: [
     '     ##########     ',

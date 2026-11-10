@@ -3,7 +3,6 @@ import type { LevelDefinition } from '../../world/level.ts';
 export const THE_DEEP: LevelDefinition = {
   id: 'the-deep',
   name: 'The Deep',
-  site: 'meridian',
   kind: 'floor',
   depth: -2,
   capacity: 200,

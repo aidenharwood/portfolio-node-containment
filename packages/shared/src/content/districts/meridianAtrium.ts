@@ -5,6 +5,7 @@ export const MERIDIAN_ATRIUM: DistrictDefinition = {
   name: 'Meridian Atrium',
   subtitle: 'Site Meridian — Central Hub',
   tier: 1,
+  region: 'meridian-core',
   ambience: { darkness: 0.36, tint: '#08141c', fog: '#0c1c26' },
   map: [
     '#########################DD#########################',

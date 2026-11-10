@@ -5,6 +5,7 @@ export const MERIDIAN_BELOW: DistrictDefinition = {
   name: 'Meridian Below',
   subtitle: 'The Far Side of the Door',
   tier: 8,
+  region: 'meridian-core',
   recovery: { districtId: 'sector-three', position: { x: 10, y: 9 } },
   ambience: { darkness: 0.68, tint: '#120a1c', fog: '#140c22', fixtures: 'failing' },
   map: [

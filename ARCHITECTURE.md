@@ -43,15 +43,17 @@ The world is a handful of continuous **levels** (`content/levels/`): the main fl
 - A teleport within the same level moves the player in place without re-entering. A teleport to another level leaves and re-enters.
 - An area is identified by its district and area id together, so area ids may repeat across districts.
 - `findLevelIssues` (`content/levelIntegrity.ts`) rejects overlapping placements, walkable tiles that cannot be reached from the level spawn (walking, through a same-level teleport, or by tram between platforms on the same level), duplicate instance ids on a level, and spawns, teleports or recoveries that land on an unwalkable tile.
-- Legacy character records saved with `{ zoneId, position }` are upgraded on load by `upgradeLegacyLocation`.
+- Character records store their location district-local, `{ districtId, position }` (`server/src/characters/storedLocation.ts`), so districts can move on a level without moving anyone. `restoreLocation` resolves it on load, and also accepts older records saved in level coordinates or as `{ zoneId, position }`.
 
-### Sites
+### Regions and the overworld
 
-Meridian is one of nine deep Sites. A **Site** (`content/sites.ts`) groups levels: every `LevelDefinition` names its `site`, and `depth` counts within that Site. A Site names a `hubDistrictId`. The home Site is the one holding the new-character start.
+The main floor is the **overworld**: one continuous level that grows outward from the Atrium, with dungeon floors below and pocket dimensions as instances. A **region** (`content/regions.ts`) is a wing of it: every district names its `region`, and a region names its outpost `hubDistrictId`. The home region is the one holding the new-character start.
 
-- `findSiteIssues` (`content/siteIntegrity.ts`) requires every level to belong to a known Site, every Site to have a floor level, and every hub to be on its own Site with a storage locker and a shopkeeper in a safe area. A Site away from home also needs an exchange mailbox in its hub and a relay arriving from another Site: any object on another Site's level whose interaction teleports onto it.
-- The player marketplace posts orders only at the Atrium exchange (`openMarket`, access `trade`). An exchange mailbox (`market-mailbox`, access `collect`) may stand only in a Site hub; it collects and withdraws orders but cannot post them. The server checks both.
-- The world map groups level tabs by Site and titles itself with the shown level's Site. A tram link to a level on another Site is labelled as a relay.
+- `findRegionIssues` (`content/regionIntegrity.ts`) requires every district to be in a known region and every outpost to have a storage locker and a shopkeeper in a safe area. Outposts away from home also need an exchange mailbox and a contract board.
+- `findOverworldIssues` (`content/overworldIntegrity.ts`) requires every district on the overworld to be reachable on foot from its spawn, counting doors and same-level passages but not trams. Only districts marked `reachedOnlyByTram` (the Intake Wing) are exempt, so trams stay shortcuts.
+- The player marketplace posts orders only at the Atrium exchange (`openMarket`, access `trade`). An exchange mailbox (`market-mailbox`, access `collect`) may stand only in a regional outpost; it collects and withdraws orders but cannot post them. The server checks both.
+- Entering a district sets `visited-district:<districtId>`. The world map draws districts the player has never entered dark and "Uncharted", and labels regions over their districts when zoomed out.
+- `npm run bench:tick [players…]` measures the tick with that many players wandering on one layer of the main floor. Run it before raising a level's `capacity`.
 
 ### World structure
 

@@ -85,6 +85,7 @@ describe('assemblies', () => {
       name: 'Yard',
       subtitle: '',
       tier: 1,
+      region: 'meridian-core',
       map: ['........', '........'],
       ambience: { darkness: 0.5, tint: '#000000', fog: '#000000' },
       areas: [],
@@ -96,7 +97,6 @@ describe('assemblies', () => {
     const level: LevelDefinition = {
       id: 'yard-level',
       name: 'Yard',
-      site: 'meridian',
       kind: 'floor',
       depth: 0,
       districts: [{ districtId: 'yard', origin: { x: 5, y: 5 } }],

@@ -1,12 +1,18 @@
-import { createObjectWalkabilityGrid, locate, type GameContent, type TilePoint, type WorldLocation } from '@containment/shared';
+import { createObjectWalkabilityGrid, locate, type DistrictId, type GameContent, type TilePoint, type WorldLocation } from '@containment/shared';
 
-interface LegacyLocation {
+export interface DistrictLocation {
+  readonly districtId: DistrictId;
+  readonly position: TilePoint;
+}
+
+interface LegacyZoneLocation {
   readonly zoneId: string;
   readonly position: TilePoint;
 }
 
-const isCurrent = (stored: unknown): stored is WorldLocation => typeof (stored as WorldLocation | null)?.levelId === 'string';
-const isLegacy = (stored: unknown): stored is LegacyLocation => typeof (stored as LegacyLocation | null)?.zoneId === 'string';
+const isLevelLocation = (stored: unknown): stored is WorldLocation => typeof (stored as WorldLocation | null)?.levelId === 'string';
+const isDistrictLocation = (stored: unknown): stored is DistrictLocation => typeof (stored as DistrictLocation | null)?.districtId === 'string';
+const isLegacyZoneLocation = (stored: unknown): stored is LegacyZoneLocation => typeof (stored as LegacyZoneLocation | null)?.zoneId === 'string';
 
 function isWalkable(location: WorldLocation, content: GameContent): boolean {
   const level = content.levels.get(location.levelId);
@@ -20,8 +26,13 @@ function mainFloorSpawn(content: GameContent): WorldLocation {
   return { levelId: level.id, position: level.spawn };
 }
 
-export function upgradeLegacyLocation(stored: unknown, content: GameContent): WorldLocation {
-  if (isCurrent(stored)) return stored;
-  const located = isLegacy(stored) ? locate(content, stored.zoneId, stored.position) : undefined;
+export function storeLocation(location: WorldLocation, content: GameContent): DistrictLocation | WorldLocation {
+  return content.levels.get(location.levelId)?.layout.toLocalPoint(location.position) ?? location;
+}
+
+export function restoreLocation(stored: unknown, content: GameContent): WorldLocation {
+  if (isLevelLocation(stored)) return stored;
+  const local = isDistrictLocation(stored) ? stored : isLegacyZoneLocation(stored) ? { districtId: stored.zoneId, position: stored.position } : undefined;
+  const located = local && locate(content, local.districtId, local.position);
   return located && isWalkable(located, content) ? located : mainFloorSpawn(content);
 }

@@ -3,6 +3,7 @@ import {
   maxIntegrityFor,
   type EntityVitals,
   type AreaId,
+  type DistrictId,
   type CharacterRecord,
   type CraftingStation,
   type DialogueId,
@@ -61,6 +62,7 @@ export class Player {
   pendingInteraction: PendingInteraction | null = null;
   dialogue: DialogueSession | null = null;
   occupiedAreas = new Set<AreaId>();
+  occupiedDistrict: DistrictId | undefined;
   combatTargetId: EntityId | null = null;
   containTargetId: EntityId | null = null;
   finishingTargetId: EntityId | null = null;
@@ -107,6 +109,7 @@ export class Player {
     this.path = [];
     this.pendingInteraction = null;
     this.occupiedAreas = new Set();
+    this.occupiedDistrict = undefined;
   }
 
   consumeStateDirty(): boolean {

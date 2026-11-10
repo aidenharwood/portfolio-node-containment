@@ -1,6 +1,6 @@
-import type { SiteId } from '../ids.ts';
-import type { SiteDefinition } from '../world/site.ts';
-import { SITES } from './sites.ts';
+import type { RegionId } from '../ids.ts';
+import type { RegionDefinition } from '../world/region.ts';
+import { REGIONS } from './regions.ts';
 import type { StartingKit } from '../character/startingKit.ts';
 import type { CreatureDefinition, CreatureId } from '../combat/creatures.ts';
 import { CREATURES } from './creatures.ts';
@@ -116,7 +116,7 @@ export interface GameContent {
   readonly districts: ReadonlyMap<DistrictId, DistrictDefinition>;
   readonly levels: ReadonlyMap<LevelId, ResolvedLevel>;
   readonly levelOfDistrict: ReadonlyMap<DistrictId, LevelId>;
-  readonly sites: ReadonlyMap<SiteId, SiteDefinition>;
+  readonly regions: ReadonlyMap<RegionId, RegionDefinition>;
   readonly tram: TramNetwork;
   readonly creatures: ReadonlyMap<CreatureId, CreatureDefinition>;
   readonly shops: ReadonlyMap<ShopId, ShopDefinition>;
@@ -212,7 +212,7 @@ export const GAME_CONTENT: GameContent = {
   districts: DISTRICTS,
   levels: LEVEL_INDEX.levels,
   levelOfDistrict: LEVEL_INDEX.levelOfDistrict,
-  sites: indexById(SITES),
+  regions: indexById(REGIONS),
   tram: buildTramNetwork(TRAM_STATIONS, TRAM_LINES, DISTRICTS, LEVEL_INDEX),
   creatures: indexById([...CREATURES, ...DEEP_CREATURES, ...WATERWORKS_CREATURES, ...OFFICE_CREATURES]),
   shops: indexById(SHOPS),

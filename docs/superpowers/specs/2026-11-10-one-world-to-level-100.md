@@ -160,7 +160,23 @@ Each step leaves the game playable and the checks green.
 
 ## Progress
 
-- The `sites-to-100` branch has the level 100 cap and a first pass at the engine work, built for the earlier separate-Sites plan: `LevelDefinition.site`, Site content, `findSiteIssues`, the world map grouped by Site, and the collect-only exchange mailbox. The mailbox carries over unchanged. The Site field and checks become regions in engine step 1.
+The engine work (section 5) is done on the `sites-to-100` branch:
+
+1. **Regions.** `DistrictDefinition.region` and `RegionDefinition` (`content/regions.ts`). Every district today is in the Meridian Core, centred on the Atrium. `findRegionIssues` checks each outpost: a locker and a shopkeeper everywhere, plus an exchange mailbox and a contract board away from the core.
+2. **Reachable on foot.** `findOverworldIssues` walks the overworld from its spawn without trams. The Intake Wing is marked `reachedOnlyByTram`.
+3. **District-local saves.** Character records store `{ districtId, position }` (`server/src/characters/storedLocation.ts`), so districts can move on the overworld without moving anyone. Older records still load, and are rewritten in the new form on their next save, so this must ship **before** any re-layout of the main floor.
+4. **Capacity.** `npm run bench:tick [players…]` runs the 300ms tick with that many players wandering on one layer of the main floor. Results on today's 202 × 106 floor:
+
+   | Players | Tick p95 before | Tick p95 after | Per-player traffic |
+   | ------- | --------------- | -------------- | ------------------ |
+   | 100 | 4.2ms | 3.6ms | ~15 KB/s |
+   | 300 | 83ms | 54ms | ~39 KB/s |
+   | 600 | 261ms | 146ms | ~72 KB/s |
+   | 1000 | – | 349ms (over budget) | ~114 KB/s |
+
+   "After" is with `publishMoves` indexing each tick's moves by chunk. Before, every player scanned every move on the layer. What remains is driven by crowding: on a floor this small, each player's 3 × 3 chunk window covers a large share of everyone. **Keep the cap at 300 for now** and re-run the benchmark on the larger overworld, where the same player count is spread far thinner, before raising it.
+5. **World map.** Districts a player has never entered are drawn dark and labelled "Uncharted", and region names are drawn over their districts when zoomed out. Players saved before district tracking keep every district of the levels they had already visited.
+6. **Outposts.** The exchange mailbox (`market-mailbox`) collects and withdraws orders from any regional outpost but cannot post them.
 
 ## Decisions
 

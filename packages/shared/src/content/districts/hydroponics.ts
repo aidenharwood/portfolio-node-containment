@@ -5,6 +5,7 @@ export const HYDROPONICS: DistrictDefinition = {
   name: 'Verdance Hydroponics',
   subtitle: 'Site Meridian — Agricultural Containment Deck',
   tier: 2,
+  region: 'meridian-core',
   recovery: { districtId: 'meridian-atrium', position: { x: 20, y: 32 } },
   ambience: { darkness: 0.62, tint: '#08160c', fog: '#0a1a10', fixtures: 'failing' },
   map: [

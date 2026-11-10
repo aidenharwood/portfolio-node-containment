@@ -29,6 +29,7 @@ const MAX_SCALE = 28;
 const READABLE_SCALE = 5;
 const ZOOM_STEP = 1.4;
 const OBJECTIVE_COLOR = '#ffb347';
+const UNCHARTED_COLOR = '#0e161b';
 
 type MapMode = 'map' | 'transit';
 
@@ -57,14 +58,8 @@ interface PointerTrack {
   readonly startY: number;
 }
 
-const SITE_ORDER = [...GAME_CONTENT.sites.keys()];
-
-const siteName = (level: ResolvedLevel): string => GAME_CONTENT.sites.get(level.definition.site)?.name ?? 'Unknown Site';
-
 const levelOrder = (a: ResolvedLevel, b: ResolvedLevel): number =>
-  SITE_ORDER.indexOf(a.definition.site) - SITE_ORDER.indexOf(b.definition.site) ||
-  (a.definition.kind === b.definition.kind ? 0 : a.definition.kind === 'floor' ? -1 : 1) ||
-  b.definition.depth - a.definition.depth;
+  (a.definition.kind === b.definition.kind ? 0 : a.definition.kind === 'floor' ? -1 : 1) || b.definition.depth - a.definition.depth;
 
 const levelDepthLabel = (level: ResolvedLevel): string => (level.definition.kind === 'pocket' ? 'Pocket' : `Level ${level.definition.depth}`);
 
@@ -188,7 +183,7 @@ export class WorldMap {
       this.element,
       h('header', { className: 'world-map-bar' },
         h('div', { className: 'world-map-title' },
-          h('h3', {}, transit ? `${siteName(shown)} Transit` : siteName(shown)),
+          h('h3', {}, transit ? 'Site Meridian Transit' : 'Site Meridian'),
           h('p', { className: 'world-map-hint' }, transit && boarding ? `On the platform at ${boarding.name}` : 'Drag to pan, pinch or scroll to zoom'),
         ),
         this.levelPicker(shown, objectives),
@@ -217,11 +212,7 @@ export class WorldMap {
         `${charted ? level.name : 'Uncharted'} · ${levelDepthLabel(level)}${hasObjective ? ' · ◆ objective' : ''}`,
       );
     };
-    const sites = [...new Set(visible.map(({ level }) => level.definition.site))];
-    if (sites.length < 2) return visible.map(option);
-    return sites.map((site) =>
-      h('optgroup', { label: GAME_CONTENT.sites.get(site)?.name ?? site }, ...visible.filter(({ level }) => level.definition.site === site).map(option)),
-    );
+    return visible.map(option);
   }
 
   private levelPicker(shown: ResolvedLevel, objectives: ReadonlySet<DistrictId>): HTMLElement {
@@ -466,13 +457,23 @@ export class WorldMap {
 
     const frame = this.frameOf(view);
     const objectives = this.objectiveDistrictIds();
-    this.paintTiles(context, level, objectives, frame);
-    this.paintDistrictLabels(context, level, objectives, frame);
+    const charted = this.chartedDistrictIds(level);
+    this.paintTiles(context, level, objectives, charted, frame);
+    this.paintRegionLabels(context, level, charted, frame);
+    this.paintDistrictLabels(context, level, objectives, charted, frame);
     this.stationHits = this.paintNetwork(context, level, this.boardingStation(), frame);
     this.paintSelf(context, level, frame);
   }
 
-  private paintTiles(context: CanvasRenderingContext2D, level: ResolvedLevel, objectives: ReadonlySet<DistrictId>, frame: MapFrame): void {
+  private chartedDistrictIds(level: ResolvedLevel): Set<DistrictId> {
+    const charted = new Set(this.world.self?.visitedDistricts ?? []);
+    const self = this.world.selfEntity;
+    const here = self && this.world.zone?.definition.id === level.id ? level.layout.districtAt(self.to) : undefined;
+    if (here !== undefined) charted.add(here);
+    return charted;
+  }
+
+  private paintTiles(context: CanvasRenderingContext2D, level: ResolvedLevel, objectives: ReadonlySet<DistrictId>, charted: ReadonlySet<DistrictId>, frame: MapFrame): void {
     const size = Math.max(1, frame.scale) + 0.5;
     const width = this.canvas.clientWidth;
     const height = this.canvas.clientHeight;
@@ -486,19 +487,44 @@ export class WorldMap {
         if (kind === 'void') continue;
         const district = level.layout.districtAt({ x, y });
         const target = district !== undefined && objectives.has(district);
-        context.fillStyle = kind === 'coolant' ? '#1f5f7a' : kind === 'track' ? '#2a2420' : kind === 'door' ? '#2f5a6a' : TILE_KINDS[kind].walkable ? (target ? '#3d3216' : '#1c2a33') : target ? '#7a5a22' : '#40525e';
+        context.fillStyle = district !== undefined && !charted.has(district) ? UNCHARTED_COLOR : kind === 'coolant' ? '#1f5f7a' : kind === 'track' ? '#2a2420' : kind === 'door' ? '#2f5a6a' : TILE_KINDS[kind].walkable ? (target ? '#3d3216' : '#1c2a33') : target ? '#7a5a22' : '#40525e';
         context.fillRect(frame.offsetX + x * frame.scale, frame.offsetY + y * frame.scale, size, size);
       }
     }
   }
 
-  private paintDistrictLabels(context: CanvasRenderingContext2D, level: ResolvedLevel, objectives: ReadonlySet<DistrictId>, frame: MapFrame): void {
+  private paintRegionLabels(context: CanvasRenderingContext2D, level: ResolvedLevel, charted: ReadonlySet<DistrictId>, frame: MapFrame): void {
+    if (frame.scale >= 3) return;
+    const bounds = new Map<string, { minX: number; minY: number; maxX: number }>();
+    for (const { districtId, rect } of level.districts) {
+      const region = GAME_CONTENT.districts.get(districtId)?.region;
+      if (region === undefined || !charted.has(districtId)) continue;
+      const known = bounds.get(region);
+      bounds.set(region, {
+        minX: Math.min(known?.minX ?? rect.x, rect.x),
+        minY: Math.min(known?.minY ?? rect.y, rect.y),
+        maxX: Math.max(known?.maxX ?? rect.x + rect.width, rect.x + rect.width),
+      });
+    }
+    context.textAlign = 'center';
+    context.textBaseline = 'top';
+    context.font = '700 15px "Chakra Petch", sans-serif';
+    context.fillStyle = 'rgba(159, 179, 190, 0.55)';
+    for (const [regionId, box] of bounds) {
+      const name = (GAME_CONTENT.regions.get(regionId)?.name ?? regionId).toUpperCase().split('').join(' ');
+      context.fillText(name, frame.offsetX + ((box.minX + box.maxX) / 2) * frame.scale, frame.offsetY + box.minY * frame.scale - 22);
+    }
+  }
+
+  private paintDistrictLabels(context: CanvasRenderingContext2D, level: ResolvedLevel, objectives: ReadonlySet<DistrictId>, charted: ReadonlySet<DistrictId>, frame: MapFrame): void {
     context.textAlign = 'center';
     context.textBaseline = 'middle';
     const detailed = frame.scale >= 3;
     for (const { districtId, rect } of level.districts) {
       const district = GAME_CONTENT.districts.get(districtId);
       if (!district) continue;
+      const isCharted = charted.has(districtId);
+      const detailedLabel = detailed && isCharted;
       const x = frame.offsetX + (rect.x + rect.width / 2) * frame.scale;
       const y = frame.offsetY + (rect.y + rect.height / 2) * frame.scale;
       const target = objectives.has(districtId);
@@ -510,15 +536,15 @@ export class WorldMap {
         context.setLineDash([]);
       }
       if (rect.width * frame.scale < 36) continue;
-      context.font = `700 ${detailed ? 14 : 12}px "Chakra Petch", sans-serif`;
-      const name = district.name.toUpperCase();
+      context.font = `700 ${detailedLabel ? 14 : 12}px "Chakra Petch", sans-serif`;
+      const name = isCharted ? district.name.toUpperCase() : 'UNCHARTED';
       const labelWidth = context.measureText(name).width + 14;
-      const labelHeight = detailed ? (target ? 46 : 34) : 20;
+      const labelHeight = detailedLabel ? (target ? 46 : 34) : 20;
       context.fillStyle = 'rgba(3, 8, 11, 0.8)';
       context.fillRect(x - labelWidth / 2, y - labelHeight / 2, labelWidth, labelHeight);
       context.fillStyle = target ? OBJECTIVE_COLOR : '#e8f4f8';
-      context.fillText(name, x, detailed ? y - labelHeight / 2 + 10 : y);
-      if (!detailed) continue;
+      context.fillText(name, x, detailedLabel ? y - labelHeight / 2 + 10 : y);
+      if (!detailedLabel) continue;
       context.font = '500 11px "IBM Plex Mono", monospace';
       context.fillStyle = '#9fb3be';
       context.fillText(`Tier ${district.tier}`, x, y - labelHeight / 2 + 24);
@@ -599,8 +625,7 @@ export class WorldMap {
 
   private paintLevelLink(context: CanvasRenderingContext2D, from: { x: number; y: number }, away: TramStation, color: string, shown: ResolvedLevel): void {
     const awayLevel = GAME_CONTENT.levels.get(away.levelId);
-    const relay = awayLevel !== undefined && awayLevel.definition.site !== shown.definition.site;
-    const goesDown = !relay && (awayLevel?.definition.depth ?? 0) < shown.definition.depth;
+    const goesDown = (awayLevel?.definition.depth ?? 0) < shown.definition.depth;
     const dy = goesDown ? 28 : -28;
     context.beginPath();
     context.moveTo(from.x, from.y);
@@ -614,7 +639,7 @@ export class WorldMap {
     context.font = '600 11px "Chakra Petch", sans-serif';
     context.textAlign = 'left';
     context.fillStyle = color;
-    context.fillText(relay ? `Relay to ${siteName(awayLevel)}` : `${goesDown ? 'Down' : 'Up'} to ${awayLevel?.name ?? 'elsewhere'}`, from.x + 8, from.y + dy);
+    context.fillText(`${goesDown ? 'Down' : 'Up'} to ${awayLevel?.name ?? 'elsewhere'}`, from.x + 8, from.y + dy);
     context.textAlign = 'center';
   }
 

@@ -22,6 +22,7 @@ const room = (id: string, map: readonly string[], extras: Partial<DistrictDefini
   name: id,
   subtitle: '',
   tier: 1,
+  region: 'meridian-core',
   map,
   ambience: AMBIENCE,
   areas: [],
@@ -57,7 +58,6 @@ function fixtureContent(levels: readonly LevelDefinition[], districts: readonly 
 const level = (districts: LevelDefinition['districts']): LevelDefinition => ({
   id: 'fixture',
   name: 'Fixture',
-  site: 'meridian',
   kind: 'floor',
   depth: 0,
   districts,

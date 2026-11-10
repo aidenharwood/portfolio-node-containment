@@ -11,6 +11,7 @@ const room = (id: string, ambience: ZoneAmbience, extras: Partial<DistrictDefini
   name: id.toUpperCase(),
   subtitle: '',
   tier: 1,
+  region: 'meridian-core',
   map: ['####', '#..#', '####'],
   ambience,
   areas: [],
@@ -35,7 +36,6 @@ const districts = new Map<string, DistrictDefinition>([
 const level: LevelDefinition = {
   id: 'fixture',
   name: 'Fixture Level',
-  site: 'meridian',
   kind: 'floor',
   depth: 0,
   districts: [

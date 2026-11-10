@@ -5,6 +5,7 @@ export const VERDANCE_CONCOURSE: DistrictDefinition = {
   name: 'Verdance Concourse',
   subtitle: 'Site Meridian — West Transit Corridor',
   tier: 1,
+  region: 'meridian-core',
   recovery: { districtId: 'meridian-atrium', position: { x: 20, y: 32 } },
   ambience: { darkness: 0.5, tint: '#0a1a12', fog: '#0c1e14' },
   map: [
@@ -41,6 +42,7 @@ export const SERVICE_CONCOURSE: DistrictDefinition = {
   name: 'Service Concourse',
   subtitle: 'Site Meridian — East Transit Corridor',
   tier: 1,
+  region: 'meridian-core',
   recovery: { districtId: 'meridian-atrium', position: { x: 20, y: 32 } },
   ambience: { darkness: 0.52, tint: '#16110a', fog: '#1a140c' },
   map: [

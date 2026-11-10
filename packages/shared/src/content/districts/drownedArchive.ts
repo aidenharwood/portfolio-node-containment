@@ -5,6 +5,7 @@ export const DROWNED_ARCHIVE: DistrictDefinition = {
   name: 'The Drowned Archive',
   subtitle: 'Site Meridian — Records Division, Lower Stacks',
   tier: 6,
+  region: 'meridian-core',
   recovery: { districtId: 'deepwatch', position: { x: 5, y: 20 } },
   ambience: { darkness: 0.66, tint: '#0e0a18', fog: '#0c0816', fixtures: 'failing' },
   map: [

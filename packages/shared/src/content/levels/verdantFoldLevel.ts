@@ -3,7 +3,6 @@ import type { LevelDefinition } from '../../world/level.ts';
 export const VERDANT_FOLD_LEVEL: LevelDefinition = {
   id: 'verdant-fold',
   name: 'The Verdant Fold',
-  site: 'meridian',
   kind: 'pocket',
   depth: 0,
   capacity: 24,
