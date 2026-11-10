@@ -178,12 +178,14 @@ The engine work (section 5) is done on the `sites-to-100` branch:
 5. **World map.** Districts a player has never entered are drawn dark and labelled "Uncharted", and region names are drawn over their districts when zoomed out. Players saved before district tracking keep every district of the levels they had already visited.
 6. **Outposts.** The exchange mailbox (`market-mailbox`) collects and withdraws orders from any regional outpost but cannot post them.
 
-Delivery step 2 is done except the dungeon:
+Delivery step 2 is done:
 
 - **Calder Wing** (region `calder`): the Calder Causeway and Brine Galleries (tier 10) open on foot from the Waterworks' east culvert; the Calder Gatehouse outpost (Warden Brandt, Quartermaster Sorrel's commissary, locker, mailbox, contract board) sits behind a story door; the Salt Cathedral (tier 11) lies beyond it with a story-gated nave.
 - **Tiers 10–11**: `TIER_LEVEL_FLOORS` gains 40 and 45, so Clearance X and XI exist. Brine crawlers, salt wights, cathedral acolytes and the Salt Bishop (keter) carry the tiers; salt seams and halite geode clusters are the nodes; the Saltworks and Cathedral sets, the Salt Poultice and three uniques are craftable or dropped.
 - **Act IV part 1**: Postmarked, Salt of the Earth and Cathedral of Salt, offered by Sel and then Brandt, with an integration test (`server/test/actFour.test.ts`).
-- **Still to do for Calder**: its dungeon floor, a tram station at the gatehouse, and a side questline.
+- **Calder Deeps**: a dungeon floor (`calder-deeps`, tier 11) reached by the gallery lift in the gatehouse once Salt of the Earth is done, with deep shift wights, crawlers and the Shift Foreman.
+- **Tram**: the Calder Gatehouse Platform is the fourth stop on the Meridian Line, after the Service Yards Depot.
+- **Side questline** `calder-gatehouse`: Short Rations (Sorrel), The Lowest Gallery and Clocking Off (Brandt), covered by the Act IV integration test.
 
 ## Decisions
 

@@ -92,6 +92,9 @@ import { BRINE_GALLERIES } from './districts/brineGalleries.ts';
 import { CALDER_CAUSEWAY } from './districts/calderCauseway.ts';
 import { CALDER_GATEHOUSE } from './districts/calderGatehouse.ts';
 import { SALT_CATHEDRAL } from './districts/saltCathedral.ts';
+import { CALDER_DEEPS } from './districts/calderDeeps.ts';
+import { CALDER_DEEPS_LEVEL } from './levels/calderDeepsLevel.ts';
+import { CALDER_SIDE_QUESTS } from './quests/calderSide.ts';
 import { DEAD_LETTER_OFFICE } from './districts/deadLetterOffice.ts';
 import { DEAD_LETTER_OFFICE_LEVEL } from './levels/deadLetterOfficeLevel.ts';
 import { ASSEMBLY_OBJECTS } from './assemblyObjects.ts';
@@ -153,9 +156,9 @@ function indexById<T extends { readonly id: string }>(entries: readonly T[]): Re
   return index;
 }
 
-const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([INTAKE_WING, MERIDIAN_ATRIUM, VERDANCE_CONCOURSE, SERVICE_CONCOURSE, SERVICE_YARDS, WATERWORKS, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, DEEP_CONCOURSE, FURNACE_CAUSEWAY, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW, VERDANT_FOLD, DEAD_LETTER_OFFICE, CALDER_CAUSEWAY, BRINE_GALLERIES, CALDER_GATEHOUSE, SALT_CATHEDRAL]);
+const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([INTAKE_WING, MERIDIAN_ATRIUM, VERDANCE_CONCOURSE, SERVICE_CONCOURSE, SERVICE_YARDS, WATERWORKS, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, DEEP_CONCOURSE, FURNACE_CAUSEWAY, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW, VERDANT_FOLD, DEAD_LETTER_OFFICE, CALDER_CAUSEWAY, BRINE_GALLERIES, CALDER_GATEHOUSE, SALT_CATHEDRAL, CALDER_DEEPS]);
 const ASSEMBLY_INDEX: ReadonlyMap<AssemblyId, AssemblyDefinition> = indexById(ASSEMBLIES);
-const LEVEL_INDEX: LevelIndex = buildLevelIndex([MAIN_FLOOR, UNDERCROFT_LEVEL, THE_DEEP, THE_THRESHOLD, MERIDIAN_BELOW_LEVEL, VERDANT_FOLD_LEVEL, DEAD_LETTER_OFFICE_LEVEL], DISTRICTS, ASSEMBLY_INDEX);
+const LEVEL_INDEX: LevelIndex = buildLevelIndex([MAIN_FLOOR, UNDERCROFT_LEVEL, THE_DEEP, THE_THRESHOLD, MERIDIAN_BELOW_LEVEL, VERDANT_FOLD_LEVEL, DEAD_LETTER_OFFICE_LEVEL, CALDER_DEEPS_LEVEL], DISTRICTS, ASSEMBLY_INDEX);
 
 function startingLocation(): WorldLocation {
   const location = locate(LEVEL_INDEX, INTAKE_WING.id, { x: 4, y: 5 });
@@ -221,6 +224,7 @@ export const GAME_CONTENT: GameContent = {
     ...WATERWORKS_QUESTS,
     ...ACT_THREE_MAIN_QUESTS,
     ...ACT_FOUR_CALDER_QUESTS,
+    ...CALDER_SIDE_QUESTS,
   ]),
   questlines: indexById(QUESTLINES),
   districts: DISTRICTS,

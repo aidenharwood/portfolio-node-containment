@@ -54,6 +54,7 @@ export const CALDER_MEDICINE: readonly ItemDefinition[] = [
 ];
 
 export const CALDER_QUEST_ITEMS: readonly ItemDefinition[] = [
+  questItem('foremans-card', "Foreman's Card", "Foreman Ostrava's punch card, forty years without a clock-off stamp. The card is warm, as though someone is still holding it.", 'keycard', ['#d8c8a8', '#8a4a3a']),
   questItem('calder-letter', 'Letter from Calder', 'Salt-crusted paper, postmarked CALDER, delivered through the Waterworks wall. It asks one question: WHO ARE YOU?', 'sheet', ['#f2e6c8', '#8a4a3a']),
 ];
 

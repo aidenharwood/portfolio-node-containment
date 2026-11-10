@@ -18,8 +18,10 @@ describe('regions', () => {
     assert.deepEqual(findRegionIssues(GAME_CONTENT), []);
     assert.equal(homeRegionOf(GAME_CONTENT), 'meridian-core');
     const calder = [...GAME_CONTENT.districts.values()].filter((district) => district.region === 'calder').map((district) => district.id);
-    assert.deepEqual(calder.sort(), ['brine-galleries', 'calder-causeway', 'calder-gatehouse', 'salt-cathedral']);
-    assert.ok(calder.every((districtId) => GAME_CONTENT.levelOfDistrict.get(districtId) === 'main-floor'));
+    assert.deepEqual(calder.sort(), ['brine-galleries', 'calder-causeway', 'calder-deeps', 'calder-gatehouse', 'salt-cathedral']);
+    const onOverworld = calder.filter((districtId) => GAME_CONTENT.levelOfDistrict.get(districtId) === 'main-floor');
+    assert.deepEqual(onOverworld.sort(), ['brine-galleries', 'calder-causeway', 'calder-gatehouse', 'salt-cathedral']);
+    assert.equal(GAME_CONTENT.levelOfDistrict.get('calder-deeps'), 'calder-deeps');
   });
 
   test('an outpost away from the core needs a locker, shopkeeper, mailbox and contract board', () => {

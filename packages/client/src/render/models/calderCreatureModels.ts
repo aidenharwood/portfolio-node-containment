@@ -9,7 +9,7 @@ import { CHARACTER_VOXEL_SIZE } from '../world/worldScale.ts';
 import { CharacterRig } from './characterModel.ts';
 import { swingCurve, type EntityPose, type EntityRig } from './entityRig.ts';
 
-type CalderCreatureModel = Extract<CreatureModel, 'brineCrawler' | 'saltWight' | 'cathedralAcolyte' | 'saltBishop'>;
+type CalderCreatureModel = Extract<CreatureModel, 'brineCrawler' | 'saltWight' | 'cathedralAcolyte' | 'saltBishop' | 'shiftForeman'>;
 
 const VOXEL = CHARACTER_VOXEL_SIZE;
 const SALT = 0xe8e2d4;
@@ -121,6 +121,18 @@ const WIGHT_APPEARANCE: CharacterAppearance = {
   augment: 'respirator',
 };
 
+const FOREMAN_APPEARANCE: CharacterAppearance = {
+  physique: 'male',
+  bodyType: 'broad',
+  height: 1.08,
+  skinTone: '#d8d0c4',
+  hairStyle: 'buzz',
+  hairColor: '#e8e2d4',
+  eyeColor: '#ff9a6a',
+  faceMark: 'burnMark',
+  augment: 'jawPlate',
+};
+
 const ACOLYTE_APPEARANCE: CharacterAppearance = {
   physique: 'female',
   bodyType: 'slight',
@@ -230,4 +242,5 @@ export const CALDER_CREATURE_FACTORIES: Readonly<Record<CalderCreatureModel, () 
   saltWight: () => new HumanoidRig(WIGHT_APPEARANCE, ['saltworks-helm', 'saltworks-plate', 'saltworks-trousers', 'saltworks-boots', 'lampline-rifle'], 1.04, 0.6),
   cathedralAcolyte: () => new HumanoidRig(ACOLYTE_APPEARANCE, ['cathedral-helm', 'cathedral-plate', 'cathedral-trousers', 'cathedral-boots', 'censer-maul'], 1.02, 0.75),
   saltBishop: () => new SaltBishopRig(),
+  shiftForeman: () => new HumanoidRig(FOREMAN_APPEARANCE, ['saltworks-helm', 'saltworks-plate', 'saltworks-gloves', 'saltworks-trousers', 'saltworks-boots', 'seam-maul'], 1.2, 0.55),
 };

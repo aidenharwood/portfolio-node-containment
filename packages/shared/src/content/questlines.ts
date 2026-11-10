@@ -37,6 +37,13 @@ export const QUESTLINES: readonly QuestlineDefinition[] = [
     questIds: ['postmarked', 'salt-of-the-earth', 'cathedral-of-salt'],
   },
   {
+    id: 'calder-gatehouse',
+    name: 'The Calder Gatehouse',
+    kind: 'side',
+    summary: 'Calder has lasted forty years on rations and patience. Its gatehouse would like to stop doing both.',
+    questIds: ['short-rations', 'the-lowest-gallery', 'clocking-off'],
+  },
+  {
     id: 'meridian-proper',
     name: 'Meridian Proper',
     kind: 'side',

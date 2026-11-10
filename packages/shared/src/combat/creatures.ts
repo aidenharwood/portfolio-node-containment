@@ -38,6 +38,7 @@ export type CreatureModel =
   | 'saltWight'
   | 'cathedralAcolyte'
   | 'saltBishop'
+  | 'shiftForeman'
   | 'understudy';
 
 export interface LootEntry {

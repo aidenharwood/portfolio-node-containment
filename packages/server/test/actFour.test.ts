@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import {
+  addItem,
   CALDER_GATE_FLAG,
+  GAME_CONTENT,
   CALDER_NAVE_FLAG,
   countItem,
   createStartingSkills,
@@ -142,5 +144,51 @@ describe('act four: postmarked', () => {
     talk(harness, 'cg-brandt', 'We will be expecting you.');
     assert.equal(stepOf(harness, 'cathedral-of-salt'), 'completed');
     assert.ok(player.hasFlag('storyline.act-four-calder-complete'));
+  });
+
+  test('the Calder Gatehouse side quests run from the commissary down to the lowest gallery', () => {
+    const stocked = (record: CharacterRecord): CharacterRecord => {
+      const prepared = veteranAt(at('calder-gatehouse', { x: 7, y: 6 }), ['postmarked', 'salt-of-the-earth'], [CALDER_GATE_FLAG])(record);
+      const withSalt = addItem(prepared.inventory, GAME_CONTENT.items, 'rock-salt', 6).inventory;
+      return { ...prepared, inventory: addItem(withSalt, GAME_CONTENT.items, 'crawler-carapace', 4).inventory };
+    };
+    const harness = createHarness({ prepare: stocked });
+    const { player } = harness;
+    assert.ok(harness.sink.last('player.state')?.self.discoveredStations.includes('calder-platform'), 'arriving in the gatehouse discovers its tram platform');
+
+    talk(harness, 'cg-sorrel', 'What are you short of?', "I'll stock you up.");
+    assert.equal(stepOf(harness, 'short-rations'), 1, 'stores already in the pack satisfy the gathering step');
+    talk(harness, 'cg-sorrel', 'Enjoy the soup.');
+    assert.equal(stepOf(harness, 'short-rations'), 'completed');
+    assert.equal(countItem(player.record.inventory, 'rock-salt'), 0);
+
+    talk(harness, 'cg-brandt', 'Why does the lift bell keep ringing?', "I'll go down.");
+    use(harness, 'cg-lift');
+    assert.equal(player.levelId, 'calder-deeps');
+    assert.equal(stepOf(harness, 'the-lowest-gallery'), 1);
+
+    travel(harness, at('calder-deeps', { x: 20, y: 9 }));
+    for (const suffix of ['a', 'b', 'c', 'd', 'e', 'f']) defeat(harness, `cd-workings-wight-${suffix}`);
+    assert.equal(stepOf(harness, 'the-lowest-gallery'), 2);
+    travel(harness, at('calder-deeps', { x: 22, y: 22 }));
+    defeat(harness, 'cd-office-foreman');
+    assert.equal(stepOf(harness, 'the-lowest-gallery'), 3);
+
+    travel(harness, at('calder-deeps', { x: 3, y: 3 }));
+    use(harness, 'cd-lift');
+    assert.equal(districtOf(player), 'calder-gatehouse');
+    talk(harness, 'cg-brandt', 'He can rest now.');
+    assert.equal(stepOf(harness, 'the-lowest-gallery'), 'completed');
+
+    talk(harness, 'cg-brandt', 'Is the log closed?', "I'll clock him off.");
+    assert.equal(countItem(player.record.inventory, 'foremans-card'), 1);
+    use(harness, 'cg-lift');
+    travel(harness, at('calder-deeps', { x: 35, y: 27 }));
+    use(harness, 'cd-time-clock');
+    assert.equal(stepOf(harness, 'clocking-off'), 1);
+    assert.equal(countItem(player.record.inventory, 'foremans-card'), 0);
+    travel(harness, at('calder-gatehouse', { x: 7, y: 6 }));
+    talk(harness, 'cg-brandt', 'Close the log.');
+    assert.equal(stepOf(harness, 'clocking-off'), 'completed');
   });
 });

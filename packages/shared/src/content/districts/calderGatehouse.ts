@@ -26,10 +26,14 @@ export const CALDER_GATEHOUSE: DistrictDefinition = {
     '#______________#',
     '#______________#',
     '#______________#',
+    '#______________#',
+    '#!!!!!!!!!!!!!!#',
+    '#TTTTTTTTTTTTTT#',
+    '#TTTTTTTTTTTTTT#',
     '################',
   ],
   areas: [
-    { id: 'gatehouse', name: 'Calder Gatehouse', rect: { x: 1, y: 1, width: 14, height: 16 }, safe: true },
+    { id: 'gatehouse', name: 'Calder Gatehouse', rect: { x: 1, y: 1, width: 14, height: 20 }, safe: true },
   ],
   npcs: [
     { instanceId: 'cg-brandt', npcId: 'warden-brandt', position: { x: 7, y: 4 } },
@@ -42,10 +46,16 @@ export const CALDER_GATEHOUSE: DistrictDefinition = {
     { instanceId: 'cg-mailbox', objectId: 'market-mailbox', position: { x: 1, y: 14 }, facing: 'east' },
     { instanceId: 'cg-contracts', objectId: 'contract-board', position: { x: 5, y: 1 } },
     { instanceId: 'cg-med-bed', objectId: 'med-bed', position: { x: 14, y: 2 }, facing: 'west' },
+    { instanceId: 'cg-lift', objectId: 'calder-lift-down', position: { x: 14, y: 4 }, facing: 'west' },
+    { instanceId: 'cg-tram-stop', objectId: 'tram-stop', position: { x: 2, y: 17 }, facing: 'east' },
+  ],
+  assemblies: [
+    { instanceId: 'cg-tram-car', assemblyId: 'tram-car', position: { x: 4, y: 19 }, facing: 'north' },
   ],
   lights: [
     { position: { x: 7, y: 4 }, radius: 6, color: '#ffcf4d', intensity: 0.6 },
     { position: { x: 4, y: 13 }, radius: 5, color: '#ffd27f', intensity: 0.5 },
     { position: { x: 12, y: 13 }, radius: 5, color: '#ff9a6a', intensity: 0.45 },
+    { position: { x: 8, y: 18 }, radius: 5, color: '#ffd27f', intensity: 0.5 },
   ],
 };
