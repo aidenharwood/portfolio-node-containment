@@ -7,6 +7,7 @@ const OUTFALL = 'the-outfall';
 export const NGATA_DIALOGUE: DialogueDefinition = {
   id: 'ngata',
   entries: [
+    { node: 'calderAsk', conditions: [{ type: 'questActive', questId: 'postmarked', stepId: 'ngata' }] },
     { node: 'pressureDeliver', conditions: [{ type: 'questActive', questId: PRESSURE, stepId: 'report' }] },
     { node: 'assayDeliver', conditions: [{ type: 'questActive', questId: BAD_WATER, stepId: 'report' }] },
     { node: 'outfallDeliver', conditions: [{ type: 'questActive', questId: OUTFALL, stepId: 'report' }] },
@@ -37,8 +38,19 @@ export const NGATA_DIALOGUE: DialogueDefinition = {
         },
         { text: 'About the outfall.', conditions: [{ type: 'questActive', questId: OUTFALL }], next: 'outfallProgress' },
         { text: 'What was down the pipe?', conditions: [{ type: 'questCompleted', questId: OUTFALL }], next: 'pipe' },
+        { text: 'What is east of the filter beds?', next: 'eastCulvert' },
         { text: 'Goodbye.', next: null },
       ],
+    },
+    calderAsk: {
+      speaker: 'npc',
+      text: "Salt? Course there's salt. The east culvert past the filter beds has wept brine since before I had this job. It's not bricked, it's just not on any plan, so nobody goes. I found that letter in the screens last week and thought it was a joke. Road runs east. Mind the crabs.",
+      options: [{ text: "I'll follow the road.", effects: [{ type: 'emitSignal', signal: 'calder.ngata-asked' }], next: null }],
+    },
+    eastCulvert: {
+      speaker: 'npc',
+      text: "A culvert that isn't on any plan, a road made of salt, and crabs the size of carts. I have never been curious enough to go and look. You have the face of someone who is.",
+      next: 'greeting',
     },
     place: {
       speaker: 'npc',

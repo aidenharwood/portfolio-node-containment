@@ -82,6 +82,16 @@ import { OFFICE_OBJECTS } from './officeObjects.ts';
 import { OFFICE_CREATURES, OFFICE_NPCS } from './officeActors.ts';
 import { ODUYA_DIALOGUE } from './dialogues/officeDialogues.ts';
 import { ACT_THREE_MAIN_QUESTS } from './quests/actThreeMain.ts';
+import { ACT_FOUR_CALDER_QUESTS } from './quests/actFourCalder.ts';
+import { CALDER_CREATURES } from './calderCreatures.ts';
+import { CALDER_MATERIALS, CALDER_MEDICINE, CALDER_QUEST_ITEMS, CALDER_UNIQUE_GEAR, CATHEDRAL_GEAR, SALTWORKS_GEAR } from './calderItems.ts';
+import { CALDER_NPCS } from './calderNpcs.ts';
+import { CALDER_OBJECTS } from './calderObjects.ts';
+import { BRANDT_DIALOGUE, SORREL_DIALOGUE } from './dialogues/calderDialogues.ts';
+import { BRINE_GALLERIES } from './districts/brineGalleries.ts';
+import { CALDER_CAUSEWAY } from './districts/calderCauseway.ts';
+import { CALDER_GATEHOUSE } from './districts/calderGatehouse.ts';
+import { SALT_CATHEDRAL } from './districts/saltCathedral.ts';
 import { DEAD_LETTER_OFFICE } from './districts/deadLetterOffice.ts';
 import { DEAD_LETTER_OFFICE_LEVEL } from './levels/deadLetterOfficeLevel.ts';
 import { ASSEMBLY_OBJECTS } from './assemblyObjects.ts';
@@ -143,7 +153,7 @@ function indexById<T extends { readonly id: string }>(entries: readonly T[]): Re
   return index;
 }
 
-const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([INTAKE_WING, MERIDIAN_ATRIUM, VERDANCE_CONCOURSE, SERVICE_CONCOURSE, SERVICE_YARDS, WATERWORKS, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, DEEP_CONCOURSE, FURNACE_CAUSEWAY, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW, VERDANT_FOLD, DEAD_LETTER_OFFICE]);
+const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([INTAKE_WING, MERIDIAN_ATRIUM, VERDANCE_CONCOURSE, SERVICE_CONCOURSE, SERVICE_YARDS, WATERWORKS, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, DEEP_CONCOURSE, FURNACE_CAUSEWAY, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW, VERDANT_FOLD, DEAD_LETTER_OFFICE, CALDER_CAUSEWAY, BRINE_GALLERIES, CALDER_GATEHOUSE, SALT_CATHEDRAL]);
 const ASSEMBLY_INDEX: ReadonlyMap<AssemblyId, AssemblyDefinition> = indexById(ASSEMBLIES);
 const LEVEL_INDEX: LevelIndex = buildLevelIndex([MAIN_FLOOR, UNDERCROFT_LEVEL, THE_DEEP, THE_THRESHOLD, MERIDIAN_BELOW_LEVEL, VERDANT_FOLD_LEVEL, DEAD_LETTER_OFFICE_LEVEL], DISTRICTS, ASSEMBLY_INDEX);
 
@@ -154,9 +164,9 @@ function startingLocation(): WorldLocation {
 }
 
 export const GAME_CONTENT: GameContent = {
-  items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS, ...UNIQUE_GEAR]),
-  npcs: indexById([...NPCS, ...DEEP_NPCS, ...WATERWORKS_NPCS, ...OFFICE_NPCS]),
-  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...FURNITURE_OBJECTS, ...OFFICE_OBJECTS, ...CONTRACT_OBJECTS]),
+  items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS, ...UNIQUE_GEAR, ...CALDER_MATERIALS, ...CALDER_MEDICINE, ...CALDER_QUEST_ITEMS, ...SALTWORKS_GEAR, ...CATHEDRAL_GEAR, ...CALDER_UNIQUE_GEAR]),
+  npcs: indexById([...NPCS, ...DEEP_NPCS, ...WATERWORKS_NPCS, ...OFFICE_NPCS, ...CALDER_NPCS]),
+  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...FURNITURE_OBJECTS, ...OFFICE_OBJECTS, ...CONTRACT_OBJECTS, ...CALDER_OBJECTS]),
   assemblies: ASSEMBLY_INDEX,
   dialogues: indexById([
     REYES_DIALOGUE,
@@ -187,6 +197,8 @@ export const GAME_CONTENT: GameContent = {
     GUEST_DIALOGUE,
     NGATA_DIALOGUE,
     ODUYA_DIALOGUE,
+    BRANDT_DIALOGUE,
+    SORREL_DIALOGUE,
   ]),
   quests: indexById([
     ORIENTATION_PROTOCOL,
@@ -208,6 +220,7 @@ export const GAME_CONTENT: GameContent = {
     ...ACT_TWO_SIDE_QUESTS,
     ...WATERWORKS_QUESTS,
     ...ACT_THREE_MAIN_QUESTS,
+    ...ACT_FOUR_CALDER_QUESTS,
   ]),
   questlines: indexById(QUESTLINES),
   districts: DISTRICTS,
@@ -215,7 +228,7 @@ export const GAME_CONTENT: GameContent = {
   levelOfDistrict: LEVEL_INDEX.levelOfDistrict,
   regions: indexById(REGIONS),
   tram: buildTramNetwork(TRAM_STATIONS, TRAM_LINES, DISTRICTS, LEVEL_INDEX),
-  creatures: indexById([...CREATURES, ...DEEP_CREATURES, ...WATERWORKS_CREATURES, ...OFFICE_CREATURES, ...TRAINING_CREATURES]),
+  creatures: indexById([...CREATURES, ...DEEP_CREATURES, ...WATERWORKS_CREATURES, ...OFFICE_CREATURES, ...TRAINING_CREATURES, ...CALDER_CREATURES]),
   shops: indexById(SHOPS),
   recipes: indexById(RECIPES),
   contracts: indexById(CONTRACTS),

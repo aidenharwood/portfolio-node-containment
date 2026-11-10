@@ -206,6 +206,23 @@ export const SHOPS: readonly ShopDefinition[] = [
     sellRate: 0.55,
   },
   {
+    id: 'calder-commissary',
+    name: 'Calder Commissary',
+    greeting: 'Forty years of stores, rationed to the gram. You are the first customer who did not come up from the galleries. Scrip is fine. Salt is better.',
+    listings: [
+      { itemId: 'salt-poultice', price: 280 },
+      { itemId: 'saltworks-helm', price: 7900 },
+      { itemId: 'saltworks-plate', price: 10500 },
+      { itemId: 'saltworks-trousers', price: 6850 },
+      { itemId: 'saltworks-gloves', price: 7100 },
+      { itemId: 'saltworks-boots', price: 6600 },
+      { itemId: 'seam-maul', price: 11300 },
+      { itemId: 'lampline-rifle', price: 11100 },
+    ],
+    buysCategories: ['material', 'equipment', 'consumable'],
+    sellRate: 0.55,
+  },
+  {
     id: 'contracts-office',
     name: 'Contracts Office',
     greeting: 'Commendations only. Scrip is for people who do not finish their contracts.',

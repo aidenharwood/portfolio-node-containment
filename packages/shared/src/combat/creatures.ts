@@ -34,6 +34,10 @@ export type CreatureModel =
   | 'frankingClerk'
   | 'courierEcho'
   | 'postmaster'
+  | 'brineCrawler'
+  | 'saltWight'
+  | 'cathedralAcolyte'
+  | 'saltBishop'
   | 'understudy';
 
 export interface LootEntry {

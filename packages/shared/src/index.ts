@@ -75,6 +75,7 @@ export * from './content/questItemReissue.ts';
 export * from './content/levelIndex.ts';
 export * from './content/levelIntegrity.ts';
 export * from './content/regions.ts';
+export * from './content/calderObjects.ts';
 export * from './content/regionIntegrity.ts';
 export * from './content/overworldIntegrity.ts';
 export * from './content/tramIntegrity.ts';

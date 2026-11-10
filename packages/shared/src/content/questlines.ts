@@ -30,6 +30,13 @@ export const QUESTLINES: readonly QuestlineDefinition[] = [
     questIds: ['the-ninth-letter', 'dead-letter-office', 'return-to-sender'],
   },
   {
+    id: 'act-four',
+    name: 'Act IV · Postmarked',
+    kind: 'main',
+    summary: 'The other Sites were never far away. Calder is behind the Waterworks wall, and it wants to know who we are.',
+    questIds: ['postmarked', 'salt-of-the-earth', 'cathedral-of-salt'],
+  },
+  {
     id: 'meridian-proper',
     name: 'Meridian Proper',
     kind: 'side',

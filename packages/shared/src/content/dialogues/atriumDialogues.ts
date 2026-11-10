@@ -195,6 +195,7 @@ export const SEL_DIALOGUE: DialogueDefinition = {
     { node: 'returnsProgress', conditions: [{ type: 'questActive', questId: 'return-to-sender' }] },
     { node: 'councilOffer', conditions: [{ type: 'questCompleted', questId: 'the-far-side' }, { type: 'questNotStarted', questId: 'a-council-of-one' }] },
     { node: 'ninthOffer', conditions: [{ type: 'questCompleted', questId: 'the-answer' }, { type: 'questNotStarted', questId: 'the-ninth-letter' }] },
+    { node: 'postmarkedProgress', conditions: [{ type: 'questActive', questId: 'postmarked' }] },
     { node: 'actThreeEpilogue', conditions: [{ type: 'questCompleted', questId: 'return-to-sender' }] },
     { node: 'epilogueWelcomed', conditions: [{ type: 'questCompleted', questId: 'the-answer' }, { type: 'hasFlag', flag: 'ending.welcomed' }] },
     { node: 'epilogueClosed', conditions: [{ type: 'questCompleted', questId: 'the-answer' }] },
@@ -376,10 +377,34 @@ export const SEL_DIALOGUE: DialogueDefinition = {
       speaker: 'npc',
       text: 'Site Halcyon wrote back first. Their archivist wants to compare notes, and their Signals officer wants to know whether Achterberg is real. I am going to need a bigger drawer.',
       options: [
+        {
+          text: 'Did every Site reply by relay?',
+          conditions: [{ type: 'questNotStarted', questId: 'postmarked' }],
+          next: 'postmarkedOffer',
+        },
+        { text: 'What did Calder say?', conditions: [{ type: 'questCompleted', questId: 'postmarked' }], next: 'postmarkedAfter' },
         { text: 'What is the Meridian Directorate?', next: 'directorate' },
         { text: 'How are anomalies classified?', next: 'classes' },
         { text: "That's all.", next: null },
       ],
+    },
+    postmarkedOffer: {
+      speaker: 'npc',
+      text: 'Seven did. The eighth came up the Waterworks drains, crusted in salt and postmarked CALDER. One line: WHO ARE YOU? Relays take a month to reach a Site. This one took an afternoon. Calder is not on the far side of anything, {name}. It is next door.',
+      options: [
+        { text: "I'll go and introduce us.", effects: [{ type: 'startQuest', questId: 'postmarked' }, { type: 'giveItem', itemId: 'calder-letter' }], next: null },
+        { text: 'Not yet.', next: null },
+      ],
+    },
+    postmarkedProgress: {
+      speaker: 'npc',
+      text: 'Start with Pumpwright Ngata. If a wall in the Waterworks is weeping salt, Ngata has already put a bucket under it. Take the letter. Whoever wrote it will want to see it came.',
+      next: null,
+    },
+    postmarkedAfter: {
+      speaker: 'npc',
+      text: 'Calder sent a second letter by hand. Their warden has kept a log every day for forty years and would like a copy of ours. I have filed it under Neighbours, which is a drawer I did not have this morning.',
+      next: null,
     },
     epilogueClosed: {
       speaker: 'npc',

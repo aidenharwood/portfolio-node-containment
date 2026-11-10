@@ -14,10 +14,12 @@ const withDistrict = (districtId: string, change: object): GameContent => {
 };
 
 describe('regions', () => {
-  test('every district is in the Meridian Core, the home region, centred on the Atrium', () => {
+  test('the Meridian Core is the home region, and the Calder Wing is an outpost region on the overworld', () => {
     assert.deepEqual(findRegionIssues(GAME_CONTENT), []);
     assert.equal(homeRegionOf(GAME_CONTENT), 'meridian-core');
-    assert.ok([...GAME_CONTENT.districts.values()].every((district) => district.region === 'meridian-core'));
+    const calder = [...GAME_CONTENT.districts.values()].filter((district) => district.region === 'calder').map((district) => district.id);
+    assert.deepEqual(calder.sort(), ['brine-galleries', 'calder-causeway', 'calder-gatehouse', 'salt-cathedral']);
+    assert.ok(calder.every((districtId) => GAME_CONTENT.levelOfDistrict.get(districtId) === 'main-floor'));
   });
 
   test('an outpost away from the core needs a locker, shopkeeper, mailbox and contract board', () => {

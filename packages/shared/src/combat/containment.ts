@@ -34,7 +34,7 @@ export const isWithinContainmentReach = (from: TilePoint, to: TilePoint, hasSigh
 
 export const CLEARANCE_TIERS = TIER_LEVEL_FLOORS.length;
 
-const CLEARANCE_NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'] as const;
+const CLEARANCE_NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX'] as const;
 
 export const clearanceFlag = (tier: number): string => `containment-clearance-${tier}`;
 

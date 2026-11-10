@@ -1,0 +1,45 @@
+import type { NpcDefinition } from '../world/entities.ts';
+
+export const CALDER_NPCS: readonly NpcDefinition[] = [
+  {
+    id: 'warden-brandt',
+    name: 'Warden Brandt',
+    title: 'Site Calder Gatehouse',
+    examine: 'Calder\'s gate warden, salt in the creases of her uniform and a pencil behind each ear. She has kept the gatehouse log for forty years without missing a day.',
+    appearance: {
+      physique: 'female',
+      bodyType: 'average',
+      height: 0.98,
+      skinTone: '#c48a64',
+      hairStyle: 'bun',
+      hairColor: '#d8d0c4',
+      eyeColor: '#5a6a7a',
+      faceMark: 'scarBrow',
+      augment: 'neuralPort',
+    },
+    gear: ['saltworks-plate', 'saltworks-trousers', 'saltworks-boots', 'saltworks-gloves'],
+    dialogueId: 'brandt',
+    wanderRadius: 1,
+  },
+  {
+    id: 'quartermaster-sorrel',
+    name: 'Quartermaster Sorrel',
+    title: 'Calder Commissary',
+    examine: 'Calder\'s quartermaster, who has been rationing the same forty-year-old stores so carefully that some of them have come back into fashion.',
+    appearance: {
+      physique: 'male',
+      bodyType: 'slight',
+      height: 1.04,
+      skinTone: '#6e4630',
+      hairStyle: 'crop',
+      hairColor: '#2a1e18',
+      eyeColor: '#2a1e14',
+      faceMark: 'freckles',
+      augment: 'ocularImplant',
+    },
+    gear: ['saltworks-plate', 'saltworks-trousers', 'saltworks-boots'],
+    dialogueId: 'sorrel',
+    shopId: 'calder-commissary',
+    wanderRadius: 1,
+  },
+];

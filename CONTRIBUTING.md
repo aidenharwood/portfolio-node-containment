@@ -77,7 +77,8 @@ Object models face south (+y on the map) by default. Wall-mounted or doorway obj
 
 A district is one hand-built map. It becomes part of the world when a level places it.
 
-1. Give it a `tier` (1 is the Intake Wing and Atrium, 4 is Sector 3, Deepwatch and the Cryovault, 8 is Meridian Below, 9 is the Dead Letter Office). Crafting checks use it to decide which gear its materials may feed.
+1. Give it a `tier` (1 is the Intake Wing and Atrium, 4 is Sector 3, Deepwatch and the Cryovault, 8 is Meridian Below, 9 is the Dead Letter Office, 10 is the Brine Galleries and 11 is the Salt Cathedral). Crafting checks use it to decide which gear its materials may feed.
+   Also give it a `region` (`content/regions.ts`). Overworld districts must be reachable on foot from the Atrium; mark one `reachedOnlyByTram` only if it is meant to be.
 2. Draw the map as an array of equal-length strings using `MAP_LEGEND` (`shared/src/world/tiles.ts`): `#` wall, `W` glass, `D` door, `.` plating, `,` concrete, `=` grate, `%` rust, `_` carpet, `!` hazard, `~` coolant, `:` soil, `T` tram track.
 3. Define `areas` (rectangles that `enterArea` objectives can use), `npcs`, `objects`, `lights` and `ambience`. Combat is single-way by default; set `multiCombat: true` on an area for boss fights with adds. Mark outposts, camps and hubs `safe: true`: friendly NPCs on a floor level must stand in one, creatures must be placed outside one, and gathering nodes belong in the hostile areas around it.
 4. Register it in `DISTRICTS` in `content/gameContent.ts`.

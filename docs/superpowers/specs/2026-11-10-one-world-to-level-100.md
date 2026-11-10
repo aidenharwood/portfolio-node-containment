@@ -59,7 +59,7 @@ Extend `TIER_LEVEL_FLOORS` from 9 tiers to 20. Gaps between floors widen as XP p
 | 19 | 92 | Nadir |
 | 20 | 100 | The Founding |
 
-`findContainmentIssues` requires a seal for every tier, so a tier and its seal must land in the same change, with at least one creature and node at that tier. Each tier is added only when its region ships.
+Containment seals have been replaced by **clearance tiers**, bought from Registrar Lind, and the clearance list follows `TIER_LEVEL_FLOORS` automatically. A tier still lands in the same change as at least one creature, node and gear set at that tier. Each tier is added only when its region ships.
 
 ## 3. World layout
 
@@ -177,6 +177,13 @@ The engine work (section 5) is done on the `sites-to-100` branch:
    "After" is with `publishMoves` indexing each tick's moves by chunk. Before, every player scanned every move on the layer. What remains is driven by crowding: on a floor this small, each player's 3 × 3 chunk window covers a large share of everyone. **Keep the cap at 300 for now** and re-run the benchmark on the larger overworld, where the same player count is spread far thinner, before raising it.
 5. **World map.** Districts a player has never entered are drawn dark and labelled "Uncharted", and region names are drawn over their districts when zoomed out. Players saved before district tracking keep every district of the levels they had already visited.
 6. **Outposts.** The exchange mailbox (`market-mailbox`) collects and withdraws orders from any regional outpost but cannot post them.
+
+Delivery step 2 is done except the dungeon:
+
+- **Calder Wing** (region `calder`): the Calder Causeway and Brine Galleries (tier 10) open on foot from the Waterworks' east culvert; the Calder Gatehouse outpost (Warden Brandt, Quartermaster Sorrel's commissary, locker, mailbox, contract board) sits behind a story door; the Salt Cathedral (tier 11) lies beyond it with a story-gated nave.
+- **Tiers 10–11**: `TIER_LEVEL_FLOORS` gains 40 and 45, so Clearance X and XI exist. Brine crawlers, salt wights, cathedral acolytes and the Salt Bishop (keter) carry the tiers; salt seams and halite geode clusters are the nodes; the Saltworks and Cathedral sets, the Salt Poultice and three uniques are craftable or dropped.
+- **Act IV part 1**: Postmarked, Salt of the Earth and Cathedral of Salt, offered by Sel and then Brandt, with an integration test (`server/test/actFour.test.ts`).
+- **Still to do for Calder**: its dungeon floor, a tram station at the gatehouse, and a side questline.
 
 ## Decisions
 

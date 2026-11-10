@@ -1,0 +1,51 @@
+import type { DistrictDefinition } from '../../world/district.ts';
+
+export const CALDER_GATEHOUSE: DistrictDefinition = {
+  id: 'calder-gatehouse',
+  name: 'Calder Gatehouse',
+  subtitle: 'Site Calder — Outpost',
+  tier: 10,
+  region: 'calder',
+  recovery: { districtId: 'calder-gatehouse', position: { x: 7, y: 12 } },
+  ambience: { darkness: 0.42, tint: '#1a1410', fog: '#1e1712' },
+  map: [
+    '################',
+    '#______________#',
+    '#______________#',
+    '#______________#',
+    '#______________#',
+    '#______________#',
+    '#______________#',
+    '#______________D',
+    '#______________D',
+    'D______________D',
+    'D______________D',
+    '#______________D',
+    '#______________#',
+    '#______________#',
+    '#______________#',
+    '#______________#',
+    '#______________#',
+    '################',
+  ],
+  areas: [
+    { id: 'gatehouse', name: 'Calder Gatehouse', rect: { x: 1, y: 1, width: 14, height: 16 }, safe: true },
+  ],
+  npcs: [
+    { instanceId: 'cg-brandt', npcId: 'warden-brandt', position: { x: 7, y: 4 } },
+    { instanceId: 'cg-sorrel', npcId: 'quartermaster-sorrel', position: { x: 12, y: 14 } },
+  ],
+  objects: [
+    { instanceId: 'cg-gate-a', objectId: 'calder-gate', position: { x: 0, y: 9 }, facing: 'east' },
+    { instanceId: 'cg-gate-b', objectId: 'calder-gate', position: { x: 0, y: 10 }, facing: 'east' },
+    { instanceId: 'cg-storage', objectId: 'storage-locker', position: { x: 1, y: 2 }, facing: 'east' },
+    { instanceId: 'cg-mailbox', objectId: 'market-mailbox', position: { x: 1, y: 14 }, facing: 'east' },
+    { instanceId: 'cg-contracts', objectId: 'contract-board', position: { x: 5, y: 1 } },
+    { instanceId: 'cg-med-bed', objectId: 'med-bed', position: { x: 14, y: 2 }, facing: 'west' },
+  ],
+  lights: [
+    { position: { x: 7, y: 4 }, radius: 6, color: '#ffcf4d', intensity: 0.6 },
+    { position: { x: 4, y: 13 }, radius: 5, color: '#ffd27f', intensity: 0.5 },
+    { position: { x: 12, y: 13 }, radius: 5, color: '#ff9a6a', intensity: 0.45 },
+  ],
+};

@@ -16,6 +16,10 @@ export const MAIN_FLOOR: LevelDefinition = {
     { districtId: 'waterworks', origin: { x: 162, y: 46 } },
     { districtId: 'sector-two', origin: { x: 77, y: 8 } },
     { districtId: 'intake-wing', origin: { x: 56, y: 76 } },
+    { districtId: 'calder-causeway', origin: { x: 202, y: 50 } },
+    { districtId: 'brine-galleries', origin: { x: 228, y: 34 } },
+    { districtId: 'calder-gatehouse', origin: { x: 272, y: 40 } },
+    { districtId: 'salt-cathedral', origin: { x: 288, y: 31 } },
   ],
   connectors: [],
 };

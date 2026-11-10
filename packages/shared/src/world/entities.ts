@@ -43,6 +43,8 @@ export type WorldObjectModel =
   | 'severedConduit'
   | 'sporeBloom'
   | 'slagHeap'
+  | 'saltSeam'
+  | 'geodeCluster'
   | 'resinDrum'
   | 'storageLocker'
   | 'medBed'

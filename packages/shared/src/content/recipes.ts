@@ -172,6 +172,37 @@ export const DEEP_FABRICATION_RECIPES: readonly RecipeDefinition[] = [
   fabricate('postmark-implant', 36, { 'dead-letter': 3, 'ink-essence': 2, 'letter-weave': 1 }, 2400),
 ];
 
+
+export const CALDER_RECIPES: readonly RecipeDefinition[] = [
+  recipe('refinery', 'brine-steel', 40, { 'crawler-carapace': 1, 'rock-salt': 2 }, { experience: 420 }),
+  recipe('refinery', 'salt-weave', 40, { 'miner-canvas': 2, 'rock-salt': 1 }, { experience: 420 }),
+  recipe('refinery', 'halite-glass', 45, { 'halite-geode': 2, 'lamp-glass': 1 }, { experience: 470 }),
+  recipe('refinery', 'vestment-weave', 45, { 'salted-vestment': 2, 'salt-weave': 1 }, { experience: 470 }),
+  recipe('synthesiser', 'salt-poultice', 42, { 'rock-salt': 2, 'gel-base': 1 }, { experience: 380 }),
+  fabricate('saltworks-helm', 40, { 'brine-steel': 2, 'salt-weave': 1 }, 2200),
+  fabricate('saltworks-plate', 41, { 'brine-steel': 4, 'salt-weave': 2 }, 2600),
+  fabricate('saltworks-gloves', 40, { 'salt-weave': 2, 'crawler-carapace': 1 }, 2100),
+  fabricate('saltworks-trousers', 40, { 'salt-weave': 3, 'brine-steel': 1 }, 2100),
+  fabricate('saltworks-boots', 40, { 'brine-steel': 2, 'salt-weave': 1 }, 2100),
+  fabricate('saltworks-goggles', 40, { 'brine-steel': 1, 'salt-weave': 1, 'lamp-glass': 2 }, 2100),
+  fabricate('seam-maul', 42, { 'brine-steel': 3, 'crawler-carapace': 2 }, 2900),
+  fabricate('brine-cutter', 41, { 'brine-steel': 2, 'salt-weave': 1 }, 2600),
+  fabricate('seam-carbine', 42, { 'brine-steel': 3, 'lamp-glass': 2 }, 2900),
+  fabricate('lampline-rifle', 42, { 'brine-steel': 2, 'lamp-glass': 2, 'salt-weave': 1 }, 2900),
+  fabricate('geode-implant', 41, { 'lamp-glass': 3, 'salt-weave': 1, 'rock-salt': 2 }, 2600),
+  fabricate('cathedral-helm', 45, { 'halite-glass': 2, 'vestment-weave': 1 }, 2500),
+  fabricate('cathedral-plate', 46, { 'halite-glass': 4, 'vestment-weave': 2 }, 3000),
+  fabricate('cathedral-gloves', 45, { 'vestment-weave': 2, 'brine-steel': 1 }, 2400),
+  fabricate('cathedral-trousers', 45, { 'vestment-weave': 3, 'halite-glass': 1 }, 2400),
+  fabricate('cathedral-boots', 45, { 'halite-glass': 2, 'vestment-weave': 1 }, 2400),
+  fabricate('cathedral-lenses', 45, { 'halite-glass': 2, 'vestment-weave': 1 }, 2400),
+  fabricate('censer-maul', 47, { 'halite-glass': 3, 'brine-steel': 2 }, 3300),
+  fabricate('reliquary-glaive', 46, { 'halite-glass': 3, 'vestment-weave': 1 }, 3000),
+  fabricate('choir-carbine', 47, { 'halite-glass': 3, 'lamp-glass': 2 }, 3300),
+  fabricate('vigil-rifle', 47, { 'halite-glass': 2, 'vestment-weave': 1, 'lamp-glass': 2 }, 3300),
+  fabricate('relic-implant', 46, { 'halite-glass': 2, 'vestment-weave': 2, 'halite-geode': 2 }, 3000),
+];
+
 export const RECIPES: readonly RecipeDefinition[] = [
   ...REFINING_RECIPES,
   ...MEDICAL_RECIPES,
@@ -179,4 +210,5 @@ export const RECIPES: readonly RecipeDefinition[] = [
   ...DEEP_REFINING_RECIPES,
   ...DEEP_MEDICAL_RECIPES,
   ...DEEP_FABRICATION_RECIPES,
+  ...CALDER_RECIPES,
 ];
