@@ -1,7 +1,8 @@
-import { GAME_CONTENT, TILE_KINDS, type Facing, type TilePoint } from '@containment/shared';
+import { GAME_CONTENT, pointsOfInterest, TILE_KINDS, type Facing, type PointOfInterest, type TilePoint } from '@containment/shared';
 import type { WorldState } from '../state/worldState.ts';
 import { h } from '../ui/dom.ts';
 import type { ClickTone } from './clickIndicator.ts';
+import { drawPoiIcon } from './poiIcons.ts';
 
 const PIXELS_PER_TILE = 7;
 const MAP_SIZE = 220;
@@ -10,6 +11,8 @@ const DESTINATION_STALL_MS = 1500;
 const INTERACT_REACH_TILES = 1.5;
 const LABEL_RIM_INSET = 14;
 const LABEL_VISIBLE_TILES = 140;
+const ICON_SIZE = 12;
+const RESOURCE_ICON_SIZE = 9;
 const DESTINATION_COLORS: Readonly<Record<ClickTone, string>> = { walk: '#ffd23f', interact: '#ff5e3a' };
 
 const TILE_COLORS: Partial<Record<string, string>> = {
@@ -44,6 +47,7 @@ export class Minimap {
   private base: HTMLCanvasElement | null = null;
   private view: MapView = { centerX: 0, centerY: 0, rotation: 0 };
   private destination: Destination | null = null;
+  private points: readonly PointOfInterest[] = [];
 
   constructor(world: WorldState, onSelectTile: (tile: TilePoint, clientX: number, clientY: number) => void, onOpenMap: () => void) {
     this.world = world;
@@ -93,6 +97,7 @@ export class Minimap {
       }
     }
     this.base = base;
+    this.points = pointsOfInterest(zone.definition, GAME_CONTENT).sort((a, b) => Number(b.kind === 'gathering') - Number(a.kind === 'gathering'));
   }
 
   render(now: number, cameraHeading: number): void {
@@ -134,6 +139,7 @@ export class Minimap {
     }
     context.restore();
 
+    this.paintPointsOfInterest(context, position, rotation);
     this.paintDistrictLabels(context, position, rotation);
     this.settleDestination(position, now);
     if (this.destination) this.paintDestination(context, this.destination, position, rotation);
@@ -176,6 +182,18 @@ export class Minimap {
       context.fillText(label, labelX, y + 0.5);
     }
     context.restore();
+  }
+
+  private paintPointsOfInterest(context: CanvasRenderingContext2D, position: TilePoint, rotation: number): void {
+    const cos = Math.cos(rotation);
+    const sin = Math.sin(rotation);
+    for (const point of this.points) {
+      const dx = (point.position.x - position.x) * PIXELS_PER_TILE;
+      const dy = (point.position.y - position.y) * PIXELS_PER_TILE;
+      const size = point.kind === 'gathering' ? RESOURCE_ICON_SIZE : ICON_SIZE;
+      if (Math.hypot(dx, dy) > MAP_RADIUS - size / 2) continue;
+      drawPoiIcon(context, point.kind, MAP_SIZE / 2 + dx * cos - dy * sin, MAP_SIZE / 2 + dx * sin + dy * cos, size);
+    }
   }
 
   private settleDestination(position: TilePoint, now: number): void {

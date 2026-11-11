@@ -3,6 +3,8 @@ import {
   GAME_CONTENT,
   linesThrough,
   objectiveDistricts,
+  POINT_OF_INTEREST_KINDS,
+  pointsOfInterest,
   stationAt,
   TILE_KINDS,
   TRAM_BOARDING_TICKS,
@@ -11,6 +13,8 @@ import {
   tramStops,
   type DistrictId,
   type LevelId,
+  type PointOfInterest,
+  type PointOfInterestKind,
   type ResolvedLevel,
   type TilePoint,
   type TramStation,
@@ -20,6 +24,7 @@ import type { GameConnection } from '../net/gameConnection.ts';
 import type { QuestTracking } from '../state/questTracking.ts';
 import type { WorldState } from '../state/worldState.ts';
 import { h, replaceChildren } from '../ui/dom.ts';
+import { drawPoiIcon, poiLegend } from './poiIcons.ts';
 
 const MAP_PADDING = 24;
 const MOUSE_HIT_RADIUS = 14;
@@ -30,6 +35,9 @@ const READABLE_SCALE = 5;
 const ZOOM_STEP = 1.4;
 const OBJECTIVE_COLOR = '#ffb347';
 const UNCHARTED_COLOR = '#0e161b';
+const ICON_SIZE = 18;
+const RESOURCE_ICON_SIZE = 13;
+const ICON_LABEL_SCALE = 10;
 
 type MapMode = 'map' | 'transit';
 
@@ -81,6 +89,7 @@ export class WorldMap {
   private pinchDistance: number | null = null;
   private lastPointerType = 'mouse';
   private paintQueued = false;
+  private readonly levelPoints = new Map<LevelId, readonly PointOfInterest[]>();
 
   constructor(connection: GameConnection, world: WorldState, questTracking: QuestTracking) {
     this.connection = connection;
@@ -197,11 +206,35 @@ export class WorldMap {
             h('button', { type: 'button', ariaLabel: 'Zoom out', onclick: () => this.zoomBy(1 / ZOOM_STEP) }, '−'),
             h('button', { type: 'button', ariaLabel: 'Centre on you', title: 'Centre on you', onclick: () => this.recentre() }, '◎'),
           ),
+          poiLegend(this.legendKinds(shown)),
         ),
         transit ? this.destinationList(boarding) : null,
       ),
     );
     this.queuePaint();
+  }
+
+  private pointsOn(level: ResolvedLevel): readonly PointOfInterest[] {
+    const cached = this.levelPoints.get(level.id);
+    if (cached) return cached;
+    const points = pointsOfInterest(level, GAME_CONTENT)
+      .map((point) => (point.kind === 'tram' ? { ...point, name: stationAt(GAME_CONTENT.tram, level.id, point.position)?.name ?? point.name } : point))
+      .sort((a, b) => Number(b.kind === 'gathering') - Number(a.kind === 'gathering'));
+    this.levelPoints.set(level.id, points);
+    return points;
+  }
+
+  private chartedPoints(level: ResolvedLevel): PointOfInterest[] {
+    const charted = this.chartedDistrictIds(level);
+    return this.pointsOn(level).filter((point) => {
+      const district = level.layout.districtAt(point.position);
+      return district === undefined || charted.has(district);
+    });
+  }
+
+  private legendKinds(level: ResolvedLevel): PointOfInterestKind[] {
+    const present = new Set(this.chartedPoints(level).map((point) => point.kind));
+    return POINT_OF_INTEREST_KINDS.filter((kind) => present.has(kind));
   }
 
   private levelOptions(shown: ResolvedLevel, objectives: ReadonlySet<DistrictId>): HTMLElement[] {
@@ -461,7 +494,9 @@ export class WorldMap {
     this.paintTiles(context, level, objectives, charted, frame);
     this.paintRegionLabels(context, level, charted, frame);
     this.paintDistrictLabels(context, level, objectives, charted, frame);
-    this.stationHits = this.paintNetwork(context, level, this.boardingStation(), frame);
+    const transit = this.mode === 'transit';
+    this.paintPointsOfInterest(context, level, frame, transit);
+    this.stationHits = transit ? this.paintNetwork(context, level, this.boardingStation(), frame) : [];
     this.paintSelf(context, level, frame);
   }
 
@@ -553,6 +588,31 @@ export class WorldMap {
         context.fillText('Tracked objective', x, y - labelHeight / 2 + 37);
       }
     }
+  }
+
+  private paintPointsOfInterest(context: CanvasRenderingContext2D, level: ResolvedLevel, frame: MapFrame, transit: boolean): void {
+    const labelled = frame.scale >= ICON_LABEL_SCALE;
+    const showResources = frame.scale >= READABLE_SCALE;
+    const alpha = transit ? 0.55 : 1;
+    context.save();
+    context.font = '600 11px "Chakra Petch", sans-serif';
+    context.textAlign = 'left';
+    context.textBaseline = 'middle';
+    for (const point of this.chartedPoints(level)) {
+      if (transit && point.kind === 'tram') continue;
+      if (point.kind === 'gathering' && !showResources) continue;
+      const x = frame.offsetX + (point.position.x + 0.5) * frame.scale;
+      const y = frame.offsetY + (point.position.y + 0.5) * frame.scale;
+      const size = point.kind === 'gathering' ? RESOURCE_ICON_SIZE : ICON_SIZE;
+      drawPoiIcon(context, point.kind, x, y, size, alpha);
+      if (!labelled || transit || point.kind === 'gathering') continue;
+      const width = context.measureText(point.name).width + 8;
+      context.fillStyle = 'rgba(3, 8, 11, 0.75)';
+      context.fillRect(x + size / 2 + 3, y - 8, width, 16);
+      context.fillStyle = '#e8f4f8';
+      context.fillText(point.name, x + size / 2 + 7, y);
+    }
+    context.restore();
   }
 
   private paintNetwork(context: CanvasRenderingContext2D, level: ResolvedLevel, boarding: TramStation | undefined, frame: MapFrame): StationHit[] {
