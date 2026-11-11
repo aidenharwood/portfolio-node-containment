@@ -250,6 +250,33 @@ body {
   }
 }
 
+@media (max-width: 760px) and (min-height: 521px), (orientation: portrait) and (min-width: 761px) {
+  .shop-window,
+  .storage-window {
+    top: calc(8px + var(--safe-top));
+    transform: translateX(-50%);
+    height: auto;
+    max-height: calc(100% - 24px - var(--side-panel-height, 50px) - var(--safe-top) - var(--safe-bottom));
+  }
+}
+
+@media (max-width: 760px) and (min-height: 521px) {
+  .game-screen:has(.shop-window:not([hidden]), .storage-window:not([hidden])) .hud-side:not(.collapsed) {
+    max-height: calc(50% - 12px - var(--safe-bottom));
+  }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  .shop-window,
+  .storage-window {
+    top: calc(8px + var(--safe-top));
+    left: calc(8px + var(--safe-left));
+    transform: none;
+    width: calc(100% - 24px - min(380px, 100% - 380px) - var(--safe-left) - var(--safe-right));
+    max-height: calc(100% - 16px - var(--safe-top) - var(--safe-bottom));
+  }
+}
+
 @media (orientation: portrait) and (min-width: 761px) {
   .hud-side {
     right: calc(12px + var(--safe-right));
