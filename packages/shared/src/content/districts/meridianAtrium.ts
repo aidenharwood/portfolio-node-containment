@@ -178,7 +178,7 @@ const litter: ObjectPlacement[] = [
 
 const props: ObjectPlacement[] = [
   ...scatterObjects(plan, 'requisitions', 'requisitions-prop', OFFICE_PROPS, 8, taken()),
-  ...scatterObjects(plan, 'archives', 'archives-prop', ['server-rack', 'filing-cabinet', 'office-desk'], 9, taken()),
+  ...scatterObjects(plan, 'archives', 'archives-prop', ['server-rack', 'filing-cabinet'], 9, taken()),
   ...scatterObjects(plan, 'response-office', 'office-prop', OFFICE_PROPS, 9, taken()),
   ...scatterObjects(plan, 'workshop', 'workshop-prop', INDUSTRIAL_PROPS, 8, taken()),
   ...scatterObjects(plan, 'engineering', 'engineering-prop', INDUSTRIAL_PROPS, 9, taken()),

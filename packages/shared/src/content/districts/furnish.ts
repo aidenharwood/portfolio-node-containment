@@ -60,16 +60,36 @@ const turnPiece = (piece: PrefabPiece, height: number): PrefabPiece => ({
   dx: height - 1 - piece.dy,
   dy: piece.dx,
   objectId: piece.objectId,
-  ...(piece.facing ? { facing: FACING_TURN[piece.facing] } : {}),
+  facing: FACING_TURN[piece.facing ?? 'south'],
 });
 
-const rotations = (prefab: Prefab): PrefabPiece[][] => {
-  const turns: PrefabPiece[][] = [prefab.pieces.map((piece) => piece)];
+const BACK_SIDE: readonly Facing[] = ['north', 'east', 'south', 'west'];
+const TURNS = [0, 1, 2, 3];
+const PLACEMENT_ATTEMPTS = 3;
+
+interface Turn {
+  readonly pieces: readonly PrefabPiece[];
+  readonly width: number;
+  readonly height: number;
+}
+
+const turnOf = (pieces: readonly PrefabPiece[]): Turn => ({
+  pieces,
+  width: Math.max(...pieces.map((piece) => piece.dx)) + 1,
+  height: Math.max(...pieces.map((piece) => piece.dy)) + 1,
+});
+
+const ROTATIONS = new Map<Prefab, readonly Turn[]>();
+
+const rotations = (prefab: Prefab): readonly Turn[] => {
+  const cached = ROTATIONS.get(prefab);
+  if (cached) return cached;
+  const turns: Turn[] = [turnOf(prefab.pieces.map((piece) => ({ ...piece, facing: piece.facing ?? 'south' })))];
   for (let turn = 1; turn < 4; turn++) {
-    const previous = turns[turn - 1] as PrefabPiece[];
-    const height = Math.max(...previous.map((piece) => piece.dy)) + 1;
-    turns.push(previous.map((piece) => turnPiece(piece, height)));
+    const previous = turns[turn - 1] as Turn;
+    turns.push(turnOf(previous.pieces.map((piece) => turnPiece(piece, previous.height))));
   }
+  ROTATIONS.set(prefab, turns);
   return turns;
 };
 
@@ -136,19 +156,30 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
     return Math.abs(point.x - centre.x) <= LANE_HALF_WIDTH || Math.abs(point.y - centre.y) <= LANE_HALF_WIDTH;
   };
 
-  const fits = (rect: TileRect, origin: TilePoint, pieces: readonly PrefabPiece[]): boolean => {
-    const width = Math.max(...pieces.map((piece) => piece.dx)) + 1;
-    const height = Math.max(...pieces.map((piece) => piece.dy)) + 1;
-    for (let y = origin.y - 1; y <= origin.y + height; y++) {
-      for (let x = origin.x - 1; x <= origin.x + width; x++) {
+  const fits = (rect: TileRect, clear: ReadonlySet<string>, origin: TilePoint, turn: Turn, back?: Facing): boolean => {
+    const { pieces, width, height } = turn;
+    if (back) {
+      const length = back === 'north' || back === 'south' ? width : height;
+      for (let index = 0; index < length; index++) {
+        const point =
+          back === 'north' || back === 'south'
+            ? { x: origin.x + index, y: back === 'north' ? origin.y - 1 : origin.y + height }
+            : { x: back === 'west' ? origin.x - 1 : origin.x + width, y: origin.y + index };
+        if (isWalkable(point)) return false;
+      }
+    }
+    for (const piece of pieces) if (!clear.has(tileKey({ x: origin.x + piece.dx, y: origin.y + piece.dy }))) return false;
+    const left = back === 'west' ? origin.x : origin.x - 1;
+    const right = back === 'east' ? origin.x + width - 1 : origin.x + width;
+    const top = back === 'north' ? origin.y : origin.y - 1;
+    const bottom = back === 'south' ? origin.y + height - 1 : origin.y + height;
+    for (let y = top; y <= bottom; y++) {
+      for (let x = left; x <= right; x++) {
         const point = { x, y };
         if (!rectContains(rect, point) || !isOpenFloor(point) || taken.has(tileKey(point))) return false;
       }
     }
-    return pieces.every((piece) => {
-      const point = { x: origin.x + piece.dx, y: origin.y + piece.dy };
-      return !nearOpening(rect, point) && !inWalkingLane(rect, point);
-    });
+    return true;
   };
 
   const objectsInRoom = (rect: TileRect): number => district.objects.filter((placement) => rectContains(rect, placement.position) && !isFloorLitter(placement.objectId)).length;
@@ -179,14 +210,29 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
       return PREFABS[(weighted[0] as (typeof weighted)[number])[0]];
     };
 
+    const alignedTurn = Math.floor(random() * TURNS.length);
+    const clear = new Set(floor.filter((point) => !nearOpening(rect, point) && !inWalkingLane(rect, point)).map(tileKey));
     const candidates = shuffle([...floor], random);
-    let placedCount = 0;
-    for (const origin of candidates) {
-      if (placedCount >= wanted) break;
-      const prefab = choosePrefab();
+    const findSpot = (prefab: Prefab): { readonly origin: TilePoint; readonly pieces: readonly PrefabPiece[] } | undefined => {
       const turns = rotations(prefab);
-      const pieces = turns[Math.floor(random() * turns.length)] as PrefabPiece[];
-      if (!fits(rect, origin, pieces)) continue;
+      const order = prefab.placement === 'aligned' ? [alignedTurn] : shuffle([...TURNS], random);
+      const start = Math.floor(random() * candidates.length);
+      for (let step = 0; step < candidates.length; step++) {
+        const origin = candidates[(start + step) % candidates.length] as TilePoint;
+        if (taken.has(tileKey(origin))) continue;
+        for (const index of order) {
+          const turn = turns[index] as Turn;
+          if (fits(rect, clear, origin, turn, prefab.placement === 'wall' ? BACK_SIDE[index] : undefined)) return { origin, pieces: turn.pieces };
+        }
+      }
+      return undefined;
+    };
+
+    let placedCount = 0;
+    for (let attempt = 0; placedCount < wanted && attempt < wanted * PLACEMENT_ATTEMPTS; attempt++) {
+      const spot = findSpot(choosePrefab());
+      if (!spot) continue;
+      const { origin, pieces } = spot;
       placedCount += 1;
       pieces.forEach((piece, index) => {
         const position = { x: origin.x + piece.dx, y: origin.y + piece.dy };

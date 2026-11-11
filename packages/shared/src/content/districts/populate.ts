@@ -45,7 +45,7 @@ export function scatterCreatures(plan: Blueprint, room: string, prefix: string, 
 
 export const LITTER: readonly WorldObjectId[] = ['litter-papers', 'litter-debris', 'litter-puddle', 'litter-gravel', 'litter-rubble'];
 
-export const OFFICE_PROPS: readonly WorldObjectId[] = ['office-desk', 'filing-cabinet', 'planter', 'briefing-bench', 'water-cooler'];
+export const OFFICE_PROPS: readonly WorldObjectId[] = ['filing-cabinet', 'planter', 'briefing-bench', 'water-cooler'];
 
 export const CIVIC_PROPS: readonly WorldObjectId[] = ['planter', 'briefing-bench', 'light-pillar', 'planter'];
 
