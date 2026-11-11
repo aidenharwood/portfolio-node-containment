@@ -14,6 +14,8 @@ export type DoorTiles = ReadonlyMap<string, WorldObjectId>;
 
 const MAX_DOOR_DEPTH = 4;
 
+export const doorKeyOf = (definition: Pick<WorldObjectDefinition, 'id' | 'countsAs'>): WorldObjectId => definition.countsAs ?? definition.id;
+
 export const doorOpenedFlag = (objectId: WorldObjectId): string => `door-opened:${objectId}`;
 
 export const isDoorOpenFor = (objectId: WorldObjectId, door: DoorDefinition, context: ConditionContext): boolean =>
@@ -25,7 +27,8 @@ export function doorTilesOf(
 ): DoorTiles {
   const doors = new Map<string, WorldObjectId>();
   for (const placement of placements) {
-    if (definitionOf(placement.objectId)?.door) doors.set(tileKey(placement.position), placement.objectId);
+    const definition = definitionOf(placement.objectId);
+    if (definition?.door) doors.set(tileKey(placement.position), doorKeyOf(definition));
   }
   return doors;
 }

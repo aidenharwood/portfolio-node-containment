@@ -1,3 +1,5 @@
+import { install } from '../installations.ts';
+import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import { drawBlueprint, exit, link, patch, pillars, room } from '../../world/blueprint.ts';
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
@@ -30,8 +32,6 @@ export const VESPER_PHARMACY_ANCHORS = {
 const npcs: NpcPlacement[] = [];
 
 const fixtures: ObjectPlacement[] = [
-  { instanceId: 'vp-surgery-door-a', objectId: 'surgery-door', position: plan.linkTile('dispensary', 'surgery', 0), facing: 'west' },
-  { instanceId: 'vp-surgery-door-b', objectId: 'surgery-door', position: plan.linkTile('dispensary', 'surgery', 1), facing: 'west' },
     { instanceId: 'vp-still-a', objectId: 'tincture-still', position: plan.at('stockroom', 104, 0) },
     { instanceId: 'vp-still-b', objectId: 'tincture-still', position: plan.at('stockroom', 51, 8) },
     { instanceId: 'vp-still-c', objectId: 'tincture-still', position: plan.at('stockroom', 1, 21) },
@@ -57,7 +57,11 @@ const residents: CreaturePlacement[] = [
     { instanceId: 'vp-surgery-physician', creatureId: 'the-chief-physician', position: plan.at('surgery', 22, 25) },
   ];
 
-const placed = [...npcs, ...fixtures, ...residents];
+const assemblies: AssemblyPlacement[] = [
+  install('vp-surgery-door', 'surgery-door', plan.linkTile('dispensary', 'surgery', 0), 'west'),
+];
+
+const placed = [...npcs, ...fixtures, ...assemblies, ...residents];
 
 const furnishings = scatterGroups(plan, placed, [
   ['stockroom', 'vp-stockroom-node', ['tincture-still'], 3],
@@ -101,6 +105,7 @@ export const VESPER_PHARMACY: DistrictDefinition = furnish(plan, {
   ],
   npcs,
   objects: [...fixtures, ...furnishings],
+  assemblies,
   creatures: [...residents, ...packs],
   lights: [
     { position: plan.spot('dispensary', 17, 15), radius: 11, color: '#ffe8b8', intensity: 0.5 },

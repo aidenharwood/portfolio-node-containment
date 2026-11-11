@@ -1,3 +1,4 @@
+import { install } from '../installations.ts';
 import { drawBlueprint, exit, link, patch, room } from '../../world/blueprint.ts';
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
@@ -46,7 +47,6 @@ const npcs: NpcPlacement[] = [
 
 const fixtures: ObjectPlacement[] = [
   
-    { instanceId: 'hydro-fold-anomaly', objectId: 'verdance-anomaly', position: plan.at('heart-bed', 3, 2) },
     { instanceId: 'hydro-tram-stop', objectId: 'tram-stop', position: plan.at('platform', 2, 34), facing: 'east' },
     { instanceId: 'hydro-platform-sign', objectId: 'warning-sign', position: plan.at('platform', 21, 0) },
     { instanceId: 'hydro-platform-storage', objectId: 'storage-locker', position: plan.at('platform', 21, 23), facing: 'west' },
@@ -71,6 +71,7 @@ const fixtures: ObjectPlacement[] = [
   ];
 
 const assemblies: AssemblyPlacement[] = [
+  install('hydro-fold-anomaly', 'verdance-anomaly', plan.at('heart-bed', 3, 2), 'south'),
   
     { instanceId: 'hydro-tram-car', assemblyId: 'tram-car', position: plan.spot('platform', 3, 38), facing: 'north' },
   ];

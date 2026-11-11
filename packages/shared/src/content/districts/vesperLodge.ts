@@ -1,3 +1,4 @@
+import { install } from '../installations.ts';
 import { drawBlueprint, exit, patch, pillars, room, track } from '../../world/blueprint.ts';
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
@@ -27,17 +28,16 @@ const npcs: NpcPlacement[] = [
   ];
 
 const fixtures: ObjectPlacement[] = [
-  { instanceId: 'vl-gate-a', objectId: 'vesper-gate', position: plan.exits.east?.tiles[0] as TilePoint, facing: 'west' },
-  { instanceId: 'vl-gate-b', objectId: 'vesper-gate', position: plan.exits.east?.tiles[1] as TilePoint, facing: 'west' },
     { instanceId: 'vl-storage', objectId: 'storage-locker', position: plan.at('lodge', 57, 1), facing: 'west' },
     { instanceId: 'vl-mailbox', objectId: 'market-mailbox', position: plan.at('lodge', 57, 31), facing: 'west' },
     { instanceId: 'vl-contracts', objectId: 'contract-board', position: plan.at('lodge', 47, 0) },
     { instanceId: 'vl-med-bed', objectId: 'med-bed', position: plan.at('lodge', 0, 1), facing: 'east' },
-    { instanceId: 'vl-lift', objectId: 'vesper-lift-down', position: plan.at('lodge', 0, 3), facing: 'east' },
     { instanceId: 'vl-tram-stop', objectId: 'tram-stop', position: plan.at('lodge', 52, 16), facing: 'west' },
   ];
 
 const assemblies: AssemblyPlacement[] = [
+  install('vl-gate', 'vesper-gate', plan.exits.east?.tiles[0] as TilePoint, 'west'),
+  install('vl-lift', 'vesper-lift-down', plan.at('lodge', 0, 3), 'east'),
   
     { instanceId: 'vl-tram-car', assemblyId: 'tram-car', position: plan.spot('lodge', 54, 8), facing: 'east' },
     { instanceId: 'vl-line-bridge', assemblyId: 'bridge', position: plan.spot('lodge', 53, 21), facing: 'east', span: 2 },

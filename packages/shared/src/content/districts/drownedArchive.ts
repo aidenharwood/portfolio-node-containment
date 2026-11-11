@@ -1,3 +1,4 @@
+import { install } from '../installations.ts';
 import { drawBlueprint, exit, link, patch, pillars, room, track } from '../../world/blueprint.ts';
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
@@ -52,8 +53,6 @@ const npcs: NpcPlacement[] = [
 
 const fixtures: ObjectPlacement[] = [
   { instanceId: 'da-tram-stop', objectId: 'tram-stop', position: plan.at('flood-stair', 5, 2), facing: 'west' },
-  { instanceId: 'da-sealed-door-a', objectId: 'sealed-reading-door', position: plan.linkTile('stacks', 'sealed-room', 0), facing: 'north' },
-  { instanceId: 'da-sealed-door-b', objectId: 'sealed-reading-door', position: plan.linkTile('stacks', 'sealed-room', 1), facing: 'north' },
     { instanceId: 'da-stair-storage', objectId: 'storage-locker', position: plan.at('flood-stair', 19, 2), facing: 'west' },
     { instanceId: 'da-stair-bed', objectId: 'med-bed', position: plan.at('flood-stair', 19, 17) },
     { instanceId: 'da-shelf-a', objectId: 'archive-shelf', position: plan.at('stacks', 2, 0) },
@@ -88,6 +87,7 @@ const fixtures: ObjectPlacement[] = [
   ];
 
 const assemblies: AssemblyPlacement[] = [
+  install('da-sealed-door', 'sealed-reading-door', plan.linkTile('stacks', 'sealed-room', 1), 'north'),
   { instanceId: 'da-tram-car', assemblyId: 'tram-car', position: plan.spot('flood-stair', 1, 4), facing: 'west' },
   { instanceId: 'da-line-bridge', assemblyId: 'bridge', position: plan.spot('flood-stair', 0, 12), facing: 'east', span: 2 },];
 

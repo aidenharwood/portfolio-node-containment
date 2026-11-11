@@ -3,6 +3,7 @@ import {
   assemblyInstanceOf,
   countItem,
   destroyedQuantity,
+  doorKeyOf,
   doorOpenedFlag,
   forgetDestroyed,
   interactionGrantsQuestItem,
@@ -178,7 +179,8 @@ export class InteractionController {
   }
 
   private passDoor(player: Player, level: LevelInstance, placed: PlacedObject, interaction: ObjectInteraction): void {
-    const { id, door } = placed.definition;
+    const { door } = placed.definition;
+    const id = doorKeyOf(placed.definition);
     if (!door || !isDoorOpenFor(id, door, conditionContextFor(player, this.content))) {
       this.host.notify(player, 'warning', interaction.failureText ?? 'The door is locked.');
       return;

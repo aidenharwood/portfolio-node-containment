@@ -1,3 +1,5 @@
+import { install } from '../installations.ts';
+import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import { drawBlueprint, exit, link, patch, pillars, room } from '../../world/blueprint.ts';
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
@@ -30,8 +32,6 @@ export const SALT_CATHEDRAL_ANCHORS = {
 const npcs: NpcPlacement[] = [];
 
 const fixtures: ObjectPlacement[] = [
-  { instanceId: 'sc-nave-door-a', objectId: 'nave-door', position: plan.linkTile('nave-steps', 'the-nave', 0), facing: 'east' },
-  { instanceId: 'sc-nave-door-b', objectId: 'nave-door', position: plan.linkTile('nave-steps', 'the-nave', 1), facing: 'east' },
     { instanceId: 'sc-geode-a', objectId: 'geode-cluster', position: plan.at('cloister', 1, 0) },
     { instanceId: 'sc-geode-b', objectId: 'geode-cluster', position: plan.at('cloister', 54, 8) },
     { instanceId: 'sc-geode-c', objectId: 'geode-cluster', position: plan.at('cloister', 104, 21) },
@@ -57,7 +57,11 @@ const residents: CreaturePlacement[] = [
     { instanceId: 'sc-nave-bishop', creatureId: 'the-salt-bishop', position: plan.at('the-nave', 51, 25) },
   ];
 
-const placed = [...npcs, ...fixtures, ...residents];
+const assemblies: AssemblyPlacement[] = [
+  install('sc-nave-door', 'nave-door', plan.linkTile('nave-steps', 'the-nave', 1), 'east'),
+];
+
+const placed = [...npcs, ...fixtures, ...assemblies, ...residents];
 
 const furnishings = scatterGroups(plan, placed, [
   ['cloister', 'sc-cloister-node', ['geode-cluster'], 3],
@@ -101,6 +105,7 @@ export const SALT_CATHEDRAL: DistrictDefinition = furnish(plan, {
   ],
   npcs,
   objects: [...fixtures, ...furnishings],
+  assemblies,
   creatures: [...residents, ...packs],
   lights: [
     { position: plan.spot('nave-steps', 12, 15), radius: 11, color: '#ffd27f', intensity: 0.5 },

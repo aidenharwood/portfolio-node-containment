@@ -1,5 +1,7 @@
 import {
+  assemblyInstanceOf,
   chunkKey,
+  doorKeyOf,
   chunkKeyOf,
   chunkOf,
   TILE_KINDS,
@@ -21,6 +23,8 @@ export interface DoorView {
 }
 
 const DOOR_OPEN_RANGE = 2.6;
+
+const doorGroupOf = (view: ObjectView): string => assemblyInstanceOf(view.instanceId) ?? view.instanceId;
 const FADE_RADIUS = 1.4;
 const FADE_REACH = 7;
 const FIXTURE_SPACING = 4;
@@ -123,8 +127,15 @@ export class LevelScene {
   }
 
   update(time: number, objectiveObjectIds: ReadonlySet<string>, depletedObjects: ReadonlySet<string>, doors: DoorView): void {
+    const nearDoors = new Set<string>();
+    if (doors.self) {
+      for (const view of this.objects.values()) {
+        if (!view.definition.door) continue;
+        if (Math.hypot(doors.self.x - view.placement.position.x, doors.self.y - view.placement.position.y) <= DOOR_OPEN_RANGE) nearDoors.add(doorGroupOf(view));
+      }
+    }
     for (const view of this.objects.values()) {
-      if (view.definition.door) this.slideDoor(view, doors);
+      if (view.definition.door) this.slideDoor(view, doors, nearDoors);
       const depleted = depletedObjects.has(view.instanceId);
       for (const { part, spec } of view.animated) {
         spec.animate(part, time, view.seed);
@@ -133,7 +144,7 @@ export class LevelScene {
       const baseScale = view.definition.modelScale ?? 1;
       const targetHeight = baseScale * (depleted ? DEPLETED_HEIGHT : 1);
       view.group.scale.y += (targetHeight - view.group.scale.y) * 0.12;
-      const isObjective = !depleted && objectiveObjectIds.has(view.definition.id);
+      const isObjective = !depleted && objectiveObjectIds.has(view.definition.id) && !(view.definition.countsAs && assemblyInstanceOf(view.instanceId));
       view.objectiveRing.visible = isObjective;
       if (isObjective) {
         const pulse = 1 + Math.sin(time * 3 + view.seed) * 0.08;
@@ -144,9 +155,8 @@ export class LevelScene {
     this.ringMaterial.opacity = 0.55 + Math.sin(time * 3) * 0.3;
   }
 
-  private slideDoor(view: ObjectView, doors: DoorView): void {
-    const near = doors.self !== null && Math.hypot(doors.self.x - view.placement.position.x, doors.self.y - view.placement.position.y) <= DOOR_OPEN_RANGE;
-    const target = near && doors.open.has(view.definition.id) ? -view.height - 0.05 : 0;
+  private slideDoor(view: ObjectView, doors: DoorView, nearDoors: ReadonlySet<string>): void {
+    const target = nearDoors.has(doorGroupOf(view)) && doors.open.has(doorKeyOf(view.definition)) ? -view.height - 0.05 : 0;
     view.group.position.y += (target - view.group.position.y) * 0.14;
   }
 

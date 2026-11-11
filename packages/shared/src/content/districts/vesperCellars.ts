@@ -1,3 +1,5 @@
+import { install } from '../installations.ts';
+import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import { drawBlueprint, link, patch, pillars, room } from '../../world/blueprint.ts';
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
@@ -37,7 +39,6 @@ const npcs: NpcPlacement[] = [];
 
 const fixtures: ObjectPlacement[] = [
   
-    { instanceId: 'vcl-lift', objectId: 'vesper-lift-up', position: plan.at('lift-landing', 19, 1), facing: 'west' },
     { instanceId: 'vcl-sign', objectId: 'warning-sign', position: plan.at('lift-landing', 0, 0) },
     { instanceId: 'vcl-still-a', objectId: 'tincture-still', position: plan.at('mortuary', 82, 0) },
     { instanceId: 'vcl-still-b', objectId: 'tincture-still', position: plan.at('mortuary', 0, 21) },
@@ -63,7 +64,11 @@ const residents: CreaturePlacement[] = [
     { instanceId: 'vcl-office-almoner', creatureId: 'the-almoner', position: plan.at('almoners-office', 24, 16) },
   ];
 
-const placed = [...npcs, ...fixtures, ...residents];
+const assemblies: AssemblyPlacement[] = [
+  install('vcl-lift', 'vesper-lift-up', plan.at('lift-landing', 19, 1), 'west'),
+];
+
+const placed = [...npcs, ...fixtures, ...assemblies, ...residents];
 
 const furnishings = scatterGroups(plan, placed, [
   ['mortuary', 'vcl-mortuary-node', ['tincture-still', 'herb-cabinet'], 4],
@@ -107,6 +112,7 @@ export const VESPER_CELLARS: DistrictDefinition = furnish(plan, {
   ],
   npcs,
   objects: [...fixtures, ...furnishings],
+  assemblies,
   creatures: [...residents, ...packs],
   lights: [
     { position: plan.center('cold-lockers'), radius: 9, color: '#9fd8ff', intensity: 0.5 },

@@ -119,6 +119,7 @@ import { CONTRACT_OBJECTS } from './contractObjects.ts';
 import { CONTRACTS } from './contracts.ts';
 import type { ContractDefinition, ContractId } from '../contracts/contract.ts';
 import { ASSEMBLIES } from './assemblies.ts';
+import { buildInstallations } from './installations.ts';
 import type { AssemblyDefinition } from '../world/assemblies.ts';
 import { VERDANT_FOLD } from './districts/verdantFold.ts';
 import { VERDANT_FOLD_LEVEL } from './levels/verdantFoldLevel.ts';
@@ -175,7 +176,8 @@ function indexById<T extends { readonly id: string }>(entries: readonly T[]): Re
 }
 
 const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([INTAKE_WING, MERIDIAN_ATRIUM, MERIDIAN_CIRCUIT, VERDANCE_CONCOURSE, SERVICE_CONCOURSE, SERVICE_YARDS, WATERWORKS, SECTOR_TWO, UNDERCROFT, SECTOR_THREE, HYDROPONICS, DEEPWATCH, DEEP_CONCOURSE, FURNACE_CAUSEWAY, CRYOVAULT, SIGNAL_ARRAY, DROWNED_ARCHIVE, FURNACE, MERIDIAN_BELOW, VERDANT_FOLD, DEAD_LETTER_OFFICE, CALDER_CAUSEWAY, BRINE_GALLERIES, CALDER_GATEHOUSE, SALT_CATHEDRAL, CALDER_DEEPS, VESPER_CAUSEWAY, VESPER_WARDS, VESPER_LODGE, VESPER_PHARMACY, VESPER_CELLARS]);
-const ASSEMBLY_INDEX: ReadonlyMap<AssemblyId, AssemblyDefinition> = indexById(ASSEMBLIES);
+const INSTALLED = buildInstallations([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...FURNITURE_OBJECTS, ...OFFICE_OBJECTS, ...CONTRACT_OBJECTS, ...CALDER_OBJECTS, ...VESPER_OBJECTS, ...CLUTTER_OBJECTS]);
+const ASSEMBLY_INDEX: ReadonlyMap<AssemblyId, AssemblyDefinition> = indexById([...ASSEMBLIES, ...INSTALLED.assemblies]);
 const LEVEL_INDEX: LevelIndex = buildLevelIndex([MAIN_FLOOR, UNDERCROFT_LEVEL, THE_DEEP, THE_THRESHOLD, MERIDIAN_BELOW_LEVEL, VERDANT_FOLD_LEVEL, DEAD_LETTER_OFFICE_LEVEL, CALDER_DEEPS_LEVEL, VESPER_CELLARS_LEVEL], DISTRICTS, ASSEMBLY_INDEX);
 
 function startingLocation(): WorldLocation {
@@ -187,7 +189,7 @@ function startingLocation(): WorldLocation {
 export const GAME_CONTENT: GameContent = {
   items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS, ...UNIQUE_GEAR, ...CALDER_MATERIALS, ...CALDER_MEDICINE, ...CALDER_QUEST_ITEMS, ...SALTWORKS_GEAR, ...CATHEDRAL_GEAR, ...CALDER_UNIQUE_GEAR, ...VESPER_MATERIALS, ...VESPER_MEDICINE, ...VESPER_QUEST_ITEMS, ...WARD_GEAR, ...PHYSICIAN_GEAR, ...VESPER_UNIQUE_GEAR]),
   npcs: indexById([...NPCS, ...DEEP_NPCS, ...WATERWORKS_NPCS, ...OFFICE_NPCS, ...CALDER_NPCS, ...VESPER_NPCS, ...AMBIENT_NPCS]),
-  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...FURNITURE_OBJECTS, ...OFFICE_OBJECTS, ...CONTRACT_OBJECTS, ...CALDER_OBJECTS, ...VESPER_OBJECTS, ...CLUTTER_OBJECTS]),
+  worldObjects: indexById(INSTALLED.objects),
   assemblies: ASSEMBLY_INDEX,
   dialogues: indexById([
     ...AMBIENT_DIALOGUES,

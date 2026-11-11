@@ -1,3 +1,4 @@
+import { install } from '../installations.ts';
 import { drawBlueprint, exit, link, patch, pillars, room } from '../../world/blueprint.ts';
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
@@ -41,13 +42,11 @@ const plan = drawBlueprint({ width: 126, height: 104 }, [
 export const ATRIUM_ANCHORS = {
   transit: plan.at('lift-bay', 6, 24),
   deepLineArrival: plan.at('lift-bay', 2, 2),
-  serviceLiftArrival: plan.at('engineering', 28, 18),
+  serviceLiftArrival: plan.at('engineering', 27, 18),
   recovery: plan.at('medbay', 6, 3),
 } satisfies Record<string, TilePoint>;
 
 const fixtures: ObjectPlacement[] = [
-  { instanceId: 'sector2-bulkhead-a', objectId: 'sealed-bulkhead', position: plan.exits.north?.tiles[0] as TilePoint },
-  { instanceId: 'sector2-bulkhead-b', objectId: 'sealed-bulkhead', position: plan.exits.north?.tiles[1] as TilePoint },
     { instanceId: 'atrium-kiosk', objectId: 'intake-kiosk', position: plan.at('requisitions', 0, 1), facing: 'east' },
     { instanceId: 'atrium-storage-a', objectId: 'storage-locker', position: plan.at('requisitions', 27, 0) },
     { instanceId: 'atrium-storage-c', objectId: 'storage-locker', position: plan.at('requisitions', 28, 0) },
@@ -69,9 +68,6 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'records-bench', objectId: 'briefing-bench', position: plan.at('archives', 12, 18) },
     { instanceId: 'records-papers-a', objectId: 'litter-papers', position: plan.at('archives', 21, 17) },
     { instanceId: 'records-papers-b', objectId: 'litter-papers', position: plan.at('archives', 3, 2) },
-    { instanceId: 'workshop-refinery', objectId: 'refinery', position: plan.at('workshop', 0, 1), facing: 'east' },
-    { instanceId: 'workshop-fabricator', objectId: 'fabricator', position: plan.at('workshop', 0, 3), facing: 'east' },
-    { instanceId: 'workshop-synthesiser', objectId: 'synthesiser', position: plan.at('workshop', 0, 17), facing: 'east' },
     { instanceId: 'atrium-storage-b', objectId: 'storage-locker', position: plan.at('workshop', 0, 26), facing: 'east' },
     { instanceId: 'workshop-crate-a', objectId: 'supply-crate', position: plan.at('workshop', 29, 0) },
     { instanceId: 'workshop-crate-b', objectId: 'supply-crate', position: plan.at('workshop', 28, 0) },
@@ -104,7 +100,6 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'east-gate-pillar-b', objectId: 'light-pillar', position: plan.at('east-gate', 29, 20) },
     { instanceId: 'east-gate-debris', objectId: 'litter-debris', position: plan.at('east-gate', 17, 1) },
     { instanceId: 'atrium-tram-stop', objectId: 'tram-stop', position: plan.at('lift-bay', 8, 26), facing: 'south' },
-    { instanceId: 'atrium-deep-line', objectId: 'atrium-deep-line', position: plan.at('lift-bay', 0, 2), facing: 'east' },
     { instanceId: 'vent-lift-bay', objectId: 'vent-panel', position: plan.at('lift-bay', 29, 2), facing: 'west' },
     { instanceId: 'transit-directory', objectId: 'intake-kiosk', position: plan.at('lift-bay', 29, 11), facing: 'west' },
     { instanceId: 'transit-bench', objectId: 'briefing-bench', position: plan.at('lift-bay', 26, 1) },
@@ -115,9 +110,7 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'medbay-bed-d', objectId: 'med-bed', position: plan.at('medbay', 48, 26) },
     { instanceId: 'medbay-bed-e', objectId: 'med-bed', position: plan.at('medbay', 55, 26) },
     { instanceId: 'medbay-bed-f', objectId: 'med-bed', position: plan.at('medbay', 59, 26) },
-    { instanceId: 'medbay-synthesiser', objectId: 'synthesiser', position: plan.at('medbay', 61, 1), facing: 'west' },
     { instanceId: 'medbay-planter', objectId: 'planter', position: plan.at('medbay', 0, 0) },
-    { instanceId: 'atrium-service-lift', objectId: 'atrium-service-lift', position: plan.at('engineering', 29, 18), facing: 'west' },
     { instanceId: 'engineering-pipes-a', objectId: 'pipe-cluster', position: plan.at('engineering', 0, 26) },
     { instanceId: 'engineering-pipes-b', objectId: 'pipe-cluster', position: plan.at('engineering', 29, 0) },
     { instanceId: 'engineering-rack', objectId: 'server-rack', position: plan.at('engineering', 1, 26), facing: 'north' },
@@ -153,6 +146,13 @@ const fixtures: ObjectPlacement[] = [
   ];
 
 const assemblies: AssemblyPlacement[] = [
+  install('sector2-bulkhead', 'sealed-bulkhead', plan.exits.north?.tiles[0] as TilePoint, 'south'),
+  install('workshop-refinery', 'refinery', plan.at('workshop', 0, 1), 'east'),
+  install('workshop-fabricator', 'fabricator', plan.at('workshop', 0, 5), 'east'),
+  install('workshop-synthesiser', 'synthesiser', plan.at('workshop', 0, 17), 'east'),
+  install('atrium-deep-line', 'atrium-deep-line', plan.at('lift-bay', 0, 2), 'east'),
+  install('medbay-synthesiser', 'synthesiser', plan.at('medbay', 61, 1), 'west'),
+  install('atrium-service-lift', 'atrium-service-lift', plan.at('engineering', 29, 18), 'west'),
     { instanceId: 'atrium-tram-car', assemblyId: 'tram-car', position: plan.spot('lift-bay', 3, 28), facing: 'north' },
     { instanceId: 'workshop-cable-run', assemblyId: 'cable-run', position: plan.spot('workshop', 2, 27), facing: 'east', span: 6 },
     { instanceId: 'engineering-cable-run', assemblyId: 'cable-run', position: plan.spot('engineering', 2, 24), facing: 'east', span: 5 },

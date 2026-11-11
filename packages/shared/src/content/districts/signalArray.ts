@@ -1,3 +1,4 @@
+import { install } from '../installations.ts';
 import { drawBlueprint, exit, link, patch, pillars, room } from '../../world/blueprint.ts';
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
@@ -62,7 +63,6 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'sa-floor-rack-d', objectId: 'server-rack', position: plan.at('relay-floor', 34, 25), facing: 'north' },
     { instanceId: 'sa-patch-floor', objectId: 'patch-point', position: plan.at('relay-floor', 5, 25), facing: 'north' },
     { instanceId: 'sa-outbox', objectId: 'outbox-terminal', position: plan.at('operator-pit', 12, 4) },
-    { instanceId: 'sa-return-chute', objectId: 'return-chute', position: plan.at('operator-pit', 23, 5), facing: 'west' },
     { instanceId: 'sa-pit-rack-a', objectId: 'server-rack', position: plan.at('operator-pit', 1, 4) },
     { instanceId: 'sa-pit-rack-b', objectId: 'server-rack', position: plan.at('operator-pit', 19, 4) },
     { instanceId: 'sa-pit-bench-a', objectId: 'briefing-bench', position: plan.at('operator-pit', 2, 22) },
@@ -84,6 +84,7 @@ const fixtures: ObjectPlacement[] = [
   ];
 
 const assemblies: AssemblyPlacement[] = [
+  install('sa-return-chute', 'return-chute', plan.at('operator-pit', 23, 5), 'west'),
   { instanceId: 'sa-tram-car', assemblyId: 'tram-car', position: plan.spot('uplink-lobby', 3, 1), facing: 'north' },
   { instanceId: 'sa-line-bridge', assemblyId: 'bridge', position: plan.spot('uplink-lobby', 12, 0), facing: 'south', span: 2 },];
 

@@ -76,7 +76,7 @@ describe('act three: return to sender', () => {
     assert.equal(countItem(player.record.inventory, 'ninth-letter'), 1);
 
     travel(harness, NEAR_CHUTE);
-    use(harness, 'sa-return-chute');
+    use(harness, 'sa-return-chute/1,0');
     assert.equal(districtOf(player), 'signal-array', 'the chute stays shut until Achterberg traces the letter');
 
     travel(harness, NEAR_ACHTERBERG);
@@ -86,7 +86,7 @@ describe('act three: return to sender', () => {
     assert.ok(player.hasFlag('returns.chute-open'));
 
     travel(harness, NEAR_CHUTE);
-    use(harness, 'sa-return-chute');
+    use(harness, 'sa-return-chute/1,0');
     assert.equal(player.levelId, 'dead-letter-office');
     assert.ok(player.hasFlag(visitedLevelFlag('dead-letter-office')));
     assert.equal(stepOf(harness, 'the-ninth-letter'), 2);
@@ -95,7 +95,7 @@ describe('act three: return to sender', () => {
     assert.equal(stepOf(harness, 'the-ninth-letter'), 'completed');
     assert.equal(stepOf(harness, 'dead-letter-office'), 0);
 
-    use(harness, 'dlo-return');
+    use(harness, 'dlo-return/1,0');
     assert.equal(districtOf(player), 'signal-array');
   });
 

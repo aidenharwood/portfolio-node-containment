@@ -1,3 +1,5 @@
+import { install } from '../installations.ts';
+import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import { drawBlueprint, link, patch, pillars, room } from '../../world/blueprint.ts';
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
@@ -32,7 +34,6 @@ const npcs: NpcPlacement[] = [
 
 const fixtures: ObjectPlacement[] = [
   
-    { instanceId: 'dlo-return', objectId: 'office-return-chute', position: plan.at('franking-hall', 0, 1), facing: 'east' },
     { instanceId: 'dlo-hall-desk', objectId: 'franking-counter', position: plan.at('franking-hall', 12, 0) },
     { instanceId: 'dlo-hall-cabinet-a', objectId: 'filing-cabinet', position: plan.at('franking-hall', 19, 0) },
     { instanceId: 'dlo-hall-cabinet-b', objectId: 'filing-cabinet', position: plan.at('franking-hall', 0, 15), facing: 'north' },
@@ -74,7 +75,11 @@ const residents: CreaturePlacement[] = [
     { instanceId: 'dlo-postmaster-add-echo', creatureId: 'courier-echo', position: plan.at('dispatch', 38, 11) },
   ];
 
-const placed = [...npcs, ...fixtures, ...residents];
+const assemblies: AssemblyPlacement[] = [
+  install('dlo-return', 'office-return-chute', plan.at('franking-hall', 0, 1), 'east'),
+];
+
+const placed = [...npcs, ...fixtures, ...assemblies, ...residents];
 
 const furnishings = scatterGroups(plan, placed, [
   ['sorting-floor', 'dlo-sorting-prop', ['letter-rack', 'filing-cabinet'], 10],
@@ -119,6 +124,7 @@ export const DEAD_LETTER_OFFICE: DistrictDefinition = furnish(plan, {
   ],
   npcs,
   objects: [...fixtures, ...furnishings],
+  assemblies,
   creatures: [...residents, ...packs],
   lights: [
     { position: plan.center('returned-stacks'), radius: 8, color: '#b57cff', intensity: 0.5 },

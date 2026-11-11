@@ -1,4 +1,5 @@
 import {
+  assemblyInstanceOf,
   CHUNK_SIZE,
   GAME_CONTENT,
   TILE_KINDS,
@@ -127,6 +128,12 @@ const shareMeshes = (meshes: VoxelMeshes): VoxelMeshes => {
     if (geometry) SHARED_GEOMETRY.add(geometry);
   }
   return meshes;
+};
+
+const assemblySeed = (assembly: InstanceId): number => {
+  let hash = 0;
+  for (const char of assembly) hash = (hash * 31 + char.charCodeAt(0)) % 97;
+  return hash;
 };
 
 const objectMeshesFor = (model: WorldObjectDefinition['model'], seed: number): ObjectMeshes => {
@@ -278,7 +285,8 @@ export class ChunkView {
   private addObject(placement: ObjectPlacement, index: number): void {
     const definition = GAME_CONTENT.worldObjects.get(placement.objectId);
     if (!definition) return;
-    const seed = (placement.position.x * 31 + placement.position.y * 17 + index) % 97;
+    const assembly = assemblyInstanceOf(placement.instanceId);
+    const seed = assembly ? assemblySeed(assembly) : (placement.position.x * 31 + placement.position.y * 17 + index) % 97;
     const parts = objectMeshesFor(definition.model, seed % MODEL_VARIANTS);
     const scale = definition.modelScale ?? 1;
     if (isStaticDecor(definition, parts)) {

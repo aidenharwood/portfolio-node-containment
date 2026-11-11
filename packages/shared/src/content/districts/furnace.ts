@@ -1,3 +1,4 @@
+import { install } from '../installations.ts';
 import { drawBlueprint, exit, link, patch, pillars, room } from '../../world/blueprint.ts';
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
@@ -51,14 +52,9 @@ const npcs: NpcPlacement[] = [
   ];
 
 const fixtures: ObjectPlacement[] = [
-  { instanceId: 'fu-blast-door-a', objectId: 'furnace-door', position: plan.exits.south?.tiles[0] as TilePoint, facing: 'north' },
-  { instanceId: 'fu-blast-door-b', objectId: 'furnace-door', position: plan.exits.south?.tiles[1] as TilePoint, facing: 'north' },
-  { instanceId: 'fu-reactor-door-a', objectId: 'reactor-door', position: plan.linkTile('ember-galleries', 'reactor-heart', 0), facing: 'north' },
-  { instanceId: 'fu-reactor-door-b', objectId: 'reactor-door', position: plan.linkTile('ember-galleries', 'reactor-heart', 1), facing: 'north' },
   { instanceId: 'fu-tram-stop', objectId: 'tram-stop', position: plan.at('coolant-lock', 2, 13), facing: 'south' },
     { instanceId: 'fu-lock-storage', objectId: 'storage-locker', position: plan.at('coolant-lock', 19, 12), facing: 'west' },
     { instanceId: 'fu-lock-bed', objectId: 'med-bed', position: plan.at('coolant-lock', 0, 10) },
-    { instanceId: 'fu-lock-synthesiser', objectId: 'synthesiser', position: plan.at('coolant-lock', 19, 10), facing: 'west' },
     { instanceId: 'fu-seam-a', objectId: 'ember-seam', position: plan.at('ember-galleries', 2, 0) },
     { instanceId: 'fu-seam-b', objectId: 'ember-seam', position: plan.at('ember-galleries', 30, 0) },
     { instanceId: 'fu-seam-c', objectId: 'ember-seam', position: plan.at('ember-galleries', 59, 0) },
@@ -80,6 +76,9 @@ const fixtures: ObjectPlacement[] = [
   ];
 
 const assemblies: AssemblyPlacement[] = [
+  install('fu-blast-door', 'furnace-door', plan.exits.south?.tiles[1] as TilePoint, 'north'),
+  install('fu-reactor-door', 'reactor-door', plan.linkTile('ember-galleries', 'reactor-heart', 1), 'north'),
+  install('fu-lock-synthesiser', 'synthesiser', plan.at('coolant-lock', 19, 10), 'west'),
   { instanceId: 'fu-tram-car', assemblyId: 'tram-car', position: plan.spot('coolant-lock', 1, 15), facing: 'north' },
   { instanceId: 'fu-line-bridge', assemblyId: 'bridge', position: plan.spot('coolant-lock', 9, 14), facing: 'south', span: 2 },];
 

@@ -1,3 +1,5 @@
+import { install } from '../installations.ts';
+import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import { drawBlueprint, link, patch, pillars, room } from '../../world/blueprint.ts';
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
@@ -57,16 +59,12 @@ const npcs: NpcPlacement[] = [
 
 const fixtures: ObjectPlacement[] = [
   
-    { instanceId: 'uc-service-lift', objectId: 'undercroft-service-lift', position: plan.at('landing', 1, 0) },
     { instanceId: 'uc-landing-sign', objectId: 'warning-sign', position: plan.at('landing', 17, 0) },
     { instanceId: 'uc-camp-heater', objectId: 'camp-heater', position: plan.at('camp', 8, 3) },
     { instanceId: 'uc-camp-crate-a', objectId: 'supply-crate', position: plan.at('camp', 1, 1) },
     { instanceId: 'uc-camp-crate-b', objectId: 'supply-crate', position: plan.at('camp', 20, 14) },
     { instanceId: 'uc-camp-bench', objectId: 'briefing-bench', position: plan.at('camp', 2, 14) },
     { instanceId: 'uc-camp-storage', objectId: 'storage-locker', position: plan.at('camp', 0, 13), facing: 'east' },
-    { instanceId: 'uc-camp-refinery', objectId: 'refinery', position: plan.at('camp', 3, 0) },
-    { instanceId: 'uc-camp-fabricator', objectId: 'fabricator', position: plan.at('camp', 13, 0) },
-    { instanceId: 'uc-camp-synthesiser', objectId: 'synthesiser', position: plan.at('camp', 19, 0) },
     { instanceId: 'uc-landing-scrap', objectId: 'scrap-heap', position: plan.at('landing', 15, 13) },
     { instanceId: 'uc-slag-a', objectId: 'slag-heap', position: plan.at('pump-hall', 15, 29) },
     { instanceId: 'uc-slag-b', objectId: 'slag-heap', position: plan.at('pump-hall', 42, 29) },
@@ -84,8 +82,6 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'uc-rack-a', objectId: 'server-rack', position: plan.at('junction-room', 0, 17), facing: 'north' },
     { instanceId: 'uc-workshop-sign', objectId: 'warning-sign', position: plan.at('workshop', 38, 2), facing: 'west' },
     { instanceId: 'uc-workshop-crate', objectId: 'supply-crate', position: plan.at('workshop', 1, 26) },
-    { instanceId: 'uc-sector-three-seal-a', objectId: 'sector-three-seal', position: plan.at('workshop', 38, 23), facing: 'west' },
-    { instanceId: 'uc-sector-three-seal-b', objectId: 'sector-three-seal', position: plan.at('workshop', 38, 24), facing: 'west' },
   ];
 
 const residents: CreaturePlacement[] = [
@@ -107,7 +103,15 @@ const residents: CreaturePlacement[] = [
     { instanceId: 'uc-foreman-add-b', creatureId: 'pipe-leech', position: plan.at('workshop', 37, 25) },
   ];
 
-const placed = [...npcs, ...fixtures, ...residents];
+const assemblies: AssemblyPlacement[] = [
+  install('uc-service-lift', 'undercroft-service-lift', plan.at('landing', 1, 0), 'south'),
+  install('uc-camp-refinery', 'refinery', plan.at('camp', 3, 0), 'south'),
+  install('uc-camp-fabricator', 'fabricator', plan.at('camp', 13, 0), 'south'),
+  install('uc-camp-synthesiser', 'synthesiser', plan.at('camp', 19, 0), 'south'),
+  install('uc-sector-three-seal', 'sector-three-seal', plan.at('workshop', 38, 23), 'west'),
+];
+
+const placed = [...npcs, ...fixtures, ...assemblies, ...residents];
 
 const furnishings = scatterGroups(plan, placed, [
   ['flooded-sump', 'uc-sump-node', ['slag-heap'], 3],
@@ -169,6 +173,7 @@ export const UNDERCROFT: DistrictDefinition = furnish(plan, {
   ],
   npcs,
   objects: [...fixtures, ...furnishings],
+  assemblies,
   creatures: [...residents, ...packs],
   lights: [
     { position: plan.center('pipe-gallery'), radius: 10, color: '#ffb347', intensity: 0.5 },

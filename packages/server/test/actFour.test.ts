@@ -164,7 +164,7 @@ describe('act four: postmarked', () => {
     assert.equal(countItem(player.record.inventory, 'rock-salt'), 0);
 
     talk(harness, 'cg-brandt', 'Why does the lift bell keep ringing?', "I'll go down.");
-    use(harness, 'cg-lift');
+    use(harness, 'cg-lift/1,0');
     assert.equal(player.levelId, 'calder-deeps');
     assert.equal(stepOf(harness, 'the-lowest-gallery'), 1);
 
@@ -176,14 +176,14 @@ describe('act four: postmarked', () => {
     assert.equal(stepOf(harness, 'the-lowest-gallery'), 3);
 
     travel(harness, at('calder-deeps', localInRoom('calder-deeps', 'lift-landing', { x: 2, y: 2 })));
-    use(harness, 'cd-lift');
+    use(harness, 'cd-lift/1,0');
     assert.equal(districtOf(player), 'calder-gatehouse');
     talk(harness, 'cg-brandt', 'He can rest now.');
     assert.equal(stepOf(harness, 'the-lowest-gallery'), 'completed');
 
     talk(harness, 'cg-brandt', 'Is the log closed?', "I'll clock him off.");
     assert.equal(countItem(player.record.inventory, 'foremans-card'), 1);
-    use(harness, 'cg-lift');
+    use(harness, 'cg-lift/1,0');
     travel(harness, at('calder-deeps', localInRoom('calder-deeps', 'foremans-office', { x: 58, y: 30 })));
     use(harness, 'cd-time-clock');
     assert.equal(stepOf(harness, 'clocking-off'), 1);

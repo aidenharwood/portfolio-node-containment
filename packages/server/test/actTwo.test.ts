@@ -82,7 +82,7 @@ describe('act two: the answer', () => {
     assert.ok(player.hasFlag('clearance.deepwatch'));
 
     travel(harness, at('meridian-atrium', localInRoom('meridian-atrium', 'lift-bay', { x: 2, y: 2 })));
-    use(harness, 'atrium-deep-line');
+    use(harness, 'atrium-deep-line/1,0');
     assert.equal(districtOf(player), 'deepwatch');
     assert.equal(stepOf(harness, 'a-council-of-one'), 1);
 
@@ -91,12 +91,12 @@ describe('act two: the answer', () => {
     assert.equal(stepOf(harness, 'a-council-of-one'), 2);
 
     travel(harness, at('deepwatch', localInRoom('deepwatch', 'concourse', { x: 14, y: 2 })));
-    use(harness, 'dw-threshold-a');
+    use(harness, 'dw-threshold/0,0');
     assert.equal(districtOf(player), 'sector-three');
     talk(harness, 's3-halvorsen');
     assert.equal(stepOf(harness, 'a-council-of-one'), 3);
 
-    use(harness, 's3-deepwatch-a');
+    use(harness, 's3-deepwatch/0,0');
     assert.equal(districtOf(player), 'deepwatch');
     travel(harness, NEAR_THALE);
     talk(harness, 'dw-thale', "It isn't");
@@ -109,7 +109,7 @@ describe('act two: the answer', () => {
     const harness = createHarness({ prepare: veteranAt(CRYOVAULT_DOOR, { 'a-council-of-one': completed('a-council-of-one'), 'cold-storage': active('cold-storage') }, ['clearance.cryovault']) });
     const { player } = harness;
 
-    use(harness, 'dc-cryovault-door-a');
+    use(harness, 'dc-cryovault-door/0,0');
     assert.equal(districtOf(player), 'cryovault');
     assert.equal(stepOf(harness, 'cold-storage'), 1);
 
@@ -142,7 +142,7 @@ describe('act two: the answer', () => {
     assert.equal(stepOf(harness, 'dead-air'), 1);
 
     travel(harness, ARRAY_DOOR);
-    use(harness, 'dc-array-door-a');
+    use(harness, 'dc-array-door/0,0');
     assert.equal(districtOf(player), 'signal-array');
     assert.equal(stepOf(harness, 'dead-air'), 2);
 
@@ -179,7 +179,7 @@ describe('act two: the answer', () => {
     assert.equal(stepOf(harness, 'original-contract'), 1);
 
     travel(harness, ARCHIVE_DOOR);
-    use(harness, 'dc-archive-door-a');
+    use(harness, 'dc-archive-door/0,0');
     assert.equal(districtOf(player), 'drowned-archive');
     assert.equal(stepOf(harness, 'original-contract'), 2);
 
@@ -187,7 +187,7 @@ describe('act two: the answer', () => {
     assert.equal(stepOf(harness, 'original-contract'), 3);
 
     travel(harness, anchor('drowned-archive', 'sealedApproach'));
-    use(harness, 'da-sealed-door-a');
+    use(harness, 'da-sealed-door/0,0');
     assert.equal(player.position.y, anchor('drowned-archive', 'sealedApproach').position.y, 'the reading room stays sealed until the sluices are open');
 
     for (const valve of ['da-sluice-a', 'da-sluice-b', 'da-sluice-c']) use(harness, valve);
@@ -195,7 +195,7 @@ describe('act two: the answer', () => {
     assert.ok(player.hasFlag('archive.drained'));
 
     travel(harness, anchor('drowned-archive', 'sealedApproach'));
-    use(harness, 'da-sealed-door-a');
+    use(harness, 'da-sealed-door/0,0');
     assert.ok(player.position.y >= levelPoint('drowned-archive', localInRoom('drowned-archive', 'sealed-room', { x: 0, y: 0 })).y, 'the drained door opens into the reading room');
 
     containSpecimen(harness, 'da-last-archivist');
@@ -219,7 +219,7 @@ describe('act two: the answer', () => {
     assert.equal(stepOf(harness, 'stoking-the-fire'), 1);
 
     travel(harness, FURNACE_DOOR);
-    use(harness, 'fu-blast-door-a');
+    use(harness, 'fu-blast-door/0,0');
     assert.equal(districtOf(player), 'furnace');
     talk(harness, 'fu-brann');
     assert.equal(stepOf(harness, 'stoking-the-fire'), 3);
@@ -232,7 +232,7 @@ describe('act two: the answer', () => {
     assert.ok(player.hasFlag('furnace.vented'));
 
     travel(harness, anchor('furnace', 'reactorApproach'));
-    use(harness, 'fu-reactor-door-a');
+    use(harness, 'fu-reactor-door/0,0');
     assert.ok(player.position.y >= levelPoint('furnace', localInRoom('furnace', 'reactor-heart', { x: 0, y: 0 })).y, 'the vented door opens into the reactor heart');
 
     containSpecimen(harness, 'fu-stoker');
@@ -251,14 +251,14 @@ describe('act two: the answer', () => {
     const harness = createHarness({ prepare: veteranAt(NEAR_HALVORSEN, { 'stoking-the-fire': completed('stoking-the-fire'), 'the-answer': active('the-answer') }) });
     const { player } = harness;
 
-    use(harness, 's3-knock', 1);
+    use(harness, 's3-knock/1,0', 1);
     assert.equal(districtOf(player), 'sector-three', 'the Knock stays shut until Halvorsen opens it');
 
     talk(harness, 's3-halvorsen', 'Open it');
     assert.ok(player.hasFlag('farside.door-open'));
     assert.equal(stepOf(harness, 'the-answer'), 1);
 
-    use(harness, 's3-knock', 1);
+    use(harness, 's3-knock/1,0', 1);
     assert.equal(districtOf(player), 'meridian-below');
     assert.equal(stepOf(harness, 'the-answer'), 2);
 

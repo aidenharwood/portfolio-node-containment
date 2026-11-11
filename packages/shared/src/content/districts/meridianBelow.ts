@@ -1,3 +1,5 @@
+import { install } from '../installations.ts';
+import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import { drawBlueprint, link, patch, pillars, room } from '../../world/blueprint.ts';
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
@@ -59,7 +61,6 @@ const fixtures: ObjectPlacement[] = [
   { instanceId: 'mb-plaza-pillar-ne', objectId: 'light-pillar', position: plan.at('inverted-plaza', 37, 4) },
   { instanceId: 'mb-plaza-pillar-sw', objectId: 'light-pillar', position: plan.at('inverted-plaza', 10, 28) },
   { instanceId: 'mb-plaza-pillar-se', objectId: 'light-pillar', position: plan.at('inverted-plaza', 37, 28) },
-    { instanceId: 'mb-return', objectId: 'far-side-return', position: plan.at('arrival', 0, 2), facing: 'east' },
     { instanceId: 'mb-arrival-mirror', objectId: 'mirror-pane', position: plan.at('arrival', 23, 18), facing: 'west' },
     { instanceId: 'mb-arrival-sign', objectId: 'warning-sign', position: plan.at('arrival', 0, 6), facing: 'east' },
     { instanceId: 'mb-lantern-medbay', objectId: 'far-lantern', position: plan.at('empty-medbay', 47, 20) },
@@ -68,9 +69,6 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'mb-shard-engineering-c', objectId: 'mirror-shard', position: plan.at('engineering-below', 7, 20) },
     { instanceId: 'mb-engineering-pipes-a', objectId: 'pipe-cluster', position: plan.at('engineering-below', 0, 0) },
     { instanceId: 'mb-engineering-pipes-b', objectId: 'pipe-cluster', position: plan.at('engineering-below', 23, 21) },
-    { instanceId: 'mb-refinery', objectId: 'refinery', position: plan.at('wrong-workshop', 0, 16), facing: 'east' },
-    { instanceId: 'mb-fabricator', objectId: 'fabricator', position: plan.at('wrong-workshop', 0, 13), facing: 'east' },
-    { instanceId: 'mb-synthesiser', objectId: 'synthesiser', position: plan.at('wrong-workshop', 0, 10), facing: 'east' },
     { instanceId: 'mb-workshop-storage', objectId: 'storage-locker', position: plan.at('wrong-workshop', 0, 3), facing: 'east' },
     { instanceId: 'mb-lantern-workshop', objectId: 'far-lantern', position: plan.at('wrong-workshop', 22, 1) },
     { instanceId: 'mb-shard-workshop', objectId: 'mirror-shard', position: plan.at('wrong-workshop', 12, 18) },
@@ -116,7 +114,14 @@ const residents: CreaturePlacement[] = [
     { instanceId: 'mb-host-add-knockling', creatureId: 'knockling', position: plan.at('the-front-door', 41, 13) },
   ];
 
-const placed = [...npcs, ...fixtures, ...residents];
+const assemblies: AssemblyPlacement[] = [
+  install('mb-return', 'far-side-return', plan.at('arrival', 0, 2), 'east'),
+  install('mb-refinery', 'refinery', plan.at('wrong-workshop', 0, 16), 'east'),
+  install('mb-fabricator', 'fabricator', plan.at('wrong-workshop', 0, 13), 'east'),
+  install('mb-synthesiser', 'synthesiser', plan.at('wrong-workshop', 0, 10), 'east'),
+];
+
+const placed = [...npcs, ...fixtures, ...assemblies, ...residents];
 
 const furnishings = scatterGroups(plan, placed, [
   ['inverted-plaza', 'mb-plaza-litter', LITTER, 8],
@@ -184,6 +189,7 @@ export const MERIDIAN_BELOW: DistrictDefinition = furnish(plan, {
   ],
   npcs,
   objects: [...fixtures, ...furnishings],
+  assemblies,
   creatures: [...residents, ...packs],
   lights: [
     { position: plan.center('the-well'), radius: 10, color: '#b57cff', intensity: 0.5 },

@@ -1,3 +1,5 @@
+import { install } from '../installations.ts';
+import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import { drawBlueprint, link, patch, room } from '../../world/blueprint.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
@@ -22,13 +24,16 @@ export const VERDANT_FOLD_ANCHORS = {
 const npcs: NpcPlacement[] = [];
 
 const fixtures: ObjectPlacement[] = [
-  { instanceId: 'fold-exit', objectId: 'verdant-fold-exit', position: plan.at('grove', 13, 27), facing: 'north' },
   { instanceId: 'fold-heartwood', objectId: 'fold-heartwood', position: plan.at('grove', 13, 13) },
     { instanceId: 'fold-planter-a', objectId: 'planter', position: plan.at('grove', 3, 17) },
     { instanceId: 'fold-planter-b', objectId: 'planter', position: plan.at('grove', 23, 21) },
   ];
 
-const placed = [...npcs, ...fixtures];
+const assemblies: AssemblyPlacement[] = [
+  install('fold-exit', 'verdant-fold-exit', plan.at('grove', 13, 27), 'north'),
+];
+
+const placed = [...npcs, ...fixtures, ...assemblies];
 
 const furnishings = scatterGroups(plan, placed, [
   ['grove', 'vf-grove-planter', ['planter'], 6],
@@ -59,6 +64,7 @@ export const VERDANT_FOLD: DistrictDefinition = furnish(plan, {
   ],
   npcs,
   objects: [...fixtures, ...furnishings],
+  assemblies,
   lights: [
     { position: plan.center('west-crease'), radius: 5, color: '#b57cff', intensity: 0.5 },
     { position: plan.center('east-crease'), radius: 5, color: '#b57cff', intensity: 0.5 },

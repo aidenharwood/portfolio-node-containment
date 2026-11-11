@@ -1,3 +1,5 @@
+import { install } from '../installations.ts';
+import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import { drawBlueprint, link, patch, pillars, room } from '../../world/blueprint.ts';
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
@@ -37,7 +39,6 @@ const npcs: NpcPlacement[] = [];
 
 const fixtures: ObjectPlacement[] = [
   
-    { instanceId: 'cd-lift', objectId: 'calder-lift-up', position: plan.at('lift-landing', 0, 1), facing: 'east' },
     { instanceId: 'cd-sign', objectId: 'warning-sign', position: plan.at('lift-landing', 19, 0) },
     { instanceId: 'cd-seam-a', objectId: 'salt-seam', position: plan.at('old-workings', 1, 0) },
     { instanceId: 'cd-seam-b', objectId: 'salt-seam', position: plan.at('old-workings', 83, 21) },
@@ -67,7 +68,11 @@ const residents: CreaturePlacement[] = [
     { instanceId: 'cd-office-foreman', creatureId: 'the-shift-foreman', position: plan.at('foremans-office', 37, 16) },
   ];
 
-const placed = [...npcs, ...fixtures, ...residents];
+const assemblies: AssemblyPlacement[] = [
+  install('cd-lift', 'calder-lift-up', plan.at('lift-landing', 0, 1), 'east'),
+];
+
+const placed = [...npcs, ...fixtures, ...assemblies, ...residents];
 
 const furnishings = scatterGroups(plan, placed, [
   ['old-workings', 'cd-workings-node', ['salt-seam', 'geode-cluster'], 4],
@@ -111,6 +116,7 @@ export const CALDER_DEEPS: DistrictDefinition = furnish(plan, {
   ],
   npcs,
   objects: [...fixtures, ...furnishings],
+  assemblies,
   creatures: [...residents, ...packs],
   lights: [
     { position: plan.center('salt-pockets'), radius: 9, color: '#9fd8ff', intensity: 0.5 },

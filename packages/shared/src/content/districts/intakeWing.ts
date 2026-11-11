@@ -1,3 +1,4 @@
+import { install } from '../installations.ts';
 import { drawBlueprint, link, patch, pillars, room } from '../../world/blueprint.ts';
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
@@ -94,9 +95,6 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'intake-moss-a', objectId: 'moss-bed', position: plan.at('workshop', 1, 26) },
     { instanceId: 'intake-moss-b', objectId: 'moss-bed', position: plan.at('workshop', 3, 26) },
     { instanceId: 'intake-resin', objectId: 'resin-drum', position: plan.at('workshop', 27, 26) },
-    { instanceId: 'intake-refinery', objectId: 'refinery', position: plan.at('workshop', 33, 7), facing: 'west' },
-    { instanceId: 'intake-fabricator', objectId: 'fabricator', position: plan.at('workshop', 33, 14), facing: 'west' },
-    { instanceId: 'intake-synthesiser', objectId: 'synthesiser', position: plan.at('workshop', 33, 21), facing: 'west' },
     { instanceId: 'intake-workshop-storage', objectId: 'storage-locker', position: plan.at('workshop', 0, 14), facing: 'east' },
     { instanceId: 'intake-workshop-debris', objectId: 'litter-debris', position: plan.at('workshop', 12, 24) },
     { instanceId: 'range-sign', objectId: 'warning-sign', position: plan.at('range-gallery', 35, 0), facing: 'west' },
@@ -132,6 +130,9 @@ const fixtures: ObjectPlacement[] = [
   ];
 
 const assemblies: AssemblyPlacement[] = [
+  install('intake-refinery', 'refinery', plan.at('workshop', 33, 7), 'west'),
+  install('intake-fabricator', 'fabricator', plan.at('workshop', 33, 14), 'west'),
+  install('intake-synthesiser', 'synthesiser', plan.at('workshop', 33, 21), 'west'),
   
     { instanceId: 'intake-tram-car', assemblyId: 'tram-car', position: plan.spot('transit-bay', 3, 29), facing: 'north' },
     { instanceId: 'intake-cable-run', assemblyId: 'cable-run', position: plan.spot('corridor', 12, 12), facing: 'east', span: 8 },

@@ -1,3 +1,4 @@
+import { install } from '../installations.ts';
 import { drawBlueprint, exit, link, patch, pillars, room, track } from '../../world/blueprint.ts';
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
@@ -55,9 +56,6 @@ const npcs: NpcPlacement[] = [
 const fixtures: ObjectPlacement[] = [
   
     { instanceId: 'dw-tram-stop', objectId: 'tram-stop', position: plan.at('platform-hall', 62, 15), facing: 'east' },
-    { instanceId: 'dw-tram', objectId: 'deepwatch-deep-line', position: plan.at('platform-hall', 0, 2), facing: 'east' },
-    { instanceId: 'dw-threshold-a', objectId: 'deepwatch-threshold-door', position: plan.at('concourse', 4, 0) },
-    { instanceId: 'dw-threshold-b', objectId: 'deepwatch-threshold-door', position: plan.at('concourse', 5, 0) },
     { instanceId: 'dw-pillar-west', objectId: 'light-pillar', position: plan.at('concourse', 0, 0) },
     { instanceId: 'dw-pillar-east', objectId: 'light-pillar', position: plan.at('concourse', 31, 0) },
     { instanceId: 'dw-concourse-sign', objectId: 'warning-sign', position: plan.at('concourse', 7, 0) },
@@ -65,9 +63,6 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'dw-command-rack-a', objectId: 'server-rack', position: plan.at('command-post', 14, 0) },
     { instanceId: 'dw-command-rack-b', objectId: 'server-rack', position: plan.at('command-post', 15, 0) },
     { instanceId: 'dw-command-bench', objectId: 'briefing-bench', position: plan.at('command-post', 13, 10) },
-    { instanceId: 'dw-refinery', objectId: 'refinery', position: plan.at('workshop', 12, 1), facing: 'west' },
-    { instanceId: 'dw-fabricator', objectId: 'fabricator', position: plan.at('workshop', 12, 3), facing: 'west' },
-    { instanceId: 'dw-synthesiser', objectId: 'synthesiser', position: plan.at('workshop', 12, 11), facing: 'west' },
     { instanceId: 'dw-workshop-storage', objectId: 'storage-locker', position: plan.at('workshop', 0, 0) },
     { instanceId: 'dw-workshop-crate', objectId: 'supply-crate', position: plan.at('workshop', 1, 11) },
     { instanceId: 'dw-hall-directory', objectId: 'intake-kiosk', position: plan.at('platform-hall', 1, 15) },
@@ -106,6 +101,11 @@ const fixtures: ObjectPlacement[] = [
   ];
 
 const assemblies: AssemblyPlacement[] = [
+  install('dw-tram', 'deepwatch-deep-line', plan.at('platform-hall', 0, 2), 'east'),
+  install('dw-threshold', 'deepwatch-threshold-door', plan.at('concourse', 4, 0), 'south'),
+  install('dw-refinery', 'refinery', plan.at('workshop', 12, 1), 'west'),
+  install('dw-fabricator', 'fabricator', plan.at('workshop', 12, 5), 'west'),
+  install('dw-synthesiser', 'synthesiser', plan.at('workshop', 12, 11), 'west'),
   { instanceId: 'dw-tram-car', assemblyId: 'tram-car', position: plan.spot('platform-hall', 64, 5), facing: 'west' },
   ...[3, 6, 9].map((dy): AssemblyPlacement => ({ instanceId: `dw-line-bridge-${dy}`, assemblyId: 'bridge', position: plan.spot('lift-gallery', 17, dy), facing: 'east', span: 2 })),];
 

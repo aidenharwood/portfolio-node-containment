@@ -1,3 +1,5 @@
+import { install } from '../installations.ts';
+import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import { drawBlueprint, link, patch, room } from '../../world/blueprint.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
@@ -30,15 +32,16 @@ const npcs: NpcPlacement[] = [
   ];
 
 const fixtures: ObjectPlacement[] = [
-  { instanceId: 's3-return-a', objectId: 'sector-three-return', position: plan.at('threshold', 0, 10), facing: 'east' },
-  { instanceId: 's3-return-b', objectId: 'sector-three-return', position: plan.at('threshold', 0, 11), facing: 'east' },
-  { instanceId: 's3-deepwatch-a', objectId: 'sector-three-deepwatch-door', position: plan.at('threshold', 29, 10), facing: 'west' },
-  { instanceId: 's3-deepwatch-b', objectId: 'sector-three-deepwatch-door', position: plan.at('threshold', 29, 11), facing: 'west' },
-  { instanceId: 's3-knock', objectId: 'the-knock', position: plan.at('threshold', 15, 3) },
     { instanceId: 's3-lantern-echo', objectId: 'lantern-echo', position: plan.at('threshold', 26, 19) },
   ];
 
-const placed = [...npcs, ...fixtures];
+const assemblies: AssemblyPlacement[] = [
+  install('s3-return', 'sector-three-return', plan.at('threshold', 0, 11), 'east'),
+  install('s3-deepwatch', 'sector-three-deepwatch-door', plan.at('threshold', 29, 10), 'west'),
+  install('s3-knock', 'the-knock', plan.at('threshold', 15, 3), 'south'),
+];
+
+const placed = [...npcs, ...fixtures, ...assemblies];
 
 const furnishings = scatterGroups(plan, placed, [
   ['reflecting-hall', 's3-hall-prop', ['light-pillar', 'briefing-bench'], 4],
@@ -67,6 +70,7 @@ export const SECTOR_THREE: DistrictDefinition = furnish(plan, {
   ],
   npcs,
   objects: [...fixtures, ...furnishings],
+  assemblies,
   lights: [
     { position: plan.center('reflecting-hall'), radius: 8, color: '#b57cff', intensity: 0.5 },
     { position: plan.spot('threshold', 16, 2), radius: 12, color: '#b57cff', intensity: 0.8 },

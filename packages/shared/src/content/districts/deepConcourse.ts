@@ -1,3 +1,4 @@
+import { install } from '../installations.ts';
 import { drawBlueprint, exit, hollow, patch, pillars, room, track } from '../../world/blueprint.ts';
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
@@ -51,14 +52,8 @@ export const DEEP_CONCOURSE_ANCHORS = {
 const npcs: NpcPlacement[] = [];
 
 const fixtures: ObjectPlacement[] = [
-  { instanceId: 'dc-cryovault-door-a', objectId: 'cryovault-door', position: plan.exits.cryovault?.tiles[0] as TilePoint, facing: 'east' },
-  { instanceId: 'dc-cryovault-door-b', objectId: 'cryovault-door', position: plan.exits.cryovault?.tiles[1] as TilePoint, facing: 'east' },
   { instanceId: 'dc-cryovault-sign', objectId: 'warning-sign', position: plan.at('cold-wing', 0, 48), facing: 'east' },
-  { instanceId: 'dc-array-door-a', objectId: 'signal-array-door', position: plan.exits.array?.tiles[0] as TilePoint, facing: 'north' },
-  { instanceId: 'dc-array-door-b', objectId: 'signal-array-door', position: plan.exits.array?.tiles[1] as TilePoint, facing: 'north' },
   { instanceId: 'dc-array-sign', objectId: 'warning-sign', position: plan.at('chasm-walk', 58, 12), facing: 'north' },
-  { instanceId: 'dc-archive-door-a', objectId: 'archive-door', position: plan.exits.archive?.tiles[0] as TilePoint, facing: 'west' },
-  { instanceId: 'dc-archive-door-b', objectId: 'archive-door', position: plan.exits.archive?.tiles[1] as TilePoint, facing: 'west' },
   { instanceId: 'dc-archive-sign', objectId: 'warning-sign', position: plan.at('records-wing', 12, 62), facing: 'west' },
   { instanceId: 'dc-lantern-turn-a', objectId: 'light-pillar', position: plan.at('nw-turn', 10, 6) },
   { instanceId: 'dc-lantern-turn-b', objectId: 'light-pillar', position: plan.at('nw-turn', 6, 10) },
@@ -91,6 +86,9 @@ const fixtures: ObjectPlacement[] = [
   ];
 
 const assemblies: AssemblyPlacement[] = [
+  install('dc-cryovault-door', 'cryovault-door', plan.exits.cryovault?.tiles[1] as TilePoint, 'east'),
+  install('dc-array-door', 'signal-array-door', plan.exits.array?.tiles[1] as TilePoint, 'north'),
+  install('dc-archive-door', 'archive-door', plan.exits.archive?.tiles[0] as TilePoint, 'west'),
   { instanceId: 'dc-bridge-west-north', assemblyId: 'bridge', position: plan.spot('cold-wing', 2, 17), facing: 'south', span: 3 },
   { instanceId: 'dc-bridge-west-south', assemblyId: 'bridge', position: plan.spot('cold-wing', 9, 17), facing: 'south', span: 3 },
   { instanceId: 'dc-bridge-east-north', assemblyId: 'bridge', position: plan.spot('records-wing', 2, 81), facing: 'south', span: 3 },

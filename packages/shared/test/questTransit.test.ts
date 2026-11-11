@@ -100,7 +100,10 @@ describe('quest transit routing', () => {
     const plan = planTransit(origin, [target], transitHops(GAME_CONTENT, access([], ['atrium-service-lift'])), regionsOf);
     assert.ok(plan);
     assert.equal(plan.hops[0]?.kind, 'passage');
-    assert.deepEqual(plan.hops[0]?.board, { point: lift.position, arriveAdjacent: true });
+    const board = plan.hops[0]?.board;
+    assert.equal(board?.arriveAdjacent, true);
+    const boarded = GAME_CONTENT.levels.get(at('meridian-atrium', 0, 0).levelId)?.objects.find((placement) => placement.position.x === board?.point.x && placement.position.y === board.point.y);
+    assert.equal(boarded && (GAME_CONTENT.worldObjects.get(boarded.objectId)?.countsAs ?? boarded.objectId), 'atrium-service-lift');
     assert.equal(plan.hops[0]?.label, 'Use the Service Lift');
   });
 

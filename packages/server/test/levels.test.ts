@@ -134,7 +134,7 @@ describe('levels', () => {
       anchor('deep-concourse', 'arrayDoor').position,
     ]);
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'deep-concourse');
-    harness.interactWithObject('dc-array-door-a');
+    harness.interactWithObject('dc-array-door/0,0');
     harness.ticksUntil(() => harness.player.path.length === 0);
     assert.equal(harness.player.levelId, 'the-deep');
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'signal-array');
@@ -142,7 +142,7 @@ describe('levels', () => {
 
   test('a pressure door stays shut without clearance', () => {
     const harness = createHarness({ prepare: placedAt(anchor('deep-concourse', 'cryovaultDoor')) });
-    harness.interactWithObject('dc-cryovault-door-a');
+    harness.interactWithObject('dc-cryovault-door/0,0');
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'deep-concourse');
     assert.match(harness.sink.last('notice')?.text ?? '', /COLD STORAGE SEALED/);
   });
@@ -161,7 +161,7 @@ describe('levels', () => {
 
   test('a door you have opened stays open after the key is gone', () => {
     const harness = createHarness({ prepare: placedAt(anchor('deep-concourse', 'cryovaultDoor'), ['clearance.cryovault']) });
-    harness.interactWithObject('dc-cryovault-door-a');
+    harness.interactWithObject('dc-cryovault-door/0,0');
     harness.ticksUntil(() => harness.player.path.length === 0);
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'cryovault');
     harness.player.update({ flags: harness.player.record.flags.filter((flag) => flag !== 'clearance.cryovault') });

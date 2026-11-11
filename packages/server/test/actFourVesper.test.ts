@@ -160,7 +160,7 @@ describe('act four: the Vesper Wing', () => {
     assert.equal(stepOf(harness, 'prescription-for-one'), 'completed');
 
     talk(harness, 'vl-ashby', 'What is down the bed lift?', "I'll go down.");
-    use(harness, 'vl-lift');
+    use(harness, 'vl-lift/1,0');
     assert.equal(player.levelId, 'vesper-cellars');
     assert.equal(stepOf(harness, 'the-cold-ward'), 1);
     travel(harness, at('vesper-cellars', localInRoom('vesper-cellars', 'mortuary', { x: 42, y: 16 })));
@@ -170,14 +170,14 @@ describe('act four: the Vesper Wing', () => {
     defeat(harness, 'vcl-office-almoner');
     assert.equal(stepOf(harness, 'the-cold-ward'), 3);
     travel(harness, at('vesper-cellars', localInRoom('vesper-cellars', 'lift-landing', { x: 17, y: 2 })));
-    use(harness, 'vcl-lift');
+    use(harness, 'vcl-lift/1,0');
     assert.equal(districtOf(player), 'vesper-lodge');
     talk(harness, 'vl-ashby', 'They can.');
     assert.equal(stepOf(harness, 'the-cold-ward'), 'completed');
 
     talk(harness, 'vl-ashby', 'Is anyone still admitted?', "I'll file them.");
     assert.equal(countItem(player.record.inventory, 'discharge-papers'), 1);
-    use(harness, 'vl-lift');
+    use(harness, 'vl-lift/1,0');
     travel(harness, at('vesper-cellars', localInRoom('vesper-cellars', 'almoners-office', { x: 3, y: 29 })));
     use(harness, 'vcl-ledger');
     assert.equal(stepOf(harness, 'discharged'), 1);

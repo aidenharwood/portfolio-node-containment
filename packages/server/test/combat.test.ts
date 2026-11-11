@@ -137,7 +137,7 @@ describe('combat', () => {
     assert.equal(stepOf(harness, 'the-knocking'), 3);
 
     harness.gameplay.teleport(player, at('meridian-atrium', localInRoom('meridian-atrium', 'quarantine-gate', { x: 31, y: 3 })));
-    harness.interactWithObject('sector2-bulkhead-b');
+    harness.interactWithObject('sector2-bulkhead/0,0');
     harness.ticksUntil(() => player.path.length === 0);
     assert.equal(districtOf(player), 'sector-two');
     assert.equal(stepOf(harness, 'the-knocking'), 4);
@@ -159,7 +159,7 @@ describe('combat', () => {
 
     harness.ticksUntil(() => player.combatTargetId === null, 600);
     harness.gameplay.teleport(player, at('sector-two', localInRoom('sector-two', 'airlock', { x: 6, y: 9 })));
-    harness.interactWithObject('sector2-bulkhead-a');
+    harness.interactWithObject('sector2-bulkhead/0,0');
     harness.ticksUntil(() => player.path.length === 0);
     assert.equal(districtOf(player), 'meridian-atrium');
 
@@ -387,7 +387,7 @@ describe('the far side', () => {
     assert.equal(stepOf(harness, 'the-far-side'), 1);
 
     harness.gameplay.teleport(player, at('meridian-atrium', localInRoom('meridian-atrium', 'engineering', { x: 28, y: 18 })));
-    harness.interactWithObject('atrium-service-lift');
+    harness.interactWithObject('atrium-service-lift/1,0');
     assert.equal(districtOf(player), 'undercroft');
     assert.equal(stepOf(harness, 'the-far-side'), 2);
 
@@ -399,14 +399,14 @@ describe('the far side', () => {
     harness.ticksUntil(() => stepOf(harness, 'the-far-side') === 3, 2000);
     assert.ok(player.hasFlag('undercroft.power-restored'));
 
-    harness.interactWithObject('uc-sector-three-seal-a');
+    harness.interactWithObject('uc-sector-three-seal/0,0');
     assert.equal(districtOf(player), 'undercroft', 'the seal stays shut while the Foreman stands');
 
     containSpecimen(harness, 'uc-foreman', 6000);
     assert.equal(stepOf(harness, 'the-far-side'), 4);
     harness.ticksUntil(() => player.combatTargetId === null, 2000);
 
-    harness.interactWithObject('uc-sector-three-seal-a');
+    harness.interactWithObject('uc-sector-three-seal/0,0');
     assert.equal(districtOf(player), 'sector-three');
     assert.equal(stepOf(harness, 'the-far-side'), 5);
 

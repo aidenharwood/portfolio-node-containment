@@ -11,6 +11,7 @@ import { CRAFTING_BUILDERS } from './craftingModels.ts';
 import { DEEP_OBJECT_BUILDERS } from './deepObjectModels.ts';
 import { FURNITURE_BUILDERS } from './furnitureModels.ts';
 import { HUB_BUILDERS } from './hubModels.ts';
+import { INSTALLATION_BUILDERS } from './installationModels.ts';
 import { LITTER_BUILDERS } from './litterModels.ts';
 import { TRANSIT_BUILDERS } from './transitModels.ts';
 
@@ -132,27 +133,23 @@ const lightPillar: ObjectBuilder = () => {
 
 const transitLift: ObjectBuilder = () => {
   const model = new VoxelModel().fill(-8, 0, -8, 7, 1, 7, (x, y, z) => {
-    const edge = x === -8 || x === 7 || z === -8 || z === 7;
-    if (edge) return Math.floor((x + z + 16) / 2) % 2 === 0 ? HAZARD_YELLOW : HAZARD_BLACK;
+    if (z >= 6) return Math.floor((x + z + 32) / 2) % 2 === 0 ? HAZARD_YELLOW : HAZARD_BLACK;
     if (y === 1 && x % 3 === 0 && z % 3 === 0) return 0x5d6b74;
     return jitter(0x232a2f, 0.03, noise3(x, y, z));
   });
-  for (const x0 of [-8, 6]) {
-    model.fill(x0, 2, -8, x0 + 1, 41, -7, grained(0x3a454d));
-    model.fill(x0, 8, -6, x0 + 1, 34, -6, (_x, y) => (y % 4 === 0 ? 0xffb347 : null), VOXEL_EMISSIVE);
-  }
-  model.fill(-8, 42, -8, 7, 44, -7, grained(0x4b5861));
-  model.fill(-2, 43, -6, 1, 43, -6, 0xffd27f, VOXEL_EMISSIVE);
-  const ring = new VoxelModel();
-  for (let i = -7; i <= 6; i++) {
-    ring.set(i, 0, -7, 0xffb347, VOXEL_EMISSIVE).set(i, 0, 6, 0xffb347, VOXEL_EMISSIVE);
-    ring.set(-7, 0, i, 0xffb347, VOXEL_EMISSIVE).set(6, 0, i, 0xffb347, VOXEL_EMISSIVE);
-  }
+  model.fill(-8, 2, -8, 7, 41, -7, grained(0x2a3035));
+  model.fill(-8, 42, -8, 7, 44, -6, grained(0x4b5861));
+  for (let x = -7; x <= 6; x++) for (let y = 33; y <= 40; y++) if (Math.hypot(y - 36.5, 0) <= 4) model.fill(x, y, -6, x, y, -3, x === -7 || x === 6 ? 0x3a454d : (x + y) % 2 === 0 ? 0x1b2228 : 0x2b3a44);
+  for (const x of [-4, 3]) model.fill(x, 2, -4, x, 32, -4, 0x8d969e);
+  model.fill(-6, 2, -6, -2, 3, -3, 0x3a454d).fill(-6, 4, -5, -3, 12, -5, 0x2a3036);
+  model.fill(-2, 43, -5, 1, 43, -5, 0xffd27f, VOXEL_EMISSIVE);
+  const hook = new VoxelModel().fill(-5, 18, -4, 4, 20, -2, HAZARD_YELLOW).fill(-1, 15, -3, 0, 17, -3, 0x8d969e);
+  model.set(-5, 9, -4, 0x7cf29a, VOXEL_EMISSIVE).set(-4, 9, -4, 0xffb347, VOXEL_EMISSIVE);
   return parts(model, 45, [
     {
-      model: ring,
-      animate: (part, time) => {
-        part.position.y = ((Math.sin(time * 1.4) + 1) / 2) * 2.4 + 0.15;
+      model: hook,
+      animate: (part, time, seed) => {
+        part.position.y = ((Math.sin(time * 0.6 + seed) + 1) / 2) * 0.6;
       },
     },
   ]);
@@ -319,6 +316,8 @@ const knockDoor: ObjectBuilder = () => {
     return jitter(0x4a3560, 0.03, noise3(x, y, 0, 5));
   });
   model.fill(3, 16, 1, 4, 18, 1, 0xc9a227);
+  model.fill(-8, 37, -3, 7, 39, 2, (x, y, z) => (y === 37 ? 0x2a1f36 : jitter(0x3c2b4f, 0.04, noise3(x, y, z, 6))));
+  for (const x of [-8, 7]) model.fill(x, 0, -3, x, 36, 2, (_x, y, z) => (y % 6 === 0 ? 0x2a1f36 : jitter(0x3c2b4f, 0.04, noise3(x, y, z, 7))));
   const outline = new VoxelModel();
   for (let y = 0; y <= 36; y++) outline.set(-7, y, 0, 0xb57cff, VOXEL_EMISSIVE).set(6, y, 0, 0xb57cff, VOXEL_EMISSIVE);
   for (let x = -7; x <= 6; x++) outline.set(x, 36, 0, 0xb57cff, VOXEL_EMISSIVE);
@@ -340,6 +339,7 @@ const BUILDERS: Readonly<Record<WorldObjectModel, ObjectBuilder>> = {
   ...VESPER_OBJECT_BUILDERS,
   ...HUB_BUILDERS,
   ...TRANSIT_BUILDERS,
+  ...INSTALLATION_BUILDERS,
   ...DEEP_OBJECT_BUILDERS,
   ...ASSEMBLY_BUILDERS,
   ...LITTER_BUILDERS,

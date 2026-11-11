@@ -1,3 +1,4 @@
+import { install } from '../installations.ts';
 import { drawBlueprint, exit, patch, pillars, room, track } from '../../world/blueprint.ts';
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
@@ -27,17 +28,16 @@ const npcs: NpcPlacement[] = [
   ];
 
 const fixtures: ObjectPlacement[] = [
-  { instanceId: 'cg-gate-a', objectId: 'calder-gate', position: plan.exits.west?.tiles[0] as TilePoint, facing: 'east' },
-  { instanceId: 'cg-gate-b', objectId: 'calder-gate', position: plan.exits.west?.tiles[1] as TilePoint, facing: 'east' },
     { instanceId: 'cg-storage', objectId: 'storage-locker', position: plan.at('gatehouse', 0, 1), facing: 'east' },
     { instanceId: 'cg-mailbox', objectId: 'market-mailbox', position: plan.at('gatehouse', 0, 31), facing: 'east' },
     { instanceId: 'cg-contracts', objectId: 'contract-board', position: plan.at('gatehouse', 10, 0) },
     { instanceId: 'cg-med-bed', objectId: 'med-bed', position: plan.at('gatehouse', 57, 1), facing: 'west' },
-    { instanceId: 'cg-lift', objectId: 'calder-lift-down', position: plan.at('gatehouse', 57, 3), facing: 'west' },
     { instanceId: 'cg-tram-stop', objectId: 'tram-stop', position: plan.at('gatehouse', 7, 16), facing: 'east' },
   ];
 
 const assemblies: AssemblyPlacement[] = [
+  install('cg-gate', 'calder-gate', plan.exits.west?.tiles[1] as TilePoint, 'east'),
+  install('cg-lift', 'calder-lift-down', plan.at('gatehouse', 57, 3), 'west'),
   
     { instanceId: 'cg-tram-car', assemblyId: 'tram-car', position: plan.spot('gatehouse', 2, 8), facing: 'west' },
     { instanceId: 'cg-line-bridge', assemblyId: 'bridge', position: plan.spot('gatehouse', 1, 21), facing: 'east', span: 2 },

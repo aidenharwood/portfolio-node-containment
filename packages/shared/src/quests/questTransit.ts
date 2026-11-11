@@ -108,7 +108,7 @@ function passageHops(content: TransitContent, access: TransitAccess): TransitHop
   for (const level of content.levels.values()) {
     for (const placement of level.objects) {
       const definition = content.worldObjects.get(placement.objectId);
-      if (!definition || !access.canUsePassage(definition.id)) continue;
+      if (!definition || !access.canUsePassage(definition.countsAs ?? definition.id)) continue;
       for (const interaction of definition.interactions) {
         for (const effect of interaction.effects) {
           if (effect.type !== 'teleport') continue;

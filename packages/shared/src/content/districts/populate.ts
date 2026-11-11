@@ -3,6 +3,7 @@ import type { WorldObjectId } from '../../ids.ts';
 import { expandAssembly, type AssemblyPlacement } from '../../world/assemblies.ts';
 import type { Blueprint } from '../../world/blueprint.ts';
 import { ASSEMBLIES } from '../assemblies.ts';
+import { installationLayoutOf } from '../installations.ts';
 import type { CreaturePlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 
@@ -11,7 +12,8 @@ export interface Placed {
 }
 
 const footprintOf = (placed: Placed): TilePoint[] => {
-  const definition = 'assemblyId' in placed ? ASSEMBLIES.find((assembly) => assembly.id === (placed as AssemblyPlacement).assemblyId) : undefined;
+  const assemblyId = 'assemblyId' in placed ? (placed as AssemblyPlacement).assemblyId : undefined;
+  const definition = assemblyId === undefined ? undefined : (ASSEMBLIES.find((assembly) => assembly.id === assemblyId) ?? installationLayoutOf(assemblyId));
   return definition ? expandAssembly(definition, placed as AssemblyPlacement).map((piece) => piece.position) : [placed.position];
 };
 

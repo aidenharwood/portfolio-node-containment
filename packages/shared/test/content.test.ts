@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { findContentIssues, GAME_CONTENT } from '../src/index.ts';
+import { districtObjects, findContentIssues, GAME_CONTENT } from '../src/index.ts';
 
 test('all content references resolve and every zone is well formed', () => {
   assert.deepEqual(findContentIssues(GAME_CONTENT), []);
@@ -78,7 +78,7 @@ test('every quest can be started: it opens the game, follows another quest, or i
 test('every lift into a deep zone has a way back out', () => {
   const destinations = new Map<string, Set<string>>();
   for (const zone of GAME_CONTENT.districts.values()) {
-    for (const placement of zone.objects) {
+    for (const placement of districtObjects(zone, GAME_CONTENT.assemblies)) {
       for (const interaction of GAME_CONTENT.worldObjects.get(placement.objectId)?.interactions ?? []) {
         for (const effect of interaction.effects) {
           if (effect.type !== 'teleport' || effect.districtId === zone.id) continue;

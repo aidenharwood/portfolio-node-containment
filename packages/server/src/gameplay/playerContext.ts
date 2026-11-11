@@ -84,12 +84,12 @@ export function openDoorsOf(player: Player, content: GameContent): Set<WorldObje
   const context = conditionContextFor(player, content);
   const open = new Set<WorldObjectId>();
   for (const definition of content.worldObjects.values()) {
-    if (definition.door && isDoorOpenFor(definition.id, definition.door, context)) open.add(definition.id);
+    if (definition.door && !definition.countsAs && isDoorOpenFor(definition.id, definition.door, context)) open.add(definition.id);
   }
   return open;
 }
 
 export function openPassagesOf(player: Player, content: GameContent): WorldObjectId[] {
   const context = conditionContextFor(player, content);
-  return [...content.worldObjects.values()].filter((definition) => isPassageOpenFor(definition, context)).map((definition) => definition.id);
+  return [...content.worldObjects.values()].filter((definition) => !definition.countsAs && isPassageOpenFor(definition, context)).map((definition) => definition.id);
 }
