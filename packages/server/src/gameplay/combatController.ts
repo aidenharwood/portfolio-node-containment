@@ -56,6 +56,7 @@ const CREATURE_PATH_SEARCH_LIMIT = 400;
 const REGENERATION_INTERVAL_TICKS = 20;
 const OUT_OF_COMBAT_TICKS = 16;
 const ENGAGEMENT_TICKS = 12;
+const ENGAGED_CHASE_EXTRA_TILES = 10;
 
 export const SINGLE_WAY_TARGET_TAKEN = 'Someone else is already fighting that.';
 export const SINGLE_WAY_UNDER_ATTACK = "You're already under attack.";
@@ -277,7 +278,7 @@ export class CombatController {
     if (!isWatched) return;
 
     const definition = creature.definition;
-    if (!creature.returningHome && chebyshevDistance(creature.position, creature.home) > definition.leashRadius) this.sendHome(creature, level);
+    if (!creature.returningHome && this.beyondLeash(creature, tick)) this.sendHome(creature, level);
     if (creature.returningHome) {
       if (samePoint(creature.position, creature.home) || creature.path.length === 0) creature.returningHome = false;
       return;
@@ -438,6 +439,14 @@ export class CombatController {
   private targetAbandoned(creature: Creature, level: LevelInstance): boolean {
     const target = creature.targetId ? level.players.get(creature.targetId) : undefined;
     return !target || !interestSet(chunkOf(creature.position)).has(chunkKeyOf(target.position));
+  }
+
+  private beyondLeash(creature: Creature, tick: number): boolean {
+    const distance = chebyshevDistance(creature.position, creature.home);
+    const leash = creature.definition.leashRadius;
+    if (distance <= leash) return false;
+    const engaged = creature.targetId !== null && creature.engagedWith === creature.targetId && tick < creature.engagedUntilTick;
+    return !engaged || distance > leash + ENGAGED_CHASE_EXTRA_TILES;
   }
 
   private resetHome(creature: Creature): void {

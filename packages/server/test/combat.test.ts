@@ -233,6 +233,32 @@ describe('combat', () => {
     assert.equal(mite.integrity, mite.definition.integrity);
   });
 
+  test('creatures under ranged fire chase past their leash instead of fleeing home to heal', () => {
+    const skills = createStartingSkills({ marksmanship: experienceForLevel(40), fortitude: experienceForLevel(40) });
+    const harness = createHarness({
+      prepare: prepared(at('sector-two', localInRoom('sector-two', 'corridor', { x: 32, y: 1 })), {}, {
+        skills,
+        vitals: { integrity: maxIntegrityFor(skills) },
+        equipment: { primary: 'lampline-rifle' },
+      }),
+      combatRandom: () => 0.99,
+    });
+    const { player, gameplay } = harness;
+    const mite = gameplay.world.levelOf(player).creatureByInstance('s2-mite-corridor-a');
+    assert.ok(mite);
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-mite-corridor-a', interactionIndex: 0 });
+    let fled = false;
+    let farthest = 0;
+    for (let tick = 0; tick < 120; tick++) {
+      gameplay.tick();
+      fled ||= mite.returningHome;
+      farthest = Math.max(farthest, Math.abs(mite.position.x - mite.home.x), Math.abs(mite.position.y - mite.home.y));
+    }
+    assert.ok(farthest > mite.definition.leashRadius, 'the mite has to cross its leash to reach a rifle at range');
+    assert.equal(fled, false);
+    assert.equal(mite.targetId, player.entityId);
+  });
+
   test('aggressive creatures ignore operatives far above their level, but not fresh ones', () => {
     const veteran = createHarness({ prepare: prepared(at('sector-two', localInRoom('sector-two', 'corridor', { x: 23, y: 2 })), {}, veteranSkills()) });
     const ignoring = veteran.gameplay.world.levelOf(veteran.player).creatureByInstance('s2-mite-corridor-a');
