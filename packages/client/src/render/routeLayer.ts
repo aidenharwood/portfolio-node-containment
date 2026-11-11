@@ -1,9 +1,10 @@
 import type { TilePoint } from '@containment/shared';
-import { AdditiveBlending, Color, DynamicDrawUsage, InstancedMesh, MeshBasicMaterial, Object3D, Shape, ShapeGeometry } from 'three';
+import { Color, DynamicDrawUsage, InstancedMesh, MeshBasicMaterial, Object3D, Shape, ShapeGeometry } from 'three';
 
 const MAX_CHEVRONS = 240;
 const ROUTE_HEIGHT = 0.035;
-const ROUTE_COLOR = new Color(0x4fd8ff);
+const ROUTE_COLOR = new Color(0xff3cc8);
+const MIN_GLOW = 0.55;
 const WAVE_SPEED = 6;
 const WAVE_LENGTH = 7;
 const FADE_IN_TILES = 2;
@@ -29,7 +30,7 @@ export class RouteLayer {
   private path: readonly TilePoint[] = [];
 
   constructor() {
-    const material = new MeshBasicMaterial({ color: 0xffffff, transparent: true, blending: AdditiveBlending, depthWrite: false, toneMapped: false });
+    const material = new MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95, depthWrite: false, toneMapped: false });
     this.mesh = new InstancedMesh(chevronGeometry(), material, MAX_CHEVRONS);
     this.mesh.instanceMatrix.setUsage(DynamicDrawUsage);
     this.mesh.frustumCulled = false;
@@ -45,7 +46,7 @@ export class RouteLayer {
     for (let index = 0; index < count; index++) {
       const wave = 0.5 + 0.5 * Math.sin((index / WAVE_LENGTH) * Math.PI * 2 - time * WAVE_SPEED);
       const fadeIn = Math.min(1, (index + 1) / (FADE_IN_TILES + 1));
-      this.tint.copy(ROUTE_COLOR).multiplyScalar((0.25 + 0.75 * wave) * fadeIn);
+      this.tint.copy(ROUTE_COLOR).multiplyScalar((MIN_GLOW + (1 - MIN_GLOW) * wave) * fadeIn);
       this.mesh.setColorAt(index, this.tint);
     }
     if (this.mesh.instanceColor) this.mesh.instanceColor.needsUpdate = true;

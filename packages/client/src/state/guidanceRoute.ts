@@ -25,9 +25,16 @@ import {
 } from '@containment/shared';
 import type { WorldState } from './worldState.ts';
 
-const REFRESH_MS = 800;
+const REFRESH_MS = 2500;
 const CANDIDATE_LIMIT = 4;
+const FOLLOW_LOOKAHEAD = 8;
+const GOAL_STICK_RADIUS = 3;
+const GOAL_STICK_BIAS = 0.5;
 const MAX_SEARCH_NODES = 40000;
+
+const chebyshev = (a: TilePoint, b: TilePoint): number => Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
+
+const sameTile = (a: TilePoint | undefined, b: TilePoint | undefined): boolean => a !== undefined && b !== undefined && a.x === b.x && a.y === b.y;
 
 const octile = (a: TilePoint, b: TilePoint): number => {
   const dx = Math.abs(a.x - b.x);
@@ -42,6 +49,7 @@ export class GuidanceRoute {
   private computedFrom = '';
   private stale = true;
   private nextHop: string | null = null;
+  private goal: TilePoint | null = null;
   private readonly regionCache = new Map<LevelId, { readonly key: string; readonly regions: WalkRegions }>();
 
   constructor(world: WorldState) {
@@ -63,17 +71,45 @@ export class GuidanceRoute {
       return [];
     }
     const originKey = tileKey(origin);
-    if (this.stale || originKey !== this.computedFrom || now - this.computedAt > REFRESH_MS) {
-      this.route = this.plan(origin, preferred);
-      this.computedAt = now;
+    if (originKey !== this.computedFrom) {
       this.computedFrom = originKey;
+      const followed = this.follow(origin);
+      if (followed) this.route = followed;
+      else this.stale = true;
+    }
+    if (this.stale || now - this.computedAt > REFRESH_MS) {
+      const planned = this.plan(origin, preferred);
+      if (!this.keepsCourse(origin, planned)) this.route = planned;
+      this.computedAt = now;
       this.stale = false;
     }
     return this.route;
   }
 
+  private follow(origin: TilePoint): TilePoint[] | null {
+    const route = this.route;
+    const limit = Math.min(route.length, FOLLOW_LOOKAHEAD);
+    for (let index = limit - 1; index >= 0; index--) {
+      const tile = route[index] as TilePoint;
+      if (chebyshev(tile, origin) > 1) continue;
+      const rest = route.slice(index);
+      return sameTile(tile, origin) ? rest : [origin, ...rest];
+    }
+    return null;
+  }
+
+  private keepsCourse(origin: TilePoint, planned: readonly TilePoint[]): boolean {
+    const route = this.route;
+    if (route.length === 0 || planned.length === 0) return false;
+    if (!sameTile(route[0], origin) || !sameTile(route[route.length - 1], planned[planned.length - 1])) return false;
+    const grid = this.world.zone?.grid;
+    return grid !== undefined && route.every((tile, index) => index === 0 || grid.isWalkable(tile));
+  }
+
   private plan(origin: TilePoint, preferred: QuestId | null): TilePoint[] {
     this.nextHop = null;
+    const previousGoal = this.goal;
+    this.goal = null;
     const { self, zone } = this.world;
     if (!self || !zone) return [];
     const tracked = trackedQuest(self.quests, GAME_CONTENT.quests, preferred);
@@ -88,7 +124,7 @@ export class GuidanceRoute {
     const district = zone.layout.districtAt(origin);
     const local = sameRegion.filter((goal) => zone.layout.districtAt(goal.point) === district);
     for (const candidates of [local, sameRegion]) {
-      const path = this.nearestPath(origin, candidates);
+      const path = this.nearestPath(origin, candidates, previousGoal);
       if (path) return path;
     }
     const targets: TransitTarget[] = [
@@ -102,18 +138,26 @@ export class GuidanceRoute {
     const hops = transitHops(GAME_CONTENT, { knowsStation: (stationId) => known.has(stationId), canUsePassage: (objectId) => passages.has(objectId) });
     const transit = planTransit({ levelId, position: origin }, targets, hops, (id) => this.regionsOf(id));
     const first = transit?.hops[0];
-    if (!transit || !first) return this.nearestPath(origin, goals) ?? [];
+    if (!transit || !first) return this.nearestPath(origin, goals, previousGoal) ?? [];
     const path = this.pathTo(origin, first.board);
     if (!path) return [];
     this.nextHop = first.label;
+    this.goal = first.board.point;
     return [origin, ...path];
   }
 
-  private nearestPath(origin: TilePoint, candidates: readonly RouteGoal[]): TilePoint[] | null {
-    const nearest = [...candidates].sort((a, b) => octile(origin, a.point) - octile(origin, b.point)).slice(0, CANDIDATE_LIMIT);
+  private nearestPath(origin: TilePoint, candidates: readonly RouteGoal[], previousGoal: TilePoint | null): TilePoint[] | null {
+    const score = (goal: RouteGoal) => {
+      const distance = octile(origin, goal.point);
+      return previousGoal && chebyshev(previousGoal, goal.point) <= GOAL_STICK_RADIUS ? distance * GOAL_STICK_BIAS : distance;
+    };
+    const nearest = [...candidates].sort((a, b) => score(a) - score(b)).slice(0, CANDIDATE_LIMIT);
     for (const goal of nearest) {
       const path = this.pathTo(origin, goal);
-      if (path) return [origin, ...path];
+      if (path) {
+        this.goal = goal.point;
+        return [origin, ...path];
+      }
     }
     return null;
   }
