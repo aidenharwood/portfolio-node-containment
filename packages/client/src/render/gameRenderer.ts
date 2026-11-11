@@ -33,7 +33,7 @@ import { GroundItemLayer } from './items/groundItemLayer.ts';
 import { ProjectileLayer } from './projectileLayer.ts';
 import { RouteLayer } from './routeLayer.ts';
 import { samePickTarget, type ClickMarker, type PickTarget } from './pickTarget.ts';
-import { clearFieldLights, FIELD_LIGHT_LIMIT, fieldLightFade, LIGHT_CONE_ANGLE, LIGHT_PENUMBRA, setFieldLights, type FieldLight } from './voxel/fieldLights.ts';
+import { buildFieldLightGrid, clearFieldLights, FIELD_LIGHT_LIMIT, fieldLightFade, LIGHT_CONE_ANGLE, LIGHT_PENUMBRA, setFieldLights, type FieldLight } from './voxel/fieldLights.ts';
 import { hex, lighten } from './voxel/palette.ts';
 import { copyAmbience, createBlendedAmbience, easeAmbience, sampleAmbience, type BlendedAmbience } from './world/ambienceBlend.ts';
 import { LevelScene, type LightSource } from './world/levelScene.ts';
@@ -485,7 +485,8 @@ export class GameRenderer {
   private updateLights(delta: number, time: number, focus: Vector3): void {
     if (!this.zone) return;
     this.lightTimer -= delta;
-    if (this.lightTimer <= 0) {
+    const reassigned = this.lightTimer <= 0;
+    if (reassigned) {
       this.lightTimer = LIGHT_REASSIGN_SECONDS;
       this.assignedLights = assignLights(this.zone.lights, focus);
     }
@@ -514,6 +515,7 @@ export class GameRenderer {
       target.color.setHex(source.color).multiplyScalar(strength(source));
       target.reach = source.radius * LIGHT_REACH;
     });
+    if (reassigned) buildFieldLightGrid(this.fieldLights.slice(0, field.length), focus);
   }
 
   private updateHover(hover: PickTarget | null, now: number): void {
