@@ -26,7 +26,7 @@ export const FURNACE_CAUSEWAY_ANCHORS = {
 const npcs: NpcPlacement[] = [];
 
 const fixtures: ObjectPlacement[] = [
-  { instanceId: 'fc-furnace-sign', objectId: 'warning-sign', position: plan.at('furnace-approach', 3, 1) },
+  { instanceId: 'fc-furnace-sign', objectId: 'warning-sign', position: plan.at('furnace-approach', 2, 0) },
   { instanceId: 'fc-ember-brazier', objectId: 'light-pillar', position: plan.at('ember-landing', 19, 9) },
     { instanceId: 'fc-pipes-a', objectId: 'pipe-cluster', position: plan.at('causeway', 4, 0) },
     { instanceId: 'fc-pipes-b', objectId: 'pipe-cluster', position: plan.at('causeway', 8, 24) },

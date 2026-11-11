@@ -1,5 +1,5 @@
 import type { AreaDefinition } from './district.ts';
-import { rectContains, tileKey, type TilePoint, type TileRect } from './geometry.ts';
+import { rectContains, tileKey, type Facing, type TilePoint, type TileRect } from './geometry.ts';
 import { MAP_LEGEND, TILE_KINDS, type TileKindId } from './tiles.ts';
 
 export type RoomShape = 'rect' | 'octagon' | 'round';
@@ -79,7 +79,20 @@ export interface Blueprint {
   linkTile(from: string, to: string, index?: number): TilePoint;
   area(room: string, name: string, options?: { readonly safe?: boolean; readonly multiCombat?: boolean }): AreaDefinition;
   scatter(room: string, count: number, seed: string, avoid?: readonly TilePoint[]): TilePoint[];
+  scatterAlongWalls(room: string, count: number, seed: string, avoid?: readonly TilePoint[]): WallSpot[];
 }
+
+export interface WallSpot {
+  readonly position: TilePoint;
+  readonly facing: Facing;
+}
+
+const WALL_SIDES: readonly { readonly facing: Facing; readonly toWall: TilePoint }[] = [
+  { facing: 'south', toWall: { x: 0, y: -1 } },
+  { facing: 'north', toWall: { x: 0, y: 1 } },
+  { facing: 'east', toWall: { x: -1, y: 0 } },
+  { facing: 'west', toWall: { x: 1, y: 0 } },
+];
 
 export const room = (id: string, x: number, y: number, width: number, height: number, floor: TileKindId, shape: RoomShape = 'rect'): RoomStep => ({
   kind: 'room',
@@ -372,6 +385,60 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
     throw new Error(`Blueprint room "${roomId}" has no room to scatter ${count} placements.`);
   };
 
+  const scatterAlongWalls = (roomId: string, count: number, seed: string, avoid: readonly TilePoint[] = []): WallSpot[] => {
+    const rect = rectOf(roomId);
+    const taken = new Set(avoid.map(tileKey));
+    const isWall = (point: TilePoint): boolean => TILE_KINDS[tileAt(point)].structure === 'wall';
+    const isClearFloor = (point: TilePoint): boolean => TILE_KINDS[tileAt(point)].walkable && tileAt(point) !== 'door' && tileAt(point) !== 'hazard';
+    const nearDoor = (point: TilePoint): boolean => {
+      for (let dy = -2; dy <= 2; dy++) {
+        for (let dx = -2; dx <= 2; dx++) {
+          if (tileAt({ x: point.x + dx, y: point.y + dy }) === 'door') return true;
+        }
+      }
+      return false;
+    };
+    const candidates: WallSpot[] = [];
+    for (let y = rect.y; y < rect.y + rect.height; y++) {
+      for (let x = rect.x; x < rect.x + rect.width; x++) {
+        const position = { x, y };
+        if (taken.has(tileKey(position)) || !isClearFloor(position) || nearDoor(position)) continue;
+        const sides = WALL_SIDES.filter(({ toWall }) => isWall({ x: x + toWall.x, y: y + toWall.y }));
+        const side = sides[0];
+        if (sides.length !== 1 || !side) continue;
+        const { toWall } = side;
+        const along = { x: toWall.y, y: toWall.x };
+        const wallRuns = [-1, 1].every((step) => isWall({ x: x + toWall.x + along.x * step, y: y + toWall.y + along.y * step }));
+        const open = [
+          { x: x + along.x, y: y + along.y },
+          { x: x - along.x, y: y - along.y },
+          { x: x - toWall.x, y: y - toWall.y },
+          { x: x - toWall.x * 2, y: y - toWall.y * 2 },
+          { x: x - toWall.x + along.x, y: y - toWall.y + along.y },
+          { x: x - toWall.x - along.x, y: y - toWall.y - along.y },
+        ].every(isClearFloor);
+        if (wallRuns && open) candidates.push({ position, facing: side.facing });
+      }
+    }
+    const random = seededRandom(`${roomId}:${seed}:walls`);
+    for (let index = candidates.length - 1; index > 0; index--) {
+      const swap = Math.floor(random() * (index + 1));
+      [candidates[index], candidates[swap]] = [candidates[swap] as WallSpot, candidates[index] as WallSpot];
+    }
+    let best: WallSpot[] = [];
+    for (let spacing = 6; spacing >= 2; spacing--) {
+      const chosen: WallSpot[] = [];
+      for (const candidate of candidates) {
+        if (chosen.length === count) break;
+        const others = [...chosen.map((spot) => spot.position), ...avoid];
+        if (others.every((other) => Math.max(Math.abs(other.x - candidate.position.x), Math.abs(other.y - candidate.position.y)) >= spacing)) chosen.push(candidate);
+      }
+      if (chosen.length === count) return chosen;
+      if (chosen.length > best.length) best = chosen;
+    }
+    return best;
+  };
+
   return {
     map,
     rooms,
@@ -390,5 +457,6 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
     },
     area: (roomId, name, options = {}) => ({ id: roomId, name, rect: rectOf(roomId), ...options }),
     scatter,
+    scatterAlongWalls,
   };
 }

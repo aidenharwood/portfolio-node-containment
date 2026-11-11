@@ -33,6 +33,8 @@ const plan = drawBlueprint({ width: 86, height: 62 }, [
   patch(1, 60, 40, 1, 'wall'),
   patch(45, 60, 40, 1, 'wall'),
   patch(75, 60, 2, 2, 'track'),
+  patch(1, 57, 31, 1, 'wall'),
+  patch(54, 57, 31, 1, 'wall'),
   exit('south', 'coolant-lock', 'south', 2, { offset: 9, gate: true, floor: 'door' }),
 ]);
 
@@ -52,7 +54,7 @@ const fixtures: ObjectPlacement[] = [
   { instanceId: 'fu-reactor-door-a', objectId: 'reactor-door', position: plan.linkTile('ember-galleries', 'reactor-heart', 0), facing: 'north' },
   { instanceId: 'fu-reactor-door-b', objectId: 'reactor-door', position: plan.linkTile('ember-galleries', 'reactor-heart', 1), facing: 'north' },
   { instanceId: 'fu-tram-stop', objectId: 'tram-stop', position: plan.at('coolant-lock', 2, 13), facing: 'south' },
-    { instanceId: 'fu-lock-storage', objectId: 'storage-locker', position: plan.at('coolant-lock', 19, 12) },
+    { instanceId: 'fu-lock-storage', objectId: 'storage-locker', position: plan.at('coolant-lock', 19, 12), facing: 'west' },
     { instanceId: 'fu-lock-bed', objectId: 'med-bed', position: plan.at('coolant-lock', 0, 10) },
     { instanceId: 'fu-lock-synthesiser', objectId: 'synthesiser', position: plan.at('coolant-lock', 19, 10), facing: 'west' },
     { instanceId: 'fu-seam-a', objectId: 'ember-seam', position: plan.at('ember-galleries', 2, 0) },
@@ -64,15 +66,15 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'fu-gallery-pipes-b', objectId: 'pipe-cluster', position: plan.at('ember-galleries', 81, 0) },
     { instanceId: 'fu-valve-a', objectId: 'pressure-valve', position: plan.at('foundry', 0, 1), facing: 'east' },
     { instanceId: 'fu-valve-b', objectId: 'pressure-valve', position: plan.at('foundry', 30, 16), facing: 'west' },
-    { instanceId: 'fu-valve-c', objectId: 'pressure-valve', position: plan.at('foundry', 0, 33), facing: 'east' },
+    { instanceId: 'fu-valve-c', objectId: 'pressure-valve', position: plan.at('foundry', 0, 31), facing: 'east' },
     { instanceId: 'fu-foundry-slag-a', objectId: 'slag-heap', position: plan.at('foundry', 2, 16) },
-    { instanceId: 'fu-foundry-slag-b', objectId: 'slag-heap', position: plan.at('foundry', 28, 33) },
-    { instanceId: 'fu-foundry-seam', objectId: 'ember-seam', position: plan.at('foundry', 13, 33) },
+    { instanceId: 'fu-foundry-slag-b', objectId: 'slag-heap', position: plan.at('foundry', 28, 32) },
+    { instanceId: 'fu-foundry-seam', objectId: 'ember-seam', position: plan.at('foundry', 13, 32) },
     { instanceId: 'fu-foundry-pump', objectId: 'pump-housing', position: plan.at('foundry', 23, 1) },
     { instanceId: 'fu-reactor-core', objectId: 'furnace-core', position: plan.at('reactor-heart', 15, 20) },
-    { instanceId: 'fu-reactor-console', objectId: 'reactor-console', position: plan.at('reactor-heart', 1, 33), facing: 'east' },
+    { instanceId: 'fu-reactor-console', objectId: 'reactor-console', position: plan.at('reactor-heart', 0, 31), facing: 'east' },
     { instanceId: 'fu-reactor-pipes-a', objectId: 'pipe-cluster', position: plan.at('reactor-heart', 30, 0) },
-    { instanceId: 'fu-reactor-pipes-b', objectId: 'pipe-cluster', position: plan.at('reactor-heart', 30, 33) },
+    { instanceId: 'fu-reactor-pipes-b', objectId: 'pipe-cluster', position: plan.at('reactor-heart', 30, 32) },
   ];
 
 const assemblies: AssemblyPlacement[] = [
@@ -86,14 +88,14 @@ const residents: CreaturePlacement[] = [
     { instanceId: 'fu-wisp-d', creatureId: 'cinder-wisp', position: plan.at('ember-galleries', 30, 20) },
     { instanceId: 'fu-wisp-e', creatureId: 'cinder-wisp', position: plan.at('ember-galleries', 47, 20) },
     { instanceId: 'fu-wisp-f', creatureId: 'cinder-wisp', position: plan.at('ember-galleries', 81, 20) },
-    { instanceId: 'fu-wisp-foundry', creatureId: 'cinder-wisp', position: plan.at('foundry', 3, 33) },
+    { instanceId: 'fu-wisp-foundry', creatureId: 'cinder-wisp', position: plan.at('foundry', 3, 31) },
     { instanceId: 'fu-golem-a', creatureId: 'slag-golem', position: plan.at('foundry', 4, 1) },
     { instanceId: 'fu-golem-b', creatureId: 'slag-golem', position: plan.at('foundry', 19, 2) },
     { instanceId: 'fu-golem-c', creatureId: 'slag-golem', position: plan.at('foundry', 11, 16) },
     { instanceId: 'fu-golem-d', creatureId: 'slag-golem', position: plan.at('foundry', 23, 20) },
-    { instanceId: 'fu-golem-e', creatureId: 'slag-golem', position: plan.at('foundry', 18, 32) },
+    { instanceId: 'fu-golem-e', creatureId: 'slag-golem', position: plan.at('foundry', 18, 30) },
     { instanceId: 'fu-golem-reactor', creatureId: 'slag-golem', position: plan.at('reactor-heart', 2, 2) },
-    { instanceId: 'fu-wisp-reactor', creatureId: 'cinder-wisp', position: plan.at('reactor-heart', 28, 32) },
+    { instanceId: 'fu-wisp-reactor', creatureId: 'cinder-wisp', position: plan.at('reactor-heart', 26, 30) },
     { instanceId: 'fu-stoker', creatureId: 'the-stoker', position: plan.at('reactor-heart', 15, 13) },
   ];
 

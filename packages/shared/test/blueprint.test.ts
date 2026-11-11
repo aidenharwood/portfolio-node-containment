@@ -75,6 +75,18 @@ describe('drawBlueprint', () => {
     for (const point of first) assert.equal(plan.map[point.y]?.[point.x], '.');
     assert.throws(() => plan.scatter('hall', 500, 'too-many'));
   });
+
+  test('scatterAlongWalls backs each spot onto a wall and faces it away', () => {
+    const spots = plan.scatterAlongWalls('hall', 3, 'lockers');
+    assert.deepEqual(spots, plan.scatterAlongWalls('hall', 3, 'lockers'));
+    assert.ok(spots.length > 0);
+    const behind = { south: [0, -1], north: [0, 1], east: [-1, 0], west: [1, 0] } as const;
+    for (const { position, facing } of spots) {
+      const [dx, dy] = behind[facing];
+      assert.equal(plan.map[position.y]?.[position.x], '.');
+      assert.equal(plan.map[position.y + dy]?.[position.x + dx], '#');
+    }
+  });
 });
 
 describe('joinDistricts', () => {

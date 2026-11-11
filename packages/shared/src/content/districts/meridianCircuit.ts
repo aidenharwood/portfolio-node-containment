@@ -61,7 +61,7 @@ const landmarks: ObjectPlacement[] = [
   { instanceId: 'circuit-ledger-c', objectId: 'server-rack', position: plan.at('ledger-court', 13, 12) },
   { instanceId: 'circuit-tallow-seal-a', objectId: 'warning-sign', position: plan.at('north-boulevard', 74, 0) },
   { instanceId: 'circuit-tallow-seal-b', objectId: 'warning-sign', position: plan.at('north-boulevard', 77, 0) },
-  { instanceId: 'circuit-chasm-rail-sign', objectId: 'warning-sign', position: plan.at('south-boulevard', 76, 12) },
+  { instanceId: 'circuit-chasm-rail-sign', objectId: 'warning-sign', position: plan.at('south-boulevard', 76, 12), facing: 'north' },
 ];
 
 const LINE_BRIDGE_COLUMNS = [3, 7, 17, 21];

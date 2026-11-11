@@ -204,6 +204,19 @@ function findTierIssues(content: GameContent, level: ResolvedLevel, rebuilt: Rea
   }
 }
 
+const WALL_FIXTURE_MODELS: ReadonlySet<string> = new Set(['bulkhead', 'transitLift', 'wallLift', 'valveWheel', 'ventPanel', 'noticeBoard', 'wallShelf', 'warningSign', 'locker', 'storageLocker', 'herbCabinet']);
+
+function findFixtureIssues(content: GameContent, level: ResolvedLevel, issues: string[]): void {
+  for (const object of level.objects) {
+    const definition = content.worldObjects.get(object.objectId);
+    if (!definition || !WALL_FIXTURE_MODELS.has(definition.model)) continue;
+    const againstWall = CARDINAL_OFFSETS.some((offset) => TILE_KINDS[level.layout.tileAt({ x: object.position.x + offset.x, y: object.position.y + offset.y })].structure === 'wall');
+    if (!againstWall) {
+      issues.push(`level ${level.id}: "${object.instanceId}" (${definition.name}) stands free at ${object.position.x},${object.position.y}; doors, lifts and wall fixtures go against a wall`);
+    }
+  }
+}
+
 export function findWorldDesignIssues(content: GameContent): string[] {
   const issues: string[] = [];
   for (const level of content.levels.values()) {
@@ -225,6 +238,7 @@ export function findWorldDesignIssues(content: GameContent): string[] {
     if (rebuilt.size === 0) continue;
     findSeamIssues(level, rebuilt, issues);
     findTierIssues(content, level, rebuilt, issues);
+    findFixtureIssues(content, level, issues);
   }
   findLineIssues(content, issues);
   return issues;

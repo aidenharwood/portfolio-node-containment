@@ -62,7 +62,7 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'locker-bench', objectId: 'briefing-bench', position: plan.at('lockers', 3, 14) },
     { instanceId: 'diag-rack-a', objectId: 'server-rack', position: plan.at('diagnostics', 0, 0) },
     { instanceId: 'diag-rack-b', objectId: 'server-rack', position: plan.at('diagnostics', 15, 0) },
-    { instanceId: 'diag-terminal', objectId: 'diagnostic-terminal', position: plan.at('diagnostics', 3, 1) },
+    { instanceId: 'diag-terminal', objectId: 'diagnostic-terminal', position: plan.at('diagnostics', 2, 0) },
     { instanceId: 'diag-papers', objectId: 'litter-papers', position: plan.at('diagnostics', 1, 16) },
     { instanceId: 'observation-sign', objectId: 'warning-sign', position: plan.at('observation', 2, 0) },
     { instanceId: 'observation-pillar-west', objectId: 'light-pillar', position: plan.at('observation', 0, 0) },

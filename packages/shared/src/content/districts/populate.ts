@@ -1,6 +1,8 @@
 import type { CreatureId } from '../../combat/creatures.ts';
 import type { WorldObjectId } from '../../ids.ts';
+import { expandAssembly, type AssemblyPlacement } from '../../world/assemblies.ts';
 import type { Blueprint } from '../../world/blueprint.ts';
+import { ASSEMBLIES } from '../assemblies.ts';
 import type { CreaturePlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 
@@ -8,7 +10,14 @@ export interface Placed {
   readonly position: TilePoint;
 }
 
-export const positionsOf = (...groups: readonly (readonly Placed[])[]): TilePoint[] => groups.flatMap((group) => group.map((placed) => placed.position));
+const footprintOf = (placed: Placed): TilePoint[] => {
+  const definition = 'assemblyId' in placed ? ASSEMBLIES.find((assembly) => assembly.id === (placed as AssemblyPlacement).assemblyId) : undefined;
+  return definition ? expandAssembly(definition, placed as AssemblyPlacement).map((piece) => piece.position) : [placed.position];
+};
+
+export const positionsOf = (...groups: readonly (readonly Placed[])[]): TilePoint[] => groups.flatMap((group) => group.flatMap(footprintOf));
+
+const WALL_FURNITURE: ReadonlySet<WorldObjectId> = new Set<WorldObjectId>(['pipe-cluster', 'storage-rack', 'wall-locker', 'server-rack', 'filing-cabinet', 'water-cooler', 'briefing-bench', 'junction-box', 'herb-cabinet', 'vellum-stack']);
 
 export function scatterObjects(
   plan: Blueprint,
@@ -18,11 +27,16 @@ export function scatterObjects(
   count: number,
   taken: readonly TilePoint[],
 ): ObjectPlacement[] {
-  return plan.scatter(room, count, prefix, taken).map((position, index) => ({
-    instanceId: `${prefix}-${index + 1}`,
-    objectId: objectIds[index % objectIds.length] as WorldObjectId,
-    position,
-  }));
+  const wanted = Array.from({ length: count }, (_, index) => objectIds[index % objectIds.length] as WorldObjectId);
+  const wallSpots = plan.scatterAlongWalls(room, wanted.filter((objectId) => WALL_FURNITURE.has(objectId)).length, prefix, taken);
+  const openSpots = plan.scatter(room, count - wallSpots.length, prefix, [...taken, ...wallSpots.map((spot) => spot.position)]);
+  let wallIndex = 0;
+  let openIndex = 0;
+  return wanted.map((objectId, index) => {
+    const wallSpot = WALL_FURNITURE.has(objectId) ? wallSpots[wallIndex++] : undefined;
+    const instanceId = `${prefix}-${index + 1}`;
+    return wallSpot ? { instanceId, objectId, position: wallSpot.position, facing: wallSpot.facing } : { instanceId, objectId, position: openSpots[openIndex++] as TilePoint };
+  });
 }
 
 export function scatterCreatures(plan: Blueprint, room: string, prefix: string, creatureId: CreatureId, count: number, taken: readonly TilePoint[]): CreaturePlacement[] {

@@ -38,6 +38,7 @@ const plan = drawBlueprint({ width: 86, height: 62 }, [
   track([82, 0], [82, 60]),
   patch(84, 1, 1, 11, 'wall'),
   patch(84, 16, 1, 45, 'wall'),
+  patch(81, 25, 1, 36, 'wall'),
   exit('east', 'dock', 'east', 2, { offset: 12, gate: true, floor: 'door' }),
 ]);
 

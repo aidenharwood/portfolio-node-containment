@@ -41,7 +41,7 @@ const fixtures: ObjectPlacement[] = [
   
     { instanceId: 's2-airlock-sign', objectId: 'warning-sign', position: plan.at('airlock', 12, 0) },
     { instanceId: 's2-corridor-sign', objectId: 'warning-sign', position: plan.at('corridor', 35, 0) },
-    { instanceId: 's2-lab-terminal', objectId: 'halvorsen-terminal', position: plan.at('research-lab', 15, 1) },
+    { instanceId: 's2-lab-terminal', objectId: 'halvorsen-terminal', position: plan.at('research-lab', 14, 0) },
     { instanceId: 's2-lab-rack-a', objectId: 'server-rack', position: plan.at('research-lab', 0, 0) },
     { instanceId: 's2-lab-rack-b', objectId: 'server-rack', position: plan.at('research-lab', 1, 0) },
     { instanceId: 's2-lab-bench', objectId: 'briefing-bench', position: plan.at('research-lab', 3, 21) },
