@@ -1,4 +1,4 @@
-import { BufferGeometry, Color, Float32BufferAttribute } from 'three';
+import { BufferAttribute, BufferGeometry, Color } from 'three';
 import { occludes, VOXEL_EMISSIVE, VOXEL_EMPTY, VOXEL_GLASS, type VoxelBounds, type VoxelSource } from './voxelKinds.ts';
 
 export interface VoxelMeshes {
@@ -10,7 +10,7 @@ export interface VoxelMeshes {
 export interface MeshOptions {
   readonly voxelSize: number;
   readonly origin: readonly [number, number, number];
-  readonly clipToBounds?: boolean;
+  readonly clipBounds?: VoxelBounds;
 }
 
 type Vector = readonly [number, number, number];
@@ -31,21 +31,106 @@ const FACES: readonly FaceDefinition[] = [
 ];
 
 const AMBIENT_OCCLUSION = [0.5, 0.68, 0.84, 1];
-const UNOCCLUDED = [3, 3, 3, 3];
+
+interface FaceProbe {
+  readonly normal: Vector;
+  readonly corners: readonly Vector[];
+  readonly sideU: readonly Vector[];
+  readonly sideV: readonly Vector[];
+  readonly diagonal: readonly Vector[];
+}
+
+const FACE_PROBES: readonly FaceProbe[] = FACES.map((face) => {
+  const uAxis = (face.axis + 1) % 3;
+  const vAxis = (face.axis + 2) % 3;
+  const offset = (stepU: number, stepV: number): Vector => {
+    const probe: [number, number, number] = [face.normal[0], face.normal[1], face.normal[2]];
+    probe[uAxis]! += stepU;
+    probe[vAxis]! += stepV;
+    return probe;
+  };
+  const steps = face.corners.map((corner) => [corner[uAxis] === 1 ? 1 : -1, corner[vAxis] === 1 ? 1 : -1] as const);
+  return {
+    normal: face.normal,
+    corners: face.corners,
+    sideU: steps.map(([stepU]) => offset(stepU, 0)),
+    sideV: steps.map(([, stepV]) => offset(0, stepV)),
+    diagonal: steps.map(([stepU, stepV]) => offset(stepU, stepV)),
+  };
+});
+
+class FloatList {
+  array: Float32Array;
+  length = 0;
+
+  constructor(capacity: number) {
+    this.array = new Float32Array(capacity);
+  }
+
+  push3(a: number, b: number, c: number): void {
+    if (this.length + 3 > this.array.length) this.grow();
+    const array = this.array;
+    array[this.length] = a;
+    array[this.length + 1] = b;
+    array[this.length + 2] = c;
+    this.length += 3;
+  }
+
+  private grow(): void {
+    const next = new Float32Array(this.array.length * 2);
+    next.set(this.array);
+    this.array = next;
+  }
+}
+
+class IndexList {
+  array: Uint32Array;
+  length = 0;
+
+  constructor(capacity: number) {
+    this.array = new Uint32Array(capacity);
+  }
+
+  push6(a: number, b: number, c: number, d: number, e: number, f: number): void {
+    if (this.length + 6 > this.array.length) {
+      const next = new Uint32Array(this.array.length * 2);
+      next.set(this.array);
+      this.array = next;
+    }
+    const array = this.array;
+    array[this.length] = a;
+    array[this.length + 1] = b;
+    array[this.length + 2] = c;
+    array[this.length + 3] = d;
+    array[this.length + 4] = e;
+    array[this.length + 5] = f;
+    this.length += 6;
+  }
+}
 
 class GeometryBuffer {
-  readonly positions: number[] = [];
-  readonly normals: number[] = [];
-  readonly colors: number[] = [];
-  readonly indices: number[] = [];
+  readonly positions = new FloatList(3 * 4096);
+  readonly normals = new FloatList(3 * 4096);
+  readonly colors = new FloatList(3 * 4096);
+  readonly indices = new IndexList(6 * 1024);
+  vertexCount = 0;
+
+  reset(): void {
+    this.positions.length = 0;
+    this.normals.length = 0;
+    this.colors.length = 0;
+    this.indices.length = 0;
+    this.vertexCount = 0;
+  }
 
   toGeometry(): BufferGeometry | null {
     if (this.indices.length === 0) return null;
     const geometry = new BufferGeometry();
-    geometry.setAttribute('position', new Float32BufferAttribute(this.positions, 3));
-    geometry.setAttribute('normal', new Float32BufferAttribute(this.normals, 3));
-    geometry.setAttribute('color', new Float32BufferAttribute(this.colors, 3));
-    geometry.setIndex(this.indices);
+    geometry.setAttribute('position', new BufferAttribute(this.positions.array.slice(0, this.positions.length), 3));
+    geometry.setAttribute('normal', new BufferAttribute(this.normals.array.slice(0, this.normals.length), 3));
+    geometry.setAttribute('color', new BufferAttribute(this.colors.array.slice(0, this.colors.length), 3));
+    const indices = this.indices.array.subarray(0, this.indices.length);
+    geometry.setIndex(new BufferAttribute(this.vertexCount > 65535 ? indices.slice() : Uint16Array.from(indices), 1));
     geometry.computeBoundingSphere();
     geometry.computeBoundingBox();
     return geometry;
@@ -69,71 +154,66 @@ function shouldEmitFace(kind: number, neighbor: number): boolean {
   return neighbor === VOXEL_GLASS;
 }
 
-export function meshVoxels(source: VoxelSource, bounds: VoxelBounds, options: MeshOptions): VoxelMeshes {
-  const buffers = { solid: new GeometryBuffer(), emissive: new GeometryBuffer(), glass: new GeometryBuffer() };
+const occlusion = [3, 3, 3, 3];
+const buffers = { solid: new GeometryBuffer(), emissive: new GeometryBuffer(), glass: new GeometryBuffer() };
+
+export function meshVoxels(source: VoxelSource, bounds: VoxelBounds, options: MeshOptions, cells?: ArrayLike<number>): VoxelMeshes {
+  buffers.solid.reset();
+  buffers.emissive.reset();
+  buffers.glass.reset();
   const { voxelSize, origin } = options;
-  const neighborKind = (x: number, y: number, z: number): number => {
-    if (options.clipToBounds && (x < bounds.min[0] || y < bounds.min[1] || z < bounds.min[2] || x >= bounds.max[0] || y >= bounds.max[1] || z >= bounds.max[2])) return VOXEL_EMPTY;
-    return source.kindAt(x, y, z);
-  };
+  const clip = options.clipBounds;
   const [minX, minY, minZ] = bounds.min;
   const [maxX, maxY, maxZ] = bounds.max;
-  const cell = [0, 0, 0];
+  const neighborKind = (x: number, y: number, z: number): number => {
+    if (clip && (x < clip.min[0] || y < clip.min[1] || z < clip.min[2] || x >= clip.max[0] || y >= clip.max[1] || z >= clip.max[2])) return VOXEL_EMPTY;
+    return source.kindAt(x, y, z);
+  };
+  const occludedAt = (x: number, y: number, z: number, offset: Vector): number => (occludes(source.kindAt(x + offset[0], y + offset[1], z + offset[2])) ? 1 : 0);
 
-  for (let y = minY; y < maxY; y++) {
-    for (let z = minZ; z < maxZ; z++) {
-      for (let x = minX; x < maxX; x++) {
+  const emitVoxel = (x: number, y: number, z: number): void => {
         const kind = source.kindAt(x, y, z);
-        if (kind === VOXEL_EMPTY) continue;
+        if (kind === VOXEL_EMPTY) return;
         const buffer = kind === VOXEL_EMISSIVE ? buffers.emissive : kind === VOXEL_GLASS ? buffers.glass : buffers.solid;
         const [red, green, blue] = linearColor(source.colorAt(x, y, z));
-        cell[0] = x;
-        cell[1] = y;
-        cell[2] = z;
 
-        for (const face of FACES) {
+        for (let faceIndex = 0; faceIndex < FACE_PROBES.length; faceIndex++) {
+          const face = FACE_PROBES[faceIndex]!;
           const [nx, ny, nz] = face.normal;
           if (!shouldEmitFace(kind, neighborKind(x + nx, y + ny, z + nz))) continue;
 
-          const occlusion = kind === VOXEL_EMISSIVE ? UNOCCLUDED : cornerOcclusion(source, cell, face);
-          const base = buffer.positions.length / 3;
-          face.corners.forEach((corner, index) => {
-            buffer.positions.push(
-              origin[0] + (x + corner[0]) * voxelSize,
-              origin[1] + (y + corner[1]) * voxelSize,
-              origin[2] + (z + corner[2]) * voxelSize,
-            );
-            buffer.normals.push(nx, ny, nz);
-            const shade = AMBIENT_OCCLUSION[occlusion[index] ?? 3] ?? 1;
-            buffer.colors.push(red * shade, green * shade, blue * shade);
-          });
-          const flip = (occlusion[0] ?? 3) + (occlusion[2] ?? 3) < (occlusion[1] ?? 3) + (occlusion[3] ?? 3);
-          if (flip) buffer.indices.push(base + 1, base + 2, base + 3, base + 1, base + 3, base);
-          else buffer.indices.push(base, base + 1, base + 2, base, base + 2, base + 3);
+          for (let corner = 0; corner < 4; corner++) {
+            if (kind === VOXEL_EMISSIVE) {
+              occlusion[corner] = 3;
+              continue;
+            }
+            const sideU = occludedAt(x, y, z, face.sideU[corner]!);
+            const sideV = occludedAt(x, y, z, face.sideV[corner]!);
+            occlusion[corner] = sideU && sideV ? 0 : 3 - (sideU + sideV + occludedAt(x, y, z, face.diagonal[corner]!));
+          }
+          const base = buffer.vertexCount;
+          for (let corner = 0; corner < 4; corner++) {
+            const offset = face.corners[corner]!;
+            buffer.positions.push3(origin[0] + (x + offset[0]) * voxelSize, origin[1] + (y + offset[1]) * voxelSize, origin[2] + (z + offset[2]) * voxelSize);
+            buffer.normals.push3(nx, ny, nz);
+            const shade = AMBIENT_OCCLUSION[occlusion[corner]!]!;
+            buffer.colors.push3(red * shade, green * shade, blue * shade);
+          }
+          buffer.vertexCount += 4;
+          if (occlusion[0]! + occlusion[2]! < occlusion[1]! + occlusion[3]!) buffer.indices.push6(base + 1, base + 2, base + 3, base + 1, base + 3, base);
+          else buffer.indices.push6(base, base + 1, base + 2, base, base + 2, base + 3);
         }
+  };
+
+  if (cells) {
+    for (let cell = 0; cell < cells.length; cell += 3) emitVoxel(cells[cell]!, cells[cell + 1]!, cells[cell + 2]!);
+  } else {
+    for (let y = minY; y < maxY; y++) {
+      for (let z = minZ; z < maxZ; z++) {
+        for (let x = minX; x < maxX; x++) emitVoxel(x, y, z);
       }
     }
   }
 
   return { solid: buffers.solid.toGeometry(), emissive: buffers.emissive.toGeometry(), glass: buffers.glass.toGeometry() };
-}
-
-function cornerOcclusion(source: VoxelSource, cell: readonly number[], face: FaceDefinition): number[] {
-  const uAxis = (face.axis + 1) % 3;
-  const vAxis = (face.axis + 2) % 3;
-  const outside = [cell[0]! + face.normal[0], cell[1]! + face.normal[1], cell[2]! + face.normal[2]];
-  const solidAt = (offsetU: number, offsetV: number): number => {
-    const probe = [...outside];
-    probe[uAxis]! += offsetU;
-    probe[vAxis]! += offsetV;
-    return occludes(source.kindAt(probe[0]!, probe[1]!, probe[2]!)) ? 1 : 0;
-  };
-  return face.corners.map((corner) => {
-    const stepU = corner[uAxis] === 1 ? 1 : -1;
-    const stepV = corner[vAxis] === 1 ? 1 : -1;
-    const sideU = solidAt(stepU, 0);
-    const sideV = solidAt(0, stepV);
-    if (sideU && sideV) return 0;
-    return 3 - (sideU + sideV + solidAt(stepU, stepV));
-  });
 }

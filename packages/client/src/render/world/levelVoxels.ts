@@ -64,10 +64,18 @@ type Side = 'north' | 'south' | 'east' | 'west';
 const isWallKind = (kind: TileKindId): boolean => TILE_KINDS[kind].structure === 'wall';
 
 export function buildTileVolume(layout: TileLayout, region: TileRect): DenseVolume {
-  const padded = { x: region.x - 1, y: region.y - 1, width: region.width + 2, height: region.height + 2 };
-  const volume = new DenseVolume(padded.width * R, ZONE_VOLUME_HEIGHT, padded.height * R, padded.x * R, padded.y * R);
-  for (let ty = padded.y; ty < padded.y + padded.height; ty++) {
-    for (let tx = padded.x; tx < padded.x + padded.width; tx++) {
+  const volume = createTileVolume(region);
+  paintTileRows(volume, layout, region, region.y - 1, region.y + region.height + 1);
+  return volume;
+}
+
+export function createTileVolume(region: TileRect): DenseVolume {
+  return new DenseVolume((region.width + 2) * R, ZONE_VOLUME_HEIGHT, (region.height + 2) * R, (region.x - 1) * R, (region.y - 1) * R);
+}
+
+export function paintTileRows(volume: DenseVolume, layout: TileLayout, region: TileRect, fromRow: number, toRow: number): DenseVolume {
+  for (let ty = Math.max(fromRow, region.y - 1); ty < Math.min(toRow, region.y + region.height + 1); ty++) {
+    for (let tx = region.x - 1; tx < region.x + region.width + 1; tx++) {
       const kind = layout.tileAt({ x: tx, y: ty });
       if (kind === 'void') continue;
       if (kind === 'wall') paintWall(volume, layout, tx, ty);

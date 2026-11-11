@@ -11,7 +11,6 @@ import {
 } from '@containment/shared';
 import { AdditiveBlending, Group, MeshBasicMaterial, type Vector3 } from 'three';
 import type { ActiveZone } from '../../state/worldState.ts';
-import { setVoxelObjectFaded } from '../voxel/voxelMaterials.ts';
 import { ChunkView, chunkRegion, type ChunkContents, type FixtureSpot, type IndexedPlacement, type LightSource, type ObjectView, type WallPiece } from './chunkView.ts';
 
 export type { LightSource, ObjectView, WallPiece } from './chunkView.ts';
@@ -30,7 +29,7 @@ const FIXTURE_OVERHEAD_ALLOWANCE = 1.2;
 const DEPLETED_HEIGHT = 0.35;
 const BUILD_RADIUS = 1;
 const RETAIN_RADIUS = 2;
-const NEIGHBOURS_BUILT_PER_FRAME = 1;
+const BUILD_BUDGET_MS = 5;
 
 function ceilingFixtureSpots(zone: ActiveZone): FixtureSpot[] {
   const occupied = new Set(zone.definition.objects.map((placement) => `${placement.position.x},${placement.position.y}`));
@@ -84,30 +83,43 @@ export class LevelScene {
   }
 
   get builtChunks(): readonly ChunkKey[] {
-    return [...this.chunks.keys()];
+    return [...this.chunks].filter(([, { view }]) => view.ready).map(([key]) => key);
   }
 
   get lights(): LightSource[] {
-    return [...this.chunks.values()].flatMap(({ view }) => view.lights);
+    return this.readyViews().flatMap((view) => view.lights);
   }
 
-  stream(focus: TilePoint): void {
+  stream(focus: TilePoint, budgetMs = BUILD_BUDGET_MS): void {
     const centre = chunkOf({ x: Math.round(focus.x), y: Math.round(focus.y) });
-    this.ensureChunk(centre);
+    const centreView = this.ensureChunk(centre);
+    if (centreView && !centreView.ready) this.buildChunk(centreView, Infinity);
     const neighbours: ChunkCoord[] = [];
     for (let dy = -BUILD_RADIUS; dy <= BUILD_RADIUS; dy++) {
-      for (let dx = -BUILD_RADIUS; dx <= BUILD_RADIUS; dx++) {
-        const coord = { cx: centre.cx + dx, cy: centre.cy + dy };
-        if (!this.chunks.has(chunkKey(coord)) && chunkRegion(coord, this.zone)) neighbours.push(coord);
-      }
+      for (let dx = -BUILD_RADIUS; dx <= BUILD_RADIUS; dx++) neighbours.push({ cx: centre.cx + dx, cy: centre.cy + dy });
     }
-    neighbours.slice(0, NEIGHBOURS_BUILT_PER_FRAME).forEach((coord) => this.ensureChunk(coord));
+    const deadline = performance.now() + budgetMs;
+    for (const coord of neighbours.sort((a, b) => Math.hypot(a.cx - centre.cx, a.cy - centre.cy) - Math.hypot(b.cx - centre.cx, b.cy - centre.cy))) {
+      if (performance.now() >= deadline) break;
+      const view = this.ensureChunk(coord);
+      if (view && !view.ready) this.buildChunk(view, deadline);
+    }
     for (const [key, { coord, view }] of this.chunks) {
       if (chunkDistance(coord, centre) <= RETAIN_RADIUS) continue;
       for (const object of view.objects) this.objects.delete(object.instanceId);
       view.dispose();
       this.chunks.delete(key);
     }
+  }
+
+  private readyViews(): ChunkView[] {
+    return [...this.chunks.values()].filter(({ view }) => view.ready).map(({ view }) => view);
+  }
+
+  private buildChunk(view: ChunkView, deadline: number): void {
+    if (!view.build(deadline)) return;
+    this.root.add(view.root);
+    for (const object of view.objects) this.objects.set(object.instanceId, object);
   }
 
   update(time: number, objectiveObjectIds: ReadonlySet<string>, depletedObjects: ReadonlySet<string>, doors: DoorView): void {
@@ -128,7 +140,7 @@ export class LevelScene {
         view.objectiveRing.scale.set(pulse, pulse, 1);
       }
     }
-    for (const { view } of this.chunks.values()) view.update(time);
+    for (const view of this.readyViews()) view.update(time);
     this.ringMaterial.opacity = 0.55 + Math.sin(time * 3) * 0.3;
   }
 
@@ -152,11 +164,12 @@ export class LevelScene {
     const apply = (piece: WallPiece, shouldFade: boolean) => {
       if (shouldFade === piece.faded) return;
       piece.faded = shouldFade;
-      setVoxelObjectFaded(piece.group, shouldFade);
+      piece.batch.setFaded(piece.index, shouldFade);
     };
-    for (const { view } of this.chunks.values()) {
+    for (const view of this.readyViews()) {
       for (const wall of view.walls) apply(wall, blocksView(wall.tile, 0));
       for (const fixture of view.fixtures) apply(fixture, blocksView(fixture.tile, FIXTURE_OVERHEAD_ALLOWANCE));
+      view.applyFades();
     }
   }
 
@@ -167,19 +180,19 @@ export class LevelScene {
     this.ringMaterial.dispose();
   }
 
-  private ensureChunk(coord: ChunkCoord): void {
+  private ensureChunk(coord: ChunkCoord): ChunkView | null {
     const key = chunkKey(coord);
-    if (this.chunks.has(key)) return;
+    const existing = this.chunks.get(key);
+    if (existing) return existing.view;
     const region = chunkRegion(coord, this.zone);
-    if (!region) return;
+    if (!region) return null;
     const contents: ChunkContents = {
       objects: this.objectsByChunk.get(key) ?? [],
       fixtures: this.fixturesByChunk.get(key) ?? [],
       lights: this.lightsByChunk.get(key) ?? [],
     };
     const view = new ChunkView(this.zone, region, contents, this.ringMaterial);
-    this.root.add(view.root);
-    for (const object of view.objects) this.objects.set(object.instanceId, object);
     this.chunks.set(key, { coord, view });
+    return view;
   }
 }
