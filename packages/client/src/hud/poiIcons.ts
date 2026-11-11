@@ -1,20 +1,21 @@
 import { POINT_OF_INTEREST_LABELS, type PointOfInterestKind } from '@containment/shared';
 import { h } from '../ui/dom.ts';
 
-const BADGE_COLORS: Readonly<Record<PointOfInterestKind, string>> = {
-  tram: '#3f8cff',
-  passage: '#8a7dff',
-  contracts: '#c9a227',
-  shop: '#e0a33a',
-  market: '#3fbf8a',
-  storage: '#8c6a48',
-  crafting: '#d2683a',
-  medical: '#e8f4f8',
+const TINTS: Readonly<Record<PointOfInterestKind, string>> = {
+  tram: '#4fd8ff',
+  passage: '#9fb4ff',
+  contracts: '#ffd23f',
+  shop: '#ffd23f',
+  market: '#7cf29a',
+  storage: '#a9bcc6',
+  crafting: '#ffb347',
+  medical: '#ff5e5e',
   quest: '#ffd23f',
-  gathering: '#4f9e5a',
+  gathering: '#7cf29a',
 };
 
-const GLYPH_COLORS: Partial<Record<PointOfInterestKind, string>> = { medical: '#e0414a', quest: '#1a1405' };
+const PLATE_FILL = 'rgba(3, 8, 11, 0.92)';
+const SOLID_KINDS: ReadonlySet<PointOfInterestKind> = new Set(['quest']);
 
 type Glyph = (context: CanvasRenderingContext2D) => void;
 
@@ -113,19 +114,59 @@ const GLYPHS: Readonly<Record<PointOfInterestKind, Glyph>> = {
   },
 };
 
+function platePath(context: CanvasRenderingContext2D, radius: number): void {
+  const cut = radius * 0.42;
+  context.beginPath();
+  context.moveTo(-radius + cut, -radius);
+  context.lineTo(radius - cut, -radius);
+  context.lineTo(radius, -radius + cut);
+  context.lineTo(radius, radius - cut);
+  context.lineTo(radius - cut, radius);
+  context.lineTo(-radius + cut, radius);
+  context.lineTo(-radius, radius - cut);
+  context.lineTo(-radius, -radius + cut);
+  context.closePath();
+}
+
+function drawResource(context: CanvasRenderingContext2D, tint: string, radius: number): void {
+  context.beginPath();
+  context.moveTo(0, -radius);
+  context.lineTo(radius * 0.72, 0);
+  context.lineTo(0, radius);
+  context.lineTo(-radius * 0.72, 0);
+  context.closePath();
+  context.fillStyle = PLATE_FILL;
+  context.fill();
+  context.lineWidth = 1;
+  context.strokeStyle = tint;
+  context.stroke();
+  context.beginPath();
+  context.arc(0, 0, radius * 0.22, 0, Math.PI * 2);
+  context.fillStyle = tint;
+  context.fill();
+}
+
 export function drawPoiIcon(context: CanvasRenderingContext2D, kind: PointOfInterestKind, x: number, y: number, size: number, alpha = 1): void {
   const radius = size / 2;
+  const tint = TINTS[kind];
+  const solid = SOLID_KINDS.has(kind);
   context.save();
   context.globalAlpha = alpha;
   context.translate(x, y);
-  context.beginPath();
-  context.arc(0, 0, radius, 0, Math.PI * 2);
-  context.fillStyle = 'rgba(3, 8, 11, 0.9)';
+  if (kind === 'gathering') {
+    drawResource(context, tint, radius);
+    context.restore();
+    return;
+  }
+  platePath(context, radius - 0.5);
+  context.fillStyle = solid ? tint : PLATE_FILL;
+  context.shadowColor = tint;
+  context.shadowBlur = solid ? 6 : 3;
   context.fill();
-  context.beginPath();
-  context.arc(0, 0, radius - 1, 0, Math.PI * 2);
-  context.fillStyle = BADGE_COLORS[kind];
-  context.fill();
+  context.shadowBlur = 0;
+  context.lineWidth = 1;
+  context.strokeStyle = solid ? PLATE_FILL : tint;
+  context.stroke();
   context.restore();
 
   context.save();
@@ -144,10 +185,10 @@ function glyphImage(kind: PointOfInterestKind, pixels: number): HTMLCanvasElemen
   glyph.width = pixels;
   glyph.height = pixels;
   const glyphContext = glyph.getContext('2d') as CanvasRenderingContext2D;
-  const glyphScale = pixels * 0.42;
+  const glyphScale = pixels * 0.38;
   glyphContext.translate(pixels / 2, pixels / 2);
   glyphContext.scale(glyphScale, glyphScale);
-  glyphContext.fillStyle = GLYPH_COLORS[kind] ?? '#0b1014';
+  glyphContext.fillStyle = SOLID_KINDS.has(kind) ? '#0b1014' : TINTS[kind];
   glyphContext.strokeStyle = glyphContext.fillStyle;
   GLYPHS[kind](glyphContext);
   glyphCache.set(key, glyph);
