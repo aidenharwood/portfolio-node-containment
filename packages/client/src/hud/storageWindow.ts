@@ -4,7 +4,7 @@ import { itemIconUrl } from '../render/items/itemSprites.ts';
 import type { WorldState } from '../state/worldState.ts';
 import { primaryGesture, secondaryGesture } from '../ui/viewport.ts';
 import { h, replaceChildren } from '../ui/dom.ts';
-import { attachItemTooltip, hideItemTooltip } from '../ui/itemTooltip.ts';
+import { attachItemTooltip, hideItemTooltip, itemDetails } from '../ui/itemTooltip.ts';
 import type { ContextMenu } from './contextMenu.ts';
 import { preserveScroll, quantityActions } from './quantityActions.ts';
 
@@ -106,7 +106,7 @@ export class StorageWindow {
       oncontextmenu: (event: MouseEvent) => {
         event.preventDefault();
         hideItemTooltip();
-        this.menu.open(event.clientX, event.clientY, quantityActions(verb, item, available, move));
+        this.menu.open(event.clientX, event.clientY, quantityActions(verb, item, available, move), itemDetails(item));
       },
     },
       h('img', { src: itemIconUrl(item), alt: item.name }),

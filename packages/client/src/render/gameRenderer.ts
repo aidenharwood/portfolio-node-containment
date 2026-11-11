@@ -36,6 +36,7 @@ import { samePickTarget, type ClickMarker, type PickTarget } from './pickTarget.
 import { buildFieldLightGrid, clearFieldLights, FIELD_LIGHT_LIMIT, fieldLightFade, LIGHT_CONE_ANGLE, LIGHT_PENUMBRA, setFieldLights, type FieldLight } from './voxel/fieldLights.ts';
 import { hex, lighten } from './voxel/palette.ts';
 import { copyAmbience, createBlendedAmbience, easeAmbience, sampleAmbience, type BlendedAmbience } from './world/ambienceBlend.ts';
+import { assignLights, shadowStrength, type LightAssignment } from './lightAssignment.ts';
 import { LevelScene, type LightSource } from './world/levelScene.ts';
 
 export interface RenderOverlay {
@@ -64,8 +65,8 @@ interface EntityView {
 }
 
 const CONTAINMENT_FIELD = 'containment-field';
-const SHADOW_LIGHT_COUNT = 4;
-const SHADOW_CANDIDATE_COUNT = 12;
+const LIGHT_LIMITS = { shadowed: 4, field: FIELD_LIGHT_LIMIT };
+const NO_LIGHTS: LightAssignment<LightSource> = { shadowed: [], field: [], edge: Infinity, shadowEdge: Infinity };
 const LIGHT_INTENSITY_SCALE = 4;
 const LIGHT_REACH = 1.5;
 const AMBIENT_BASE = 2.5;
@@ -116,7 +117,7 @@ export class GameRenderer {
   private readonly projectiles = new ProjectileLayer();
   private readonly route = new RouteLayer();
   private readonly stopHitListener: () => void;
-  private assignedLights: LightAssignment = { shadowed: [], field: [], edge: Infinity };
+  private assignedLights: LightAssignment<LightSource> = NO_LIGHTS;
   private readonly fieldLights: FieldLight[] = Array.from({ length: FIELD_LIGHT_LIMIT }, () => ({ position: new Vector3(), color: new Color(), reach: 0 }));
   private lightTimer = 0;
   private activeFieldLights = 0;
@@ -146,7 +147,7 @@ export class GameRenderer {
     this.scene.background = this.background;
     this.scene.add(this.projectiles.root, this.groundItems.root, this.hemisphere, this.keyLight, this.keyLight.target, this.hoverRing, this.selfRing, this.click.group, this.route.mesh);
 
-    for (let index = 0; index < SHADOW_LIGHT_COUNT; index++) {
+    for (let index = 0; index < LIGHT_LIMITS.shadowed; index++) {
       const light = new SpotLight(0xffffff, 0, 6, LIGHT_CONE_ANGLE, LIGHT_PENUMBRA, 0);
       light.castShadow = true;
       light.shadow.mapSize.set(512, 512);
@@ -210,7 +211,7 @@ export class GameRenderer {
     if (!active) return;
     this.zone = new LevelScene(active);
     this.scene.add(this.zone.root);
-    this.assignedLights = { shadowed: [], field: [], edge: Infinity };
+    this.assignedLights = NO_LIGHTS;
     this.lightTimer = 0;
 
     const start = this.world.selfEntity?.to ?? active.definition.spawn;
@@ -488,9 +489,9 @@ export class GameRenderer {
     const reassigned = this.lightTimer <= 0;
     if (reassigned) {
       this.lightTimer = LIGHT_REASSIGN_SECONDS;
-      this.assignedLights = assignLights(this.zone.lights, focus);
+      this.assignedLights = assignLights(this.zone.lights, focus, LIGHT_LIMITS);
     }
-    const { shadowed, field, edge } = this.assignedLights;
+    const { shadowed, field, edge, shadowEdge } = this.assignedLights;
     const strength = (source: LightSource) => {
       const flicker = source.flicker ? 0.78 + 0.22 * (Math.sin(time * 7.3 + source.seed) * 0.5 + Math.sin(time * 17.1 + source.seed * 3) * 0.5) : 1;
       return source.intensity * LIGHT_INTENSITY_SCALE * flicker * fieldLightFade(Math.sqrt(source.position.distanceToSquared(focus)), edge);
@@ -506,6 +507,7 @@ export class GameRenderer {
       light.color.setHex(source.color);
       light.distance = source.radius * LIGHT_REACH;
       light.shadow.camera.far = light.distance;
+      light.shadow.intensity = shadowStrength(source.position.distanceTo(focus), shadowEdge);
       light.intensity = strength(source);
     });
     this.activeFieldLights = field.length;
@@ -552,22 +554,6 @@ export class GameRenderer {
     this.click.material.color.setHex(marker.tone === 'walk' ? 0xffd23f : 0xff5e3a);
     this.click.material.opacity = 1 - age;
   }
-}
-
-interface LightAssignment {
-  readonly shadowed: readonly LightSource[];
-  readonly field: readonly LightSource[];
-  readonly edge: number;
-}
-
-function assignLights(lights: readonly LightSource[], focus: Vector3): LightAssignment {
-  const sorted = [...lights].sort((a, b) => a.position.distanceToSquared(focus) - b.position.distanceToSquared(focus));
-  const shadowed = sorted.slice(0, SHADOW_CANDIDATE_COUNT).filter((light) => light.shadow).slice(0, SHADOW_LIGHT_COUNT);
-  const field = sorted.filter((light) => !shadowed.includes(light)).slice(0, FIELD_LIGHT_LIMIT);
-  const overflow = sorted.length > shadowed.length + field.length;
-  const last = field[field.length - 1];
-  const edge = overflow && last ? Math.sqrt(last.position.distanceToSquared(focus)) : Infinity;
-  return { shadowed, field, edge };
 }
 
 function shortestAngle(from: number, to: number): number {

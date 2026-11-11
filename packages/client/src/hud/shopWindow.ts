@@ -4,7 +4,7 @@ import { itemIconUrl } from '../render/items/itemSprites.ts';
 import type { WorldState } from '../state/worldState.ts';
 import { primaryGesture, secondaryGesture } from '../ui/viewport.ts';
 import { h, replaceChildren } from '../ui/dom.ts';
-import { attachItemTooltip, hideItemTooltip } from '../ui/itemTooltip.ts';
+import { attachItemTooltip, hideItemTooltip, itemDetails } from '../ui/itemTooltip.ts';
 import type { ContextMenu } from './contextMenu.ts';
 import { preserveScroll, quantityActions } from './quantityActions.ts';
 
@@ -102,7 +102,7 @@ export class ShopWindow {
           event.preventDefault();
           const affordable = Math.min(MAX_PURCHASE, Math.floor(scrip / listing.price), roomFor(self.inventory, item));
           hideItemTooltip();
-          this.menu.open(event.clientX, event.clientY, quantityActions('Buy', item, affordable, buy));
+          this.menu.open(event.clientX, event.clientY, quantityActions('Buy', item, affordable, buy), itemDetails(item));
         };
         attachItemTooltip(row, () => item);
         return row;
@@ -127,7 +127,7 @@ export class ShopWindow {
             event.preventDefault();
             hideItemTooltip();
             const owned = countItem(self.inventory, item.id);
-            this.menu.open(event.clientX, event.clientY, quantityActions('Sell', item, owned, (quantity) => this.connection.send({ type: 'shop.sell', slotIndex, quantity })));
+            this.menu.open(event.clientX, event.clientY, quantityActions('Sell', item, owned, (quantity) => this.connection.send({ type: 'shop.sell', slotIndex, quantity })), itemDetails(item));
           },
         },
           h('img', { src: itemIconUrl(item), alt: item.name }),

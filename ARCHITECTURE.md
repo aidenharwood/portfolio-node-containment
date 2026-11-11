@@ -354,7 +354,7 @@ Everything in the world is built procedurally from voxels at runtime; there are 
 - **`models/characterModel.ts`** builds an articulated `CharacterRig` (legs, torso, head and arms on pivots) from `CharacterAppearance` and equipped gear visuals. Geometry is cached per look, so NPCs that look the same share it.
 - **`gameRenderer.ts`** handles:
   - renderer setup: ACES tone mapping, soft shadows from a key light that follows the focus, and a hemisphere fill;
-  - local lights, reassigned to the nearest sources every quarter second: four shadow-casting spotlights, plus up to 96 **field lights** shaded inside the voxel materials (`voxel/fieldLights.ts`). Field lights are binned into a 64 × 64 grid of 2-tile cells around the focus, holding up to 16 lights per cell whose cone can reach it, so each fragment only shades the lights listed in its own cell;
+  - local lights, reassigned to the nearest sources every quarter second: four shadow-casting spotlights (`lightAssignment.ts`), whose shadows fade out as the next caster in line draws level so a light only joins or leaves the pool while its shadow is invisible, plus up to 96 **field lights** shaded inside the voxel materials (`voxel/fieldLights.ts`). Field lights are binned into a 64 × 64 grid of 2-tile cells around the focus, holding up to 16 lights per cell whose cone can reach it, so each fragment only shades the lights listed in its own cell;
   - bloom post-processing;
   - entity sync and interpolation;
   - quest markers and hover, self and click markers;

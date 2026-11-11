@@ -1,5 +1,5 @@
 const LONG_PRESS_MS = 450;
-const MOVE_TOLERANCE_PIXELS = 10;
+export const MOVE_TOLERANCE_PIXELS = 10;
 const CLICK_SUPPRESS_MS = 600;
 
 interface PendingPress {

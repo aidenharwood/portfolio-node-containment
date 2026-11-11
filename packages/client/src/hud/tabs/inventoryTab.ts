@@ -2,7 +2,8 @@ import { GAME_CONTENT, INVENTORY_CAPACITY, type ItemDefinition, type SelfState }
 import type { GameConnection } from '../../net/gameConnection.ts';
 import { itemIconUrl } from '../../render/items/itemSprites.ts';
 import { h, replaceChildren } from '../../ui/dom.ts';
-import { attachItemTooltip, hideItemTooltip } from '../../ui/itemTooltip.ts';
+import { attachTouchDrag } from '../../input/touchDrag.ts';
+import { attachItemTooltip, hideItemTooltip, itemDetails } from '../../ui/itemTooltip.ts';
 import type { ContextMenu, MenuAction } from '../contextMenu.ts';
 import type { PanelTab } from '../sidePanel.ts';
 
@@ -69,7 +70,7 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
       const item = slotItem(index);
       if (item) {
         hideItemTooltip();
-        menu.open(event.clientX, event.clientY, actionsFor(index, item));
+        menu.open(event.clientX, event.clientY, actionsFor(index, item), itemDetails(item));
       }
     };
     slot.ondragstart = (event) => {
@@ -83,6 +84,14 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
       const from = Number(event.dataTransfer?.getData('text/plain'));
       if (Number.isInteger(from) && from !== index) connection.send({ type: 'inventory.swap', from, to: index });
     };
+    attachTouchDrag(slot, {
+      canDrag: () => slotItem(index) !== null,
+      ghost: () => slot.querySelector('img')?.cloneNode() as HTMLElement | undefined ?? null,
+      drop: (target) => {
+        const to = Number(target?.closest<HTMLElement>('.inventory-grid .inventory-slot')?.dataset.index);
+        if (grid.contains(target) && Number.isInteger(to) && to !== index) connection.send({ type: 'inventory.swap', from: index, to });
+      },
+    });
     attachItemTooltip(slot, () => slotItem(index));
     return slot;
   });

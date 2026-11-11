@@ -1,4 +1,5 @@
 import { h, replaceChildren } from '../ui/dom.ts';
+import { placeInViewport, VIEWPORT_MARGIN } from '../ui/placement.ts';
 import type { MenuAction } from './contextMenu.ts';
 
 export interface BubbleContent {
@@ -9,7 +10,6 @@ export interface BubbleContent {
 }
 
 const CURSOR_OFFSET = 18;
-const EDGE_MARGIN = 8;
 
 export class InteractionBubble {
   readonly element = h('div', { className: 'interaction-bubble', hidden: true, role: 'tooltip' });
@@ -39,10 +39,13 @@ export class InteractionBubble {
     }
     this.element.hidden = false;
     const bounds = this.element.getBoundingClientRect();
-    const flipX = clientX + CURSOR_OFFSET + bounds.width > window.innerWidth - EDGE_MARGIN;
-    const flipY = clientY + CURSOR_OFFSET + bounds.height > window.innerHeight - EDGE_MARGIN;
-    this.element.style.left = `${flipX ? clientX - CURSOR_OFFSET - bounds.width : clientX + CURSOR_OFFSET}px`;
-    this.element.style.top = `${flipY ? clientY - CURSOR_OFFSET - bounds.height : clientY + CURSOR_OFFSET}px`;
+    const flipX = clientX + CURSOR_OFFSET + bounds.width > window.innerWidth - VIEWPORT_MARGIN;
+    const flipY = clientY + CURSOR_OFFSET + bounds.height > window.innerHeight - VIEWPORT_MARGIN;
+    placeInViewport(
+      this.element,
+      flipX ? clientX - CURSOR_OFFSET - bounds.width : clientX + CURSOR_OFFSET,
+      flipY ? clientY - CURSOR_OFFSET - bounds.height : clientY + CURSOR_OFFSET,
+    );
   }
 
   hide(): void {

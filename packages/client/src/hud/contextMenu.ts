@@ -1,4 +1,6 @@
+import { MOVE_TOLERANCE_PIXELS } from '../input/touchContextMenu.ts';
 import { h, replaceChildren } from '../ui/dom.ts';
+import { placeInViewport } from '../ui/placement.ts';
 
 export interface MenuAction {
   readonly verb: string;
@@ -15,6 +17,9 @@ export class ContextMenu {
   private leaveTimer: number | null = null;
   private readonly touchesDown = new Set<number>();
   private heldPointerId: number | null = null;
+  private heldOrigin = { x: 0, y: 0 };
+  private heldMoved = false;
+  private lastPointerWasTouch = false;
   private highlighted: HTMLElement | null = null;
   private readonly itemActions = new Map<HTMLElement, MenuAction>();
 
@@ -45,9 +50,11 @@ export class ContextMenu {
     this.itemActions.clear();
     this.highlighted = null;
     this.heldPointerId = this.touchesDown.size === 1 ? ([...this.touchesDown][0] ?? null) : null;
+    this.heldOrigin = { x: clientX, y: clientY };
+    this.heldMoved = false;
     replaceChildren(
       this.element,
-      this.heldPointerId !== null && touchDetails && h('div', { className: 'context-details' }, touchDetails),
+      this.lastPointerWasTouch && touchDetails && h('div', { className: 'context-details' }, touchDetails),
       h('div', { className: 'context-title' }, 'Choose Option'),
       ...[...actions, { verb: 'Cancel', run: () => undefined }].map((action) => {
         const button = h('button', {
@@ -61,9 +68,8 @@ export class ContextMenu {
       }),
     );
     this.element.hidden = false;
-    const bounds = this.element.getBoundingClientRect();
-    this.element.style.left = `${Math.min(clientX - bounds.width / 2, window.innerWidth - bounds.width - 8)}px`;
-    this.element.style.top = `${Math.min(clientY - 8, window.innerHeight - bounds.height - 8)}px`;
+    this.element.scrollTop = 0;
+    placeInViewport(this.element, clientX - this.element.getBoundingClientRect().width / 2, clientY - 8);
   }
 
   focusFirst(): void {
@@ -103,18 +109,25 @@ export class ContextMenu {
   }
 
   private readonly onPointerDown = (event: PointerEvent): void => {
-    if (event.pointerType === 'touch') this.touchesDown.add(event.pointerId);
+    this.lastPointerWasTouch = event.pointerType === 'touch';
+    if (this.lastPointerWasTouch) this.touchesDown.add(event.pointerId);
     if (this.isOpen && !this.element.contains(event.target as Node)) this.close();
   };
 
   private readonly followHeldTouch = (event: PointerEvent): void => {
     if (!this.isOpen || event.pointerId !== this.heldPointerId) return;
+    if (!this.heldMoved && Math.hypot(event.clientX - this.heldOrigin.x, event.clientY - this.heldOrigin.y) <= MOVE_TOLERANCE_PIXELS) return;
+    this.heldMoved = true;
     this.highlight(this.itemAt(event.clientX, event.clientY));
   };
 
   private readonly onPointerUp = (event: PointerEvent): void => {
     this.touchesDown.delete(event.pointerId);
     if (!this.isOpen || event.pointerId !== this.heldPointerId) return;
+    if (!this.heldMoved) {
+      this.heldPointerId = null;
+      return;
+    }
     const item = this.itemAt(event.clientX, event.clientY);
     const action = item ? this.itemActions.get(item) : undefined;
     if (action) this.choose(action);
