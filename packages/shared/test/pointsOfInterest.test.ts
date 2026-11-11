@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { GAME_CONTENT, npcPointOfInterestKind, objectPointOfInterestKind, pointsOfInterest, type WorldObjectDefinition } from '../src/index.ts';
+import { GAME_CONTENT, mapScenery, npcPointOfInterestKind, objectMapSceneryKind, objectPointOfInterestKind, pointsOfInterest, type WorldObjectDefinition } from '../src/index.ts';
 
 const object = (effects: WorldObjectDefinition['interactions'][number]['effects']): WorldObjectDefinition => ({
   id: 'probe',
@@ -33,6 +33,24 @@ test('every tram station platform has a tram point of interest nearby', () => {
     assert.ok(level);
     const near = pointsOfInterest(level, GAME_CONTENT).some((point) => point.kind === 'tram' && Math.hypot(point.position.x - station.platformPoint.x, point.position.y - station.platformPoint.y) <= 16);
     assert.ok(near, `no tram icon near ${station.id}`);
+  }
+});
+
+test('scenery is categorised for the map by footprint and use', () => {
+  const plain = { ...object([]), interactions: [] };
+  assert.equal(objectMapSceneryKind(plain), 'obstacle');
+  assert.equal(objectMapSceneryKind(object([{ type: 'openStorage' }])), 'fixture');
+  assert.equal(objectMapSceneryKind({ ...plain, blocksMovement: false }), 'loose');
+  assert.equal(objectMapSceneryKind({ ...plain, blocksMovement: false, deck: true }), 'deck');
+  const door = [...GAME_CONTENT.worldObjects.values()].find((candidate) => candidate.door);
+  assert.ok(door);
+  assert.equal(objectMapSceneryKind(door), undefined);
+});
+
+test('every level puts some blocking scenery on the map', () => {
+  for (const level of GAME_CONTENT.levels.values()) {
+    const scenery = mapScenery(level, GAME_CONTENT.worldObjects);
+    if (level.objects.length > 0) assert.ok(scenery.length > 0, `${level.id} has no map scenery`);
   }
 });
 

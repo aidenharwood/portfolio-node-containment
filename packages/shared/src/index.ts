@@ -66,6 +66,7 @@ export * from './world/region.ts';
 export * from './world/levelLayout.ts';
 export * from './world/tram.ts';
 export * from './world/pointsOfInterest.ts';
+export * from './world/mapScenery.ts';
 
 export * from './protocol/clientMessages.ts';
 export * from './protocol/serverMessages.ts';

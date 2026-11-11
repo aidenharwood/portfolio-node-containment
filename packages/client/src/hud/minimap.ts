@@ -1,4 +1,4 @@
-import { GAME_CONTENT, pointsOfInterest, TILE_KINDS, type Facing, type PointOfInterest, type TilePoint } from '@containment/shared';
+import { GAME_CONTENT, mapScenery, pointsOfInterest, TILE_KINDS, type Facing, type MapSceneryKind, type PointOfInterest, type TilePoint } from '@containment/shared';
 import type { WorldState } from '../state/worldState.ts';
 import { h } from '../ui/dom.ts';
 import type { ClickTone } from './clickIndicator.ts';
@@ -24,6 +24,28 @@ const TILE_COLORS: Partial<Record<string, string>> = {
   carpet: '#3a3150',
   track: '#2a2420',
 };
+
+const SCENERY_COLORS: Readonly<Record<MapSceneryKind, string>> = {
+  deck: '#2b3a44',
+  fixture: '#4f8a96',
+  obstacle: '#43525c',
+  loose: '#3a4a54',
+};
+
+function paintScenery(context: CanvasRenderingContext2D, kind: MapSceneryKind, position: TilePoint): void {
+  const left = position.x * PIXELS_PER_TILE;
+  const top = position.y * PIXELS_PER_TILE;
+  context.fillStyle = SCENERY_COLORS[kind];
+  if (kind === 'deck') context.fillRect(left, top, PIXELS_PER_TILE, PIXELS_PER_TILE);
+  else if (kind === 'loose') context.fillRect(left + 2, top + 2, PIXELS_PER_TILE - 4, PIXELS_PER_TILE - 4);
+  else {
+    context.fillRect(left + 0.5, top + 0.5, PIXELS_PER_TILE - 1, PIXELS_PER_TILE - 1);
+    if (kind === 'fixture') {
+      context.fillStyle = '#0b1014';
+      context.fillRect(left + 2.5, top + 2.5, PIXELS_PER_TILE - 5, PIXELS_PER_TILE - 5);
+    }
+  }
+}
 
 const FACING_ANGLE: Readonly<Record<Facing, number>> = { north: -Math.PI / 2, east: 0, south: Math.PI / 2, west: Math.PI };
 
@@ -96,6 +118,7 @@ export class Minimap {
         context.fillRect(x * PIXELS_PER_TILE, y * PIXELS_PER_TILE, PIXELS_PER_TILE, PIXELS_PER_TILE);
       }
     }
+    for (const { kind, position } of mapScenery(zone.definition, GAME_CONTENT.worldObjects)) paintScenery(context, kind, position);
     this.base = base;
     this.points = pointsOfInterest(zone.definition, GAME_CONTENT).sort((a, b) => Number(b.kind === 'gathering') - Number(a.kind === 'gathering'));
   }
