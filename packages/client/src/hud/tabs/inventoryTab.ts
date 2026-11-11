@@ -5,18 +5,20 @@ import { h, replaceChildren } from '../../ui/dom.ts';
 import { attachTouchDrag } from '../../input/touchDrag.ts';
 import { attachItemTooltip, hideItemTooltip, itemDetails } from '../../ui/itemTooltip.ts';
 import type { ContextMenu, MenuAction } from '../contextMenu.ts';
+import type { InventoryModeSlot } from '../inventoryMode.ts';
 import type { PanelTab } from '../sidePanel.ts';
 
 export interface ItemExaminer {
   examine(text: string): void;
 }
 
-export function createInventoryTab(connection: GameConnection, menu: ContextMenu, examiner: ItemExaminer): PanelTab {
+export function createInventoryTab(connection: GameConnection, menu: ContextMenu, examiner: ItemExaminer, modes: InventoryModeSlot): PanelTab {
   let self: SelfState | null = null;
+  const modeHint = h('span', { className: 'inventory-mode', hidden: true });
   const scrip = h('span', { className: 'scrip-amount' }, '0');
   const grid = h('div', { className: 'inventory-grid' });
   const element = h('div', { className: 'tab-inventory' },
-    h('header', { className: 'tab-header' }, h('span', { className: 'scrip' }, 'Scrip ', scrip)),
+    h('header', { className: 'tab-header' }, h('span', { className: 'scrip' }, 'Scrip ', scrip), modeHint),
     grid,
   );
 
@@ -26,6 +28,8 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
   };
 
   const actionsFor = (index: number, item: ItemDefinition): MenuAction[] => {
+    const mode = modes.current;
+    if (mode) return [...mode.actions(index, item), { verb: 'Examine', subject: item.name, subjectTone: 'item', run: () => examiner.examine(item.examine) }];
     const actions: MenuAction[] = [];
     if (item.consumable) {
       actions.push({ verb: item.consumable.verb, subject: item.name, subjectTone: 'item', run: () => connection.send({ type: 'inventory.use', slotIndex: index }) });
@@ -45,9 +49,11 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
 
   const slots = Array.from({ length: INVENTORY_CAPACITY }, (_, index) => {
     const slot = h('div', { className: 'inventory-slot', draggable: true, tabIndex: 0, role: 'button', ariaLabel: `Empty slot ${index + 1}`, dataset: { index: String(index) } });
-    slot.onclick = () => {
+    slot.onclick = (event) => {
       const item = slotItem(index);
-      if (item) actionsFor(index, item).find((action) => action.verb !== 'Drop' && action.verb !== 'Destroy')?.run();
+      const mode = modes.current;
+      if (item && mode) mode.primary(index, item, event.shiftKey);
+      else if (item) actionsFor(index, item).find((action) => action.verb !== 'Drop' && action.verb !== 'Destroy')?.run();
     };
     slot.onkeydown = (event) => {
       const item = slotItem(index);
@@ -97,6 +103,18 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
   });
   grid.append(...slots);
 
+  const paint = () => {
+    const mode = modes.current;
+    modeHint.hidden = !mode;
+    modeHint.textContent = mode?.hint ?? '';
+    element.classList.toggle('trading', mode !== null);
+    slots.forEach((slot, index) => {
+      const item = slotItem(index);
+      slot.classList.toggle('locked', mode !== null && item !== null && !mode.accepts(item));
+    });
+  };
+  modes.onChange(paint);
+
   return {
     id: 'inventory',
     label: 'Inventory',
@@ -119,6 +137,7 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
         );
       });
       scrip.textContent = scripTotal.toLocaleString();
+      paint();
     },
   };
 }

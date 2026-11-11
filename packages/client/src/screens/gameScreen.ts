@@ -21,6 +21,7 @@ import { ClickIndicator, type ClickTone } from '../hud/clickIndicator.ts';
 import { ContractBoardWindow } from '../hud/contractBoardWindow.ts';
 import { ObjectiveTracker } from '../hud/objectiveTracker.ts';
 import { MarketWindow } from '../hud/marketWindow.ts';
+import { InventoryModeSlot } from '../hud/inventoryMode.ts';
 import { ShopWindow } from '../hud/shopWindow.ts';
 import { ActivityBar } from '../hud/activityBar.ts';
 import { CraftingWindow } from '../hud/craftingWindow.ts';
@@ -88,8 +89,9 @@ export function createGameScreen(app: AppNavigator): Screen {
   const vitals = new VitalsPanel((entityId) => {
     connection.send({ type: 'world.interact', targetKind: 'creature', instanceId: entityId.replace(/^creature:/, ''), interactionIndex: CONTAIN_INTERACTION });
   });
-  const shop = new ShopWindow(connection, world, menu);
-  const storage = new StorageWindow(connection, world, menu);
+  const inventoryModes = new InventoryModeSlot();
+  const shop = new ShopWindow(connection, world, menu, inventoryModes);
+  const storage = new StorageWindow(connection, world, menu, inventoryModes);
   const market = new MarketWindow(connection, world);
   const contractBoard = new ContractBoardWindow(connection, world);
   const crafting = new CraftingWindow(connection, world);
@@ -141,7 +143,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   const tramRide = new TramRide(connection, world);
   const minimap = new Minimap(world, walkTo, () => worldMap.toggle());
   const sidePanel = new SidePanel([
-    createInventoryTab(connection, menu, { examine }),
+    createInventoryTab(connection, menu, { examine }, inventoryModes),
     createEquipmentTab(connection, world),
     createSkillsTab(),
     createQuestsTab(menu, questTracking),
@@ -150,6 +152,9 @@ export function createGameScreen(app: AppNavigator): Screen {
     createBestiaryTab(),
     createDossierTab(connection, world),
   ]);
+  const stopInventoryModes = inventoryModes.onChange((mode) => {
+    if (mode) sidePanel.select('inventory');
+  });
 
   const refreshBeacons = () => {
     const self = world.self;
@@ -532,6 +537,7 @@ export function createGameScreen(app: AppNavigator): Screen {
       tramRide.dispose();
       activity.dispose();
       menu.dispose();
+      stopInventoryModes();
       sidePanel.dispose();
       renderer.dispose();
     },

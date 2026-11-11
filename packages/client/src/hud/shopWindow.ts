@@ -2,10 +2,11 @@ import { countItem, GAME_CONTENT, sellPrice, shopCurrencyLabel, shopCurrencyOf, 
 import type { GameConnection } from '../net/gameConnection.ts';
 import { itemIconUrl } from '../render/items/itemSprites.ts';
 import type { WorldState } from '../state/worldState.ts';
-import { primaryGesture, secondaryGesture } from '../ui/viewport.ts';
+import { secondaryGesture } from '../ui/viewport.ts';
 import { h, replaceChildren } from '../ui/dom.ts';
 import { attachItemTooltip, hideItemTooltip, itemDetails } from '../ui/itemTooltip.ts';
-import type { ContextMenu } from './contextMenu.ts';
+import type { ContextMenu, MenuAction } from './contextMenu.ts';
+import type { InventoryMode, InventoryModeSlot } from './inventoryMode.ts';
 import { preserveScroll, quantityActions } from './quantityActions.ts';
 
 const MAX_PURCHASE = 1000;
@@ -19,18 +20,20 @@ function roomFor(inventory: InventoryState, item: ItemDefinition): number {
 
 const BULK_QUANTITY = 5;
 
-export class ShopWindow {
+export class ShopWindow implements InventoryMode {
   readonly element = h('section', { className: 'shop-window panel', hidden: true, role: 'dialog', ariaLabel: 'Shop' });
   private readonly connection: GameConnection;
   private readonly world: WorldState;
   private readonly menu: ContextMenu;
+  private readonly modes: InventoryModeSlot;
   private shop: ShopDefinition | null = null;
   private readonly unsubscribers: (() => void)[];
 
-  constructor(connection: GameConnection, world: WorldState, menu: ContextMenu) {
+  constructor(connection: GameConnection, world: WorldState, menu: ContextMenu, modes: InventoryModeSlot) {
     this.connection = connection;
     this.world = world;
     this.menu = menu;
+    this.modes = modes;
     this.unsubscribers = [
       connection.on('shop.opened', ({ shopId }) => this.open(shopId)),
       connection.on('shop.closed', () => this.hide()),
@@ -54,12 +57,38 @@ export class ShopWindow {
   private open(shopId: string): void {
     this.shop = GAME_CONTENT.shops.get(shopId) ?? null;
     this.element.hidden = !this.shop;
+    if (this.shop) this.modes.enter(this);
     this.render();
   }
 
   private hide(): void {
     this.shop = null;
     this.element.hidden = true;
+    this.modes.leave(this);
+  }
+
+  get hint(): string {
+    return `Selling to ${this.shop?.name ?? 'the shop'}`;
+  }
+
+  accepts(item: ItemDefinition): boolean {
+    return this.shop !== null && sellPrice(item, this.shop) !== null;
+  }
+
+  primary(slotIndex: number, item: ItemDefinition, all: boolean): void {
+    const self = this.world.self;
+    if (!this.accepts(item) || !self) return;
+    this.connection.send({ type: 'shop.sell', slotIndex, quantity: all ? countItem(self.inventory, item.id) : 1 });
+  }
+
+  actions(slotIndex: number, item: ItemDefinition): MenuAction[] {
+    const self = this.world.self;
+    if (!this.shop || !self) return [];
+    const price = sellPrice(item, this.shop);
+    if (price === null) return [];
+    const owned = countItem(self.inventory, item.id);
+    return quantityActions('Sell', item, owned, (quantity) => this.connection.send({ type: 'shop.sell', slotIndex, quantity }))
+      .map((action) => ({ ...action, subject: `${item.name} (${price} each)` }));
   }
 
   private render(): void {
@@ -67,19 +96,16 @@ export class ShopWindow {
     const self = this.world.self;
     if (!shop || !self) return;
     const scrip = countItem(self.inventory, shopCurrencyOf(shop));
-    preserveScroll(this.element, ['.shop-column:first-child', '.shop-column:last-child'], () => replaceChildren(
+    preserveScroll(this.element, ['.shop-column'], () => replaceChildren(
       this.element,
       h('header', { className: 'shop-header' },
         h('div', {}, h('h3', {}, shop.name), h('p', { className: 'shop-greeting' }, shop.greeting)),
         h('button', { className: 'dialogue-close', type: 'button', ariaLabel: 'Close shop', onclick: () => this.requestClose() }, '×'),
       ),
-      h('div', { className: 'shop-columns' },
-        h('div', { className: 'shop-column' }, h('p', { className: 'eyebrow' }, 'Requisition'), this.renderStock(shop, scrip, self)),
-        h('div', { className: 'shop-column' }, h('p', { className: 'eyebrow' }, 'Sell from inventory'), this.renderSellables(shop, self)),
-      ),
+      h('div', { className: 'shop-column' }, h('p', { className: 'eyebrow' }, 'Requisition'), this.renderStock(shop, scrip, self)),
       h('footer', { className: 'shop-footer' },
         h('span', {}, `${shopCurrencyLabel(shop).replace(/^./, (letter) => letter.toUpperCase())} `, h('strong', { className: 'scrip-amount' }, scrip.toLocaleString())),
-        h('span', { className: 'tab-hint' }, `${primaryGesture()} for one · ${secondaryGesture()} to buy or sell more`),
+        h('span', { className: 'tab-hint' }, `${secondaryGesture()} to buy more · sell from your inventory`),
       ),
     ));
   }
@@ -106,36 +132,6 @@ export class ShopWindow {
         };
         attachItemTooltip(row, () => item);
         return row;
-      }),
-    );
-  }
-
-  private renderSellables(shop: ShopDefinition, self: SelfState): HTMLElement {
-    const slots = self.inventory.flatMap((stack, slotIndex) => {
-      const item = stack ? GAME_CONTENT.items.get(stack.itemId) : undefined;
-      const price = item ? sellPrice(item, shop) : null;
-      return stack && item && price !== null ? [{ stack, item, price, slotIndex }] : [];
-    });
-    if (slots.length === 0) return h('p', { className: 'tab-hint' }, 'Nothing you carry interests the quartermaster.');
-    return h('div', { className: 'shop-sell-grid' },
-      ...slots.map(({ stack, item, price, slotIndex }) => {
-        const cell = h('button', {
-          className: `inventory-slot filled rarity-${item.rarity}`,
-          type: 'button',
-          onclick: (event: MouseEvent) => this.connection.send({ type: 'shop.sell', slotIndex, quantity: event.shiftKey ? countItem(self.inventory, item.id) : 1 }),
-          oncontextmenu: (event: MouseEvent) => {
-            event.preventDefault();
-            hideItemTooltip();
-            const owned = countItem(self.inventory, item.id);
-            this.menu.open(event.clientX, event.clientY, quantityActions('Sell', item, owned, (quantity) => this.connection.send({ type: 'shop.sell', slotIndex, quantity })), itemDetails(item));
-          },
-        },
-          h('img', { src: itemIconUrl(item), alt: item.name }),
-          stack.quantity > 1 && h('span', { className: 'stack-count' }, String(stack.quantity)),
-          h('span', { className: 'sell-price' }, `${price}`),
-        );
-        attachItemTooltip(cell, () => item);
-        return cell;
       }),
     );
   }

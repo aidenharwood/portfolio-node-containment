@@ -5,23 +5,27 @@ import type { WorldState } from '../state/worldState.ts';
 import { primaryGesture, secondaryGesture } from '../ui/viewport.ts';
 import { h, replaceChildren } from '../ui/dom.ts';
 import { attachItemTooltip, hideItemTooltip, itemDetails } from '../ui/itemTooltip.ts';
-import type { ContextMenu } from './contextMenu.ts';
+import type { ContextMenu, MenuAction } from './contextMenu.ts';
+import type { InventoryMode, InventoryModeSlot } from './inventoryMode.ts';
 import { preserveScroll, quantityActions } from './quantityActions.ts';
 
-const SCROLLING = ['.storage-shelves', '.storage-inventory'] as const;
+const SCROLLING = ['.storage-shelves'] as const;
 
-export class StorageWindow {
+export class StorageWindow implements InventoryMode {
+  readonly hint = 'Depositing into storage';
   readonly element = h('section', { className: 'storage-window panel', hidden: true, role: 'dialog', ariaLabel: 'Personal storage' });
   private readonly connection: GameConnection;
   private readonly world: WorldState;
   private readonly menu: ContextMenu;
+  private readonly modes: InventoryModeSlot;
   private open = false;
   private readonly unsubscribers: (() => void)[];
 
-  constructor(connection: GameConnection, world: WorldState, menu: ContextMenu) {
+  constructor(connection: GameConnection, world: WorldState, menu: ContextMenu, modes: InventoryModeSlot) {
     this.connection = connection;
     this.world = world;
     this.menu = menu;
+    this.modes = modes;
     this.unsubscribers = [
       connection.on('storage.opened', () => this.show()),
       connection.on('storage.closed', () => this.hide()),
@@ -45,12 +49,30 @@ export class StorageWindow {
   private show(): void {
     this.open = true;
     this.element.hidden = false;
+    this.modes.enter(this);
     this.render();
   }
 
   private hide(): void {
     this.open = false;
     this.element.hidden = true;
+    this.modes.leave(this);
+  }
+
+  accepts(): boolean {
+    return this.open;
+  }
+
+  primary(slotIndex: number, item: ItemDefinition, all: boolean): void {
+    const self = this.world.self;
+    if (!this.open || !self) return;
+    this.connection.send({ type: 'storage.deposit', slotIndex, quantity: all ? countItem(self.inventory, item.id) : 1 });
+  }
+
+  actions(slotIndex: number, item: ItemDefinition): MenuAction[] {
+    const self = this.world.self;
+    if (!this.open || !self) return [];
+    return quantityActions('Deposit', item, countItem(self.inventory, item.id), (quantity) => this.connection.send({ type: 'storage.deposit', slotIndex, quantity }));
   }
 
   private render(): void {
@@ -66,39 +88,26 @@ export class StorageWindow {
           ),
           h('button', { className: 'dialogue-close', type: 'button', ariaLabel: 'Close storage', onclick: () => this.requestClose() }, '×'),
         ),
-        h('div', { className: 'shop-columns' },
-          h('div', { className: 'shop-column' },
-            h('p', { className: 'eyebrow' }, 'Stored'),
-            self.storage.length === 0
-              ? h('p', { className: 'tab-hint' }, `Nothing stored yet. ${primaryGesture()} items in your pack to store them.`)
-              : h('div', { className: 'shop-sell-grid storage-shelves' },
-                  ...self.storage.map((stack) => {
-                    const item = GAME_CONTENT.items.get(stack.itemId);
-                    return item ? this.cell(item, stack.quantity, 'Withdraw', (quantity) => this.connection.send({ type: 'storage.withdraw', itemId: item.id, quantity })) : null;
-                  }),
-                ),
-          ),
-          h('div', { className: 'shop-column' },
-            h('p', { className: 'eyebrow' }, 'Your pack'),
-            h('div', { className: 'shop-sell-grid storage-inventory' },
-              ...self.inventory.map((stack, slotIndex) => {
-                const item = stack ? GAME_CONTENT.items.get(stack.itemId) : undefined;
-                if (!stack || !item) return null;
-                const carried = countItem(self.inventory, item.id);
-                return this.cell(item, stack.quantity, 'Deposit', (quantity) => this.connection.send({ type: 'storage.deposit', slotIndex, quantity }), carried);
-              }),
-            ),
-          ),
+        h('div', { className: 'shop-column' },
+          h('p', { className: 'eyebrow' }, 'Stored'),
+          self.storage.length === 0
+            ? h('p', { className: 'tab-hint' }, `Nothing stored yet. ${primaryGesture()} items in your inventory to store them.`)
+            : h('div', { className: 'shop-sell-grid storage-shelves' },
+                ...self.storage.map((stack) => {
+                  const item = GAME_CONTENT.items.get(stack.itemId);
+                  return item ? this.cell(item, stack.quantity, (quantity) => this.connection.send({ type: 'storage.withdraw', itemId: item.id, quantity })) : null;
+                }),
+              ),
         ),
         h('footer', { className: 'shop-footer' },
-          h('span', { className: 'tab-hint' }, `${primaryGesture()} to move one · ${secondaryGesture()} for more`),
+          h('span', { className: 'tab-hint' }, `${primaryGesture()} to withdraw one · ${secondaryGesture()} for more · deposit from your inventory`),
           h('button', { className: 'button small', type: 'button', onclick: () => this.connection.send({ type: 'storage.depositAll' }) }, 'Deposit pack'),
         ),
       ),
     );
   }
 
-  private cell(item: ItemDefinition, shown: number, verb: string, move: (quantity: number) => void, available = shown): HTMLElement {
+  private cell(item: ItemDefinition, shown: number, move: (quantity: number) => void): HTMLElement {
     const cell = h('button', {
       className: `inventory-slot filled rarity-${item.rarity}`,
       type: 'button',
@@ -106,7 +115,7 @@ export class StorageWindow {
       oncontextmenu: (event: MouseEvent) => {
         event.preventDefault();
         hideItemTooltip();
-        this.menu.open(event.clientX, event.clientY, quantityActions(verb, item, available, move), itemDetails(item));
+        this.menu.open(event.clientX, event.clientY, quantityActions('Withdraw', item, shown, move), itemDetails(item));
       },
     },
       h('img', { src: itemIconUrl(item), alt: item.name }),
