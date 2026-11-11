@@ -3,6 +3,7 @@ import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlaceme
 import type { TilePoint } from '../../world/geometry.ts';
 import { VESPER_LODGE_ANCHORS } from './vesperLodge.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 110, height: 84 }, [
   room('lift-landing', 89, 1, 20, 18, 'carpet'),
@@ -77,7 +78,15 @@ const packs = scatterPacks(plan, [...placed, ...furnishings], [
   ['cold-lockers', 'vcl-attendant-lockers-pack', 'morgue-attendant', 4],
 ]);
 
-export const VESPER_CELLARS: DistrictDefinition = {
+const dressing: Dressing = {
+  'lift-landing': 'ward',
+  'mortuary': 'ward',
+  'cold-ward': 'ward',
+  'almoners-office': { theme: 'office', density: 'sparse' },
+  'cold-lockers': 'cold',
+};
+
+export const VESPER_CELLARS: DistrictDefinition = furnish(plan, {
   id: 'vesper-cellars',
   name: 'The Cold Ward',
   subtitle: 'Vesper Wing — Cellars',
@@ -108,4 +117,4 @@ export const VESPER_CELLARS: DistrictDefinition = {
     { position: plan.spot('almoners-office', 37, 16), radius: 14, color: '#ffe8b8', intensity: 0.55 },
     { position: plan.spot('almoners-office', 6, 29), radius: 9, color: '#6ad8b8', intensity: 0.5 },
   ],
-};
+}, dressing);

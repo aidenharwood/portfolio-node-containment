@@ -4,6 +4,8 @@ import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../wo
 import type { TilePoint } from '../../world/geometry.ts';
 import { DEEPWATCH_ANCHORS } from './deepwatch.ts';
 import { INDUSTRIAL_PROPS, LITTER, scatterGroups } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
+import { ambientCast } from '../ambientNpcs.ts';
 
 const plan = drawBlueprint({ width: 41, height: 70 }, [
   room('furnace-approach', 14, 1, 13, 25, 'grate'),
@@ -49,7 +51,13 @@ const furnishings = scatterGroups(plan, placed, [
   ['furnace-approach', 'fc-approach-litter', LITTER, 4],
 ]);
 
-export const FURNACE_CAUSEWAY: DistrictDefinition = {
+const dressing: Dressing = {
+  'furnace-approach': 'industrial',
+  'ember-landing': 'camp',
+  'causeway': { theme: 'industrial', density: 'sparse' },
+};
+
+export const FURNACE_CAUSEWAY: DistrictDefinition = furnish(plan, {
   id: 'furnace-causeway',
   name: 'Furnace Causeway',
   subtitle: 'The Deep — Reactor Approach',
@@ -64,7 +72,7 @@ export const FURNACE_CAUSEWAY: DistrictDefinition = {
   areas: [
     plan.area('causeway', 'Furnace Causeway'),
     plan.area('furnace-approach', 'Furnace Approach'),
-    plan.area('ember-landing', 'Ember Landing'),
+    plan.area('ember-landing', 'Ember Landing', { safe: true }),
   ],
   npcs,
   objects: [...fixtures, ...furnishings],
@@ -76,4 +84,4 @@ export const FURNACE_CAUSEWAY: DistrictDefinition = {
     { position: plan.spot('causeway', 6, 2), radius: 6, color: '#4fd8ff', intensity: 0.5 },
     { position: plan.spot('causeway', 8, 2), radius: 7, color: '#ff7a2a', intensity: 0.55 },
   ],
-};
+}, dressing, { cast: ambientCast('deckhand', 'researcher', 'operative', 'technician') });

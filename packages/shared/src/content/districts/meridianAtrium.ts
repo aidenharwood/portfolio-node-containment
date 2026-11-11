@@ -3,6 +3,7 @@ import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { CIVIC_PROPS, INDUSTRIAL_PROPS, LITTER, OFFICE_PROPS, positionsOf, scatterObjects } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 126, height: 104 }, [
   room('requisitions', 1, 1, 30, 20, 'carpet'),
@@ -187,7 +188,21 @@ const props: ObjectPlacement[] = [
   ...scatterObjects(plan, 'east-gate', 'east-gate-prop', CIVIC_PROPS, 5, taken()),
 ];
 
-export const MERIDIAN_ATRIUM: DistrictDefinition = {
+const dressing: Dressing = {
+  'requisitions': 'office',
+  'quarantine-gate': { theme: 'civic', density: 'dense' },
+  'archives': 'archive',
+  'plaza': { theme: 'civic', density: 'dense' },
+  'workshop': 'industrial',
+  'west-gate': 'civic',
+  'response-office': 'office',
+  'east-gate': 'freight',
+  'lift-bay': { theme: 'civic', density: 'dense' },
+  'medbay': 'medical',
+  'engineering': 'industrial',
+};
+
+export const MERIDIAN_ATRIUM: DistrictDefinition = furnish(plan, {
   id: 'meridian-atrium',
   name: 'Meridian Atrium',
   subtitle: 'Site Meridian — Central Hub',
@@ -227,4 +242,4 @@ export const MERIDIAN_ATRIUM: DistrictDefinition = {
     { position: plan.spot('medbay', 29, 11), radius: 14, color: '#d8fff0', intensity: 0.5 },
     { position: plan.spot('engineering', 12, 11), radius: 13, color: '#46c8a8', intensity: 0.4 },
   ],
-};
+}, dressing);

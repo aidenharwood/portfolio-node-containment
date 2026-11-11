@@ -4,6 +4,8 @@ import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlaceme
 import type { TilePoint } from '../../world/geometry.ts';
 import { DEEPWATCH_ANCHORS } from './deepwatch.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
+import { ambientCast } from '../ambientNpcs.ts';
 
 const plan = drawBlueprint({ width: 86, height: 62 }, [
   room('flood-stair', 1, 1, 20, 18, 'plating'),
@@ -126,7 +128,16 @@ const packs = scatterPacks(plan, [...placed, ...furnishings], [
   ['sluice-hall', 'da-eel-sluice-pack', 'ink-eel', 1],
 ]);
 
-export const DROWNED_ARCHIVE: DistrictDefinition = {
+const dressing: Dressing = {
+  'flood-stair': 'camp',
+  'stacks': 'archive',
+  'sluice-hall': 'wet',
+  'drying-room': 'archive',
+  'reading-rooms': 'archive',
+  'sealed-room': { theme: 'archive', density: 'sparse' },
+};
+
+export const DROWNED_ARCHIVE: DistrictDefinition = furnish(plan, {
   id: 'drowned-archive',
   name: 'The Drowned Archive',
   subtitle: 'Site Meridian — Records Division, Lower Stacks',
@@ -160,4 +171,4 @@ export const DROWNED_ARCHIVE: DistrictDefinition = {
     { position: plan.spot('reading-rooms', 16, 17), radius: 13, color: '#9fd8ff', intensity: 0.4 },
     { position: plan.spot('sealed-room', 12, 17), radius: 13, color: '#b57cff', intensity: 0.65 },
   ],
-};
+}, dressing, { cast: ambientCast('deckhand', 'researcher', 'operative', 'technician') });

@@ -3,6 +3,8 @@ import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { CIVIC_PROPS, INDUSTRIAL_PROPS, scatterGroups } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
+import { ambientCast } from '../ambientNpcs.ts';
 
 const plan = drawBlueprint({ width: 68, height: 48 }, [
   room('command-post', 1, 1, 16, 12, 'carpet'),
@@ -117,7 +119,17 @@ const furnishings = scatterGroups(plan, placed, [
   ['infirmary', 'dw-infirmary-prop', ['planter', 'water-cooler'], 3],
 ]);
 
-export const DEEPWATCH: DistrictDefinition = {
+const dressing: Dressing = {
+  'command-post': 'office',
+  'concourse': 'civic',
+  'workshop': 'industrial',
+  'platform-hall': { theme: 'civic', density: 'dense' },
+  'infirmary': 'medical',
+  'stores': 'freight',
+  'lift-gallery': 'civic',
+};
+
+export const DEEPWATCH: DistrictDefinition = furnish(plan, {
   id: 'deepwatch',
   name: 'Deepwatch Station',
   subtitle: 'Site Meridian — Forward Base, Sector 3 Annex',
@@ -150,4 +162,4 @@ export const DEEPWATCH: DistrictDefinition = {
     { position: plan.spot('stores', 12, 12), radius: 11, color: '#ffcf4d', intensity: 0.45 },
     { position: plan.spot('lift-gallery', 10, 12), radius: 11, color: '#ff9a4d', intensity: 0.5 },
   ],
-};
+}, dressing, { cast: ambientCast('deckhand', 'researcher', 'operative', 'technician') });

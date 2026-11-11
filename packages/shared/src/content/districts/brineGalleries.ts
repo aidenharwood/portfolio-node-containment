@@ -3,6 +3,7 @@ import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlaceme
 import type { TilePoint } from '../../world/geometry.ts';
 import { WATERWORKS_ANCHORS } from './waterworks.ts';
 import { INDUSTRIAL_PROPS, LITTER, scatterGroups, scatterPacks } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 120, height: 96 }, [
   room('salt-landing', 50, 1, 26, 20, 'concrete'),
@@ -93,7 +94,15 @@ const packs = scatterPacks(plan, [...placed, ...furnishings], [
   ['gate-approach', 'bg-wight-approach-pack', 'salt-wight', 4],
 ]);
 
-export const BRINE_GALLERIES: DistrictDefinition = {
+const dressing: Dressing = {
+  'salt-landing': 'mine',
+  'brine-pans': 'mine',
+  'wight-drifts': 'mine',
+  'gate-approach': 'mine',
+  'tally-house': 'office',
+};
+
+export const BRINE_GALLERIES: DistrictDefinition = furnish(plan, {
   id: 'brine-galleries',
   name: 'Brine Galleries',
   subtitle: 'Calder Wing — Saltworks Level',
@@ -126,4 +135,4 @@ export const BRINE_GALLERIES: DistrictDefinition = {
     { position: plan.spot('wight-drifts', 12, 24), radius: 13, color: '#ffd27f', intensity: 0.4 },
     { position: plan.spot('wight-drifts', 42, 34), radius: 14, color: '#ff9a6a', intensity: 0.45 },
   ],
-};
+}, dressing);

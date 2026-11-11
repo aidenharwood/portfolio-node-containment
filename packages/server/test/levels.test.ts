@@ -16,8 +16,8 @@ const ROUTE_TO_HYDROPONICS: readonly TilePoint[] = [
   levelPoint('meridian-circuit', localInRoom('meridian-circuit', 'west-boulevard', { x: 6, y: 135 })),
   exitPoint('meridian-circuit', 'west'),
   levelPoint('verdance-concourse', localInRoom('verdance-concourse', 'concourse', { x: 90, y: 6 })),
-  levelPoint('verdance-concourse', localInRoom('verdance-concourse', 'concourse', { x: 62, y: 2 })),
-  levelPoint('verdance-concourse', localInRoom('verdance-concourse', 'concourse', { x: 38, y: 2 })),
+  levelPoint('verdance-concourse', localInRoom('verdance-concourse', 'concourse', { x: 62, y: 6 })),
+  levelPoint('verdance-concourse', localInRoom('verdance-concourse', 'concourse', { x: 38, y: 6 })),
   levelPoint('verdance-concourse', localInRoom('verdance-concourse', 'concourse', { x: 10, y: 6 })),
   levelPoint('hydroponics', localInRoom('hydroponics', 'grow-hall', { x: 40, y: 32 })),
 ];
@@ -50,7 +50,7 @@ const placedAt = (location: CharacterRecord['location'], flags: readonly string[
 
 describe('levels', () => {
   test('legacy locations convert to level coordinates', () => {
-    assert.deepEqual(restoreLocation({ zoneId: 'hydroponics', position: localInRoom('hydroponics', 'platform', { x: 3, y: 2 }) }, GAME_CONTENT), at('hydroponics', localInRoom('hydroponics', 'platform', { x: 3, y: 2 })));
+    assert.deepEqual(restoreLocation({ zoneId: 'hydroponics', position: localInRoom('hydroponics', 'platform', { x: 6, y: 34 }) }, GAME_CONTENT), at('hydroponics', localInRoom('hydroponics', 'platform', { x: 6, y: 34 })));
   });
 
   test('legacy locations convert to the main-floor spawn when the zone is gone', () => {
@@ -72,10 +72,10 @@ describe('levels', () => {
     database.exec('PRAGMA foreign_keys = OFF;');
     const repository = new CharacterRepository(database, GAME_CONTENT);
     const created = createCharacterRecord({ ...createDefaultDraft(), name: 'Stored Operative' }, { id: 'character-9', accountId: 'account-9' }, GAME_CONTENT);
-    const record = { ...created, location: at('hydroponics', localInRoom('hydroponics', 'platform', { x: 3, y: 2 })) };
+    const record = { ...created, location: at('hydroponics', localInRoom('hydroponics', 'platform', { x: 6, y: 34 })) };
     repository.insert(record);
     const row = database.prepare('SELECT record FROM characters WHERE id = ?').get('character-9') as { record: string };
-    assert.deepEqual(JSON.parse(row.record).location, { districtId: 'hydroponics', position: localInRoom('hydroponics', 'platform', { x: 3, y: 2 }) });
+    assert.deepEqual(JSON.parse(row.record).location, { districtId: 'hydroponics', position: localInRoom('hydroponics', 'platform', { x: 6, y: 34 }) });
     assert.deepEqual(repository.findOwned('account-9', 'character-9')?.location, record.location);
   });
 

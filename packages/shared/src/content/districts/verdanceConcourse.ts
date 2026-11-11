@@ -4,6 +4,7 @@ import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../wo
 import type { TilePoint } from '../../world/geometry.ts';
 import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 import { CIVIC_PROPS, INDUSTRIAL_PROPS, LITTER, OFFICE_PROPS, scatterGroups } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 100, height: 47 }, [
   room('concourse', 0, 17, 100, 13, 'plating'),
@@ -52,7 +53,15 @@ const furnishings = scatterGroups(plan, placed, [
   ['compost-yard', 'compost-yard-prop', ['planter', 'litter-gravel', 'storage-rack'], 8],
 ]);
 
-export const VERDANCE_CONCOURSE: DistrictDefinition = {
+const dressing: Dressing = {
+  'concourse': 'garden',
+  'seed-exchange': { theme: 'garden', density: 'dense' },
+  'irrigation-plant': 'wet',
+  'gardeners-row': 'garden',
+  'compost-yard': 'garden',
+};
+
+export const VERDANCE_CONCOURSE: DistrictDefinition = furnish(plan, {
   id: 'verdance-concourse',
   name: 'Verdance Concourse',
   subtitle: 'Site Meridian — West Transit Corridor',
@@ -66,9 +75,9 @@ export const VERDANCE_CONCOURSE: DistrictDefinition = {
   anchors: VERDANCE_CONCOURSE_ANCHORS,
   areas: [
     plan.area('concourse', 'Verdance Concourse'),
-    plan.area('seed-exchange', 'Seed Exchange'),
+    plan.area('seed-exchange', 'Seed Exchange', { safe: true }),
     plan.area('irrigation-plant', 'Irrigation Plant'),
-    plan.area('gardeners-row', 'Gardeners\' Row'),
+    plan.area('gardeners-row', 'Gardeners\' Row', { safe: true }),
     plan.area('compost-yard', 'Compost Yard'),
   ],
   npcs,
@@ -83,4 +92,4 @@ export const VERDANCE_CONCOURSE: DistrictDefinition = {
     { position: plan.spot('concourse', 54, 2), radius: 7, color: '#4fd8ff', intensity: 0.55 },
     { position: plan.spot('concourse', 97, 2), radius: 9, color: '#9fd8ff', intensity: 0.45 },
   ],
-};
+}, dressing);

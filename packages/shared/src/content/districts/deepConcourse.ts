@@ -5,6 +5,8 @@ import type { TilePoint } from '../../world/geometry.ts';
 import { DEEPWATCH_ANCHORS } from './deepwatch.ts';
 export const CONCOURSE_HOLLOW_FOR_DEEPWATCH: TilePoint = { x: 50, y: 50 };
 import { INDUSTRIAL_PROPS, LITTER, scatterGroups } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
+import { ambientCast } from '../ambientNpcs.ts';
 
 const plan = drawBlueprint({ width: 168, height: 148 }, [
   room('nw-turn', 1, 1, 21, 21, 'grate', 'octagon'),
@@ -121,7 +123,22 @@ const furnishings = scatterGroups(plan, placed, [
   ['east-span', 'dc-east-span-litter', LITTER, 3],
 ]);
 
-export const DEEP_CONCOURSE: DistrictDefinition = {
+const dressing: Dressing = {
+  'nw-turn': 'cold',
+  'ne-turn': 'cold',
+  'sw-turn': 'cold',
+  'se-turn': 'cold',
+  'ring-hub': { theme: 'civic', density: 'dense' },
+  'chasm-walk': 'civic',
+  'cold-wing': 'cold',
+  'records-wing': 'archive',
+  'north-span': { theme: 'cold', density: 'sparse' },
+  'south-span': { theme: 'cold', density: 'sparse' },
+  'west-span': { theme: 'cold', density: 'sparse' },
+  'east-span': { theme: 'cold', density: 'sparse' },
+};
+
+export const DEEP_CONCOURSE: DistrictDefinition = furnish(plan, {
   id: 'deep-concourse',
   name: 'Deep Concourse',
   subtitle: 'The Deep — Station Ring',
@@ -134,9 +151,9 @@ export const DEEP_CONCOURSE: DistrictDefinition = {
   exits: plan.exits,
   anchors: DEEP_CONCOURSE_ANCHORS,
   areas: [
-    plan.area('cold-wing', 'Cold Wing Approach'),
-    plan.area('ring-hub', 'Station Ring'),
-    plan.area('records-wing', 'Records Wing Approach'),
+    plan.area('cold-wing', 'Cold Wing Approach', { safe: true }),
+    plan.area('ring-hub', 'Station Ring', { safe: true }),
+    plan.area('records-wing', 'Records Wing Approach', { safe: true }),
     plan.area('nw-turn', 'Lantern Turn'),
     plan.area('ne-turn', 'Mast Turn'),
     plan.area('sw-turn', 'Sump Turn'),
@@ -169,4 +186,4 @@ export const DEEP_CONCOURSE: DistrictDefinition = {
     { position: plan.spot('records-wing', 1, 2), radius: 11, color: '#b57cff', intensity: 0.5 },
     { position: plan.spot('records-wing', 6, 2), radius: 9, color: '#4fd8ff', intensity: 0.5 },
   ],
-};
+}, dressing, { cast: ambientCast('deckhand', 'researcher', 'operative', 'technician') });

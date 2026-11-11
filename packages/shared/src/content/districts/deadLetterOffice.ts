@@ -2,6 +2,7 @@ import { drawBlueprint, link, patch, pillars, room } from '../../world/blueprint
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { scatterGroups, scatterPacks } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 72, height: 52 }, [
   room('dead-letter-stacks', 1, 1, 23, 16, 'rust'),
@@ -89,7 +90,15 @@ const packs = scatterPacks(plan, [...placed, ...furnishings], [
   ['returned-stacks', 'dlo-echo-returned-pack', 'courier-echo', 4],
 ]);
 
-export const DEAD_LETTER_OFFICE: DistrictDefinition = {
+const dressing: Dressing = {
+  'dead-letter-stacks': 'post',
+  'franking-hall': 'post',
+  'returned-stacks': 'post',
+  'sorting-floor': 'post',
+  'dispatch': 'post',
+};
+
+export const DEAD_LETTER_OFFICE: DistrictDefinition = furnish(plan, {
   id: 'dead-letter-office',
   name: 'The Dead Letter Office',
   subtitle: 'Where the Post Went Instead',
@@ -119,4 +128,4 @@ export const DEAD_LETTER_OFFICE: DistrictDefinition = {
     { position: plan.spot('dead-letter-stacks', 8, 8), radius: 12, color: '#c9a227', intensity: 0.35 },
     { position: plan.spot('dispatch', 22, 10), radius: 14, color: '#ff8a4a', intensity: 0.6 },
   ],
-};
+}, dressing);

@@ -3,6 +3,8 @@ import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { CIVIC_PROPS, OFFICE_PROPS, scatterGroups } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
+import { ambientCast } from '../ambientNpcs.ts';
 
 const plan = drawBlueprint({ width: 60, height: 46 }, [
   room('gatehouse', 1, 1, 58, 44, 'carpet'),
@@ -48,7 +50,11 @@ const furnishings = scatterGroups(plan, placed, [
   ['gatehouse', 'cg-civic', CIVIC_PROPS, 8],
 ]);
 
-export const CALDER_GATEHOUSE: DistrictDefinition = {
+const dressing: Dressing = {
+  'gatehouse': { theme: 'camp', density: 'dense' },
+};
+
+export const CALDER_GATEHOUSE: DistrictDefinition = furnish(plan, {
   id: 'calder-gatehouse',
   name: 'Calder Gatehouse',
   subtitle: 'Site Calder — Outpost',
@@ -72,4 +78,4 @@ export const CALDER_GATEHOUSE: DistrictDefinition = {
     { position: plan.spot('gatehouse', 55, 29), radius: 9, color: '#ff9a6a', intensity: 0.45 },
     { position: plan.spot('gatehouse', 32, 41), radius: 9, color: '#ffd27f', intensity: 0.5 },
   ],
-};
+}, dressing, { cast: ambientCast('saltworker', 'operative', 'technician') });

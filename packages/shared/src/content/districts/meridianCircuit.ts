@@ -4,6 +4,7 @@ import type { DistrictDefinition, ObjectPlacement } from '../../world/district.t
 import type { TilePoint } from '../../world/geometry.ts';
 import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 import { CIVIC_PROPS, INDUSTRIAL_PROPS, LITTER, OFFICE_PROPS, scatterGroups } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 export const CIRCUIT_HOLLOW_FOR_ATRIUM: TilePoint = { x: 39, y: 88 };
 
@@ -93,7 +94,26 @@ const furnishings = scatterGroups(plan, landmarks, [
   ['duty-office', 'duty-office-prop', OFFICE_PROPS, 8],
 ]);
 
-export const MERIDIAN_CIRCUIT: DistrictDefinition = {
+const dressing: Dressing = {
+  'north-boulevard': 'civic',
+  'south-boulevard': 'civic',
+  'west-boulevard': 'civic',
+  'east-boulevard': 'civic',
+  'signal-court': { theme: 'civic', density: 'dense' },
+  'pump-court': { theme: 'civic', density: 'dense' },
+  'lantern-court': { theme: 'civic', density: 'dense' },
+  'ledger-court': { theme: 'civic', density: 'dense' },
+  'west-dormitory': { theme: 'dormitory', density: 'dense' },
+  'canteen': { theme: 'canteen', density: 'dense' },
+  'west-stores': 'freight',
+  'reading-room': 'archive',
+  'east-barracks': { theme: 'dormitory', density: 'dense' },
+  'mess-hall': { theme: 'canteen', density: 'dense' },
+  'east-stores': 'freight',
+  'duty-office': 'office',
+};
+
+export const MERIDIAN_CIRCUIT: DistrictDefinition = furnish(plan, {
   id: 'meridian-circuit',
   name: 'The Circuit',
   subtitle: 'Site Meridian — Ring Boulevard',
@@ -105,22 +125,22 @@ export const MERIDIAN_CIRCUIT: DistrictDefinition = {
   rooms: plan.rooms,
   exits: plan.exits,
   areas: [
-    plan.area('north-boulevard', 'Quarantine Row'),
-    plan.area('south-boulevard', 'Chasm Promenade'),
-    plan.area('west-boulevard', 'Verdance Walk'),
-    plan.area('east-boulevard', 'Service Walk'),
-    plan.area('signal-court', 'Signal Court'),
-    plan.area('pump-court', 'Pump Court'),
-    plan.area('lantern-court', 'Lantern Court'),
-    plan.area('ledger-court', 'Ledger Court'),
-    plan.area('west-dormitory', 'West Dormitory'),
-    plan.area('canteen', 'Staff Canteen'),
-    plan.area('west-stores', 'West Stores'),
-    plan.area('reading-room', 'Reading Room'),
-    plan.area('east-barracks', 'Response Barracks'),
-    plan.area('mess-hall', 'Mess Hall'),
-    plan.area('east-stores', 'East Stores'),
-    plan.area('duty-office', 'Duty Office'),
+    plan.area('north-boulevard', 'Quarantine Row', { safe: true }),
+    plan.area('south-boulevard', 'Chasm Promenade', { safe: true }),
+    plan.area('west-boulevard', 'Verdance Walk', { safe: true }),
+    plan.area('east-boulevard', 'Service Walk', { safe: true }),
+    plan.area('signal-court', 'Signal Court', { safe: true }),
+    plan.area('pump-court', 'Pump Court', { safe: true }),
+    plan.area('lantern-court', 'Lantern Court', { safe: true }),
+    plan.area('ledger-court', 'Ledger Court', { safe: true }),
+    plan.area('west-dormitory', 'West Dormitory', { safe: true }),
+    plan.area('canteen', 'Staff Canteen', { safe: true }),
+    plan.area('west-stores', 'West Stores', { safe: true }),
+    plan.area('reading-room', 'Reading Room', { safe: true }),
+    plan.area('east-barracks', 'Response Barracks', { safe: true }),
+    plan.area('mess-hall', 'Mess Hall', { safe: true }),
+    plan.area('east-stores', 'East Stores', { safe: true }),
+    plan.area('duty-office', 'Duty Office', { safe: true }),
   ],
   npcs: [],
   objects: [...landmarks, ...furnishings],
@@ -135,4 +155,4 @@ export const MERIDIAN_CIRCUIT: DistrictDefinition = {
     { position: plan.center('west-boulevard'), radius: 9, color: '#7cf29a', intensity: 0.45 },
     { position: plan.center('east-boulevard'), radius: 9, color: '#ffd27f', intensity: 0.45 },
   ],
-};
+}, dressing);

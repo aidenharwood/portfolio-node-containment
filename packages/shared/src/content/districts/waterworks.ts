@@ -2,6 +2,7 @@ import { drawBlueprint, exit, link, patch, room } from '../../world/blueprint.ts
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { INDUSTRIAL_PROPS, LITTER, scatterGroups, scatterPacks } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 116, height: 91 }, [
   room('filtration-beds', 1, 1, 114, 33, 'plating'),
@@ -116,7 +117,16 @@ const packs = scatterPacks(plan, [...placed, ...furnishings], [
   ['outfall', 'ww-bloat-outfall-pack', 'sump-bloat', 5],
 ]);
 
-export const WATERWORKS: DistrictDefinition = {
+const dressing: Dressing = {
+  'filtration-beds': 'wet',
+  'valve-gallery': 'wet',
+  'pump-house': 'camp',
+  'settling-tanks': 'wet',
+  'intake-screens': 'wet',
+  'outfall': 'wet',
+};
+
+export const WATERWORKS: DistrictDefinition = furnish(plan, {
   id: 'waterworks',
   name: 'Meridian Waterworks',
   subtitle: 'Site Meridian — Reclamation and Outflow',
@@ -148,4 +158,4 @@ export const WATERWORKS: DistrictDefinition = {
     { position: plan.spot('settling-tanks', 25, 12), radius: 14, color: '#3ab8a0', intensity: 0.45 },
     { position: plan.spot('outfall', 21, 24), radius: 13, color: '#9a4dff', intensity: 0.55 },
   ],
-};
+}, dressing);

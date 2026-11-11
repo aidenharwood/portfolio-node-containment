@@ -4,6 +4,7 @@ import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlaceme
 import type { TilePoint } from '../../world/geometry.ts';
 import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 105, height: 71 }, [
   room('seed-vault', 1, 14, 22, 14, 'carpet'),
@@ -105,7 +106,15 @@ const packs = scatterPacks(plan, [...placed, ...furnishings], [
   ['grow-hall', 'hydro-drifter-hall-pack', 'spore-drifter', 5],
 ]);
 
-export const HYDROPONICS: DistrictDefinition = {
+const dressing: Dressing = {
+  'seed-vault': 'garden',
+  'platform': 'civic',
+  'nursery': 'garden',
+  'greenhouse': 'garden',
+  'grow-hall': 'garden',
+};
+
+export const HYDROPONICS: DistrictDefinition = furnish(plan, {
   id: 'hydroponics',
   name: 'Verdance Hydroponics',
   subtitle: 'Site Meridian — Agricultural Containment Deck',
@@ -137,4 +146,4 @@ export const HYDROPONICS: DistrictDefinition = {
     { position: plan.spot('grow-hall', 19, 13), radius: 14, color: '#7cf29a', intensity: 0.45 },
     { position: plan.spot('heart-bed', 2, 2), radius: 13, color: '#c8ff7a', intensity: 0.6 },
   ],
-};
+}, dressing);

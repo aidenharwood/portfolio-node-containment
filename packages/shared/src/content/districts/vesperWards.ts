@@ -3,6 +3,7 @@ import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlaceme
 import type { TilePoint } from '../../world/geometry.ts';
 import { HYDROPONICS_ANCHORS } from './hydroponics.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 120, height: 96 }, [
   room('north-ward', 1, 1, 118, 30, 'plating'),
@@ -89,7 +90,15 @@ const packs = scatterPacks(plan, [...placed, ...furnishings], [
   ['linen-store', 'vw-nurse-linen-pack', 'night-nurse', 2],
 ]);
 
-export const VESPER_WARDS: DistrictDefinition = {
+const dressing: Dressing = {
+  'north-ward': 'ward',
+  'ward-corridor': 'ward',
+  'south-ward': 'ward',
+  'linen-store': 'freight',
+  'admissions': 'office',
+};
+
+export const VESPER_WARDS: DistrictDefinition = furnish(plan, {
   id: 'vesper-wards',
   name: 'Vesper Wards',
   subtitle: 'Vesper Wing — General Wards',
@@ -122,4 +131,4 @@ export const VESPER_WARDS: DistrictDefinition = {
     { position: plan.spot('south-ward', 47, 24), radius: 13, color: '#ffe8b8', intensity: 0.4 },
     { position: plan.spot('south-ward', 17, 34), radius: 14, color: '#6ad8b8', intensity: 0.45 },
   ],
-};
+}, dressing);

@@ -2,6 +2,7 @@ import { drawBlueprint, link, patch, room } from '../../world/blueprint.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { LITTER, scatterGroups } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 38, height: 33 }, [
   room('threshold', 4, 1, 30, 22, 'concrete', 'octagon'),
@@ -44,7 +45,12 @@ const furnishings = scatterGroups(plan, placed, [
   ['threshold', 's3-threshold-litter', LITTER, 4],
 ]);
 
-export const SECTOR_THREE: DistrictDefinition = {
+const dressing: Dressing = {
+  'threshold': 'civic',
+  'reflecting-hall': { theme: 'civic', density: 'sparse' },
+};
+
+export const SECTOR_THREE: DistrictDefinition = furnish(plan, {
   id: 'sector-three',
   name: 'Sector 3',
   subtitle: 'The Threshold',
@@ -67,4 +73,4 @@ export const SECTOR_THREE: DistrictDefinition = {
     { position: plan.spot('threshold', 3, 12), radius: 7, color: '#ffb347', intensity: 0.4 },
     { position: plan.spot('threshold', 26, 19), radius: 7, color: '#ffb347', intensity: 0.5 },
   ],
-};
+}, dressing);

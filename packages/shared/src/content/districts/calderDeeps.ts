@@ -3,6 +3,7 @@ import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlaceme
 import type { TilePoint } from '../../world/geometry.ts';
 import { CALDER_GATEHOUSE_ANCHORS } from './calderGatehouse.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 110, height: 84 }, [
   room('lift-landing', 1, 1, 20, 18, 'carpet'),
@@ -81,7 +82,15 @@ const packs = scatterPacks(plan, [...placed, ...furnishings], [
   ['salt-pockets', 'cd-wight-pockets-pack', 'deep-shift-wight', 3],
 ]);
 
-export const CALDER_DEEPS: DistrictDefinition = {
+const dressing: Dressing = {
+  'lift-landing': 'mine',
+  'old-workings': 'mine',
+  'flooded-drift': 'wet',
+  'foremans-office': { theme: 'mine', density: 'sparse' },
+  'salt-pockets': 'mine',
+};
+
+export const CALDER_DEEPS: DistrictDefinition = furnish(plan, {
   id: 'calder-deeps',
   name: 'Calder Deeps',
   subtitle: 'Calder Wing — The Lowest Gallery',
@@ -112,4 +121,4 @@ export const CALDER_DEEPS: DistrictDefinition = {
     { position: plan.spot('foremans-office', 24, 16), radius: 14, color: '#ffd27f', intensity: 0.55 },
     { position: plan.spot('foremans-office', 55, 29), radius: 9, color: '#ff9a6a', intensity: 0.5 },
   ],
-};
+}, dressing);

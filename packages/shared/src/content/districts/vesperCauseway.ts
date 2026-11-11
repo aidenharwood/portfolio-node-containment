@@ -3,6 +3,7 @@ import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../wo
 import type { TilePoint } from '../../world/geometry.ts';
 import { HYDROPONICS_ANCHORS } from './hydroponics.ts';
 import { CIVIC_PROPS, LITTER, scatterGroups } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 80, height: 71 }, [
   room('sanatorium-rise', 14, 0, 13, 57, 'concrete'),
@@ -40,7 +41,13 @@ const furnishings = scatterGroups(plan, placed, [
   ['porters-yard', 'vsw-yard-prop', ['briefing-bench', 'planter', 'wall-locker', 'storage-rack'], 10],
 ]);
 
-export const VESPER_CAUSEWAY: DistrictDefinition = {
+const dressing: Dressing = {
+  'sanatorium-rise': 'ward',
+  'walk': 'civic',
+  'porters-yard': 'ward',
+};
+
+export const VESPER_CAUSEWAY: DistrictDefinition = furnish(plan, {
   id: 'vesper-causeway',
   name: 'Sanatorium Walk',
   subtitle: 'Vesper Wing — Covered Walk',
@@ -55,7 +62,7 @@ export const VESPER_CAUSEWAY: DistrictDefinition = {
   areas: [
     plan.area('walk', 'Sanatorium Walk'),
     plan.area('sanatorium-rise', 'Sanatorium Rise'),
-    plan.area('porters-yard', 'Porters\' Yard'),
+    plan.area('porters-yard', 'Porters\' Yard', { safe: true }),
   ],
   npcs,
   objects: [...fixtures, ...furnishings],
@@ -66,4 +73,4 @@ export const VESPER_CAUSEWAY: DistrictDefinition = {
     { position: plan.spot('walk', 31, 2), radius: 9, color: '#ffe8b8', intensity: 0.35 },
     { position: plan.spot('walk', 3, 2), radius: 9, color: '#6ad8b8', intensity: 0.45 },
   ],
-};
+}, dressing);

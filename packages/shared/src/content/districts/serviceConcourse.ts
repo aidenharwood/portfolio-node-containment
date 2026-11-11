@@ -4,6 +4,7 @@ import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../wo
 import type { TilePoint } from '../../world/geometry.ts';
 import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 import { INDUSTRIAL_PROPS, LITTER, OFFICE_PROPS, scatterGroups } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 100, height: 47 }, [
   room('concourse', 0, 17, 100, 13, 'concrete'),
@@ -55,7 +56,15 @@ const furnishings = scatterGroups(plan, placed, [
   ['salvage-lot', 'salvage-lot-prop', ['pipe-cluster', 'litter-rubble', 'storage-rack'], 10],
 ]);
 
-export const SERVICE_CONCOURSE: DistrictDefinition = {
+const dressing: Dressing = {
+  'concourse': 'freight',
+  'freight-office': 'office',
+  'container-stacks': { theme: 'freight', density: 'dense' },
+  'drivers-rest': 'canteen',
+  'salvage-lot': 'freight',
+};
+
+export const SERVICE_CONCOURSE: DistrictDefinition = furnish(plan, {
   id: 'service-concourse',
   name: 'Service Concourse',
   subtitle: 'Site Meridian — East Transit Corridor',
@@ -69,9 +78,9 @@ export const SERVICE_CONCOURSE: DistrictDefinition = {
   anchors: SERVICE_CONCOURSE_ANCHORS,
   areas: [
     plan.area('concourse', 'Service Concourse'),
-    plan.area('freight-office', 'Freight Office'),
+    plan.area('freight-office', 'Freight Office', { safe: true }),
     plan.area('container-stacks', 'Container Stacks'),
-    plan.area('drivers-rest', 'Drivers\' Rest'),
+    plan.area('drivers-rest', 'Drivers\' Rest', { safe: true }),
     plan.area('salvage-lot', 'Salvage Lot'),
   ],
   npcs,
@@ -85,4 +94,4 @@ export const SERVICE_CONCOURSE: DistrictDefinition = {
     { position: plan.spot('concourse', 3, 2), radius: 9, color: '#ffb347', intensity: 0.45 },
     { position: plan.spot('concourse', 96, 2), radius: 9, color: '#ffd27f', intensity: 0.45 },
   ],
-};
+}, dressing);

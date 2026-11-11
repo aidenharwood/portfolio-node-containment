@@ -3,6 +3,7 @@ import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlaceme
 import type { TilePoint } from '../../world/geometry.ts';
 import { SECTOR_THREE_ANCHORS } from './sectorThree.ts';
 import { INDUSTRIAL_PROPS, LITTER, scatterGroups, scatterPacks } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 100, height: 75 }, [
   room('arrival', 1, 1, 24, 22, 'grate'),
@@ -142,7 +143,21 @@ const packs = scatterPacks(plan, [...placed, ...furnishings], [
   ['drowned-records', 'mb-knockling-records-pack', 'knockling', 1],
 ]);
 
-export const MERIDIAN_BELOW: DistrictDefinition = {
+const dressing: Dressing = {
+  'arrival': 'civic',
+  'empty-medbay': 'medical',
+  'engineering-below': 'industrial',
+  'west-hall': 'civic',
+  'inverted-plaza': 'civic',
+  'east-hall': 'civic',
+  'wrong-workshop': 'industrial',
+  'quiet-range': { theme: 'camp', density: 'sparse' },
+  'mirror-commissary': 'office',
+  'the-front-door': 'works',
+  'drowned-records': 'archive',
+};
+
+export const MERIDIAN_BELOW: DistrictDefinition = furnish(plan, {
   id: 'meridian-below',
   name: 'Meridian Below',
   subtitle: 'The Far Side of the Door',
@@ -182,4 +197,4 @@ export const MERIDIAN_BELOW: DistrictDefinition = {
     { position: plan.spot('quiet-range', 12, 9), radius: 13, color: '#ff4d4d', intensity: 0.35 },
     { position: plan.spot('the-front-door', 22, 3), radius: 14, color: '#b57cff', intensity: 0.8 },
   ],
-};
+}, dressing);

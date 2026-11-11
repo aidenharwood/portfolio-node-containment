@@ -3,6 +3,7 @@ import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlaceme
 import type { TilePoint } from '../../world/geometry.ts';
 import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 import { INDUSTRIAL_PROPS, LITTER, OFFICE_PROPS, scatterGroups, scatterPacks } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 112, height: 74 }, [
   room('research-lab', 6, 1, 36, 24, 'carpet'),
@@ -100,7 +101,17 @@ const packs = scatterPacks(plan, [...placed, ...furnishings], [
   ['inner-chamber', 's2-wraith-chamber-pack', 'static-wraith', 2],
 ]);
 
-export const SECTOR_TWO: DistrictDefinition = {
+const dressing: Dressing = {
+  'research-lab': 'lab',
+  'observation-gallery': 'lab',
+  'inner-chamber': { theme: 'lab', density: 'sparse' },
+  'corridor': 'lab',
+  'storage': 'freight',
+  'airlock': { theme: 'works', density: 'sparse' },
+  'isolation-ward': 'medical',
+};
+
+export const SECTOR_TWO: DistrictDefinition = furnish(plan, {
   id: 'sector-two',
   name: 'Sector 2',
   subtitle: 'Quarantine — Do Not Enter',
@@ -135,4 +146,4 @@ export const SECTOR_TWO: DistrictDefinition = {
     { position: plan.spot('storage', 19, 2), radius: 7, color: '#7a3cff', intensity: 0.45 },
     { position: plan.spot('isolation-ward', 19, 2), radius: 7, color: '#c8f6ff', intensity: 0.4 },
   ],
-};
+}, dressing);

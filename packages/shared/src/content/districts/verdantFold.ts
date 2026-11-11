@@ -2,6 +2,7 @@ import { drawBlueprint, link, patch, room } from '../../world/blueprint.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { scatterGroups } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 46, height: 30 }, [
   room('grove', 10, 1, 26, 28, 'soil', 'round'),
@@ -36,7 +37,11 @@ const furnishings = scatterGroups(plan, placed, [
   ['east-crease', 'vf-east-prop', ['planter', 'litter-puddle'], 2],
 ]);
 
-export const VERDANT_FOLD: DistrictDefinition = {
+const dressing: Dressing = {
+  'grove': { theme: 'garden', density: 'sparse' },
+};
+
+export const VERDANT_FOLD: DistrictDefinition = furnish(plan, {
   id: 'verdant-fold',
   name: 'The Verdant Fold',
   subtitle: 'A Garden Folded Out of Hydroponics',
@@ -61,4 +66,4 @@ export const VERDANT_FOLD: DistrictDefinition = {
     { position: plan.spot('grove', 6, 3), radius: 9, color: '#b57cff', intensity: 0.6 },
     { position: plan.spot('grove', 17, 25), radius: 9, color: '#9fd8ff', intensity: 0.5 },
   ],
-};
+}, dressing);

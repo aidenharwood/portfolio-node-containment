@@ -67,6 +67,9 @@ import { ITEMS } from './items.ts';
 import { RECIPES } from './recipes.ts';
 import { FIELD_FABRICATION } from './quests/fieldFabrication.ts';
 import { NPCS } from './npcs.ts';
+import { AMBIENT_NPCS } from './ambientNpcs.ts';
+import { CLUTTER_OBJECTS } from './clutterObjects.ts';
+import { AMBIENT_DIALOGUES } from './dialogues/ambientDialogues.ts';
 import { ORIENTATION_PROTOCOL } from './quests/orientationProtocol.ts';
 import { LIVE_FIRE } from './quests/liveFire.ts';
 import { CLEARED_FOR_TRANSIT } from './quests/clearedForTransit.ts';
@@ -183,10 +186,11 @@ function startingLocation(): WorldLocation {
 
 export const GAME_CONTENT: GameContent = {
   items: indexById<ItemDefinition>([...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS, ...UNIQUE_GEAR, ...CALDER_MATERIALS, ...CALDER_MEDICINE, ...CALDER_QUEST_ITEMS, ...SALTWORKS_GEAR, ...CATHEDRAL_GEAR, ...CALDER_UNIQUE_GEAR, ...VESPER_MATERIALS, ...VESPER_MEDICINE, ...VESPER_QUEST_ITEMS, ...WARD_GEAR, ...PHYSICIAN_GEAR, ...VESPER_UNIQUE_GEAR]),
-  npcs: indexById([...NPCS, ...DEEP_NPCS, ...WATERWORKS_NPCS, ...OFFICE_NPCS, ...CALDER_NPCS, ...VESPER_NPCS]),
-  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...FURNITURE_OBJECTS, ...OFFICE_OBJECTS, ...CONTRACT_OBJECTS, ...CALDER_OBJECTS, ...VESPER_OBJECTS]),
+  npcs: indexById([...NPCS, ...DEEP_NPCS, ...WATERWORKS_NPCS, ...OFFICE_NPCS, ...CALDER_NPCS, ...VESPER_NPCS, ...AMBIENT_NPCS]),
+  worldObjects: indexById([...WORLD_OBJECTS, ...CRAFTING_OBJECTS, ...DEEP_OBJECTS, ...TRANSIT_OBJECTS, ...POCKET_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...FURNITURE_OBJECTS, ...OFFICE_OBJECTS, ...CONTRACT_OBJECTS, ...CALDER_OBJECTS, ...VESPER_OBJECTS, ...CLUTTER_OBJECTS]),
   assemblies: ASSEMBLY_INDEX,
   dialogues: indexById([
+    ...AMBIENT_DIALOGUES,
     REYES_DIALOGUE,
     VARGA_DIALOGUE,
     PELL_DIALOGUE,

@@ -3,6 +3,7 @@ import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlaceme
 import type { TilePoint } from '../../world/geometry.ts';
 import { VESPER_LODGE_ANCHORS } from './vesperLodge.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 108, height: 101 }, [
   room('stockroom', 1, 1, 106, 23, 'plating'),
@@ -72,7 +73,14 @@ const packs = scatterPacks(plan, [...placed, ...furnishings], [
   ['surgery', 'vp-wraith-surgery-pack', 'prescription-wraith', 4],
 ]);
 
-export const VESPER_PHARMACY: DistrictDefinition = {
+const dressing: Dressing = {
+  'stockroom': 'freight',
+  'dispensary': 'medical',
+  'surgery': { theme: 'medical', density: 'sparse' },
+  'cold-store': 'cold',
+};
+
+export const VESPER_PHARMACY: DistrictDefinition = furnish(plan, {
   id: 'vesper-pharmacy',
   name: 'Vesper Pharmacy',
   subtitle: 'Vesper Wing — Dispensary and Surgery',
@@ -103,4 +111,4 @@ export const VESPER_PHARMACY: DistrictDefinition = {
     { position: plan.spot('cold-store', 83, 11), radius: 13, color: '#c88ad8', intensity: 0.4 },
     { position: plan.spot('cold-store', 19, 13), radius: 14, color: '#ffe8b8', intensity: 0.4 },
   ],
-};
+}, dressing);

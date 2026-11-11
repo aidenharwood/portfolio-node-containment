@@ -4,6 +4,8 @@ import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlaceme
 import type { TilePoint } from '../../world/geometry.ts';
 import { DEEPWATCH_ANCHORS } from './deepwatch.ts';
 import { INDUSTRIAL_PROPS, LITTER, OFFICE_PROPS, scatterGroups, scatterPacks } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
+import { ambientCast } from '../ambientNpcs.ts';
 
 const plan = drawBlueprint({ width: 86, height: 62 }, [
   room('uplink-lobby', 1, 1, 22, 18, 'plating'),
@@ -120,7 +122,16 @@ const packs = scatterPacks(plan, [...placed, ...furnishings], [
   ['spool-store', 'sa-operator-spool-pack', 'echo-operator', 2],
 ]);
 
-export const SIGNAL_ARRAY: DistrictDefinition = {
+const dressing: Dressing = {
+  'uplink-lobby': 'office',
+  'relay-floor': 'industrial',
+  'operator-pit': 'office',
+  'cable-run': 'industrial',
+  'spool-store': 'freight',
+  'dish-gantry': 'industrial',
+};
+
+export const SIGNAL_ARRAY: DistrictDefinition = furnish(plan, {
   id: 'signal-array',
   name: 'The Signal Array',
   subtitle: 'Site Meridian — Long-Range Communications',
@@ -155,4 +166,4 @@ export const SIGNAL_ARRAY: DistrictDefinition = {
     { position: plan.spot('dish-gantry', 31, 19), radius: 14, color: '#8afff0', intensity: 0.65 },
     { position: plan.spot('dish-gantry', 53, 13), radius: 13, color: '#ffb87a', intensity: 0.45 },
   ],
-};
+}, dressing, { cast: ambientCast('deckhand', 'researcher', 'operative', 'technician') });

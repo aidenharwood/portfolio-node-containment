@@ -4,6 +4,7 @@ import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../wo
 import type { TilePoint } from '../../world/geometry.ts';
 import { WATERWORKS_ANCHORS } from './waterworks.ts';
 import { INDUSTRIAL_PROPS, LITTER, scatterGroups } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 67, height: 70 }, [
   room('causeway', 0, 1, 66, 13, 'concrete'),
@@ -52,7 +53,13 @@ const furnishings = scatterGroups(plan, placed, [
   ['weighbridge', 'cc-weighbridge-prop', ['storage-rack', 'pipe-cluster', 'wall-locker', 'litter-gravel'], 10],
 ]);
 
-export const CALDER_CAUSEWAY: DistrictDefinition = {
+const dressing: Dressing = {
+  'causeway': 'mine',
+  'salt-road': 'mine',
+  'weighbridge': 'mine',
+};
+
+export const CALDER_CAUSEWAY: DistrictDefinition = furnish(plan, {
   id: 'calder-causeway',
   name: 'Calder Causeway',
   subtitle: 'Calder Wing — Sealed Salt Road',
@@ -67,7 +74,7 @@ export const CALDER_CAUSEWAY: DistrictDefinition = {
   areas: [
     plan.area('causeway', 'Calder Causeway'),
     plan.area('salt-road', 'Salt Road'),
-    plan.area('weighbridge', 'Weighbridge'),
+    plan.area('weighbridge', 'Weighbridge', { safe: true }),
   ],
   npcs,
   objects: [...fixtures, ...furnishings],
@@ -79,4 +86,4 @@ export const CALDER_CAUSEWAY: DistrictDefinition = {
     { position: plan.spot('causeway', 34, 2), radius: 9, color: '#ffd27f', intensity: 0.35 },
     { position: plan.spot('causeway', 62, 2), radius: 9, color: '#ff9a6a', intensity: 0.45 },
   ],
-};
+}, dressing);

@@ -4,6 +4,7 @@ import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlaceme
 import type { TilePoint } from '../../world/geometry.ts';
 import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 124, height: 88 }, [
   room('loading-dock', 1, 1, 28, 25, 'rust'),
@@ -135,7 +136,17 @@ const packs = scatterPacks(plan, [...placed, ...furnishings], [
   ['cold-store', 'yd-mite-cold-pack', 'gloam-mite', 3],
 ]);
 
-export const SERVICE_YARDS: DistrictDefinition = {
+const dressing: Dressing = {
+  'loading-dock': 'freight',
+  'cold-store': 'cold',
+  'yard-office': 'office',
+  'scrap-yard': 'freight',
+  'culverts': 'wet',
+  'laundry': 'industrial',
+  'gantry-yard': 'freight',
+};
+
+export const SERVICE_YARDS: DistrictDefinition = furnish(plan, {
   id: 'service-yards',
   name: 'Service Yards',
   subtitle: 'Site Meridian — Salvage and Laundry',
@@ -170,4 +181,4 @@ export const SERVICE_YARDS: DistrictDefinition = {
     { position: plan.spot('laundry', 22, 20), radius: 11, color: '#d8e7ef', intensity: 0.4 },
     { position: plan.spot('culverts', 17, 20), radius: 13, color: '#7cf29a', intensity: 0.45 },
   ],
-};
+}, dressing);

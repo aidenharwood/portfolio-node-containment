@@ -18,7 +18,7 @@ import { buildObjectModel, type AnimatedPart } from '../models/objectModels.ts';
 import { hex, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE } from '../voxel/voxelKinds.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
-import { meshVoxels } from '../voxel/voxelMesher.ts';
+import { meshVoxels, type VoxelMeshes } from '../voxel/voxelMesher.ts';
 import { createVoxelObject } from '../voxel/voxelMaterials.ts';
 import { LiquidSurface } from './liquidSurface.ts';
 import { buildFloorScatter } from './floorScatter.ts';
@@ -91,6 +91,28 @@ function hasStructure(zone: ActiveZone, region: TileRect): boolean {
   }
   return false;
 }
+
+interface ObjectMeshes {
+  readonly base: VoxelMeshes;
+  readonly animated: readonly { readonly meshes: VoxelMeshes; readonly spec: AnimatedPart }[];
+  readonly heightVoxels: number;
+}
+
+const OBJECT_MESH_CACHE = new Map<string, ObjectMeshes>();
+
+const objectMeshesFor = (model: WorldObjectDefinition['model'], seed: number): ObjectMeshes => {
+  const key = `${model}:${seed}`;
+  const cached = OBJECT_MESH_CACHE.get(key);
+  if (cached) return cached;
+  const parts = buildObjectModel(model, seed);
+  const built = {
+    base: parts.base.mesh(MODEL_VOXEL_SIZE),
+    animated: parts.animated.map((spec) => ({ meshes: spec.model.mesh(MODEL_VOXEL_SIZE), spec })),
+    heightVoxels: parts.heightVoxels,
+  };
+  OBJECT_MESH_CACHE.set(key, built);
+  return built;
+};
 
 export class ChunkView {
   readonly root = new Group();
@@ -174,16 +196,16 @@ export class ChunkView {
     const definition = GAME_CONTENT.worldObjects.get(placement.objectId);
     if (!definition) return;
     const seed = (placement.position.x * 31 + placement.position.y * 17 + index) % 97;
-    const parts = buildObjectModel(definition.model, seed);
+    const parts = objectMeshesFor(definition.model, seed);
     const scale = definition.modelScale ?? 1;
 
     const group = new Group();
     group.position.set(placement.position.x, 0, placement.position.y);
     group.scale.setScalar(scale);
     group.rotation.y = OBJECT_FACING_YAW[placement.facing ?? 'south'];
-    group.add(createVoxelObject(parts.base.mesh(MODEL_VOXEL_SIZE)));
-    const animated = parts.animated.map((spec) => {
-      const part = createVoxelObject(spec.model.mesh(MODEL_VOXEL_SIZE), { castShadow: false });
+    group.add(createVoxelObject(parts.base));
+    const animated = parts.animated.map(({ meshes, spec }) => {
+      const part = createVoxelObject(meshes, { castShadow: false });
       group.add(part);
       return { part, spec };
     });

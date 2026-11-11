@@ -4,6 +4,8 @@ import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlaceme
 import type { TilePoint } from '../../world/geometry.ts';
 import { DEEPWATCH_ANCHORS } from './deepwatch.ts';
 import { INDUSTRIAL_PROPS, LITTER, OFFICE_PROPS, scatterGroups, scatterPacks } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
+import { ambientCast } from '../ambientNpcs.ts';
 
 const plan = drawBlueprint({ width: 86, height: 62 }, [
   room('freezer-plant', 1, 1, 16, 20, 'grate'),
@@ -135,7 +137,18 @@ const packs = scatterPacks(plan, [...placed, ...furnishings], [
   ['freezer-plant', 'cv-plant-mote-pack', 'frost-mote', 2],
 ]);
 
-export const CRYOVAULT: DistrictDefinition = {
+const dressing: Dressing = {
+  'freezer-plant': 'cold',
+  'fenn-nook': 'camp',
+  'thaw-room': 'medical',
+  'pod-hall': 'cold',
+  'dock': 'freight',
+  'cold-corridor': 'cold',
+  'curator-office': { theme: 'office', density: 'sparse' },
+  'husk-ward': 'medical',
+};
+
+export const CRYOVAULT: DistrictDefinition = furnish(plan, {
   id: 'cryovault',
   name: 'The Cryovault',
   subtitle: 'Site Meridian — Cold Storage, Dormant Holdings',
@@ -173,4 +186,4 @@ export const CRYOVAULT: DistrictDefinition = {
     { position: plan.spot('husk-ward', 18, 12), radius: 13, color: '#7ae0ff', intensity: 0.45 },
     { position: plan.spot('curator-office', 21, 12), radius: 13, color: '#c8f0ff', intensity: 0.6 },
   ],
-};
+}, dressing, { cast: ambientCast('deckhand', 'researcher', 'operative', 'technician') });

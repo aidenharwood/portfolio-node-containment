@@ -3,6 +3,8 @@ import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { CIVIC_PROPS, OFFICE_PROPS, scatterGroups } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
+import { ambientCast } from '../ambientNpcs.ts';
 
 const plan = drawBlueprint({ width: 60, height: 46 }, [
   room('lodge', 1, 1, 58, 44, 'carpet'),
@@ -48,7 +50,11 @@ const furnishings = scatterGroups(plan, placed, [
   ['lodge', 'vl-civic', CIVIC_PROPS, 8],
 ]);
 
-export const VESPER_LODGE: DistrictDefinition = {
+const dressing: Dressing = {
+  'lodge': { theme: 'camp', density: 'dense' },
+};
+
+export const VESPER_LODGE: DistrictDefinition = furnish(plan, {
   id: 'vesper-lodge',
   name: 'Porter\'s Lodge',
   subtitle: 'Site Vesper — Outpost',
@@ -72,4 +78,4 @@ export const VESPER_LODGE: DistrictDefinition = {
     { position: plan.spot('lodge', 2, 29), radius: 9, color: '#ffe8b8', intensity: 0.45 },
     { position: plan.spot('lodge', 32, 41), radius: 9, color: '#6ad8b8', intensity: 0.5 },
   ],
-};
+}, dressing, { cast: ambientCast('porter', 'orderly', 'operative') });

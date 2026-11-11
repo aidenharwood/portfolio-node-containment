@@ -3,6 +3,7 @@ import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlaceme
 import type { TilePoint } from '../../world/geometry.ts';
 import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 import { INDUSTRIAL_PROPS, LITTER, scatterGroups, scatterPacks } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 110, height: 80 }, [
   room('landing', 1, 1, 18, 14, 'grate'),
@@ -129,7 +130,20 @@ const packs = scatterPacks(plan, [...placed, ...furnishings], [
   ['tunnel', 'uc-leech-tunnel-pack', 'pipe-leech', 1],
 ]);
 
-export const UNDERCROFT: DistrictDefinition = {
+const dressing: Dressing = {
+  'landing': 'camp',
+  'tunnel': { theme: 'wet', density: 'sparse' },
+  'junction-room': 'industrial',
+  'camp': { theme: 'camp', density: 'dense' },
+  'pump-hall': 'wet',
+  'warrens': 'wet',
+  'pipe-gallery': 'industrial',
+  'east-corridor': 'industrial',
+  'flooded-sump': 'wet',
+  'workshop': 'industrial',
+};
+
+export const UNDERCROFT: DistrictDefinition = furnish(plan, {
   id: 'undercroft',
   name: 'The Undercroft',
   subtitle: 'Site Meridian — Abandoned Maintenance Level',
@@ -167,4 +181,4 @@ export const UNDERCROFT: DistrictDefinition = {
     { position: plan.spot('junction-room', 3, 3), radius: 9, color: '#9fd8ff', intensity: 0.4 },
     { position: plan.spot('workshop', 24, 13), radius: 11, color: '#ff4d4d', intensity: 0.55 },
   ],
-};
+}, dressing);

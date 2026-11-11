@@ -4,6 +4,8 @@ import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlaceme
 import type { TilePoint } from '../../world/geometry.ts';
 import { DEEPWATCH_ANCHORS } from './deepwatch.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
+import { ambientCast } from '../ambientNpcs.ts';
 
 const plan = drawBlueprint({ width: 86, height: 62 }, [
   room('ember-galleries', 1, 1, 84, 22, 'rust'),
@@ -115,7 +117,15 @@ const packs = scatterPacks(plan, [...placed, ...furnishings], [
   ['slag-pit', 'fu-wisp-pit-pack', 'cinder-wisp', 2],
 ]);
 
-export const FURNACE: DistrictDefinition = {
+const dressing: Dressing = {
+  'ember-galleries': 'industrial',
+  'foundry': 'industrial',
+  'slag-pit': { theme: 'industrial', density: 'sparse' },
+  'reactor-heart': { theme: 'industrial', density: 'sparse' },
+  'coolant-lock': 'camp',
+};
+
+export const FURNACE: DistrictDefinition = furnish(plan, {
   id: 'furnace',
   name: 'The Furnace',
   subtitle: 'Site Meridian — Primary Reactor',
@@ -148,4 +158,4 @@ export const FURNACE: DistrictDefinition = {
     { position: plan.spot('foundry', 23, 30), radius: 12, color: '#ffb347', intensity: 0.45 },
     { position: plan.spot('reactor-heart', 15, 20), radius: 14, color: '#ff7a2a', intensity: 0.85 },
   ],
-};
+}, dressing, { cast: ambientCast('deckhand', 'researcher', 'operative', 'technician') });

@@ -3,6 +3,7 @@ import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlaceme
 import type { TilePoint } from '../../world/geometry.ts';
 import { CALDER_GATEHOUSE_ANCHORS } from './calderGatehouse.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 108, height: 101 }, [
   room('cloister', 1, 1, 106, 23, 'plating'),
@@ -72,7 +73,14 @@ const packs = scatterPacks(plan, [...placed, ...furnishings], [
   ['the-nave', 'sc-acolyte-nave-pack', 'cathedral-acolyte', 4],
 ]);
 
-export const SALT_CATHEDRAL: DistrictDefinition = {
+const dressing: Dressing = {
+  'cloister': 'chapel',
+  'nave-steps': 'chapel',
+  'the-nave': { theme: 'chapel', density: 'sparse' },
+  'reliquary': 'chapel',
+};
+
+export const SALT_CATHEDRAL: DistrictDefinition = furnish(plan, {
   id: 'salt-cathedral',
   name: 'Salt Cathedral',
   subtitle: 'Calder Wing — The Nave',
@@ -103,4 +111,4 @@ export const SALT_CATHEDRAL: DistrictDefinition = {
     { position: plan.spot('reliquary', 22, 11), radius: 13, color: '#ffd27f', intensity: 0.4 },
     { position: plan.spot('reliquary', 86, 13), radius: 14, color: '#ffb3c8', intensity: 0.45 },
   ],
-};
+}, dressing);

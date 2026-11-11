@@ -3,6 +3,7 @@ import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { CIVIC_PROPS, LITTER, scatterGroups } from './populate.ts';
+import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 124, height: 68 }, [
   room('arrival', 1, 1, 20, 18, 'concrete'),
@@ -154,7 +155,21 @@ const furnishings = scatterGroups(plan, placed, [
   ['corridor', 'intake-corridor-litter', LITTER, 5],
 ]);
 
-export const INTAKE_WING: DistrictDefinition = {
+const dressing: Dressing = {
+  'arrival': { theme: 'civic', density: 'dense' },
+  'lockers': 'civic',
+  'diagnostics': 'medical',
+  'observation': 'lab',
+  'supply': 'freight',
+  'corridor': 'civic',
+  'storeroom': 'freight',
+  'workshop': 'industrial',
+  'range-gallery': { theme: 'camp', density: 'sparse' },
+  'range': { theme: 'camp', density: 'sparse' },
+  'transit-bay': { theme: 'civic', density: 'dense' },
+};
+
+export const INTAKE_WING: DistrictDefinition = furnish(plan, {
   id: 'intake-wing',
   name: 'Intake Wing',
   subtitle: 'Site Meridian — Sublevel 4',
@@ -198,4 +213,4 @@ export const INTAKE_WING: DistrictDefinition = {
     { position: plan.spot('range', 18, 10), radius: 11, color: '#ffcf4d', intensity: 0.45 },
     { position: plan.spot('transit-bay', 14, 10), radius: 11, color: '#4fd8ff', intensity: 0.5 },
   ],
-};
+}, dressing);
