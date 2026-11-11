@@ -39,7 +39,8 @@ const plan = drawBlueprint({ width: 204, height: 206 }, [
   link('east-barracks', 'mess-hall', 3),
   link('mess-hall', 'east-stores', 3),
   patch(26, 205, 152, 1, 'glass'),
-  track([70, 192], [70, 204]),
+  track([0, 189], [37, 189]),
+  track([165, 189], [202, 189]),
   pillars('north-boulevard', 8, 6, 3),
   pillars('south-boulevard', 8, 6, 3),
   pillars('west-boulevard', 6, 8, 3),
@@ -63,13 +64,11 @@ const landmarks: ObjectPlacement[] = [
   { instanceId: 'circuit-chasm-rail-sign', objectId: 'warning-sign', position: plan.at('south-boulevard', 76, 12) },
 ];
 
-const assemblies: AssemblyPlacement[] = [0, 4, 7, 11].map((dy, index) => ({
-  instanceId: `circuit-line-bridge-${index + 1}`,
-  assemblyId: 'bridge',
-  position: plan.spot('south-boulevard', 43, dy),
-  facing: 'east',
-  span: 2,
-}));
+const LINE_BRIDGE_COLUMNS = [3, 7, 17, 21];
+
+const assemblies: AssemblyPlacement[] = ['lantern-court', 'ledger-court'].flatMap((court) =>
+  LINE_BRIDGE_COLUMNS.map((dx, index) => ({ instanceId: `${court}-line-bridge-${index + 1}`, assemblyId: 'bridge', position: plan.spot(court, dx, 8), span: 2 })),
+);
 
 const furnishings = scatterGroups(plan, landmarks, [
   ['north-boulevard', 'circuit-north-prop', CIVIC_PROPS, 12],

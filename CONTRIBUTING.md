@@ -100,7 +100,7 @@ Read `WORLD_DESIGN.md` first: it holds the rules, and `findWorldDesignIssues` en
 
 ### Add a tram station
 
-1. Pick a room in the district to act as the platform. `patch` a two-tile-wide strip of `track` against one wall, running wall to wall so both ends meet a wall (the tunnel mouths), and keep the wall behind it solid. Edge the platform side with a `hazard` strip. On the overworld, continue the line beyond the tunnel mouth to the next station (`WORLD_DESIGN.md`, rule 17).
+1. Pick a room in the district to act as the platform. Draw a two-tile-wide bed with `track(...)` straight through it and on out of the district at both ends, and edge the platform side with a `hazard` strip. Then join both ends to the line's loop in the level file with `drawTrackway`, so the line stays a closed circuit (`WORLD_DESIGN.md`, rule 17). Where the bed crosses floor people need, put `bridge` assemblies over it.
    Place exactly one `tram-car` assembly on the track, facing `north` or `south` for a track along x and `east` or `west` for one along y. Its pieces open the transit map; a `tram-stop` pylon on the platform is optional scenery.
 2. Add a `TramStationDefinition` to `TRAM_STATIONS` in `content/tramNetwork.ts`, with an arrival `platform` tile inside that area, read from the district's `anchors`.
 3. Add the station to a line in `TRAM_LINES`. Neighbours in a line's list are one stop apart. A station's car serves every line through it, and only those, so riders change lines by getting off at a shared station.

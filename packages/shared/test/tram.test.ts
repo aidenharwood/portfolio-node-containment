@@ -63,7 +63,7 @@ test('findTramIssues reports a station with a second tram car', () => {
   assert.ok(findTramIssues(content).some((issue) => issue.includes('"atrium-transit" has 2 tram cars')));
 });
 
-test('every station car sits on a track that runs into tunnels, with a platform on one side', () => {
+test('every station car sits on track that runs on through its platform', () => {
   assert.deepEqual(findTramIssues(GAME_CONTENT), []);
   for (const station of network.stations.values()) {
     const level = GAME_CONTENT.levels.get(station.levelId);
@@ -74,11 +74,11 @@ test('every station car sits on a track that runs into tunnels, with a platform 
   }
 });
 
-test('the overworld lines run on drawn track from each station to the next', () => {
+test('every line runs on a closed loop of drawn track through its stations', () => {
   assert.deepEqual(findWorldDesignIssues(GAME_CONTENT).filter((issue) => issue.startsWith('tram line')), []);
 });
 
-test('a gap in the track between two stations is reported', () => {
+test('breaking the loop is reported at every station on it', () => {
   const level = GAME_CONTENT.levels.get('main-floor');
   assert.ok(level);
   const gap = new Set([0, 1].flatMap((dx) => [45, 46].map((y) => level.layout.toLevelPoint('service-concourse', { x: 98 + dx, y }))).map((point) => `${point.x},${point.y}`));
@@ -86,5 +86,9 @@ test('a gap in the track between two stations is reported', () => {
   const layout = { ...level.layout, tileAt };
   const content: GameContent = { ...GAME_CONTENT, levels: new Map([...GAME_CONTENT.levels, ['main-floor', { ...level, layout }]]) };
   const issues = findWorldDesignIssues(content).filter((issue) => issue.startsWith('tram line'));
-  assert.deepEqual(issues.map((issue) => issue.match(/"[^"]+" to "[^"]+"/)?.[0]), ['"atrium-transit" to "yards-depot"', '"yards-depot" to "calder-platform"']);
+  const meridianLine = GAME_CONTENT.tram.lines.get('meridian-line');
+  assert.ok(meridianLine);
+  for (const stationId of meridianLine.stations) {
+    assert.ok(issues.some((issue) => issue.includes('closed loop') && issue.includes(`"${stationId}"`)), stationId);
+  }
 });

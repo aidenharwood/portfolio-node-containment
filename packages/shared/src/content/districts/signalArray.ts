@@ -12,8 +12,6 @@ const plan = drawBlueprint({ width: 86, height: 62 }, [
   room('cable-run', 1, 20, 22, 25, 'rust'),
   room('spool-store', 1, 46, 22, 15, 'concrete'),
   room('dish-gantry', 24, 28, 61, 33, 'concrete'),
-  patch(1, 1, 2, 18, 'track'),
-  patch(3, 1, 1, 18, 'hazard'),
   patch(30, 13, 24, 1, 'hazard'),
   patch(66, 17, 14, 2, 'glass'),
   patch(44, 38, 20, 1, 'hazard'),
@@ -28,13 +26,19 @@ const plan = drawBlueprint({ width: 86, height: 62 }, [
   link('spool-store', 'dish-gantry', 5, 'concrete'),
   pillars('relay-floor', 7, 7, 4),
   pillars('dish-gantry', 10, 8, 5),
+  patch(1, 4, 22, 1, 'hazard'),
+  patch(0, 2, 86, 2, 'track'),
+  patch(45, 0, 2, 2, 'track'),
+  patch(1, 1, 11, 1, 'wall'),
+  patch(16, 1, 29, 1, 'wall'),
+  patch(47, 1, 38, 1, 'wall'),
   exit('north', 'uplink-lobby', 'north', 2, { offset: 12, gate: true, floor: 'door' }),
 ]);
 
 export const SIGNAL_ARRAY_ANCHORS = {
-  tramPlatform: plan.at('uplink-lobby', 4, 6),
-  entrance: plan.at('uplink-lobby', 12, 2),
-  chuteLanding: plan.at('operator-pit', 22, 2),
+  tramPlatform: plan.at('uplink-lobby', 6, 7),
+  entrance: plan.at('uplink-lobby', 12, 5),
+  chuteLanding: plan.at('operator-pit', 22, 4),
 } satisfies Record<string, TilePoint>;
 
 const npcs: NpcPlacement[] = [
@@ -42,22 +46,22 @@ const npcs: NpcPlacement[] = [
   ];
 
 const fixtures: ObjectPlacement[] = [
-  { instanceId: 'sa-tram-stop', objectId: 'tram-stop', position: plan.at('uplink-lobby', 3, 12), facing: 'west' },
-    { instanceId: 'sa-lobby-storage', objectId: 'storage-locker', position: plan.at('uplink-lobby', 21, 0) },
+  { instanceId: 'sa-tram-stop', objectId: 'tram-stop', position: plan.at('uplink-lobby', 2, 5), facing: 'north' },
+    { instanceId: 'sa-lobby-storage', objectId: 'storage-locker', position: plan.at('uplink-lobby', 21, 5) },
     { instanceId: 'sa-lobby-bed', objectId: 'med-bed', position: plan.at('uplink-lobby', 20, 17) },
-    { instanceId: 'sa-lobby-sign', objectId: 'warning-sign', position: plan.at('uplink-lobby', 11, 0) },
-    { instanceId: 'sa-console-a', objectId: 'relay-console', position: plan.at('relay-floor', 1, 0) },
-    { instanceId: 'sa-console-b', objectId: 'relay-console', position: plan.at('relay-floor', 16, 0) },
-    { instanceId: 'sa-console-c', objectId: 'relay-console', position: plan.at('relay-floor', 34, 0) },
-    { instanceId: 'sa-floor-rack-a', objectId: 'server-rack', position: plan.at('relay-floor', 7, 0) },
-    { instanceId: 'sa-floor-rack-b', objectId: 'server-rack', position: plan.at('relay-floor', 25, 0) },
+    { instanceId: 'sa-lobby-sign', objectId: 'warning-sign', position: plan.at('uplink-lobby', 16, 4) },
+    { instanceId: 'sa-console-a', objectId: 'relay-console', position: plan.at('relay-floor', 1, 3) },
+    { instanceId: 'sa-console-b', objectId: 'relay-console', position: plan.at('relay-floor', 16, 3) },
+    { instanceId: 'sa-console-c', objectId: 'relay-console', position: plan.at('relay-floor', 34, 3) },
+    { instanceId: 'sa-floor-rack-a', objectId: 'server-rack', position: plan.at('relay-floor', 7, 3) },
+    { instanceId: 'sa-floor-rack-b', objectId: 'server-rack', position: plan.at('relay-floor', 25, 3) },
     { instanceId: 'sa-floor-rack-c', objectId: 'server-rack', position: plan.at('relay-floor', 1, 25) },
     { instanceId: 'sa-floor-rack-d', objectId: 'server-rack', position: plan.at('relay-floor', 34, 25) },
     { instanceId: 'sa-patch-floor', objectId: 'patch-point', position: plan.at('relay-floor', 5, 25) },
-    { instanceId: 'sa-outbox', objectId: 'outbox-terminal', position: plan.at('operator-pit', 12, 0) },
-    { instanceId: 'sa-return-chute', objectId: 'return-chute', position: plan.at('operator-pit', 23, 2), facing: 'west' },
-    { instanceId: 'sa-pit-rack-a', objectId: 'server-rack', position: plan.at('operator-pit', 1, 0) },
-    { instanceId: 'sa-pit-rack-b', objectId: 'server-rack', position: plan.at('operator-pit', 22, 0) },
+    { instanceId: 'sa-outbox', objectId: 'outbox-terminal', position: plan.at('operator-pit', 12, 3) },
+    { instanceId: 'sa-return-chute', objectId: 'return-chute', position: plan.at('operator-pit', 23, 4), facing: 'west' },
+    { instanceId: 'sa-pit-rack-a', objectId: 'server-rack', position: plan.at('operator-pit', 1, 3) },
+    { instanceId: 'sa-pit-rack-b', objectId: 'server-rack', position: plan.at('operator-pit', 19, 3) },
     { instanceId: 'sa-pit-bench-a', objectId: 'briefing-bench', position: plan.at('operator-pit', 2, 22) },
     { instanceId: 'sa-pit-bench-b', objectId: 'briefing-bench', position: plan.at('operator-pit', 21, 22) },
     { instanceId: 'sa-patch-pit', objectId: 'patch-point', position: plan.at('operator-pit', 23, 25) },
@@ -77,17 +81,18 @@ const fixtures: ObjectPlacement[] = [
   ];
 
 const assemblies: AssemblyPlacement[] = [
-  { instanceId: 'sa-tram-car', assemblyId: 'tram-car', position: plan.spot('uplink-lobby', 0, 5), facing: 'west' },];
+  { instanceId: 'sa-tram-car', assemblyId: 'tram-car', position: plan.spot('uplink-lobby', 3, 1), facing: 'north' },
+  { instanceId: 'sa-line-bridge', assemblyId: 'bridge', position: plan.spot('uplink-lobby', 12, 0), facing: 'south', span: 2 },];
 
 const residents: CreaturePlacement[] = [
-    { instanceId: 'sa-sentinel-a', creatureId: 'relay-sentinel', position: plan.at('relay-floor', 3, 2) },
-    { instanceId: 'sa-sentinel-b', creatureId: 'relay-sentinel', position: plan.at('relay-floor', 21, 2) },
+    { instanceId: 'sa-sentinel-a', creatureId: 'relay-sentinel', position: plan.at('relay-floor', 3, 4) },
+    { instanceId: 'sa-sentinel-b', creatureId: 'relay-sentinel', position: plan.at('relay-floor', 21, 4) },
     { instanceId: 'sa-sentinel-c', creatureId: 'relay-sentinel', position: plan.at('relay-floor', 32, 3) },
     { instanceId: 'sa-sentinel-d', creatureId: 'relay-sentinel', position: plan.at('relay-floor', 10, 22) },
     { instanceId: 'sa-sentinel-e', creatureId: 'relay-sentinel', position: plan.at('relay-floor', 25, 23) },
     { instanceId: 'sa-sentinel-f', creatureId: 'relay-sentinel', position: plan.at('relay-floor', 2, 23) },
     { instanceId: 'sa-sentinel-gantry', creatureId: 'relay-sentinel', position: plan.at('dish-gantry', 16, 2) },
-    { instanceId: 'sa-operator-a', creatureId: 'echo-operator', position: plan.at('operator-pit', 2, 2) },
+    { instanceId: 'sa-operator-a', creatureId: 'echo-operator', position: plan.at('operator-pit', 2, 4) },
     { instanceId: 'sa-operator-b', creatureId: 'echo-operator', position: plan.at('operator-pit', 21, 3) },
     { instanceId: 'sa-operator-c', creatureId: 'echo-operator', position: plan.at('operator-pit', 3, 24) },
     { instanceId: 'sa-operator-d', creatureId: 'echo-operator', position: plan.at('operator-pit', 22, 23) },

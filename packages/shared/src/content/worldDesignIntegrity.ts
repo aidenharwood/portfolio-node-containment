@@ -1,6 +1,6 @@
 import type { DistrictId } from '../ids.ts';
 import { parseTileLayout, type DistrictDefinition, type TileLayout } from '../world/district.ts';
-import { CARDINAL_OFFSETS, chebyshevDistance, rectContains, tileKey, type TilePoint } from '../world/geometry.ts';
+import { CARDINAL_OFFSETS, chebyshevDistance, rectContains, tileKey, type TilePoint, type TileRect } from '../world/geometry.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
 import { TILE_KINDS } from '../world/tiles.ts';
 import type { GameContent } from './gameContent.ts';
@@ -98,38 +98,53 @@ function trackNear(layout: ResolvedLevel['layout'], platform: TilePoint): TilePo
   return tiles;
 }
 
-function trackReachableFrom(layout: ResolvedLevel['layout'], start: readonly TilePoint[]): Set<string> {
+function trackReachableFrom(layout: ResolvedLevel['layout'], start: readonly TilePoint[], isCut: (point: TilePoint) => boolean = () => false): Set<string> {
   const seen = new Set(start.map(tileKey));
   const queue = [...start];
-  const visit = (point: TilePoint) => {
-    if (layout.tileAt(point) !== 'track' || seen.has(tileKey(point))) return;
-    seen.add(tileKey(point));
-    queue.push(point);
-  };
   for (let index = 0; index < queue.length; index++) {
     const here = queue[index] as TilePoint;
     for (let dy = -1; dy <= 1; dy++) {
-      for (let dx = -1; dx <= 1; dx++) visit({ x: here.x + dx, y: here.y + dy });
-    }
-    for (const offset of CARDINAL_OFFSETS) {
-      if (layout.tileAt({ x: here.x + offset.x, y: here.y + offset.y }) === 'wall') visit({ x: here.x + 2 * offset.x, y: here.y + 2 * offset.y });
+      for (let dx = -1; dx <= 1; dx++) {
+        const point = { x: here.x + dx, y: here.y + dy };
+        if (layout.tileAt(point) !== 'track' || seen.has(tileKey(point)) || isCut(point)) continue;
+        seen.add(tileKey(point));
+        queue.push(point);
+      }
     }
   }
   return seen;
 }
 
+function trackLeaving(layout: ResolvedLevel['layout'], area: TileRect): TilePoint[] {
+  const leaving: TilePoint[] = [];
+  for (let y = area.y - 1; y <= area.y + area.height; y++) {
+    for (let x = area.x - 1; x <= area.x + area.width; x++) {
+      if (!rectContains(area, { x, y }) && layout.tileAt({ x, y }) === 'track') leaving.push({ x, y });
+    }
+  }
+  return leaving;
+}
+
 function findLineIssues(content: GameContent, issues: string[]): void {
-  const level = overworldLevelOf(content);
-  if (!level) return;
-  for (const line of content.tram.lines.values()) {
-    const stations = line.stations.map((stationId) => content.tram.stations.get(stationId)).filter((station) => station?.levelId === level.id);
-    for (let index = 1; index < stations.length; index++) {
-      const from = stations[index - 1];
-      const to = stations[index];
-      if (!from || !to) continue;
-      const reached = trackReachableFrom(level.layout, trackNear(level.layout, from.platformPoint));
-      if (!trackNear(level.layout, to.platformPoint).some((tile) => reached.has(tileKey(tile)))) {
-        issues.push(`tram line ${line.id}: no drawn track runs from "${from.id}" to "${to.id}" on ${level.id}; lay track between them, through a tunnel mouth at each platform`);
+  for (const level of content.levels.values()) {
+    for (const line of content.tram.lines.values()) {
+      const stations = line.stations.flatMap((stationId) => {
+        const station = content.tram.stations.get(stationId);
+        return station && station.levelId === level.id ? [station] : [];
+      });
+      if (stations.length < 2) continue;
+      const first = stations[0] as (typeof stations)[number];
+      const reached = trackReachableFrom(level.layout, trackNear(level.layout, first.platformPoint));
+      for (const station of stations) {
+        if (!trackNear(level.layout, station.platformPoint).some((tile) => reached.has(tileKey(tile)))) {
+          issues.push(`tram line ${line.id}: no drawn track runs from "${first.id}" to "${station.id}" on ${level.id}`);
+          continue;
+        }
+        const leaving = trackLeaving(level.layout, station.area).filter((tile) => reached.has(tileKey(tile)));
+        const around = leaving.length === 0 ? new Set<string>() : trackReachableFrom(level.layout, [leaving[0] as TilePoint], (point) => rectContains(station.area, point));
+        if (leaving.length === 0 || leaving.some((tile) => !around.has(tileKey(tile)))) {
+          issues.push(`tram line ${line.id}: the track through "${station.id}" is not part of a closed loop on ${level.id}; a tram leaving one end of the platform must be able to come back in at the other`);
+        }
       }
     }
   }

@@ -1,4 +1,4 @@
-import { drawBlueprint, exit, link, patch, pillars, room } from '../../world/blueprint.ts';
+import { drawBlueprint, exit, link, patch, pillars, room, track } from '../../world/blueprint.ts';
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
@@ -14,8 +14,6 @@ const plan = drawBlueprint({ width: 86, height: 62 }, [
   room('cold-corridor', 1, 26, 84, 9, 'plating'),
   room('curator-office', 1, 36, 43, 25, 'carpet'),
   room('husk-ward', 45, 36, 40, 25, 'concrete'),
-  patch(66, 1, 19, 2, 'track'),
-  patch(66, 3, 19, 1, 'hazard'),
   patch(42, 9, 15, 2, 'coolant'),
   patch(52, 44, 10, 2, 'coolant'),
   patch(70, 52, 10, 2, 'coolant'),
@@ -36,12 +34,16 @@ const plan = drawBlueprint({ width: 86, height: 62 }, [
   pillars('cold-corridor', 10, 4, 4),
   pillars('pod-hall', 8, 8, 4),
   pillars('husk-ward', 9, 8, 5),
+  patch(81, 1, 1, 24, 'hazard'),
+  track([82, 0], [82, 60]),
+  patch(84, 1, 1, 11, 'wall'),
+  patch(84, 16, 1, 45, 'wall'),
   exit('east', 'dock', 'east', 2, { offset: 12, gate: true, floor: 'door' }),
 ]);
 
 export const CRYOVAULT_ANCHORS = {
-  tramPlatform: plan.at('dock', 4, 5),
-  entrance: plan.at('dock', 16, 13),
+  tramPlatform: plan.at('dock', 12, 6),
+  entrance: plan.at('dock', 14, 13),
 } satisfies Record<string, TilePoint>;
 
 const npcs: NpcPlacement[] = [
@@ -49,10 +51,10 @@ const npcs: NpcPlacement[] = [
   ];
 
 const fixtures: ObjectPlacement[] = [
-  { instanceId: 'cv-tram-stop', objectId: 'tram-stop', position: plan.at('dock', 1, 3), facing: 'east' },
-    { instanceId: 'cv-dock-sign', objectId: 'warning-sign', position: plan.at('dock', 18, 2) },
-    { instanceId: 'cv-dock-crate-a', objectId: 'supply-crate', position: plan.at('dock', 16, 23) },
-    { instanceId: 'cv-dock-crate-b', objectId: 'supply-crate', position: plan.at('dock', 17, 23) },
+  { instanceId: 'cv-tram-stop', objectId: 'tram-stop', position: plan.at('dock', 14, 2), facing: 'east' },
+    { instanceId: 'cv-dock-sign', objectId: 'warning-sign', position: plan.at('dock', 14, 0) },
+    { instanceId: 'cv-dock-crate-a', objectId: 'supply-crate', position: plan.at('dock', 13, 23) },
+    { instanceId: 'cv-dock-crate-b', objectId: 'supply-crate', position: plan.at('dock', 14, 23) },
     { instanceId: 'cv-pod-a', objectId: 'cryo-pod', position: plan.at('pod-hall', 1, 1) },
     { instanceId: 'cv-pod-b', objectId: 'cryo-pod', position: plan.at('pod-hall', 29, 1) },
     { instanceId: 'cv-pod-c', objectId: 'cryo-pod', position: plan.at('pod-hall', 1, 18) },
@@ -71,11 +73,11 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'cv-crystal-d', objectId: 'rime-crystal', position: plan.at('freezer-plant', 14, 18) },
     { instanceId: 'cv-plant-pipes', objectId: 'pipe-cluster', position: plan.at('freezer-plant', 3, 0) },
     { instanceId: 'cv-corridor-pillar-west', objectId: 'light-pillar', position: plan.at('cold-corridor', 0, 2) },
-    { instanceId: 'cv-corridor-pillar-east', objectId: 'light-pillar', position: plan.at('cold-corridor', 83, 0) },
+    { instanceId: 'cv-corridor-pillar-east', objectId: 'light-pillar', position: plan.at('cold-corridor', 79, 0) },
     { instanceId: 'cv-ward-pod-a', objectId: 'cold-pod', position: plan.at('husk-ward', 1, 1) },
-    { instanceId: 'cv-ward-pod-b', objectId: 'cold-pod', position: plan.at('husk-ward', 38, 1) },
+    { instanceId: 'cv-ward-pod-b', objectId: 'cold-pod', position: plan.at('husk-ward', 35, 1) },
     { instanceId: 'cv-ward-pod-c', objectId: 'cold-pod', position: plan.at('husk-ward', 1, 24) },
-    { instanceId: 'cv-ward-pod-d', objectId: 'cold-pod', position: plan.at('husk-ward', 38, 24) },
+    { instanceId: 'cv-ward-pod-d', objectId: 'cold-pod', position: plan.at('husk-ward', 35, 24) },
     { instanceId: 'cv-ward-crystal-a', objectId: 'rime-crystal', position: plan.at('husk-ward', 18, 12) },
     { instanceId: 'cv-ward-crystal-b', objectId: 'rime-crystal', position: plan.at('husk-ward', 18, 22) },
     { instanceId: 'cv-ledger', objectId: 'curator-ledger', position: plan.at('curator-office', 21, 6) },
@@ -87,7 +89,8 @@ const fixtures: ObjectPlacement[] = [
   ];
 
 const assemblies: AssemblyPlacement[] = [
-  { instanceId: 'cv-tram-car', assemblyId: 'tram-car', position: plan.spot('dock', 2, 0), facing: 'north' },];
+  { instanceId: 'cv-tram-car', assemblyId: 'tram-car', position: plan.spot('dock', 16, 4), facing: 'east' },
+  { instanceId: 'cv-line-bridge', assemblyId: 'bridge', position: plan.spot('dock', 15, 12), facing: 'east', span: 2 },];
 
 const residents: CreaturePlacement[] = [
     { instanceId: 'cv-moth-hall-a', creatureId: 'frost-moth', position: plan.at('pod-hall', 3, 2) },

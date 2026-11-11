@@ -1,4 +1,4 @@
-import { drawBlueprint, exit, link, patch, pillars, room } from '../../world/blueprint.ts';
+import { drawBlueprint, exit, link, patch, pillars, room, track } from '../../world/blueprint.ts';
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
@@ -12,8 +12,6 @@ const plan = drawBlueprint({ width: 86, height: 62 }, [
   room('drying-room', 1, 45, 20, 16, 'concrete'),
   room('reading-rooms', 22, 22, 32, 39, 'carpet'),
   room('sealed-room', 55, 22, 30, 39, 'carpet'),
-  patch(1, 1, 20, 2, 'track'),
-  patch(1, 3, 20, 1, 'hazard'),
   patch(28, 7, 50, 2, 'coolant'),
   patch(28, 14, 50, 2, 'coolant'),
   patch(40, 7, 3, 2, 'grate'),
@@ -32,12 +30,16 @@ const plan = drawBlueprint({ width: 86, height: 62 }, [
   link('sluice-hall', 'drying-room', 5, 'concrete'),
   link('drying-room', 'reading-rooms', 3),
   pillars('reading-rooms', 8, 8, 4),
+  patch(4, 1, 1, 18, 'hazard'),
+  track([2, 0], [2, 60]),
+  patch(1, 1, 1, 11, 'wall'),
+  patch(1, 16, 1, 45, 'wall'),
   exit('west', 'flood-stair', 'west', 2, { offset: 12, gate: true, floor: 'door' }),
 ]);
 
 export const DROWNED_ARCHIVE_ANCHORS = {
-  tramPlatform: plan.at('flood-stair', 4, 5),
-  entrance: plan.at('flood-stair', 2, 12),
+  tramPlatform: plan.at('flood-stair', 8, 6),
+  entrance: plan.at('flood-stair', 5, 12),
   sealedApproach: plan.at('stacks', 47, 19),
 } satisfies Record<string, TilePoint>;
 
@@ -46,7 +48,7 @@ const npcs: NpcPlacement[] = [
   ];
 
 const fixtures: ObjectPlacement[] = [
-  { instanceId: 'da-tram-stop', objectId: 'tram-stop', position: plan.at('flood-stair', 1, 3), facing: 'north' },
+  { instanceId: 'da-tram-stop', objectId: 'tram-stop', position: plan.at('flood-stair', 5, 2), facing: 'west' },
   { instanceId: 'da-sealed-door-a', objectId: 'sealed-reading-door', position: plan.linkTile('stacks', 'sealed-room', 0), facing: 'north' },
   { instanceId: 'da-sealed-door-b', objectId: 'sealed-reading-door', position: plan.linkTile('stacks', 'sealed-room', 1), facing: 'north' },
     { instanceId: 'da-stair-storage', objectId: 'storage-locker', position: plan.at('flood-stair', 19, 2) },
@@ -63,10 +65,10 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'da-vellum-c', objectId: 'vellum-stack', position: plan.at('stacks', 62, 3) },
     { instanceId: 'da-ink-a', objectId: 'ink-pool', position: plan.at('stacks', 40, 19) },
     { instanceId: 'da-ink-b', objectId: 'ink-pool', position: plan.at('stacks', 61, 19) },
-    { instanceId: 'da-sluice-a', objectId: 'sluice-valve', position: plan.at('sluice-hall', 0, 2), facing: 'east' },
+    { instanceId: 'da-sluice-a', objectId: 'sluice-valve', position: plan.at('sluice-hall', 3, 2), facing: 'east' },
     { instanceId: 'da-sluice-b', objectId: 'sluice-valve', position: plan.at('sluice-hall', 19, 5), facing: 'west' },
-    { instanceId: 'da-sluice-c', objectId: 'sluice-valve', position: plan.at('sluice-hall', 0, 21), facing: 'east' },
-    { instanceId: 'da-sluice-shelf-a', objectId: 'archive-shelf', position: plan.at('sluice-hall', 1, 23) },
+    { instanceId: 'da-sluice-c', objectId: 'sluice-valve', position: plan.at('sluice-hall', 3, 21), facing: 'east' },
+    { instanceId: 'da-sluice-shelf-a', objectId: 'archive-shelf', position: plan.at('sluice-hall', 3, 23) },
     { instanceId: 'da-sluice-shelf-b', objectId: 'archive-shelf', position: plan.at('sluice-hall', 18, 23) },
     { instanceId: 'da-sluice-ink', objectId: 'ink-pool', position: plan.at('sluice-hall', 16, 18) },
     { instanceId: 'da-reading-shelf-a', objectId: 'archive-shelf', position: plan.at('reading-rooms', 0, 0) },
@@ -83,7 +85,8 @@ const fixtures: ObjectPlacement[] = [
   ];
 
 const assemblies: AssemblyPlacement[] = [
-  { instanceId: 'da-tram-car', assemblyId: 'tram-car', position: plan.spot('flood-stair', 2, 0), facing: 'north' },];
+  { instanceId: 'da-tram-car', assemblyId: 'tram-car', position: plan.spot('flood-stair', 1, 4), facing: 'west' },
+  { instanceId: 'da-line-bridge', assemblyId: 'bridge', position: plan.spot('flood-stair', 0, 12), facing: 'east', span: 2 },];
 
 const residents: CreaturePlacement[] = [
     { instanceId: 'da-eel-stacks-a', creatureId: 'ink-eel', position: plan.at('stacks', 3, 1) },
@@ -92,7 +95,7 @@ const residents: CreaturePlacement[] = [
     { instanceId: 'da-eel-stacks-d', creatureId: 'ink-eel', position: plan.at('stacks', 16, 18) },
     { instanceId: 'da-eel-stacks-e', creatureId: 'ink-eel', position: plan.at('stacks', 59, 18) },
     { instanceId: 'da-eel-stacks-f', creatureId: 'ink-eel', position: plan.at('stacks', 50, 1) },
-    { instanceId: 'da-eel-sluice-a', creatureId: 'ink-eel', position: plan.at('sluice-hall', 2, 6) },
+    { instanceId: 'da-eel-sluice-a', creatureId: 'ink-eel', position: plan.at('sluice-hall', 4, 6) },
     { instanceId: 'da-eel-sluice-b', creatureId: 'ink-eel', position: plan.at('sluice-hall', 16, 3) },
     { instanceId: 'da-eel-sluice-c', creatureId: 'ink-eel', position: plan.at('sluice-hall', 16, 13) },
     { instanceId: 'da-redactor-a', creatureId: 'redactor', position: plan.at('reading-rooms', 2, 1) },

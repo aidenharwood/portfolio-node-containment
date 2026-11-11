@@ -1,4 +1,4 @@
-import { drawBlueprint, exit, hollow, patch, pillars, room } from '../../world/blueprint.ts';
+import { drawBlueprint, exit, hollow, patch, pillars, room, track } from '../../world/blueprint.ts';
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
@@ -27,6 +27,8 @@ const plan = drawBlueprint({ width: 168, height: 148 }, [
   pillars('chasm-walk', 8, 8, 5),
   pillars('cold-wing', 8, 8, 5),
   pillars('records-wing', 8, 8, 5),
+  track([115, 0], [115, 48]),
+  track([115, 98], [115, 146]),
   exit('causeway', 'ring-hub', 'north', 13, { offset: 55 }),
   exit('cryovault', 'cold-wing', 'west', 2, { offset: 51, gate: true, floor: 'door' }),
   exit('archive', 'records-wing', 'east', 2, { offset: 65, gate: true, floor: 'door' }),
@@ -91,6 +93,9 @@ const assemblies: AssemblyPlacement[] = [
   { instanceId: 'dc-bridge-west-south', assemblyId: 'bridge', position: plan.spot('cold-wing', 9, 17), facing: 'south', span: 3 },
   { instanceId: 'dc-bridge-east-north', assemblyId: 'bridge', position: plan.spot('records-wing', 2, 81), facing: 'south', span: 3 },
   { instanceId: 'dc-bridge-east-south', assemblyId: 'bridge', position: plan.spot('records-wing', 9, 81), facing: 'south', span: 3 },
+  ...(['ring-hub', 'chasm-walk'] as const).flatMap((roomId) =>
+    [2, 6, 10].map((dy): AssemblyPlacement => ({ instanceId: `dc-line-bridge-${roomId}-${dy}`, assemblyId: 'bridge', position: plan.spot(roomId, 92, dy), facing: 'east', span: 2 })),
+  ),
   { instanceId: 'dc-cable-run-west', assemblyId: 'cable-run', position: plan.spot('cold-wing', 2, 60), facing: 'south', span: 2 },
   { instanceId: 'dc-cable-run-hub', assemblyId: 'cable-run', position: plan.spot('ring-hub', 30, 11), facing: 'east', span: 20 },
   { instanceId: 'dc-cable-run-east', assemblyId: 'cable-run', position: plan.spot('records-wing', 10, 20), facing: 'south', span: 10 },];

@@ -66,13 +66,14 @@ export function drawTrackway(placements: readonly DistrictPlacement[], districts
     for (const offset of AROUND) {
       const near = { x: point.x + offset.x, y: point.y + offset.y };
       const key = tileKey(near);
-      if (!bed.has(key) && !solid.has(key) && near.x >= 0 && near.y >= 0) walls.set(key, near);
+      if (!bed.has(key) && !solid.has(key)) walls.set(key, near);
     }
   }
 
   const tiles = [...bed.values(), ...walls.values()];
   const minX = Math.min(...tiles.map((tile) => tile.x));
   const minY = Math.min(...tiles.map((tile) => tile.y));
+  if (minX < 0 || minY < 0) throw new Error(`Trackway "${options.id}" runs off the level at ${minX},${minY}; give joinDistricts a margin.`);
   const width = Math.max(...tiles.map((tile) => tile.x)) - minX + 1;
   const height = Math.max(...tiles.map((tile) => tile.y)) - minY + 1;
   const rows = Array.from({ length: height }, () => new Array<string>(width).fill(' '));

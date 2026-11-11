@@ -1,4 +1,4 @@
-import { drawBlueprint, exit, patch, pillars, room } from '../../world/blueprint.ts';
+import { drawBlueprint, exit, patch, pillars, room, track } from '../../world/blueprint.ts';
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
@@ -6,9 +6,9 @@ import { CIVIC_PROPS, OFFICE_PROPS, scatterGroups } from './populate.ts';
 
 const plan = drawBlueprint({ width: 60, height: 46 }, [
   room('lodge', 1, 1, 58, 44, 'carpet'),
-  patch(1, 42, 58, 1, 'hazard'),
-  patch(1, 43, 58, 2, 'track'),
   pillars('lodge', 9, 9, 6),
+  patch(54, 1, 1, 44, 'hazard'),
+  track([55, 0], [55, 44]),
   exit('east', 'lodge', 'east', 2, { gate: true, floor: 'door' }),
   exit('west', 'lodge', 'west', 13),
 ]);
@@ -16,7 +16,7 @@ const plan = drawBlueprint({ width: 60, height: 46 }, [
 export const VESPER_LODGE_ANCHORS = {
   recovery: plan.at('lodge', 30, 20),
   liftArrival: plan.at('lodge', 2, 4),
-  tramPlatform: plan.at('lodge', 8, 39),
+  tramPlatform: plan.at('lodge', 50, 12),
 } satisfies Record<string, TilePoint>;
 
 const npcs: NpcPlacement[] = [
@@ -32,12 +32,13 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'vl-contracts', objectId: 'contract-board', position: plan.at('lodge', 47, 0) },
     { instanceId: 'vl-med-bed', objectId: 'med-bed', position: plan.at('lodge', 0, 1), facing: 'east' },
     { instanceId: 'vl-lift', objectId: 'vesper-lift-down', position: plan.at('lodge', 0, 3), facing: 'east' },
-    { instanceId: 'vl-tram-stop', objectId: 'tram-stop', position: plan.at('lodge', 56, 40), facing: 'west' },
+    { instanceId: 'vl-tram-stop', objectId: 'tram-stop', position: plan.at('lodge', 52, 16), facing: 'west' },
   ];
 
 const assemblies: AssemblyPlacement[] = [
   
-    { instanceId: 'vl-tram-car', assemblyId: 'tram-car', position: plan.spot('lodge', 3, 42), facing: 'north' },
+    { instanceId: 'vl-tram-car', assemblyId: 'tram-car', position: plan.spot('lodge', 54, 8), facing: 'east' },
+    { instanceId: 'vl-line-bridge', assemblyId: 'bridge', position: plan.spot('lodge', 53, 21), facing: 'east', span: 2 },
   ];
 
 const placed = [...npcs, ...fixtures, ...assemblies];

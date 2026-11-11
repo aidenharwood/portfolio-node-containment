@@ -70,22 +70,18 @@ function findCarIssues(content: GameContent, level: ResolvedLevel, station: Tram
   const point = (along: number, across: number): TilePoint => (alongX ? { x: along, y: across } : { x: across, y: along });
   const acrossValues = [...new Set(alongX ? ys : xs)];
   const carAlong = alongX ? xs : ys;
+  const platformStart = alongX ? station.area.x : station.area.y;
+  const platformEnd = platformStart + (alongX ? station.area.width : station.area.height) - 1;
   const issues: string[] = [];
-  let runStart = Math.min(...carAlong);
-  let runEnd = Math.max(...carAlong);
   for (const across of acrossValues) {
     let start = Math.min(...carAlong);
     let end = Math.max(...carAlong);
-    while (tileAt(point(start - 1, across)) === 'track') start--;
-    while (tileAt(point(end + 1, across)) === 'track') end++;
-    if (tileAt(point(start - 1, across)) !== 'wall' || tileAt(point(end + 1, across)) !== 'wall') issues.push(`The track under tram car "${car}" at "${station.id}" must run into a tunnel in a wall at both ends.`);
-    runStart = Math.min(runStart, start);
-    runEnd = Math.max(runEnd, end);
+    while (start >= platformStart && tileAt(point(start - 1, across)) === 'track') start--;
+    while (end <= platformEnd && tileAt(point(end + 1, across)) === 'track') end++;
+    if (start >= platformStart || end <= platformEnd) issues.push(`The track under tram car "${car}" at "${station.id}" must run on through the platform and out of it at both ends.`);
   }
-  const sideTiles = (across: number) => Array.from({ length: runEnd - runStart + 1 }, (_, index) => point(runStart + index, across));
-  const sides = [Math.min(...acrossValues) - 1, Math.max(...acrossValues) + 1].map(sideTiles);
-  const walled = sides.filter((side) => side.every((tile) => tileAt(tile) === 'wall'));
-  const open = sides.filter((side) => side.some((tile) => TILE_KINDS[tileAt(tile)].walkable));
-  if (walled.length !== 1 || open.length !== 1) issues.push(`Tram car "${car}" at "${station.id}" must be walled on one side and reached from a platform on the other.`);
+  const besideTrack = [Math.min(...acrossValues) - 1, Math.max(...acrossValues) + 1];
+  const hasPlatform = besideTrack.some((across) => carAlong.some((along) => TILE_KINDS[tileAt(point(along, across))].walkable));
+  if (!hasPlatform) issues.push(`Tram car "${car}" at "${station.id}" must be reached from a platform beside it.`);
   return [...new Set(issues)];
 }

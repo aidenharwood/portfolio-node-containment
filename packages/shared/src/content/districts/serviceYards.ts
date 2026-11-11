@@ -5,21 +5,22 @@ import type { TilePoint } from '../../world/geometry.ts';
 import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
 
-const plan = drawBlueprint({ width: 124, height: 85 }, [
+const plan = drawBlueprint({ width: 124, height: 88 }, [
   room('loading-dock', 1, 1, 28, 25, 'rust'),
-  room('yard-office', 1, 28, 28, 28, 'plating'),
-  room('cold-store', 1, 58, 28, 26, 'concrete'),
+  room('cold-store', 1, 28, 28, 28, 'concrete'),
+  room('yard-office', 1, 58, 28, 29, 'plating'),
   room('scrap-yard', 31, 1, 60, 40, 'rust'),
   room('culverts', 93, 1, 30, 40, 'soil'),
   room('laundry', 31, 43, 44, 41, 'concrete'),
   room('gantry-yard', 77, 43, 46, 41, 'concrete'),
-  patch(1, 53, 28, 1, 'hazard'),
-  patch(1, 54, 28, 2, 'track'),
+  patch(1, 84, 28, 1, 'hazard'),
+  patch(0, 85, 124, 2, 'track'),
   patch(107, 1, 3, 40, 'coolant'),
   patch(77, 62, 46, 1, 'hazard'),
-  link('yard-office', 'loading-dock', 3),
+  link('cold-store', 'loading-dock', 3),
+  link('yard-office', 'cold-store', 3),
   link('cold-store', 'laundry', 3),
-  link('yard-office', 'scrap-yard', 5, 'plating'),
+  link('cold-store', 'scrap-yard', 5, 'concrete'),
   link('yard-office', 'laundry', 3),
   link('loading-dock', 'scrap-yard', 5, 'rust'),
   link('scrap-yard', 'culverts', 7, 'rust'),
@@ -90,7 +91,7 @@ const fixtures: ObjectPlacement[] = [
 const assemblies: AssemblyPlacement[] = [
   { instanceId: 'yd-culvert-bridge', assemblyId: 'bridge', position: plan.spot('culverts', 13, 12), facing: 'east', span: 3 },
   { instanceId: 'yd-culvert-catwalk', assemblyId: 'catwalk', position: plan.spot('culverts', 13, 28), facing: 'east', span: 3 },
-    { instanceId: 'yards-tram-car', assemblyId: 'tram-car', position: plan.spot('yard-office', 2, 26), facing: 'north' },
+    { instanceId: 'yards-tram-car', assemblyId: 'tram-car', position: plan.spot('yard-office', 2, 27), facing: 'north' },
     { instanceId: 'yd-scrap-cable-run', assemblyId: 'cable-run', position: plan.spot('scrap-yard', 1, 38), facing: 'east', span: 6 },
   ];
 

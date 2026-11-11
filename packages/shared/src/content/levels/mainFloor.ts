@@ -20,6 +20,7 @@ import { VESPER_WARDS } from '../districts/vesperWards.ts';
 import { WATERWORKS } from '../districts/waterworks.ts';
 
 const CHASM_WIDTH = 24;
+const TRACKWAY_MARGIN = { x: 8, y: 8 };
 
 const DISTRICTS = [
   MERIDIAN_ATRIUM,
@@ -58,32 +59,41 @@ const PLACEMENTS = joinDistricts(DISTRICTS, 'meridian-atrium', [
   { districtId: 'brine-galleries', exit: 'north', to: 'calder-causeway', toExit: 'south' },
   { districtId: 'calder-gatehouse', exit: 'west', to: 'brine-galleries', toExit: 'east' },
   { districtId: 'salt-cathedral', exit: 'west', to: 'calder-gatehouse', toExit: 'east' },
-]);
+], TRACKWAY_MARGIN);
 
-const CHASM_TRUNK_ROW = MERIDIAN_CIRCUIT.map.length + 8;
+const widthOf = (district: { readonly map: readonly string[] }): number => (district.map[0] ?? '').length;
 
-const LODGE_MOUTH = trackPoint('vesper-lodge', 58, 46);
-const VERDANCE_BRANCH = trackPoint('vesper-causeway', -2, 16);
-const ATRIUM_JUNCTION = trackPoint('meridian-circuit', 70, CHASM_TRUNK_ROW);
-const ATRIUM_MOUTH = trackPoint('meridian-circuit', 70, MERIDIAN_CIRCUIT.map.length);
-const INTAKE_MOUTH = trackPoint('intake-wing', (INTAKE_WING.map[0] ?? '').length, 62);
+const RETURN_LEG = trackPoint('intake-wing', 0, 65);
+const LODGE_NORTH = trackPoint('vesper-lodge', 55, -2);
+const LODGE_SOUTH = trackPoint('vesper-lodge', 55, VESPER_LODGE.map.length);
+const PHARMACY_CORNER = trackPoint('vesper-pharmacy', -5, -5);
+const VERDANCE_WEST = trackPoint('hydroponics', -2, 68);
+const VERDANCE_EAST = trackPoint('hydroponics', widthOf(HYDROPONICS), 68);
+const CONCOURSE_JOG = trackPoint('verdance-concourse', 50, 0);
+const CIRCUIT_WEST = trackPoint('meridian-circuit', -2, 189);
+const CIRCUIT_EAST = trackPoint('meridian-circuit', widthOf(MERIDIAN_CIRCUIT), 189);
 const YARDS_MOUTH = trackPoint('service-concourse', 98, SERVICE_CONCOURSE.map.length);
-const CALDER_TURN = trackPoint('service-yards', (SERVICE_YARDS.map[0] ?? '').length + 36, 0);
+const YARDS_EAST = trackPoint('service-yards', widthOf(SERVICE_YARDS), 85);
+const CALDER_TURN = trackPoint('service-yards', widthOf(SERVICE_YARDS) + 36, 0);
 const SALT_ROAD_WEST = trackPoint('calder-causeway', -2, 52);
-const SALT_ROAD_EAST = trackPoint('calder-causeway', (CALDER_CAUSEWAY.map[0] ?? '').length, 52);
-const GATEHOUSE_MOUTH = trackPoint('calder-gatehouse', 3, -2);
+const SALT_ROAD_EAST = trackPoint('calder-causeway', widthOf(CALDER_CAUSEWAY), 52);
+const GATEHOUSE_NORTH = trackPoint('calder-gatehouse', 3, -2);
+const GATEHOUSE_SOUTH = trackPoint('calder-gatehouse', 3, CALDER_GATEHOUSE.map.length);
+const INTAKE_WEST = trackPoint('intake-wing', -2, 65);
+const INTAKE_EAST = trackPoint('intake-wing', widthOf(INTAKE_WING), 65);
 
 const MERIDIAN_LINE = drawTrackway(PLACEMENTS, DISTRICTS, {
   id: 'meridian-line-trackway',
   name: 'Meridian Line',
   ambience: { darkness: 0.72, tint: '#0a0f12', fog: '#0c1216' },
   routes: [
-    [LODGE_MOUTH, trackCorner(LODGE_MOUTH, ATRIUM_JUNCTION), ATRIUM_JUNCTION, ATRIUM_MOUTH],
-    [trackCorner(LODGE_MOUTH, VERDANCE_BRANCH), VERDANCE_BRANCH],
-    [ATRIUM_JUNCTION, trackCorner(CALDER_TURN, ATRIUM_JUNCTION), trackCorner(CALDER_TURN, SALT_ROAD_WEST), SALT_ROAD_WEST],
-    [trackCorner(YARDS_MOUTH, ATRIUM_JUNCTION), YARDS_MOUTH],
-    [trackCorner(INTAKE_MOUTH, ATRIUM_JUNCTION), INTAKE_MOUTH],
-    [SALT_ROAD_EAST, trackCorner(GATEHOUSE_MOUTH, SALT_ROAD_EAST), GATEHOUSE_MOUTH],
+    [LODGE_NORTH, trackCorner(LODGE_NORTH, PHARMACY_CORNER), PHARMACY_CORNER, trackCorner(PHARMACY_CORNER, RETURN_LEG), INTAKE_WEST],
+    [INTAKE_EAST, trackCorner(GATEHOUSE_SOUTH, RETURN_LEG), GATEHOUSE_SOUTH],
+    [LODGE_SOUTH, trackCorner(LODGE_SOUTH, VERDANCE_WEST), VERDANCE_WEST],
+    [VERDANCE_EAST, trackCorner(CONCOURSE_JOG, VERDANCE_EAST), trackCorner(CONCOURSE_JOG, CIRCUIT_WEST), CIRCUIT_WEST],
+    [CIRCUIT_EAST, trackCorner(YARDS_MOUTH, CIRCUIT_EAST), YARDS_MOUTH],
+    [YARDS_EAST, trackCorner(CALDER_TURN, YARDS_EAST), trackCorner(CALDER_TURN, SALT_ROAD_WEST), SALT_ROAD_WEST],
+    [SALT_ROAD_EAST, trackCorner(GATEHOUSE_NORTH, SALT_ROAD_EAST), GATEHOUSE_NORTH],
   ],
 });
 

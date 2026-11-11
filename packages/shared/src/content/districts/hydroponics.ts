@@ -1,19 +1,18 @@
-import { drawBlueprint, exit, link, patch, room, track } from '../../world/blueprint.ts';
+import { drawBlueprint, exit, link, patch, room } from '../../world/blueprint.ts';
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
 
-const plan = drawBlueprint({ width: 105, height: 68 }, [
-  room('platform', 1, 14, 22, 26, 'grate'),
-  room('seed-vault', 1, 42, 22, 14, 'carpet'),
+const plan = drawBlueprint({ width: 105, height: 71 }, [
+  room('seed-vault', 1, 14, 22, 14, 'carpet'),
+  room('platform', 1, 30, 22, 40, 'grate'),
   room('nursery', 26, 1, 30, 30, 'soil'),
   room('greenhouse', 26, 34, 30, 32, 'soil'),
   room('grow-hall', 60, 1, 44, 65, 'soil'),
-  patch(1, 14, 2, 26, 'track'),
-  patch(3, 14, 1, 26, 'hazard'),
-  track([0, 1], [1, 1], [1, 11]),
+  patch(1, 67, 22, 1, 'hazard'),
+  patch(0, 68, 105, 2, 'track'),
   patch(31, 7, 20, 2, 'coolant'),
   patch(31, 15, 20, 2, 'coolant'),
   patch(31, 23, 20, 2, 'coolant'),
@@ -25,10 +24,9 @@ const plan = drawBlueprint({ width: 105, height: 68 }, [
   patch(90, 6, 2, 26, 'coolant'),
   patch(66, 58, 32, 2, 'coolant'),
   room('heart-bed', 74, 40, 14, 14, 'concrete', 'round'),
-  link('platform', 'nursery', 3),
+  link('seed-vault', 'nursery', 3),
   link('platform', 'greenhouse', 3),
   link('platform', 'seed-vault', 3),
-  link('seed-vault', 'greenhouse', 3),
   link('nursery', 'greenhouse', 9, 'concrete'),
   link('nursery', 'grow-hall', 9, 'concrete'),
   link('greenhouse', 'grow-hall', 9, 'concrete'),
@@ -37,7 +35,7 @@ const plan = drawBlueprint({ width: 105, height: 68 }, [
 ]);
 
 export const HYDROPONICS_ANCHORS = {
-  tramPlatform: plan.at('platform', 4, 5),
+  tramPlatform: plan.at('platform', 6, 34),
   foldReturn: plan.at('heart-bed', 5, 8),
 } satisfies Record<string, TilePoint>;
 
@@ -48,7 +46,7 @@ const npcs: NpcPlacement[] = [
 const fixtures: ObjectPlacement[] = [
   
     { instanceId: 'hydro-fold-anomaly', objectId: 'verdance-anomaly', position: plan.at('heart-bed', 3, 2) },
-    { instanceId: 'hydro-tram-stop', objectId: 'tram-stop', position: plan.at('platform', 2, 24), facing: 'east' },
+    { instanceId: 'hydro-tram-stop', objectId: 'tram-stop', position: plan.at('platform', 2, 34), facing: 'east' },
     { instanceId: 'hydro-platform-sign', objectId: 'warning-sign', position: plan.at('platform', 21, 0) },
     { instanceId: 'hydro-platform-storage', objectId: 'storage-locker', position: plan.at('platform', 21, 23), facing: 'west' },
     { instanceId: 'hydro-seed-vault', objectId: 'seed-vault-console', position: plan.at('seed-vault', 3, 13), facing: 'north' },
@@ -73,7 +71,7 @@ const fixtures: ObjectPlacement[] = [
 
 const assemblies: AssemblyPlacement[] = [
   
-    { instanceId: 'hydro-tram-car', assemblyId: 'tram-car', position: plan.spot('platform', 0, 0), facing: 'east' },
+    { instanceId: 'hydro-tram-car', assemblyId: 'tram-car', position: plan.spot('platform', 3, 38), facing: 'north' },
   ];
 
 const residents: CreaturePlacement[] = [

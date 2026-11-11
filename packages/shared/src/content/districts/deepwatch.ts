@@ -1,4 +1,4 @@
-import { drawBlueprint, exit, link, patch, pillars, room } from '../../world/blueprint.ts';
+import { drawBlueprint, exit, link, patch, pillars, room, track } from '../../world/blueprint.ts';
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
@@ -12,8 +12,6 @@ const plan = drawBlueprint({ width: 68, height: 48 }, [
   room('infirmary', 1, 31, 20, 16, 'plating'),
   room('stores', 22, 31, 24, 16, 'concrete'),
   room('lift-gallery', 47, 31, 20, 16, 'grate'),
-  patch(65, 14, 2, 16, 'track'),
-  patch(64, 14, 1, 16, 'hazard'),
   patch(31, 5, 6, 4, 'glass'),
   patch(32, 6, 4, 2, 'coolant'),
   link('command-post', 'concourse', 3),
@@ -28,6 +26,9 @@ const plan = drawBlueprint({ width: 68, height: 48 }, [
   link('stores', 'lift-gallery', 3),
   pillars('platform-hall', 8, 8, 4),
   pillars('lift-gallery', 6, 6, 4),
+  patch(64, 14, 1, 16, 'hazard'),
+  patch(64, 31, 1, 16, 'hazard'),
+  track([65, 0], [65, 46]),
   exit('north', 'concourse', 'north', 13, { floor: 'grate' }),
   exit('south', 'stores', 'south', 13, { floor: 'grate' }),
   exit('west', 'platform-hall', 'west', 9, { offset: 6, floor: 'grate' }),
@@ -61,9 +62,9 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'dw-command-rack-a', objectId: 'server-rack', position: plan.at('command-post', 14, 0) },
     { instanceId: 'dw-command-rack-b', objectId: 'server-rack', position: plan.at('command-post', 15, 0) },
     { instanceId: 'dw-command-bench', objectId: 'briefing-bench', position: plan.at('command-post', 13, 10) },
-    { instanceId: 'dw-refinery', objectId: 'refinery', position: plan.at('workshop', 15, 1), facing: 'west' },
-    { instanceId: 'dw-fabricator', objectId: 'fabricator', position: plan.at('workshop', 15, 3), facing: 'west' },
-    { instanceId: 'dw-synthesiser', objectId: 'synthesiser', position: plan.at('workshop', 15, 11), facing: 'west' },
+    { instanceId: 'dw-refinery', objectId: 'refinery', position: plan.at('workshop', 13, 1), facing: 'west' },
+    { instanceId: 'dw-fabricator', objectId: 'fabricator', position: plan.at('workshop', 13, 3), facing: 'west' },
+    { instanceId: 'dw-synthesiser', objectId: 'synthesiser', position: plan.at('workshop', 13, 11), facing: 'west' },
     { instanceId: 'dw-workshop-storage', objectId: 'storage-locker', position: plan.at('workshop', 0, 0) },
     { instanceId: 'dw-workshop-crate', objectId: 'supply-crate', position: plan.at('workshop', 1, 11) },
     { instanceId: 'dw-hall-directory', objectId: 'intake-kiosk', position: plan.at('platform-hall', 1, 15) },
@@ -82,9 +83,9 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'dw-stores-crate-c', objectId: 'supply-crate', position: plan.at('stores', 0, 15) },
     { instanceId: 'dw-stores-storage', objectId: 'storage-locker', position: plan.at('stores', 23, 15) },
     { instanceId: 'dw-gallery-pillar-a', objectId: 'light-pillar', position: plan.at('lift-gallery', 0, 15) },
-    { instanceId: 'dw-gallery-pillar-b', objectId: 'light-pillar', position: plan.at('lift-gallery', 19, 15) },
+    { instanceId: 'dw-gallery-pillar-b', objectId: 'light-pillar', position: plan.at('lift-gallery', 16, 15) },
     { instanceId: 'dw-gallery-papers', objectId: 'litter-papers', position: plan.at('lift-gallery', 2, 2) },
-    { instanceId: 'dw-gallery-sign', objectId: 'warning-sign', position: plan.at('lift-gallery', 19, 0) },
+    { instanceId: 'dw-gallery-sign', objectId: 'warning-sign', position: plan.at('lift-gallery', 16, 0) },
     { instanceId: 'dw-command-desk', objectId: 'office-desk', position: plan.at('command-post', 0, 3), facing: 'east' },
     { instanceId: 'dw-command-cabinet', objectId: 'filing-cabinet', position: plan.at('command-post', 0, 11), facing: 'east' },
     { instanceId: 'dw-command-notices', objectId: 'notice-board', position: plan.at('command-post', 12, 0) },
@@ -102,7 +103,8 @@ const fixtures: ObjectPlacement[] = [
   ];
 
 const assemblies: AssemblyPlacement[] = [
-  { instanceId: 'dw-tram-car', assemblyId: 'tram-car', position: plan.spot('platform-hall', 64, 5), facing: 'west' },];
+  { instanceId: 'dw-tram-car', assemblyId: 'tram-car', position: plan.spot('platform-hall', 64, 5), facing: 'west' },
+  ...[3, 6, 9].map((dy): AssemblyPlacement => ({ instanceId: `dw-line-bridge-${dy}`, assemblyId: 'bridge', position: plan.spot('lift-gallery', 17, dy), facing: 'east', span: 2 })),];
 
 const placed = [...npcs, ...fixtures, ...assemblies];
 

@@ -4,7 +4,7 @@ import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlaceme
 import type { TilePoint } from '../../world/geometry.ts';
 import { CIVIC_PROPS, LITTER, scatterGroups } from './populate.ts';
 
-const plan = drawBlueprint({ width: 124, height: 65 }, [
+const plan = drawBlueprint({ width: 124, height: 68 }, [
   room('arrival', 1, 1, 20, 18, 'concrete'),
   room('lockers', 22, 1, 18, 18, 'carpet'),
   room('diagnostics', 41, 1, 16, 18, 'plating'),
@@ -15,12 +15,12 @@ const plan = drawBlueprint({ width: 124, height: 65 }, [
   room('workshop', 22, 36, 34, 28, 'grate'),
   room('range-gallery', 58, 36, 36, 8, 'concrete'),
   room('range', 58, 44, 36, 20, 'concrete'),
-  room('transit-bay', 95, 36, 28, 28, 'grate'),
+  room('transit-bay', 95, 36, 28, 31, 'grate'),
   patch(66, 6, 20, 8, 'glass'),
   patch(67, 7, 18, 6, 'coolant'),
   patch(58, 44, 36, 1, 'hazard'),
-  patch(95, 61, 28, 1, 'hazard'),
-  patch(95, 62, 28, 2, 'track'),
+  patch(95, 64, 28, 1, 'hazard'),
+  patch(0, 65, 124, 2, 'track'),
   link('arrival', 'corridor', 3),
   link('lockers', 'corridor', 3),
   link('diagnostics', 'corridor', 3),
@@ -34,7 +34,7 @@ const plan = drawBlueprint({ width: 124, height: 65 }, [
 ]);
 
 export const INTAKE_WING_ANCHORS = {
-  tramPlatform: plan.at('transit-bay', 6, 21),
+  tramPlatform: plan.at('transit-bay', 6, 25),
   start: plan.at('arrival', 3, 4),
 } satisfies Record<string, TilePoint>;
 
@@ -132,7 +132,7 @@ const fixtures: ObjectPlacement[] = [
 
 const assemblies: AssemblyPlacement[] = [
   
-    { instanceId: 'intake-tram-car', assemblyId: 'tram-car', position: plan.spot('transit-bay', 3, 26), facing: 'north' },
+    { instanceId: 'intake-tram-car', assemblyId: 'tram-car', position: plan.spot('transit-bay', 3, 29), facing: 'north' },
     { instanceId: 'intake-cable-run', assemblyId: 'cable-run', position: plan.spot('corridor', 12, 12), facing: 'east', span: 8 },
     { instanceId: 'diagnostics-cable-run', assemblyId: 'cable-run', position: plan.spot('diagnostics', 1, 3), facing: 'east', span: 3 },
   ];

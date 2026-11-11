@@ -34,7 +34,12 @@ function exitOf(district: DistrictDefinition, exitId: string): DistrictExit {
   return exit;
 }
 
-export function joinDistricts(districts: readonly DistrictDefinition[], rootId: DistrictId, attachments: readonly DistrictAttachment[]): DistrictPlacement[] {
+export function joinDistricts(
+  districts: readonly DistrictDefinition[],
+  rootId: DistrictId,
+  attachments: readonly DistrictAttachment[],
+  margin: TilePoint = { x: 0, y: 0 },
+): DistrictPlacement[] {
   const byId = new Map(districts.map((district) => [district.id, district]));
   const definitionOf = (districtId: DistrictId): DistrictDefinition => {
     const district = byId.get(districtId);
@@ -69,5 +74,5 @@ export function joinDistricts(districts: readonly DistrictDefinition[], rootId: 
 
   const minX = Math.min(...[...origins.values()].map((origin) => origin.x));
   const minY = Math.min(...[...origins.values()].map((origin) => origin.y));
-  return [...origins].map(([districtId, origin]) => ({ districtId, origin: { x: origin.x - minX, y: origin.y - minY } }));
+  return [...origins].map(([districtId, origin]) => ({ districtId, origin: { x: origin.x - minX + margin.x, y: origin.y - minY + margin.y } }));
 }

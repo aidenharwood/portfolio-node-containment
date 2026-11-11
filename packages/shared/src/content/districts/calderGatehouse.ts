@@ -6,10 +6,9 @@ import { CIVIC_PROPS, OFFICE_PROPS, scatterGroups } from './populate.ts';
 
 const plan = drawBlueprint({ width: 60, height: 46 }, [
   room('gatehouse', 1, 1, 58, 44, 'carpet'),
-  patch(1, 42, 58, 1, 'hazard'),
-  patch(1, 43, 58, 2, 'track'),
   pillars('gatehouse', 9, 9, 6),
-  track([3, 0], [3, 41]),
+  patch(5, 1, 1, 44, 'hazard'),
+  track([3, 0], [3, 44]),
   exit('west', 'gatehouse', 'west', 2, { gate: true, floor: 'door' }),
   exit('east', 'gatehouse', 'east', 13),
 ]);
@@ -17,7 +16,7 @@ const plan = drawBlueprint({ width: 60, height: 46 }, [
 export const CALDER_GATEHOUSE_ANCHORS = {
   recovery: plan.at('gatehouse', 28, 20),
   liftArrival: plan.at('gatehouse', 55, 4),
-  tramPlatform: plan.at('gatehouse', 8, 39),
+  tramPlatform: plan.at('gatehouse', 9, 12),
 } satisfies Record<string, TilePoint>;
 
 const npcs: NpcPlacement[] = [
@@ -33,12 +32,12 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'cg-contracts', objectId: 'contract-board', position: plan.at('gatehouse', 10, 0) },
     { instanceId: 'cg-med-bed', objectId: 'med-bed', position: plan.at('gatehouse', 57, 1), facing: 'west' },
     { instanceId: 'cg-lift', objectId: 'calder-lift-down', position: plan.at('gatehouse', 57, 3), facing: 'west' },
-    { instanceId: 'cg-tram-stop', objectId: 'tram-stop', position: plan.at('gatehouse', 1, 40), facing: 'east' },
+    { instanceId: 'cg-tram-stop', objectId: 'tram-stop', position: plan.at('gatehouse', 7, 16), facing: 'east' },
   ];
 
 const assemblies: AssemblyPlacement[] = [
   
-    { instanceId: 'cg-tram-car', assemblyId: 'tram-car', position: plan.spot('gatehouse', 3, 42), facing: 'north' },
+    { instanceId: 'cg-tram-car', assemblyId: 'tram-car', position: plan.spot('gatehouse', 2, 8), facing: 'west' },
     { instanceId: 'cg-line-bridge', assemblyId: 'bridge', position: plan.spot('gatehouse', 1, 21), facing: 'east', span: 2 },
   ];
 

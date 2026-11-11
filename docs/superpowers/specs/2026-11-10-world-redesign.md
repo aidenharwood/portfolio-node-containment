@@ -133,8 +133,7 @@ Where the result differs from section 1:
 
 - The main floor is wider and flatter than planned. The wings still run mostly outward along the east–west axis before turning north (Vesper) and south (Calder).
 - Sector Two sits inside the Circuit and is reached only through the Atrium bulkhead, so the ring does not join it or the Waterworks to their neighbours.
-- The Meridian Line is a trunk through the chasm with a spur to each station, because most platforms back onto a room at one end. Trams reverse at stations.
-- On the Deep, track is drawn at each platform, not around the ring.
+- Tram track is a closed loop on each level, running straight through every platform. Platform rooms were moved to district edges for it (Hydroponics, Service Yards, Intake Wing, Porter's Lodge, Calder Gatehouse and all five Deep stations). The Intake Shuttle shares the Meridian loop. On the Deep the loop rings the concourse, with a chord through Deepwatch.
 
 `npm run bench:tick` on the rebuilt main floor (one layer, players wandering):
 
