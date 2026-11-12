@@ -7,15 +7,13 @@ import {
   regionsReaching,
   transitHops,
   withOpenDoors,
-  trackedQuest,
   GAME_CONTENT,
-  routeGoals,
   tileKey,
   walkableTilesNear,
   type LevelId,
   type LiveCreature,
   type NpcId,
-  type QuestId,
+  type GuidanceTarget,
   type ResolvedLevel,
   type RouteGoal,
   type RouteScene,
@@ -23,6 +21,7 @@ import {
   type TransitTarget,
   type WalkRegions,
 } from '@containment/shared';
+import { guidanceGoals } from './guidanceGoals.ts';
 import type { WorldState } from './worldState.ts';
 
 const REFRESH_MS = 2500;
@@ -80,6 +79,8 @@ export class GuidanceRoute {
   private stale = true;
   private nextHop: string | null = null;
   private goal: TilePoint | null = null;
+  private depleted = false;
+  private lost = false;
   private readonly regionCache = new Map<LevelId, { readonly key: string; readonly regions: WalkRegions }>();
 
   constructor(world: WorldState) {
@@ -94,7 +95,15 @@ export class GuidanceRoute {
     return this.nextHop;
   }
 
-  current(now: number, preferred: QuestId | null): readonly TilePoint[] {
+  get exhausted(): boolean {
+    return this.depleted;
+  }
+
+  get unreachable(): boolean {
+    return this.lost;
+  }
+
+  current(now: number, target: GuidanceTarget | null): readonly TilePoint[] {
     const origin = this.world.selfEntity?.to;
     if (!origin) {
       this.nextHop = null;
@@ -108,7 +117,7 @@ export class GuidanceRoute {
       else this.stale = true;
     }
     if (this.stale || now - this.computedAt > REFRESH_MS) {
-      const planned = this.plan(origin, preferred);
+      const planned = this.plan(origin, target);
       if (!this.keepsCourse(origin, planned)) this.route = untangle(planned);
       this.computedAt = now;
       this.stale = false;
@@ -138,24 +147,32 @@ export class GuidanceRoute {
     return grid !== undefined && route.every((tile, index) => index === 0 || grid.isWalkable(tile));
   }
 
-  private plan(origin: TilePoint, preferred: QuestId | null): TilePoint[] {
+  private plan(origin: TilePoint, target: GuidanceTarget | null): TilePoint[] {
+    this.depleted = false;
+    this.lost = false;
+    const route = this.planRoute(origin, target);
+    this.lost = target !== null && route.length === 0;
+    return route;
+  }
+
+  private planRoute(origin: TilePoint, target: GuidanceTarget | null): TilePoint[] {
     this.nextHop = null;
     const previousGoal = this.goal;
     this.goal = null;
     const { self, zone } = this.world;
     if (!self || !zone) return [];
-    const tracked = trackedQuest(self.quests, GAME_CONTENT.quests, preferred);
-    if (!tracked) return [];
     const levelId = zone.definition.id;
-    const goals = routeGoals(tracked, this.scene(zone.definition), GAME_CONTENT);
+    const local = guidanceGoals(target, self.quests, this.scene(zone.definition));
+    this.depleted = local.allDepleted;
+    const goals = local.goals;
     const here = this.regionsOf(levelId)?.regionAt(origin) ?? -1;
     const sameRegion = goals.filter((goal) => {
       const regions = this.regionsOf(levelId);
       return regions !== undefined && regionsReaching(regions, goal).has(here);
     });
     const district = zone.layout.districtAt(origin);
-    const local = sameRegion.filter((goal) => zone.layout.districtAt(goal.point) === district);
-    for (const candidates of [local, sameRegion]) {
+    const nearby = sameRegion.filter((goal) => zone.layout.districtAt(goal.point) === district);
+    for (const candidates of [nearby, sameRegion]) {
       const path = this.nearestPath(origin, candidates, previousGoal);
       if (path) return path;
     }
@@ -163,7 +180,7 @@ export class GuidanceRoute {
       ...goals.map((goal) => ({ levelId, goal })),
       ...[...GAME_CONTENT.levels.values()]
         .filter((level) => level.id !== levelId)
-        .flatMap((level) => routeGoals(tracked, { level, npcPositions: new Map(), creatures: [], depletedInstances: this.world.usedObjects }, GAME_CONTENT).map((goal) => ({ levelId: level.id, goal }))),
+        .flatMap((level) => guidanceGoals(target, self.quests, { level, npcPositions: new Map(), creatures: [], depletedInstances: this.world.usedObjects }).goals.map((goal) => ({ levelId: level.id, goal }))),
     ];
     const known = new Set(self.discoveredStations);
     const passages = new Set(self.openPassages);

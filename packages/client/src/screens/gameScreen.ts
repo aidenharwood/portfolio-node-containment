@@ -175,7 +175,12 @@ export function createGameScreen(app: AppNavigator): Screen {
     const self = world.self;
     const areas = world.zone?.definition.areas ?? [];
     if (!self) return;
-    objectiveBeacons = objectiveAreas(self.quests, GAME_CONTENT.quests, guidanceTracking.questId).flatMap((target) =>
+    const preferred = guidanceTracking.questPreference();
+    if (preferred === false) {
+      objectiveBeacons = [];
+      return;
+    }
+    objectiveBeacons = objectiveAreas(self.quests, GAME_CONTENT.quests, preferred).flatMap((target) =>
       areas
         .filter((area) => area.districtId === target.districtId && area.id === target.areaId)
         .map((area) => ({ x: area.rect.x + Math.floor(area.rect.width / 2), y: area.rect.y + Math.floor(area.rect.height / 2) })),
@@ -186,15 +191,17 @@ export function createGameScreen(app: AppNavigator): Screen {
     const self = world.self;
     if (!self) return;
     guidanceTracking.bind(self.characterId);
+    const preferred = guidanceTracking.questPreference();
+    const resourceId = guidanceTracking.resourceId;
     npcMarkers = new Map();
     for (const npc of GAME_CONTENT.npcs.values()) {
-      const marker = npcQuestMarker(npc.id, self.quests, GAME_CONTENT.quests, guidanceTracking.questId);
-      if (marker) npcMarkers.set(npc.id, marker);
+      const marker = npcQuestMarker(npc.id, self.quests, GAME_CONTENT.quests, preferred || null);
+      if (marker && (preferred !== false || marker === 'available')) npcMarkers.set(npc.id, marker);
     }
     setTooltipEquipment(self.equipment);
     party.update(self.characterId);
-    objectiveObjects = objectiveObjectIds(self.quests, GAME_CONTENT.quests, guidanceTracking.questId, GAME_CONTENT.worldObjects, GAME_CONTENT.recipes);
-    objectiveCreatures = objectiveCreatureIds(self.quests, GAME_CONTENT.quests, guidanceTracking.questId);
+    objectiveObjects = resourceId ? new Set([resourceId]) : objectiveObjectIds(self.quests, GAME_CONTENT.quests, preferred || null, GAME_CONTENT.worldObjects, GAME_CONTENT.recipes);
+    objectiveCreatures = resourceId ? new Set() : objectiveCreatureIds(self.quests, GAME_CONTENT.quests, preferred || null);
     refreshBeacons();
     guidanceRoute.invalidate();
     objectives.update(self.quests);
@@ -489,7 +496,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   const unsubscribers = [world.on('zoneChanged', onZoneChanged), world.on('selfChanged', refreshGuidance)];
 
   const loop = (now: number) => {
-    renderer.render(now, { hover, clickMarker, objectiveObjectIds: objectiveObjects, npcMarkers, objectiveCreatureIds: objectiveCreatures, objectiveBeacons, guidanceRoute: guidanceRoute.current(now, guidanceTracking.questId) });
+    renderer.render(now, { hover, clickMarker, objectiveObjectIds: objectiveObjects, npcMarkers, objectiveCreatureIds: objectiveCreatures, objectiveBeacons, guidanceRoute: guidanceRoute.current(now, guidanceTracking.target) });
     objectives.setVia(guidanceRoute.via);
     if (renderer.loading) loadingVisibleUntil = now + LOADING_MIN_VISIBLE_MS;
     loadingMarker.classList.toggle('visible', now < loadingVisibleUntil);
