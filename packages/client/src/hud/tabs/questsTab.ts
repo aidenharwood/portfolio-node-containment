@@ -1,5 +1,4 @@
 import {
-  trackedQuest,
   GAME_CONTENT,
   objectiveGoal,
   QUESTLINE_KIND_LABELS,
@@ -11,6 +10,7 @@ import {
   type QuestlineId,
   type SelfState,
 } from '@containment/shared';
+import { guidedQuest } from '../../state/guidanceGoals.ts';
 import type { GuidanceTracking } from '../../state/guidanceTracking.ts';
 import { h, replaceChildren } from '../../ui/dom.ts';
 import type { ContextMenu, MenuAction } from '../contextMenu.ts';
@@ -41,7 +41,7 @@ export function createQuestsTab(menu: ContextMenu, tracking: GuidanceTracking): 
   };
 
   const trackedId = (): QuestId | null =>
-    self ? trackedQuest(self.quests, GAME_CONTENT.quests, tracking.questId)?.quest.id ?? null : null;
+    self ? guidedQuest(tracking.target, self.quests)?.quest.id ?? null : null;
 
   const open = (questId: QuestId | null) => {
     selected = questId;

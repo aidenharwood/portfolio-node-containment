@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import type { QuestLog, RouteScene } from '@containment/shared';
-import { guidanceGoals } from '../src/state/guidanceGoals.ts';
+import { guidanceGoals, guidedQuest } from '../src/state/guidanceGoals.ts';
 
 const scene: RouteScene = {
   level: {
@@ -41,6 +41,12 @@ describe('guidance goals', () => {
     const { goals, allDepleted } = guidanceGoals(null, stocking, scene);
     assert.ok(goals.some((goal) => goal.point.x === 5 && goal.point.y === 5));
     assert.equal(allDepleted, false);
+  });
+
+  test('no quest counts as guided while a resource is tracked, so the journal can track one again', () => {
+    assert.equal(guidedQuest({ kind: 'resource', objectId: 'slag-heap' }, stocking), null);
+    assert.equal(guidedQuest(null, stocking)?.quest.id, 'scrap-run');
+    assert.equal(guidedQuest({ kind: 'quest', questId: 'scrap-run' }, stocking)?.quest.id, 'scrap-run');
   });
 
   test('a quest target with no active quest gives no goals', () => {
