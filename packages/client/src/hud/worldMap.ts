@@ -1,6 +1,7 @@
 import {
   trackedQuest,
   GAME_CONTENT,
+  salvageGuide,
   linesThrough,
   objectiveDistricts,
   POINT_OF_INTEREST_KINDS,
@@ -65,6 +66,8 @@ interface PointerTrack {
   readonly startX: number;
   readonly startY: number;
 }
+
+const SALVAGE_GUIDE = salvageGuide(GAME_CONTENT);
 
 const levelOrder = (a: ResolvedLevel, b: ResolvedLevel): number =>
   (a.definition.kind === b.definition.kind ? 0 : a.definition.kind === 'floor' ? -1 : 1) || b.definition.depth - a.definition.depth;
@@ -170,6 +173,11 @@ export class WorldMap {
   private objectiveDistrictIds(): Set<DistrictId> {
     const self = this.world.self;
     if (!self) return new Set();
+    const resourceId = this.questTracking.resourceId;
+    if (resourceId) {
+      const locations = SALVAGE_GUIDE.find((entry) => entry.objectId === resourceId)?.locations ?? [];
+      return new Set(locations.flatMap((location) => (location.districtId ? [location.districtId] : [])));
+    }
     const quest = trackedQuest(self.quests, GAME_CONTENT.quests, this.questTracking.questId);
     return quest ? objectiveDistricts(quest.objectives, GAME_CONTENT) : new Set();
   }
