@@ -20,13 +20,9 @@ const RUST = [0x6a3f24, 0x7f4c2a, 0x52301c, 0x8a5a36];
 const SOIL = [0x4a3a28, 0x5b4a34, 0x3a2e20, 0x6b5a42];
 
 const PALETTES: Partial<Record<TileKindId, ScatterPalette>> = {
-  plating: { density: 0.55, pebbles: STONE, grit: [0x3a4a55, 0x2c3a44, 0x56656f], pieces: ['grit', 'grit', 'pebble', 'bolt', 'flake'] },
-  concrete: { density: 0.8, pebbles: STONE, grit: [0x3a3e41, 0x4c5054, 0x232629], pieces: ['pebble', 'pebble', 'stone', 'grit', 'grit', 'shard'] },
-  rust: { density: 0.75, pebbles: RUST, grit: [0x3a2216, 0x5a3420], pieces: ['flake', 'flake', 'pebble', 'grit', 'bolt'] },
-  soil: { density: 0.9, pebbles: SOIL, grit: [0x2a2014, 0x3a2c1c], pieces: ['pebble', 'stone', 'leaf', 'tuft', 'tuft', 'grit'] },
-  carpet: { density: 0.25, pebbles: [0x3a3248, 0x4a4058], grit: [0x1e1a28, 0x5a4a2a], pieces: ['grit', 'flake'] },
-  hazard: { density: 0.35, pebbles: STONE, grit: [0x2a2a20, 0x4a4a3a], pieces: ['grit', 'pebble', 'bolt'] },
-  grate: { density: 0.18, pebbles: STONE, grit: [0x2b3a44], pieces: ['bolt', 'grit'] },
+  concrete: { density: 0.14, pebbles: STONE, grit: [0x3a3e41, 0x4c5054], pieces: ['pebble', 'stone', 'shard'] },
+  rust: { density: 0.16, pebbles: RUST, grit: [0x3a2216, 0x5a3420], pieces: ['flake', 'bolt'] },
+  soil: { density: 0.22, pebbles: SOIL, grit: [0x2a2014, 0x3a2c1c], pieces: ['stone', 'leaf', 'tuft'] },
 };
 
 const pick = <T>(list: readonly T[], roll: number): T => list[Math.min(list.length - 1, Math.floor(roll * list.length))] as T;
@@ -79,7 +75,7 @@ export function buildFloorScatter(layout: TileLayout, region: TileRect, isOccupi
       const palette = PALETTES[layout.tileAt({ x: tx, y: ty })];
       if (!palette || isOccupied({ x: tx, y: ty })) continue;
       if (noise3(tx, ty, 0, 91) > palette.density) continue;
-      const count = 1 + Math.floor(noise3(tx, ty, 1, 92) * 3);
+      const count = 1 + Math.floor(noise3(tx, ty, 1, 92) * 2);
       for (let index = 0; index < count; index++) {
         const seed = tx * 131 + ty * 71 + index * 17;
         const lx = Math.floor(noise3(tx, index, ty, 93) * (VOXELS_PER_TILE - EDGE_MARGIN * 2 - 3)) + EDGE_MARGIN - HALF;
