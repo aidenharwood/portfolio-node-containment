@@ -176,15 +176,8 @@ const atriumPiece = (room: string, name: string, prefab: string, dx: number, dy:
   setPiece(plan, room, prefab, dx, dy, facing, `atrium-${room}-${name}`);
 
 const setPieces: SetPiece[] = [
-  atriumPiece('plaza', 'fountain-nw', 'fountain-corner', 17, 17),
-  atriumPiece('plaza', 'fountain-ne', 'fountain-corner', 41, 17, 'west'),
-  atriumPiece('plaza', 'fountain-sw', 'fountain-corner', 17, 31, 'east'),
-  atriumPiece('plaza', 'fountain-se', 'fountain-corner', 41, 31, 'north'),
   atriumPiece('plaza', 'ring-north', 'bench-ring', 28, 15),
   atriumPiece('plaza', 'ring-south', 'bench-ring', 28, 31),
-  atriumPiece('plaza', 'monument-west', 'statue-court', 8, 23),
-  atriumPiece('plaza', 'monument-east', 'statue-court', 49, 23),
-  atriumPiece('plaza', 'banners', 'banner-pair', 29, 2),
   atriumPiece('quarantine-gate', 'checkpoint', 'checkpoint', 27, 6),
   atriumPiece('lift-bay', 'shelter', 'shelter-stop', 27, 22, 'west'),
   atriumPiece('lift-bay', 'timetable', 'timetable-wall', 29, 14, 'west'),
@@ -200,21 +193,16 @@ const setPieces: SetPiece[] = [
 ];
 
 const plazaAt = (dx: number, dy: number): TilePoint => plan.at('plaza', dx, dy);
-const runner = (dx: number, dy: number, width: number, height: number): FloorDecal => ({ kind: 'runner', rect: { ...plazaAt(dx, dy), width, height } });
 
 const decals: FloorDecal[] = [
   { kind: 'mosaic', pattern: 'compass', rect: { ...plazaAt(27, 22), width: 9, height: 9 } },
-  runner(30, 0, 3, 22),
-  runner(31, 31, 3, 19),
-  runner(0, 12, 62, 3),
-  runner(0, 38, 62, 3),
 ];
 
 const dressing: Dressing = {
   'requisitions': 'office',
   'quarantine-gate': { theme: 'civic', density: 'dense', composition: 'court', condition: 'breached' },
   'archives': 'archive',
-  'plaza': { theme: 'civic', density: 'dense', composition: 'radial' },
+  'plaza': { theme: 'civic', density: 'sparse', composition: 'radial' },
   'workshop': 'industrial',
   'west-gate': 'civic',
   'response-office': 'office',
@@ -266,4 +254,4 @@ export const MERIDIAN_ATRIUM: DistrictDefinition = furnish(plan, {
     { position: plan.spot('medbay', 29, 11), radius: 14, color: '#d8fff0', intensity: 0.5 },
     { position: plan.spot('engineering', 12, 11), radius: 13, color: '#46c8a8', intensity: 0.4 },
   ],
-}, dressing, { setPieces, landmarks: ['plaza'] });
+}, dressing, { setPieces });
