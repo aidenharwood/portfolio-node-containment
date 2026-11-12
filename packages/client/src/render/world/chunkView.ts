@@ -119,6 +119,10 @@ const bandsOf = (region: TileRect): number[] => {
   for (let band = Math.floor(region.y / BAND_ROWS); band <= Math.floor((region.y + region.height - 1) / BAND_ROWS); band++) bands.push(band);
   return bands;
 };
+export const decorBandOf = (lastRow: number, region: TileRect): number => {
+  const bands = bandsOf(region);
+  return Math.min(Math.floor(lastRow / BAND_ROWS), bands[bands.length - 1] as number);
+};
 const SCONCE_MESH_CACHE = new Map<boolean, VoxelMeshes>();
 const GLOW_CACHE = new Map<string, Glow | null>();
 
@@ -166,6 +170,7 @@ export class ChunkView {
   readonly lights: LightSource[] = [];
   private coolant: LiquidSurface | null = null;
   private readonly ringMaterial: Material;
+  private readonly region: TileRect;
   private readonly decor = new Map<number, Record<VoxelLayer, VoxelGeometryPart[]>>();
   private readonly fixturePieces: { readonly tile: TilePoint; readonly meshes: VoxelMeshes }[] = [];
   private readonly batches: FadeBatch[] = [];
@@ -174,6 +179,7 @@ export class ChunkView {
 
   constructor(zone: ActiveZone, region: TileRect, contents: ChunkContents, ringMaterial: Material) {
     this.ringMaterial = ringMaterial;
+    this.region = region;
     if (hasStructure(zone, region)) this.planStructure(zone, region, new Set(contents.objects.flatMap(({ placement }) => objectFootprintTiles(GAME_CONTENT.worldObjects.get(placement.objectId), placement).map(tileKey))));
     contents.objects.forEach(({ placement, index }) => this.steps.push(() => this.addObject(placement, index)));
     bandsOf(region).forEach((band) => this.steps.push(() => this.buildDecor(band)));
@@ -344,7 +350,7 @@ export class ChunkView {
       new Vector3(scale, scale, scale),
     );
     const lastRow = objectFootprintTiles(definition, placement).reduce((row, tile) => Math.max(row, tile.y), placement.position.y);
-    const band = Math.floor(lastRow / BAND_ROWS);
+    const band = decorBandOf(lastRow, this.region);
     const parts = this.decor.get(band) ?? { solid: [], emissive: [], glass: [] };
     this.decor.set(band, parts);
     for (const layer of VOXEL_LAYERS) {

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import type { WorldObjectDefinition } from '@containment/shared';
-import { objectModelOrigin } from '../src/render/world/chunkView.ts';
+import { decorBandOf, objectModelOrigin } from '../src/render/world/chunkView.ts';
 import { clampToViewport } from '../src/ui/placement.ts';
 
 const viewport = { width: 400, height: 300 };
@@ -38,4 +38,16 @@ test('a wide object is centred over its footprint', () => {
 test('a one tile object stays on its own tile', () => {
   const crate = { ...plinth, footprint: undefined };
   assert.deepEqual(objectModelOrigin({ instanceId: 'a', objectId: plinth.id, position: { x: 4, y: 4 } }, crate), { x: 4, z: 4 });
+});
+
+test('decor spilling past the last band of its chunk is clamped into that band', () => {
+  const region = { x: 0, y: 32, width: 32, height: 32 };
+  assert.equal(decorBandOf(64, region), 7);
+  assert.equal(decorBandOf(70, region), 7);
+});
+
+test('decor inside its chunk keeps the band of its last row', () => {
+  const region = { x: 0, y: 32, width: 32, height: 32 };
+  assert.equal(decorBandOf(33, region), 4);
+  assert.equal(decorBandOf(63, region), 7);
 });
