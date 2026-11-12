@@ -106,10 +106,56 @@ export function hitsAt(layout: DistrictLayout, district: DistrictDefinition, til
 
   const room: Hit[] = roomAt ? [{ kind: 'room', room: roomAt }] : [];
   const seen = new Set<string>();
-  return [...setPieces, ...objects, ...npcs, ...creatures, ...anchors, ...lights, ...decals, ...steps, ...room].filter((hit) => {
+  return [...setPieces, ...objects, ...npcs, ...creatures, ...anchors, ...lights, ...decals, ...room, ...steps].filter((hit) => {
     const key = keyOf(hit);
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
   });
+}
+
+export interface Bounds {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+}
+
+const boxOf = (tiles: readonly TilePoint[]): Bounds | null => {
+  if (tiles.length === 0) return null;
+  const xs = tiles.map((tile) => tile.x);
+  const ys = tiles.map((tile) => tile.y);
+  const x = Math.min(...xs);
+  const y = Math.min(...ys);
+  return { x, y, width: Math.max(...xs) - x + 1, height: Math.max(...ys) - y + 1 };
+};
+
+export function boundsOf(layout: DistrictLayout, district: DistrictDefinition, hit: Hit): Bounds | null {
+  const plan = drawBlueprint(layout.size, layout.steps, layout.tiles);
+  if (hit.kind === 'room' || hit.kind === 'dressing') return plan.rooms[hit.room] ?? null;
+  if (hit.kind === 'step') {
+    const step = layout.steps[hit.index];
+    if (!step) return null;
+    if ('rect' in step) return step.rect;
+    if (step.kind === 'link') return boxOf(plan.links[`${step.from}>${step.to}`] ?? []);
+    if (step.kind === 'exit') return boxOf(plan.exits[step.id]?.tiles ?? []);
+    if (step.kind === 'pillars') return plan.rooms[step.room] ?? null;
+    return boxOf(trackBed(step.points).flatMap((rect) => [{ x: rect.x, y: rect.y }, { x: rect.x + rect.width - 1, y: rect.y + rect.height - 1 }]));
+  }
+  const ref = hit.ref;
+  if (ref.collection === 'anchors') {
+    const at = layout.anchors[ref.name];
+    return at ? boxOf([resolvePosition(plan, at, 'bounds')]) : null;
+  }
+  const entry = layout[ref.collection][ref.index] as { id?: string; at: Parameters<typeof resolvePosition>[1]; width?: number; height?: number } | undefined;
+  if (!entry) return null;
+  const at = resolvePosition(plan, entry.at, 'bounds');
+  if (ref.collection === 'decals') return { ...at, width: entry.width ?? 1, height: entry.height ?? 1 };
+  if (ref.collection === 'objects' || ref.collection === 'assemblies' || ref.collection === 'setPieces') {
+    const id = entry.id ?? '';
+    const pieces = districtObjects(district, GAME_CONTENT.assemblies).filter((object) => object.instanceId === id || object.instanceId.startsWith(`${id}/`) || assemblyInstanceOf(object.instanceId) === id);
+    const tiles = pieces.flatMap((object) => objectFootprintTiles(GAME_CONTENT.worldObjects.get(object.objectId), object));
+    return boxOf(tiles.length > 0 ? tiles : [at]);
+  }
+  return boxOf([at]);
 }

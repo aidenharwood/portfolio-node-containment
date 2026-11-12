@@ -105,3 +105,15 @@ export const DISTRICT_LAYOUT_SCHEMA = z
 
 export type DistrictLayout = z.infer<typeof DISTRICT_LAYOUT_SCHEMA>;
 export type LayoutPosition = z.infer<typeof LAYOUT_POSITION_SCHEMA>;
+
+export const LAYOUT_CHOICES = {
+  facings: FACINGS,
+  shapes: SHAPES,
+  conditions: CONDITIONS,
+  densities: DENSITIES,
+  compositions: COMPOSITION_NAMES,
+  decalKinds: DECAL_KINDS,
+  decalPatterns: DECAL_PATTERNS,
+  themes: DRESSING_THEMES,
+  tiles: TILE_KIND_IDS,
+} as const;

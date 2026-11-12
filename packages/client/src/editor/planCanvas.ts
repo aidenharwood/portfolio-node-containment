@@ -94,6 +94,13 @@ export function planDrawList(content: GameContent, districtId: DistrictId, layer
 
 const FACING_STEP: Readonly<Record<Facing, TilePoint>> = { north: { x: 0, y: -1 }, south: { x: 0, y: 1 }, east: { x: 1, y: 0 }, west: { x: -1, y: 0 } };
 
+export interface TileBox {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+}
+
 export class PlanCanvas {
   private readonly canvas: HTMLCanvasElement;
   private readonly context: CanvasRenderingContext2D;
@@ -105,6 +112,11 @@ export class PlanCanvas {
   private clickListeners: ((tile: TilePoint) => void)[] = [];
   private drag: { x: number; y: number; moved: boolean } | null = null;
   private highlight: TilePoint | null = null;
+  private selectionRect: TileBox | null = null;
+  private ghostRect: TileBox | null = null;
+  private editing = false;
+  private editPointer = false;
+  private pointerListeners: Record<'down' | 'move' | 'up', ((tile: TilePoint, event?: PointerEvent) => void)[]> = { down: [], move: [], up: [] };
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -121,9 +133,16 @@ export class PlanCanvas {
       this.scale = next;
       this.draw();
     }, { passive: false });
+    canvas.addEventListener('contextmenu', (event) => event.preventDefault());
     canvas.addEventListener('pointerdown', (event) => {
-      this.drag = { x: event.offsetX, y: event.offsetY, moved: false };
       canvas.setPointerCapture(event.pointerId);
+      if (this.editing && event.button === 0) {
+        this.editPointer = true;
+        const tile = this.tileAt(event.offsetX, event.offsetY);
+        for (const listener of this.pointerListeners.down) listener(tile, event);
+        return;
+      }
+      this.drag = { x: event.offsetX, y: event.offsetY, moved: false };
     });
     canvas.addEventListener('pointermove', (event) => {
       if (this.drag) {
@@ -139,9 +158,16 @@ export class PlanCanvas {
         }
       }
       const tile = this.tileAt(event.offsetX, event.offsetY);
+      if (this.editPointer) for (const listener of this.pointerListeners.move) listener(tile);
       for (const listener of this.hoverListeners) listener(tile);
     });
     canvas.addEventListener('pointerup', (event) => {
+      if (this.editPointer) {
+        this.editPointer = false;
+        const tile = this.tileAt(event.offsetX, event.offsetY);
+        for (const listener of this.pointerListeners.up) listener(tile);
+        return;
+      }
       const clicked = this.drag && !this.drag.moved;
       this.drag = null;
       if (clicked) {
@@ -149,6 +175,21 @@ export class PlanCanvas {
         for (const listener of this.clickListeners) listener(tile);
       }
     });
+  }
+
+  setEditing(on: boolean): void {
+    this.editing = on;
+    this.canvas.style.cursor = on ? 'default' : 'crosshair';
+  }
+
+  onPointer(kind: 'down' | 'move' | 'up', listener: (tile: TilePoint, event?: PointerEvent) => void): void {
+    this.pointerListeners[kind].push(listener);
+  }
+
+  showSelection(rect: TileBox | null, ghost: TileBox | null): void {
+    this.selectionRect = rect;
+    this.ghostRect = ghost;
+    this.draw();
   }
 
   onHover(listener: (tile: TilePoint) => void): void {
@@ -268,6 +309,18 @@ export class PlanCanvas {
           }
         }
       }
+    }
+    if (this.selectionRect) {
+      context.strokeStyle = '#ffd23f';
+      context.lineWidth = 2;
+      context.strokeRect(this.selectionRect.x * s - 1, this.selectionRect.y * s - 1, this.selectionRect.width * s + 2, this.selectionRect.height * s + 2);
+      context.lineWidth = 1;
+    }
+    if (this.ghostRect) {
+      context.strokeStyle = '#ffffff';
+      context.setLineDash([4, 3]);
+      context.strokeRect(this.ghostRect.x * s, this.ghostRect.y * s, this.ghostRect.width * s, this.ghostRect.height * s);
+      context.setLineDash([]);
     }
     if (this.highlight) {
       context.strokeStyle = '#ffffff';

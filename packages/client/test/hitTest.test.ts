@@ -24,7 +24,9 @@ test('a placed object selects its entry, with the room underneath', () => {
   assert.ok(core);
   const hits = hitsAt(layout, atrium, core.position);
   assert.deepEqual(hits[0], { kind: 'entry', ref: { collection: 'objects', index: layout.objects.findIndex((entry) => entry.id === 'atrium-core') } });
-  assert.deepEqual(hits.at(-1), { kind: 'room', room: 'plaza' });
+  assert.ok(hits.some((hit) => hit.kind === 'room' && hit.room === 'plaza'));
+  const roomAt = hits.findIndex((hit) => hit.kind === 'room');
+  assert.ok(hits.slice(roomAt + 1).every((hit) => hit.kind === 'step'));
 });
 
 test('an empty floor tile yields only its room', () => {

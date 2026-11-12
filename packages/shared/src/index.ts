@@ -107,3 +107,4 @@ export * from './content/weaponVariants.ts';
 export * from './content/districts/layouts/index.ts';
 export * from './content/levels/recipes.ts';
 export * from './content/levels/shippedContext.ts';
+export { PREFABS } from './content/prefabs/index.ts';

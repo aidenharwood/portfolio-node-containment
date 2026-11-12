@@ -150,3 +150,146 @@ body {
   color: var(--bad);
   white-space: pre-wrap;
 }
+
+#editor {
+  grid-template-rows: auto auto 1fr minmax(80px, 22vh);
+}
+
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--line);
+  background: #071016;
+}
+
+.tools[hidden],
+.side[hidden] {
+  display: none;
+}
+
+.tools button,
+.tools select,
+.side button,
+.side input,
+.side select {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 3px 6px;
+  font: inherit;
+}
+
+.tools button[aria-pressed='true'],
+.edit-toggle[aria-pressed='true'] {
+  border-color: #ffd23f;
+  color: #ffd23f;
+}
+
+.tools .save:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.tools .dirty {
+  color: var(--muted);
+}
+
+.banner {
+  flex-basis: 100%;
+  min-height: 1.2em;
+  color: var(--muted);
+}
+
+.banner[data-kind='error'] {
+  color: var(--bad);
+}
+
+.views[data-editing='true'] {
+  grid-template-columns: 1fr 1fr 300px;
+}
+
+.views[data-editing='true'][data-view='2d'] {
+  grid-template-columns: 1fr 0 300px;
+}
+
+.views[data-editing='true'][data-view='3d'] {
+  grid-template-columns: 0 1fr 300px;
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--line);
+  background: var(--panel);
+  overflow: auto;
+}
+
+.palette {
+  padding: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.palette input {
+  width: 100%;
+}
+
+.palette-results {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  max-height: 22vh;
+  overflow: auto;
+}
+
+.palette-results button {
+  width: 100%;
+  text-align: left;
+  border: none;
+  padding: 2px 4px;
+}
+
+.palette-results button:hover {
+  color: var(--accent);
+}
+
+.properties {
+  padding: 8px 10px;
+}
+
+.properties h2 {
+  margin: 0 0 4px;
+  font: 600 14px 'Chakra Petch', sans-serif;
+  color: var(--accent);
+}
+
+.properties h3 {
+  margin: 10px 0 4px;
+  font: 600 12px 'Chakra Petch', sans-serif;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.properties .hint {
+  color: var(--muted);
+  margin: 0 0 6px;
+  overflow-wrap: anywhere;
+}
+
+.properties .field {
+  display: grid;
+  grid-template-columns: 9ch 1fr;
+  gap: 6px;
+  align-items: center;
+  margin: 3px 0;
+}
+
+.properties .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
