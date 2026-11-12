@@ -10,7 +10,7 @@
   "steps": [
     { "kind": "room", "id": "loading-dock", "rect": { "x": 1, "y": 1, "width": 28, "height": 25 }, "floor": "rust", "shape": "rect" },
     { "kind": "room", "id": "cold-store", "rect": { "x": 1, "y": 28, "width": 28, "height": 28 }, "floor": "concrete", "shape": "rect" },
-    { "kind": "room", "id": "yard-office", "rect": { "x": 1, "y": 58, "width": 28, "height": 29 }, "floor": "plating", "shape": "rect" },
+    { "kind": "room", "id": "yard-office", "rect": { "x": 1, "y": 58, "width": 28, "height": 29 }, "floor": "concrete", "shape": "rect" },
     { "kind": "room", "id": "scrap-yard", "rect": { "x": 31, "y": 1, "width": 60, "height": 40 }, "floor": "rust", "shape": "rect" },
     { "kind": "room", "id": "culverts", "rect": { "x": 93, "y": 1, "width": 30, "height": 40 }, "floor": "soil", "shape": "rect" },
     { "kind": "room", "id": "laundry", "rect": { "x": 31, "y": 43, "width": 44, "height": 41 }, "floor": "concrete", "shape": "rect" },

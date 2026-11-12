@@ -10,10 +10,10 @@
   "size": { "width": 124, "height": 68 },
   "steps": [
     { "kind": "room", "id": "arrival", "rect": { "x": 1, "y": 1, "width": 20, "height": 18 }, "floor": "concrete", "shape": "rect" },
-    { "kind": "room", "id": "lockers", "rect": { "x": 22, "y": 1, "width": 18, "height": 18 }, "floor": "carpet", "shape": "rect" },
+    { "kind": "room", "id": "lockers", "rect": { "x": 22, "y": 1, "width": 18, "height": 18 }, "floor": "concrete", "shape": "rect" },
     { "kind": "room", "id": "diagnostics", "rect": { "x": 41, "y": 1, "width": 16, "height": 18 }, "floor": "plating", "shape": "rect" },
     { "kind": "room", "id": "observation", "rect": { "x": 58, "y": 1, "width": 36, "height": 18 }, "floor": "grate", "shape": "rect" },
-    { "kind": "room", "id": "supply", "rect": { "x": 95, "y": 1, "width": 28, "height": 18 }, "floor": "carpet", "shape": "rect" },
+    { "kind": "room", "id": "supply", "rect": { "x": 95, "y": 1, "width": 28, "height": 18 }, "floor": "concrete", "shape": "rect" },
     { "kind": "room", "id": "corridor", "rect": { "x": 1, "y": 21, "width": 122, "height": 13 }, "floor": "plating", "shape": "rect" },
     { "kind": "room", "id": "storeroom", "rect": { "x": 1, "y": 36, "width": 20, "height": 28 }, "floor": "concrete", "shape": "rect" },
     { "kind": "room", "id": "workshop", "rect": { "x": 22, "y": 36, "width": 34, "height": 28 }, "floor": "grate", "shape": "rect" },

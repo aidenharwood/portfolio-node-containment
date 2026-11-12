@@ -8,7 +8,7 @@
   "ambience": { "darkness": 0.4, "tint": "#101614", "fog": "#141a18" },
   "size": { "width": 60, "height": 46 },
   "steps": [
-    { "kind": "room", "id": "lodge", "rect": { "x": 1, "y": 1, "width": 58, "height": 44 }, "floor": "carpet", "shape": "rect" },
+    { "kind": "room", "id": "lodge", "rect": { "x": 1, "y": 1, "width": 58, "height": 44 }, "floor": "terrazzo", "shape": "rect" },
     { "kind": "pillars", "room": "lodge", "everyX": 7, "everyY": 30, "inset": 7 },
     { "kind": "patch", "rect": { "x": 6, "y": 14, "width": 15, "height": 1 }, "tile": "glass" },
     { "kind": "patch", "rect": { "x": 34, "y": 14, "width": 15, "height": 1 }, "tile": "glass" },

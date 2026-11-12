@@ -8,7 +8,7 @@
   "ambience": { "darkness": 0.62, "tint": "#08160c", "fog": "#0a1a10", "fixtures": "failing" },
   "size": { "width": 105, "height": 71 },
   "steps": [
-    { "kind": "room", "id": "seed-vault", "rect": { "x": 1, "y": 14, "width": 22, "height": 14 }, "floor": "carpet", "shape": "rect" },
+    { "kind": "room", "id": "seed-vault", "rect": { "x": 1, "y": 14, "width": 22, "height": 14 }, "floor": "terrazzo", "shape": "rect" },
     { "kind": "room", "id": "platform", "rect": { "x": 1, "y": 30, "width": 22, "height": 40 }, "floor": "grate", "shape": "rect" },
     { "kind": "room", "id": "nursery", "rect": { "x": 26, "y": 1, "width": 30, "height": 30 }, "floor": "soil", "shape": "rect" },
     { "kind": "room", "id": "greenhouse", "rect": { "x": 26, "y": 34, "width": 30, "height": 32 }, "floor": "soil", "shape": "rect" },

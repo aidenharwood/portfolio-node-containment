@@ -8,7 +8,7 @@
   "ambience": { "darkness": 0.42, "tint": "#0a1018", "fog": "#0c141e" },
   "size": { "width": 68, "height": 48 },
   "steps": [
-    { "kind": "room", "id": "command-post", "rect": { "x": 1, "y": 1, "width": 16, "height": 12 }, "floor": "carpet", "shape": "rect" },
+    { "kind": "room", "id": "command-post", "rect": { "x": 1, "y": 1, "width": 16, "height": 12 }, "floor": "plating", "shape": "rect" },
     { "kind": "room", "id": "concourse", "rect": { "x": 18, "y": 1, "width": 32, "height": 12 }, "floor": "concrete", "shape": "rect" },
     { "kind": "room", "id": "workshop", "rect": { "x": 51, "y": 1, "width": 16, "height": 12 }, "floor": "grate", "shape": "rect" },
     { "kind": "room", "id": "platform-hall", "rect": { "x": 1, "y": 14, "width": 66, "height": 16 }, "floor": "plating", "shape": "rect" },

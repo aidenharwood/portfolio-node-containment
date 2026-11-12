@@ -23,6 +23,7 @@ const TILE_COLORS: Partial<Record<string, string>> = {
   hazard: '#a88417',
   door: '#c9a227',
   carpet: '#3a3150',
+  terrazzo: '#4a4c4e',
   track: '#2a2420',
 };
 

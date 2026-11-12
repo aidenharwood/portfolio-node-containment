@@ -72,15 +72,17 @@ Site Meridian is **one large facility you can walk across**, not a set of rooms 
 
 | Place | Shapes and floors | Landmark |
 | ----- | ----------------- | -------- |
-| Atrium and the Circuit | Octagonal plaza, colonnaded boulevards, `plating` and `carpet` | The central shaft |
+| Atrium and the Circuit | Octagonal plaza, colonnaded boulevards, `plating` and `terrazzo` | The central shaft |
 | Service Yards, freight filler | Long rectangular yards, `concrete` and `rust`, `hazard` edging | Gantry cranes, scrap stacks |
 | Hydroponics, Vesper approach | Rounded grow halls, `soil` with `coolant` channels | The Heart Bed |
 | Waterworks, Calder approach | Tanks and canals: large `coolant` pools with `grate` walkways | Settling tanks |
 | Calder Wing | Round caverns and long naves, `rust` and `concrete` | The Salt Cathedral nave |
-| Vesper Wing | Symmetrical wards off long galleries, `carpet` and `plating` | The Pharmacy rotunda |
+| Vesper Wing | Symmetrical wards off long galleries, `terrazzo` and `plating` | The Pharmacy rotunda |
 | The Deep | A ring causeway of `grate` over void, round caverns | The chasm |
 | Dungeon floors | Winding round chambers with loops; boss room furthest from the lift | The boss room |
 | Pockets | Small, wrong and symmetrical where the original is not | Whatever it mirrors |
+
+**Floors.** A district has one base floor and at most one accent floor from `plating`, `concrete`, `rust` and `terrazzo`. Functional floors (`grate`, `soil`, `hazard`, `door`, `track`, `coolant`) do not count. The accent marks the rooms that matter, such as civic halls, wards or a nave, so walking room to room does not jump between tile sets. The renderer lays a brass threshold wherever two floors meet. `carpet` is retired: use `terrazzo`.
 
 ## Reserved ground
 

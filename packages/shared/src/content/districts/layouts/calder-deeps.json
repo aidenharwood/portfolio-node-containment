@@ -8,9 +8,9 @@
   "ambience": { "darkness": 0.72, "tint": "#160f0c", "fog": "#1c130e", "fixtures": "failing" },
   "size": { "width": 110, "height": 84 },
   "steps": [
-    { "kind": "room", "id": "lift-landing", "rect": { "x": 1, "y": 1, "width": 20, "height": 18 }, "floor": "carpet", "shape": "rect" },
+    { "kind": "room", "id": "lift-landing", "rect": { "x": 1, "y": 1, "width": 20, "height": 18 }, "floor": "concrete", "shape": "rect" },
     { "kind": "room", "id": "old-workings", "rect": { "x": 24, "y": 1, "width": 84, "height": 46 }, "floor": "concrete", "shape": "round" },
-    { "kind": "room", "id": "flooded-drift", "rect": { "x": 1, "y": 22, "width": 20, "height": 60 }, "floor": "plating", "shape": "rect" },
+    { "kind": "room", "id": "flooded-drift", "rect": { "x": 1, "y": 22, "width": 20, "height": 60 }, "floor": "concrete", "shape": "rect" },
     { "kind": "room", "id": "foremans-office", "rect": { "x": 24, "y": 50, "width": 62, "height": 32 }, "floor": "rust", "shape": "rect" },
     { "kind": "room", "id": "salt-pockets", "rect": { "x": 88, "y": 50, "width": 20, "height": 32 }, "floor": "concrete", "shape": "octagon" },
     { "kind": "patch", "rect": { "x": 34, "y": 12, "width": 60, "height": 2 }, "tile": "coolant" },

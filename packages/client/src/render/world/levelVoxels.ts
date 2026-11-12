@@ -29,6 +29,11 @@ const COLORS = {
   rustSeam: 0x22160f,
   algae: 0x2f4a2a,
   carpetTrim: 0x5a4a2a,
+  terrazzo: 0x34373a,
+  terrazzoChip: 0x45484b,
+  terrazzoWarm: 0x4a4038,
+  terrazzoStrip: 0x4a4232,
+  threshold: 0x463d2c,
   hazardYellow: 0xc99a1c,
   hazardBlack: 0x17170f,
   chevron: 0xd6a922,
@@ -84,14 +89,37 @@ export function paintTileRows(volume: DenseVolume, layout: TileLayout, region: T
       if (kind === 'wall') paintWall(volume, layout, tx, ty);
       else if (kind === 'glass') paintGlass(volume, tx, ty);
       else if (kind === 'track') paintTrack(volume, trackAxis(layout, tx, ty), tx, ty);
-      else paintFloor(volume, kind, tx, ty, kind === 'door' ? doorAxis(layout, tx, ty) : 'x', decals?.get(tileKey({ x: tx, y: ty })));
+      else paintFloor(volume, kind, tx, ty, kind === 'door' ? doorAxis(layout, tx, ty) : 'x', decals?.get(tileKey({ x: tx, y: ty })), seamsOf(layout, kind, tx, ty));
       if (kind === 'door') paintLintel(volume, layout, tx, ty);
     }
   }
   return volume;
 }
 
-function paintFloor(volume: DenseVolume, kind: TileKindId, tx: number, ty: number, axis: Axis, cells?: readonly DecalCell[]): void {
+const SURFACES: ReadonlySet<TileKindId> = new Set<TileKindId>(['plating', 'concrete', 'rust', 'carpet', 'terrazzo', 'soil', 'grate']);
+
+interface Seams {
+  readonly north: boolean;
+  readonly south: boolean;
+  readonly east: boolean;
+  readonly west: boolean;
+}
+
+function seamsOf(layout: TileLayout, kind: TileKindId, tx: number, ty: number): Seams | null {
+  if (!SURFACES.has(kind) || kind === 'grate') return null;
+  const differs = (x: number, y: number): boolean => {
+    const other = layout.tileAt({ x, y });
+    return other !== kind && SURFACES.has(other);
+  };
+  const seams = { north: differs(tx, ty - 1), south: differs(tx, ty + 1), east: differs(tx + 1, ty), west: differs(tx - 1, ty) };
+  return seams.north || seams.south || seams.east || seams.west ? seams : null;
+}
+
+function onSeam(seams: Seams, lx: number, lz: number): boolean {
+  return (seams.west && lx === 0) || (seams.east && lx === R - 1) || (seams.north && lz === 0) || (seams.south && lz === R - 1);
+}
+
+function paintFloor(volume: DenseVolume, kind: TileKindId, tx: number, ty: number, axis: Axis, cells?: readonly DecalCell[], seams?: Seams | null): void {
   const tile: FloorTile = { tx, ty, tone: noise3(tx, ty, 0, 11), axis };
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
@@ -104,6 +132,10 @@ function paintFloor(volume: DenseVolume, kind: TileKindId, tx: number, ty: numbe
       }
       const surface = floorVoxel(kind, lx, lz, vx, vz, tile);
       if (!surface) continue;
+      if (seams && onSeam(seams, lx, lz)) {
+        volume.set(vx, FLOOR, vz, jitter(COLORS.threshold, 0.02, tile.tone));
+        continue;
+      }
       const decal = cells && kind !== 'door' ? decalColor(cells, lx, lz, surface.color, noise3(vx, FLOOR, vz, 3)) : null;
       if (decal) volume.set(vx, FLOOR, vz, decal.color, decal.emissive ? VOXEL_EMISSIVE : VOXEL_SOLID);
       else volume.set(vx, FLOOR, vz, surface.color, surface.kind);
@@ -181,6 +213,13 @@ function floorVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: nu
     case 'carpet': {
       if (even(tile.tx + tile.ty) && Math.abs(lx - 3.5) + Math.abs(lz - 3.5) === 2) return solid(mix(COLORS.carpet, COLORS.carpetTrim, 0.4));
       return solid(COLORS.carpet);
+    }
+    case 'terrazzo': {
+      if ((even(tile.tx) && lx === 0) || (even(tile.ty) && lz === 0)) return solid(COLORS.terrazzoStrip);
+      const chip = noise3(vx, vz, 0, 23);
+      if (chip > 0.965) return solid(COLORS.terrazzoWarm);
+      if (chip > 0.9) return solid(COLORS.terrazzoChip);
+      return solid(jitter(COLORS.terrazzo, 0.012, noise3(Math.floor(tile.tx / 2), Math.floor(tile.ty / 2), 0, 29)));
     }
     case 'hazard':
       return solid(even(Math.floor((vx + vz) / 4)) ? COLORS.hazardYellow : COLORS.hazardBlack);

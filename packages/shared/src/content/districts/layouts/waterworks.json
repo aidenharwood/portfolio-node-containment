@@ -12,7 +12,7 @@
     { "kind": "room", "id": "valve-gallery", "rect": { "x": 1, "y": 36, "width": 26, "height": 28 }, "floor": "grate", "shape": "rect" },
     { "kind": "room", "id": "pump-house", "rect": { "x": 1, "y": 66, "width": 26, "height": 24 }, "floor": "concrete", "shape": "rect" },
     { "kind": "room", "id": "settling-tanks", "rect": { "x": 29, "y": 36, "width": 50, "height": 28 }, "floor": "concrete", "shape": "rect" },
-    { "kind": "room", "id": "intake-screens", "rect": { "x": 29, "y": 66, "width": 50, "height": 24 }, "floor": "rust", "shape": "rect" },
+    { "kind": "room", "id": "intake-screens", "rect": { "x": 29, "y": 66, "width": 50, "height": 24 }, "floor": "plating", "shape": "rect" },
     { "kind": "room", "id": "outfall", "rect": { "x": 81, "y": 36, "width": 34, "height": 54 }, "floor": "grate", "shape": "rect" },
     { "kind": "patch", "rect": { "x": 8, "y": 9, "width": 100, "height": 3 }, "tile": "coolant" },
     { "kind": "patch", "rect": { "x": 8, "y": 22, "width": 100, "height": 3 }, "tile": "coolant" },

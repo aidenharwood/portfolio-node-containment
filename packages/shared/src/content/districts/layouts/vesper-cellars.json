@@ -8,9 +8,9 @@
   "ambience": { "darkness": 0.72, "tint": "#0c1416", "fog": "#0f181a", "fixtures": "failing" },
   "size": { "width": 110, "height": 84 },
   "steps": [
-    { "kind": "room", "id": "lift-landing", "rect": { "x": 89, "y": 1, "width": 20, "height": 18 }, "floor": "carpet", "shape": "rect" },
+    { "kind": "room", "id": "lift-landing", "rect": { "x": 89, "y": 1, "width": 20, "height": 18 }, "floor": "concrete", "shape": "rect" },
     { "kind": "room", "id": "mortuary", "rect": { "x": 2, "y": 1, "width": 84, "height": 46 }, "floor": "concrete", "shape": "rect" },
-    { "kind": "room", "id": "cold-ward", "rect": { "x": 89, "y": 22, "width": 20, "height": 60 }, "floor": "plating", "shape": "rect" },
+    { "kind": "room", "id": "cold-ward", "rect": { "x": 89, "y": 22, "width": 20, "height": 60 }, "floor": "concrete", "shape": "rect" },
     { "kind": "room", "id": "almoners-office", "rect": { "x": 24, "y": 50, "width": 62, "height": 32 }, "floor": "rust", "shape": "rect" },
     { "kind": "room", "id": "cold-lockers", "rect": { "x": 2, "y": 50, "width": 20, "height": 32 }, "floor": "concrete", "shape": "octagon" },
     { "kind": "patch", "rect": { "x": 99, "y": 34, "width": 6, "height": 6 }, "tile": "coolant" },

@@ -9,7 +9,7 @@
   "ambience": { "darkness": 0.74, "tint": "#160709", "fog": "#12090b", "fixtures": "failing" },
   "size": { "width": 112, "height": 74 },
   "steps": [
-    { "kind": "room", "id": "research-lab", "rect": { "x": 6, "y": 1, "width": 36, "height": 24 }, "floor": "carpet", "shape": "rect" },
+    { "kind": "room", "id": "research-lab", "rect": { "x": 6, "y": 1, "width": 36, "height": 24 }, "floor": "plating", "shape": "rect" },
     { "kind": "room", "id": "observation-gallery", "rect": { "x": 44, "y": 1, "width": 16, "height": 24 }, "floor": "grate", "shape": "rect" },
     { "kind": "room", "id": "inner-chamber", "rect": { "x": 62, "y": 1, "width": 44, "height": 24 }, "floor": "concrete", "shape": "rect" },
     { "kind": "room", "id": "corridor", "rect": { "x": 6, "y": 27, "width": 100, "height": 22 }, "floor": "plating", "shape": "rect" },
