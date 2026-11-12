@@ -4,6 +4,7 @@ import {
   doorTilesOf,
   withOpenDoors,
   GAME_CONTENT,
+  sizeOf,
   walkableTilesNear,
   type WalkabilityGrid,
   type ChunkKey,
@@ -192,6 +193,17 @@ export class WorldState {
       x: entity.from.x + (entity.to.x - entity.from.x) * progress,
       y: entity.from.y + (entity.to.y - entity.from.y) * progress,
     };
+  }
+
+  bodySize(entity: ClientEntity): number {
+    const creature = entity.creatureId ? GAME_CONTENT.creatures.get(entity.creatureId) : undefined;
+    return creature ? sizeOf(creature) : 1;
+  }
+
+  bodyPosition(entity: ClientEntity, now: number): TilePoint {
+    const position = this.renderPosition(entity, now);
+    const offset = (this.bodySize(entity) - 1) / 2;
+    return { x: position.x + offset, y: position.y + offset };
   }
 
   isMoving(entity: ClientEntity, now: number): boolean {

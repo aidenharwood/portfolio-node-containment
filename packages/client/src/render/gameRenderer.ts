@@ -62,7 +62,10 @@ interface EntityView {
   yaw: number;
   marker: Group | null;
   markerKind: QuestMarkerKind | null;
+  readonly scale: number;
 }
+
+const FOOTPRINT_MODEL_SCALE: Readonly<Record<number, number>> = { 1: 1, 2: 1.75 };
 
 const CONTAINMENT_FIELD = 'containment-field';
 const LIGHT_LIMITS = { shadowed: 4, field: FIELD_LIGHT_LIMIT };
@@ -310,8 +313,8 @@ export class GameRenderer {
     const view = this.entities.get(entityId);
     const entity = this.world.entities.get(entityId);
     if (!view || !entity) return null;
-    const position = this.world.renderPosition(entity, now);
-    return this.project(new Vector3(position.x, view.rig.height + extraHeight, position.y));
+    const position = this.world.bodyPosition(entity, now);
+    return this.project(new Vector3(position.x, view.rig.height * view.scale + extraHeight, position.y));
   }
 
   dispose(): void {
@@ -337,10 +340,12 @@ export class GameRenderer {
     const target = this.world.entities.get(event.targetId);
     if (!attacker || !target) return;
     const now = performance.now();
-    const muzzle = this.world.renderPosition(attacker, now);
-    const impact = this.world.renderPosition(target, now);
-    const attackerHeight = this.entities.get(attacker.id)?.rig.height ?? 1.2;
-    const targetHeight = this.entities.get(target.id)?.rig.height ?? 1.2;
+    const muzzle = this.world.bodyPosition(attacker, now);
+    const impact = this.world.bodyPosition(target, now);
+    const attackerView = this.entities.get(attacker.id);
+    const targetView = this.entities.get(target.id);
+    const attackerHeight = attackerView ? attackerView.rig.height * attackerView.scale : 1.2;
+    const targetHeight = targetView ? targetView.rig.height * targetView.scale : 1.2;
     const from = new Vector3(muzzle.x, attackerHeight * 0.55, muzzle.y);
     const to = new Vector3(impact.x, targetHeight * 0.55, impact.y);
     if (attacker.kind !== 'creature') from.lerp(to, Math.min(0.45, MUZZLE_REACH / Math.max(0.001, from.distanceTo(to))));
@@ -389,7 +394,7 @@ export class GameRenderer {
         view.character.setLook(entity.appearance, entity.gear);
         view.gear = entity.gear;
       }
-      const position = this.world.renderPosition(entity, now);
+      const position = this.world.bodyPosition(entity, now);
       const moving = this.world.isMoving(entity, now);
       if (moving) entity.walkPhase += delta * 10;
       view.rig.root.position.set(position.x, 0, position.y);
@@ -411,10 +416,11 @@ export class GameRenderer {
       const dying = entity.dyingAt === null ? 0 : Math.min(1, (now - entity.dyingAt) / DEATH_ANIMATION_MS);
       if (entity.contained) {
         view.rig.root.rotation.y += dying * dying * 9;
-        view.rig.root.scale.setScalar(Math.max(0.01, 1 - dying));
+        view.rig.root.scale.setScalar(view.scale * Math.max(0.01, 1 - dying));
         view.rig.root.position.y = dying * 0.6;
         this.updateContainmentField(view, dying);
       } else {
+        view.rig.root.scale.setScalar(view.scale);
         view.rig.root.rotation.z = -dying * 1.4;
         view.rig.root.position.y = -dying * 0.15;
       }
@@ -445,7 +451,9 @@ export class GameRenderer {
     const rig: EntityRig = creature ? createCreatureRig(creature.model) : (character as CharacterRig);
     rig.root.userData.pick = { kind: 'entity', entityId: entity.id };
     this.scene.add(rig.root);
-    const view: EntityView = { rig, character, gear: entity.gear, yaw: FACING_YAW[entity.facing], marker: null, markerKind: null };
+    const scale = FOOTPRINT_MODEL_SCALE[this.world.bodySize(entity)] ?? 1;
+    rig.root.scale.setScalar(scale);
+    const view: EntityView = { rig, character, gear: entity.gear, yaw: FACING_YAW[entity.facing], marker: null, markerKind: null, scale };
     this.entities.set(entity.id, view);
     return view;
   }
@@ -529,9 +537,9 @@ export class GameRenderer {
     ring.visible = false;
     if (!hover) return;
     if (hover.kind === 'entity') {
-      const position = this.world.renderPosition(hover.entity, now);
+      const position = this.world.bodyPosition(hover.entity, now);
       ring.position.set(position.x, 0.025, position.y);
-      ring.scale.setScalar(1);
+      ring.scale.setScalar(this.world.bodySize(hover.entity));
       ring.visible = hover.entity.id !== this.world.selfEntityId;
     } else if (hover.kind === 'groundItem') {
       ring.position.set(hover.item.position.x, 0.025, hover.item.position.y);
