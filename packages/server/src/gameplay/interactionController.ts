@@ -10,6 +10,7 @@ import {
   isCardinallyAdjacent,
   isDoorOpenFor,
   manhattanDistance,
+  objectUseFlag,
   pathThroughDoor,
   samePoint,
   storedCount,
@@ -36,9 +37,6 @@ interface ApproachTarget {
   readonly instanceId: string;
   readonly position: TilePoint;
 }
-
-export const objectUseFlag = (districtId: string, instanceId: string, interactionIndex: number): string =>
-  `object-used:${districtId}:${instanceId}:${interactionIndex}`;
 
 export class InteractionController {
   private readonly content: GameContent;

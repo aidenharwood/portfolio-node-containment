@@ -128,7 +128,7 @@ export class LevelScene {
     for (const object of view.objects) this.objects.set(object.instanceId, object);
   }
 
-  update(time: number, objectiveObjectIds: ReadonlySet<string>, depletedObjects: ReadonlySet<string>, doors: DoorView): void {
+  update(time: number, objectiveObjectIds: ReadonlySet<string>, depletedObjects: ReadonlySet<string>, usedObjects: ReadonlySet<string>, doors: DoorView): void {
     const nearDoors = new Set<string>();
     if (doors.self) {
       for (const view of this.objects.values()) {
@@ -146,7 +146,7 @@ export class LevelScene {
       const baseScale = view.definition.modelScale ?? 1;
       const targetHeight = baseScale * (depleted ? DEPLETED_HEIGHT : 1);
       view.group.scale.y += (targetHeight - view.group.scale.y) * 0.12;
-      const isObjective = !depleted && objectiveObjectIds.has(view.definition.id) && !(view.definition.countsAs && assemblyInstanceOf(view.instanceId));
+      const isObjective = !depleted && !usedObjects.has(view.instanceId) && objectiveObjectIds.has(view.definition.id) && !(view.definition.countsAs && assemblyInstanceOf(view.instanceId));
       view.objectiveRing.visible = isObjective;
       if (isObjective) {
         const pulse = 1 + Math.sin(time * 3 + view.seed) * 0.08;

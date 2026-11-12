@@ -75,6 +75,7 @@ export interface SelfState {
   readonly openDoors: readonly WorldObjectId[];
   readonly openPassages: readonly WorldObjectId[];
   readonly studiedCreatures: readonly CreatureId[];
+  readonly usedObjects: readonly string[];
   readonly containmentClearance: number;
   readonly contracts: ContractLedger;
 }
