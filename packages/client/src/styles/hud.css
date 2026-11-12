@@ -3560,7 +3560,7 @@
   }
 }
 
-.game-screen :is(.hud-top-left, .hud-top-right, .hud-side, .hud-chat, .hud-dialogue, .shop-window, .crafting-window, .storage-window, .market-window, .contract-window, .settings-window, .activity-bar, .zone-banner, .camera-hint, .tram-ride) {
+.game-screen :is(.hud-top-left, .hud-top-right, .hud-side, .hud-chat, .hud-dialogue, .shop-window, .crafting-window, .storage-window, .salvage-guide-window, .market-window, .contract-window, .settings-window, .activity-bar, .zone-banner, .camera-hint, .tram-ride) {
   zoom: var(--ui-scale, 1);
 }
 
@@ -3728,4 +3728,99 @@
 .objectives-untrack:hover,
 .objectives-untrack:focus-visible {
   color: var(--color-text);
+}
+
+.tooltip-hint {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--color-accent);
+}
+
+.salvage-guide-window {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(520px, calc(100% - 32px));
+  height: min(560px, calc(100% - 120px));
+  display: flex;
+  flex-direction: column;
+  padding: 16px 20px 14px;
+  z-index: 30;
+  border-color: var(--color-line-strong);
+}
+
+.salvage-guide-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.salvage-guide-row {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border: 1px solid var(--color-line);
+  background: var(--color-surface-inset);
+}
+
+.salvage-guide-row.locked {
+  opacity: 0.55;
+}
+
+.salvage-guide-row.next {
+  opacity: 1;
+  border-color: var(--color-gold);
+}
+
+.salvage-guide-icon {
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+}
+
+.salvage-guide-text {
+  min-width: 0;
+}
+
+.salvage-guide-text p {
+  margin: 0;
+}
+
+.salvage-guide-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.salvage-guide-level {
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.salvage-guide-row.locked .salvage-guide-level {
+  color: var(--color-warning);
+}
+
+.salvage-guide-yield {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.salvage-guide-where {
+  font-size: 12px;
+  color: var(--color-text-faint);
+  overflow-wrap: anywhere;
+}
+
+.salvage-guide-track.tracking {
+  color: var(--color-gold);
+  border-color: var(--color-gold);
 }

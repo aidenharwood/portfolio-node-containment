@@ -26,6 +26,7 @@ import { InventoryModeSlot } from '../hud/inventoryMode.ts';
 import { ShopWindow } from '../hud/shopWindow.ts';
 import { ActivityBar } from '../hud/activityBar.ts';
 import { CraftingWindow } from '../hud/craftingWindow.ts';
+import { SalvageGuideWindow } from '../hud/salvageGuideWindow.ts';
 import { StorageWindow } from '../hud/storageWindow.ts';
 import { TramRide } from '../hud/tramRide.ts';
 import { WorldMap } from '../hud/worldMap.ts';
@@ -103,6 +104,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   const inventoryModes = new InventoryModeSlot();
   const shop = new ShopWindow(connection, world, menu, inventoryModes);
   const storage = new StorageWindow(connection, world, menu, inventoryModes);
+  const salvageGuideWindow = new SalvageGuideWindow(world, guidanceTracking);
   const market = new MarketWindow(connection, world);
   const contractBoard = new ContractBoardWindow(connection, world);
   const crafting = new CraftingWindow(connection, world);
@@ -160,7 +162,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   const sidePanel = new SidePanel([
     createInventoryTab(connection, menu, { examine }, inventoryModes),
     createEquipmentTab(connection, world),
-    createSkillsTab(),
+    createSkillsTab(() => salvageGuideWindow.show()),
     createQuestsTab(menu, guidanceTracking),
     createContractsTab(),
     createSocialTab(connection, social, { whisper }),
@@ -429,6 +431,10 @@ export function createGameScreen(app: AppNavigator): Screen {
       crafting.requestClose();
       return;
     }
+    if (event.key === 'Escape' && salvageGuideWindow.isOpen) {
+      salvageGuideWindow.hide();
+      return;
+    }
     if (event.key === 'Escape' && storage.isOpen) {
       storage.requestClose();
       return;
@@ -528,6 +534,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     shop.element,
     crafting.element,
     storage.element,
+    salvageGuideWindow.element,
     market.element,
     contractBoard.element,
     worldMap.element,
@@ -576,6 +583,7 @@ export function createGameScreen(app: AppNavigator): Screen {
       shop.dispose();
       crafting.dispose();
       storage.dispose();
+      salvageGuideWindow.dispose();
       market.dispose();
       contractBoard.dispose();
       party.dispose();

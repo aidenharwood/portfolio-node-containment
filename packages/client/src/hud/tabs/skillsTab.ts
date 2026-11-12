@@ -18,7 +18,7 @@ interface SkillTile {
   readonly fill: HTMLSpanElement;
 }
 
-export function createSkillsTab(): PanelTab {
+export function createSkillsTab(openSalvageGuide: () => void): PanelTab {
   let experienceById: Readonly<Record<SkillId, number>> | null = null;
   let shownId: SkillId | null = null;
   let pinned = false;
@@ -47,6 +47,7 @@ export function createSkillsTab(): PanelTab {
       ),
       h('div', { className: 'skill-bar' }, h('span', { style: { width: `${levelProgress(experience) * 100}%` } })),
       h('p', { className: 'tooltip-examine' }, SKILL_INFO[id].summary),
+      id === 'salvage' && h('p', { className: 'tooltip-hint' }, 'Select to open the salvage guide'),
     );
   };
 
@@ -108,6 +109,11 @@ export function createSkillsTab(): PanelTab {
     });
     tile.addEventListener('animationend', () => tile.classList.remove('levelled'));
     tile.addEventListener('click', (event) => {
+      if (id === 'salvage') {
+        hide();
+        openSalvageGuide();
+        return;
+      }
       if (event.detail > 0 && lastPointerType === 'mouse') return;
       if (pinned && shownId === id) return hide();
       show(id);
