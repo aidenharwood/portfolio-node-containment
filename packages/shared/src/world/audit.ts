@@ -47,13 +47,41 @@ function roomStats(content: GameContent, district: DistrictDefinition, layout: D
     const inside = (point: TilePoint): boolean => rectContains(rect, point);
     const roomObjects = objects.filter((object) => inside(object.position));
     const people = [...district.npcs, ...(district.creatures ?? [])].filter((placement) => inside(placement.position));
-    const lit = district.lights.some((light) => inside(light.position)) || roomObjects.some((object) => content.worldObjects.get(object.objectId)?.light !== undefined);
+    const sconced = district.areas.some((area) => area.rect.x < rect.x + rect.width && rect.x < area.rect.x + area.rect.width && area.rect.y < rect.y + rect.height && rect.y < area.rect.y + area.rect.height);
+    const lit = sconced || district.lights.some((light) => inside(light.position)) || roomObjects.some((object) => content.worldObjects.get(object.objectId)?.light !== undefined);
     const purposeful = people.length > 0 || roomObjects.some((object) => (content.worldObjects.get(object.objectId)?.interactions.length ?? 0) > 0);
-    const openings =
-      layout.steps.filter((step) => step.kind === 'link' && (step.from === room || step.to === room)).length +
-      layout.steps.filter((step) => step.kind === 'exit' && step.room === room).length;
+    const openings = openingsOf(rect, (point) => TILE_KINDS[tiles.tileAt(point)].walkable);
     return { room, rect, walkable, placements: roomObjects.length + people.length, lit, purposeful, openings };
   });
+}
+
+function openingsOf(rect: TileRect, walkable: (point: TilePoint) => boolean): number {
+  const outside: TilePoint[] = [];
+  for (let y = rect.y - 1; y <= rect.y + rect.height; y++) {
+    for (let x = rect.x - 1; x <= rect.x + rect.width; x++) {
+      const point = { x, y };
+      if (rectContains(rect, point) || !walkable(point)) continue;
+      const inward = [{ x: x + 1, y }, { x: x - 1, y }, { x, y: y + 1 }, { x, y: y - 1 }];
+      if (inward.some((next) => rectContains(rect, next) && walkable(next))) outside.push(point);
+    }
+  }
+  const seen = new Set<string>();
+  let groups = 0;
+  for (const start of outside) {
+    if (seen.has(tileKey(start))) continue;
+    groups += 1;
+    const queue = [start];
+    seen.add(tileKey(start));
+    while (queue.length > 0) {
+      const point = queue.pop() as TilePoint;
+      for (const next of outside) {
+        if (seen.has(tileKey(next)) || Math.max(Math.abs(next.x - point.x), Math.abs(next.y - point.y)) > 1) continue;
+        seen.add(tileKey(next));
+        queue.push(next);
+      }
+    }
+  }
+  return groups;
 }
 
 const lowerMedian = (values: readonly number[]): number => {

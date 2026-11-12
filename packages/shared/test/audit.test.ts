@@ -20,7 +20,8 @@ const kinds = (findings: readonly AuditFinding[], room: string): string[] => [..
 
 describe('auditDistrict', () => {
   test('a room with nothing in it is empty, dark and a lone dead end', () => {
-    const layout = { ...sample(), dressing: {} };
+    const base = sample();
+    const layout = { ...base, dressing: {}, areas: base.areas.filter((area) => !('room' in area) || area.room !== 'side') };
     const findings = auditDistrict(withLayouts([layout]), 'sample-district', layout);
     assert.deepEqual(kinds(findings, 'side'), ['dark-room', 'dead-end', 'empty-room']);
   });
@@ -38,6 +39,17 @@ describe('auditDistrict', () => {
     const layout: DistrictLayout = { ...base, creatures: [{ id: 'stray-mite', creature: 'gloam-mite', at: { room: 'hall', dx: 3, dy: 5 } }] };
     const findings = auditDistrict(withLayouts([layout]), 'sample-district', layout);
     assert.ok(findings.some((finding) => finding.kind === 'people' && finding.message.includes('stray-mite')));
+  });
+
+  test('a room under an area is lit by wall sconces', () => {
+    const layout = { ...sample(), dressing: {} };
+    const findings = auditDistrict(withLayouts([layout]), 'sample-district', layout);
+    assert.equal(kinds(findings, 'side').includes('dark-room'), false);
+  });
+
+  test('rooms joined by shared floor are not dead ends', () => {
+    const findings = auditDistrict(GAME_CONTENT, 'deep-concourse');
+    assert.deepEqual(findings.filter((finding) => finding.kind === 'dead-end' && finding.message.includes('no way in')), []);
   });
 
   test('the atrium plaza is not empty, dark or a dead end', () => {

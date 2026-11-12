@@ -48,7 +48,10 @@
     { "at": { "room": "grove", "dx": 17, "dy": 25 }, "radius": 9, "color": "#9fd8ff", "intensity": 0.5 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "verdant-fold-setPieces-1", "prefab": "grove-planters", "at": { "room": "west-crease", "dx": 2, "dy": 2 }, "facing": "south" },
+    { "id": "verdant-fold-setPieces-2", "prefab": "grove-planters", "at": { "room": "east-crease", "dx": 3, "dy": 2 }, "facing": "south" }
+  ],
   "dressing": {
     "grove": { "theme": "garden", "density": "dense", "composition": "court" }
   },
