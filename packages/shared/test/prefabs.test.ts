@@ -54,9 +54,11 @@ describe('prefab libraries', () => {
     assert.ok(issues.some((issue) => issue.includes('overlap')), issues.join('; '));
   });
 
-  test('the Atrium prefabs exist, with civic focal, island and edge choices', () => {
-    for (const id of ATRIUM_PREFABS) assert.ok(PREFABS[id], `${id} is missing`);
-    for (const role of ['focal', 'island', 'edge'] as const) assert.ok(prefabsWithRole('civic', role).length >= 3, `civic has fewer than 3 ${role} prefabs`);
+  test('the Atrium prefabs exist and are placed only by hand', () => {
+    for (const id of ATRIUM_PREFABS) {
+      assert.ok(PREFABS[id], `${id} is missing`);
+      assert.deepEqual(PREFABS[id]?.themes, [], `${id} would be scattered by the composer`);
+    }
     assert.equal(PREFABS['fountain-court']?.symmetric, true);
     assert.equal(PREFABS['checkpoint']?.symmetric, true);
   });

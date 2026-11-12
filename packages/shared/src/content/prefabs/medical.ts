@@ -8,5 +8,5 @@ export const MEDICAL_PREFABS: readonly Prefab[] = [
   prefab('ward-beds', ['ward'], ['wall', 'bay'], [[0, 0, 'gurney'], [1, 0, 'screen-partition', 'east'], [2, 0, 'gurney'], [3, 0, 'screen-partition', 'east'], [4, 0, 'gurney']]),
   prefab('medical-corner', ['medical'], ['corner'], [[0, 0, 'potted-fern']]),
   prefab('ward-corner', ['ward'], ['corner'], [[0, 0, 'potted-fern']]),
-  prefab('triage-hub', ['medical'], ['focal'], [[3, 0, 'gurney'], [0, 2, 'gurney'], [2, 2, 'triage-station'], [6, 2, 'gurney'], [3, 5, 'gurney']], { decals: [{ kind: 'inlay', pattern: 'border', rect: { x: 0, y: 0, width: 7, height: 6 } }] }),
+  prefab('triage-hub', [], ['focal'], [[3, 0, 'gurney'], [0, 2, 'gurney'], [2, 2, 'triage-station'], [6, 2, 'gurney'], [3, 5, 'gurney']], { decals: [{ kind: 'inlay', pattern: 'border', rect: { x: 0, y: 0, width: 7, height: 6 } }] }),
 ];

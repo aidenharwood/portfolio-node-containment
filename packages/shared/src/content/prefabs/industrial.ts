@@ -9,5 +9,5 @@ export const INDUSTRIAL_PREFABS: readonly Prefab[] = [
   prefab('barrels', ['industrial', 'wet', 'cold'], ['island'], [[0, 0, 'barrel'], [1, 0, 'barrel'], [0, 1, 'barrel'], [1, 1, 'barrel']]),
   prefab('lamp-cart', ['industrial'], ['island', 'edge'], [[0, 0, 'floor-lamp'], [1, 0, 'tool-cart'], [2, 0, 'cable-spool']]),
   prefab('industrial-corner', ['industrial'], ['corner'], [[0, 0, 'barrel']]),
-  prefab('press-cell', ['industrial'], ['focal'], [[4, 0, 'workbench'], [1, 1, 'hydraulic-press'], [0, 4, 'tool-cart']], { decals: [{ kind: 'hazard-paint', pattern: 'border', rect: { x: 0, y: 0, width: 5, height: 5 } }] }),
+  prefab('press-cell', [], ['focal'], [[4, 0, 'workbench'], [1, 1, 'hydraulic-press'], [0, 4, 'tool-cart']], { decals: [{ kind: 'hazard-paint', pattern: 'border', rect: { x: 0, y: 0, width: 5, height: 5 } }] }),
 ];
