@@ -19,7 +19,11 @@ export interface ActiveQuest {
   readonly objectives: readonly ActiveObjective[];
 }
 
-export type NpcQuestMarker = 'objective' | 'available' | null;
+export type GuidanceTarget =
+  | { readonly kind: 'quest'; readonly questId: QuestId }
+  | { readonly kind: 'resource'; readonly objectId: WorldObjectId };
+
+export type NpcQuestMarker ='objective' | 'available' | null;
 
 export function activeQuests(log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>): ActiveQuest[] {
   const tracked: ActiveQuest[] = [];

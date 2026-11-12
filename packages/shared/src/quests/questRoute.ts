@@ -46,11 +46,24 @@ function creatureGoals(creatureId: CreatureId, scene: RouteScene): RouteGoal[] {
   return positions.map(adjacentTo);
 }
 
+const placementsOf = (ids: ReadonlySet<WorldObjectId>, scene: RouteScene) => scene.level.objects.filter((placement) => ids.has(placement.objectId));
+
 function objectGoals(objective: QuestObjective, scene: RouteScene, content: RouteContent): RouteGoal[] {
-  const ids = objectIdsForObjective(objective, content.worldObjects, content.recipes);
-  return scene.level.objects
-    .filter((placement) => ids.has(placement.objectId) && !scene.depletedInstances.has(placement.instanceId))
+  return placementsOf(objectIdsForObjective(objective, content.worldObjects, content.recipes), scene)
+    .filter((placement) => !scene.depletedInstances.has(placement.instanceId))
     .map((placement) => adjacentTo(placement.position));
+}
+
+export interface ResourceGoals {
+  readonly goals: RouteGoal[];
+  readonly allDepleted: boolean;
+}
+
+export function resourceRouteGoals(objectId: WorldObjectId, scene: RouteScene): ResourceGoals {
+  const placements = placementsOf(new Set([objectId]), scene);
+  const live = placements.filter((placement) => !scene.depletedInstances.has(placement.instanceId));
+  const allDepleted = live.length === 0 && placements.length > 0;
+  return { goals: (allDepleted ? placements : live).map((placement) => adjacentTo(placement.position)), allDepleted };
 }
 
 function goalsForObjective(objective: QuestObjective, scene: RouteScene, content: RouteContent): RouteGoal[] {
