@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { assembleLevel, resolveLevel, type DistrictDefinition, type LevelDefinition, type ZoneAmbience } from '../src/index.ts';
+import { assembleLevel, decalIndex, resolveLevel, type DistrictDefinition, type FloorDecal, type LevelDefinition, type ZoneAmbience } from '../src/index.ts';
 
 const DIM: ZoneAmbience = { darkness: 0.5, tint: '#000000', fog: '#111111' };
 const BRIGHT: ZoneAmbience = { darkness: 0.1, tint: '#ffffff', fog: '#eeeeee', fixtures: 'failing' };
@@ -98,5 +98,34 @@ describe('level assembly', () => {
     assert.equal(resolved.ambienceAt({ x: 7, y: 1 }), BRIGHT);
     assert.equal(resolved.ambienceAt({ x: 4, y: 1 }), CORRIDOR);
     assert.equal(resolved.ambienceAt({ x: 40, y: 1 }), DIM);
+  });
+});
+
+describe('floor decals', () => {
+  const rug: FloorDecal = { kind: 'rug', rect: { x: 2, y: 3, width: 4, height: 2 }, pattern: 'border', tint: '#aa3322' };
+  const withDecals = new Map<string, DistrictDefinition>([
+    ['a', room('a', DIM)],
+    ['b', room('b', BRIGHT, { decals: [rug] })],
+  ]);
+
+  test('resolveLevel offsets district decals by the district origin', () => {
+    const resolved = resolveLevel(level, withDecals);
+    assert.deepEqual(resolved.decals, [{ ...rug, rect: { x: 8, y: 3, width: 4, height: 2 } }]);
+  });
+
+  test('resolveLevel exposes an empty decal list when no district has decals', () => {
+    assert.deepEqual(resolveLevel(level, districts).decals, []);
+  });
+
+  test('decalIndex returns overlapping decals in list order with tile offsets', () => {
+    const first: FloorDecal = { kind: 'rug', rect: { x: 0, y: 0, width: 3, height: 2 } };
+    const second: FloorDecal = { kind: 'wear', rect: { x: 2, y: 1, width: 2, height: 2 } };
+    const index = decalIndex([first, second]);
+    assert.deepEqual(index.get('2,1'), [
+      { decal: first, u: 2, v: 1 },
+      { decal: second, u: 0, v: 0 },
+    ]);
+    assert.deepEqual(index.get('3,2'), [{ decal: second, u: 1, v: 1 }]);
+    assert.equal(index.get('3,0'), undefined);
   });
 });

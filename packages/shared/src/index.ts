@@ -53,6 +53,7 @@ export * from './dialogue/dialogue.ts';
 
 export * from './world/assemblies.ts';
 export * from './world/entities.ts';
+export * from './world/decals.ts';
 export * from './world/geometry.ts';
 export * from './world/lineOfSight.ts';
 export * from './world/pathfinding.ts';

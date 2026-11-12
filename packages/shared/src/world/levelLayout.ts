@@ -11,6 +11,7 @@ import {
   type ZoneAmbience,
   type ZoneLight,
 } from './district.ts';
+import type { FloorDecal } from './decals.ts';
 import type { TilePoint, TileRect } from './geometry.ts';
 import type { LevelDefinition } from './level.ts';
 import type { TileKindId } from './tiles.ts';
@@ -45,6 +46,7 @@ export interface ResolvedLevel {
   readonly objects: readonly ObjectPlacement[];
   readonly creatures: readonly CreaturePlacement[];
   readonly lights: readonly ZoneLight[];
+  readonly decals: readonly FloorDecal[];
   ambienceAt(point: TilePoint): ZoneAmbience;
 }
 
@@ -176,6 +178,9 @@ export function resolveLevel(
       ...placed.flatMap(({ origin, district }) => district.lights.map((light) => ({ ...light, position: offset(light.position, origin) }))),
       ...level.connectors.flatMap((connector) => connector.lights.map((light) => ({ ...light, position: offset(light.position, connector.origin) }))),
     ],
+    decals: placed.flatMap(({ origin, district }) =>
+      (district.decals ?? []).map((decal) => ({ ...decal, rect: { ...decal.rect, ...offset(decal.rect, origin) } })),
+    ),
     ambienceAt: (point) => {
       const districtId = layout.districtAt(point);
       if (districtId) return districtOf(districts, districtId).ambience;

@@ -2,6 +2,7 @@ import type { CreatureId } from '../combat/creatures.ts';
 import type { AreaId, InstanceId, NpcId, WorldObjectId, DistrictId, RegionId } from '../ids.ts';
 import { tileKey, type Facing, type TilePoint, type TileRect } from './geometry.ts';
 import type { AssemblyPlacement } from './assemblies.ts';
+import type { FloorDecal } from './decals.ts';
 import type { DistrictExit } from './blueprint.ts';
 import type { WorldObjectDefinition } from './entities.ts';
 import { objectFootprintTiles } from './footprint.ts';
@@ -69,6 +70,7 @@ export interface DistrictDefinition {
   readonly assemblies?: readonly AssemblyPlacement[];
   readonly creatures?: readonly CreaturePlacement[];
   readonly lights: readonly ZoneLight[];
+  readonly decals?: readonly FloorDecal[];
 }
 
 export interface TileLayout {
