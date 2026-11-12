@@ -31,6 +31,13 @@ const BUILD_RADIUS = 1;
 const RETAIN_RADIUS = 2;
 const BUILD_BUDGET_MS = 5;
 
+export interface StreamReach {
+  readonly build: number;
+  readonly retain: number;
+}
+
+const DEFAULT_REACH: StreamReach = { build: BUILD_RADIUS, retain: RETAIN_RADIUS };
+
 function groupByChunk<T>(entries: readonly T[], positionOf: (entry: T) => TilePoint): Map<ChunkKey, T[]> {
   const grouped = new Map<ChunkKey, T[]>();
   for (const entry of entries) {
@@ -77,7 +84,7 @@ export class LevelScene {
     return this.readyViews().flatMap((view) => view.lights);
   }
 
-  stream(focus: TilePoint, budgetMs = BUILD_BUDGET_MS): void {
+  stream(focus: TilePoint, budgetMs = BUILD_BUDGET_MS, reach: StreamReach = DEFAULT_REACH): void {
     const centre = chunkOf({ x: Math.round(focus.x), y: Math.round(focus.y) });
     const centreView = this.ensureChunk(centre);
     if (centreView && !centreView.ready) {
@@ -97,8 +104,8 @@ export class LevelScene {
     }
     this.deferredCentre = null;
     const neighbours: ChunkCoord[] = [];
-    for (let dy = -BUILD_RADIUS; dy <= BUILD_RADIUS; dy++) {
-      for (let dx = -BUILD_RADIUS; dx <= BUILD_RADIUS; dx++) neighbours.push({ cx: centre.cx + dx, cy: centre.cy + dy });
+    for (let dy = -reach.build; dy <= reach.build; dy++) {
+      for (let dx = -reach.build; dx <= reach.build; dx++) neighbours.push({ cx: centre.cx + dx, cy: centre.cy + dy });
     }
     const deadline = performance.now() + budgetMs;
     for (const coord of neighbours.sort((a, b) => Math.hypot(a.cx - centre.cx, a.cy - centre.cy) - Math.hypot(b.cx - centre.cx, b.cy - centre.cy))) {
@@ -111,7 +118,7 @@ export class LevelScene {
       return entry ? !entry.view.ready : chunkRegion(coord, this.zone) !== null;
     });
     for (const [key, { coord, view }] of this.chunks) {
-      if (chunkDistance(coord, centre) <= RETAIN_RADIUS) continue;
+      if (chunkDistance(coord, centre) <= reach.retain) continue;
       for (const object of view.objects) this.objects.delete(object.instanceId);
       view.dispose();
       this.chunks.delete(key);

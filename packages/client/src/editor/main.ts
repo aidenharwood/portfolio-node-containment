@@ -1,6 +1,8 @@
 import type { GameContent, PlanIssue, TilePoint } from '@containment/shared';
 import { PlanCanvas, planDrawList, type PlanShape } from './planCanvas.ts';
-import { PLAN_LAYERS, readViewState, writeViewState, type PlanLayer, type ViewMode, type ViewState } from './viewState.ts';
+import { previewZone } from './previewLevel.ts';
+import { PreviewView } from './previewView.ts';
+import { PLAN_LAYERS, readViewState, writeViewState, type PlanLayer, type ViewState } from './viewState.ts';
 
 const root = document.getElementById('editor') as HTMLElement;
 
@@ -49,6 +51,25 @@ function start(content: GameContent, issuesFor: (content: GameContent, districtI
   root.append(bar, views, issueList);
 
   const plan = new PlanCanvas(canvas);
+  const preview3d = new PreviewView(preview);
+  const previewControls = element('div', { class: 'preview-controls' });
+  const gameAngle = element('button', { type: 'button' }, 'Game angle');
+  gameAngle.addEventListener('click', () => preview3d.gameAngle());
+  const survey = element('button', { type: 'button', 'aria-pressed': 'false' }, 'Survey light');
+  survey.addEventListener('click', () => {
+    const on = survey.getAttribute('aria-pressed') !== 'true';
+    survey.setAttribute('aria-pressed', String(on));
+    preview3d.setSurvey(on);
+  });
+  previewControls.append(survey, gameAngle);
+  preview.append(previewControls);
+  let cameraKey = '';
+  const cameraKeyOf = (view: ViewState): string => `${view.yaw},${view.pitch},${view.zoom},${view.focus?.x},${view.focus?.y}`;
+  preview3d.onCamera((camera) => {
+    state = { ...state, ...camera };
+    cameraKey = cameraKeyOf(state);
+    history.replaceState(null, '', writeViewState(state));
+  });
   let shapes: PlanShape[] = [];
   let issues: PlanIssue[] = [];
 
@@ -115,6 +136,8 @@ function start(content: GameContent, issuesFor: (content: GameContent, districtI
         issues = issuesFor(content, state.district);
         renderIssues();
         plan.show([]);
+        preview3d.show(previewZone(content, state.district));
+        cameraKey = '';
       }
     }
     plan.show(shapes, state.focus);
@@ -124,6 +147,11 @@ function start(content: GameContent, issuesFor: (content: GameContent, districtI
       if (rect) plan.fitRect(rect);
     }
     plan.mark(state.focus ?? null);
+    if (cameraKeyOf(state) !== cameraKey) {
+      cameraKey = cameraKeyOf(state);
+      const roomRect = state.room === undefined ? undefined : district?.rooms?.[state.room];
+      preview3d.look(state.focus || !roomRect ? state : { ...state, focus: { x: roomRect.x + Math.floor(roomRect.width / 2), y: roomRect.y + Math.floor(roomRect.height / 2) } });
+    }
   }
 
   districtSelect.addEventListener('change', () => update({ district: districtSelect.value }));
