@@ -1,6 +1,8 @@
 import type { DistrictId } from '../ids.ts';
-import { parseTileLayout, type DistrictDefinition, type TileLayout } from '../world/district.ts';
-import { CARDINAL_OFFSETS, chebyshevDistance, rectContains, tileKey, type TilePoint, type TileRect } from '../world/geometry.ts';
+import { parseTileLayout, type DistrictDefinition, type ObjectPlacement, type TileLayout } from '../world/district.ts';
+import type { WorldObjectDefinition } from '../world/entities.ts';
+import { objectFootprintTiles } from '../world/footprint.ts';
+import { CARDINAL_OFFSETS, chebyshevDistance, rectContains, tileKey, type Facing, type TilePoint, type TileRect } from '../world/geometry.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
 import { TILE_KINDS } from '../world/tiles.ts';
 import type { GameContent } from './gameContent.ts';
@@ -207,11 +209,26 @@ function findTierIssues(content: GameContent, level: ResolvedLevel, rebuilt: Rea
 
 const WALL_FIXTURE_MODELS: ReadonlySet<string> = new Set(['bulkhead', 'transitLift', 'wallLift', 'valveWheel', 'ventPanel', 'noticeBoard', 'wallShelf', 'warningSign', 'locker', 'storageLocker', 'herbCabinet']);
 
+const BACK_EDGE_OFFSET: Record<Facing, TilePoint> = { south: { x: 0, y: -1 }, north: { x: 0, y: 1 }, east: { x: -1, y: 0 }, west: { x: 1, y: 0 } };
+
+const isWallTile = (level: ResolvedLevel, point: TilePoint): boolean => TILE_KINDS[level.layout.tileAt(point)].structure === 'wall';
+
+function isAgainstWall(level: ResolvedLevel, definition: WorldObjectDefinition, object: ObjectPlacement): boolean {
+  const tiles = objectFootprintTiles(definition, object);
+  if (tiles.length === 1) return CARDINAL_OFFSETS.some((offset) => isWallTile(level, { x: object.position.x + offset.x, y: object.position.y + offset.y }));
+  const back = BACK_EDGE_OFFSET[object.facing ?? 'south'];
+  const owned = new Set(tiles.map(tileKey));
+  return tiles.some((tile) => {
+    const behind = { x: tile.x + back.x, y: tile.y + back.y };
+    return !owned.has(tileKey(behind)) && isWallTile(level, behind);
+  });
+}
+
 function findFixtureIssues(content: GameContent, level: ResolvedLevel, issues: string[]): void {
   for (const object of level.objects) {
     const definition = content.worldObjects.get(object.objectId);
     if (!definition || !WALL_FIXTURE_MODELS.has(definition.model)) continue;
-    const againstWall = CARDINAL_OFFSETS.some((offset) => TILE_KINDS[level.layout.tileAt({ x: object.position.x + offset.x, y: object.position.y + offset.y })].structure === 'wall');
+    const againstWall = isAgainstWall(level, definition, object);
     if (!againstWall) {
       issues.push(`level ${level.id}: "${object.instanceId}" (${definition.name}) stands free at ${object.position.x},${object.position.y}; doors, lifts and wall fixtures go against a wall`);
     }

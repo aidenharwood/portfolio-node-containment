@@ -171,6 +171,7 @@ export interface WorldObjectDefinition {
   readonly model: WorldObjectModel;
   readonly blocksMovement: boolean;
   readonly deck?: boolean;
+  readonly footprint?: { readonly width: number; readonly height: number };
   readonly door?: DoorDefinition;
   readonly modelScale?: number;
   readonly light?: ObjectLight;

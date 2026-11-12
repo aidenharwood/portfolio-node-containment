@@ -1,4 +1,5 @@
-import type { TilePoint } from './geometry.ts';
+import type { WorldObjectDefinition } from './entities.ts';
+import type { Facing, TilePoint } from './geometry.ts';
 import type { WalkabilityGrid } from './pathfinding.ts';
 
 export type FootprintSize = 1 | 2;
@@ -30,3 +31,22 @@ export const footprintCentre = (anchor: TilePoint, size: number): { x: number; y
 
 export const fitsFootprint = (grid: WalkabilityGrid, anchor: TilePoint, size: number): boolean =>
   footprintTiles(anchor, size).every((tile) => grid.isWalkable(tile));
+
+export interface ObjectFootprint {
+  readonly width: number;
+  readonly height: number;
+}
+
+export function objectFootprintSize(definition: WorldObjectDefinition | undefined, facing?: Facing): { width: number; height: number } {
+  const { width, height } = definition?.footprint ?? { width: 1, height: 1 };
+  return facing === 'east' || facing === 'west' ? { width: height, height: width } : { width, height };
+}
+
+export function objectFootprintTiles(definition: WorldObjectDefinition | undefined, placement: { position: TilePoint; facing?: Facing }): TilePoint[] {
+  const { width, height } = objectFootprintSize(definition, placement.facing);
+  const tiles: TilePoint[] = [];
+  for (let dy = 0; dy < height; dy++) {
+    for (let dx = 0; dx < width; dx++) tiles.push({ x: placement.position.x + dx, y: placement.position.y + dy });
+  }
+  return tiles;
+}

@@ -1,6 +1,7 @@
 import type { WorldObjectId } from '../ids.ts';
 import type { WorldObjectDefinition } from './entities.ts';
 import type { TilePoint } from './geometry.ts';
+import { objectFootprintTiles } from './footprint.ts';
 import type { ResolvedLevel } from './levelLayout.ts';
 
 export const MAP_SCENERY_KINDS = ['deck', 'fixture', 'obstacle', 'loose'] as const;
@@ -24,7 +25,7 @@ export function mapScenery(level: ResolvedLevel, worldObjects: ReadonlyMap<World
   for (const placement of level.objects) {
     const object = worldObjects.get(placement.objectId);
     const kind = object ? objectMapSceneryKind(object) : undefined;
-    if (kind) found.push({ kind, position: placement.position });
+    if (kind) for (const position of objectFootprintTiles(object, placement)) found.push({ kind, position });
   }
   return found.sort((a, b) => MAP_SCENERY_KINDS.indexOf(a.kind) - MAP_SCENERY_KINDS.indexOf(b.kind));
 }

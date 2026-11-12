@@ -5,19 +5,28 @@ import type { Blueprint } from '../../world/blueprint.ts';
 import { ASSEMBLIES } from '../assemblies.ts';
 import { installationLayoutOf } from '../installations.ts';
 import type { CreaturePlacement, ObjectPlacement } from '../../world/district.ts';
+import type { WorldObjectDefinition } from '../../world/entities.ts';
+import { objectFootprintTiles } from '../../world/footprint.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 
 export interface Placed {
   readonly position: TilePoint;
 }
 
-const footprintOf = (placed: Placed): TilePoint[] => {
+export type ObjectDefinitionLookup = (objectId: WorldObjectId) => WorldObjectDefinition | undefined;
+
+const footprintOf = (placed: Placed, definitionOf: ObjectDefinitionLookup): TilePoint[] => {
   const assemblyId = 'assemblyId' in placed ? (placed as AssemblyPlacement).assemblyId : undefined;
   const definition = assemblyId === undefined ? undefined : (ASSEMBLIES.find((assembly) => assembly.id === assemblyId) ?? installationLayoutOf(assemblyId));
-  return definition ? expandAssembly(definition, placed as AssemblyPlacement).map((piece) => piece.position) : [placed.position];
+  if (definition) return expandAssembly(definition, placed as AssemblyPlacement).map((piece) => piece.position);
+  if ('objectId' in placed) return objectFootprintTiles(definitionOf((placed as ObjectPlacement).objectId), placed as ObjectPlacement);
+  return [placed.position];
 };
 
-export const positionsOf = (...groups: readonly (readonly Placed[])[]): TilePoint[] => groups.flatMap((group) => group.flatMap(footprintOf));
+export const positionsOfWith = (definitionOf: ObjectDefinitionLookup, ...groups: readonly (readonly Placed[])[]): TilePoint[] =>
+  groups.flatMap((group) => group.flatMap((placed) => footprintOf(placed, definitionOf)));
+
+export const positionsOf = (...groups: readonly (readonly Placed[])[]): TilePoint[] => positionsOfWith(() => undefined, ...groups);
 
 const WALL_FURNITURE: ReadonlySet<WorldObjectId> = new Set<WorldObjectId>(['pipe-cluster', 'storage-rack', 'wall-locker', 'server-rack', 'filing-cabinet', 'water-cooler', 'briefing-bench', 'junction-box', 'herb-cabinet', 'vellum-stack']);
 

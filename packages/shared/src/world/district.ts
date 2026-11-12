@@ -4,6 +4,7 @@ import { tileKey, type Facing, type TilePoint, type TileRect } from './geometry.
 import type { AssemblyPlacement } from './assemblies.ts';
 import type { DistrictExit } from './blueprint.ts';
 import type { WorldObjectDefinition } from './entities.ts';
+import { objectFootprintTiles } from './footprint.ts';
 import type { WalkabilityGrid } from './pathfinding.ts';
 import { MAP_LEGEND, TILE_KINDS, type TileKindId } from './tiles.ts';
 
@@ -113,10 +114,10 @@ export function createObjectWalkabilityGrid(
   placements: readonly ObjectPlacement[],
   definitionOf: (objectId: WorldObjectId) => WorldObjectDefinition | undefined,
 ): WalkabilityGrid {
-  const placed = placements.map((placement) => ({ position: placement.position, definition: definitionOf(placement.objectId) }));
+  const placed = placements.map((placement) => ({ tiles: objectFootprintTiles(definitionOf(placement.objectId), placement), definition: definitionOf(placement.objectId) }));
   return createWalkabilityGrid(
     layout,
-    placed.filter(({ definition }) => definition?.blocksMovement).map(({ position }) => position),
-    placed.filter(({ definition }) => definition?.deck && !definition.blocksMovement).map(({ position }) => position),
+    placed.filter(({ definition }) => definition?.blocksMovement).flatMap(({ tiles }) => tiles),
+    placed.filter(({ definition }) => definition?.deck && !definition.blocksMovement).flatMap(({ tiles }) => tiles),
   );
 }

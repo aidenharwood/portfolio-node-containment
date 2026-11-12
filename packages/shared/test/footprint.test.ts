@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { fitsFootprint, footprintCentre, footprintTiles, isInFootprint, nearestFootprintTile, sizeOf, tileKey } from '../src/index.ts';
+import { createObjectWalkabilityGrid, fitsFootprint, footprintCentre, footprintTiles, isInFootprint, nearestFootprintTile, objectFootprintTiles, parseTileLayout, sizeOf, tileKey, type ObjectPlacement, type WorldObjectDefinition } from '../src/index.ts';
+import { positionsOf, positionsOfWith } from '../src/content/districts/populate.ts';
 
 describe('footprints', () => {
   test('a 2×2 footprint covers four tiles from its north-west anchor', () => {
@@ -36,5 +37,41 @@ describe('footprints', () => {
   test('size defaults to one', () => {
     assert.equal(sizeOf({}), 1);
     assert.equal(sizeOf({ size: 2 }), 2);
+  });
+});
+
+describe('object footprints', () => {
+  const wide = { id: 'wide', name: 'Wide', examine: '', model: 'crate', blocksMovement: true, footprint: { width: 3, height: 2 }, interactions: [] } as unknown as WorldObjectDefinition;
+  const keys = (tiles: { x: number; y: number }[]) => tiles.map(tileKey).sort();
+
+  test('a footprint spans its width and height from the position and swaps when facing east or west', () => {
+    const south = objectFootprintTiles(wide, { position: { x: 10, y: 5 }, facing: 'south' });
+    assert.equal(south.length, 6);
+    assert.deepEqual([Math.min(...south.map((t) => t.x)), Math.max(...south.map((t) => t.x))], [10, 12]);
+    assert.deepEqual([Math.min(...south.map((t) => t.y)), Math.max(...south.map((t) => t.y))], [5, 6]);
+    const east = objectFootprintTiles(wide, { position: { x: 10, y: 5 }, facing: 'east' });
+    assert.equal(east.length, 6);
+    assert.deepEqual([Math.min(...east.map((t) => t.x)), Math.max(...east.map((t) => t.x))], [10, 11]);
+    assert.deepEqual([Math.min(...east.map((t) => t.y)), Math.max(...east.map((t) => t.y))], [5, 7]);
+    assert.deepEqual(objectFootprintTiles(wide, { position: { x: 10, y: 5 }, facing: 'north' }), south);
+    assert.deepEqual(objectFootprintTiles({ ...wide, footprint: undefined }, { position: { x: 2, y: 3 } }), [{ x: 2, y: 3 }]);
+    assert.deepEqual(objectFootprintTiles(undefined, { position: { x: 2, y: 3 } }), [{ x: 2, y: 3 }]);
+  });
+
+  test('the walkability grid blocks every footprint tile', () => {
+    const layout = parseTileLayout(Array.from({ length: 20 }, () => '.'.repeat(30)));
+    const placements = [{ instanceId: 'w', objectId: 'wide', position: { x: 10, y: 5 } }] as unknown as ObjectPlacement[];
+    const grid = createObjectWalkabilityGrid(layout, placements, () => wide);
+    for (const tile of objectFootprintTiles(wide, placements[0]!)) assert.equal(grid.isWalkable(tile), false);
+    assert.equal(grid.isWalkable({ x: 13, y: 5 }), true);
+    const turned = createObjectWalkabilityGrid(layout, [{ ...placements[0]!, facing: 'east' }], () => wide);
+    assert.equal(turned.isWalkable({ x: 12, y: 5 }), true);
+    assert.equal(turned.isWalkable({ x: 11, y: 7 }), false);
+  });
+
+  test('positionsOfWith expands object placements through the footprint', () => {
+    const placements = [{ instanceId: 'w', objectId: 'wide', position: { x: 10, y: 5 } }] as unknown as ObjectPlacement[];
+    assert.deepEqual(keys(positionsOfWith(() => wide, placements)), keys(objectFootprintTiles(wide, placements[0]!)));
+    assert.deepEqual(positionsOf(placements), [{ x: 10, y: 5 }]);
   });
 });
