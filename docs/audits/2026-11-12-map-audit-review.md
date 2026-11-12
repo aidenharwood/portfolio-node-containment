@@ -40,6 +40,13 @@ Every district was shot whole in 2D and at its landmark in 3D with headless Chro
 
 Every landmark object now stands in one district only, apart from the four Circuit plazas, which each hold one of their own.
 
+### Outpost shapes
+
+Porter's Lodge and the Calder Gatehouse were the same 58×44 rectangle mirrored across the tram line. Each now follows its wing's shape language, keeping its footprint, exits and track:
+
+- **Calder Gatehouse** is an octagonal keep. Its corners are cut away and the tram tunnels in past them. The locker, contract board, lift, lift landing, med bed and tram car moved in off the corners. Its dressing is pinned to `court`, since an octagon would otherwise be dressed as a sparse formal `radial` room.
+- **Porter's Lodge** is a long central gallery with a symmetrical ward to the north and south, behind glazed partitions. Each partition has doorways at both ends and a 13-tile opening in the middle.
+
 ### Dead-end rooms
 
 Twelve dressed side rooms had one way in and nothing to do. Each now holds a gathering node at the tier of its district, against the wall furthest from its door:
@@ -62,12 +69,11 @@ The audit now reports four dead ends, all of them the Deep Concourse bridge span
 
 ## For you
 
-These are judgement calls, so they are left unchanged.
+This is a judgement call, so it is left unchanged.
 
 1. **Meridian Atrium `plaza` is sparse**: 2.0 placements per 100 tiles against a district median of 11.2. You asked for this when the plaza was stripped back to the core, its compass and two bench rings. If you want a little more life, I suggest two `bench-curve` pairs or a few `potted-fern` at the far ends of the plaza, away from the routes. [View](http://localhost:5173/editor.html?district=meridian-atrium&room=plaza)
-2. **Porter's Lodge and Calder Gatehouse are still near copies of each other in plan**, mirrored across the tram line. Their landmarks, floors and set-pieces now differ, but a second room or a mezzanine in one of them would make each outpost recognisable from its shape alone.
 
-Neither is a bug.
+This is not a bug.
 
 ## Known limits of the heuristics
 
