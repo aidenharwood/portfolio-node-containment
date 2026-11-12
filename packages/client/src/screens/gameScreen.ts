@@ -1,6 +1,7 @@
 import {
   CONTAIN_INTERACTION,
   GAME_CONTENT,
+  salvageSourceOf,
   npcQuestMarker,
   objectiveAreas,
   objectiveCreatureIds,
@@ -43,7 +44,7 @@ import { createEquipmentTab } from '../hud/tabs/equipmentTab.ts';
 import { createInventoryTab } from '../hud/tabs/inventoryTab.ts';
 import { createQuestsTab } from '../hud/tabs/questsTab.ts';
 import { GuidanceRoute } from '../state/guidanceRoute.ts';
-import { QuestTracking } from '../state/questTracking.ts';
+import { GuidanceTracking } from '../state/guidanceTracking.ts';
 import { SocialState } from '../state/socialState.ts';
 import { createSkillsTab } from '../hud/tabs/skillsTab.ts';
 import { actionsForTarget, type ActionContext } from '../input/worldActions.ts';
@@ -57,6 +58,11 @@ const LOADING_MIN_VISIBLE_MS = 450;
 const ORBIT_YAW_PER_PIXEL = 0.008;
 const ORBIT_PITCH_PER_PIXEL = 0.006;
 const ZOOM_STEP = 1.12;
+
+const isSalvageNode = (id: string): boolean => {
+  const definition = GAME_CONTENT.worldObjects.get(id);
+  return definition !== undefined && salvageSourceOf(definition) !== undefined;
+};
 
 interface PinchState {
   readonly distance: number;
@@ -84,10 +90,10 @@ export function createGameScreen(app: AppNavigator): Screen {
   const whisper = (name: string) => chat.focusInput(whisperPrefix(name));
   const party = new PartyFrame(connection, social, menu, whisper);
   const dialogue = new DialogueBox(connection);
-  const questTracking = new QuestTracking();
-  const objectives = new ObjectiveTracker(questTracking);
+  const guidanceTracking = new GuidanceTracking(isSalvageNode);
+  const objectives = new ObjectiveTracker(guidanceTracking);
   const guidanceRoute = new GuidanceRoute(world);
-  questTracking.onChange(() => refreshGuidance());
+  guidanceTracking.onChange(() => refreshGuidance());
   const bubble = new InteractionBubble();
   const speech = new SpeechLayer();
   const combatOverlay = new CombatOverlay(world);
@@ -146,7 +152,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     connection.send({ type: 'world.walk', target });
   };
 
-  const worldMap = new WorldMap(connection, world, questTracking);
+  const worldMap = new WorldMap(connection, world, guidanceTracking);
   const tramRide = new TramRide(connection, world);
   const settings = new SettingsWindow(gameSettings);
   const minimap = new Minimap(world, walkTo, () => worldMap.toggle(), () => settings.toggle());
@@ -155,7 +161,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     createInventoryTab(connection, menu, { examine }, inventoryModes),
     createEquipmentTab(connection, world),
     createSkillsTab(),
-    createQuestsTab(menu, questTracking),
+    createQuestsTab(menu, guidanceTracking),
     createContractsTab(),
     createSocialTab(connection, social, { whisper }),
     createBestiaryTab(),
@@ -169,7 +175,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     const self = world.self;
     const areas = world.zone?.definition.areas ?? [];
     if (!self) return;
-    objectiveBeacons = objectiveAreas(self.quests, GAME_CONTENT.quests, questTracking.questId).flatMap((target) =>
+    objectiveBeacons = objectiveAreas(self.quests, GAME_CONTENT.quests, guidanceTracking.questId).flatMap((target) =>
       areas
         .filter((area) => area.districtId === target.districtId && area.id === target.areaId)
         .map((area) => ({ x: area.rect.x + Math.floor(area.rect.width / 2), y: area.rect.y + Math.floor(area.rect.height / 2) })),
@@ -179,16 +185,16 @@ export function createGameScreen(app: AppNavigator): Screen {
   const refreshGuidance = () => {
     const self = world.self;
     if (!self) return;
-    questTracking.bind(self.characterId);
+    guidanceTracking.bind(self.characterId);
     npcMarkers = new Map();
     for (const npc of GAME_CONTENT.npcs.values()) {
-      const marker = npcQuestMarker(npc.id, self.quests, GAME_CONTENT.quests, questTracking.questId);
+      const marker = npcQuestMarker(npc.id, self.quests, GAME_CONTENT.quests, guidanceTracking.questId);
       if (marker) npcMarkers.set(npc.id, marker);
     }
     setTooltipEquipment(self.equipment);
     party.update(self.characterId);
-    objectiveObjects = objectiveObjectIds(self.quests, GAME_CONTENT.quests, questTracking.questId, GAME_CONTENT.worldObjects, GAME_CONTENT.recipes);
-    objectiveCreatures = objectiveCreatureIds(self.quests, GAME_CONTENT.quests, questTracking.questId);
+    objectiveObjects = objectiveObjectIds(self.quests, GAME_CONTENT.quests, guidanceTracking.questId, GAME_CONTENT.worldObjects, GAME_CONTENT.recipes);
+    objectiveCreatures = objectiveCreatureIds(self.quests, GAME_CONTENT.quests, guidanceTracking.questId);
     refreshBeacons();
     guidanceRoute.invalidate();
     objectives.update(self.quests);
@@ -483,7 +489,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   const unsubscribers = [world.on('zoneChanged', onZoneChanged), world.on('selfChanged', refreshGuidance)];
 
   const loop = (now: number) => {
-    renderer.render(now, { hover, clickMarker, objectiveObjectIds: objectiveObjects, npcMarkers, objectiveCreatureIds: objectiveCreatures, objectiveBeacons, guidanceRoute: guidanceRoute.current(now, questTracking.questId) });
+    renderer.render(now, { hover, clickMarker, objectiveObjectIds: objectiveObjects, npcMarkers, objectiveCreatureIds: objectiveCreatures, objectiveBeacons, guidanceRoute: guidanceRoute.current(now, guidanceTracking.questId) });
     objectives.setVia(guidanceRoute.via);
     if (renderer.loading) loadingVisibleUntil = now + LOADING_MIN_VISIBLE_MS;
     loadingMarker.classList.toggle('visible', now < loadingVisibleUntil);

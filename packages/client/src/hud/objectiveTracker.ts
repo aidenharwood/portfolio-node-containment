@@ -1,5 +1,5 @@
 import { trackedQuest, GAME_CONTENT, type QuestLog } from '@containment/shared';
-import type { QuestTracking } from '../state/questTracking.ts';
+import type { GuidanceTracking } from '../state/guidanceTracking.ts';
 import { h, replaceChildren } from '../ui/dom.ts';
 
 export class ObjectiveTracker {
@@ -7,9 +7,9 @@ export class ObjectiveTracker {
   private collapsed = false;
   private log: QuestLog = {};
   private via: string | null = null;
-  private readonly tracking: QuestTracking;
+  private readonly tracking: GuidanceTracking;
 
-  constructor(tracking: QuestTracking) {
+  constructor(tracking: GuidanceTracking) {
     this.tracking = tracking;
     tracking.onChange(() => this.render());
   }
