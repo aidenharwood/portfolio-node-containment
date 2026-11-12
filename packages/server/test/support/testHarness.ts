@@ -6,6 +6,9 @@ import {
   GAME_CONTENT,
   chebyshevDistance,
   CARDINAL_OFFSETS,
+  footprintTiles,
+  isInFootprint,
+  nearestFootprintTile,
   tileKey,
   type CharacterRecord,
   type DistrictId,
@@ -90,22 +93,29 @@ export function createHarness(options: HarnessOptions = {}): Harness {
     const level = GAME_CONTENT.levels.get(player.levelId);
     const creature = gameplay.world.levelOf(player).creatureByInstance(instanceId);
     const target = creature ?? level?.npcs.find((npc) => npc.instanceId === instanceId) ?? level?.objects.find((object) => object.instanceId === instanceId);
-    if (!level || !target || chebyshevDistance(target.position, player.position) <= REACH_WITHOUT_TRAVEL) return;
+    if (!level || !target) return;
+    const nearest = creature ? nearestFootprintTile(creature.position, creature.size, player.position) : target.position;
+    if (chebyshevDistance(nearest, player.position) <= REACH_WITHOUT_TRAVEL && !(creature && isInFootprint(player.position, creature.position, creature.size))) return;
     if ('objectId' in target && GAME_CONTENT.worldObjects.get(target.objectId)?.door) return;
     const grid = gameplay.world.levelOf(player).grid;
     const seen = new Set<string>();
     const assembly = assemblyInstanceOf(instanceId);
-    const footprint = assembly === null ? [target.position] : level.objects.filter((object) => assemblyInstanceOf(object.instanceId) === assembly).map((object) => object.position);
+    const footprint = creature
+      ? footprintTiles(creature.position, creature.size)
+      : assembly === null
+        ? [target.position]
+        : level.objects.filter((object) => assemblyInstanceOf(object.instanceId) === assembly).map((object) => object.position);
+    const covered = new Set(footprint.map(tileKey));
     let frontier = footprint
       .flatMap((tile) => CARDINAL_OFFSETS.map((offset) => ({ x: tile.x + offset.x, y: tile.y + offset.y })))
-      .filter((point) => grid.isWalkable(point));
+      .filter((point) => grid.isWalkable(point) && !covered.has(tileKey(point)));
     let standing = frontier[0];
     for (let depth = 0; depth < APPROACH_DEPTH && frontier.length > 0; depth++) {
       standing = frontier[0];
       for (const point of frontier) seen.add(tileKey(point));
       frontier = frontier
         .flatMap((point) => CARDINAL_OFFSETS.map((offset) => ({ x: point.x + offset.x, y: point.y + offset.y })))
-        .filter((point) => grid.isWalkable(point) && !seen.has(tileKey(point)));
+        .filter((point) => grid.isWalkable(point) && !seen.has(tileKey(point)) && !covered.has(tileKey(point)));
     }
     if (standing) gameplay.teleport(player, { levelId: level.id, position: standing });
   };

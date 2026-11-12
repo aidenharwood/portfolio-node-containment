@@ -181,6 +181,13 @@ export class World {
     return true;
   }
 
+  approachBody(player: Player, body: { readonly entityId: string; readonly position: TilePoint; readonly size: number }): boolean {
+    const path = this.levelOf(player).pathToBody(player.position, body, this.hooks.openDoorsFor(player));
+    if (!path) return false;
+    player.path = path;
+    return true;
+  }
+
   face(player: Player, target: TilePoint): void {
     player.facing = facingBetween(player.position, target, player.facing);
     this.levelOf(player).broadcastNear(player.position, {
@@ -202,6 +209,7 @@ export class World {
       if (level.players.size === 0) continue;
       const moves: EntityMove[] = [];
       const watched = level.watchedChunks();
+      level.rebuildBodies();
       for (const npc of level.npcs.values()) {
         if (watched.has(chunkKeyOf(npc.position))) this.advanceNpc(npc, level, moves);
       }
@@ -233,17 +241,48 @@ export class World {
 
   private advanceNpc(npc: Npc, level: LevelInstance, moves: EntityMove[]): void {
     if (npc.engagedWith) return;
-    this.advanceWalker(npc, npc.definition.wanderRadius, level, moves, false);
+    this.advanceWalker(npc, npc.definition.wanderRadius, level, moves);
   }
 
   private advanceCreature(creature: Creature, level: LevelInstance, moves: EntityMove[]): void {
     if (!creature.isAlive) return;
-    this.advanceWalker(creature, creature.canWander ? creature.definition.wanderRadius : 0, level, moves, true);
+    if (creature.path.length === 0 && creature.canWander && this.random() < NPC_WANDER_CHANCE_PER_TICK) {
+      creature.path = this.creatureWanderPath(creature, level);
+    }
+    const next = creature.path[0];
+    if (!next) return;
+    if (!level.isBodyFree(next, creature.size, creature.entityId)) {
+      creature.blockedStep = true;
+      if (creature.targetId === null) creature.path = this.detour(creature, level);
+      return;
+    }
+    creature.path.shift();
+    const from = creature.position;
+    creature.facing = facingBetween(creature.position, next, creature.facing);
+    level.moveBody(creature, next);
+    moves.push({ from, movement: { entityId: creature.entityId, position: next, facing: creature.facing } });
   }
 
-  private advanceWalker(walker: Walker, wanderRadius: number, level: LevelInstance, moves: EntityMove[], isCreature: boolean): void {
+  private detour(creature: Creature, level: LevelInstance): TilePoint[] {
+    const destination = creature.path.at(-1);
+    if (!destination) return [];
+    return level.creaturePathBetween(creature, destination, false, NPC_WANDER_SEARCH_LIMIT, true) ?? [];
+  }
+
+  private creatureWanderPath(creature: Creature, level: LevelInstance): TilePoint[] {
+    const radius = creature.definition.wanderRadius;
+    if (radius <= 0) return [];
+    const target = {
+      x: creature.home.x + Math.round((this.random() * 2 - 1) * radius),
+      y: creature.home.y + Math.round((this.random() * 2 - 1) * radius),
+    };
+    if (!level.isWanderDestination(creature, target)) return [];
+    return level.creaturePathBetween(creature, target, false, NPC_WANDER_SEARCH_LIMIT) ?? [];
+  }
+
+  private advanceWalker(walker: Walker, wanderRadius: number, level: LevelInstance, moves: EntityMove[]): void {
     if (walker.path.length === 0 && wanderRadius > 0 && this.random() < NPC_WANDER_CHANCE_PER_TICK) {
-      walker.path = this.wanderPath(walker, wanderRadius, level, isCreature);
+      walker.path = this.wanderPath(walker, wanderRadius, level);
     }
     const next = walker.path.shift();
     if (!next) return;
@@ -253,14 +292,13 @@ export class World {
     moves.push({ from, movement: { entityId: walker.entityId, position: next, facing: walker.facing } });
   }
 
-  private wanderPath(walker: Walker, radius: number, level: LevelInstance, isCreature: boolean): TilePoint[] {
+  private wanderPath(walker: Walker, radius: number, level: LevelInstance): TilePoint[] {
     const target = {
       x: walker.home.x + Math.round((this.random() * 2 - 1) * radius),
       y: walker.home.y + Math.round((this.random() * 2 - 1) * radius),
     };
-    if (!(isCreature ? level.creatureGrid : level.grid).isWalkable(target)) return [];
-    const path = isCreature ? level.creaturePathBetween(walker.position, target, false, NPC_WANDER_SEARCH_LIMIT) : level.pathBetween(walker.position, target, false, NPC_WANDER_SEARCH_LIMIT);
-    return path ?? [];
+    if (!level.grid.isWalkable(target)) return [];
+    return level.pathBetween(walker.position, target, false, NPC_WANDER_SEARCH_LIMIT) ?? [];
   }
 
   private refreshAreas(player: Player, level: LevelInstance): void {

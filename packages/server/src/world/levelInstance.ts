@@ -9,6 +9,13 @@ import {
   interestDelta,
   interestSet,
   findPath,
+  fitsFootprint,
+  footprintTiles,
+  isCardinallyAdjacent,
+  isInFootprint,
+  nearestFootprintTile,
+  tileKey,
+  CARDINAL_OFFSETS,
   rectContains,
   type ChunkKey,
   type EntityId,
@@ -33,6 +40,14 @@ import { Npc } from './npc.ts';
 import type { Player } from './player.ts';
 
 const SAFE_SPAWN_SEARCH_RADIUS = 12;
+const FREE_ANCHOR_SEARCH_RADIUS = 6;
+const STRAIGHT_STEP_COST = 10;
+
+export interface Walker {
+  readonly entityId: EntityId;
+  readonly position: TilePoint;
+  readonly size: number;
+}
 
 export interface EntityMove {
   readonly from: TilePoint;
@@ -81,6 +96,8 @@ export class LevelInstance {
   readonly objects = new Map<InstanceId, PlacedObject>();
   readonly creatures = new Map<EntityId, Creature>();
   readonly groundItems = new Map<string, GroundItem>();
+  private readonly bodyOccupancy = new Map<string, EntityId>();
+  private readonly sizedGrids = new Map<number, WalkabilityGrid>();
   readonly depletedUntil = new Map<InstanceId, number>();
   private readonly nodeCharges = new Map<InstanceId, number>();
   readonly layer: number;
@@ -106,6 +123,7 @@ export class LevelInstance {
       const creature = new Creature(placement, creatureDefinition);
       this.creatures.set(creature.entityId, creature);
     }
+    this.rebuildBodies();
 
     for (const placement of definition.npcs) {
       const npcDefinition = content.npcs.get(placement.npcId);
@@ -254,8 +272,99 @@ export class LevelInstance {
     return findPath(this.gridWithDoors(openDoors), { from, to, arriveAdjacent, maxSearchNodes });
   }
 
-  creaturePathBetween(from: TilePoint, to: TilePoint, arriveAdjacent: boolean, maxSearchNodes?: number): TilePoint[] | null {
-    return findPath(this.creatureGrid, { from, to, arriveAdjacent, maxSearchNodes });
+  pathToBody(from: TilePoint, body: Walker, openDoors: ReadonlySet<WorldObjectId> = new Set()): TilePoint[] | null {
+    const isGoal = (point: TilePoint) => !isInFootprint(point, body.position, body.size) && isCardinallyAdjacent(point, nearestFootprintTile(body.position, body.size, point));
+    return findPath(this.gridWithDoors(openDoors), { from, to: body.position, isGoal, goalSlack: STRAIGHT_STEP_COST * body.size });
+  }
+
+  creatureGridFor(size: number): WalkabilityGrid {
+    if (size <= 1) return this.creatureGrid;
+    const cached = this.sizedGrids.get(size);
+    if (cached) return cached;
+    const fits = new Map<string, boolean>();
+    const grid: WalkabilityGrid = {
+      isWalkable: (point) => {
+        const key = tileKey(point);
+        let known = fits.get(key);
+        if (known === undefined) {
+          known = fitsFootprint(this.creatureGrid, point, size);
+          fits.set(key, known);
+        }
+        return known;
+      },
+    };
+    this.sizedGrids.set(size, grid);
+    return grid;
+  }
+
+  rebuildBodies(): void {
+    this.bodyOccupancy.clear();
+    for (const creature of this.creatures.values()) {
+      if (creature.isAlive) this.occupy(creature);
+    }
+  }
+
+  occupy(walker: Walker): void {
+    for (const tile of footprintTiles(walker.position, walker.size)) this.bodyOccupancy.set(tileKey(tile), walker.entityId);
+  }
+
+  vacate(walker: Walker): void {
+    for (const tile of footprintTiles(walker.position, walker.size)) {
+      const key = tileKey(tile);
+      if (this.bodyOccupancy.get(key) === walker.entityId) this.bodyOccupancy.delete(key);
+    }
+  }
+
+  moveBody(walker: Walker & { position: TilePoint }, to: TilePoint): void {
+    this.vacate(walker);
+    walker.position = to;
+    this.occupy(walker);
+  }
+
+  bodyAt(point: TilePoint): EntityId | undefined {
+    return this.bodyOccupancy.get(tileKey(point));
+  }
+
+  isBodyFree(anchor: TilePoint, size: number, self: EntityId): boolean {
+    return footprintTiles(anchor, size).every((tile) => {
+      const owner = this.bodyOccupancy.get(tileKey(tile));
+      return owner === undefined || owner === self;
+    });
+  }
+
+  creaturePathBetween(walker: Walker, to: TilePoint, arriveAdjacent: boolean, maxSearchNodes?: number, avoidAllBodies = false): TilePoint[] | null {
+    const sized = this.creatureGridFor(walker.size);
+    const blocks = (owner: EntityId | undefined) =>
+      owner !== undefined && owner !== walker.entityId && (avoidAllBodies || (this.creatures.get(owner)?.size ?? 1) > 1);
+    const grid: WalkabilityGrid = {
+      isWalkable: (point) => sized.isWalkable(point) && !footprintTiles(point, walker.size).some((tile) => blocks(this.bodyOccupancy.get(tileKey(tile)))),
+    };
+    if (!arriveAdjacent) return findPath(grid, { from: walker.position, to, maxSearchNodes });
+    const isGoal = (anchor: TilePoint) => !isInFootprint(to, anchor, walker.size) && isCardinallyAdjacent(nearestFootprintTile(anchor, walker.size, to), to);
+    return findPath(grid, { from: walker.position, to, isGoal, goalSlack: STRAIGHT_STEP_COST * walker.size, maxSearchNodes });
+  }
+
+  isChokepoint(point: TilePoint): boolean {
+    const open = CARDINAL_OFFSETS.filter((offset) => this.grid.isWalkable({ x: point.x + offset.x, y: point.y + offset.y }));
+    return open.length === 2 && open[0]!.x === -open[1]!.x && open[0]!.y === -open[1]!.y;
+  }
+
+  isWanderDestination(walker: Walker, point: TilePoint): boolean {
+    return this.creatureGridFor(walker.size).isWalkable(point) && !footprintTiles(point, walker.size).some((tile) => this.isChokepoint(tile));
+  }
+
+  freeAnchorNear(walker: Walker, preferred: TilePoint): TilePoint {
+    const grid = this.creatureGridFor(walker.size);
+    for (let radius = 0; radius <= FREE_ANCHOR_SEARCH_RADIUS; radius++) {
+      for (let dy = -radius; dy <= radius; dy++) {
+        for (let dx = -radius; dx <= radius; dx++) {
+          if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
+          const candidate = { x: preferred.x + dx, y: preferred.y + dy };
+          if (grid.isWalkable(candidate) && this.isBodyFree(candidate, walker.size, walker.entityId)) return candidate;
+        }
+      }
+    }
+    return preferred;
   }
 
   creatureByInstance(instanceId: InstanceId): Creature | undefined {

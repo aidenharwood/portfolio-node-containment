@@ -24,6 +24,7 @@ export class Creature {
   returningHome = false;
   nextAttackTick = 0;
   lastPathTick = -Infinity;
+  blockedStep = false;
   diedAtTick = 0;
   respawnDelayTicks = 0;
   readonly contributors = new Set<EntityId>();
@@ -58,9 +59,10 @@ export class Creature {
     return { integrity: this.integrity, maxIntegrity: this.definition.integrity };
   }
 
-  respawn(): void {
-    this.position = this.home;
+  respawn(anchor: TilePoint = this.home): void {
+    this.position = anchor;
     this.path = [];
+    this.blockedStep = false;
     this.integrity = this.definition.integrity;
     this.state = 'alive';
     this.targetId = null;

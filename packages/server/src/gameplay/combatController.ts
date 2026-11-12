@@ -23,7 +23,10 @@ import {
   deriveCombatProfile,
   equipmentStats,
   hasLineOfSight,
-  isWithinAttackRange,
+  isBodyWithinAttackRange,
+  bodyDistance,
+  facingTiles,
+  nearestFootprintTile,
   playerAttackProfile,
   rollAttack,
   samePoint,
@@ -159,7 +162,7 @@ export class CombatController {
     }
 
     const attack = playerAttackProfile(player.record.skills, player.record.equipment, this.content.items);
-    if (isWithinAttackRange(attack, player.position, creature.position, sightline) && !level.isSafe(player.position)) {
+    if (isBodyWithinAttackRange(attack, { position: player.position, size: 1 }, creature, sightline) && !level.isSafe(player.position)) {
       player.path = [];
       player.lastChaseTarget = null;
       if (tick < player.nextAttackTick) return;
@@ -210,7 +213,7 @@ export class CombatController {
   private chase(player: Player, creature: Creature): void {
     const chaseStale = !player.lastChaseTarget || !samePoint(player.lastChaseTarget, creature.position);
     if (player.path.length === 0 || chaseStale) {
-      if (!this.world.approach(player, creature.position)) {
+      if (!this.world.approachBody(player, creature)) {
         this.host.notify(player, 'warning', "You can't reach that.");
         this.disengage(player);
         return;
@@ -262,7 +265,8 @@ export class CombatController {
       return;
     }
     if (creature.state === 'despawned' && tick >= creature.diedAtTick + creature.respawnDelayTicks) {
-      creature.respawn();
+      creature.respawn(level.freeAnchorNear(creature, creature.home));
+      level.occupy(creature);
       level.broadcastNear(creature.position, { type: 'world.entitySpawned', entity: creature.snapshot() });
       return;
     }
@@ -272,7 +276,7 @@ export class CombatController {
     if (creature.targetId && this.targetAbandoned(creature, level)) {
       if (isWatched) this.sendHome(creature, level);
       else {
-        this.resetHome(creature);
+        this.resetHome(creature, level);
         level.broadcastNear(creature.position, { type: 'world.entitySpawned', entity: creature.snapshot() });
       }
     }
@@ -303,7 +307,7 @@ export class CombatController {
 
     const attack = creatureAttackProfile(definition);
     const sightline = (from: TilePoint, to: TilePoint) => hasLineOfSight(level.layout, from, to);
-    if (isWithinAttackRange(attack, creature.position, target.position, sightline)) {
+    if (isBodyWithinAttackRange(attack, creature, { position: target.position, size: 1 }, sightline)) {
       creature.path = [];
       if (tick < creature.nextAttackTick) return;
       creature.nextAttackTick = tick + attack.speedTicks;
@@ -314,7 +318,8 @@ export class CombatController {
 
     if (tick - creature.lastPathTick >= CHASE_REPATH_TICKS) {
       creature.lastPathTick = tick;
-      creature.path = level.creaturePathBetween(creature.position, target.position, true, CREATURE_PATH_SEARCH_LIMIT) ?? [];
+      creature.path = level.creaturePathBetween(creature, target.position, true, CREATURE_PATH_SEARCH_LIMIT, creature.blockedStep) ?? [];
+      creature.blockedStep = false;
     }
   }
 
@@ -349,6 +354,7 @@ export class CombatController {
   }
 
   private defeatCreature(creature: Creature, level: LevelInstance, killer: Player, tick: number, container: Player | null = null): void {
+    level.vacate(creature);
     creature.state = 'dying';
     creature.diedAtTick = tick;
     creature.respawnDelayTicks = scaledRespawnTicks(creature.definition.respawnTicks, level.players.size);
@@ -370,10 +376,10 @@ export class CombatController {
     creature.contributors.clear();
     for (const entityId of credited) {
       const player = level.players.get(entityId);
-      if (player) this.rewardDefeat(player, creature, creature.position);
+      if (player) this.rewardDefeat(player, creature, nearestFootprintTile(creature.position, creature.size, player.position));
     }
     this.creditPartyMates(credited, creature, level);
-    if (container) this.rewardContainment(container, creature, creature.position);
+    if (container) this.rewardContainment(container, creature, nearestFootprintTile(creature.position, creature.size, container.position));
   }
 
   private creditPartyMates(credited: ReadonlySet<string>, creature: Creature, level: LevelInstance): void {
@@ -451,14 +457,16 @@ export class CombatController {
     return !engaged || distance > leash + ENGAGED_CHASE_EXTRA_TILES;
   }
 
-  private resetHome(creature: Creature): void {
+  private resetHome(creature: Creature, level: LevelInstance): void {
     creature.targetId = null;
     creature.engagedWith = null;
     creature.contributors.clear();
     creature.returningHome = false;
     creature.integrity = creature.definition.integrity;
     creature.path = [];
-    creature.position = creature.home;
+    level.vacate(creature);
+    creature.position = level.freeAnchorNear(creature, creature.home);
+    level.occupy(creature);
   }
 
   private sendHome(creature: Creature, level: LevelInstance): void {
@@ -467,7 +475,7 @@ export class CombatController {
     creature.contributors.clear();
     creature.returningHome = true;
     creature.integrity = creature.definition.integrity;
-    creature.path = level.creaturePathBetween(creature.position, creature.home, false, CREATURE_PATH_SEARCH_LIMIT) ?? [];
+    creature.path = level.creaturePathBetween(creature, creature.home, false, CREATURE_PATH_SEARCH_LIMIT) ?? [];
   }
 
   isMultiCombat(level: LevelInstance, point: TilePoint): boolean {
@@ -507,9 +515,11 @@ export class CombatController {
       if (!creature.definition.relentless && ignoresOutclassedPlayer(creature.definition.level, combatLevel(player.record.skills))) continue;
       if (creatureBusy && creature.engagedWith !== player.entityId) continue;
       if (this.playerBusyElsewhere(player, creature, level, tick)) continue;
-      const distance = chebyshevDistance(creature.position, player.position);
+      const body = { position: player.position, size: 1 };
+      const distance = bodyDistance(creature, body);
       if (distance > creature.definition.aggroRadius || distance >= closestDistance) continue;
-      if (!hasLineOfSight(level.layout, creature.position, player.position)) continue;
+      const sight = facingTiles(creature, body);
+      if (!hasLineOfSight(level.layout, sight.from, sight.to)) continue;
       closest = player;
       closestDistance = distance;
     }

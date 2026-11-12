@@ -25,7 +25,7 @@ describe('safe areas', () => {
     const level = harness.gameplay.world.levelOf(harness.player);
     const from = levelPoint('service-yards', localInRoom('service-yards', 'loading-dock', { x: 8, y: 23 }));
     const into = levelPoint('service-yards', localInRoom('service-yards', 'yard-office', { x: 8, y: 3 }));
-    assert.equal(level.creaturePathBetween(from, into, false), null);
+    assert.equal(level.creaturePathBetween({ entityId: 'probe', position: from, size: 1 }, into, false), null);
     assert.ok(level.pathBetween(from, into, false));
   });
 
