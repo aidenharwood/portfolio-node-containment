@@ -1,12 +1,15 @@
 import {
+  appearanceItemIds,
   equipFromInventory,
-  equippedItemIds,
   recordDestroyed,
+  removeCosmetic,
   swapSlots,
   unequipToInventory,
+  wearCosmetic,
   type EquipmentSlot,
   type GameContent,
   type Loadout,
+  type WardrobeSlot,
 } from '@containment/shared';
 import type { Player } from '../world/player.ts';
 import type { World } from '../world/world.ts';
@@ -27,6 +30,11 @@ export class GearController {
   }
 
   equip(player: Player, slotIndex: number): void {
+    const stack = player.record.inventory[slotIndex];
+    if (stack && this.content.items.get(stack.itemId)?.cosmetic) {
+      this.wear(player, slotIndex);
+      return;
+    }
     const result = equipFromInventory(this.loadoutOf(player), slotIndex, this.content.items, player.record);
     if (!result.ok) {
       this.host.notify(player, 'warning', result.error);
@@ -42,6 +50,34 @@ export class GearController {
       return;
     }
     this.commitLoadout(player, result.value, true);
+  }
+
+  removeCosmetic(player: Player, slot: WardrobeSlot): void {
+    const result = removeCosmetic({ inventory: player.record.inventory, wardrobe: player.record.wardrobe }, slot, this.content.items);
+    if (!result.ok) {
+      this.host.notify(player, 'warning', result.error);
+      return;
+    }
+    player.update({ inventory: result.value.inventory, wardrobe: result.value.wardrobe });
+    this.broadcastAppearance(player);
+  }
+
+  private wear(player: Player, slotIndex: number): void {
+    const result = wearCosmetic({ inventory: player.record.inventory, wardrobe: player.record.wardrobe }, slotIndex, this.content.items);
+    if (!result.ok) {
+      this.host.notify(player, 'warning', result.error);
+      return;
+    }
+    player.update({ inventory: result.value.inventory, wardrobe: result.value.wardrobe });
+    this.broadcastAppearance(player);
+  }
+
+  private broadcastAppearance(player: Player): void {
+    this.world.levelOf(player).broadcastNear(player.position, {
+      type: 'world.entityGearChanged',
+      entityId: player.entityId,
+      gear: appearanceItemIds(player.record.equipment, player.record.wardrobe),
+    });
   }
 
   use(player: Player, slotIndex: number, tick: number): void {
@@ -112,13 +148,7 @@ export class GearController {
 
   private commitLoadout(player: Player, loadout: Loadout, equipmentChanged: boolean): void {
     player.update({ inventory: loadout.inventory, equipment: loadout.equipment });
-    if (equipmentChanged) {
-      this.world.levelOf(player).broadcastNear(player.position, {
-        type: 'world.entityGearChanged',
-        entityId: player.entityId,
-        gear: equippedItemIds(loadout.equipment),
-      });
-    }
+    if (equipmentChanged) this.broadcastAppearance(player);
     this.host.raiseQuestEvent(player, { type: 'loadoutChanged' });
   }
 }

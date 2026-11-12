@@ -185,6 +185,29 @@ describe('act two difficulty curve', () => {
     assert.ok(ranged >= 0.6 && ranged <= 0.92, `postmaster ranged in dispatch ${ranged}`);
   });
 
+  test('every weapon variant fights its boss about as well as the weapon it is based on', () => {
+    const pairs: [string, number, 'closeQuarters' | 'marksmanship', string, string, string][] = [
+      ['the-curator', 14, 'closeQuarters', 'rimeguard', 'cryo-maul', 'cryo-hammer'],
+      ['the-curator', 14, 'closeQuarters', 'rimeguard', 'rime-shiv', 'rime-dirk'],
+      ['the-curator', 14, 'marksmanship', 'rimeguard', 'rime-carbine', 'rime-flechette'],
+      ['the-choir', 19, 'closeQuarters', 'relay', 'arc-baton', 'arc-mace'],
+      ['the-choir', 19, 'marksmanship', 'relay', 'arc-carbine', 'arc-stutter'],
+      ['last-archivist', 24, 'closeQuarters', 'archive', 'censor-maul', 'censor-gavel'],
+      ['last-archivist', 24, 'marksmanship', 'archive', 'inkshot-pistol', 'inkshot-revolver'],
+      ['the-stoker', 29, 'closeQuarters', 'furnace', 'stoker-maul', 'stoker-shovel'],
+      ['the-stoker', 29, 'marksmanship', 'furnace', 'cinder-carbine', 'cinder-sprayer'],
+      ['the-host', 34, 'closeQuarters', 'threshold', 'the-knocker', 'the-rapper'],
+      ['the-host', 34, 'marksmanship', 'threshold', 'farsight-rifle', 'nearsight-rifle'],
+      ['the-postmaster', 38, 'closeQuarters', 'dispatch', 'franking-hammer', 'franking-stamp-hammer'],
+      ['the-postmaster', 38, 'marksmanship', 'dispatch', 'return-to-sender', 'express-delivery'],
+    ];
+    for (const [boss, level, style, kit, base, variant] of pairs) {
+      const original = duelWinRate(at(level, style), { ...kits[kit]!, primary: base }, boss);
+      const alternative = duelWinRate(at(level, style), { ...kits[kit]!, primary: variant }, boss);
+      assert.ok(Math.abs(original - alternative) <= 0.15, `${variant} ${alternative} vs ${base} ${original} against ${boss}`);
+    }
+  });
+
   test('melee and ranged training reach every boss on comparable terms', () => {
     const ranged: [string, number, EquipmentState][] = [
       ['the-curator', 14, { ...kits.rimeguard!, primary: 'rime-carbine' }],

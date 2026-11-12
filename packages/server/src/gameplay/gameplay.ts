@@ -52,6 +52,7 @@ export type GameplayMessage = ClientMessageOf<
   | 'world.pickup'
   | 'inventory.swap'
   | 'equipment.unequip'
+  | 'wardrobe.remove'
   | 'chat.say'
   | 'chat.whisper'
   | 'party.invite'
@@ -252,6 +253,9 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
         break;
       case 'equipment.unequip':
         this.gear.unequip(player, message.slot);
+        break;
+      case 'wardrobe.remove':
+        this.gear.removeCosmetic(player, message.slot);
         break;
       case 'chat.say':
         this.social.say(player, message.text, message.channel ?? 'local', this.now());

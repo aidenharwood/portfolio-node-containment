@@ -1,4 +1,4 @@
-import { equippedItemIds, GAME_CONTENT, type CharacterSummary } from '@containment/shared';
+import { appearanceItemIds, GAME_CONTENT, type CharacterSummary } from '@containment/shared';
 import type { AppNavigator } from '../app.ts';
 import { AvatarPreview } from '../ui/avatarPreview.ts';
 import { createBackdrop } from '../ui/backdrop.ts';
@@ -42,7 +42,7 @@ export function createRosterScreen(app: AppNavigator, roster: readonly Character
 
   const cards = roster.map((character) => {
     const preview = new AvatarPreview(
-      { appearance: character.appearance, gear: equippedItemIds(character.equipment), facing: 'south', walking: false },
+      { appearance: character.appearance, gear: appearanceItemIds(character.equipment, character.wardrobe ?? {}), facing: 'south', walking: false },
       { width: 140, height: 170, pedestal: true },
     );
     previews.push(preview);

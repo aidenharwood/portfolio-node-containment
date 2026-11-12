@@ -1,5 +1,5 @@
 import {
-  equippedItemIds,
+  appearanceItemIds,
   maxIntegrityFor,
   type EntityVitals,
   type AreaId,
@@ -171,7 +171,7 @@ export class Player {
       position: this.position,
       facing: this.facing,
       appearance: this.record.appearance,
-      gear: equippedItemIds(this.record.equipment),
+      gear: appearanceItemIds(this.record.equipment, this.record.wardrobe),
       vitals: this.vitals(),
     };
   }

@@ -8,10 +8,12 @@ export const ITEM_RARITIES = ['standard', 'issued', 'restricted', 'classified', 
 
 export type ItemRarity = (typeof ITEM_RARITIES)[number];
 
-export type ItemCategory = 'equipment' | 'consumable' | 'material' | 'quest' | 'currency';
+export type ItemCategory = 'equipment' | 'cosmetic' | 'consumable' | 'material' | 'quest' | 'currency';
 
 export type ItemIconShape =
   | 'helmet'
+  | 'hood'
+  | 'cowl'
   | 'visor'
   | 'jumpsuit'
   | 'vest'
@@ -19,6 +21,8 @@ export type ItemIconShape =
   | 'gloves'
   | 'trousers'
   | 'boots'
+  | 'pack'
+  | 'cape'
   | 'baton'
   | 'pistol'
   | 'datapad'
@@ -50,10 +54,21 @@ export type ItemIconShape =
   | 'seal'
   | 'credits';
 
+export const GEAR_MOTIFS = ['bulwark', 'skirmisher', 'warden'] as const;
+
+export type GearMotif = (typeof GEAR_MOTIFS)[number];
+
+export const GEAR_MOTIF_INFO: Readonly<Record<GearMotif, { name: string; summary: string }>> = {
+  bulwark: { name: 'Bulwark', summary: 'Heavy plate built to stand in the way.' },
+  skirmisher: { name: 'Skirmisher', summary: 'Light harness cut for marksmen who keep moving.' },
+  warden: { name: 'Warden', summary: 'Warded vestments for operatives who face the mind-bending.' },
+};
+
 export interface GearVisual {
   readonly primary: string;
   readonly secondary: string;
   readonly emissive?: string;
+  readonly motif?: GearMotif;
 }
 
 export interface EquipRequirements {
@@ -66,6 +81,11 @@ export interface EquipmentProperties {
   readonly requirements?: EquipRequirements;
   readonly visual: GearVisual;
   readonly weapon?: WeaponProfile;
+}
+
+export interface CosmeticProperties {
+  readonly slot: EquipmentSlot;
+  readonly visual: GearVisual;
 }
 
 export interface ConsumableProperties {
@@ -85,9 +105,20 @@ export interface ItemDefinition {
   readonly value: number;
   readonly unique?: boolean;
   readonly equipment?: EquipmentProperties;
+  readonly cosmetic?: CosmeticProperties;
   readonly consumable?: ConsumableProperties;
 }
 
 export type ItemCatalog = ReadonlyMap<ItemId, ItemDefinition>;
 
 export const isStackable = (item: ItemDefinition): boolean => item.maxStack > 1;
+
+export const wornVisualOf = (item: ItemDefinition): { readonly slot: EquipmentSlot; readonly visual: GearVisual } | null =>
+  item.equipment ?? item.cosmetic ?? null;
+
+export function gearLineOf(item: ItemDefinition): GearMotif | null {
+  const equipment = item.equipment;
+  if (!equipment || equipment.weapon) return null;
+  if (equipment.visual.motif) return equipment.visual.motif;
+  return equipment.requirements?.skills?.fortitude ? 'bulwark' : null;
+}
