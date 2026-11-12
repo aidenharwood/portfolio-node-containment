@@ -2,6 +2,24 @@ import type { Blueprint } from './blueprint.ts';
 import { rectContains, type TilePoint } from './geometry.ts';
 import type { LayoutPosition } from './layoutSchema.ts';
 
+export function positionAt(plan: Blueprint, point: TilePoint): LayoutPosition {
+  for (const step of plan.steps) {
+    if (step.kind !== 'room') continue;
+    const rect = plan.rooms[step.id];
+    if (rect && rectContains(rect, point)) return { room: step.id, dx: point.x - rect.x, dy: point.y - rect.y };
+  }
+  for (const [exit, value] of Object.entries(plan.exits)) {
+    const index = value.tiles.findIndex((tile) => tile.x === point.x && tile.y === point.y);
+    if (index >= 0) return { exit, index };
+  }
+  for (const [key, tiles] of Object.entries(plan.links)) {
+    const index = tiles.findIndex((tile) => tile.x === point.x && tile.y === point.y);
+    const [from, to] = key.split('>') as [string, string];
+    if (index >= 0) return { link: [from, to], index };
+  }
+  return { x: point.x, y: point.y };
+}
+
 export function resolvePosition(plan: Blueprint, at: LayoutPosition, path: string): TilePoint {
   const fail = (reason: string): never => {
     throw new Error(`${path}: ${reason}`);

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { drawBlueprint, exit, link, room } from '../src/world/blueprint.ts';
-import { resolvePosition } from '../src/world/layoutPosition.ts';
+import { positionAt, resolvePosition } from '../src/world/layoutPosition.ts';
 import { DISTRICT_LAYOUT_SCHEMA } from '../src/world/layoutSchema.ts';
 
 const plan = drawBlueprint({ width: 22, height: 10 }, [
@@ -72,5 +72,25 @@ describe('layout schema', () => {
     });
     assert.equal(result.success, false);
     assert.ok(!result.success && result.error.issues.some((issue) => issue.path.join('.') === 'objects.0' && issue.message.includes('colour')), JSON.stringify(!result.success && result.error.issues));
+  });
+});
+
+describe('positionAt', () => {
+  test('a tile in a room becomes the room form', () => {
+    assert.deepEqual(positionAt(plan, { x: 13, y: 4 }), { room: 'b', dx: 2, dy: 3 });
+  });
+
+  test('an exit tile becomes the exit form', () => {
+    const tile = plan.exits.west?.tiles[1];
+    assert.ok(tile);
+    assert.deepEqual(positionAt(plan, tile), { exit: 'west', index: 1 });
+  });
+
+  test('a link tile becomes the link form', () => {
+    assert.deepEqual(positionAt(plan, plan.linkTile('a', 'b', 1)), { link: ['a', 'b'], index: 1 });
+  });
+
+  test('a tile in no room, exit or link stays absolute', () => {
+    assert.deepEqual(positionAt(plan, { x: 21, y: 9 }), { x: 21, y: 9 });
   });
 });
