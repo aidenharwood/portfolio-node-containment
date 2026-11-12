@@ -38,7 +38,7 @@ interface ArmourTier {
   readonly warden: LinePieces;
 }
 
-const LINE_SKILL: Readonly<Record<GearMotif, SkillId>> = { bulwark: 'fortitude', skirmisher: 'marksmanship', warden: 'containment' };
+const LINE_SKILL: Readonly<Record<GearMotif, SkillId>> = { bulwark: 'fortitude', skirmisher: 'marksmanship', warden: 'psionics' };
 
 const LINE_SHAPES: Readonly<Record<LineMotif, Readonly<Record<ArmourSlot, { readonly icon: ItemIconShape; readonly noun: string }>>>> = {
   skirmisher: {
@@ -65,11 +65,11 @@ const prune = (stats: Record<string, number>): StatBlock =>
 function backStats(motif: GearMotif, level: number): StatBlock {
   switch (motif) {
     case 'bulwark':
-      return prune({ armor: Math.round(level * 0.25) + 1, hazardShielding: Math.round(level * 0.12) + 1, power: Math.round(level * 0.08) });
+      return prune({ armor: Math.round(level * 0.25) + 1, deflection: Math.round(level * 0.2), hazardShielding: Math.round(level * 0.12) + 1, power: Math.round(level * 0.08) });
     case 'skirmisher':
-      return prune({ armor: Math.round(level * 0.15) + 1, accuracy: Math.round(level * 0.15) + 1, hazardShielding: Math.round(level * 0.06) });
+      return prune({ deflection: Math.round(level * 0.25) + 1, armor: Math.round(level * 0.08), accuracy: Math.round(level * 0.15) + 1, hazardShielding: Math.round(level * 0.06) });
     case 'warden':
-      return prune({ cognitiveWard: Math.round(level * 0.25) + 1, insight: Math.round(level / 15) + 1, armor: Math.round(level * 0.08) });
+      return prune({ cognitiveWard: Math.round(level * 0.25) + 1, focus: Math.round(level * 0.15) + 1, insight: Math.round(level / 15) + 1, armor: Math.round(level * 0.08) });
   }
 }
 
@@ -80,20 +80,21 @@ function lineStats(motif: LineMotif, slot: BodySlot, heavy: StatBlock, level: nu
   const offence = (heavy.power ?? 0) + (heavy.accuracy ?? 0);
   if (motif === 'skirmisher') {
     return prune({
-      armor: Math.round(armor * 0.7),
+      armor: Math.round(armor * 0.45),
+      deflection: Math.max(1, armor),
       hazardShielding: hazard,
-      cognitiveWard: Math.round(ward * 0.5),
+      cognitiveWard: Math.round(ward * 0.5 + armor * 0.25),
       accuracy: slot === 'hands' ? offence : Math.max(1, Math.round(armor * 0.25)),
     });
   }
   const insight = slot === 'head' || slot === 'torso' ? Math.max(1, Math.round(level / 10)) : 0;
   return prune({
     armor: Math.round(armor * 0.65),
+    deflection: Math.round(armor * 0.3),
     hazardShielding: Math.round(hazard * 0.6),
-    cognitiveWard: ward + Math.max(1, Math.round(armor * 0.35)),
+    cognitiveWard: ward + Math.max(1, Math.round(armor * 0.6)),
     insight,
-    power: slot === 'hands' ? Math.round((heavy.power ?? 0) / 2) : 0,
-    accuracy: slot === 'hands' ? Math.round((heavy.accuracy ?? 0) / 2) : 0,
+    focus: slot === 'hands' ? offence : Math.max(1, Math.round(armor * 0.25)),
   });
 }
 

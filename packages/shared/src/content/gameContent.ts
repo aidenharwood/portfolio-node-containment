@@ -67,7 +67,8 @@ import { ITEMS } from './items.ts';
 import { RECIPES } from './recipes.ts';
 import { ARMOUR_LINE_ITEMS, ARMOUR_LINE_RECIPES } from './armourLines.ts';
 import { COSMETIC_ITEMS, COSMETIC_RECIPES } from './cosmetics.ts';
-import { weaponVariantRecipes, weaponVariants } from './weaponVariants.ts';
+import { PSIONIC_GEAR, PSIONIC_RECIPES, PSIONIC_VARIANT_SPECS } from './psionicGear.ts';
+import { WEAPON_VARIANT_SPECS, weaponVariantRecipes, weaponVariants } from './weaponVariants.ts';
 import { FIELD_FABRICATION } from './quests/fieldFabrication.ts';
 import { NPCS } from './npcs.ts';
 import { AMBIENT_NPCS } from './ambientNpcs.ts';
@@ -189,10 +190,12 @@ function startingLocation(): WorldLocation {
   return location;
 }
 
-const BASE_ITEMS: readonly ItemDefinition[] = [...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS, ...UNIQUE_GEAR, ...CALDER_MATERIALS, ...CALDER_MEDICINE, ...CALDER_QUEST_ITEMS, ...SALTWORKS_GEAR, ...CATHEDRAL_GEAR, ...CALDER_UNIQUE_GEAR, ...VESPER_MATERIALS, ...VESPER_MEDICINE, ...VESPER_QUEST_ITEMS, ...WARD_GEAR, ...PHYSICIAN_GEAR, ...VESPER_UNIQUE_GEAR, ...ARMOUR_LINE_ITEMS, ...COSMETIC_ITEMS];
+const ALL_VARIANT_SPECS = [...WEAPON_VARIANT_SPECS, ...PSIONIC_VARIANT_SPECS];
+
+const BASE_ITEMS: readonly ItemDefinition[] = [...ITEMS, ...CRAFTING_ITEMS, ...DEEP_ITEMS, ...UNIQUE_GEAR, ...CALDER_MATERIALS, ...CALDER_MEDICINE, ...CALDER_QUEST_ITEMS, ...SALTWORKS_GEAR, ...CATHEDRAL_GEAR, ...CALDER_UNIQUE_GEAR, ...VESPER_MATERIALS, ...VESPER_MEDICINE, ...VESPER_QUEST_ITEMS, ...WARD_GEAR, ...PHYSICIAN_GEAR, ...VESPER_UNIQUE_GEAR, ...ARMOUR_LINE_ITEMS, ...PSIONIC_GEAR, ...COSMETIC_ITEMS];
 
 export const GAME_CONTENT: GameContent = {
-  items: indexById<ItemDefinition>([...BASE_ITEMS, ...weaponVariants(indexById(BASE_ITEMS))]),
+  items: indexById<ItemDefinition>([...BASE_ITEMS, ...weaponVariants(indexById(BASE_ITEMS), ALL_VARIANT_SPECS)]),
   npcs: indexById([...NPCS, ...DEEP_NPCS, ...WATERWORKS_NPCS, ...OFFICE_NPCS, ...CALDER_NPCS, ...VESPER_NPCS, ...AMBIENT_NPCS]),
   worldObjects: indexById(INSTALLED.objects),
   assemblies: ASSEMBLY_INDEX,
@@ -264,7 +267,7 @@ export const GAME_CONTENT: GameContent = {
   tram: buildTramNetwork(TRAM_STATIONS, TRAM_LINES, DISTRICTS, LEVEL_INDEX),
   creatures: indexById([...CREATURES, ...DEEP_CREATURES, ...WATERWORKS_CREATURES, ...OFFICE_CREATURES, ...TRAINING_CREATURES, ...CALDER_CREATURES, ...VESPER_CREATURES]),
   shops: indexById(SHOPS),
-  recipes: indexById([...RECIPES, ...ARMOUR_LINE_RECIPES, ...COSMETIC_RECIPES, ...weaponVariantRecipes(RECIPES)]),
+  recipes: indexById([...RECIPES, ...ARMOUR_LINE_RECIPES, ...PSIONIC_RECIPES, ...COSMETIC_RECIPES, ...weaponVariantRecipes([...RECIPES, ...PSIONIC_RECIPES], ALL_VARIANT_SPECS)]),
   contracts: indexById(CONTRACTS),
   newCharacter: {
     startingLocation: startingLocation(),

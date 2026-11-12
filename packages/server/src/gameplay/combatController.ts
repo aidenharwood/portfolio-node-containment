@@ -15,7 +15,8 @@ import {
   clearanceTierOf,
   ignoresOutclassedPlayer,
   defeatExperience,
-  effectiveDefence,
+  creatureDefence,
+  defenceAgainst,
   studiedFlag,
   scaledRespawnTicks,
   creatureAttackProfile,
@@ -178,7 +179,7 @@ export class CombatController {
       player.nextAttackTick = tick + attack.speedTicks;
       player.lastCombatTick = tick;
       const studied = player.hasFlag(studiedFlag(creature.definition.id));
-      const outcome = rollAttack(attack, effectiveDefence(creature.definition, attack.style, studied), this.random);
+      const outcome = rollAttack(attack, creatureDefence(creature.definition, attack.style, studied), this.random);
       const damage = restrained ? Math.min(outcome.damage, creature.integrity - 1) : outcome.damage;
       creature.integrity = Math.max(0, creature.integrity - damage);
       if (damage > 0) creature.contributors.add(player.entityId);
@@ -318,8 +319,9 @@ export class CombatController {
   }
 
   private resolveCreatureAttack(creature: Creature, player: Player, level: LevelInstance, tick: number): void {
-    const defence = deriveCombatProfile(player.record.skills, equipmentStats(player.record.equipment, this.content.items)).defence;
-    const outcome = rollAttack(creatureAttackProfile(creature.definition), defence, this.random);
+    const attack = creatureAttackProfile(creature.definition);
+    const profile = deriveCombatProfile(player.record.skills, equipmentStats(player.record.equipment, this.content.items));
+    const outcome = rollAttack(attack, defenceAgainst(profile, attack.style), this.random);
     this.engageBoth(player, creature, tick);
     player.lastCombatTick = tick;
     player.setIntegrity(player.integrity - outcome.damage);

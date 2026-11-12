@@ -54,6 +54,7 @@ export const FABRICATION_RECIPES: readonly RecipeDefinition[] = [
   recipe('fabricator', 'utility-knife', 1, { 'alloy-plate': 1, 'synthweave-bolt': 1 }, { experience: 24, ticks: 5 }),
   recipe('fabricator', 'lab-coat', 2, { 'synthweave-bolt': 3 }, { experience: 32, ticks: 5 }),
   recipe('fabricator', 'dart-pistol', 2, { 'alloy-plate': 2, 'polymer-sheet': 1 }, { experience: 36, ticks: 5 }),
+  recipe('fabricator', 'training-focus', 2, { 'polymer-sheet': 2, 'alloy-plate': 1 }, { experience: 36, ticks: 5 }),
   recipe('fabricator', 'containment-gloves', 3, { 'synthweave-bolt': 1, 'polymer-sheet': 1 }, { experience: 40, ticks: 5 }),
   recipe('fabricator', 'hazard-visor', 3, { 'polymer-sheet': 2 }, { experience: 40, ticks: 5 }),
   recipe('fabricator', 'field-vest-mk1', 4, { 'alloy-plate': 2, 'synthweave-bolt': 2 }, { experience: 50, ticks: 6 }),

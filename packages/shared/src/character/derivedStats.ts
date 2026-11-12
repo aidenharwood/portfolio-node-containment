@@ -5,9 +5,11 @@ export const PROFILE_STAT_IDS = [
   'integrity',
   'meleeRating',
   'rangedRating',
-  'defence',
+  'psionicRating',
+  'meleeDefence',
+  'rangedDefence',
+  'psionicDefence',
   'hazardResistance',
-  'cognitiveResistance',
   'analysis',
 ] as const;
 
@@ -23,11 +25,13 @@ export interface ProfileStatInfo {
 
 export const PROFILE_STAT_INFO: Readonly<Record<ProfileStatId, ProfileStatInfo>> = {
   integrity: { name: 'Integrity', derivation: 'Maximum health. 20 + 4 per Fortitude level.' },
-  meleeRating: { name: 'Melee Rating', derivation: 'Close Quarters level + weapon Power.', gearStat: 'power' },
-  rangedRating: { name: 'Ranged Rating', derivation: 'Marksmanship level + weapon Accuracy.', gearStat: 'accuracy' },
-  defence: { name: 'Defence', derivation: 'Half Fortitude level + Armor.', gearStat: 'armor' },
+  meleeRating: { name: 'Melee Rating', derivation: 'Close Quarters level + Power.', gearStat: 'power' },
+  rangedRating: { name: 'Ranged Rating', derivation: 'Marksmanship level + Accuracy.', gearStat: 'accuracy' },
+  psionicRating: { name: 'Psionic Rating', derivation: 'Psionics level + Focus.', gearStat: 'focus' },
+  meleeDefence: { name: 'Melee Defence', derivation: 'Half Fortitude level + Armor.', gearStat: 'armor' },
+  rangedDefence: { name: 'Ranged Defence', derivation: 'Half Fortitude level + Deflection.', gearStat: 'deflection' },
+  psionicDefence: { name: 'Psionic Defence', derivation: 'Half Fortitude level + Cognitive Ward.', gearStat: 'cognitiveWard' },
   hazardResistance: { name: 'Hazard Resistance', derivation: 'Half Fortitude level + Hazard Shielding.', gearStat: 'hazardShielding' },
-  cognitiveResistance: { name: 'Cognitive Resistance', derivation: 'Half Containment level + Cognitive Ward.', gearStat: 'cognitiveWard' },
   analysis: { name: 'Analysis', derivation: 'Research level + Insight. Study anomalies whose level is at or below it.', gearStat: 'insight' },
 };
 
@@ -35,14 +39,16 @@ export const maxIntegrityFor = (skills: SkillExperience): number => 20 + levelFo
 
 export function deriveCombatProfile(skills: SkillExperience, gear: Readonly<Record<StatId, number>>): CombatProfile {
   const level = (experience: number) => levelForExperience(experience);
-  const fortitude = level(skills.fortitude);
+  const guard = Math.floor(level(skills.fortitude) / 2);
   return {
     integrity: maxIntegrityFor(skills),
     meleeRating: level(skills.closeQuarters) + gear.power,
     rangedRating: level(skills.marksmanship) + gear.accuracy,
-    defence: Math.floor(fortitude / 2) + gear.armor,
-    hazardResistance: Math.floor(fortitude / 2) + gear.hazardShielding,
-    cognitiveResistance: Math.floor(level(skills.containment) / 2) + gear.cognitiveWard,
+    psionicRating: level(skills.psionics) + gear.focus,
+    meleeDefence: guard + gear.armor,
+    rangedDefence: guard + gear.deflection,
+    psionicDefence: guard + gear.cognitiveWard,
+    hazardResistance: guard + gear.hazardShielding,
     analysis: level(skills.research) + gear.insight,
   };
 }

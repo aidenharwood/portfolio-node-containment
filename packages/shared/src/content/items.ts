@@ -46,7 +46,7 @@ export const ITEMS: readonly ItemDefinition[] = [
     value: 4,
     equipment: {
       slot: 'torso',
-      stats: { armor: 1 },
+      stats: { armor: 1, deflection: 1 },
       visual: { primary: '#7d8791', secondary: '#4a525a' },
     },
   },
@@ -62,7 +62,7 @@ export const ITEMS: readonly ItemDefinition[] = [
     value: 3,
     equipment: {
       slot: 'legs',
-      stats: { armor: 1 },
+      stats: { armor: 1, deflection: 1 },
       visual: { primary: '#5b636b', secondary: '#3b4248' },
     },
   },
@@ -78,7 +78,7 @@ export const ITEMS: readonly ItemDefinition[] = [
     value: 3,
     equipment: {
       slot: 'feet',
-      stats: { armor: 1, hazardShielding: 1 },
+      stats: { armor: 1, deflection: 1, hazardShielding: 1 },
       visual: { primary: '#3a2f28', secondary: '#1e1915' },
     },
   },
@@ -94,7 +94,7 @@ export const ITEMS: readonly ItemDefinition[] = [
     value: 40,
     equipment: {
       slot: 'torso',
-      stats: { armor: 6, hazardShielding: 1 },
+      stats: { armor: 6, deflection: 6, hazardShielding: 1 },
       visual: { primary: '#2f4f5f', secondary: '#1d3440', emissive: '#c9a227' },
     },
   },
@@ -126,7 +126,7 @@ export const ITEMS: readonly ItemDefinition[] = [
     value: 30,
     equipment: {
       slot: 'hands',
-      stats: { armor: 1, hazardShielding: 2 },
+      stats: { armor: 1, deflection: 1, hazardShielding: 2 },
       visual: { primary: '#c46a2b', secondary: '#3d2416' },
     },
   },
@@ -142,7 +142,7 @@ export const ITEMS: readonly ItemDefinition[] = [
     value: 120,
     equipment: {
       slot: 'head',
-      stats: { armor: 5, hazardShielding: 2 },
+      stats: { armor: 5, deflection: 4, hazardShielding: 2 },
       requirements: { skills: { fortitude: 5 } },
       visual: { primary: '#3c4a3f', secondary: '#242d26', emissive: '#9fdc6a' },
     },
@@ -179,6 +179,23 @@ export const ITEMS: readonly ItemDefinition[] = [
       stats: { power: 2, accuracy: 4 },
       visual: { primary: '#5b6770', secondary: '#2a3238', emissive: '#8fdcf5' },
       weapon: { kind: 'pistol', range: 5, speedTicks: 5 },
+    },
+  },
+  {
+    id: 'training-focus',
+    name: 'Training Focus',
+    examine: 'A plastic rod with a cheap lens on the end, issued for psionic qualification. It works better if you stop feeling silly holding it.',
+    category: 'equipment',
+    rarity: 'standard',
+    icon: 'focus',
+    iconColors: ['#8a7aa8', '#d8b8ff'],
+    maxStack: 1,
+    value: 20,
+    equipment: {
+      slot: 'primary',
+      stats: { focus: 4 },
+      visual: { primary: '#8a7aa8', secondary: '#2e2838', emissive: '#d8b8ff', motif: 'warden' },
+      weapon: { kind: 'focus', range: 4, speedTicks: 5 },
     },
   },
   {
@@ -488,7 +505,7 @@ export const ITEMS: readonly ItemDefinition[] = [
     value: 300,
     equipment: {
       slot: 'torso',
-      stats: { armor: 11, hazardShielding: 2 },
+      stats: { armor: 11, deflection: 9, hazardShielding: 2 },
       requirements: { skills: { fortitude: 8 } },
       visual: { primary: '#3a3f45', secondary: '#1e2226', emissive: '#ff5e5e' },
     },
@@ -505,7 +522,7 @@ export const ITEMS: readonly ItemDefinition[] = [
     value: 120,
     equipment: {
       slot: 'eyes',
-      stats: { hazardShielding: 6, cognitiveWard: 2, armor: 1 },
+      stats: { hazardShielding: 6, cognitiveWard: 2, armor: 1, deflection: 1 },
       visual: { primary: '#1a2a20', secondary: '#3a4046', emissive: '#3fa35f' },
     },
   },

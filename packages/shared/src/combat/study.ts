@@ -1,7 +1,7 @@
 import { experienceForLevel } from '../character/skills.ts';
 import { chebyshevDistance, type TilePoint } from '../world/geometry.ts';
 import type { CreatureDefinition, CreatureId } from './creatures.ts';
-import type { CombatStyle } from './weapons.ts';
+import { COMBAT_STYLE_INFO, styleBeating, type CombatStyle } from './weapons.ts';
 
 export const STUDY_INTERACTION = 2;
 
@@ -36,8 +36,27 @@ export function studyExperience(creature: CreatureDefinition, firstStudy: boolea
   return firstStudy ? discovery : Math.max(1, Math.round(discovery * REPEAT_STUDY_SHARE));
 }
 
-export const exploitsWeakness = (creature: CreatureDefinition, style: CombatStyle, studied: boolean): boolean =>
-  studied && creature.weakness === style;
+export const GUARD_STRONG_FACTOR = 1.15;
 
-export const effectiveDefence = (creature: CreatureDefinition, style: CombatStyle, studied: boolean): number =>
-  exploitsWeakness(creature, style, studied) ? Math.floor(creature.defence * EXPLOITED_DEFENCE_FACTOR) : creature.defence;
+export const GUARD_WEAK_FACTOR = 0.8;
+
+export function weaknessOf(creature: CreatureDefinition): CombatStyle | null {
+  if (!creature.guard) return null;
+  const own = (Object.keys(COMBAT_STYLE_INFO) as CombatStyle[]).find((style) => COMBAT_STYLE_INFO[style].line === creature.guard);
+  return own ? styleBeating(own) : null;
+}
+
+export function guardFactor(creature: CreatureDefinition, style: CombatStyle): number {
+  if (!creature.guard) return 1;
+  if (weaknessOf(creature) === style) return GUARD_WEAK_FACTOR;
+  if (creature.guard === 'warden' && style === 'melee') return 1;
+  return GUARD_STRONG_FACTOR;
+}
+
+export const exploitsWeakness = (creature: CreatureDefinition, style: CombatStyle, studied: boolean): boolean =>
+  studied && weaknessOf(creature) === style;
+
+export function creatureDefence(creature: CreatureDefinition, style: CombatStyle, studied: boolean): number {
+  const guarded = Math.round(creature.defence * guardFactor(creature, style));
+  return exploitsWeakness(creature, style, studied) ? Math.floor(guarded * EXPLOITED_DEFENCE_FACTOR) : guarded;
+}

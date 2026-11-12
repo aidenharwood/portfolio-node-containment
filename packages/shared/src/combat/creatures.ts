@@ -1,3 +1,4 @@
+import type { GearMotif } from '../gear/items.ts';
 import type { ItemId } from '../ids.ts';
 import type { CombatStyle } from './weapons.ts';
 
@@ -83,7 +84,7 @@ export interface CreatureDefinition {
   readonly integrity: number;
   readonly defence: number;
   readonly attack: CreatureAttack;
-  readonly weakness: CombatStyle;
+  readonly guard?: GearMotif;
   readonly aggressive?: boolean;
   readonly relentless?: boolean;
   readonly aggroRadius: number;

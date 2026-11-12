@@ -180,6 +180,28 @@ const pistol: ItemBuilder = ({ primary, secondary, emissive }) => {
   return model;
 };
 
+const focus: ItemBuilder = ({ primary, secondary, emissive }) => {
+  const model = new VoxelModel();
+  line(model, [-6, 0, 0], [3, 9, 0], secondary);
+  model.fill(3, 8, -1, 7, 12, 1, (x, y, z) => ((x === 3 || x === 7) && (y === 8 || y === 12) ? null : z === 0 && x > 3 && x < 7 && y > 8 && y < 12 ? null : primary));
+  model.fill(4, 9, 0, 6, 11, 0, emissive ?? lighten(primary, 0.35), emissive ? VOXEL_EMISSIVE : VOXEL_GLASS);
+  return model;
+};
+
+const resonator: ItemBuilder = ({ primary, secondary, emissive }) => {
+  const model = new VoxelModel();
+  line(model, [-8, 0, 0], [-2, 6, 0], secondary);
+  model.fill(-2, 4, 0, 8, 14, 0, (x, y) => {
+    const ring = Math.abs(Math.hypot(x - 3, y - 9) - 5);
+    if (ring < 0.7) return primary;
+    return null;
+  });
+  if (emissive) {
+    for (const y of [6, 9, 12]) model.fill(0, y, 0, 6, y, 0, emissive, VOXEL_EMISSIVE);
+  }
+  return model;
+};
+
 const datapad: ItemBuilder = ({ primary, secondary, emissive }) => {
   const model = new VoxelModel().fill(-5, 0, -1, 5, 13, 0, grain(primary));
   model.fill(-4, 2, 1, 4, 12, 1, (_x, y) => (y % 3 === 0 ? lighten(emissive ?? secondary, 0.35) : (emissive ?? secondary)), emissive ? VOXEL_EMISSIVE : undefined);
@@ -489,6 +511,8 @@ const seal: ItemBuilder = ({ primary, secondary }) => {
 };
 
 const BUILDERS: Readonly<Record<ItemIconShape, ItemBuilder>> = {
+  focus,
+  resonator,
   fibre,
   moss,
   gel,

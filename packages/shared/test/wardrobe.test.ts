@@ -50,15 +50,15 @@ describe('wardrobe', () => {
 });
 
 describe('armour lines', () => {
-  const byLine = (motif: string) => [...items.values()].filter((item) => !item.equipment?.weapon && item.equipment?.visual.motif === motif);
+  const byLine = (motif: string) => [...items.values()].filter((item) => !item.equipment?.weapon && item.equipment?.slot !== 'implant' && item.equipment?.visual.motif === motif);
   const total = (item: ItemDefinition) => Object.values(item.equipment?.stats ?? {}).reduce<number>((sum, value) => sum + (value ?? 0), 0);
   const stat = (item: ItemDefinition, id: keyof StatBlock) => item.equipment?.stats[id] ?? 0;
 
-  test('every tier offers a marksman line and a containment line beside its heavy set', () => {
+  test('every tier offers a marksman line and a psionic line beside its heavy set', () => {
     assert.equal(byLine('skirmisher').length, byLine('warden').length);
     assert.ok(byLine('skirmisher').length >= 50);
     assert.ok(byLine('skirmisher').every((item) => item.equipment?.requirements?.skills?.marksmanship));
-    assert.ok(byLine('warden').every((item) => item.equipment?.requirements?.skills?.containment));
+    assert.ok(byLine('warden').every((item) => item.equipment?.requirements?.skills?.psionics));
   });
 
   test('the lines trade armour for their specialty rather than outclassing the heavy set', () => {
@@ -89,7 +89,7 @@ describe('crafting groups', () => {
 describe('back slot', () => {
   test('every armour tier offers a pack or cape for each line, and outfits can dress the back too', () => {
     const backs = [...items.values()].filter((item) => item.equipment?.slot === 'back');
-    for (const skill of ['fortitude', 'marksmanship', 'containment'] as const) {
+    for (const skill of ['fortitude', 'marksmanship', 'psionics'] as const) {
       assert.equal(backs.filter((item) => item.equipment?.requirements?.skills?.[skill]).length, 11, skill);
     }
     assert.ok([...items.values()].some((item) => item.cosmetic?.slot === 'back' && item.icon === 'cape'));

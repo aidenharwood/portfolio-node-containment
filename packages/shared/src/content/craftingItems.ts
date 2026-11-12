@@ -131,7 +131,7 @@ export const HYDROPONICS_GEAR: readonly ItemDefinition[] = [
     value: 70,
     equipment: {
       slot: 'hands',
-      stats: { armor: 3, hazardShielding: 2, power: 1 },
+      stats: { armor: 3, deflection: 2, hazardShielding: 2, power: 1 },
       requirements: { skills: { fortitude: 4 } },
       visual: { primary: '#6a8a3a', secondary: '#2a3a1a' },
     },

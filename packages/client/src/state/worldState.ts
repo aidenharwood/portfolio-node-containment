@@ -23,6 +23,7 @@ import {
   type ResolvedLevel,
   type ProjectileKind,
   type WeaponKind,
+  type CombatStyle,
 } from '@containment/shared';
 import type { GameConnection } from '../net/gameConnection.ts';
 
@@ -64,7 +65,7 @@ export interface CombatHitEvent {
   readonly targetId: EntityId;
   readonly outcome: 'hit' | 'miss';
   readonly damage: number;
-  readonly style: 'melee' | 'ranged';
+  readonly style: CombatStyle;
   readonly weapon: WeaponKind | null;
   readonly projectile: ProjectileKind | null;
   readonly at: number;
@@ -81,14 +82,17 @@ const PROJECTILE_FLIGHT_SCALE: Readonly<Record<ProjectileKind, number>> = {
   tracer: 0.35,
   pellets: 0.6,
   spit: 1.25,
+  pulse: 1.1,
+  wave: 1.4,
 };
 
 export const projectileFlightMs = (kind: ProjectileKind, from: TilePoint, to: TilePoint): number =>
   (PROJECTILE_BASE_FLIGHT_MS + Math.hypot(to.x - from.x, to.y - from.y) * PROJECTILE_FLIGHT_MS_PER_TILE) * PROJECTILE_FLIGHT_SCALE[kind];
 
-const projectileOf = (style: 'melee' | 'ranged', weapon: WeaponKind | null): ProjectileKind | null => {
-  if (style !== 'ranged') return null;
-  return weapon ? (WEAPON_KIND_INFO[weapon].projectile ?? 'bolt') : 'spit';
+const projectileOf = (style: CombatStyle, weapon: WeaponKind | null): ProjectileKind | null => {
+  if (style === 'melee') return null;
+  const fallback: ProjectileKind = style === 'psionic' ? 'pulse' : 'spit';
+  return weapon ? (WEAPON_KIND_INFO[weapon].projectile ?? fallback) : fallback;
 };
 
 export class WorldState {

@@ -108,6 +108,19 @@ describe('combat', () => {
     assert.equal(player.integrity, player.maxIntegrity);
     assert.equal(stepOf(harness, 'live-fire'), 8);
 
+    assert.equal(countItem(player.record.inventory, 'training-focus'), 1);
+    harness.equipItem('training-focus');
+    assert.equal(player.record.equipment.primary, 'training-focus');
+    assert.equal(stepOf(harness, 'live-fire'), 9);
+
+    const psionicsBefore = player.record.skills.psionics;
+    harness.ticksUntil(() => harness.gameplay.world.levelOf(player).creatureByInstance('range-drone-a')?.isAlive === true, 200);
+    defeat(harness, 'range-drone-a');
+    assert.ok(player.record.skills.psionics > psionicsBefore, 'focus kills train Psionics');
+    const pulse = harness.sink.messages.findLast((message) => message.type === 'combat.hit' && message.attackerId === player.entityId);
+    assert.ok(pulse?.type === 'combat.hit' && pulse.weapon === 'focus' && pulse.style === 'psionic');
+    assert.equal(stepOf(harness, 'live-fire'), 10);
+
     harness.talkTo('intake-osei');
     finishDialogue(harness);
     assert.equal(stepOf(harness, 'live-fire'), 'completed');

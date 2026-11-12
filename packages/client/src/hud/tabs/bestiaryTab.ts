@@ -1,5 +1,10 @@
 import {
+  COMBAT_STYLE_INFO,
+  COMBAT_STYLES,
   CONTAINMENT_CLASS_INFO,
+  creatureDefence,
+  GEAR_MOTIF_INFO,
+  weaknessOf,
   clearanceName,
   clearanceTierFor,
   containmentThreshold,
@@ -12,8 +17,6 @@ import {
 } from '@containment/shared';
 import { h, replaceChildren } from '../../ui/dom.ts';
 import type { PanelTab } from '../sidePanel.ts';
-
-const STYLE_LABELS = { melee: 'Melee', ranged: 'Ranged' } as const;
 
 const habitatsByCreature = (): ReadonlyMap<CreatureId, readonly string[]> => {
   const habitats = new Map<CreatureId, string[]>();
@@ -80,6 +83,8 @@ export function createBestiaryTab(): PanelTab {
     const containment = creature.containment;
     const places = habitats.get(creature.id) ?? [];
     const exploit = Math.round((1 - EXPLOITED_DEFENCE_FACTOR) * 100);
+    const weakness = weaknessOf(creature);
+    const guardName = creature.guard ? GEAR_MOTIF_INFO[creature.guard].name : '';
     replaceChildren(
       body,
       h('div', { className: 'bestiary-detail' },
@@ -89,13 +94,15 @@ export function createBestiaryTab(): PanelTab {
         h('p', { className: 'bestiary-examine' }, creature.examine),
         h('p', { className: 'bestiary-weakness' },
           h('span', { className: 'bestiary-weakness-label' }, 'Weakness '),
-          `${STYLE_LABELS[creature.weakness]}. Your ${creature.weakness} attacks ignore ${exploit}% of its Defence.`),
+          weakness
+            ? `${COMBAT_STYLE_INFO[weakness].name}. ${guardName} guard. Your ${COMBAT_STYLE_INFO[weakness].name.toLowerCase()} attacks ignore ${exploit}% of its Defence.`
+            : 'None. It guards evenly against every style.'),
         h('h4', { className: 'subheading' }, 'Field profile'),
         h('table', { className: 'dossier-stats bestiary-stats' },
           h('tbody', {},
             statRow('Integrity', String(creature.integrity)),
-            statRow('Defence', String(creature.defence)),
-            statRow('Attack', `${STYLE_LABELS[attack.style]}, up to ${attack.maxHit}`),
+            ...COMBAT_STYLES.map((style) => statRow(`${COMBAT_STYLE_INFO[style].name} defence`, String(creatureDefence(creature, style, false)))),
+            statRow('Attack', `${COMBAT_STYLE_INFO[attack.style].name}, up to ${attack.maxHit}`),
             statRow('Range', attack.range > 1 ? `${attack.range} tiles` : 'Adjacent'),
             statRow('Attack speed', `${(attack.speedTicks * 0.3).toFixed(1)}s`),
           ),

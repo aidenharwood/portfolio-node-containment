@@ -1,7 +1,7 @@
 import type { CharacterAppearance } from '../character/appearance.ts';
 import type { CombatProfile } from '../character/derivedStats.ts';
 import type { CreatureId } from '../combat/creatures.ts';
-import type { WeaponKind } from '../combat/weapons.ts';
+import type { CombatStyle, WeaponKind } from '../combat/weapons.ts';
 import type { CraftingStation } from '../crafting/recipes.ts';
 import type { CharacterSummary } from '../character/character.ts';
 import type { PronounSetId } from '../character/pronouns.ts';
@@ -133,7 +133,7 @@ export type ServerMessage =
       readonly targetId: EntityId;
       readonly outcome: 'hit' | 'miss';
       readonly damage: number;
-      readonly style: 'melee' | 'ranged';
+      readonly style: CombatStyle;
       readonly weapon?: WeaponKind;
       readonly vitals: EntityVitals;
     }

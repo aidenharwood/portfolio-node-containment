@@ -21,6 +21,8 @@ const LOOKS: Readonly<Record<ProjectileKind, ProjectileLook>> = {
   tracer: { core: [0.045, 0.045, 1.2], halo: [0.12, 0.12, 0.95], trailSegments: 0, trailSpacing: 0, arcHeight: 0, count: 1, spread: 0, impactScale: 1.35, muzzleScale: 1 },
   pellets: { core: [0.07, 0.07, 0.12], halo: null, trailSegments: 2, trailSpacing: 0.06, arcHeight: 0.04, count: 6, spread: 0.34, impactScale: 0.55, muzzleScale: 1.15 },
   spit: { core: [0.12, 0.12, 0.16], halo: [0.22, 0.22, 0.22], trailSegments: 5, trailSpacing: 0.08, arcHeight: 0.35, count: 1, spread: 0, impactScale: 0.9, muzzleScale: 0 },
+  pulse: { core: [0.16, 0.16, 0.16], halo: [0.36, 0.36, 0.36], trailSegments: 4, trailSpacing: 0.12, arcHeight: 0, count: 1, spread: 0, impactScale: 1.25, muzzleScale: 0 },
+  wave: { core: [0.42, 0.06, 0.06], halo: [0.62, 0.14, 0.12], trailSegments: 2, trailSpacing: 0.16, arcHeight: 0.05, count: 3, spread: 0.16, impactScale: 1.5, muzzleScale: 0 },
 };
 
 interface Flight {

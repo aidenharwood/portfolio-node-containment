@@ -253,6 +253,8 @@ export const OSEI_DIALOGUE: DialogueDefinition = {
     { node: 'armUp', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'arm-up' }] },
     { node: 'drill', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'drill' }] },
     { node: 'patchUp', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'patch-up' }] },
+    { node: 'focus', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'focus-up' }] },
+    { node: 'focus', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'focus-drill' }] },
     { node: 'containBrief', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'containment-brief' }] },
     { node: 'clearance', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'clearance' }] },
     { node: 'contain', conditions: [{ type: 'questActive', questId: LIVE_FIRE, stepId: 'contain' }] },
@@ -317,6 +319,11 @@ export const OSEI_DIALOGUE: DialogueDefinition = {
     armUp: { speaker: 'npc', text: "Baton's in your inventory. Click it to wield. I'll wait. I'm very good at waiting.", next: null },
     drill: { speaker: 'npc', text: "Three drones. The red markers are yours. Click one to engage. If you're hurting, step back into the gallery and breathe.", next: null },
     patchUp: { speaker: 'npc', text: 'Medgel. Inventory. Click it to apply. Into the wound, not the eyes. Then come back. We are not finished.', next: null },
+    focus: {
+      speaker: 'npc',
+      text: "The focus. Wield it, pick a drone, and mean it. A baton argues with armour and a dart argues with cover. A focus skips both and argues with the mind. Plate does nothing against it. A good ward does. Remember that when something starts talking inside your head.",
+      next: null,
+    },
     containBrief: {
       speaker: 'npc',
       text: "Drones are furniture. What comes through the bulkheads is not. The Directorate does not kill what it can keep. We contain it: wear it down, then seal it while it's too weak to argue.",

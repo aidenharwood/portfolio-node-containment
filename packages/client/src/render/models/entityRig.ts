@@ -31,6 +31,8 @@ const ATTACK_DURATION_MS: Readonly<Record<AttackMotion, number>> = {
   shoulderShot: 400,
   heavyShot: 560,
   blast: 480,
+  channel: 460,
+  invoke: 620,
 };
 
 export const attackDurationMs = (motion: AttackMotion | null | undefined): number => (motion ? ATTACK_DURATION_MS[motion] : DEFAULT_ATTACK_MS);

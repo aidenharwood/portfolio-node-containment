@@ -3,6 +3,8 @@ import { describe, test } from 'node:test';
 import {
   createStartingSkills,
   creatureAttackProfile,
+  creatureDefence,
+  defenceAgainst,
   defeatExperience,
   deriveCombatProfile,
   equipmentStats,
@@ -28,15 +30,16 @@ function duelWinRate(skills: SkillExperience, equipment: EquipmentState, creatur
   const creature = GAME_CONTENT.creatures.get(creatureId);
   assert.ok(creature);
   const attack = playerAttackProfile(skills, equipment, GAME_CONTENT.items);
-  const defence = deriveCombatProfile(skills, equipmentStats(equipment, GAME_CONTENT.items)).defence;
   const enemy = creatureAttackProfile(creature);
+  const defence = defenceAgainst(deriveCombatProfile(skills, equipmentStats(equipment, GAME_CONTENT.items)), enemy.style);
+  const guard = creatureDefence(creature, attack.style, false);
   let wins = 0;
   for (let trial = 0; trial < trials; trial++) {
     const random = seededRandom(trial + 1);
     let playerIntegrity = maxIntegrityFor(skills);
     let creatureIntegrity = creature.integrity;
     for (let tick = 0; playerIntegrity > 0 && creatureIntegrity > 0; tick++) {
-      if (tick % attack.speedTicks === 0) creatureIntegrity -= rollAttack(attack, creature.defence, random).damage;
+      if (tick % attack.speedTicks === 0) creatureIntegrity -= rollAttack(attack, guard, random).damage;
       if (creatureIntegrity > 0 && tick % enemy.speedTicks === 0) playerIntegrity -= rollAttack(enemy, defence, random).damage;
     }
     if (creatureIntegrity <= 0) wins++;

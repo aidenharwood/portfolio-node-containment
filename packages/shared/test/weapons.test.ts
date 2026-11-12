@@ -52,14 +52,14 @@ describe('weapon kinds', () => {
   test('every ranged kind fires a projectile and no melee kind does', () => {
     for (const kind of WEAPON_KINDS) {
       const info = WEAPON_KIND_INFO[kind];
-      assert.equal(info.projectile !== null, info.style === 'ranged', kind);
+      assert.equal(info.projectile !== null, info.style !== 'melee', kind);
     }
   });
 
   test('faster kinds hit lighter, so damage per tick stays close across kinds', () => {
     const rating = 40;
     const reference = (1 + Math.floor(rating / 4) + 1) / 2 / 5;
-    const typicalSpeed = { unarmed: 4, knife: 3, baton: 4, blade: 4, maul: 5, polearm: 5, pistol: 4, carbine: 5, rifle: 7, scattergun: 5 } as const;
+    const typicalSpeed = { unarmed: 4, knife: 3, baton: 4, blade: 4, maul: 5, polearm: 5, pistol: 4, carbine: 5, rifle: 7, scattergun: 5, focus: 4, resonator: 6 } as const;
     for (const kind of WEAPON_KINDS) {
       const maxHit = 1 + Math.floor((rating * WEAPON_KIND_INFO[kind].damageScale) / 4);
       const perTick = (maxHit + 1) / 2 / typicalSpeed[kind];

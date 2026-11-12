@@ -4,6 +4,7 @@ export const SKILL_IDS = [
   'engineering',
   'marksmanship',
   'closeQuarters',
+  'psionics',
   'fortitude',
   'salvage',
   'refining',
@@ -45,6 +46,11 @@ export const SKILL_INFO: Readonly<Record<SkillId, SkillInfo>> = {
     name: 'Close Quarters',
     shortName: 'Close Qtrs',
     summary: 'Batons, blades and the art of not being grabbed.',
+  },
+  psionics: {
+    name: 'Psionics',
+    shortName: 'Psionics',
+    summary: 'Projecting will through focus conduits, and enduring what projects back.',
   },
   fortitude: {
     name: 'Fortitude',
@@ -96,11 +102,12 @@ export const normalizeSkills = (stored: Partial<SkillExperience>): SkillExperien
 export const createStartingSkills = (bonusExperience: Partial<SkillExperience> = {}): SkillExperience =>
   Object.fromEntries(SKILL_IDS.map((id) => [id, bonusExperience[id] ?? 0])) as SkillExperience;
 
-export const COMBAT_SKILLS = ['closeQuarters', 'marksmanship', 'fortitude'] as const satisfies readonly SkillId[];
+export const COMBAT_SKILLS = ['closeQuarters', 'marksmanship', 'psionics', 'fortitude'] as const satisfies readonly SkillId[];
 
 export function combatLevel(skills: SkillExperience): number {
   const fortitude = levelForExperience(skills.fortitude);
-  const melee = levelForExperience(skills.closeQuarters);
-  const ranged = levelForExperience(skills.marksmanship);
-  return Math.max(1, Math.floor(fortitude / 2 + Math.max(melee, ranged) / 2 + Math.min(melee, ranged) / 4));
+  const [best = 1, second = 1, third = 1] = [skills.closeQuarters, skills.marksmanship, skills.psionics]
+    .map((experience) => levelForExperience(experience))
+    .sort((a, b) => b - a);
+  return Math.max(1, Math.floor(fortitude / 2 + best / 2 + (second + third) / 8));
 }

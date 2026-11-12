@@ -32,6 +32,8 @@ const GRIPS: Readonly<Record<WeaponKind, ArmPose>> = {
   carbine: pose({ rightX: -0.75, rightZ: -0.2, leftX: -1.0, leftZ: 0.6, twist: 0.3, level: 1, aim: 0.4 }),
   rifle: pose({ rightX: -0.75, rightZ: -0.2, leftX: -1.0, leftZ: 0.6, twist: 0.3, level: 1, aim: 0.45 }),
   scattergun: pose({ rightX: -0.75, rightZ: -0.2, leftX: -1.0, leftZ: 0.6, twist: 0.3, level: 1, aim: 0.4 }),
+  focus: pose({ rightX: -0.45, rightZ: 0.05, weaponX: 0.25 }),
+  resonator: pose({ rightX: -0.7, rightZ: -0.25, leftX: -0.7, leftZ: 0.25, level: 1, aim: 0.2 }),
 };
 
 export function heldWeaponOf(gear: readonly ItemId[]): WeaponKind | null {
@@ -77,7 +79,26 @@ const pistolKick: Partial<ArmPose> = { ...pistolAimed, rightX: -1.35, aim: -0.45
 
 const shouldered: Partial<ArmPose> = { rightX: -0.45, leftX: -0.45, aim: -0.4 };
 
+const focusRaised: Partial<ArmPose> = { rightX: -1.3, rightZ: -0.05, twist: -0.2, level: 1, weaponX: 0.3 };
+const latticeHeld: Partial<ArmPose> = { rightX: -1.1, leftX: -1.1, rightZ: -0.1, leftZ: 0.1, level: 1 };
+
 const ATTACKS: Readonly<Record<AttackMotion, readonly Keyframe[]>> = {
+  channel: [
+    [0, {}],
+    [0.3, { ...focusRaised, lean: -0.06 }],
+    [0.5, { ...focusRaised, lean: -0.06, rightX: -1.4 }],
+    [0.6, { ...focusRaised, rightX: -1.55, lean: 0.08, lunge: 0.03 }],
+    [0.85, focusRaised],
+    [1, {}],
+  ],
+  invoke: [
+    [0, {}],
+    [0.35, { ...latticeHeld, rightX: -1.6, leftX: -1.6, lean: -0.14 }],
+    [0.55, { ...latticeHeld, rightX: -1.7, leftX: -1.7, lean: -0.16 }],
+    [0.66, { ...latticeHeld, lean: 0.2, lunge: 0.06 }],
+    [0.85, latticeHeld],
+    [1, {}],
+  ],
   jab: [
     [0, {}],
     [0.15, { rightX: 0.2, twist: 0.15 }],

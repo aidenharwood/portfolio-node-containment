@@ -24,7 +24,8 @@ export const LIVE_FIRE: QuestDefinition = {
       objectives: [{ type: 'defeat', creatureId: 'training-drone', count: 3, label: 'Defeat training drones' }],
       onComplete: [
         { type: 'giveItem', itemId: 'medgel', count: 2 },
-        { type: 'notify', text: 'Osei tosses you two Medgel ampoules. "Patch up."' },
+        { type: 'giveItem', itemId: 'training-focus', count: 1 },
+        { type: 'notify', text: 'Osei tosses you two Medgel ampoules and a Training Focus. "Patch up. Then try thinking at one."' },
       ],
     },
     {
@@ -59,6 +60,18 @@ export const LIVE_FIRE: QuestDefinition = {
       objectives: [{ type: 'interactWith', objectId: 'med-bed', label: 'Rest on a medbay bed' }],
     },
     {
+      id: 'focus-up',
+      journal:
+        'Patched up, I can try the Training Focus Osei gave me. Psionic attacks strike the mind and slip straight past plate. I should wield the focus from my inventory.',
+      objectives: [{ type: 'equipItem', itemId: 'training-focus', label: 'Wield the Training Focus' }],
+    },
+    {
+      id: 'focus-drill',
+      journal:
+        'One more drone, at range this time. The focus reaches four tiles. Melee beats ranged, ranged beats psionic, psionic beats melee: what a target wears tells me which to use.',
+      objectives: [{ type: 'defeat', creatureId: 'training-drone', count: 1, label: 'Defeat a training drone with the focus' }],
+    },
+    {
       id: 'debrief',
       journal: 'Drill complete. Osei will want a word.',
       objectives: [{ type: 'talkTo', npcId: 'warden-osei', label: 'Debrief with Warden Osei' }],
@@ -66,11 +79,12 @@ export const LIVE_FIRE: QuestDefinition = {
   ],
   rewards: [
     { type: 'grantExperience', skill: 'closeQuarters', amount: 150 },
+    { type: 'grantExperience', skill: 'psionics', amount: 75 },
     { type: 'grantExperience', skill: 'fortitude', amount: 100 },
     { type: 'grantExperience', skill: 'containment', amount: 100 },
     { type: 'giveItem', itemId: 'medgel', count: 3 },
     { type: 'giveItem', itemId: 'meridian-scrip', count: 30 },
   ],
-  rewardSummary: ['150 Close Quarters XP', '100 Fortitude XP', '100 Containment XP', '3 Medgel', '30 Meridian Scrip'],
+  rewardSummary: ['150 Close Quarters XP', '75 Psionics XP', '100 Fortitude XP', '100 Containment XP', '3 Medgel', '30 Meridian Scrip'],
   followUpQuestId: 'cleared-for-transit',
 };

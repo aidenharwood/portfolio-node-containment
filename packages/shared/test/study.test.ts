@@ -2,7 +2,10 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
   createStartingSkills,
-  effectiveDefence,
+  creatureDefence,
+  GUARD_STRONG_FACTOR,
+  GUARD_WEAK_FACTOR,
+  weaknessOf,
   experienceForLevel,
   findContentIssues,
   GAME_CONTENT,
@@ -28,8 +31,9 @@ test('a skillLevel condition passes at or above the level', () => {
   assert.equal(isConditionMet(condition, contextWith(40)), true);
 });
 
-test('every creature has a weakness and content stays valid', () => {
-  for (const creature of GAME_CONTENT.creatures.values()) assert.ok(creature.weakness === 'melee' || creature.weakness === 'ranged', creature.id);
+test('every creature outside the training range has a guard and content stays valid', () => {
+  const training = new Set(['training-drone', 'the-understudy']);
+  for (const creature of GAME_CONTENT.creatures.values()) assert.equal(creature.guard === undefined, training.has(creature.id), creature.id);
   assert.deepEqual(findContentIssues(GAME_CONTENT), []);
 });
 
@@ -49,13 +53,34 @@ test('discovery experience grows with level and dwarfs repeat studies', () => {
   for (const creature of creatures) assert.ok(studyExperience(creature, false) * 5 < studyExperience(creature, true), creature.id);
 });
 
-test('only a studied weakness lowers defence', () => {
+test('a guard follows the triangle', () => {
+  const byGuard = (id: string) => {
+    const creature = GAME_CONTENT.creatures.get(id);
+    assert.ok(creature);
+    return creature;
+  };
+  assert.equal(weaknessOf(byGuard('slag-golem')), 'psionic');
+  assert.equal(weaknessOf(byGuard('frost-moth')), 'melee');
+  assert.equal(weaknessOf(byGuard('the-host')), 'ranged');
+  assert.equal(weaknessOf(byGuard('training-drone')), null);
+  const golem = byGuard('slag-golem');
+  assert.equal(creatureDefence(golem, 'melee', false), Math.round(golem.defence * GUARD_STRONG_FACTOR));
+  assert.equal(creatureDefence(golem, 'psionic', false), Math.round(golem.defence * GUARD_WEAK_FACTOR));
+  const host = byGuard('the-host');
+  assert.equal(creatureDefence(host, 'melee', false), host.defence);
+});
+
+test('only a studied weakness is exploited', () => {
   const golem = GAME_CONTENT.creatures.get('slag-golem');
   assert.ok(golem);
-  const other = golem.weakness === 'melee' ? 'ranged' : 'melee';
-  assert.equal(effectiveDefence(golem, golem.weakness, false), golem.defence);
-  assert.equal(effectiveDefence(golem, other, true), golem.defence);
-  assert.ok(effectiveDefence(golem, golem.weakness, true) < golem.defence);
+  assert.equal(creatureDefence(golem, 'ranged', true), creatureDefence(golem, 'ranged', false));
+  assert.ok(creatureDefence(golem, 'psionic', true) < creatureDefence(golem, 'psionic', false));
+});
+
+test('psychic anomalies attack the mind', () => {
+  for (const id of ['static-wraith', 'the-choir', 'knockling', 'the-host', 'prescription-wraith']) {
+    assert.equal(GAME_CONTENT.creatures.get(id)?.attack.style, 'psionic', id);
+  }
 });
 
 test('studied creatures are read back from flags', () => {

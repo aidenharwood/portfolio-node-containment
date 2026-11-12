@@ -120,7 +120,7 @@ function describeItem(item: ItemDefinition): (HTMLElement | null | false | undef
 function weaponSummary(weapon: WeaponProfile): string {
   const info = WEAPON_KIND_INFO[weapon.kind];
   const grip = info.grip === 'twoHanded' ? 'Two-handed' : 'One-handed';
-  const reach = info.style === 'ranged' ? `Range ${weapon.range}` : weapon.range > 1 ? `Reach ${weapon.range}` : 'Melee';
+  const reach = info.style !== 'melee' ? `Range ${weapon.range}` : weapon.range > 1 ? `Reach ${weapon.range}` : 'Melee';
   return `${grip} ${info.name.toLowerCase()} · ${attackPace(weapon.speedTicks)} · ${reach}`;
 }
 

@@ -8,6 +8,7 @@ const SKILL_ICON_PATHS: Readonly<Record<SkillId, readonly string[]>> = {
   engineering: ['M14.5 4a4.5 4.5 0 0 0-4.2 6.1L4 16.4 7.6 20l6.3-6.3A4.5 4.5 0 0 0 20 9.5l-2.8 2.8-3.2-.3-.3-3.2L16.5 6a4.5 4.5 0 0 0-2-.5'],
   marksmanship: ['M12 5a7 7 0 1 0 0 14 7 7 0 0 0 0-14z', 'M12 2v6', 'M12 16v6', 'M2 12h6', 'M16 12h6'],
   closeQuarters: ['M18 3h3v3L9 18l-3-3z', 'M5 14l5 5', 'M7 17l-3 3'],
+  psionics: ['M12 4c-4 0-7 3-7 6.5 0 2.5 1.5 4 3 5V20h8v-4.5c1.5-1 3-2.5 3-5C19 7 16 4 12 4z', 'M9 10.5c1-1.5 5-1.5 6 0', 'M12 7v3'],
   fortitude: ['M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z', 'M12 8v8', 'M8 12h8'],
   salvage: ['M3 9h18v11H3z', 'M3 9l3-5h12l3 5', 'M10 13h4'],
   refining: ['M4 4h16l-6 8v6l-4 2v-8z'],

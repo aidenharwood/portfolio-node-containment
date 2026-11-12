@@ -1,10 +1,10 @@
-import { deriveCombatProfile } from '../character/derivedStats.ts';
+import { deriveCombatProfile, type CombatProfile } from '../character/derivedStats.ts';
 import type { SkillExperience, SkillId } from '../character/skills.ts';
 import { equipmentStats, type EquipmentState } from '../gear/equipment.ts';
 import type { ItemCatalog } from '../gear/items.ts';
 import { chebyshevDistance, isCardinallyAdjacent, type TilePoint } from '../world/geometry.ts';
 import type { CreatureDefinition } from './creatures.ts';
-import { UNARMED, WEAPON_KIND_INFO, type CombatStyle, type WeaponKind, type WeaponProfile } from './weapons.ts';
+import { COMBAT_STYLE_INFO, UNARMED, WEAPON_KIND_INFO, type CombatStyle, type WeaponKind, type WeaponProfile } from './weapons.ts';
 
 export interface AttackProfile {
   readonly style: CombatStyle;
@@ -38,11 +38,27 @@ export function weaponOf(equipment: EquipmentState, items: ItemCatalog): WeaponP
   return primary?.equipment?.weapon ?? UNARMED;
 }
 
+const RATING_OF: Readonly<Record<CombatStyle, 'meleeRating' | 'rangedRating' | 'psionicRating'>> = {
+  melee: 'meleeRating',
+  ranged: 'rangedRating',
+  psionic: 'psionicRating',
+};
+
+const DEFENCE_OF: Readonly<Record<CombatStyle, 'meleeDefence' | 'rangedDefence' | 'psionicDefence'>> = {
+  melee: 'meleeDefence',
+  ranged: 'rangedDefence',
+  psionic: 'psionicDefence',
+};
+
+export const ratingFor = (profile: CombatProfile, style: CombatStyle): number => profile[RATING_OF[style]];
+
+export const defenceAgainst = (profile: CombatProfile, style: CombatStyle): number => profile[DEFENCE_OF[style]];
+
 export function playerAttackProfile(skills: SkillExperience, equipment: EquipmentState, items: ItemCatalog): AttackProfile {
   const weapon = weaponOf(equipment, items);
   const kind = WEAPON_KIND_INFO[weapon.kind];
   const profile = deriveCombatProfile(skills, equipmentStats(equipment, items));
-  const accuracy = kind.style === 'melee' ? profile.meleeRating : profile.rangedRating;
+  const accuracy = ratingFor(profile, kind.style);
   return {
     style: kind.style,
     accuracy,
@@ -92,7 +108,7 @@ function isWithinReach(
 export function combatExperience(style: CombatStyle, damage: number): ExperienceAward[] {
   if (damage <= 0) return [];
   return [
-    { skill: style === 'melee' ? 'closeQuarters' : 'marksmanship', amount: damage * STYLE_EXPERIENCE_PER_DAMAGE },
+    { skill: COMBAT_STYLE_INFO[style].skill, amount: damage * STYLE_EXPERIENCE_PER_DAMAGE },
     { skill: 'fortitude', amount: Math.round(damage * FORTITUDE_EXPERIENCE_PER_DAMAGE) },
   ];
 }
@@ -100,7 +116,7 @@ export function combatExperience(style: CombatStyle, damage: number): Experience
 export function defeatExperience(style: CombatStyle, experience: number): ExperienceAward[] {
   if (experience <= 0) return [];
   return [
-    { skill: style === 'melee' ? 'closeQuarters' : 'marksmanship', amount: experience },
+    { skill: COMBAT_STYLE_INFO[style].skill, amount: experience },
     { skill: 'fortitude', amount: Math.round(experience / 3) },
   ];
 }

@@ -42,6 +42,8 @@ export type ItemIconShape =
   | 'polearm'
   | 'rifle'
   | 'scattergun'
+  | 'focus'
+  | 'resonator'
   | 'plate'
   | 'respirator'
   | 'fibre'
@@ -120,5 +122,7 @@ export function gearLineOf(item: ItemDefinition): GearMotif | null {
   const equipment = item.equipment;
   if (!equipment || equipment.weapon) return null;
   if (equipment.visual.motif) return equipment.visual.motif;
-  return equipment.requirements?.skills?.fortitude ? 'bulwark' : null;
+  const skills = equipment.requirements?.skills;
+  if (skills?.psionics) return 'warden';
+  return skills?.fortitude ? 'bulwark' : null;
 }

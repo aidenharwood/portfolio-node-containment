@@ -161,7 +161,7 @@ When a player clicks an NPC or object, `InteractionController.request` stores a 
 
 The pure rules live in `shared/src/combat/combatMath.ts`: attack profiles, hit chance, damage rolls, range and sightline checks, and XP per point of damage. `server/src/gameplay/combatController.ts` runs them each tick, after movement:
 
-- **Players:** a player with a `combatTargetId` chases the target until `isWithinAttackRange` (melee needs cardinal adjacency; ranged needs distance and line of sight via `world/lineOfSight.ts`). They then attack every `speedTicks`. Damage awards XP quietly through `EffectRunner.awardExperience`.
+- **Players:** a player with a `combatTargetId` chases the target until `isWithinAttackRange` (melee needs cardinal adjacency; ranged and psionic need distance and line of sight via `world/lineOfSight.ts`). They then attack every `speedTicks`. Damage awards XP quietly through `EffectRunner.awardExperience`.
 - **Creatures:**
   - Aggressive creatures pick the nearest visible player inside `aggroRadius`.
   - Any creature retaliates when attacked.
@@ -169,6 +169,8 @@ The pure rules live in `shared/src/combat/combatMath.ts`: attack profiles, hit c
   - A defeated creature plays a death animation for 3 ticks, despawns, and respawns after `respawnTicks`. Loot rolls go straight to the killer's inventory, and a `defeated` quest event fires.
 - **Incapacitation:** an incapacitated player is moved to the `recovery` location of the district they fell in (or the level spawn) at full integrity.
 - **Regeneration and auto-retaliate:** integrity regenerates 1 point every 20 ticks once out of combat. A player who is idle when attacked fights back automatically.
+
+**Combat triangle:** melee beats ranged, ranged beats psionic, psionic beats melee. `COMBAT_STYLE_INFO` in `weapons.ts` gives each style its skill (Close Quarters, Marksmanship, Psionics), offence stat (Power, Accuracy, Focus), defence stat (Armor, Deflection, Cognitive Ward) and armour line (Bulwark, Skirmisher, Warden). A creature attack rolls against the player's defence for its style (`defenceAgainst`). A creature's optional `guard` names the line it fights like: `creatureDefence` raises its Defence against the styles that line resists and lowers it against the style that beats it, and `weaknessOf` derives the weakness that study exploits. Creatures without a guard are neutral.
 
 Creatures are content (`content/creatures.ts`) placed through `DistrictDefinition.creatures`. Consumables are `item.consumable`. Quests use `defeat` and `useItem` objectives.
 
@@ -198,6 +200,8 @@ A weapon is `equipment.weapon`: a `kind`, a `range` and `speedTicks`. `WEAPON_KI
 | carbine | two-handed | ranged | shoulder shot | bolt | |
 | rifle | two-handed | ranged | heavy shot | tracer | 7 ticks, range 9 (×1.35) |
 | scattergun | two-handed | ranged | blast | pellets | range 3 (×1.15) |
+| focus | one-handed | psionic | channel | pulse | |
+| resonator | two-handed | psionic | invoke | wave | 6 ticks (×1.3) |
 
 - **Damage scale** multiplies the rating before it becomes a max hit, so fast weapons hit lighter and slow ones harder. `weapons.test.ts` keeps damage per tick within a band across kinds.
 - **Reach:** a melee weapon with `range` above 1 hits targets up to that many tiles away in a straight cardinal line, with line of sight.

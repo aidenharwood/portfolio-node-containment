@@ -8,6 +8,8 @@ import {
   studiedFlag,
   studyBlocker,
   studyExperience,
+  weaknessOf,
+  COMBAT_STYLE_INFO,
   type CreatureDefinition,
   type GameContent,
   type InstanceId,
@@ -114,7 +116,9 @@ export class ResearchController {
     }
     const firstStudy = player.addFlag(studiedFlag(creature.id));
     const label = creature.designation ? `${creature.designation} (${creature.name})` : creature.name;
-    if (firstStudy) this.host.notify(player, 'success', `${label} catalogued. Its weakness to ${creature.weakness} attacks is now in your bestiary.`);
+    const weakness = weaknessOf(creature);
+    const finding = weakness ? `Its weakness to ${COMBAT_STYLE_INFO[weakness].name.toLowerCase()} attacks is now in your bestiary.` : 'It has no particular weakness.';
+    if (firstStudy) this.host.notify(player, 'success', `${label} catalogued. ${finding}`);
     else this.host.notify(player, 'info', `You add field notes on ${creature.name}.`);
     this.effects.awardExperience(player, 'research', studyExperience(creature, firstStudy), true);
   }
