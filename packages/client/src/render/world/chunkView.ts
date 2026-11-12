@@ -2,6 +2,8 @@ import {
   assemblyInstanceOf,
   CHUNK_SIZE,
   GAME_CONTENT,
+  objectFootprintSize,
+  objectFootprintTiles,
   TILE_KINDS,
   tileKey,
   type ChunkCoord,
@@ -151,6 +153,11 @@ const objectMeshesFor = (model: WorldObjectDefinition['model'], seed: number): O
   return built;
 };
 
+export function objectModelOrigin(placement: ObjectPlacement, definition: WorldObjectDefinition): { x: number; z: number } {
+  const { width, height } = objectFootprintSize(definition, placement.facing);
+  return { x: placement.position.x + (width - 1) / 2, z: placement.position.y + (height - 1) / 2 };
+}
+
 export class ChunkView {
   readonly root = new Group();
   readonly walls: WallPiece[] = [];
@@ -167,7 +174,7 @@ export class ChunkView {
 
   constructor(zone: ActiveZone, region: TileRect, contents: ChunkContents, ringMaterial: Material) {
     this.ringMaterial = ringMaterial;
-    if (hasStructure(zone, region)) this.planStructure(zone, region, new Set(contents.objects.map(({ placement }) => tileKey(placement.position))));
+    if (hasStructure(zone, region)) this.planStructure(zone, region, new Set(contents.objects.flatMap(({ placement }) => objectFootprintTiles(GAME_CONTENT.worldObjects.get(placement.objectId), placement).map(tileKey))));
     contents.objects.forEach(({ placement, index }) => this.steps.push(() => this.addObject(placement, index)));
     bandsOf(region).forEach((band) => this.steps.push(() => this.buildDecor(band)));
     contents.sconces.forEach((spot) => this.steps.push(() => this.addSconce(spot)));
@@ -289,14 +296,15 @@ export class ChunkView {
     const seed = assembly ? assemblySeed(assembly) : (placement.position.x * 31 + placement.position.y * 17 + index) % 97;
     const parts = objectMeshesFor(definition.model, seed % MODEL_VARIANTS);
     const scale = definition.modelScale ?? 1;
-    this.addObjectLight(definition, placement, parts, `${definition.model}:${seed % MODEL_VARIANTS}`, scale, seed);
+    const origin = objectModelOrigin(placement, definition);
+    this.addObjectLight(definition, placement, origin, parts, `${definition.model}:${seed % MODEL_VARIANTS}`, scale, seed);
     if (isStaticDecor(definition, parts)) {
-      this.addDecor(parts.base, placement, scale);
+      this.addDecor(parts.base, placement, definition, origin, scale);
       return;
     }
 
     const group = new Group();
-    group.position.set(placement.position.x, 0, placement.position.y);
+    group.position.set(origin.x, 0, origin.z);
     group.scale.setScalar(scale);
     group.rotation.y = OBJECT_FACING_YAW[placement.facing ?? 'south'];
     group.add(createVoxelObject(parts.base));
@@ -309,7 +317,7 @@ export class ChunkView {
 
     const objectiveRing = new Mesh(OBJECTIVE_RING_GEOMETRY, this.ringMaterial);
     objectiveRing.rotation.x = -Math.PI / 2;
-    objectiveRing.position.set(placement.position.x, 0.02, placement.position.y);
+    objectiveRing.position.set(origin.x, 0.02, origin.z);
     objectiveRing.visible = false;
 
     this.root.add(group, objectiveRing);
@@ -317,11 +325,11 @@ export class ChunkView {
     this.objects.push({ instanceId: placement.instanceId, placement, definition, group, objectiveRing, height, animated, seed });
   }
 
-  private addObjectLight(definition: WorldObjectDefinition, placement: ObjectPlacement, parts: ObjectMeshes, cacheKey: string, scale: number, seed: number): void {
+  private addObjectLight(definition: WorldObjectDefinition, placement: ObjectPlacement, origin: { x: number; z: number }, parts: ObjectMeshes, cacheKey: string, scale: number, seed: number): void {
     const glow = glowOf(cacheKey, parts);
     if (!definition.light && !glow) return;
     const local = glow ? glow.centre.clone() : new Vector3(0, parts.heightVoxels * MODEL_VOXEL_SIZE + 0.2, 0);
-    const position = local.multiplyScalar(scale).applyAxisAngle(UP, OBJECT_FACING_YAW[placement.facing ?? 'south']).add(new Vector3(placement.position.x, 0, placement.position.y));
+    const position = local.multiplyScalar(scale).applyAxisAngle(UP, OBJECT_FACING_YAW[placement.facing ?? 'south']).add(new Vector3(origin.x, 0, origin.z));
     if (definition.light) {
       this.lights.push({ position, color: hex(definition.light.color), intensity: definition.light.intensity, radius: definition.light.radius, flicker: definition.light.flicker ?? false, seed });
     } else if (glow) {
@@ -329,13 +337,14 @@ export class ChunkView {
     }
   }
 
-  private addDecor(meshes: VoxelMeshes, placement: ObjectPlacement, scale: number): void {
+  private addDecor(meshes: VoxelMeshes, placement: ObjectPlacement, definition: WorldObjectDefinition, origin: { x: number; z: number }, scale: number): void {
     const transform = new Matrix4().compose(
-      new Vector3(placement.position.x, 0, placement.position.y),
+      new Vector3(origin.x, 0, origin.z),
       new Quaternion().setFromAxisAngle(UP, OBJECT_FACING_YAW[placement.facing ?? 'south']),
       new Vector3(scale, scale, scale),
     );
-    const band = Math.floor(placement.position.y / BAND_ROWS);
+    const lastRow = objectFootprintTiles(definition, placement).reduce((row, tile) => Math.max(row, tile.y), placement.position.y);
+    const band = Math.floor(lastRow / BAND_ROWS);
     const parts = this.decor.get(band) ?? { solid: [], emissive: [], glass: [] };
     this.decor.set(band, parts);
     for (const layer of VOXEL_LAYERS) {

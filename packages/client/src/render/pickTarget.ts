@@ -1,4 +1,4 @@
-import type { GroundItemSnapshot, InstanceId, ObjectPlacement, TilePoint, WorldObjectDefinition } from '@containment/shared';
+import { objectFootprintTiles, type GroundItemSnapshot, type InstanceId, type ObjectPlacement, type TilePoint, type WorldObjectDefinition } from '@containment/shared';
 import type { ClientEntity } from '../state/worldState.ts';
 
 export type PickTarget =
@@ -21,3 +21,6 @@ export const samePickTarget = (a: PickTarget | null, b: PickTarget | null): bool
   if (a.kind === 'tile' && b.kind === 'tile') return a.tile.x === b.tile.x && a.tile.y === b.tile.y;
   return false;
 };
+
+export const objectCoversTile = (placement: ObjectPlacement, definition: WorldObjectDefinition, tile: TilePoint): boolean =>
+  objectFootprintTiles(definition, placement).some((covered) => covered.x === tile.x && covered.y === tile.y);

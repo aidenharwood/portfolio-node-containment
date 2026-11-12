@@ -10,6 +10,7 @@ import {
   isCardinallyAdjacent,
   isDoorOpenFor,
   manhattanDistance,
+  objectFootprintTiles,
   pathThroughDoor,
   samePoint,
   storedCount,
@@ -35,7 +36,13 @@ const MAX_REPATH_ATTEMPTS = 4;
 interface ApproachTarget {
   readonly instanceId: string;
   readonly position: TilePoint;
+  readonly tiles: readonly TilePoint[];
 }
+
+const touches = (from: TilePoint, tiles: readonly TilePoint[]): boolean => tiles.some((tile) => isCardinallyAdjacent(from, tile));
+
+const nearestTile = (from: TilePoint, tiles: readonly TilePoint[]): TilePoint =>
+  tiles.reduce((best, tile) => (manhattanDistance(from, tile) < manhattanDistance(from, best) ? tile : best), tiles[0] as TilePoint);
 
 export const objectUseFlag = (districtId: string, instanceId: string, interactionIndex: number): string =>
   `object-used:${districtId}:${instanceId}:${interactionIndex}`;
@@ -70,26 +77,26 @@ export class InteractionController {
       }
       return;
     }
-    const approach = pending.kind === 'object' ? this.approachObject(player, pending.instanceId, pending.interactionIndex) : this.approachTile(player, pending.instanceId, target);
+    const approach = pending.kind === 'object' ? this.approachObject(player, pending.instanceId, pending.interactionIndex) : this.approachTile(player, { instanceId: pending.instanceId, position: target, tiles: [target] });
     if (!approach) {
       player.pendingInteraction = null;
       this.host.notify(player, 'warning', "You can't reach that.");
       return;
     }
     player.pendingInteraction = { ...pending, instanceId: approach.instanceId, repathAttempts: 0 };
-    if (isCardinallyAdjacent(player.position, approach.position)) {
+    if (touches(player.position, approach.tiles)) {
       player.path = [];
       this.resolveArrival(player);
     }
   }
 
-  private approachTile(player: Player, instanceId: string, position: TilePoint): ApproachTarget | null {
-    return isCardinallyAdjacent(player.position, position) || this.world.approach(player, position) ? { instanceId, position } : null;
+  private approachTile(player: Player, candidate: ApproachTarget): ApproachTarget | null {
+    return touches(player.position, candidate.tiles) || this.world.approach(player, nearestTile(player.position, candidate.tiles)) ? candidate : null;
   }
 
   private approachObject(player: Player, instanceId: string, interactionIndex: number): ApproachTarget | null {
     for (const candidate of this.approachCandidates(this.world.levelOf(player), instanceId, interactionIndex, player.position)) {
-      if (this.approachTile(player, candidate.instanceId, candidate.position)) return candidate;
+      if (this.approachTile(player, candidate)) return candidate;
     }
     return null;
   }
@@ -97,13 +104,13 @@ export class InteractionController {
   private approachCandidates(level: LevelInstance, instanceId: string, interactionIndex: number, from: TilePoint): ApproachTarget[] {
     const clicked = level.objects.get(instanceId);
     if (!clicked) return [];
-    const own = { instanceId, position: clicked.placement.position };
+    const own = { instanceId, position: clicked.placement.position, tiles: objectFootprintTiles(clicked.definition, clicked.placement) };
     const assembly = assemblyInstanceOf(instanceId);
     const verb = clicked.definition.interactions[interactionIndex]?.verb;
     if (!assembly || !verb) return [own];
     const siblings = [...level.objects.values()]
       .filter(({ placement, definition }) => placement.instanceId !== instanceId && assemblyInstanceOf(placement.instanceId) === assembly && definition.interactions[interactionIndex]?.verb === verb)
-      .map(({ placement }) => ({ instanceId: placement.instanceId, position: placement.position }))
+      .map(({ placement, definition }) => ({ instanceId: placement.instanceId, position: placement.position, tiles: objectFootprintTiles(definition, placement) }))
       .sort((a, b) => manhattanDistance(from, a.position) - manhattanDistance(from, b.position));
     return [own, ...siblings];
   }
@@ -117,18 +124,20 @@ export class InteractionController {
       player.pendingInteraction = null;
       return;
     }
+    const tiles = this.targetTiles(level, pending, target);
     if (pending.kind === 'groundItem') {
       player.pendingInteraction = null;
       if (samePoint(player.position, target) || isCardinallyAdjacent(player.position, target)) this.host.pickUp(player, pending.instanceId);
       return;
     }
-    if (isCardinallyAdjacent(player.position, target)) {
+    const touched = tiles.find((tile) => isCardinallyAdjacent(player.position, tile));
+    if (touched) {
       player.pendingInteraction = null;
-      this.world.face(player, target);
+      this.world.face(player, touched);
       this.execute(player, level, pending);
       return;
     }
-    if (pending.repathAttempts >= MAX_REPATH_ATTEMPTS || !this.world.approach(player, target)) {
+    if (pending.repathAttempts >= MAX_REPATH_ATTEMPTS || !this.world.approach(player, nearestTile(player.position, tiles))) {
       player.pendingInteraction = null;
       this.host.notify(player, 'warning', "You can't reach that.");
       return;
@@ -205,6 +214,11 @@ export class InteractionController {
       { type: 'notify', text: `You recover a replacement ${missing.map(({ itemId }) => this.content.items.get(itemId)?.name ?? itemId).join(' and ')}.` },
     ]);
     return true;
+  }
+
+  private targetTiles(level: LevelInstance, pending: Pick<PendingInteraction, 'kind' | 'instanceId'>, target: TilePoint): readonly TilePoint[] {
+    const placed = pending.kind === 'object' ? level.objects.get(pending.instanceId) : undefined;
+    return placed ? objectFootprintTiles(placed.definition, placed.placement) : [target];
   }
 
   private targetPosition(player: Player, pending: Pick<PendingInteraction, 'kind' | 'instanceId'>): TilePoint | null {

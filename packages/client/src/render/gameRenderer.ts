@@ -34,12 +34,13 @@ import { GroundItemLayer } from './items/groundItemLayer.ts';
 import { ProjectileLayer } from './projectileLayer.ts';
 import { RouteLayer } from './routeLayer.ts';
 import { EncounterLayer } from './encounterLayer.ts';
-import { samePickTarget, type ClickMarker, type PickTarget } from './pickTarget.ts';
+import { objectCoversTile, samePickTarget, type ClickMarker, type PickTarget } from './pickTarget.ts';
 import { buildFieldLightGrid, clearFieldLights, FIELD_LIGHT_LIMIT, fieldLightFade, setFieldLights, type FieldLight } from './voxel/fieldLights.ts';
 import { hex, lighten } from './voxel/palette.ts';
 import { copyAmbience, createBlendedAmbience, easeAmbience, sampleAmbience, type BlendedAmbience } from './world/ambienceBlend.ts';
 import { assignLights, type LightAssignment } from './lightAssignment.ts';
 import { LevelScene, type LightSource } from './world/levelScene.ts';
+import { objectModelOrigin } from './world/chunkView.ts';
 
 export interface RenderOverlay {
   readonly hover: PickTarget | null;
@@ -298,6 +299,9 @@ export class GameRenderer {
     for (const item of this.world.groundItems.values()) {
       if (item.position.x === tile.x && item.position.y === tile.y) add({ kind: 'groundItem', item });
     }
+    for (const view of this.zone.objects.values()) {
+      if (view.definition.interactions.length > 0 && objectCoversTile(view.placement, view.definition, tile)) add({ kind: 'object', instanceId: view.instanceId, placement: view.placement, definition: view.definition });
+    }
     const walkTarget = this.world.walkTargetFor(tile);
     if (walkTarget) add({ kind: 'tile', tile: walkTarget });
     return targets;
@@ -543,7 +547,8 @@ export class GameRenderer {
       ring.scale.setScalar(0.7);
       ring.visible = true;
     } else if (hover.kind === 'object') {
-      ring.position.set(hover.placement.position.x, 0.025, hover.placement.position.y);
+      const origin = objectModelOrigin(hover.placement, hover.definition);
+      ring.position.set(origin.x, 0.025, origin.z);
       ring.scale.setScalar(1.45 * (hover.definition.modelScale ?? 1));
       ring.visible = true;
     } else {
