@@ -227,7 +227,7 @@ export class Minimap {
     const distance = Math.hypot(position.x - destination.tile.x, position.y - destination.tile.y);
     const reach = destination.tone === 'walk' ? 0.05 : INTERACT_REACH_TILES;
     const arrived = !moving && distance <= reach;
-    const stalled = !moving && now - Math.max(destination.setAt, self.movedAt + this.world.tickMs) > DESTINATION_STALL_MS;
+    const stalled = !moving && now - Math.max(destination.setAt, this.world.motionEndsAt(self)) > DESTINATION_STALL_MS;
     if (arrived || stalled) this.destination = null;
   }
 

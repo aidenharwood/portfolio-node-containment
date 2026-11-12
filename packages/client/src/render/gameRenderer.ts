@@ -405,8 +405,8 @@ export class GameRenderer {
       if (moving) entity.walkPhase += delta * 10;
       view.rig.root.position.set(position.x, 0, position.y);
 
-      const dx = entity.to.x - entity.from.x;
-      const dz = entity.to.y - entity.from.y;
+      const dx = entity.motion.to.x - entity.motion.from.x;
+      const dz = entity.motion.to.y - entity.motion.from.y;
       const desiredYaw = moving && (dx !== 0 || dz !== 0) ? Math.atan2(dx, dz) : FACING_YAW[entity.facing];
       view.yaw += shortestAngle(view.yaw, desiredYaw) * Math.min(1, delta * 12);
       view.rig.root.rotation.y = view.yaw;

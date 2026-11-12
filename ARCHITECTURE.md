@@ -118,14 +118,18 @@ A pocket is an ordinary shared, layered level with `kind: 'pocket'`: the Thresho
 
 ### Tick model
 
-`World.tick()` runs every 300ms. For each level layer with players it:
+`World.tick()` runs every 300ms on `startTickTimer`, which schedules each tick against a fixed grid so the cadence does not drift the way `setInterval` does. For each level layer with players it:
 
 1. advances NPC and creature wander paths in **watched** chunks,
 2. moves each player one tile along their path and fires `onAreaEntered` for newly entered areas,
 3. sends each player their chunk changes and a `world.tick` holding only the movements they can see (see Interest management),
 4. resolves pending interactions for players whose path has finished (`onPathCompleted`).
 
-The client interpolates each entity from its previous tile to its new one over one tick.
+The client plays each step from the previous tile to the new one over one tick (`state/motionPlayback.ts`):
+
+- **`TickClock`** learns the server's tick phase from `world.tick` arrivals, so each step is timed on the tick grid rather than on its jittery arrival time. It keeps a decaying envelope of how late ticks arrive.
+- **`Motion`** queues each entity's steps. Rendering runs behind real time by the clock's delay (at least 10ms, at most a third of a tick), so on a normal link the next step is already queued when the current one ends. Walking stays continuous and the walk pose holds across tiles. A step that arrives later than that starts from where the entity stands rather than jumping ahead.
+- `entity.to` is always the latest authoritative tile for game logic; `entity.motion` is only for drawing.
 
 ### Interest management
 

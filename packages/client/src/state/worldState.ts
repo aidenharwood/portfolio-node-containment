@@ -28,6 +28,7 @@ import {
   type HazardKind,
 } from '@containment/shared';
 import type { GameConnection } from '../net/gameConnection.ts';
+import { Motion, TickClock } from './motionPlayback.ts';
 
 export interface ClientEntity {
   readonly id: EntityId;
@@ -47,9 +48,8 @@ export interface ClientEntity {
   contained: boolean;
   gear: readonly ItemId[];
   facing: Facing;
-  from: TilePoint;
   to: TilePoint;
-  movedAt: number;
+  readonly motion: Motion;
   walkPhase: number;
   speech: { text: string; until: number } | null;
   phase: number;
@@ -117,6 +117,7 @@ export class WorldState {
   zone: ActiveZone | null = null;
   selfEntityId: EntityId | null = null;
   tickMs = 300;
+  private readonly tickClock = new TickClock(this.tickMs);
   layer = 1;
   self: SelfState | null = null;
   selfVitals: EntityVitals | null = null;
@@ -232,11 +233,9 @@ export class WorldState {
   }
 
   renderPosition(entity: ClientEntity, now: number): TilePoint {
-    const progress = this.movementProgress(entity, now);
-    return {
-      x: entity.from.x + (entity.to.x - entity.from.x) * progress,
-      y: entity.from.y + (entity.to.y - entity.from.y) * progress,
-    };
+    const playbackAt = this.playbackTime(now);
+    entity.motion.advance(playbackAt, this.tickMs);
+    return entity.motion.positionAt(playbackAt, this.tickMs);
   }
 
   bodySize(entity: ClientEntity): number {
@@ -251,11 +250,17 @@ export class WorldState {
   }
 
   isMoving(entity: ClientEntity, now: number): boolean {
-    return this.movementProgress(entity, now) < 1 && (entity.from.x !== entity.to.x || entity.from.y !== entity.to.y);
+    const playbackAt = this.playbackTime(now);
+    entity.motion.advance(playbackAt, this.tickMs);
+    return entity.motion.isMoving(playbackAt, this.tickMs);
   }
 
-  private movementProgress(entity: ClientEntity, now: number): number {
-    return Math.min(1, (now - entity.movedAt) / this.tickMs);
+  motionEndsAt(entity: ClientEntity): number {
+    return entity.motion.endsAt(this.tickMs) + this.tickClock.delayMs;
+  }
+
+  private playbackTime(now: number): number {
+    return now - this.tickClock.delayMs;
   }
 
   private applyHit(message: ServerMessageOf<'combat.hit'>): void {
@@ -302,6 +307,7 @@ export class WorldState {
     this.zone = { definition, layout: definition.layout, grid };
     this.selfEntityId = message.selfEntityId;
     this.tickMs = message.tickMs;
+    this.tickClock.reset(message.tickMs);
     this.layer = message.layer;
     this.entities.clear();
     this.combatTargetId = null;
@@ -333,14 +339,20 @@ export class WorldState {
 
   private applyMovements(message: ServerMessageOf<'world.tick'>): void {
     const now = performance.now();
-    for (const movement of message.movements) {
+    const moved = message.movements.filter((movement) => {
+      const entity = this.entities.get(movement.entityId);
+      if (!entity) return false;
+      entity.facing = movement.facing;
+      return entity.to.x !== movement.position.x || entity.to.y !== movement.position.y;
+    });
+    if (moved.length === 0) return;
+    const startAt = this.tickClock.observe(now);
+    const playbackAt = this.playbackTime(now);
+    for (const movement of moved) {
       const entity = this.entities.get(movement.entityId);
       if (!entity) continue;
-      entity.facing = movement.facing;
-      if (entity.to.x === movement.position.x && entity.to.y === movement.position.y) continue;
-      entity.from = this.renderPosition(entity, now);
       entity.to = movement.position;
-      entity.movedAt = now;
+      entity.motion.push(movement.position, startAt, playbackAt);
     }
   }
 
@@ -368,9 +380,8 @@ function toClientEntity(snapshot: EntitySnapshot): ClientEntity {
     contained: false,
     gear: snapshot.gear,
     facing: snapshot.facing,
-    from: snapshot.position,
     to: snapshot.position,
-    movedAt: 0,
+    motion: new Motion(snapshot.position),
     walkPhase: 0,
     speech: null,
     phase: snapshot.phase ?? 0,
