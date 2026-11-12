@@ -15,7 +15,7 @@ Help players answer two questions: "what can I salvage at my level, and what com
 
 ### `salvageGuide(content)`
 
-New module `src/gathering/salvageGuide.ts`. Pure, derived entirely from content, so new nodes appear without extra work.
+New module `src/crafting/salvageGuide.ts`, next to `gathering.ts`. Pure, derived entirely from content, so new nodes appear without extra work.
 
 ```ts
 interface SalvageGuideLocation {
@@ -40,7 +40,7 @@ function salvageGuide(content: GameContent): SalvageGuideEntry[];
 ```
 
 - Includes every world object with an interaction whose `gather.skill` is `'salvage'`.
-- Locations come from every level's object placements of that object id, grouped by level and district (`layout.districtAt(position)`), in level order and then by district name. A placement outside any district (`districtAt` returns `undefined`) is grouped under the level alone, with the district name left empty.
+- Locations come from every level's object placements of that object id, grouped by level and district (`layout.districtAt(position)`), ordered as `content.levels` lists them and then by district name. A placement outside any district (`districtAt` returns `undefined`) is grouped under the level alone, with the district name left empty.
 - Entries are sorted by `level`, then `name`.
 - Node types with no placements are still listed, with an empty `locations`.
 
