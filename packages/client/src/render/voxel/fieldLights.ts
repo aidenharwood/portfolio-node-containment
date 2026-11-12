@@ -6,6 +6,8 @@ const GRID_CELLS = 64;
 const CELL_TEXELS = 4;
 export const FIELD_LIGHTS_PER_CELL = CELL_TEXELS * 4;
 const EMPTY_SLOT = 255;
+const LIT_KNEE = 0.5;
+const LIT_CEILING = 0.85;
 
 export interface FieldLight {
   readonly position: Vector3;
@@ -142,9 +144,22 @@ if ( fieldLightGridEnabled == 1 && fieldCell.x >= 0 && fieldCell.y >= 0 && field
 		}
 	}
 }`,
+      )
+      .replace(
+        '#include <lights_fragment_end>',
+        `#include <lights_fragment_end>
+vec3 litRadiance = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse;
+float litPeak = max( max( litRadiance.r, litRadiance.g ), litRadiance.b );
+if ( litPeak > ${LIT_KNEE.toFixed(3)} ) {
+	float litRange = ${(LIT_CEILING - LIT_KNEE).toFixed(3)};
+	float litShoulder = ${LIT_KNEE.toFixed(3)} + litRange * ( 1.0 - exp( - ( litPeak - ${LIT_KNEE.toFixed(3)} ) / litRange ) );
+	float litScale = litShoulder / litPeak;
+	reflectedLight.directDiffuse *= litScale;
+	reflectedLight.indirectDiffuse *= litScale;
+}`,
       );
   };
-  material.customProgramCacheKey = () => `field-light-point-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}`;
+  material.customProgramCacheKey = () => `field-light-point-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}-lit-${LIT_KNEE}-${LIT_CEILING}`;
   return material;
 }
 
