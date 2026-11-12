@@ -1,4 +1,5 @@
 import type { WorldObjectDefinition } from '../world/entities.ts';
+import { RUIN_OBJECTS } from './ruinObjects.ts';
 import { ATRIUM_ANCHORS } from './districts/meridianAtrium.ts';
 import { MERIDIAN_BELOW_ANCHORS } from './districts/meridianBelow.ts';
 import { SECTOR_THREE_ANCHORS } from './districts/sectorThree.ts';
@@ -441,4 +442,5 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     light: { radius: 4, color: '#ffb347', intensity: 0.8, flicker: true },
     interactions: [],
   },
+  ...RUIN_OBJECTS,
 ];

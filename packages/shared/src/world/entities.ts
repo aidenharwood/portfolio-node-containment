@@ -145,7 +145,13 @@ export type WorldObjectModel =
   | 'worksBarrier'
   | 'surveyStake'
   | 'shutteredKiosk'
-  | 'reservedPlot';
+  | 'reservedPlot'
+  | 'benchToppled'
+  | 'planterToppled'
+  | 'barricade'
+  | 'debrisPile'
+  | 'kioskBurnt'
+  | 'collapsedSlab';
 
 export interface ObjectInteraction {
   readonly verb: string;

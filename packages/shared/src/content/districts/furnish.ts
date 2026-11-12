@@ -10,13 +10,16 @@ import { ambientCast } from '../ambientNpcs.ts';
 import { ASSEMBLY_OBJECTS } from '../assemblyObjects.ts';
 import { CLUTTER_OBJECTS } from '../clutterObjects.ts';
 import { COMPOSITIONS, inferComposition, type CompositionName, type DressingDensity } from '../compositions.ts';
+import type { Condition } from '../conditions.ts';
 import { CONTRACT_OBJECTS } from '../contractObjects.ts';
 import { FURNITURE_OBJECTS } from '../furnitureObjects.ts';
 import { LITTER_OBJECTS } from '../litterObjects.ts';
 import { PREFABS, type DressingTheme } from '../prefabs/index.ts';
+import { RUIN_OBJECTS } from '../ruinObjects.ts';
 import { TRANSIT_OBJECTS } from '../transitObjects.ts';
 import { WATERWORKS_OBJECTS } from '../waterworksObjects.ts';
 import { composeRoom } from './compose.ts';
+import { applyCondition } from './condition.ts';
 import { pieceTiles, rotationOf, turnsOf, type Turn } from './composeLayout.ts';
 import { positionsOfWith } from './populate.ts';
 import { hashSeed, seededRandom, shuffle } from './seededRandom.ts';
@@ -28,6 +31,7 @@ export interface RoomDressing {
   readonly theme: DressingTheme;
   readonly density?: DressingDensity;
   readonly composition?: CompositionName;
+  readonly condition?: Condition;
   readonly people?: number;
   readonly cast?: readonly NpcId[];
 }
@@ -49,7 +53,7 @@ const GATHERING_POINTS: ReadonlySet<WorldObjectId> = new Set<WorldObjectId>(['br
 const CARDINAL: readonly TilePoint[] = [{ x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }];
 
 const DRESSING_OBJECTS: ReadonlyMap<WorldObjectId, WorldObjectDefinition> = new Map(
-  [...CLUTTER_OBJECTS, ...FURNITURE_OBJECTS, ...TRANSIT_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...CONTRACT_OBJECTS].map((definition) => [definition.id, definition]),
+  [...CLUTTER_OBJECTS, ...FURNITURE_OBJECTS, ...TRANSIT_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...CONTRACT_OBJECTS, ...RUIN_OBJECTS].map((definition) => [definition.id, definition]),
 );
 const dressingObjectOf = (id: WorldObjectId): WorldObjectDefinition | undefined => DRESSING_OBJECTS.get(id);
 
@@ -150,24 +154,29 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
   for (const [roomId, entry] of Object.entries(dressing)) {
     const rect = plan.rooms[roomId];
     if (!rect) throw new Error(`District "${district.id}" dresses unknown room "${roomId}".`);
-    const { theme, density = 'normal', composition, people, cast } = dressingOf(entry);
+    const { theme, density = 'normal', composition, people, cast, condition: roomCondition } = dressingOf(entry);
+    const condition = roomCondition ?? district.condition ?? 'pristine';
     const floor: TilePoint[] = [];
     for (let y = rect.y; y < rect.y + rect.height; y++) {
       for (let x = rect.x; x < rect.x + rect.width; x++) if (isOpenFloor({ x, y })) floor.push({ x, y });
     }
-    const composed = composeRoom({
+    const base = COMPOSITIONS[composition ?? inferComposition(rect, plan.shapes[roomId] ?? 'rect', theme)];
+    const clear = new Set(floor.map(tileKey).filter((key) => !taken.has(key)));
+    const openings = openingsOf(rect);
+    const composedRoom = composeRoom({
       roomId,
       rect,
       theme,
       density,
-      composition: COMPOSITIONS[composition ?? inferComposition(rect, plan.shapes[roomId] ?? 'rect', theme)],
+      composition: condition === 'uncanny' ? { ...base, formal: true } : base,
       seed: `${district.id}:${roomId}:dressing`,
-      clear: new Set(floor.map(tileKey).filter((key) => !taken.has(key))),
-      openings: openingsOf(rect),
+      clear,
+      openings,
       isWall: (point) => !isWalkable(point),
       objectOf: dressingObjectOf,
       occupied: taken,
     });
+    const composed = applyCondition({ condition, rect, seed: `${district.id}:${roomId}:condition`, composed: composedRoom, clear, occupied: taken, objectOf: dressingObjectOf, roomId, openings });
     objects.push(...composed.objects);
     decals.push(...composed.decals);
 
