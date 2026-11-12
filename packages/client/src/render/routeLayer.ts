@@ -3,7 +3,7 @@ import { Color, DynamicDrawUsage, InstancedMesh, MeshBasicMaterial, Object3D, Sh
 
 const MAX_CHEVRONS = 240;
 const ROUTE_HEIGHT = 0.035;
-const ROUTE_COLOR = new Color(0xff3cc8);
+const ROUTE_COLOR = new Color(0x3cff6e);
 const MIN_GLOW = 0.55;
 const WAVE_SPEED = 6;
 const WAVE_LENGTH = 7;

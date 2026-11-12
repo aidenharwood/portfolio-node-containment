@@ -31,6 +31,7 @@ const FOLLOW_LOOKAHEAD = 8;
 const GOAL_STICK_RADIUS = 3;
 const GOAL_STICK_BIAS = 0.5;
 const MAX_SEARCH_NODES = 40000;
+const KEEP_COURSE_SLACK = 2;
 
 const chebyshev = (a: TilePoint, b: TilePoint): number => Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
 
@@ -41,6 +42,35 @@ const octile = (a: TilePoint, b: TilePoint): number => {
   const dy = Math.abs(a.y - b.y);
   return Math.max(dx, dy) + 0.41 * Math.min(dx, dy);
 };
+
+const routeLength = (route: readonly TilePoint[]): number => {
+  let total = 0;
+  for (let index = 1; index < route.length; index++) total += octile(route[index - 1] as TilePoint, route[index] as TilePoint);
+  return total;
+};
+
+export function untangle(route: readonly TilePoint[]): TilePoint[] {
+  const result: TilePoint[] = [];
+  let index = 0;
+  while (index < route.length) {
+    const tile = route[index] as TilePoint;
+    result.push(tile);
+    let next = index + 1;
+    for (let ahead = route.length - 1; ahead > index + 1; ahead--) {
+      const later = route[ahead] as TilePoint;
+      if (sameTile(later, tile)) {
+        next = ahead + 1;
+        break;
+      }
+      if (Math.abs(later.x - tile.x) + Math.abs(later.y - tile.y) === 1) {
+        next = ahead;
+        break;
+      }
+    }
+    index = next;
+  }
+  return result;
+}
 
 export class GuidanceRoute {
   private readonly world: WorldState;
@@ -74,12 +104,12 @@ export class GuidanceRoute {
     if (originKey !== this.computedFrom) {
       this.computedFrom = originKey;
       const followed = this.follow(origin);
-      if (followed) this.route = followed;
+      if (followed) this.route = untangle(followed);
       else this.stale = true;
     }
     if (this.stale || now - this.computedAt > REFRESH_MS) {
       const planned = this.plan(origin, preferred);
-      if (!this.keepsCourse(origin, planned)) this.route = planned;
+      if (!this.keepsCourse(origin, planned)) this.route = untangle(planned);
       this.computedAt = now;
       this.stale = false;
     }
@@ -92,6 +122,7 @@ export class GuidanceRoute {
     for (let index = limit - 1; index >= 0; index--) {
       const tile = route[index] as TilePoint;
       if (chebyshev(tile, origin) > 1) continue;
+      if (index === 0 && !sameTile(tile, origin)) return null;
       const rest = route.slice(index);
       return sameTile(tile, origin) ? rest : [origin, ...rest];
     }
@@ -102,6 +133,7 @@ export class GuidanceRoute {
     const route = this.route;
     if (route.length === 0 || planned.length === 0) return false;
     if (!sameTile(route[0], origin) || !sameTile(route[route.length - 1], planned[planned.length - 1])) return false;
+    if (routeLength(route) > routeLength(planned) + KEEP_COURSE_SLACK) return false;
     const grid = this.world.zone?.grid;
     return grid !== undefined && route.every((tile, index) => index === 0 || grid.isWalkable(tile));
   }

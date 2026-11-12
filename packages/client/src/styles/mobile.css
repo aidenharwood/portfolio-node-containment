@@ -118,10 +118,16 @@ body {
     gap: 6px;
   }
 
-  .hud-minimap {
+  .hud-top-right {
     top: calc(8px + var(--safe-top));
     right: calc(8px + var(--safe-right));
     width: auto;
+    max-width: min(200px, calc(100% - 150px));
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  .hud-minimap {
     padding: 4px;
     --bevel: 6px;
   }
