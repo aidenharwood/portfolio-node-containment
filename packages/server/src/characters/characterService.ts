@@ -29,6 +29,7 @@ export const summarizeCharacter = (record: CharacterRecord, content: GameContent
   name: record.name,
   appearance: record.appearance,
   equipment: record.equipment,
+  wardrobe: record.wardrobe,
   combatLevel: combatLevel(record.skills),
   districtId: districtAt(record.location, content),
 });

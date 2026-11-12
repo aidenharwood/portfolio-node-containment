@@ -83,3 +83,27 @@ export function craftOnce(inventory: InventoryState, catalog: ItemCatalog, recip
   const added = addItem(next, catalog, recipe.output.itemId, recipe.output.count);
   return success({ inventory: added.inventory, overflow: added.overflow });
 }
+
+export const RECIPE_GROUPS = ['armour', 'weapons', 'kit', 'cosmetics', 'parts', 'medicine'] as const;
+
+export type RecipeGroup = (typeof RECIPE_GROUPS)[number];
+
+export const RECIPE_GROUP_LABELS: Readonly<Record<RecipeGroup, string>> = {
+  armour: 'Armour',
+  weapons: 'Weapons',
+  kit: 'Kit',
+  cosmetics: 'Wardrobe',
+  parts: 'Parts',
+  medicine: 'Medicine',
+};
+
+export function recipeGroupOf(recipe: RecipeDefinition, catalog: ItemCatalog): RecipeGroup {
+  const item = catalog.get(recipe.output.itemId);
+  if (item?.cosmetic) return 'cosmetics';
+  if (item?.consumable) return 'medicine';
+  const slot = item?.equipment?.slot;
+  if (!slot) return 'parts';
+  if (slot === 'primary') return 'weapons';
+  if (slot === 'secondary' || slot === 'implant' || slot === 'utility') return 'kit';
+  return 'armour';
+}

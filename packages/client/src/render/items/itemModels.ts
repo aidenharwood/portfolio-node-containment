@@ -12,7 +12,7 @@ export interface ItemPalette {
 type ItemBuilder = (palette: ItemPalette) => VoxelModel;
 
 export function itemPalette(item: ItemDefinition): ItemPalette {
-  const visual = item.equipment?.visual;
+  const visual = item.equipment?.visual ?? item.cosmetic?.visual;
   if (visual) {
     return { primary: hex(visual.primary), secondary: hex(visual.secondary), emissive: visual.emissive ? hex(visual.emissive) : null };
   }
@@ -52,6 +52,53 @@ const helmet: ItemBuilder = ({ primary, secondary, emissive }) => {
   model.fill(-1, 7, -3, 0, 8, 3, lighten(primary, 0.15));
   return model;
 };
+
+const hoodLike = (deep: boolean): ItemBuilder => ({ primary, secondary, emissive }) => {
+  const model = new VoxelModel();
+  for (let x = -6; x <= 6; x++) {
+    for (let y = -4; y <= 8; y++) {
+      for (let z = -6; z <= 6; z++) {
+        const radius = Math.hypot(x, Math.max(0, y) * 1.1, z);
+        if (radius > 6.6 || radius < 5.2) continue;
+        const face = z > 2 && y < 5 && Math.abs(x) < 5;
+        if (face) continue;
+        if (y < 0 && z > -3) continue;
+        model.set(x, y, z, z > 3 && y >= 5 ? secondary : jitter(primary, 0.04, noise3(x, y, z, 5)));
+      }
+    }
+  }
+  model.fill(-1, 8, -5, 1, 9, -3, darken(primary, 0.1));
+  if (deep) {
+    model.fill(-4, 0, 4, 4, 2, 4, secondary);
+    model.fill(-4, 5, 6, 4, 5, 6, darken(primary, 0.15));
+  }
+  if (emissive) model.fill(-1, 4, deep ? 6 : 5, 1, 4, deep ? 6 : 5, emissive, VOXEL_EMISSIVE);
+  return model;
+};
+
+const pack: ItemBuilder = ({ primary, secondary, emissive }) => {
+  const model = new VoxelModel();
+  model.fill(-4, 0, -2, 4, 9, 2, (x, y, z) => (y === 0 ? darken(primary, 0.3) : jitter(primary, 0.04, noise3(x, y, z, 7))));
+  model.fill(-3, 1, 3, 3, 4, 3, darken(primary, 0.15));
+  model.fill(-5, 10, -2, 5, 11, 1, secondary);
+  for (const x of [-2, 2]) model.fill(x, 3, -3, x, 9, -3, darken(secondary, 0.2));
+  if (emissive) model.set(2, 7, 3, emissive, VOXEL_EMISSIVE);
+  return model;
+};
+
+const cape: ItemBuilder = ({ primary, secondary, emissive }) => {
+  const model = new VoxelModel();
+  for (let y = 0; y <= 12; y++) {
+    const half = 3 + Math.floor((12 - y) / 3);
+    for (let x = -half; x <= half; x++) model.set(x, y, Math.round(Math.abs(x) * 0.3), y <= 1 ? secondary : jitter(x % 2 === 0 ? primary : darken(primary, 0.08), 0.03, noise3(x, y, 0, 9)));
+  }
+  model.fill(-4, 13, 0, 4, 13, 1, darken(primary, 0.15));
+  for (const x of [-3, 3]) model.set(x, 12, -1, emissive ?? secondary, emissive ? VOXEL_EMISSIVE : undefined);
+  return model;
+};
+
+const hood = hoodLike(false);
+const cowl = hoodLike(true);
 
 const visor: ItemBuilder = ({ primary, secondary, emissive }) => {
   const model = new VoxelModel();
@@ -460,6 +507,10 @@ const BUILDERS: Readonly<Record<ItemIconShape, ItemBuilder>> = {
   plate,
   respirator,
   helmet,
+  hood,
+  pack,
+  cape,
+  cowl,
   visor,
   jumpsuit: garment(false),
   vest,

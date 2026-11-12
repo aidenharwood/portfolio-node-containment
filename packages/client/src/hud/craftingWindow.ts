@@ -3,11 +3,19 @@ import {
   craftableCount,
   craftingBlocker,
   GAME_CONTENT,
+  GEAR_MOTIF_INFO,
+  GEAR_MOTIFS,
+  gearLineOf,
   levelForExperience,
+  RECIPE_GROUP_LABELS,
+  RECIPE_GROUPS,
+  recipeGroupOf,
   SKILL_INFO,
   STATION_INFO,
   type CraftingStation,
+  type GearMotif,
   type RecipeDefinition,
+  type RecipeGroup,
   type SelfState,
 } from '@containment/shared';
 import type { GameConnection } from '../net/gameConnection.ts';
@@ -20,12 +28,26 @@ import { promptQuantity } from './quantityPrompt.ts';
 
 const BATCH_SIZES = [1, 5] as const;
 
+interface CraftingFilter {
+  group: RecipeGroup | 'all';
+  line: GearMotif | 'all';
+  makeableOnly: boolean;
+  query: string;
+}
+
+const lineOf = (recipe: RecipeDefinition): GearMotif | null => {
+  const item = GAME_CONTENT.items.get(recipe.output.itemId);
+  return item ? gearLineOf(item) : null;
+};
+
 export class CraftingWindow {
   readonly element = h('section', { className: 'crafting-window panel', hidden: true, role: 'dialog', ariaLabel: 'Crafting station' });
   private readonly connection: GameConnection;
   private readonly world: WorldState;
   private station: CraftingStation | null = null;
   private selectedRecipeId: string | null = null;
+  private readonly filters = new Map<CraftingStation, CraftingFilter>();
+  private readonly search = h('input', { className: 'crafting-search', type: 'search', placeholder: 'Search patterns', ariaLabel: 'Search patterns' });
   private readonly unsubscribers: (() => void)[];
 
   constructor(connection: GameConnection, world: WorldState) {
@@ -36,6 +58,33 @@ export class CraftingWindow {
       connection.on('crafting.closed', () => this.hide()),
       world.on('selfChanged', () => this.render()),
     ];
+    this.search.oninput = () => {
+      this.filter().query = this.search.value;
+      this.render();
+    };
+  }
+
+  private filter(): CraftingFilter {
+    const station = this.station ?? 'fabricator';
+    let filter = this.filters.get(station);
+    if (!filter) {
+      filter = { group: 'all', line: 'all', makeableOnly: false, query: '' };
+      this.filters.set(station, filter);
+    }
+    return filter;
+  }
+
+  private matches(recipe: RecipeDefinition, self: SelfState, filter: CraftingFilter, ignoreGroup = false): boolean {
+    const group = recipeGroupOf(recipe, GAME_CONTENT.items);
+    if (!ignoreGroup && filter.group !== 'all' && group !== filter.group) return false;
+    if (!ignoreGroup && filter.group === 'armour' && filter.line !== 'all' && lineOf(recipe) !== filter.line) return false;
+    if (filter.makeableOnly && craftingBlocker(recipe, self.skills, self.inventory, GAME_CONTENT.items)) return false;
+    const query = filter.query.trim().toLowerCase();
+    if (query) {
+      const item = GAME_CONTENT.items.get(recipe.output.itemId);
+      if (!(item?.name ?? recipe.output.itemId).toLowerCase().includes(query)) return false;
+    }
+    return true;
   }
 
   get isOpen(): boolean {
@@ -72,9 +121,14 @@ export class CraftingWindow {
     const self = this.world.self;
     if (!station || !self) return;
     const info = STATION_INFO[station];
-    const recipes = this.recipes();
+    const all = this.recipes();
+    const filter = this.filter();
+    const recipes = all.filter((recipe) => this.matches(recipe, self, filter));
+    const searchFocused = document.activeElement === this.search;
+    const caret = this.search.selectionStart;
+    this.search.value = filter.query;
     const selected = recipes.find((recipe) => recipe.id === this.selectedRecipeId) ?? recipes.find((recipe) => !craftingBlocker(recipe, self.skills, self.inventory, GAME_CONTENT.items)) ?? recipes[0];
-    const skills = [...new Set(recipes.map((recipe) => recipe.skill))];
+    const skills = [...new Set(all.map((recipe) => recipe.skill))];
     preserveScroll(this.element, ['.crafting-list'], () => replaceChildren(
       this.element,
       h('header', { className: 'shop-header' },
@@ -84,11 +138,59 @@ export class CraftingWindow {
         ),
         h('button', { className: 'dialogue-close', type: 'button', ariaLabel: 'Close station', onclick: () => this.requestClose() }, '×'),
       ),
+      this.renderFilters(all, self, filter),
       h('div', { className: 'crafting-columns' },
-        h('ul', { className: 'crafting-list' }, ...recipes.map((recipe) => this.renderRecipeRow(recipe, self, recipe === selected))),
+        recipes.length > 0
+          ? h('ul', { className: 'crafting-list' }, ...recipes.map((recipe) => this.renderRecipeRow(recipe, self, recipe === selected)))
+          : h('p', { className: 'tab-hint crafting-empty' }, 'No patterns match these filters.'),
         selected ? this.renderDetail(selected, self) : h('p', { className: 'tab-hint' }, 'No patterns are loaded.'),
       ),
     ));
+    if (searchFocused) {
+      this.search.focus();
+      if (caret !== null) this.search.setSelectionRange(caret, caret);
+    }
+  }
+
+  private renderFilters(all: readonly RecipeDefinition[], self: SelfState, filter: CraftingFilter): HTMLElement {
+    const set = (change: Partial<CraftingFilter>) => {
+      Object.assign(filter, change);
+      this.selectedRecipeId = null;
+      this.render();
+    };
+    const counted = all.filter((recipe) => this.matches(recipe, self, filter, true));
+    const countOf = (group: RecipeGroup | 'all') => (group === 'all' ? counted.length : counted.filter((recipe) => recipeGroupOf(recipe, GAME_CONTENT.items) === group).length);
+    const groups = RECIPE_GROUPS.filter((group) => all.some((recipe) => recipeGroupOf(recipe, GAME_CONTENT.items) === group));
+    const tab = (group: RecipeGroup | 'all', label: string) =>
+      h('button', {
+        className: `crafting-tab${filter.group === group ? ' active' : ''}`,
+        type: 'button',
+        role: 'tab',
+        ariaSelected: String(filter.group === group),
+        onclick: () => set({ group, line: 'all' }),
+      }, label, h('span', { className: 'crafting-tab-count' }, String(countOf(group))));
+    const armour = all.filter((recipe) => recipeGroupOf(recipe, GAME_CONTENT.items) === 'armour');
+    const lines = GEAR_MOTIFS.filter((motif) => armour.some((recipe) => lineOf(recipe) === motif));
+    const chip = (line: GearMotif | 'all', label: string, title?: string) =>
+      h('button', { className: `crafting-chip${filter.line === line ? ' active' : ''}`, type: 'button', title: title ?? label, onclick: () => set({ line }) }, label);
+    return h('div', { className: 'crafting-filters' },
+      h('div', { className: 'crafting-tabs', role: 'tablist', ariaLabel: 'Pattern groups' },
+        ...(groups.length > 1 ? [tab('all', 'All'), ...groups.map((group) => tab(group, RECIPE_GROUP_LABELS[group]))] : []),
+      ),
+      h('div', { className: 'crafting-tools' },
+        this.search,
+        h('button', {
+          className: `crafting-chip${filter.makeableOnly ? ' active' : ''}`,
+          type: 'button',
+          ariaPressed: String(filter.makeableOnly),
+          onclick: () => set({ makeableOnly: !filter.makeableOnly }),
+        }, 'Can make'),
+      ),
+      filter.group === 'armour' && lines.length > 1 && h('div', { className: 'crafting-lines' },
+        chip('all', 'All lines'),
+        ...lines.map((line) => chip(line, GEAR_MOTIF_INFO[line].name, GEAR_MOTIF_INFO[line].summary)),
+      ),
+    );
   }
 
   private renderRecipeRow(recipe: RecipeDefinition, self: SelfState, isSelected: boolean): HTMLElement {

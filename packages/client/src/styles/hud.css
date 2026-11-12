@@ -377,7 +377,8 @@
 }
 
 .inventory-slot img,
-.equipment-slot img {
+.equipment-slot img,
+.wardrobe-slot img {
   width: 86%;
   height: 86%;
   pointer-events: none;
@@ -3210,5 +3211,135 @@
     left: 10px;
     bottom: 10px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.crafting-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  margin-bottom: 10px;
+}
+
+.crafting-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1 1 auto;
+}
+
+.crafting-tab,
+.crafting-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  background: var(--color-surface-inset);
+  border: 1px solid var(--color-line);
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.crafting-tab:hover,
+.crafting-chip:hover {
+  border-color: var(--color-line-strong);
+  color: var(--color-text);
+}
+
+.crafting-tab.active,
+.crafting-chip.active {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  box-shadow: inset 0 0 0 1px var(--color-accent-dim);
+}
+
+.crafting-tab-count {
+  color: var(--color-text-faint);
+  font-size: 10px;
+}
+
+.crafting-tab.active .crafting-tab-count {
+  color: var(--color-accent);
+}
+
+.crafting-tools {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.crafting-search {
+  width: 150px;
+  padding: 4px 8px;
+  background: var(--color-surface-inset);
+  border: 1px solid var(--color-line);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 12px;
+}
+
+.crafting-search:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.crafting-lines {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex-basis: 100%;
+}
+
+.crafting-empty {
+  padding: 8px;
+}
+
+.wardrobe {
+  margin-top: 10px;
+}
+
+.wardrobe-slots {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin: 4px 0;
+}
+
+.wardrobe-slot {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  background: var(--color-surface-inset);
+  border: 1px dashed var(--color-line);
+  color: var(--color-text-faint);
+  cursor: pointer;
+}
+
+.wardrobe-slot:hover {
+  border-color: var(--color-line-strong);
+}
+
+.wardrobe-slot.filled {
+  border-style: solid;
+}
+
+.wardrobe-slot .slot-label {
+  font-size: 9px;
+}
+
+@media (max-width: 640px) {
+  .crafting-tools {
+    flex: 1 1 100%;
+  }
+
+  .crafting-search {
+    flex: 1;
+    width: auto;
   }
 }

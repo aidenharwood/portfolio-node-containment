@@ -7,6 +7,7 @@ export const EQUIPMENT_SLOTS = [
   'hands',
   'legs',
   'feet',
+  'back',
   'primary',
   'secondary',
   'implant',
@@ -16,12 +17,13 @@ export const EQUIPMENT_SLOTS = [
 export type EquipmentSlot = (typeof EQUIPMENT_SLOTS)[number];
 
 export const EQUIPMENT_SHAPES = {
-  head: ['helmet'],
+  head: ['helmet', 'hood', 'cowl'],
   eyes: ['visor', 'respirator'],
   torso: ['jumpsuit', 'vest', 'coat', 'plate'],
   hands: ['gloves'],
   legs: ['trousers'],
   feet: ['boots'],
+  back: ['pack', 'cape'],
   primary: ['knife', 'baton', 'blade', 'maul', 'polearm', 'pistol', 'carbine', 'rifle', 'scattergun'],
   secondary: ['datapad', 'scanner'],
   implant: ['implant'],
@@ -33,6 +35,12 @@ export type GearShape<S extends EquipmentSlot = EquipmentSlot> = (typeof EQUIPME
 export const isShapeForSlot = (slot: EquipmentSlot, shape: ItemIconShape): boolean =>
   (EQUIPMENT_SHAPES[slot] as readonly ItemIconShape[]).includes(shape);
 
+export const WARDROBE_SLOTS = ['head', 'eyes', 'torso', 'hands', 'legs', 'feet', 'back'] as const satisfies readonly EquipmentSlot[];
+
+export type WardrobeSlot = (typeof WARDROBE_SLOTS)[number];
+
+export const isWardrobeSlot = (value: string): value is WardrobeSlot => (WARDROBE_SLOTS as readonly string[]).includes(value);
+
 export const EQUIPMENT_SLOT_LABELS: Readonly<Record<EquipmentSlot, string>> = {
   head: 'Head',
   eyes: 'Eyes',
@@ -40,6 +48,7 @@ export const EQUIPMENT_SLOT_LABELS: Readonly<Record<EquipmentSlot, string>> = {
   hands: 'Hands',
   legs: 'Legs',
   feet: 'Feet',
+  back: 'Back',
   primary: 'Primary',
   secondary: 'Secondary',
   implant: 'Implant',

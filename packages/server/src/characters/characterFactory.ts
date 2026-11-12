@@ -51,6 +51,7 @@ export function createCharacterRecord(
     inventory,
     storage: [],
     equipment,
+    wardrobe: {},
     quests: startingQuest ? { [startingQuest.id]: startQuest(startingQuest, probe).progress } : {},
     flags: [],
     friends: [],

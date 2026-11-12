@@ -64,6 +64,7 @@ export const selfStateOf = (player: Player, content: GameContent): SelfState => 
     inventory: player.record.inventory,
     storage: player.record.storage,
     equipment: player.record.equipment,
+    wardrobe: player.record.wardrobe,
     quests: player.record.quests,
     stats: gearStats,
     profile: deriveCombatProfile(player.record.skills, gearStats),

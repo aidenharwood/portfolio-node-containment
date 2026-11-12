@@ -38,6 +38,9 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
       const verb = item.equipment.slot === 'primary' || item.equipment.slot === 'secondary' ? 'Wield' : 'Wear';
       actions.push({ verb, subject: item.name, subjectTone: 'item', run: () => connection.send({ type: 'inventory.equip', slotIndex: index }) });
     }
+    if (item.cosmetic) {
+      actions.push({ verb: 'Wear', subject: item.name, subjectTone: 'item', run: () => connection.send({ type: 'inventory.equip', slotIndex: index }) });
+    }
     if (item.category === 'quest') {
       actions.push({ verb: 'Destroy', subject: item.name, subjectTone: 'item', run: () => connection.send({ type: 'inventory.destroy', slotIndex: index }) });
     } else {
