@@ -1,3 +1,4 @@
+import { pixelRatioFor, shadowMapSizeFor, type GameSettings, type RenderScale } from '../state/gameSettings.ts';
 import { GAME_CONTENT, WEAPON_KIND_INFO, type EntityId, type Facing, type ItemId, type NpcQuestMarker, type TilePoint } from '@containment/shared';
 import {
   ACESFilmicToneMapping,
@@ -129,6 +130,7 @@ export class GameRenderer {
   private lightTimer = 0;
   private activeFieldLights = 0;
   private lastFrame = performance.now();
+  private renderScale: RenderScale = 'sharp';
 
   constructor(canvas: HTMLCanvasElement, world: WorldState) {
     this.canvas = canvas;
@@ -164,12 +166,27 @@ export class GameRenderer {
   resize(): void {
     const width = this.canvas.clientWidth;
     const height = this.canvas.clientHeight;
-    const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.75);
+    const pixelRatio = pixelRatioFor(this.renderScale, window.devicePixelRatio);
     this.renderer.setPixelRatio(pixelRatio);
     this.renderer.setSize(width, height, false);
     this.composer.setPixelRatio(pixelRatio);
     this.composer.setSize(width, height);
     this.cameraRig.resize(width, height);
+  }
+
+  applyGraphics(settings: GameSettings): void {
+    const scaleChanged = settings.renderScale !== this.renderScale;
+    this.renderScale = settings.renderScale;
+    this.bloom.enabled = settings.bloom;
+    const castShadow = settings.shadows !== 'off';
+    const mapSize = shadowMapSizeFor(settings.shadows);
+    if (this.keyLight.shadow.mapSize.x !== mapSize) {
+      this.keyLight.shadow.mapSize.set(mapSize, mapSize);
+      this.keyLight.shadow.map?.dispose();
+      this.keyLight.shadow.map = null;
+    }
+    this.keyLight.castShadow = castShadow;
+    if (scaleChanged) this.resize();
   }
 
   private applyAmbience(ambience: BlendedAmbience): void {

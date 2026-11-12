@@ -1,6 +1,6 @@
 # Containment Online
 
-A browser-based, point-and-click sci-fi MMO set inside a containment facility run by the Meridian Directorate. The world is fully 3D and built from voxels, with a freely orbiting camera. It has click-to-walk movement, hover bubbles for interactions, context-menu interactions, skills that level from XP, a 28-slot inventory, and a ten-slot loadout.
+A browser-based, point-and-click sci-fi MMO set inside a containment facility run by the Meridian Directorate. The world is fully 3D and built from voxels, with a freely orbiting camera. It has click-to-walk movement, hover bubbles for interactions, context-menu interactions, skills that level from XP, a 28-slot inventory, and an eleven-slot loadout.
 
 ## Quick start
 
@@ -25,7 +25,7 @@ Open http://localhost:5173. The Vite client proxies `/ws` to the game server on 
 
 - Left-click to walk or to do the default action. Hover anything interactive to see its bubble; right-click for every option.
 - Drag, middle-drag or Q/E to rotate the camera. Use the arrow keys to tilt, scroll to zoom, and Home to reset.
-- F1–F5 switch the side panel tabs. Enter opens chat.
+- 1–8 (or F1–F8) switch the side panel tabs. M opens the world map. Enter opens chat. Hotkeys are ignored while you are typing in a text field; Escape leaves the field.
 
 Environment variables for the server: `GAME_SERVER_PORT` (default 7420), `DATABASE_PATH` (default `data/containment.sqlite`) and `CLIENT_DIST_PATH`. For the client dev server, `GAME_SERVER_URL` sets the proxy target.
 
@@ -56,6 +56,8 @@ Environment variables for the server: `GAME_SERVER_PORT` (default 7420), `DATABA
 - **Gathering, refining and crafting:** every piece of gear and every healing item can be made. Raw stock is gathered with Salvage from resource nodes: scrap heaps, textile bins, moss beds, resin drums, severed conduits, lumen blooms and slag heaps. Creature drops count as raw stock too. A Refinery turns raw stock into base parts (Refining), a Fabricator assembles parts into equipment (Engineering), and a Bio-synthesiser makes medicine (Biochemistry): Medgel, Trauma Foam and Clotting Shots. Click a node and you keep working it until it runs dry (it replenishes after a while, for everyone in that level layer) or your pack is full. Workshops are in the Atrium (west wall) and Mags' camp in the Undercroft. Deeper districts hold better stock.
 - **Ranged training path:** a level-1 Trainee Dart Pistol (from Sergeant Kade, or 35 scrip at Requisitions) trains Marksmanship up to the Kestrel's level-5 requirement.
 - **Minimap:** circular, centred on you and rotated with the camera, with a north marker, your facing arrow, creatures, NPCs and ground items. Click it to walk.
+- **Settings:** the sliders button beside the minimap's Map button opens graphics settings (resolution, shadows, glow and scanlines) and an interface scale from 80% to 150%. They are saved in the browser.
+- **Side panel:** the inventory, loadout and skills tabs size themselves to the space the panel has, so they never scroll, on desktop or phone and at any interface scale.
 - **Item sprites:** every item has a voxel model. Its inventory and shop icon is a render of that model.
 - **Quests and tutorial:** a data-driven quest engine with event-based and state-based objectives, conditional dialogue trees and effects. The storyline runs in order:
   1. *Orientation Protocol* (Intake Wing): getting around and gear.

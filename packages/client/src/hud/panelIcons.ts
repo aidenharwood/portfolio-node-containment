@@ -16,3 +16,9 @@ const PANEL_ICON_PATHS: Readonly<Record<PanelIconId, readonly string[]>> = {
 export function panelIcon(id: PanelIconId): SVGSVGElement {
   return lineIcon(PANEL_ICON_PATHS[id], 'panel-tab-icon');
 }
+
+const SETTINGS_ICON_PATHS = ['M4 6h8', 'M16 6h4', 'M14 4v4', 'M4 12h2', 'M10 12h10', 'M8 10v4', 'M4 18h10', 'M18 18h2', 'M16 16v4'];
+
+export function settingsIcon(): SVGSVGElement {
+  return lineIcon(SETTINGS_ICON_PATHS, 'minimap-settings-icon');
+}

@@ -1,12 +1,18 @@
-import { emptyContractLedger, maxIntegrityFor, normalizeAppearance, normalizeSkills, type AccountId, type FriendEntry, type CharacterId, type CharacterRecord, type GameContent } from '@containment/shared';
+import { emptyContractLedger, maxIntegrityFor, normalizeAppearance, normalizeSkills, type AccountId, type FriendEntry, type CharacterId, type CharacterRecord, type GameContent, type ItemStack } from '@containment/shared';
 import { retireContainmentSeals } from './retiredSeals.ts';
 import { restoreLocation, storeLocation } from './storedLocation.ts';
 import type { Database } from '../persistence/database.ts';
 
+function dropUnknownItems<T extends ItemStack | null>(stacks: readonly T[], content: GameContent): T[] {
+  return stacks.map((stack) => (stack && !content.items.has(stack.itemId) ? (null as T) : stack));
+}
+
 function parseRecord(json: string, content: GameContent): CharacterRecord {
-  const stored = JSON.parse(json) as Omit<CharacterRecord, 'vitals' | 'storage' | 'wardrobe' | 'location' | 'friends' | 'contracts'> & Partial<Pick<CharacterRecord, 'vitals' | 'storage' | 'wardrobe' | 'friends' | 'contracts'>> & { readonly location: unknown };
+  const { wardrobe: _retiredWardrobe, ...stored } = JSON.parse(json) as Omit<CharacterRecord, 'vitals' | 'storage' | 'location' | 'friends' | 'contracts'> & Partial<Pick<CharacterRecord, 'vitals' | 'storage' | 'friends' | 'contracts'>> & { readonly location: unknown; readonly wardrobe?: unknown };
   const skills = normalizeSkills(stored.skills);
-  return retireContainmentSeals({ ...stored, location: restoreLocation(stored.location, content), appearance: normalizeAppearance(stored.appearance), storage: stored.storage ?? [], wardrobe: stored.wardrobe ?? {}, friends: stored.friends ?? [], contracts: stored.contracts ?? emptyContractLedger(), skills, vitals: stored.vitals ?? { integrity: maxIntegrityFor(skills) } }, content);
+  const inventory = dropUnknownItems(stored.inventory, content);
+  const storage = dropUnknownItems(stored.storage ?? [], content).filter((stack): stack is ItemStack => stack !== null);
+  return retireContainmentSeals({ ...stored, inventory, storage, location: restoreLocation(stored.location, content), appearance: normalizeAppearance(stored.appearance), friends: stored.friends ?? [], contracts: stored.contracts ?? emptyContractLedger(), skills, vitals: stored.vitals ?? { integrity: maxIntegrityFor(skills) } }, content);
 }
 
 export class CharacterRepository {

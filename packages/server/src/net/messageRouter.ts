@@ -17,7 +17,6 @@ const GAMEPLAY_MESSAGE_TYPES = new Set<ClientMessage['type']>([
   'world.pickup',
   'inventory.swap',
   'equipment.unequip',
-  'wardrobe.remove',
   'chat.say',
   'chat.whisper',
   'party.invite',

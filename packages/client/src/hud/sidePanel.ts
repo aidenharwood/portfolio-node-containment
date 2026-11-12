@@ -3,21 +3,30 @@ import { h } from '../ui/dom.ts';
 import { isCompactLayout } from '../ui/viewport.ts';
 import { panelIcon, type PanelIconId } from './panelIcons.ts';
 
+export interface FitSpace {
+  readonly width: number;
+  readonly height: number;
+}
+
 export interface PanelTab {
   readonly id: string;
   readonly label: string;
   readonly icon: PanelIconId;
   readonly element: HTMLElement;
   update(self: SelfState): void;
+  fit?(space: FitSpace): void;
   bindAttention?(signal: () => void): void;
   dispose?(): void;
 }
 
 export class SidePanel {
   readonly element: HTMLElement;
+  private readonly body: HTMLElement;
   private readonly tabs: readonly PanelTab[];
   private readonly buttons = new Map<string, HTMLButtonElement>();
   private active: string;
+  private readonly probe = h('div', { ariaHidden: 'true', style: { position: 'absolute', visibility: 'hidden', pointerEvents: 'none', top: '0', left: '0', width: '0' } });
+  private readonly fitObserver = new ResizeObserver(() => this.fitActiveTab());
 
   constructor(tabs: readonly PanelTab[]) {
     this.tabs = tabs;
@@ -39,9 +48,12 @@ export class SidePanel {
         return button;
       }),
     );
-    this.element = h('section', { className: 'hud-side panel' }, strip, h('div', { className: 'panel-body' }, ...tabs.map((tab) => tab.element)));
+    this.body = h('div', { className: 'panel-body' }, ...tabs.map((tab) => tab.element));
+    this.element = h('section', { className: 'hud-side panel' }, strip, this.body);
     this.select(this.active);
     if (isCompactLayout()) this.collapse();
+    this.fitObserver.observe(this.element);
+    window.addEventListener('resize', this.onResize);
     for (const tab of tabs) tab.bindAttention?.(() => this.signal(tab.id));
   }
 
@@ -69,6 +81,41 @@ export class SidePanel {
       if (tab.id === id) button?.classList.remove('attention');
       button?.setAttribute('aria-selected', String(tab.id === id));
     }
+    this.fitActiveTab();
+  }
+
+  private readonly onResize = () => this.fitActiveTab();
+
+  private heightLimit(): number {
+    const maxHeight = getComputedStyle(this.element).maxHeight;
+    if (maxHeight === 'none') return this.element.offsetHeight;
+    if (/^[\d.]+px$/.test(maxHeight)) return parseFloat(maxHeight);
+    const parent = this.element.parentElement;
+    if (!parent) return this.element.offsetHeight;
+    this.probe.style.height = maxHeight;
+    this.probe.style.zoom = getComputedStyle(this.element).zoom;
+    parent.append(this.probe);
+    const limit = this.probe.offsetHeight;
+    this.probe.remove();
+    return limit;
+  }
+
+  refit(): void {
+    requestAnimationFrame(() => this.fitActiveTab());
+  }
+
+  private fitActiveTab(): void {
+    if (this.isCollapsed) return;
+    const tab = this.tabs.find((candidate) => candidate.id === this.active);
+    const area = tab?.element.querySelector<HTMLElement>('.fit-area');
+    if (!tab || !area) return;
+    const limit = this.heightLimit();
+    if (!Number.isFinite(limit)) return;
+    const chrome = this.element.offsetHeight - this.body.offsetHeight + (area.offsetTop - this.body.offsetTop) + parseFloat(getComputedStyle(this.body).paddingBottom);
+    const height = Math.max(48, Math.floor(limit - chrome) - 1);
+    if (!Number.isFinite(height)) return;
+    if (area.style.getPropertyValue('--fit-h') !== `${height}px`) area.style.setProperty('--fit-h', `${height}px`);
+    tab.fit?.({ width: area.clientWidth, height });
   }
 
   signal(id: string): void {
@@ -89,6 +136,8 @@ export class SidePanel {
   }
 
   dispose(): void {
+    this.fitObserver.disconnect();
+    window.removeEventListener('resize', this.onResize);
     for (const tab of this.tabs) tab.dispose?.();
   }
 }

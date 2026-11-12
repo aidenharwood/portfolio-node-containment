@@ -352,20 +352,6 @@ body {
 }
 
 @media (max-width: 760px), (max-height: 520px) {
-  .hud-side .inventory-grid {
-    grid-template-columns: repeat(7, 1fr);
-    gap: 3px;
-  }
-
-  .hud-side .stack-count {
-    font-size: 9px;
-  }
-
-  .hud-side .loadout {
-    max-width: 300px;
-    margin: 0 auto;
-  }
-
   .roster-layout {
     padding: calc(16px + var(--safe-top)) 12px calc(16px + var(--safe-bottom));
   }

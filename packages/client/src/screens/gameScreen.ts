@@ -28,6 +28,8 @@ import { CraftingWindow } from '../hud/craftingWindow.ts';
 import { StorageWindow } from '../hud/storageWindow.ts';
 import { TramRide } from '../hud/tramRide.ts';
 import { WorldMap } from '../hud/worldMap.ts';
+import { SettingsWindow } from '../hud/settingsWindow.ts';
+import { gameSettings } from '../state/gameSettings.ts';
 import { setTooltipEquipment } from '../ui/itemTooltip.ts';
 import { SidePanel } from '../hud/sidePanel.ts';
 import { SpeechLayer } from '../hud/speechLayer.ts';
@@ -46,7 +48,7 @@ import { createSkillsTab } from '../hud/tabs/skillsTab.ts';
 import { actionsForTarget, type ActionContext } from '../input/worldActions.ts';
 import { GameRenderer } from '../render/gameRenderer.ts';
 import type { ClickMarker, PickTarget } from '../render/pickTarget.ts';
-import { h, replaceChildren, type Screen } from '../ui/dom.ts';
+import { h, isTextEntry, replaceChildren, type Screen } from '../ui/dom.ts';
 import { isCoarsePointer } from '../ui/viewport.ts';
 
 const TOUCH_DRAG_THRESHOLD_PIXELS = 10;
@@ -144,7 +146,8 @@ export function createGameScreen(app: AppNavigator): Screen {
 
   const worldMap = new WorldMap(connection, world, questTracking);
   const tramRide = new TramRide(connection, world);
-  const minimap = new Minimap(world, walkTo, () => worldMap.toggle());
+  const settings = new SettingsWindow(gameSettings);
+  const minimap = new Minimap(world, walkTo, () => worldMap.toggle(), () => settings.toggle());
   const topRight = h('div', { className: 'hud-top-right' }, minimap.element, objectives.element);
   const sidePanel = new SidePanel([
     createInventoryTab(connection, menu, { examine }, inventoryModes),
@@ -394,6 +397,10 @@ export function createGameScreen(app: AppNavigator): Screen {
 
   const onKeyDown = (event: KeyboardEvent) => {
     if (chat.isTyping()) return;
+    if (isTextEntry(event.target)) {
+      if (event.key === 'Escape' && event.target instanceof HTMLElement) event.target.blur();
+      return;
+    }
     const activatesFocused = (event.key === 'Enter' || event.key === ' ')
       && event.target instanceof Element
       && event.target.closest('button, [role="button"], input, textarea, select') !== null;
@@ -416,6 +423,10 @@ export function createGameScreen(app: AppNavigator): Screen {
     }
     if (event.key === 'Escape' && contractBoard.isOpen) {
       contractBoard.requestClose();
+      return;
+    }
+    if (event.key === 'Escape' && settings.isOpen) {
+      settings.requestClose();
       return;
     }
     if (event.key === 'Escape' && worldMap.isOpen) {
@@ -504,12 +515,20 @@ export function createGameScreen(app: AppNavigator): Screen {
     market.element,
     contractBoard.element,
     worldMap.element,
+    settings.element,
     activity.element,
     tramRide.element,
     clickIndicator.element,
     bubble.element,
     menu.element,
   );
+
+  const stopSettings = gameSettings.subscribe((next) => {
+    renderer.applyGraphics(next);
+    element.style.setProperty('--ui-scale', String(next.uiScale));
+    element.classList.toggle('no-scanlines', !next.scanlines);
+    sidePanel.refit();
+  });
 
   const panelObserver = new ResizeObserver(() => {
     element.style.setProperty('--side-panel-height', `${sidePanel.element.offsetHeight}px`);
@@ -545,6 +564,8 @@ export function createGameScreen(app: AppNavigator): Screen {
       contractBoard.dispose();
       social.dispose();
       worldMap.dispose();
+      settings.dispose();
+      stopSettings();
       tramRide.dispose();
       activity.dispose();
       menu.dispose();

@@ -6,7 +6,7 @@ import type { QuestObjective } from '../quests/questDefinition.ts';
 import { questlineKindFor } from '../quests/questline.ts';
 import { MARKET_DISTRICT_ID } from '../economy/market.ts';
 import { isRegionHub } from '../world/region.ts';
-import { isShapeForSlot, isWardrobeSlot } from '../gear/slots.ts';
+import { isShapeForSlot } from '../gear/slots.ts';
 import { TILE_KINDS } from '../world/tiles.ts';
 import { parseTileLayout } from '../world/district.ts';
 import { districtObjectsOf, findAssemblyIssues } from './assemblyIntegrity.ts';
@@ -111,12 +111,6 @@ export function findContentIssues(content: GameContent): string[] {
 
   for (const item of content.items.values()) {
     if (item.category === 'equipment' && !item.equipment) report(`item ${item.id}`, 'equipment item lacks equipment properties');
-    if ((item.category === 'cosmetic') !== Boolean(item.cosmetic)) report(`item ${item.id}`, 'cosmetic items, and only cosmetic items, carry cosmetic properties');
-    if (item.cosmetic && item.equipment) report(`item ${item.id}`, 'an item is either equipment or a cosmetic, not both');
-    if (item.cosmetic && !isWardrobeSlot(item.cosmetic.slot)) report(`item ${item.id}`, `cosmetic slot "${item.cosmetic.slot}" is not a wardrobe slot`);
-    if (item.cosmetic && !isShapeForSlot(item.cosmetic.slot, item.icon)) {
-      report(`item ${item.id}`, `icon "${item.icon}" is not a ${item.cosmetic.slot} shape, so the worn model would not match the icon`);
-    }
     if (item.equipment && !isShapeForSlot(item.equipment.slot, item.icon)) {
       report(`item ${item.id}`, `icon "${item.icon}" is not a ${item.equipment.slot} shape, so the worn model would not match the icon`);
     }

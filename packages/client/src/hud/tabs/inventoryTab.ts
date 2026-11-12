@@ -7,6 +7,7 @@ import { attachItemTooltip, hideItemTooltip, itemDetails } from '../../ui/itemTo
 import type { ContextMenu, MenuAction } from '../contextMenu.ts';
 import type { InventoryModeSlot } from '../inventoryMode.ts';
 import type { PanelTab } from '../sidePanel.ts';
+import { inventoryColumns } from './inventoryLayout.ts';
 
 export interface ItemExaminer {
   examine(text: string): void;
@@ -17,9 +18,9 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
   const modeHint = h('span', { className: 'inventory-mode', hidden: true });
   const scrip = h('span', { className: 'scrip-amount' }, '0');
   const grid = h('div', { className: 'inventory-grid' });
-  const element = h('div', { className: 'tab-inventory' },
+  const element = h('div', { className: 'tab-inventory tab-fit' },
     h('header', { className: 'tab-header' }, h('span', { className: 'scrip' }, 'Scrip ', scrip), modeHint),
-    grid,
+    h('div', { className: 'fit-area' }, grid),
   );
 
   const slotItem = (index: number): ItemDefinition | null => {
@@ -37,9 +38,6 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
     if (item.equipment) {
       const verb = item.equipment.slot === 'primary' || item.equipment.slot === 'secondary' ? 'Wield' : 'Wear';
       actions.push({ verb, subject: item.name, subjectTone: 'item', run: () => connection.send({ type: 'inventory.equip', slotIndex: index }) });
-    }
-    if (item.cosmetic) {
-      actions.push({ verb: 'Wear', subject: item.name, subjectTone: 'item', run: () => connection.send({ type: 'inventory.equip', slotIndex: index }) });
     }
     if (item.category === 'quest') {
       actions.push({ verb: 'Destroy', subject: item.name, subjectTone: 'item', run: () => connection.send({ type: 'inventory.destroy', slotIndex: index }) });
@@ -123,6 +121,11 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
     label: 'Inventory',
     icon: 'inventory',
     element,
+    fit(space) {
+      const columns = inventoryColumns(space);
+      grid.style.setProperty('--cols', String(columns));
+      grid.style.setProperty('--rows', String(Math.ceil(INVENTORY_CAPACITY / columns)));
+    },
     update(next) {
       self = next;
       let scripTotal = 0;

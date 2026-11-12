@@ -10,6 +10,7 @@ import {
 import { h, replaceChildren } from '../../ui/dom.ts';
 import { skillIcon } from '../skillIcons.ts';
 import type { PanelTab } from '../sidePanel.ts';
+import { skillLayout } from './skillsLayout.ts';
 
 interface SkillTile {
   readonly element: HTMLButtonElement;
@@ -27,7 +28,7 @@ export function createSkillsTab(): PanelTab {
 
   const total = h('span', { className: 'tab-hint' });
   const list = h('div', { className: 'skill-grid' });
-  const element = h('div', { className: 'tab-skills' }, h('header', { className: 'tab-header' }, total), list);
+  const element = h('div', { className: 'tab-skills tab-fit' }, h('header', { className: 'tab-header' }, total), h('div', { className: 'fit-area' }, list));
   const details = h('div', { className: 'item-tooltip skill-tooltip panel', hidden: true, role: 'tooltip' });
   document.body.append(details);
 
@@ -128,6 +129,12 @@ export function createSkillsTab(): PanelTab {
     label: 'Skills',
     icon: 'skills',
     element,
+    fit(space) {
+      const layout = skillLayout(space);
+      list.style.setProperty('--cols', String(layout.columns));
+      list.style.setProperty('--rows', String(layout.rows));
+      list.dataset.mode = layout.mode;
+    },
     bindAttention(signal) {
       signalAttention = signal;
     },

@@ -396,8 +396,7 @@
 }
 
 .inventory-slot img,
-.equipment-slot img,
-.wardrobe-slot img {
+.equipment-slot img {
   width: 86%;
   height: 86%;
   pointer-events: none;
@@ -433,41 +432,92 @@
   text-shadow: 1px 1px 0 #000;
 }
 
-.loadout {
+.panel-body:has(> .tab-fit:not([hidden])) {
+  overflow: hidden;
+}
+
+.tab-fit {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.tab-fit .tab-header {
+  flex: none;
+  margin-bottom: 8px;
+}
+
+.fit-area {
+  --fit-h: 300px;
+  flex: 1;
+  min-height: 0;
+  container-type: inline-size;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  place-items: center;
+  align-content: start;
+  overflow: hidden;
+}
+
+.tab-inventory .inventory-grid {
+  --cols: 4;
+  --rows: 7;
+  --gap: 4px;
+  --slot: min(64px, calc((100cqw - (var(--cols) - 1) * var(--gap)) / var(--cols)), calc((var(--fit-h) - (var(--rows) - 1) * var(--gap)) / var(--rows)));
+  grid-template-columns: repeat(var(--cols), var(--slot));
+  grid-auto-rows: var(--slot);
+  gap: var(--gap);
+}
+
+.loadout {
+  --gap: 6px;
+  --fig-h: min(236px, var(--fit-h));
+  --fig-w: calc(var(--fig-h) * 0.44);
+  --slot: min(56px, calc((var(--fit-h) - 5 * var(--gap)) / 6), calc((100cqw - var(--fig-w) - 2 * var(--gap)) / 2));
+  display: grid;
+  grid-template-columns: var(--slot) var(--fig-w) var(--slot);
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  column-gap: var(--gap);
+  width: 100%;
 }
 
 .loadout-column {
   display: grid;
-  grid-auto-rows: auto;
-  gap: 6px;
+  grid-auto-rows: var(--slot);
+  gap: var(--gap);
 }
 
 .loadout-column .equipment-slot {
-  width: 100%;
-  max-width: 52px;
-}
-
-.loadout-column.left .equipment-slot {
-  justify-self: end;
+  width: var(--slot);
+  height: var(--slot);
 }
 
 .loadout-figure {
   display: grid;
   place-items: center;
-  min-width: 104px;
-  min-height: 236px;
+  width: var(--fig-w);
+  height: var(--fig-h);
   background: radial-gradient(ellipse at 50% 85%, rgba(79, 216, 255, 0.1), transparent 70%);
 }
 
-.loadout-summary {
-  margin: 10px 0 0;
-  font-size: 11px;
-  color: var(--color-text-faint);
-  text-align: center;
+.loadout-figure .avatar-preview {
+  width: var(--fig-w) !important;
+  height: var(--fig-h) !important;
+}
+
+.loadout .slot-label {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: min(10px, calc(var(--slot) * 0.19));
+  letter-spacing: 0;
+}
+
+.slot-label {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: min(10px, calc(var(--slot) * 0.19));
+  letter-spacing: 0;
 }
 
 .slot-label {
@@ -536,16 +586,45 @@
 }
 
 .skill-grid {
+  --cols: 3;
+  --rows: 4;
+  --gap: 4px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--rows), min(64px, calc((var(--fit-h) - (var(--rows) - 1) * var(--gap)) / var(--rows))));
+  gap: var(--gap);
+  width: 100%;
+}
+
+.skill-grid[data-mode='short'] .skill-name,
+.skill-grid[data-mode='tiny'] .skill-name,
+.skill-grid[data-mode='tiny'] .skill-bar {
+  display: none;
+}
+
+.skill-grid[data-mode='tiny'] .skill-tile {
+  padding: 3px;
+}
+
+.skill-grid[data-mode='tiny'] .skill-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.skill-grid[data-mode='tiny'] .skill-level {
+  min-width: 22px;
+  padding: 1px 3px;
+  font-size: 12px;
 }
 
 .skill-tile {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 5px;
-  padding: 6px 6px 5px;
+  min-height: 0;
+  overflow: hidden;
+  padding: 6px 4px 5px;
   background: var(--color-surface-inset);
   border: 1px solid rgba(79, 216, 255, 0.08);
   color: inherit;
@@ -3374,40 +3453,6 @@
   padding: 8px;
 }
 
-.wardrobe {
-  margin-top: 10px;
-}
-
-.wardrobe-slots {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-  margin: 4px 0;
-}
-
-.wardrobe-slot {
-  aspect-ratio: 1;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  background: var(--color-surface-inset);
-  border: 1px dashed var(--color-line);
-  color: var(--color-text-faint);
-  cursor: pointer;
-}
-
-.wardrobe-slot:hover {
-  border-color: var(--color-line-strong);
-}
-
-.wardrobe-slot.filled {
-  border-style: solid;
-}
-
-.wardrobe-slot .slot-label {
-  font-size: 9px;
-}
-
 @media (max-width: 640px) {
   .crafting-tools {
     flex: 1 1 100%;
@@ -3417,4 +3462,142 @@
     flex: 1;
     width: auto;
   }
+}
+
+.game-screen :is(.hud-top-left, .hud-top-right, .hud-side, .hud-chat, .hud-dialogue, .shop-window, .crafting-window, .storage-window, .market-window, .contract-window, .settings-window, .activity-bar, .zone-banner, .camera-hint, .tram-ride) {
+  zoom: var(--ui-scale, 1);
+}
+
+.game-screen.no-scanlines .scanlines {
+  display: none;
+}
+
+.minimap-settings {
+  display: grid;
+  place-items: center;
+  padding: 2px 5px;
+}
+
+.minimap-settings-icon {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.settings-window {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(470px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 20px 14px;
+  z-index: 34;
+  border-color: var(--color-line-strong);
+}
+
+.settings-window[hidden] {
+  display: none;
+}
+
+.settings-window .shop-header {
+  margin-bottom: 6px;
+}
+
+.settings-body {
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  gap: 14px;
+}
+
+.settings-group {
+  display: grid;
+  gap: 8px;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 32px;
+}
+
+.settings-label {
+  font-size: 13px;
+  color: var(--color-text);
+}
+
+.settings-choices {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.settings-choice {
+  padding: 5px 10px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  background: var(--color-surface-inset);
+  border: 1px solid var(--color-line);
+  cursor: pointer;
+}
+
+.settings-choice:hover,
+.settings-choice:focus-visible {
+  border-color: var(--color-line-strong);
+  color: var(--color-text);
+  outline: none;
+}
+
+.settings-choice.active {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  background: var(--color-accent-dim);
+}
+
+.settings-switch {
+  cursor: pointer;
+}
+
+.settings-toggle {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.settings-slider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  max-width: 220px;
+}
+
+.settings-range {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--color-accent);
+}
+
+.settings-value {
+  min-width: 40px;
+  text-align: right;
+  font-size: 12px;
+  color: var(--color-accent);
+}
+
+.settings-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
 }

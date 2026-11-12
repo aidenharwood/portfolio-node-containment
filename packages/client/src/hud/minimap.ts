@@ -2,6 +2,7 @@ import { GAME_CONTENT, mapScenery, pointsOfInterest, TILE_KINDS, type Facing, ty
 import type { WorldState } from '../state/worldState.ts';
 import { h } from '../ui/dom.ts';
 import type { ClickTone } from './clickIndicator.ts';
+import { settingsIcon } from './panelIcons.ts';
 import { drawPoiIcon } from './poiIcons.ts';
 
 const PIXELS_PER_TILE = 7;
@@ -71,13 +72,14 @@ export class Minimap {
   private destination: Destination | null = null;
   private points: readonly PointOfInterest[] = [];
 
-  constructor(world: WorldState, onSelectTile: (tile: TilePoint, clientX: number, clientY: number) => void, onOpenMap: () => void) {
+  constructor(world: WorldState, onSelectTile: (tile: TilePoint, clientX: number, clientY: number) => void, onOpenMap: () => void, onOpenSettings: () => void) {
     this.world = world;
     const ratio = Math.min(window.devicePixelRatio || 1, 2);
     this.canvas.width = MAP_SIZE * ratio;
     this.canvas.height = MAP_SIZE * ratio;
     const mapButton = h('button', { className: 'minimap-open-map', type: 'button', title: 'World map (M)', ariaLabel: 'Open the world map', onclick: onOpenMap }, 'Map');
-    this.element = h('div', { className: 'hud-minimap panel' }, h('div', { className: 'minimap-header' }, this.title, mapButton), h('div', { className: 'minimap-frame' }, this.canvas));
+    const settingsButton = h('button', { className: 'minimap-open-map minimap-settings', type: 'button', title: 'Settings', ariaLabel: 'Open settings', onclick: onOpenSettings }, settingsIcon());
+    this.element = h('div', { className: 'hud-minimap panel' }, h('div', { className: 'minimap-header' }, this.title, mapButton, settingsButton), h('div', { className: 'minimap-frame' }, this.canvas));
     this.canvas.onclick = (event) => {
       const bounds = this.canvas.getBoundingClientRect();
       const scale = MAP_SIZE / bounds.width;

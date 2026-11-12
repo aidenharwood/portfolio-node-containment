@@ -8,7 +8,6 @@ import type { CharacterSummary } from '../character/character.ts';
 import type { PronounSetId } from '../character/pronouns.ts';
 import type { SkillExperience } from '../character/skills.ts';
 import type { EquipmentState } from '../gear/equipment.ts';
-import type { WardrobeState } from '../gear/wardrobe.ts';
 import type { InventoryState } from '../gear/inventory.ts';
 import type { StorageState } from '../gear/storage.ts';
 import type { MarketAccess, MarketOrder, MarketQuote } from '../economy/market.ts';
@@ -65,7 +64,6 @@ export interface SelfState {
   readonly inventory: InventoryState;
   readonly storage: StorageState;
   readonly equipment: EquipmentState;
-  readonly wardrobe: WardrobeState;
   readonly quests: QuestLog;
   readonly stats: Readonly<Record<StatId, number>>;
   readonly profile: CombatProfile;

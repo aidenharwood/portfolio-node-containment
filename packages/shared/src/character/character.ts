@@ -4,7 +4,6 @@ import type { FriendEntry } from '../social/friends.ts';
 import type { EquipmentState } from '../gear/equipment.ts';
 import type { InventoryState } from '../gear/inventory.ts';
 import type { StorageState } from '../gear/storage.ts';
-import type { WardrobeState } from '../gear/wardrobe.ts';
 import type { QuestLog } from '../quests/questProgress.ts';
 import type { WorldLocation } from '../world/level.ts';
 import type { CharacterAppearance } from './appearance.ts';
@@ -26,7 +25,6 @@ export interface CharacterRecord {
   readonly inventory: InventoryState;
   readonly storage: StorageState;
   readonly equipment: EquipmentState;
-  readonly wardrobe: WardrobeState;
   readonly quests: QuestLog;
   readonly flags: readonly string[];
   readonly friends: readonly FriendEntry[];
@@ -40,7 +38,6 @@ export interface CharacterSummary {
   readonly name: string;
   readonly appearance: CharacterAppearance;
   readonly equipment: EquipmentState;
-  readonly wardrobe: WardrobeState;
   readonly combatLevel: number;
   readonly districtId: DistrictId;
 }
