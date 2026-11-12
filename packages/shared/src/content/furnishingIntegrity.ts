@@ -6,17 +6,17 @@ import type { ResolvedLevel } from '../world/levelLayout.ts';
 import type { WalkabilityGrid } from '../world/pathfinding.ts';
 import { TILE_KINDS } from '../world/tiles.ts';
 import { CONDITION_RULES } from './conditions.ts';
+import { MAX_PREFAB_REPEATS } from './districts/compose.ts';
 import type { GameContent } from './gameContent.ts';
 import { findPrefabIssues, findPrefabLibraryIssues, PREFABS } from './prefabs/index.ts';
 
 export const OPENING_CLEARANCE = 2;
 export const VARIETY_ROOM_TILES = 150;
 export const MIN_PREFABS_IN_LARGE_ROOM = 3;
-export const MAX_PREFAB_REPEATS = 3;
 
 type Report = (problem: string) => void;
 
-const COMPOSED_ID = /-(dressing|ruin|mirror)-\d+-\d+$/;
+const COMPOSED_ID = /-(dressing|ruin|mirror)-\d/;
 const SET_PIECE_ID = /(\/\d+|-set-\d+-\d+)$/;
 
 const isWalkableTile = (layout: TileLayout, point: TilePoint): boolean => TILE_KINDS[layout.tileAt(point)].walkable;
@@ -93,7 +93,7 @@ function findRoomVarietyIssues(entry: DressedRoom, rect: TileRect | undefined, l
   }
   if (entry.formal) return;
   const uses = new Map<string, number>();
-  for (const prefab of entry.prefabs) uses.set(prefab, (uses.get(prefab) ?? 0) + 1);
+  for (const prefab of [...entry.prefabs, ...entry.additions]) uses.set(prefab, (uses.get(prefab) ?? 0) + 1);
   for (const [prefab, count] of uses) {
     if (count > MAX_PREFAB_REPEATS) report(`room "${entry.room}" uses prefab "${prefab}" ${count} times; an informal room uses each at most ${MAX_PREFAB_REPEATS} times`);
   }

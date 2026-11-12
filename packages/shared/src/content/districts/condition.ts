@@ -6,7 +6,7 @@ import { objectFootprintSize, objectFootprintTiles } from '../../world/footprint
 import { rectContains, tileKey, type Facing, type TilePoint, type TileRect } from '../../world/geometry.ts';
 import { CONDITION_RULES, type Condition } from '../conditions.ts';
 import { PREFABS } from '../prefabs/index.ts';
-import type { Composed } from './compose.ts';
+import { MAX_PREFAB_REPEATS, type Composed } from './compose.ts';
 import { inWalkingLane, pieceTiles, turnsOf, type Turn } from './composeLayout.ts';
 import { seededRandom, shuffle } from './seededRandom.ts';
 
@@ -48,6 +48,7 @@ export function applyCondition(input: ConditionInput): Composed {
   const objects: ObjectPlacement[] = [...composed.objects];
   const decals: FloorDecal[] = [...composed.decals];
   const additions: string[] = [...(composed.additions ?? [])];
+  const usesOf = (id: string): number => [...(composed.prefabs ?? []), ...additions].filter((used) => used === id).length;
 
   const eligible = objects.map((object, index) => ({ object, index })).filter(({ object }) => isDressing(object) && rule.swaps[object.objectId] !== undefined);
   const swapCount = Math.round(rule.swapShare * eligible.length);
@@ -77,7 +78,9 @@ export function applyCondition(input: ConditionInput): Composed {
 
   const addCount = rule.adds.length === 0 ? 0 : perThousand(rule.addsPerThousandTiles, floorTiles);
   for (let added = 1; added <= addCount; added++) {
-    const prefab = PREFABS[pickFrom(rule.adds, random)];
+    const fresh = rule.adds.filter((id) => usesOf(id) < MAX_PREFAB_REPEATS);
+    if (fresh.length === 0) break;
+    const prefab = PREFABS[pickFrom(fresh, random)];
     if (!prefab) continue;
     const turns = turnsOf(prefab, objectOf);
     const first = Math.floor(random() * 4);

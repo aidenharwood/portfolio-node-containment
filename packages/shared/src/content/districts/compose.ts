@@ -56,7 +56,7 @@ export interface Composed {
 }
 
 const OPENING_CLEARANCE = 3;
-const MAX_REPEATS = 3;
+export const MAX_PREFAB_REPEATS = 3;
 const MIN_CORNER_SPAN = 8;
 
 interface Slot {
@@ -170,7 +170,7 @@ export function composeRoom(input: ComposeInput): Composed {
   const candidatesFor = (zone: CompositionZone): readonly Prefab[] => prefabsWithRole(input.theme, zone.role).filter((prefab) => fitsRoom(prefab, rect));
 
   const allowed = (prefab: Prefab, previous: string | undefined): boolean =>
-    prefab.id !== previous && (formal || (uses.get(prefab.id) ?? 0) < MAX_REPEATS);
+    prefab.id !== previous && (formal || (uses.get(prefab.id) ?? 0) < MAX_PREFAB_REPEATS);
 
   const record = (prefab: Prefab, count: number): void => {
     uses.set(prefab.id, (uses.get(prefab.id) ?? 0) + count);

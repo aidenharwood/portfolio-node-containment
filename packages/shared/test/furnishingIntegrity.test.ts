@@ -65,6 +65,16 @@ describe('furnishing integrity', () => {
     assert.ok(issues.some((issue) => issue.includes('test-yard-hall-dressing-1-1') && issue.includes('opening')), issues.join('\n'));
   });
 
+  test('an uncanny mirror piece on or beside a door is reported', () => {
+    const door = plan.linkTile('hall', 'annex');
+    const onDoor: ObjectPlacement = { instanceId: 'test-yard-hall-mirror-1', objectId: 'planter', position: door };
+    const covered = findFurnishingIssues(contentWith(baseDistrict({ objects: [onDoor] })));
+    assert.ok(covered.some((issue) => issue.includes('test-yard-hall-mirror-1') && issue.includes('door tile')), covered.join('\n'));
+    const beside: ObjectPlacement = { ...onDoor, position: { x: door.x - 2, y: door.y } };
+    const crowded = findFurnishingIssues(contentWith(baseDistrict({ objects: [beside] })));
+    assert.ok(crowded.some((issue) => issue.includes('test-yard-hall-mirror-1') && issue.includes('opening')), crowded.join('\n'));
+  });
+
   test('a landmark room without a focal set-piece is reported', () => {
     const district = furnish(plan, baseDistrict(), { hall: 'civic' }, { landmarks: ['hall', 'nowhere'] });
     const issues = findFurnishingIssues(contentWith(district));
@@ -103,7 +113,12 @@ describe('furnishing integrity', () => {
 
 describe('fixtures against walls', () => {
   const wideLocker: WorldObjectDefinition = { ...GAME_CONTENT.worldObjects.get('storage-locker')!, id: 'wide-locker', footprint: { width: 3, height: 1 } };
-  const objects = new Map([...GAME_CONTENT.worldObjects, ['wide-locker', wideLocker]]);
+  const squareLocker: WorldObjectDefinition = { ...GAME_CONTENT.worldObjects.get('storage-locker')!, id: 'square-locker', footprint: { width: 2, height: 2 } };
+  const objects = new Map([...GAME_CONTENT.worldObjects, ['wide-locker', wideLocker], ['square-locker', squareLocker]]);
+  const squareIssues = (dy: number) =>
+    findWorldDesignIssues(contentWith(baseDistrict({ objects: [{ instanceId: 'square', objectId: 'square-locker', position: plan.at('hall', 9, dy), facing: 'north' }] }), objects)).filter((issue) =>
+      issue.includes('"square"'),
+    );
   const fixtureIssues = (dy: number) =>
     findWorldDesignIssues(contentWith(baseDistrict({ objects: [{ instanceId: 'wide', objectId: 'wide-locker', position: plan.at('hall', 4, dy), facing: 'south' }] }), objects)).filter((issue) =>
       issue.includes('"wide"'),
@@ -115,6 +130,15 @@ describe('fixtures against walls', () => {
 
   test('the same fixture one tile off the wall is reported', () => {
     assert.equal(fixtureIssues(1).length, 1);
+  });
+
+  test('a 2×2 fixture facing north passes when its far back edge meets the south wall', () => {
+    assert.deepEqual(squareIssues(18), []);
+  });
+
+  test('a 2×2 fixture facing north is reported one tile off the south wall, and with only its anchor row on the north wall', () => {
+    assert.equal(squareIssues(17).length, 1);
+    assert.equal(squareIssues(0).length, 1);
   });
 });
 
