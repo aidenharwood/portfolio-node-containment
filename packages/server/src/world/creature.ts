@@ -7,7 +7,8 @@ import type {
   Facing,
   TilePoint,
 } from '@containment/shared';
-import { sizeOf, type FootprintSize } from '@containment/shared';
+import { creatureAttackProfile, enragedSpeedTicks, sizeOf, type AttackProfile, type EncounterPhase, type FootprintSize, type GearMotif } from '@containment/shared';
+import { EncounterState } from './encounterState.ts';
 
 export type CreatureState = 'alive' | 'dying' | 'despawned';
 
@@ -30,13 +31,46 @@ export class Creature {
   readonly contributors = new Set<EntityId>();
   engagedWith: EntityId | null = null;
   engagedUntilTick = 0;
+  readonly encounter: EncounterState | null;
+  readonly summoner: EntityId | null;
 
-  constructor(placement: CreaturePlacement, definition: CreatureDefinition) {
+  constructor(placement: CreaturePlacement, definition: CreatureDefinition, summoner: EntityId | null = null) {
     this.entityId = `creature:${placement.instanceId}`;
     this.placement = placement;
     this.definition = definition;
     this.position = placement.position;
     this.integrity = definition.integrity;
+    this.encounter = definition.encounter ? new EncounterState() : null;
+    this.summoner = summoner;
+  }
+
+  get transient(): boolean {
+    return this.summoner !== null;
+  }
+
+  private phaseValue<T>(pick: (phase: EncounterPhase) => T | undefined): T | undefined {
+    const phases = this.definition.encounter?.phases ?? [];
+    const reached = this.encounter?.phase ?? 0;
+    for (let index = reached - 1; index >= 0; index--) {
+      const value = pick(phases[index]!);
+      if (value !== undefined) return value;
+    }
+    return undefined;
+  }
+
+  attackProfile(): AttackProfile {
+    const attack = this.phaseValue((phase) => phase.attack) ?? this.definition.attack;
+    const profile = creatureAttackProfile({ ...this.definition, attack });
+    return this.encounter?.enraged ? { ...profile, speedTicks: enragedSpeedTicks(profile.speedTicks, this.encounter.enrageFactor) } : profile;
+  }
+
+  get guard(): GearMotif | undefined {
+    return this.phaseValue((phase) => phase.guard) ?? this.definition.guard;
+  }
+
+  get fightingDefinition(): CreatureDefinition {
+    const guard = this.guard;
+    return guard === this.definition.guard ? this.definition : { ...this.definition, guard };
   }
 
   get size(): FootprintSize {
@@ -84,6 +118,8 @@ export class Creature {
       creatureId: this.definition.id,
       level: this.definition.level,
       vitals: this.vitals(),
+      ...(this.encounter && this.encounter.phase > 0 ? { phase: this.encounter.phase } : {}),
+      ...(this.encounter?.enraged ? { enraged: true } : {}),
     };
   }
 }

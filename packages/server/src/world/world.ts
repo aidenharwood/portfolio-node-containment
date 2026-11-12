@@ -110,6 +110,7 @@ export class World {
       tickMs: this.tickMs,
       layer: level.layer,
     });
+    for (const message of level.encounterMessagesIn(interest)) player.send(message);
     level.broadcastNear(player.position, { type: 'world.entitySpawned', entity: player.snapshot() }, player.entityId);
     this.hooks.onLevelEntered(player, level.id);
     this.refreshAreas(player, level);

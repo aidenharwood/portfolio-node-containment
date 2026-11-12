@@ -19,7 +19,6 @@ import {
   defenceAgainst,
   studiedFlag,
   scaledRespawnTicks,
-  creatureAttackProfile,
   deriveCombatProfile,
   equipmentStats,
   hasLineOfSight,
@@ -30,6 +29,9 @@ import {
   playerAttackProfile,
   rollAttack,
   samePoint,
+  type AttackOutcome,
+  type AttackProfile,
+  type CombatStyle,
   type GameContent,
   type InstanceId,
   type NoticeTone,
@@ -41,6 +43,7 @@ import type { Player } from '../world/player.ts';
 import type { World } from '../world/world.ts';
 import type { LevelInstance } from '../world/levelInstance.ts';
 import type { EffectRunner } from './effectRunner.ts';
+import { EncounterController, type EncounterHost } from './encounterController.ts';
 
 export interface CombatHost {
   raiseQuestEvent(player: Player, event: QuestEvent): void;
@@ -65,12 +68,13 @@ const ENGAGED_CHASE_EXTRA_TILES = 10;
 export const SINGLE_WAY_TARGET_TAKEN = 'Someone else is already fighting that.';
 export const SINGLE_WAY_UNDER_ATTACK = "You're already under attack.";
 
-export class CombatController {
+export class CombatController implements EncounterHost {
   private readonly content: GameContent;
   private readonly world: World;
   private readonly effects: EffectRunner;
   private readonly host: CombatHost;
   private readonly random: () => number;
+  private readonly encounters: EncounterController;
 
   constructor(content: GameContent, world: World, effects: EffectRunner, host: CombatHost, random: () => number) {
     this.content = content;
@@ -78,6 +82,7 @@ export class CombatController {
     this.effects = effects;
     this.host = host;
     this.random = random;
+    this.encounters = new EncounterController(content, this, random);
   }
 
   engage(player: Player, instanceId: InstanceId, tick: number): void {
@@ -182,7 +187,7 @@ export class CombatController {
       player.nextAttackTick = tick + attack.speedTicks;
       player.lastCombatTick = tick;
       const studied = player.hasFlag(studiedFlag(creature.definition.id));
-      const outcome = rollAttack(attack, creatureDefence(creature.definition, attack.style, studied), this.random);
+      const outcome = rollAttack(attack, creatureDefence(creature.fightingDefinition, attack.style, studied), this.random);
       const damage = restrained ? Math.min(outcome.damage, creature.integrity - 1) : outcome.damage;
       creature.integrity = Math.max(0, creature.integrity - damage);
       if (damage > 0) creature.contributors.add(player.entityId);
@@ -261,7 +266,8 @@ export class CombatController {
   private updateCreature(creature: Creature, level: LevelInstance, tick: number, watched: ReadonlySet<ChunkKey>): void {
     if (creature.state === 'dying' && tick >= creature.diedAtTick + DEATH_ANIMATION_TICKS) {
       creature.state = 'despawned';
-      level.broadcastNear(creature.position, { type: 'world.entityDespawned', entityId: creature.entityId });
+      if (creature.transient) level.removeCreature(creature);
+      else level.broadcastNear(creature.position, { type: 'world.entityDespawned', entityId: creature.entityId });
       return;
     }
     if (creature.state === 'despawned' && tick >= creature.diedAtTick + creature.respawnDelayTicks) {
@@ -280,7 +286,10 @@ export class CombatController {
         level.broadcastNear(creature.position, { type: 'world.entitySpawned', entity: creature.snapshot() });
       }
     }
-    if (!isWatched) return;
+    if (!isWatched) {
+      if (creature.encounter?.engaged) this.encounters.reset(creature, level);
+      return;
+    }
 
     const definition = creature.definition;
     if (!creature.returningHome && this.beyondLeash(creature, tick)) this.sendHome(creature, level);
@@ -299,20 +308,25 @@ export class CombatController {
       target = this.findAggroTarget(creature, level, tick);
       if (target) creature.targetId = target.entityId;
     }
-    if (!target) return;
+    if (!target) {
+      if (creature.encounter?.engaged) this.encounters.reset(creature, level);
+      return;
+    }
     if (level.isSafe(target.position)) {
       this.sendHome(creature, level);
       return;
     }
 
-    const attack = creatureAttackProfile(definition);
+    this.encounters.update(creature, level, target, tick);
+    if (!creature.isAlive || target.isIncapacitated) return;
+    const attack = creature.attackProfile();
     const sightline = (from: TilePoint, to: TilePoint) => hasLineOfSight(level.layout, from, to);
     if (isBodyWithinAttackRange(attack, creature, { position: target.position, size: 1 }, sightline)) {
       creature.path = [];
       if (tick < creature.nextAttackTick) return;
       creature.nextAttackTick = tick + attack.speedTicks;
       this.world.faceNpc(creature, target.position, level);
-      this.resolveCreatureAttack(creature, target, level, tick);
+      this.resolveCreatureAttack(creature, target, attack, level, tick, true);
       return;
     }
 
@@ -323,11 +337,22 @@ export class CombatController {
     }
   }
 
-  private resolveCreatureAttack(creature: Creature, player: Player, level: LevelInstance, tick: number): void {
-    const attack = creatureAttackProfile(creature.definition);
+  strike(creature: Creature, player: Player, attack: AttackProfile, level: LevelInstance, tick: number): void {
+    this.resolveCreatureAttack(creature, player, attack, level, tick, false);
+  }
+
+  scorch(creature: Creature, player: Player, damage: number, level: LevelInstance, tick: number): void {
+    this.landOnPlayer(creature, player, { hit: true, damage }, creature.attackProfile().style, level, tick);
+  }
+
+  private resolveCreatureAttack(creature: Creature, player: Player, attack: AttackProfile, level: LevelInstance, tick: number, engage: boolean): void {
     const profile = deriveCombatProfile(player.record.skills, equipmentStats(player.record.equipment, this.content.items));
     const outcome = rollAttack(attack, defenceAgainst(profile, attack.style), this.random);
-    this.engageBoth(player, creature, tick);
+    if (engage) this.engageBoth(player, creature, tick);
+    this.landOnPlayer(creature, player, outcome, attack.style, level, tick);
+  }
+
+  private landOnPlayer(creature: Creature, player: Player, outcome: AttackOutcome, style: CombatStyle, level: LevelInstance, tick: number): void {
     player.lastCombatTick = tick;
     player.setIntegrity(player.integrity - outcome.damage);
     this.host.onAttacked(player);
@@ -338,7 +363,7 @@ export class CombatController {
       targetId: player.entityId,
       outcome: outcome.hit ? 'hit' : 'miss',
       damage: outcome.damage,
-      style: creature.definition.attack.style,
+      style,
       vitals: player.vitals(),
     });
 
@@ -354,6 +379,7 @@ export class CombatController {
   }
 
   private defeatCreature(creature: Creature, level: LevelInstance, killer: Player, tick: number, container: Player | null = null): void {
+    this.encounters.reset(creature, level);
     level.vacate(creature);
     creature.state = 'dying';
     creature.diedAtTick = tick;
@@ -416,7 +442,7 @@ export class CombatController {
     for (const award of defeatExperience(style, creature.definition.experience)) {
       this.effects.awardExperience(player, award.skill, award.amount, false);
     }
-    const loot = creature.definition.loot.filter((entry) => this.random() < entry.chance);
+    const loot = creature.transient ? [] : creature.definition.loot.filter((entry) => this.random() < entry.chance);
     if (loot.length > 0) {
       for (const entry of loot) this.host.dropToGround(player, entry.itemId, entry.count, position);
       const names = loot.map((entry) => `${entry.count > 1 ? `${entry.count} × ` : ''}${this.content.items.get(entry.itemId)?.name ?? entry.itemId}`);
@@ -458,6 +484,7 @@ export class CombatController {
   }
 
   private resetHome(creature: Creature, level: LevelInstance): void {
+    this.encounters.reset(creature, level);
     creature.targetId = null;
     creature.engagedWith = null;
     creature.contributors.clear();
@@ -470,6 +497,7 @@ export class CombatController {
   }
 
   private sendHome(creature: Creature, level: LevelInstance): void {
+    this.encounters.reset(creature, level);
     creature.targetId = null;
     creature.engagedWith = null;
     creature.contributors.clear();

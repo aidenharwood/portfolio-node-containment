@@ -1,6 +1,7 @@
 import type { CharacterAppearance } from '../character/appearance.ts';
 import type { CombatProfile } from '../character/derivedStats.ts';
 import type { CreatureId } from '../combat/creatures.ts';
+import type { HazardKind, TelegraphShape } from '../combat/encounters.ts';
 import type { CombatStyle, WeaponKind } from '../combat/weapons.ts';
 import type { CraftingStation } from '../crafting/recipes.ts';
 import type { CharacterSummary } from '../character/character.ts';
@@ -38,6 +39,8 @@ export interface EntitySnapshot {
   readonly creatureId?: CreatureId;
   readonly level?: number;
   readonly vitals?: EntityVitals;
+  readonly phase?: number;
+  readonly enraged?: boolean;
 }
 
 export interface GroundItemSnapshot {
@@ -138,6 +141,21 @@ export type ServerMessage =
       readonly vitals: EntityVitals;
     }
   | { readonly type: 'combat.death'; readonly entityId: EntityId; readonly containedBy?: EntityId }
+  | {
+      readonly type: 'encounter.telegraph';
+      readonly entityId: EntityId;
+      readonly mechanicId: string;
+      readonly shape: TelegraphShape;
+      readonly style: CombatStyle;
+      readonly tiles: readonly TilePoint[];
+      readonly resolvesAtTick: number;
+      readonly windupTicks: number;
+    }
+  | { readonly type: 'encounter.resolved'; readonly entityId: EntityId; readonly mechanicId: string }
+  | { readonly type: 'encounter.hazard'; readonly entityId: EntityId; readonly mechanicId: string; readonly hazard: HazardKind; readonly tiles: readonly TilePoint[] }
+  | { readonly type: 'encounter.phase'; readonly entityId: EntityId; readonly phase: number; readonly announce: string }
+  | { readonly type: 'encounter.enraged'; readonly entityId: EntityId }
+  | { readonly type: 'encounter.cleared'; readonly entityId: EntityId }
   | { readonly type: 'world.groundItemAdded'; readonly item: GroundItemSnapshot }
   | { readonly type: 'world.groundItemRemoved'; readonly id: string }
   | { readonly type: 'shop.opened'; readonly shopId: string }

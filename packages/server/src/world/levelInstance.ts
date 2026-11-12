@@ -18,6 +18,7 @@ import {
   CARDINAL_OFFSETS,
   rectContains,
   type ChunkKey,
+  type CreatureDefinition,
   type EntityId,
   type EntityMovement,
   type EntitySnapshot,
@@ -98,6 +99,7 @@ export class LevelInstance {
   readonly groundItems = new Map<string, GroundItem>();
   private readonly bodyOccupancy = new Map<string, EntityId>();
   private readonly sizedGrids = new Map<number, WalkabilityGrid>();
+  private transientCount = 0;
   readonly depletedUntil = new Map<InstanceId, number>();
   private readonly nodeCharges = new Map<InstanceId, number>();
   readonly layer: number;
@@ -198,6 +200,7 @@ export class LevelInstance {
         groundItems: this.groundItemsVisibleIn(entered, player.entityId),
         depletedObjects: this.depletedObjectsIn(entered),
       });
+      for (const message of this.encounterMessagesIn(entered)) player.send(message);
     }
     return { entered: new Set(delta.entered), left: new Set(delta.left) };
   }
@@ -365,6 +368,51 @@ export class LevelInstance {
       }
     }
     return preferred;
+  }
+
+  addTransientCreature(definition: CreatureDefinition, near: TilePoint, summoner: Creature): Creature {
+    this.transientCount++;
+    const placement = { instanceId: `${summoner.placement.instanceId}/add-${this.transientCount}`, creatureId: definition.id, position: near };
+    const creature = new Creature(placement, definition, summoner.entityId);
+    creature.position = this.freeAnchorNear(creature, near);
+    this.creatures.set(creature.entityId, creature);
+    this.occupy(creature);
+    this.broadcastNear(creature.position, { type: 'world.entitySpawned', entity: creature.snapshot() });
+    return creature;
+  }
+
+  removeCreature(creature: Creature): void {
+    if (!this.creatures.delete(creature.entityId)) return;
+    this.vacate(creature);
+    this.broadcastNear(creature.position, { type: 'world.entityDespawned', entityId: creature.entityId });
+  }
+
+  encounterMessagesIn(chunks: ReadonlySet<ChunkKey>): ServerMessage[] {
+    const messages: ServerMessage[] = [];
+    for (const creature of this.creatures.values()) {
+      const state = creature.encounter;
+      const encounter = creature.definition.encounter;
+      if (!state?.engaged || !encounter || !chunks.has(chunkKeyOf(creature.position))) continue;
+      const pending = state.pending;
+      const mechanic = pending ? encounter.mechanics.find((candidate) => candidate.id === pending.mechanicId) : undefined;
+      if (pending && mechanic?.kind === 'telegraph') {
+        messages.push({
+          type: 'encounter.telegraph',
+          entityId: creature.entityId,
+          mechanicId: mechanic.id,
+          shape: mechanic.shape,
+          style: mechanic.style,
+          tiles: pending.tiles,
+          resolvesAtTick: pending.resolvesAtTick,
+          windupTicks: mechanic.windupTicks,
+        });
+      }
+      for (const [mechanicId, tiles] of state.hazards) {
+        const hazard = encounter.mechanics.find((candidate) => candidate.id === mechanicId);
+        if (hazard?.kind === 'hazard') messages.push({ type: 'encounter.hazard', entityId: creature.entityId, mechanicId, hazard: hazard.hazard, tiles });
+      }
+    }
+    return messages;
   }
 
   creatureByInstance(instanceId: InstanceId): Creature | undefined {
