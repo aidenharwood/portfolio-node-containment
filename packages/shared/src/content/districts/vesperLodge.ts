@@ -57,6 +57,7 @@ export const VESPER_LODGE: DistrictDefinition = furnish(plan, {
   name: 'Porter\'s Lodge',
   subtitle: 'Site Vesper — Outpost',
   tier: 12,
+  condition: 'pristine',
   region: 'vesper',
   recovery: { districtId: 'vesper-lodge', position: plan.at('lodge', 30, 20) },
   ambience: { darkness: 0.4, tint: '#101614', fog: '#141a18' },

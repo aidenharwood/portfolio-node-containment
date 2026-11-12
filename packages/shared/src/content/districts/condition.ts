@@ -47,6 +47,7 @@ export function applyCondition(input: ConditionInput): Composed {
 
   const objects: ObjectPlacement[] = [...composed.objects];
   const decals: FloorDecal[] = [...composed.decals];
+  const additions: string[] = [...(composed.additions ?? [])];
 
   const eligible = objects.map((object, index) => ({ object, index })).filter(({ object }) => isDressing(object) && rule.swaps[object.objectId] !== undefined);
   const swapCount = Math.round(rule.swapShare * eligible.length);
@@ -91,6 +92,7 @@ export function applyCondition(input: ConditionInput): Composed {
     }
     if (!spot) continue;
     for (const tile of pieceTiles(spot.origin, spot.turn)) occupied.add(tileKey(tile));
+    additions.push(prefab.id);
     spot.turn.pieces.forEach((piece, index) => {
       objects.push({
         instanceId: `${roomId}-ruin-${added}-${index + 1}`,
@@ -131,5 +133,5 @@ export function applyCondition(input: ConditionInput): Composed {
     }
   }
 
-  return { objects, decals };
+  return { ...composed, objects, decals, additions };
 }

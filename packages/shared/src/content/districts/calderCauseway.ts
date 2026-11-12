@@ -62,6 +62,7 @@ export const CALDER_CAUSEWAY: DistrictDefinition = furnish(plan, {
   name: 'Calder Causeway',
   subtitle: 'Calder Wing — Sealed Salt Road',
   tier: 10,
+  condition: 'breached',
   region: 'calder',
   recovery: { districtId: 'waterworks', position: WATERWORKS_ANCHORS.recovery },
   ambience: { darkness: 0.62, tint: '#1a1210', fog: '#20160f', fixtures: 'failing' },

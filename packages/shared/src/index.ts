@@ -93,6 +93,7 @@ export * from './content/safetyIntegrity.ts';
 export * from './content/footprintIntegrity.ts';
 export * from './content/encounterIntegrity.ts';
 export * from './content/worldDesignIntegrity.ts';
+export * from './content/furnishingIntegrity.ts';
 export * from './content/tramNetwork.ts';
 export * from './content/questLocations.ts';
 export * from './content/containmentIntegrity.ts';

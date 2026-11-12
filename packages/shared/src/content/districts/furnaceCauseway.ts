@@ -61,6 +61,7 @@ export const FURNACE_CAUSEWAY: DistrictDefinition = furnish(plan, {
   name: 'Furnace Causeway',
   subtitle: 'The Deep — Reactor Approach',
   tier: 4,
+  condition: 'alien',
   region: 'meridian-core',
   recovery: { districtId: 'deepwatch', position: DEEPWATCH_ANCHORS.recovery },
   ambience: { darkness: 0.62, tint: '#1a0a04', fog: '#200c06', fixtures: 'failing' },

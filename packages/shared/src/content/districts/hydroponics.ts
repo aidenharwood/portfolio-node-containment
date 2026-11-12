@@ -106,7 +106,7 @@ const packs = scatterPacks(plan, [...placed, ...furnishings], [
 ]);
 
 const dressing: Dressing = {
-  'seed-vault': 'garden',
+  'seed-vault': { theme: 'garden', condition: 'pristine' },
   'platform': 'civic',
   'nursery': 'garden',
   'greenhouse': 'garden',
@@ -118,6 +118,7 @@ export const HYDROPONICS: DistrictDefinition = furnish(plan, {
   name: 'Verdance Hydroponics',
   subtitle: 'Site Meridian — Agricultural Containment Deck',
   tier: 2,
+  condition: 'overgrown',
   region: 'meridian-core',
   recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.62, tint: '#08160c', fog: '#0a1a10', fixtures: 'failing' },

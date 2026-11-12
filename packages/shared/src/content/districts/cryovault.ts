@@ -150,6 +150,7 @@ export const CRYOVAULT: DistrictDefinition = furnish(plan, {
   name: 'The Cryovault',
   subtitle: 'Site Meridian — Cold Storage, Dormant Holdings',
   tier: 4,
+  condition: 'alien',
   region: 'meridian-core',
   deadEnd: true,
   recovery: { districtId: 'deepwatch', position: DEEPWATCH_ANCHORS.recovery },

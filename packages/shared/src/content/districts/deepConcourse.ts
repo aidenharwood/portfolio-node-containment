@@ -118,10 +118,10 @@ const furnishings = scatterGroups(plan, placed, [
 ]);
 
 const dressing: Dressing = {
-  'nw-turn': 'cold',
-  'ne-turn': 'cold',
-  'sw-turn': 'cold',
-  'se-turn': 'cold',
+  'nw-turn': { theme: 'cold', composition: 'court' },
+  'ne-turn': { theme: 'cold', composition: 'court' },
+  'sw-turn': { theme: 'cold', composition: 'court' },
+  'se-turn': { theme: 'cold', composition: 'court' },
   'ring-hub': { theme: 'civic', density: 'dense' },
   'chasm-walk': 'civic',
   'cold-wing': 'cold',
@@ -137,6 +137,7 @@ export const DEEP_CONCOURSE: DistrictDefinition = furnish(plan, {
   name: 'Deep Concourse',
   subtitle: 'The Deep — Station Ring',
   tier: 4,
+  condition: 'alien',
   region: 'meridian-core',
   recovery: { districtId: 'deepwatch', position: DEEPWATCH_ANCHORS.recovery },
   ambience: { darkness: 0.66, tint: '#06101a', fog: '#08141e', fixtures: 'failing' },

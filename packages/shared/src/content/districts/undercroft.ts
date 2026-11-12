@@ -134,7 +134,7 @@ const packs = scatterPacks(plan, [...placed, ...furnishings], [
 
 const dressing: Dressing = {
   'landing': 'camp',
-  'tunnel': { theme: 'wet', density: 'sparse' },
+  'tunnel': { theme: 'wet', density: 'sparse', composition: 'workroom' },
   'junction-room': 'industrial',
   'camp': { theme: 'camp', density: 'dense' },
   'pump-hall': 'wet',
@@ -150,6 +150,7 @@ export const UNDERCROFT: DistrictDefinition = furnish(plan, {
   name: 'The Undercroft',
   subtitle: 'Site Meridian — Abandoned Maintenance Level',
   tier: 3,
+  condition: 'flooded',
   region: 'meridian-core',
   recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.7, tint: '#10120c', fog: '#0d0f0a', fixtures: 'failing' },

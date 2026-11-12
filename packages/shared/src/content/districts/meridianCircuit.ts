@@ -102,6 +102,7 @@ export const MERIDIAN_CIRCUIT: DistrictDefinition = furnish(plan, {
   name: 'The Circuit',
   subtitle: 'Site Meridian — Ring Boulevard',
   tier: 1,
+  condition: 'worn',
   region: 'meridian-core',
   recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.42, tint: '#0a151c', fog: '#0c1a24' },

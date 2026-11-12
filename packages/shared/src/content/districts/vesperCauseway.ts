@@ -50,6 +50,7 @@ export const VESPER_CAUSEWAY: DistrictDefinition = furnish(plan, {
   name: 'Sanatorium Walk',
   subtitle: 'Vesper Wing — Covered Walk',
   tier: 12,
+  condition: 'breached',
   region: 'vesper',
   recovery: { districtId: 'hydroponics', position: HYDROPONICS_ANCHORS.tramPlatform },
   ambience: { darkness: 0.58, tint: '#0f1614', fog: '#121a18', fixtures: 'failing' },

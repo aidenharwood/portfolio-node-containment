@@ -135,6 +135,7 @@ export const SIGNAL_ARRAY: DistrictDefinition = furnish(plan, {
   name: 'The Signal Array',
   subtitle: 'Site Meridian — Long-Range Communications',
   tier: 5,
+  condition: 'alien',
   region: 'meridian-core',
   deadEnd: true,
   recovery: { districtId: 'deepwatch', position: DEEPWATCH_ANCHORS.recovery },

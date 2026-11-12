@@ -92,7 +92,7 @@ const dressing: Dressing = {
   'old-workings': 'mine',
   'flooded-drift': 'wet',
   'foremans-office': { theme: 'mine', density: 'sparse' },
-  'salt-pockets': 'mine',
+  'salt-pockets': { theme: 'mine', composition: 'court' },
 };
 
 export const CALDER_DEEPS: DistrictDefinition = furnish(plan, {
@@ -100,6 +100,7 @@ export const CALDER_DEEPS: DistrictDefinition = furnish(plan, {
   name: 'Calder Deeps',
   subtitle: 'Calder Wing — The Lowest Gallery',
   tier: 11,
+  condition: 'alien',
   region: 'calder',
   recovery: { districtId: 'calder-gatehouse', position: CALDER_GATEHOUSE_ANCHORS.recovery },
   ambience: { darkness: 0.72, tint: '#160f0c', fog: '#1c130e', fixtures: 'failing' },
@@ -127,4 +128,4 @@ export const CALDER_DEEPS: DistrictDefinition = furnish(plan, {
     { position: plan.spot('foremans-office', 24, 16), radius: 14, color: '#ffd27f', intensity: 0.55 },
     { position: plan.spot('foremans-office', 55, 29), radius: 9, color: '#ff9a6a', intensity: 0.5 },
   ],
-}, dressing);
+}, dressing, { decalSwaps: { 'alien-vein': 'salt-crust' } });

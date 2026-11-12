@@ -18,6 +18,7 @@ import { findLevelIssues } from './levelIntegrity.ts';
 import { findOverworldIssues } from './overworldIntegrity.ts';
 import { findRegionIssues } from './regionIntegrity.ts';
 import { findEncounterIssues } from './encounterIntegrity.ts';
+import { findFurnishingIssues } from './furnishingIntegrity.ts';
 import { findSafetyIssues } from './safetyIntegrity.ts';
 import { findTramIssues } from './tramIntegrity.ts';
 import { findWorldDesignIssues } from './worldDesignIntegrity.ts';
@@ -249,6 +250,7 @@ export function findContentIssues(content: GameContent): string[] {
   issues.push(...findAssemblyIssues(content));
   issues.push(...findSafetyIssues(content));
   issues.push(...findWorldDesignIssues(content));
+  issues.push(...findFurnishingIssues(content));
   issues.push(...findContainmentIssues(content));
   issues.push(...findEncounterIssues(content));
   issues.push(...findContractIssues(content));

@@ -57,6 +57,7 @@ export const CALDER_GATEHOUSE: DistrictDefinition = furnish(plan, {
   name: 'Calder Gatehouse',
   subtitle: 'Site Calder — Outpost',
   tier: 10,
+  condition: 'worn',
   region: 'calder',
   recovery: { districtId: 'calder-gatehouse', position: plan.at('gatehouse', 28, 20) },
   ambience: { darkness: 0.42, tint: '#1a1410', fog: '#1e1712' },

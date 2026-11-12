@@ -64,6 +64,7 @@ export const SERVICE_CONCOURSE: DistrictDefinition = furnish(plan, {
   name: 'Service Concourse',
   subtitle: 'Site Meridian — East Transit Corridor',
   tier: 1,
+  condition: 'worn',
   region: 'meridian-core',
   recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.52, tint: '#16110a', fog: '#1a140c' },

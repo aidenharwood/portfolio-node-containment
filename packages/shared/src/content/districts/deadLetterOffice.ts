@@ -93,10 +93,10 @@ const packs = scatterPacks(plan, [...placed, ...furnishings], [
 
 const dressing: Dressing = {
   'dead-letter-stacks': 'post',
-  'franking-hall': 'post',
+  'franking-hall': { theme: 'post', composition: 'court' },
   'returned-stacks': 'post',
-  'sorting-floor': 'post',
-  'dispatch': 'post',
+  'sorting-floor': { theme: 'post', composition: 'hall' },
+  'dispatch': { theme: 'post', composition: 'hall' },
 };
 
 export const DEAD_LETTER_OFFICE: DistrictDefinition = furnish(plan, {
@@ -104,6 +104,7 @@ export const DEAD_LETTER_OFFICE: DistrictDefinition = furnish(plan, {
   name: 'The Dead Letter Office',
   subtitle: 'Where the Post Went Instead',
   tier: 9,
+  condition: 'uncanny',
   region: 'meridian-core',
   recovery: { districtId: 'dead-letter-office', position: DEAD_LETTER_OFFICE_ANCHORS.spawn },
   ambience: { darkness: 0.64, tint: '#1a1408', fog: '#18120a', fixtures: 'failing' },

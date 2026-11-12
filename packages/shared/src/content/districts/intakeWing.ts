@@ -164,7 +164,7 @@ const dressing: Dressing = {
   'corridor': 'civic',
   'storeroom': 'freight',
   'workshop': 'industrial',
-  'range-gallery': { theme: 'camp', density: 'sparse' },
+  'range-gallery': { theme: 'camp', composition: 'workroom' },
   'range': { theme: 'camp', density: 'sparse' },
   'transit-bay': { theme: 'civic', density: 'dense' },
 };
@@ -174,6 +174,7 @@ export const INTAKE_WING: DistrictDefinition = furnish(plan, {
   name: 'Intake Wing',
   subtitle: 'Site Meridian — Sublevel 4',
   tier: 1,
+  condition: 'breached',
   region: 'meridian-core',
   reachedOnlyByTram: true,
   recovery: { districtId: 'intake-wing', position: plan.at('arrival', 3, 4) },

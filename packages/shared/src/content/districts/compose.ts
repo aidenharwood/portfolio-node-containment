@@ -51,6 +51,8 @@ export interface ComposeInput {
 export interface Composed {
   readonly objects: readonly ObjectPlacement[];
   readonly decals: readonly FloorDecal[];
+  readonly prefabs?: readonly string[];
+  readonly additions?: readonly string[];
 }
 
 const OPENING_CLEARANCE = 3;
@@ -80,6 +82,7 @@ export function composeRoom(input: ComposeInput): Composed {
   const objects: ObjectPlacement[] = [];
   const decals: FloorDecal[] = [];
   const uses = new Map<string, number>();
+  const used: string[] = [];
   const turnCache = new Map<Prefab, readonly Turn[]>();
   const turnOf = (prefab: Prefab, rotation: number): Turn => {
     const cached = turnCache.get(prefab) ?? turnsOf(prefab, objectOf);
@@ -167,10 +170,11 @@ export function composeRoom(input: ComposeInput): Composed {
   const candidatesFor = (zone: CompositionZone): readonly Prefab[] => prefabsWithRole(input.theme, zone.role).filter((prefab) => fitsRoom(prefab, rect));
 
   const allowed = (prefab: Prefab, previous: string | undefined): boolean =>
-    formal || (prefab.id !== previous && (uses.get(prefab.id) ?? 0) < MAX_REPEATS);
+    prefab.id !== previous && (formal || (uses.get(prefab.id) ?? 0) < MAX_REPEATS);
 
   const record = (prefab: Prefab, count: number): void => {
     uses.set(prefab.id, (uses.get(prefab.id) ?? 0) + count);
+    for (let index = 0; index < count; index++) used.push(prefab.id);
   };
 
   const fillFocal = (zone: CompositionZone): void => {
@@ -318,5 +322,5 @@ export function composeRoom(input: ComposeInput): Composed {
     for (const laneRect of rectsOfTiles(walkable)) decals.push({ kind, rect: laneRect });
   }
 
-  return { objects, decals };
+  return { objects, decals, prefabs: used };
 }

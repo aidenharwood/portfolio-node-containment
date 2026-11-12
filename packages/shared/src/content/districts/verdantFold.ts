@@ -40,7 +40,7 @@ const furnishings = scatterGroups(plan, placed, [
 ]);
 
 const dressing: Dressing = {
-  'grove': { theme: 'garden', density: 'sparse' },
+  'grove': { theme: 'garden', density: 'dense', composition: 'court' },
 };
 
 export const VERDANT_FOLD: DistrictDefinition = furnish(plan, {
@@ -48,6 +48,7 @@ export const VERDANT_FOLD: DistrictDefinition = furnish(plan, {
   name: 'The Verdant Fold',
   subtitle: 'A Garden Folded Out of Hydroponics',
   tier: 2,
+  condition: 'uncanny',
   region: 'meridian-core',
   ambience: { darkness: 0.55, tint: '#140a1e', fog: '#0c1a12' },
   map: plan.map,

@@ -1,7 +1,7 @@
 import type { NpcId, WorldObjectId } from '../../ids.ts';
 import type { Blueprint } from '../../world/blueprint.ts';
-import type { FloorDecal } from '../../world/decals.ts';
-import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
+import type { FloorDecal, FloorDecalKind } from '../../world/decals.ts';
+import type { DistrictDefinition, DressedRoom, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { WorldObjectDefinition } from '../../world/entities.ts';
 import { objectFootprintTiles } from '../../world/footprint.ts';
 import { rectContains, tileKey, type TilePoint, type TileRect } from '../../world/geometry.ts';
@@ -42,6 +42,7 @@ export interface FurnishOptions {
   readonly cast?: readonly NpcId[];
   readonly setPieces?: readonly SetPiece[];
   readonly landmarks?: readonly string[];
+  readonly decalSwaps?: Readonly<Partial<Record<FloorDecalKind, FloorDecalKind>>>;
 }
 
 const isFloorLitter = (objectId: string): boolean => objectId.startsWith('litter-') || objectId.startsWith('cable-run');
@@ -55,7 +56,7 @@ const CARDINAL: readonly TilePoint[] = [{ x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0,
 const DRESSING_OBJECTS: ReadonlyMap<WorldObjectId, WorldObjectDefinition> = new Map(
   [...CLUTTER_OBJECTS, ...FURNITURE_OBJECTS, ...TRANSIT_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...CONTRACT_OBJECTS, ...RUIN_OBJECTS].map((definition) => [definition.id, definition]),
 );
-const dressingObjectOf = (id: WorldObjectId): WorldObjectDefinition | undefined => DRESSING_OBJECTS.get(id);
+export const dressingObjectOf = (id: WorldObjectId): WorldObjectDefinition | undefined => DRESSING_OBJECTS.get(id);
 
 export function setPieceTurn(piece: Pick<SetPiece, 'prefab' | 'facing'>): Turn | undefined {
   const prefab = PREFABS[piece.prefab];
@@ -122,6 +123,8 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
   const npcs: NpcPlacement[] = [];
   const setPieceObjects: ObjectPlacement[] = [];
   const setPiecesInRoom = new Map<string, number>();
+  const log = new Map<string, DressedRoom>();
+  const logOf = (room: string): DressedRoom => log.get(room) ?? { room, formal: false, prefabs: [], additions: [], setPieces: [] };
   const blocked = new Set(taken);
 
   for (const piece of options.setPieces ?? []) {
@@ -131,6 +134,8 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
     if (!turn) throw new Error(`${where} names an unknown prefab.`);
     const index = (setPiecesInRoom.get(piece.room) ?? 0) + 1;
     setPiecesInRoom.set(piece.room, index);
+    const logged = logOf(piece.room);
+    log.set(piece.room, { ...logged, setPieces: [...logged.setPieces, { prefab: piece.prefab, roles: PREFABS[piece.prefab]?.roles ?? [] }] });
     const tiles = pieceTiles(piece.origin, turn);
     for (const tile of tiles) if (blocked.has(tileKey(tile))) throw new Error(`${where} overlaps something already placed at ${tileKey(tile)}.`);
     for (const tile of tiles) blocked.add(tileKey(tile));
@@ -160,7 +165,9 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
     for (let y = rect.y; y < rect.y + rect.height; y++) {
       for (let x = rect.x; x < rect.x + rect.width; x++) if (isOpenFloor({ x, y })) floor.push({ x, y });
     }
-    const base = COMPOSITIONS[composition ?? inferComposition(rect, plan.shapes[roomId] ?? 'rect', theme)];
+    const compositionName = composition ?? inferComposition(rect, plan.shapes[roomId] ?? 'rect', theme);
+    const base = COMPOSITIONS[compositionName];
+    const formal = base.formal || condition === 'uncanny';
     const clear = new Set(floor.map(tileKey).filter((key) => !taken.has(key)));
     const openings = openingsOf(rect);
     const composedRoom = composeRoom({
@@ -168,7 +175,7 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
       rect,
       theme,
       density,
-      composition: condition === 'uncanny' ? { ...base, formal: true } : base,
+      composition: formal === base.formal ? base : { ...base, formal },
       seed: `${district.id}:${roomId}:dressing`,
       clear,
       openings,
@@ -179,6 +186,7 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
     const composed = applyCondition({ condition, rect, seed: `${district.id}:${roomId}:condition`, composed: composedRoom, clear, occupied: taken, objectOf: dressingObjectOf, roomId, openings });
     objects.push(...composed.objects);
     decals.push(...composed.decals);
+    log.set(roomId, { ...logOf(roomId), composition: compositionName, formal, prefabs: composed.prefabs ?? [], additions: composed.additions ?? [] });
 
     if (!safeRooms.has(roomId)) continue;
     const random = seededRandom(`${district.id}:${roomId}:crowd`);
@@ -213,7 +221,8 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
       ...setPieceObjects,
       ...objects.map((object) => ({ ...object, instanceId: `${district.id}-${object.instanceId}` })),
     ],
-    ...(decals.length > 0 || district.decals ? { decals: [...(district.decals ?? []), ...decals] } : {}),
+    ...(decals.length > 0 || district.decals ? { decals: [...(district.decals ?? []), ...decals.map((decal) => ({ ...decal, kind: options.decalSwaps?.[decal.kind] ?? decal.kind }))] } : {}),
     ...(options.landmarks ? { landmarks: options.landmarks } : {}),
+    ...(log.size > 0 ? { dressingLog: [...log.values()] } : {}),
   };
 }

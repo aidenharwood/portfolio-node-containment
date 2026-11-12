@@ -100,6 +100,7 @@ export const VESPER_WARDS: DistrictDefinition = furnish(plan, {
   name: 'Vesper Wards',
   subtitle: 'Vesper Wing — General Wards',
   tier: 12,
+  condition: 'breached',
   region: 'vesper',
   recovery: { districtId: 'hydroponics', position: HYDROPONICS_ANCHORS.tramPlatform },
   ambience: { darkness: 0.6, tint: '#0f1614', fog: '#121a18', fixtures: 'failing' },

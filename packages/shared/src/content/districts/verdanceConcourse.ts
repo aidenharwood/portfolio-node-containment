@@ -61,6 +61,7 @@ export const VERDANCE_CONCOURSE: DistrictDefinition = furnish(plan, {
   name: 'Verdance Concourse',
   subtitle: 'Site Meridian — West Transit Corridor',
   tier: 1,
+  condition: 'worn',
   region: 'meridian-core',
   recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.5, tint: '#0a1a12', fog: '#0c1e14' },

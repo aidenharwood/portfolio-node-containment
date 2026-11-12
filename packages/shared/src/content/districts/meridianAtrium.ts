@@ -179,7 +179,7 @@ const litter: ObjectPlacement[] = [
 
 const dressing: Dressing = {
   'requisitions': 'office',
-  'quarantine-gate': { theme: 'civic', density: 'dense' },
+  'quarantine-gate': { theme: 'civic', density: 'dense', condition: 'breached' },
   'archives': 'archive',
   'plaza': { theme: 'civic', density: 'dense' },
   'workshop': 'industrial',
@@ -196,6 +196,7 @@ export const MERIDIAN_ATRIUM: DistrictDefinition = furnish(plan, {
   name: 'Meridian Atrium',
   subtitle: 'Site Meridian — Central Hub',
   tier: 1,
+  condition: 'pristine',
   region: 'meridian-core',
   ambience: { darkness: 0.36, tint: '#08141c', fog: '#0c1c26' },
   map: plan.map,

@@ -117,10 +117,10 @@ const furnishings = scatterGroups(plan, placed, [
 const dressing: Dressing = {
   'command-post': 'office',
   'concourse': 'civic',
-  'workshop': 'industrial',
+  'workshop': { theme: 'industrial', density: 'dense' },
   'platform-hall': { theme: 'civic', density: 'dense' },
   'infirmary': 'medical',
-  'stores': 'freight',
+  'stores': { theme: 'freight', composition: 'yard' },
   'lift-gallery': 'civic',
 };
 
@@ -129,6 +129,7 @@ export const DEEPWATCH: DistrictDefinition = furnish(plan, {
   name: 'Deepwatch Station',
   subtitle: 'Site Meridian — Forward Base, Sector 3 Annex',
   tier: 4,
+  condition: 'worn',
   region: 'meridian-core',
   ambience: { darkness: 0.42, tint: '#0a1018', fog: '#0c141e' },
   map: plan.map,

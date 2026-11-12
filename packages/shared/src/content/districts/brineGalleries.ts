@@ -105,6 +105,7 @@ export const BRINE_GALLERIES: DistrictDefinition = furnish(plan, {
   name: 'Brine Galleries',
   subtitle: 'Calder Wing — Saltworks Level',
   tier: 10,
+  condition: 'flooded',
   region: 'calder',
   recovery: { districtId: 'waterworks', position: WATERWORKS_ANCHORS.recovery },
   ambience: { darkness: 0.64, tint: '#1c1210', fog: '#24170f', fixtures: 'failing' },

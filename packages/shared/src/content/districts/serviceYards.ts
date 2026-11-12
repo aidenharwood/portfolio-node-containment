@@ -148,6 +148,7 @@ export const SERVICE_YARDS: DistrictDefinition = furnish(plan, {
   name: 'Service Yards',
   subtitle: 'Site Meridian — Salvage and Laundry',
   tier: 1,
+  condition: 'worn',
   region: 'meridian-core',
   recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.6, tint: '#140f08', fog: '#1a140c', fixtures: 'failing' },

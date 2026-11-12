@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { findSafetyIssues, GAME_CONTENT, objectiveAreas, objectiveObjectIds, type GameContent, type QuestLog } from '../src/index.ts';
+import { findFurnishingIssues, findSafetyIssues, GAME_CONTENT, objectiveAreas, objectiveObjectIds, type GameContent, type QuestLog } from '../src/index.ts';
 
 const activeAt = (questId: string, stepIndex: number, objectiveCount = 1): QuestLog => ({
   [questId]: { questId, status: 'active', stepIndex, objectiveProgress: Array.from({ length: objectiveCount }, () => 0) },
@@ -11,6 +11,30 @@ const tutorialQuests = [...GAME_CONTENT.quests.values()].filter((quest) => quest
 describe('world audit', () => {
   test('the shipped content keeps friendly NPCs in safe areas and creatures out of them', () => {
     assert.deepEqual(findSafetyIssues(GAME_CONTENT), []);
+  });
+
+  test('every district is furnished honestly', () => {
+    assert.deepEqual(findFurnishingIssues(GAME_CONTENT), []);
+  });
+
+  test('the world decays with depth', () => {
+    const conditions: Record<string, readonly string[]> = {
+      pristine: ['meridian-atrium', 'vesper-lodge'],
+      worn: ['meridian-circuit', 'service-concourse', 'service-yards', 'verdance-concourse', 'calder-gatehouse', 'deepwatch'],
+      breached: ['intake-wing', 'sector-two', 'vesper-wards', 'vesper-pharmacy', 'vesper-causeway', 'calder-causeway', 'vesper-cellars'],
+      overgrown: ['hydroponics'],
+      flooded: ['waterworks', 'drowned-archive', 'undercroft', 'brine-galleries'],
+      alien: ['deep-concourse', 'cryovault', 'signal-array', 'furnace', 'furnace-causeway', 'sector-three', 'salt-cathedral', 'calder-deeps'],
+      uncanny: ['meridian-below', 'dead-letter-office', 'verdant-fold'],
+    };
+    for (const district of GAME_CONTENT.districts.values()) {
+      const expected = Object.entries(conditions).find(([, ids]) => ids.includes(district.id))?.[0];
+      assert.equal(district.condition, expected, district.id);
+    }
+    for (const id of ['salt-cathedral', 'calder-deeps']) {
+      const kinds = new Set(GAME_CONTENT.districts.get(id)?.decals?.map((decal) => decal.kind));
+      assert.ok(kinds.has('salt-crust') && !kinds.has('alien-vein'), `${id} decals: ${[...kinds].join(', ')}`);
+    }
   });
 
   test('an NPC outside a safe area on a floor level is reported', () => {

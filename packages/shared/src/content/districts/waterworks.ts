@@ -129,6 +129,7 @@ export const WATERWORKS: DistrictDefinition = furnish(plan, {
   name: 'Meridian Waterworks',
   subtitle: 'Site Meridian — Reclamation and Outflow',
   tier: 3,
+  condition: 'flooded',
   region: 'meridian-core',
   recovery: { districtId: 'waterworks', position: plan.at('pump-house', 3, 6) },
   ambience: { darkness: 0.66, tint: '#071419', fog: '#0a1a20', fixtures: 'failing' },

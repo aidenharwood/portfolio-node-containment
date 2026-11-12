@@ -96,6 +96,7 @@ export const VESPER_CELLARS: DistrictDefinition = furnish(plan, {
   name: 'The Cold Ward',
   subtitle: 'Vesper Wing — Cellars',
   tier: 13,
+  condition: 'breached',
   region: 'vesper',
   recovery: { districtId: 'vesper-lodge', position: VESPER_LODGE_ANCHORS.recovery },
   ambience: { darkness: 0.72, tint: '#0c1416', fog: '#0f181a', fixtures: 'failing' },

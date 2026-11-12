@@ -89,6 +89,7 @@ export const SALT_CATHEDRAL: DistrictDefinition = furnish(plan, {
   name: 'Salt Cathedral',
   subtitle: 'Calder Wing — The Nave',
   tier: 11,
+  condition: 'alien',
   region: 'calder',
   deadEnd: true,
   recovery: { districtId: 'calder-gatehouse', position: CALDER_GATEHOUSE_ANCHORS.recovery },
@@ -116,4 +117,4 @@ export const SALT_CATHEDRAL: DistrictDefinition = furnish(plan, {
     { position: plan.spot('reliquary', 22, 11), radius: 13, color: '#ffd27f', intensity: 0.4 },
     { position: plan.spot('reliquary', 86, 13), radius: 14, color: '#ffb3c8', intensity: 0.45 },
   ],
-}, dressing);
+}, dressing, { decalSwaps: { 'alien-vein': 'salt-crust' } });

@@ -1,7 +1,9 @@
 import type { CreatureId } from '../combat/creatures.ts';
 import type { AreaId, InstanceId, NpcId, WorldObjectId, DistrictId, RegionId } from '../ids.ts';
 import { tileKey, type Facing, type TilePoint, type TileRect } from './geometry.ts';
+import type { CompositionName } from '../content/compositions.ts';
 import type { Condition } from '../content/conditions.ts';
+import type { PrefabRole } from '../content/prefabs/types.ts';
 import type { AssemblyPlacement } from './assemblies.ts';
 import type { FloorDecal } from './decals.ts';
 import type { DistrictExit } from './blueprint.ts';
@@ -51,6 +53,15 @@ export interface ZoneAmbience {
   readonly fixtures?: 'working' | 'failing';
 }
 
+export interface DressedRoom {
+  readonly room: string;
+  readonly composition?: CompositionName;
+  readonly formal: boolean;
+  readonly prefabs: readonly string[];
+  readonly additions: readonly string[];
+  readonly setPieces: readonly { readonly prefab: string; readonly roles: readonly PrefabRole[] }[];
+}
+
 export interface DistrictDefinition {
   readonly id: DistrictId;
   readonly name: string;
@@ -74,6 +85,7 @@ export interface DistrictDefinition {
   readonly lights: readonly ZoneLight[];
   readonly decals?: readonly FloorDecal[];
   readonly landmarks?: readonly string[];
+  readonly dressingLog?: readonly DressedRoom[];
 }
 
 export interface TileLayout {

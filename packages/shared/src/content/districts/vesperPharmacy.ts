@@ -87,6 +87,7 @@ export const VESPER_PHARMACY: DistrictDefinition = furnish(plan, {
   name: 'Vesper Pharmacy',
   subtitle: 'Vesper Wing — Dispensary and Surgery',
   tier: 13,
+  condition: 'breached',
   region: 'vesper',
   deadEnd: true,
   recovery: { districtId: 'vesper-lodge', position: VESPER_LODGE_ANCHORS.recovery },

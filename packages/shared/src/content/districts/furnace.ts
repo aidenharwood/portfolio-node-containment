@@ -128,6 +128,7 @@ export const FURNACE: DistrictDefinition = furnish(plan, {
   name: 'The Furnace',
   subtitle: 'Site Meridian — Primary Reactor',
   tier: 7,
+  condition: 'alien',
   region: 'meridian-core',
   deadEnd: true,
   recovery: { districtId: 'deepwatch', position: DEEPWATCH_ANCHORS.recovery },

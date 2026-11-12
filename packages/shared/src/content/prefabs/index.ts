@@ -33,9 +33,23 @@ export type PrefabName = string;
 export const prefabsWithRole = (theme: DressingTheme, role: PrefabRole): readonly Prefab[] =>
   Object.values(PREFABS).filter((prefab) => prefab.themes.includes(theme) && prefab.roles.includes(role));
 
+export function findPrefabLibraryIssues(libraries: readonly (readonly Prefab[])[] = LIBRARIES, merged: Readonly<Record<string, Prefab>> = PREFABS): string[] {
+  const issues: string[] = [];
+  const seen = new Set<string>();
+  for (const prefab of libraries.flat()) {
+    if (seen.has(prefab.id)) issues.push(`prefab "${prefab.id}" is defined more than once`);
+    seen.add(prefab.id);
+  }
+  for (const [key, prefab] of Object.entries(merged)) if (key !== prefab.id) issues.push(`prefab "${prefab.id}" is filed under "${key}"`);
+  return issues;
+}
+
+const BACKED_ROLES: readonly PrefabRole[] = ['wall', 'bay'];
+
 export function findPrefabIssues(prefab: Prefab, objectOf: (id: WorldObjectId) => WorldObjectDefinition | undefined): string[] {
   const issues: string[] = [];
   if (prefab.roles.length === 0) issues.push(`${prefab.id} has empty roles`);
+  if (prefab.roles.some((role) => BACKED_ROLES.includes(role)) && !prefab.pieces.some((piece) => piece.dy === 0)) issues.push(`${prefab.id} backs onto a wall but has no back row`);
   const owner = new Map<string, number>();
   prefab.pieces.forEach((piece, index) => {
     const definition = objectOf(piece.objectId);

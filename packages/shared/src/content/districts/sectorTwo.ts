@@ -112,6 +112,7 @@ export const SECTOR_TWO: DistrictDefinition = furnish(plan, {
   name: 'Sector 2',
   subtitle: 'Quarantine — Do Not Enter',
   tier: 2,
+  condition: 'breached',
   region: 'meridian-core',
   deadEnd: true,
   recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },

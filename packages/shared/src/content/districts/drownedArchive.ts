@@ -141,6 +141,7 @@ export const DROWNED_ARCHIVE: DistrictDefinition = furnish(plan, {
   name: 'The Drowned Archive',
   subtitle: 'Site Meridian — Records Division, Lower Stacks',
   tier: 6,
+  condition: 'flooded',
   region: 'meridian-core',
   deadEnd: true,
   recovery: { districtId: 'deepwatch', position: DEEPWATCH_ANCHORS.recovery },
