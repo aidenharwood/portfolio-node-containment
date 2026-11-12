@@ -3697,3 +3697,35 @@
   justify-content: flex-end;
   margin-top: 14px;
 }
+
+.objective-resource .objective-quest-name {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.objective-resource-level {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.objective-resource-level.objective-locked {
+  color: var(--color-warning);
+}
+
+.objectives-untrack {
+  margin-left: auto;
+  background: none;
+  border: none;
+  padding: 0 2px;
+  color: var(--color-text-muted);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.objectives-untrack:hover,
+.objectives-untrack:focus-visible {
+  color: var(--color-text);
+}

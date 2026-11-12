@@ -204,7 +204,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     objectiveCreatures = resourceId ? new Set() : objectiveCreatureIds(self.quests, GAME_CONTENT.quests, preferred || null);
     refreshBeacons();
     guidanceRoute.invalidate();
-    objectives.update(self.quests);
+    objectives.update(self);
     sidePanel.update(self);
   };
 
@@ -497,7 +497,7 @@ export function createGameScreen(app: AppNavigator): Screen {
 
   const loop = (now: number) => {
     renderer.render(now, { hover, clickMarker, objectiveObjectIds: objectiveObjects, npcMarkers, objectiveCreatureIds: objectiveCreatures, objectiveBeacons, guidanceRoute: guidanceRoute.current(now, guidanceTracking.target) });
-    objectives.setVia(guidanceRoute.via);
+    objectives.setRoute(guidanceRoute.via, guidanceRoute.exhausted, guidanceRoute.unreachable);
     if (renderer.loading) loadingVisibleUntil = now + LOADING_MIN_VISIBLE_MS;
     loadingMarker.classList.toggle('visible', now < loadingVisibleUntil);
     refreshHover();
