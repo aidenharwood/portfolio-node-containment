@@ -1,7 +1,9 @@
-import { CHUNK_SIZE, type TilePoint } from '@containment/shared';
+import { CHUNK_SIZE, GAME_CONTENT, type TilePoint } from '@containment/shared';
 import { Group, Mesh, MeshBasicMaterial, MathUtils, PerspectiveCamera, PlaneGeometry, Scene, Vector3 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { SceneLook } from '../render/sceneLook.ts';
+import { ActorLayer } from './actorLayer.ts';
+import { actorsOf } from './actorSpecs.ts';
 import { createBlendedAmbience, sampleAmbience } from '../render/world/ambienceBlend.ts';
 import { LevelScene, type StreamReach } from '../render/world/levelScene.ts';
 import type { ActiveZone } from '../state/worldState.ts';
@@ -27,6 +29,7 @@ export class PreviewView {
   private readonly controls: OrbitControls;
   private readonly ambience = createBlendedAmbience();
   private readonly issueMarkers = new Group();
+  private readonly actors = new ActorLayer();
   private readonly issueGeometry = new PlaneGeometry(1, 1);
   private readonly issueMaterial = new MeshBasicMaterial({ color: 0xff3b3b, transparent: true, opacity: 0.75, depthWrite: false, toneMapped: false });
   private level: LevelScene | null = null;
@@ -41,7 +44,7 @@ export class PreviewView {
     this.canvas.style.cssText = 'width:100%;height:100%;display:block';
     container.append(this.canvas);
     this.sceneLook = new SceneLook(this.canvas, this.scene, this.camera, PREVIEW_FOG);
-    this.scene.add(this.issueMarkers);
+    this.scene.add(this.issueMarkers, this.actors.root);
     this.controls = new OrbitControls(this.camera, this.canvas);
     this.controls.enableDamping = true;
     this.controls.minDistance = 1.5;
@@ -68,6 +71,7 @@ export class PreviewView {
       this.level.dispose();
     }
     this.zone = zone;
+    this.actors.show(actorsOf(GAME_CONTENT, zone.definition));
     this.level = new LevelScene(zone);
     this.scene.add(this.level.root);
     this.sceneLook.resetLights();
@@ -95,6 +99,10 @@ export class PreviewView {
     for (const listener of this.listeners) listener(this.cameraState());
   }
 
+  showActors(on: boolean): void {
+    this.actors.setVisible(on);
+  }
+
   markIssues(tiles: readonly TilePoint[]): void {
     this.issueMarkers.clear();
     for (const tile of tiles) {
@@ -117,6 +125,7 @@ export class PreviewView {
     cancelAnimationFrame(this.frame);
     this.resizeObserver.disconnect();
     this.controls.dispose();
+    this.actors.dispose();
     this.issueGeometry.dispose();
     this.issueMaterial.dispose();
     this.level?.dispose();
@@ -160,6 +169,7 @@ export class PreviewView {
     const time = now / 1000;
     this.level.stream({ x: target.x, y: target.z }, BUILD_BUDGET_MS, this.reach);
     this.level.update(time, NOTHING, NOTHING, { open: NOTHING, self: null });
+    this.actors.update(time);
     this.level.updateCutaway(this.camera.position, target);
     this.sceneLook.aimKeyLight(target);
     this.sceneLook.updateLights(this.level.lights, delta, time, target);

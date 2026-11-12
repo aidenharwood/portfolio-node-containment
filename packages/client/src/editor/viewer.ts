@@ -124,6 +124,7 @@ function start(root: HTMLElement, content: GameContent, issuesFor: (content: Gam
     for (const button of viewButtons) button.setAttribute('aria-pressed', String(button.dataset.view === state.view));
     views.dataset.view = state.view;
     for (const [layer, input] of layerInputs) input.checked = state.layers.includes(layer);
+    preview3d.showActors(state.layers.includes('npcs'));
     const layersKey = state.layers.join(',');
     if (state.district !== shownDistrict || layersKey !== shownLayers) {
       const fresh = state.district !== shownDistrict;
