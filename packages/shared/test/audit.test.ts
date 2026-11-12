@@ -1,0 +1,63 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { describe, test } from 'node:test';
+import { GAME_CONTENT, type GameContent } from '../src/index.ts';
+import { auditDistrict, auditSeams, type AuditFinding } from '../src/world/audit.ts';
+import type { DistrictDefinition } from '../src/world/district.ts';
+import { buildDistrict, parseLayout } from '../src/world/layout.ts';
+import type { DistrictLayout } from '../src/world/layoutSchema.ts';
+
+const FIXTURE = new URL('./fixtures/sample-layout.json', import.meta.url);
+const sample = (): DistrictLayout => parseLayout(JSON.parse(readFileSync(FIXTURE, 'utf8')));
+
+const withLayouts = (layouts: readonly DistrictLayout[]): GameContent => {
+  const districts = new Map(GAME_CONTENT.districts);
+  for (const layout of layouts) districts.set(layout.id, buildDistrict(layout));
+  return { ...GAME_CONTENT, districts };
+};
+
+const kinds = (findings: readonly AuditFinding[], room: string): string[] => [...new Set(findings.filter((finding) => finding.room === room).map((finding) => finding.kind))].sort();
+
+describe('auditDistrict', () => {
+  test('a room with nothing in it is empty, dark and a lone dead end', () => {
+    const layout = { ...sample(), dressing: {} };
+    const findings = auditDistrict(withLayouts([layout]), 'sample-district', layout);
+    assert.deepEqual(kinds(findings, 'side'), ['dark-room', 'dead-end', 'empty-room']);
+  });
+
+  test('a room crammed far beyond its neighbours is a density outlier', () => {
+    const base = sample();
+    const planters = Array.from({ length: 20 }, (_, index) => ({ id: `crammed-${index}`, object: 'planter', at: { room: 'side', dx: index % 5, dy: 3 + Math.floor(index / 5) } }));
+    const layout: DistrictLayout = { ...base, dressing: {}, objects: [...base.objects, ...planters] };
+    const findings = auditDistrict(withLayouts([layout]), 'sample-district', layout);
+    assert.ok(findings.some((finding) => finding.kind === 'density' && finding.room === 'side'), JSON.stringify(findings));
+  });
+
+  test('a creature standing in a safe area is reported', () => {
+    const base = sample();
+    const layout: DistrictLayout = { ...base, creatures: [{ id: 'stray-mite', creature: 'gloam-mite', at: { room: 'hall', dx: 3, dy: 5 } }] };
+    const findings = auditDistrict(withLayouts([layout]), 'sample-district', layout);
+    assert.ok(findings.some((finding) => finding.kind === 'people' && finding.message.includes('stray-mite')));
+  });
+
+  test('the atrium plaza is not empty, dark or a dead end', () => {
+    const findings = auditDistrict(GAME_CONTENT, 'meridian-atrium');
+    assert.deepEqual(kinds(findings, 'plaza').filter((kind) => kind === 'empty-room' || kind === 'dark-room' || kind === 'dead-end'), []);
+  });
+});
+
+describe('auditSeams', () => {
+  test('the shipped main floor has matching seams', () => {
+    assert.deepEqual(auditSeams(GAME_CONTENT).filter((finding) => finding.message.includes('sector-two')), []);
+  });
+
+  test('an exit narrower than the exit it meets is reported', () => {
+    const sectorTwo = GAME_CONTENT.districts.get('sector-two') as DistrictDefinition;
+    const narrowed: DistrictDefinition = {
+      ...sectorTwo,
+      exits: Object.fromEntries(Object.entries(sectorTwo.exits ?? {}).map(([name, exit]) => [name, name === 'south' ? { ...exit, tiles: exit.tiles.slice(1) } : exit])),
+    };
+    const content: GameContent = { ...GAME_CONTENT, districts: new Map([...GAME_CONTENT.districts, ['sector-two', narrowed]]) };
+    assert.ok(auditSeams(content).some((finding) => finding.kind === 'seam' && finding.message.includes('sector-two')));
+  });
+});

@@ -14,7 +14,8 @@
     "test": "node --test --no-warnings=ExperimentalWarning \"packages/*/test/**/*.test.ts\"",
     "typecheck": "tsc -p packages/shared && tsc -p packages/server && tsc -p packages/client",
     "bench:tick": "node --no-warnings=ExperimentalWarning packages/server/bench/tickLoad.ts",
-    "plan": "node --no-warnings=ExperimentalWarning scripts/plan.ts"
+    "plan": "node --no-warnings=ExperimentalWarning scripts/plan.ts",
+    "audit": "node --no-warnings=ExperimentalWarning scripts/audit.ts"
   },
   "engines": {
     "node": ">=24"
