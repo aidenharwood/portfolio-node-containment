@@ -267,7 +267,7 @@ export class GameRenderer {
     this.followAmbience(focus, delta, false);
     this.keyLight.position.set(focus.x + 5, focus.y + 12, focus.z + 3);
     this.keyLight.target.position.copy(focus);
-    this.zone.update(time, overlay.objectiveObjectIds, this.world.depletedObjects, { open: this.world.openDoors, self: this.world.selfEntity?.to ?? null });
+    this.zone.update(time, overlay.objectiveObjectIds, this.world.depletedObjects, this.world.usedObjects, { open: this.world.openDoors, self: this.world.selfEntity?.to ?? null });
     this.zone.updateCutaway(this.cameraRig.camera.position, focus);
     this.updateLights(delta, time, focus);
     this.updateHover(overlay.hover, now);

@@ -8,6 +8,8 @@ import {
   routeGoals,
   objectiveDistricts,
   activeQuests,
+  objectUseFlag,
+  usedObjectsOf,
   type QuestLog,
   type RouteScene,
 } from '../src/index.ts';
@@ -97,6 +99,22 @@ describe('quest handholding', () => {
       assert.ok(objectiveDistricts(tracked.objectives, GAME_CONTENT).size > 0);
     });
   }
+
+  test('a multi-object step stops routing to the objects this character already used', () => {
+    const quest = GAME_CONTENT.quests.get('the-far-side');
+    const stepIndex = quest?.steps.findIndex((step) => step.id === 'restore-power') ?? -1;
+    const tracked = trackedQuest(activeAt('the-far-side', stepIndex), GAME_CONTENT.quests, null);
+    assert.ok(tracked);
+    const levelId = [...GAME_CONTENT.levels.values()].find((resolved) => resolved.objects.some((object) => object.instanceId === 'uc-junction-a'))?.id;
+    assert.ok(levelId);
+    const junction = (instanceId: string) => level(levelId).objects.find((object) => object.instanceId === instanceId)?.position;
+    const flags = [objectUseFlag('undercroft', 'uc-junction-a', 0), objectUseFlag('undercroft', 'uc-junction-c', 0), 'visited:undercroft'];
+    assert.deepEqual(usedObjectsOf(flags), ['uc-junction-a', 'uc-junction-c']);
+    const goals = routeGoals(tracked, { ...sceneOf(levelId), depletedInstances: new Set(usedObjectsOf(flags)) }, GAME_CONTENT);
+    const routed = (instanceId: string) => goals.some((goal) => goal.point === junction(instanceId));
+    assert.ok(routed('uc-junction-b'));
+    assert.ok(!routed('uc-junction-a') && !routed('uc-junction-c'));
+  });
 
   test('an area step routes to the middle of the area', () => {
     const log = activeAt('orientation-protocol', 4);

@@ -120,6 +120,7 @@ export class WorldState {
   private readonly tickClock = new TickClock(this.tickMs);
   layer = 1;
   self: SelfState | null = null;
+  usedObjects: ReadonlySet<string> = new Set();
   selfVitals: EntityVitals | null = null;
   combatTargetId: EntityId | null = null;
   private readonly hitListeners = new Set<(event: CombatHitEvent) => void>();
@@ -174,6 +175,7 @@ export class WorldState {
       }),
       connection.on('player.state', ({ self }) => {
         this.self = self;
+        this.usedObjects = new Set(self.usedObjects);
         this.selfVitals = self.vitals;
         this.emit('selfChanged');
         this.emit('vitalsChanged');

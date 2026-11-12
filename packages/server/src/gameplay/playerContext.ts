@@ -21,6 +21,7 @@ import {
   visitedDistrictFlag,
   visitedLevelFlag,
   studiedCreaturesOf,
+  usedObjectsOf,
   type WorldObjectId,
 } from '@containment/shared';
 import type { Player } from '../world/player.ts';
@@ -75,6 +76,7 @@ export const selfStateOf = (player: Player, content: GameContent): SelfState => 
     openDoors: [...openDoorsOf(player, content)],
     openPassages: openPassagesOf(player, content),
     studiedCreatures: studiedCreaturesOf(player.record.flags),
+    usedObjects: usedObjectsOf(player.record.flags),
     containmentClearance: clearanceTierOf(player.record.flags),
     contracts: player.record.contracts,
   };
