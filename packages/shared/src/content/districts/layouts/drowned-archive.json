@@ -158,7 +158,9 @@
     { "at": { "room": "sealed-room", "dx": 12, "dy": 17 }, "radius": 13, "color": "#b57cff", "intensity": 0.65 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "drowned-archive-reading-rooms-landmark", "prefab": "carousel-focal", "at": { "room": "reading-rooms", "dx": 4, "dy": 14 }, "facing": "south" }
+  ],
   "dressing": {
     "flood-stair": "camp",
     "stacks": "archive",
@@ -167,5 +169,5 @@
     "reading-rooms": "archive",
     "sealed-room": { "theme": "archive", "density": "sparse" }
   },
-  "furnish": { "cast": ["ambient-deckhand-1", "ambient-deckhand-2", "ambient-researcher-1", "ambient-researcher-2", "ambient-researcher-3", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4", "ambient-technician-1", "ambient-technician-2", "ambient-technician-3"] }
+  "furnish": { "cast": ["ambient-deckhand-1", "ambient-deckhand-2", "ambient-researcher-1", "ambient-researcher-2", "ambient-researcher-3", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4", "ambient-technician-1", "ambient-technician-2", "ambient-technician-3"], "landmarks": ["reading-rooms"] }
 }

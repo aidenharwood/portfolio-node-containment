@@ -11,6 +11,7 @@ import { FREIGHT_PREFABS } from './freight.ts';
 import { GARDEN_PREFABS } from './garden.ts';
 import { INDUSTRIAL_PREFABS } from './industrial.ts';
 import { LAB_PREFABS } from './lab.ts';
+import { LANDMARK_PREFABS } from './landmark.ts';
 import { MEDICAL_PREFABS } from './medical.ts';
 import { MINE_PREFABS } from './mine.ts';
 import { OFFICE_PREFABS } from './office.ts';
@@ -24,7 +25,7 @@ import { type DressingTheme, type Prefab, type PrefabRole } from './types.ts';
 
 export * from './types.ts';
 
-const LIBRARIES: readonly (readonly Prefab[])[] = [ARCHIVE_PREFABS, CAMP_PREFABS, CANTEEN_PREFABS, CIVIC_PREFABS, COLD_PREFABS, DORMITORY_PREFABS, FREIGHT_PREFABS, GARDEN_PREFABS, INDUSTRIAL_PREFABS, LAB_PREFABS, MEDICAL_PREFABS, MINE_PREFABS, OFFICE_PREFABS, POST_PREFABS, RITUAL_PREFABS, RUIN_PREFABS, TRANSIT_PREFABS, WET_PREFABS, WORKS_PREFABS];
+const LIBRARIES: readonly (readonly Prefab[])[] = [ARCHIVE_PREFABS, CAMP_PREFABS, CANTEEN_PREFABS, CIVIC_PREFABS, COLD_PREFABS, DORMITORY_PREFABS, FREIGHT_PREFABS, GARDEN_PREFABS, INDUSTRIAL_PREFABS, LAB_PREFABS, LANDMARK_PREFABS, MEDICAL_PREFABS, MINE_PREFABS, OFFICE_PREFABS, POST_PREFABS, RITUAL_PREFABS, RUIN_PREFABS, TRANSIT_PREFABS, WET_PREFABS, WORKS_PREFABS];
 
 export const PREFABS: Readonly<Record<string, Prefab>> = Object.fromEntries(LIBRARIES.flat().map((prefab) => [prefab.id, prefab]));
 

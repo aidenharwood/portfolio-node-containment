@@ -178,7 +178,9 @@
     { "at": { "room": "transit-bay", "dx": 14, "dy": 10 }, "radius": 11, "color": "#4fd8ff", "intensity": 0.5 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "intake-wing-arrival-landmark", "prefab": "decon-gate", "at": { "room": "arrival", "dx": 7, "dy": 7 }, "facing": "south" }
+  ],
   "dressing": {
     "arrival": { "theme": "civic", "density": "dense" },
     "lockers": "civic",
@@ -192,5 +194,5 @@
     "range": { "theme": "camp", "density": "sparse" },
     "transit-bay": { "theme": "civic", "density": "dense" }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["arrival"] }
 }

@@ -66,11 +66,13 @@
     { "at": { "room": "causeway", "dx": 62, "dy": 2 }, "radius": 9, "color": "#ff9a6a", "intensity": 0.45 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "calder-causeway-weighbridge-landmark", "prefab": "weighbridge", "at": { "room": "weighbridge", "dx": 15, "dy": 13 }, "facing": "south" }
+  ],
   "dressing": {
     "causeway": "mine",
     "salt-road": "mine",
     "weighbridge": "mine"
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["weighbridge"] }
 }

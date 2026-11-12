@@ -163,7 +163,9 @@
     { "at": { "room": "outfall", "dx": 21, "dy": 24 }, "radius": 13, "color": "#9a4dff", "intensity": 0.55 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "waterworks-filtration-beds-landmark", "prefab": "settling-tank-focal", "at": { "room": "filtration-beds", "dx": 60, "dy": 25 }, "facing": "south" }
+  ],
   "dressing": {
     "filtration-beds": "wet",
     "valve-gallery": "wet",
@@ -172,5 +174,5 @@
     "intake-screens": "wet",
     "outfall": "wet"
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["filtration-beds"] }
 }

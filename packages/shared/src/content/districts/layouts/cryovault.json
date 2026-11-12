@@ -169,7 +169,9 @@
     { "at": { "room": "curator-office", "dx": 21, "dy": 12 }, "radius": 13, "color": "#c8f0ff", "intensity": 0.6 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "cryovault-pod-hall-landmark", "prefab": "cryo-core-focal", "at": { "room": "pod-hall", "dx": 6, "dy": 11 }, "facing": "south" }
+  ],
   "dressing": {
     "freezer-plant": "cold",
     "fenn-nook": "camp",
@@ -180,5 +182,5 @@
     "curator-office": { "theme": "office", "density": "sparse" },
     "husk-ward": "medical"
   },
-  "furnish": { "cast": ["ambient-deckhand-1", "ambient-deckhand-2", "ambient-researcher-1", "ambient-researcher-2", "ambient-researcher-3", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4", "ambient-technician-1", "ambient-technician-2", "ambient-technician-3"] }
+  "furnish": { "cast": ["ambient-deckhand-1", "ambient-deckhand-2", "ambient-researcher-1", "ambient-researcher-2", "ambient-researcher-3", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4", "ambient-technician-1", "ambient-technician-2", "ambient-technician-3"], "landmarks": ["pod-hall"] }
 }

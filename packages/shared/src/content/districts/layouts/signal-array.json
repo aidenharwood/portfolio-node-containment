@@ -151,7 +151,9 @@
     { "at": { "room": "dish-gantry", "dx": 53, "dy": 13 }, "radius": 13, "color": "#ffb87a", "intensity": 0.45 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "signal-array-dish-gantry-landmark", "prefab": "great-dish-focal", "at": { "room": "dish-gantry", "dx": 17, "dy": 15 }, "facing": "south" }
+  ],
   "dressing": {
     "uplink-lobby": "office",
     "relay-floor": "industrial",
@@ -160,5 +162,5 @@
     "spool-store": "freight",
     "dish-gantry": "industrial"
   },
-  "furnish": { "cast": ["ambient-deckhand-1", "ambient-deckhand-2", "ambient-researcher-1", "ambient-researcher-2", "ambient-researcher-3", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4", "ambient-technician-1", "ambient-technician-2", "ambient-technician-3"] }
+  "furnish": { "cast": ["ambient-deckhand-1", "ambient-deckhand-2", "ambient-researcher-1", "ambient-researcher-2", "ambient-researcher-3", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4", "ambient-technician-1", "ambient-technician-2", "ambient-technician-3"], "landmarks": ["dish-gantry"] }
 }

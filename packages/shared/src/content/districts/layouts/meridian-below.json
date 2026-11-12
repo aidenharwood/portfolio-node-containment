@@ -179,7 +179,9 @@
     { "at": { "room": "the-front-door", "dx": 22, "dy": 3 }, "radius": 14, "color": "#b57cff", "intensity": 0.8 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "meridian-below-inverted-plaza-landmark", "prefab": "inverted-court", "at": { "room": "inverted-plaza", "dx": 34, "dy": 8 }, "facing": "south" }
+  ],
   "dressing": {
     "arrival": "civic",
     "empty-medbay": "medical",
@@ -193,5 +195,5 @@
     "the-front-door": { "theme": "works", "composition": "yard" },
     "drowned-records": "archive"
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["inverted-plaza"] }
 }

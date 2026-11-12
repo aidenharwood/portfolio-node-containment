@@ -13,12 +13,6 @@
     { "kind": "room", "id": "cold-ward", "rect": { "x": 89, "y": 22, "width": 20, "height": 60 }, "floor": "plating", "shape": "rect" },
     { "kind": "room", "id": "almoners-office", "rect": { "x": 24, "y": 50, "width": 62, "height": 32 }, "floor": "rust", "shape": "rect" },
     { "kind": "room", "id": "cold-lockers", "rect": { "x": 2, "y": 50, "width": 20, "height": 32 }, "floor": "concrete", "shape": "octagon" },
-    { "kind": "patch", "rect": { "x": 16, "y": 12, "width": 60, "height": 2 }, "tile": "coolant" },
-    { "kind": "patch", "rect": { "x": 30, "y": 12, "width": 4, "height": 2 }, "tile": "grate" },
-    { "kind": "patch", "rect": { "x": 56, "y": 12, "width": 4, "height": 2 }, "tile": "grate" },
-    { "kind": "patch", "rect": { "x": 16, "y": 32, "width": 60, "height": 2 }, "tile": "coolant" },
-    { "kind": "patch", "rect": { "x": 30, "y": 32, "width": 4, "height": 2 }, "tile": "grate" },
-    { "kind": "patch", "rect": { "x": 56, "y": 32, "width": 4, "height": 2 }, "tile": "grate" },
     { "kind": "patch", "rect": { "x": 99, "y": 34, "width": 6, "height": 6 }, "tile": "coolant" },
     { "kind": "patch", "rect": { "x": 93, "y": 60, "width": 7, "height": 8 }, "tile": "coolant" },
     { "kind": "link", "from": "lift-landing", "to": "mortuary", "width": 3, "floor": "door" },
@@ -28,7 +22,21 @@
     { "kind": "link", "from": "cold-ward", "to": "almoners-office", "width": 3, "floor": "door" },
     { "kind": "link", "from": "mortuary", "to": "cold-lockers", "width": 7, "floor": "concrete" },
     { "kind": "link", "from": "cold-lockers", "to": "almoners-office", "width": 5, "floor": "concrete" },
-    { "kind": "pillars", "room": "mortuary", "everyX": 12, "everyY": 11, "inset": 6 }
+    { "kind": "pillars", "room": "mortuary", "everyX": 14, "everyY": 46, "inset": 7 },
+    { "kind": "patch", "rect": { "x": 8, "y": 1, "width": 1, "height": 9 }, "tile": "wall" },
+    { "kind": "patch", "rect": { "x": 8, "y": 38, "width": 1, "height": 9 }, "tile": "wall" },
+    { "kind": "patch", "rect": { "x": 20, "y": 1, "width": 1, "height": 9 }, "tile": "wall" },
+    { "kind": "patch", "rect": { "x": 20, "y": 38, "width": 1, "height": 9 }, "tile": "wall" },
+    { "kind": "patch", "rect": { "x": 32, "y": 1, "width": 1, "height": 9 }, "tile": "wall" },
+    { "kind": "patch", "rect": { "x": 32, "y": 38, "width": 1, "height": 9 }, "tile": "wall" },
+    { "kind": "patch", "rect": { "x": 44, "y": 1, "width": 1, "height": 9 }, "tile": "wall" },
+    { "kind": "patch", "rect": { "x": 44, "y": 38, "width": 1, "height": 9 }, "tile": "wall" },
+    { "kind": "patch", "rect": { "x": 56, "y": 1, "width": 1, "height": 9 }, "tile": "wall" },
+    { "kind": "patch", "rect": { "x": 56, "y": 38, "width": 1, "height": 9 }, "tile": "wall" },
+    { "kind": "patch", "rect": { "x": 68, "y": 1, "width": 1, "height": 9 }, "tile": "wall" },
+    { "kind": "patch", "rect": { "x": 68, "y": 38, "width": 1, "height": 9 }, "tile": "wall" },
+    { "kind": "patch", "rect": { "x": 80, "y": 1, "width": 1, "height": 9 }, "tile": "wall" },
+    { "kind": "patch", "rect": { "x": 80, "y": 38, "width": 1, "height": 9 }, "tile": "wall" }
   ],
   "tiles": [],
   "areas": [
@@ -66,7 +74,7 @@
     { "id": "vcl-mortuary-litter-3", "object": "litter-puddle", "at": { "room": "mortuary", "dx": 22, "dy": 4 } },
     { "id": "vcl-mortuary-litter-4", "object": "litter-gravel", "at": { "room": "mortuary", "dx": 76, "dy": 35 } },
     { "id": "vcl-mortuary-litter-5", "object": "litter-rubble", "at": { "room": "mortuary", "dx": 43, "dy": 9 } },
-    { "id": "vcl-mortuary-litter-6", "object": "litter-papers", "at": { "room": "mortuary", "dx": 54, "dy": 37 } },
+    { "id": "vcl-mortuary-litter-6", "object": "litter-papers", "at": { "room": "mortuary", "dx": 55, "dy": 37 } },
     { "id": "vcl-mortuary-litter-7", "object": "litter-debris", "at": { "room": "mortuary", "dx": 30, "dy": 30 } },
     { "id": "vcl-mortuary-litter-8", "object": "litter-puddle", "at": { "room": "mortuary", "dx": 38, "dy": 16 } },
     { "id": "vcl-mortuary-litter-9", "object": "litter-gravel", "at": { "room": "mortuary", "dx": 69, "dy": 28 } },
@@ -82,7 +90,7 @@
   ],
   "npcs": [],
   "creatures": [
-    { "id": "vcl-mortuary-attendant-a", "creature": "morgue-attendant", "at": { "room": "mortuary", "dx": 77, "dy": 2 } },
+    { "id": "vcl-mortuary-attendant-a", "creature": "morgue-attendant", "at": { "room": "mortuary", "dx": 79, "dy": 2 } },
     { "id": "vcl-mortuary-attendant-b", "creature": "morgue-attendant", "at": { "room": "mortuary", "dx": 49, "dy": 21 } },
     { "id": "vcl-mortuary-attendant-c", "creature": "morgue-attendant", "at": { "room": "mortuary", "dx": 14, "dy": 2 } },
     { "id": "vcl-mortuary-attendant-d", "creature": "morgue-attendant", "at": { "room": "mortuary", "dx": 7, "dy": 24 } },
@@ -97,7 +105,7 @@
     { "id": "vcl-attendant-mortuary-pack-4", "creature": "morgue-attendant", "at": { "room": "mortuary", "dx": 69, "dy": 39 } },
     { "id": "vcl-attendant-mortuary-pack-5", "creature": "morgue-attendant", "at": { "room": "mortuary", "dx": 52, "dy": 44 } },
     { "id": "vcl-attendant-mortuary-pack-6", "creature": "morgue-attendant", "at": { "room": "mortuary", "dx": 10, "dy": 14 } },
-    { "id": "vcl-attendant-mortuary-pack-7", "creature": "morgue-attendant", "at": { "room": "mortuary", "dx": 5, "dy": 41 } },
+    { "id": "vcl-attendant-mortuary-pack-7", "creature": "morgue-attendant", "at": { "room": "mortuary", "dx": 7, "dy": 41 } },
     { "id": "vcl-attendant-mortuary-pack-8", "creature": "morgue-attendant", "at": { "room": "mortuary", "dx": 39, "dy": 44 } },
     { "id": "vcl-attendant-mortuary-pack-9", "creature": "morgue-attendant", "at": { "room": "mortuary", "dx": 27, "dy": 20 } },
     { "id": "vcl-attendant-ward-pack-1", "creature": "morgue-attendant", "at": { "room": "cold-ward", "dx": 15, "dy": 38 } },
@@ -120,7 +128,9 @@
     { "at": { "room": "almoners-office", "dx": 6, "dy": 29 }, "radius": 9, "color": "#6ad8b8", "intensity": 0.5 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "vesper-cellars-mortuary-landmark", "prefab": "bier-focal", "at": { "room": "mortuary", "dx": 39, "dy": 21 }, "facing": "south" }
+  ],
   "dressing": {
     "lift-landing": "ward",
     "mortuary": "ward",
@@ -128,5 +138,5 @@
     "almoners-office": { "theme": "office", "density": "sparse" },
     "cold-lockers": "cold"
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["mortuary"] }
 }

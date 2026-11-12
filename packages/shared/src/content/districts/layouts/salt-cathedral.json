@@ -11,18 +11,20 @@
   "steps": [
     { "kind": "room", "id": "cloister", "rect": { "x": 1, "y": 1, "width": 106, "height": 23 }, "floor": "plating", "shape": "rect" },
     { "kind": "room", "id": "nave-steps", "rect": { "x": 1, "y": 36, "width": 30, "height": 30 }, "floor": "concrete", "shape": "rect" },
-    { "kind": "room", "id": "the-nave", "rect": { "x": 33, "y": 26, "width": 74, "height": 50 }, "floor": "carpet", "shape": "rect" },
+    { "kind": "room", "id": "the-nave", "rect": { "x": 33, "y": 38, "width": 74, "height": 26 }, "floor": "carpet", "shape": "rect" },
     { "kind": "room", "id": "reliquary", "rect": { "x": 1, "y": 78, "width": 106, "height": 22 }, "floor": "plating", "shape": "rect" },
-    { "kind": "patch", "rect": { "x": 48, "y": 34, "width": 10, "height": 6 }, "tile": "coolant" },
-    { "kind": "patch", "rect": { "x": 84, "y": 34, "width": 10, "height": 6 }, "tile": "coolant" },
-    { "kind": "patch", "rect": { "x": 48, "y": 62, "width": 10, "height": 6 }, "tile": "coolant" },
-    { "kind": "patch", "rect": { "x": 84, "y": 62, "width": 10, "height": 6 }, "tile": "coolant" },
+    { "kind": "room", "id": "north-chapel", "rect": { "x": 45, "y": 27, "width": 50, "height": 9 }, "floor": "concrete", "shape": "rect" },
+    { "kind": "room", "id": "south-chapel", "rect": { "x": 45, "y": 66, "width": 50, "height": 9 }, "floor": "concrete", "shape": "rect" },
     { "kind": "link", "from": "nave-steps", "to": "the-nave", "width": 2, "floor": "door" },
     { "kind": "link", "from": "nave-steps", "to": "cloister", "width": 7, "floor": "concrete" },
     { "kind": "link", "from": "nave-steps", "to": "reliquary", "width": 7, "floor": "concrete" },
-    { "kind": "pillars", "room": "the-nave", "everyX": 12, "everyY": 10, "inset": 5 },
     { "kind": "pillars", "room": "reliquary", "everyX": 13, "everyY": 8, "inset": 4 },
     { "kind": "pillars", "room": "cloister", "everyX": 13, "everyY": 8, "inset": 4 },
+    { "kind": "pillars", "room": "the-nave", "everyX": 8, "everyY": 18, "inset": 4 },
+    { "kind": "link", "from": "the-nave", "to": "north-chapel", "width": 9, "floor": "carpet" },
+    { "kind": "link", "from": "the-nave", "to": "south-chapel", "width": 9, "floor": "carpet" },
+    { "kind": "patch", "rect": { "x": 64, "y": 29, "width": 12, "height": 4 }, "tile": "coolant" },
+    { "kind": "patch", "rect": { "x": 64, "y": 69, "width": 12, "height": 4 }, "tile": "coolant" },
     { "kind": "exit", "id": "west", "room": "nave-steps", "side": "west", "width": 13, "gate": false }
   ],
   "tiles": [],
@@ -30,7 +32,9 @@
     { "room": "cloister", "name": "Salt Cloister" },
     { "room": "nave-steps", "name": "Nave Steps" },
     { "room": "the-nave", "name": "The Nave", "multiCombat": true },
-    { "room": "reliquary", "name": "Reliquary" }
+    { "room": "reliquary", "name": "Reliquary" },
+    { "room": "north-chapel", "name": "North Chapel" },
+    { "room": "south-chapel", "name": "South Chapel" }
   ],
   "anchors": {},
   "recovery": { "districtId": "calder-gatehouse", "at": { "room": "cloister", "dx": 28, "dy": 20 } },
@@ -85,9 +89,9 @@
     { "id": "sc-reliquary-acolyte-b", "creature": "cathedral-acolyte", "at": { "room": "reliquary", "dx": 41, "dy": 18 } },
     { "id": "sc-reliquary-acolyte-c", "creature": "cathedral-acolyte", "at": { "room": "reliquary", "dx": 76, "dy": 2 } },
     { "id": "sc-reliquary-acolyte-d", "creature": "cathedral-acolyte", "at": { "room": "reliquary", "dx": 99, "dy": 16 } },
-    { "id": "sc-nave-acolyte-a", "creature": "cathedral-acolyte", "at": { "room": "the-nave", "dx": 29, "dy": 3 } },
-    { "id": "sc-nave-acolyte-b", "creature": "cathedral-acolyte", "at": { "room": "the-nave", "dx": 29, "dy": 46 } },
-    { "id": "sc-nave-bishop", "creature": "the-salt-bishop", "at": { "room": "the-nave", "dx": 51, "dy": 25 } },
+    { "id": "sc-nave-acolyte-a", "creature": "cathedral-acolyte", "at": { "room": "the-nave", "dx": 29, "dy": 1 } },
+    { "id": "sc-nave-acolyte-b", "creature": "cathedral-acolyte", "at": { "room": "the-nave", "dx": 29, "dy": 23 } },
+    { "id": "sc-nave-bishop", "creature": "the-salt-bishop", "at": { "room": "the-nave", "dx": 51, "dy": 13 } },
     { "id": "sc-acolyte-cloister-pack-1", "creature": "cathedral-acolyte", "at": { "room": "cloister", "dx": 41, "dy": 15 } },
     { "id": "sc-acolyte-cloister-pack-2", "creature": "cathedral-acolyte", "at": { "room": "cloister", "dx": 84, "dy": 7 } },
     { "id": "sc-acolyte-cloister-pack-3", "creature": "cathedral-acolyte", "at": { "room": "cloister", "dx": 34, "dy": 7 } },
@@ -112,27 +116,33 @@
     { "id": "sc-acolyte-reliquary-pack-10", "creature": "cathedral-acolyte", "at": { "room": "reliquary", "dx": 61, "dy": 1 } },
     { "id": "sc-acolyte-reliquary-pack-11", "creature": "cathedral-acolyte", "at": { "room": "reliquary", "dx": 85, "dy": 10 } },
     { "id": "sc-acolyte-reliquary-pack-12", "creature": "cathedral-acolyte", "at": { "room": "reliquary", "dx": 24, "dy": 5 } },
-    { "id": "sc-acolyte-nave-pack-1", "creature": "cathedral-acolyte", "at": { "room": "the-nave", "dx": 28, "dy": 39 } },
-    { "id": "sc-acolyte-nave-pack-2", "creature": "cathedral-acolyte", "at": { "room": "the-nave", "dx": 41, "dy": 20 } },
-    { "id": "sc-acolyte-nave-pack-3", "creature": "cathedral-acolyte", "at": { "room": "the-nave", "dx": 17, "dy": 30 } },
-    { "id": "sc-acolyte-nave-pack-4", "creature": "cathedral-acolyte", "at": { "room": "the-nave", "dx": 6, "dy": 28 } }
+    { "id": "sc-acolyte-nave-pack-1", "creature": "cathedral-acolyte", "at": { "room": "the-nave", "dx": 28, "dy": 20 } },
+    { "id": "sc-acolyte-nave-pack-2", "creature": "cathedral-acolyte", "at": { "room": "the-nave", "dx": 41, "dy": 10 } },
+    { "id": "sc-acolyte-nave-pack-3", "creature": "cathedral-acolyte", "at": { "room": "the-nave", "dx": 17, "dy": 15 } },
+    { "id": "sc-acolyte-nave-pack-4", "creature": "cathedral-acolyte", "at": { "room": "the-nave", "dx": 6, "dy": 14 } }
   ],
   "lights": [
     { "at": { "room": "nave-steps", "dx": 12, "dy": 15 }, "radius": 11, "color": "#ffd27f", "intensity": 0.5 },
     { "at": { "room": "cloister", "dx": 22, "dy": 8 }, "radius": 13, "color": "#ffd27f", "intensity": 0.45 },
     { "at": { "room": "cloister", "dx": 80, "dy": 8 }, "radius": 14, "color": "#ffb3c8", "intensity": 0.45 },
-    { "at": { "room": "the-nave", "dx": 14, "dy": 25 }, "radius": 13, "color": "#ffd27f", "intensity": 0.55 },
-    { "at": { "room": "the-nave", "dx": 59, "dy": 25 }, "radius": 14, "color": "#ffb3c8", "intensity": 0.7 },
+    { "at": { "room": "the-nave", "dx": 14, "dy": 13 }, "radius": 13, "color": "#ffd27f", "intensity": 0.55 },
+    { "at": { "room": "the-nave", "dx": 59, "dy": 13 }, "radius": 14, "color": "#ffb3c8", "intensity": 0.7 },
     { "at": { "room": "reliquary", "dx": 22, "dy": 11 }, "radius": 13, "color": "#ffd27f", "intensity": 0.4 },
     { "at": { "room": "reliquary", "dx": 86, "dy": 13 }, "radius": 14, "color": "#ffb3c8", "intensity": 0.45 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "salt-cathedral-the-nave-landmark", "prefab": "salt-altar", "at": { "room": "the-nave", "dx": 61, "dy": 10 }, "facing": "west" },
+    { "id": "salt-cathedral-north-chapel-shrine", "prefab": "salt-shrine", "at": { "room": "north-chapel", "dx": 23, "dy": 0 }, "facing": "south" },
+    { "id": "salt-cathedral-south-chapel-shrine", "prefab": "salt-shrine", "at": { "room": "south-chapel", "dx": 23, "dy": 8 }, "facing": "north" }
+  ],
   "dressing": {
     "cloister": "chapel",
     "nave-steps": "chapel",
     "the-nave": { "theme": "chapel", "density": "sparse" },
-    "reliquary": "chapel"
+    "reliquary": "chapel",
+    "north-chapel": "chapel",
+    "south-chapel": "chapel"
   },
-  "furnish": { "decalSwaps": { "alien-vein": "salt-crust" } }
+  "furnish": { "landmarks": ["the-nave"], "decalSwaps": { "alien-vein": "salt-crust" } }
 }

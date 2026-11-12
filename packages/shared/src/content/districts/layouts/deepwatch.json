@@ -128,7 +128,9 @@
     { "at": { "room": "lift-gallery", "dx": 10, "dy": 12 }, "radius": 11, "color": "#ff9a4d", "intensity": 0.5 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "deepwatch-concourse-landmark", "prefab": "gauge-focal", "at": { "room": "concourse", "dx": 20, "dy": 4 }, "facing": "south" }
+  ],
   "dressing": {
     "command-post": "office",
     "concourse": "civic",
@@ -138,5 +140,5 @@
     "stores": { "theme": "freight", "composition": "yard" },
     "lift-gallery": "civic"
   },
-  "furnish": { "cast": ["ambient-deckhand-1", "ambient-deckhand-2", "ambient-researcher-1", "ambient-researcher-2", "ambient-researcher-3", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4", "ambient-technician-1", "ambient-technician-2", "ambient-technician-3"] }
+  "furnish": { "cast": ["ambient-deckhand-1", "ambient-deckhand-2", "ambient-researcher-1", "ambient-researcher-2", "ambient-researcher-3", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4", "ambient-technician-1", "ambient-technician-2", "ambient-technician-3"], "landmarks": ["concourse"] }
 }

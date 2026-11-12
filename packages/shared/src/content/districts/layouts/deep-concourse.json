@@ -198,7 +198,12 @@
     { "at": { "room": "records-wing", "dx": 6, "dy": 2 }, "radius": 9, "color": "#4fd8ff", "intensity": 0.5 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "deep-concourse-nw-turn-landmark", "prefab": "beacon-red-turn", "at": { "room": "nw-turn", "dx": 6, "dy": 5 }, "facing": "south" },
+    { "id": "deep-concourse-ne-turn-landmark", "prefab": "beacon-green-turn", "at": { "room": "ne-turn", "dx": 9, "dy": 6 }, "facing": "south" },
+    { "id": "deep-concourse-sw-turn-landmark", "prefab": "beacon-blue-turn", "at": { "room": "sw-turn", "dx": 8, "dy": 13 }, "facing": "south" },
+    { "id": "deep-concourse-se-turn-landmark", "prefab": "beacon-amber-turn", "at": { "room": "se-turn", "dx": 9, "dy": 13 }, "facing": "south" }
+  ],
   "dressing": {
     "nw-turn": { "theme": "cold", "composition": "court" },
     "ne-turn": { "theme": "cold", "composition": "court" },
@@ -213,5 +218,5 @@
     "west-span": { "theme": "cold", "density": "sparse" },
     "east-span": { "theme": "cold", "density": "sparse" }
   },
-  "furnish": { "cast": ["ambient-deckhand-1", "ambient-deckhand-2", "ambient-researcher-1", "ambient-researcher-2", "ambient-researcher-3", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4", "ambient-technician-1", "ambient-technician-2", "ambient-technician-3"] }
+  "furnish": { "cast": ["ambient-deckhand-1", "ambient-deckhand-2", "ambient-researcher-1", "ambient-researcher-2", "ambient-researcher-3", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4", "ambient-technician-1", "ambient-technician-2", "ambient-technician-3"], "landmarks": ["nw-turn", "ne-turn", "sw-turn", "se-turn"] }
 }

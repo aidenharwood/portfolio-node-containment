@@ -192,7 +192,9 @@
     { "at": { "room": "culverts", "dx": 17, "dy": 20 }, "radius": 13, "color": "#7cf29a", "intensity": 0.45 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "service-yards-gantry-yard-landmark", "prefab": "gantry-bay", "at": { "room": "gantry-yard", "dx": 25, "dy": 8 }, "facing": "south" }
+  ],
   "dressing": {
     "loading-dock": "freight",
     "cold-store": "cold",
@@ -202,5 +204,5 @@
     "laundry": "industrial",
     "gantry-yard": "freight"
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["gantry-yard"] }
 }

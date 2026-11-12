@@ -12,6 +12,7 @@ import { DEEP_OBJECT_BUILDERS } from './deepObjectModels.ts';
 import { FURNITURE_BUILDERS } from './furnitureModels.ts';
 import { RUIN_BUILDERS } from './ruinModels.ts';
 import { SET_PIECE_BUILDERS } from './setPieceModels.ts';
+import { LANDMARK_BUILDERS } from './landmarkModels.ts';
 import { HUB_BUILDERS } from './hubModels.ts';
 import { INSTALLATION_BUILDERS } from './installationModels.ts';
 import { LITTER_BUILDERS } from './litterModels.ts';
@@ -348,6 +349,7 @@ const BUILDERS: Readonly<Record<WorldObjectModel, ObjectBuilder>> = {
   ...FURNITURE_BUILDERS,
   ...RUIN_BUILDERS,
   ...SET_PIECE_BUILDERS,
+  ...LANDMARK_BUILDERS,
   ...CLUTTER_BUILDERS,
   junctionBox,
   pipeCluster,

@@ -65,11 +65,13 @@
     { "at": { "room": "causeway", "dx": 8, "dy": 2 }, "radius": 7, "color": "#ff7a2a", "intensity": 0.55 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "furnace-causeway-ember-landing-landmark", "prefab": "slag-ladle-focal", "at": { "room": "ember-landing", "dx": 24, "dy": 7 }, "facing": "south" }
+  ],
   "dressing": {
     "furnace-approach": "industrial",
     "ember-landing": "camp",
     "causeway": { "theme": "industrial", "density": "sparse" }
   },
-  "furnish": { "cast": ["ambient-deckhand-1", "ambient-deckhand-2", "ambient-researcher-1", "ambient-researcher-2", "ambient-researcher-3", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4", "ambient-technician-1", "ambient-technician-2", "ambient-technician-3"] }
+  "furnish": { "cast": ["ambient-deckhand-1", "ambient-deckhand-2", "ambient-researcher-1", "ambient-researcher-2", "ambient-researcher-3", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4", "ambient-technician-1", "ambient-technician-2", "ambient-technician-3"], "landmarks": ["ember-landing"] }
 }

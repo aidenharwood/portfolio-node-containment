@@ -136,7 +136,9 @@
     { "at": { "room": "isolation-ward", "dx": 19, "dy": 2 }, "radius": 7, "color": "#c8f6ff", "intensity": 0.4 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "sector-two-inner-chamber-landmark", "prefab": "containment-focal", "at": { "room": "inner-chamber", "dx": 19, "dy": 9 }, "facing": "south" }
+  ],
   "dressing": {
     "research-lab": "lab",
     "observation-gallery": "lab",
@@ -146,5 +148,5 @@
     "airlock": { "theme": "works", "density": "sparse" },
     "isolation-ward": "medical"
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["inner-chamber"] }
 }

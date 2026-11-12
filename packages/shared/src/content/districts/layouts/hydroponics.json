@@ -148,7 +148,9 @@
     { "at": { "room": "grow-hall", "dx": 16, "dy": 41 }, "radius": 13, "color": "#c8ff7a", "intensity": 0.6 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "hydroponics-grow-hall-landmark", "prefab": "heart-bloom-bed", "at": { "room": "grow-hall", "dx": 19, "dy": 33 }, "facing": "south" }
+  ],
   "dressing": {
     "seed-vault": { "theme": "garden", "condition": "pristine" },
     "platform": "civic",
@@ -156,5 +158,5 @@
     "greenhouse": "garden",
     "grow-hall": "garden"
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["grow-hall"] }
 }

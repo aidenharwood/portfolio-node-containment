@@ -184,7 +184,9 @@
     { "at": { "room": "workshop", "dx": 24, "dy": 13 }, "radius": 11, "color": "#ff4d4d", "intensity": 0.55 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "undercroft-pump-hall-landmark", "prefab": "beam-engine-focal", "at": { "room": "pump-hall", "dx": 33, "dy": 5 }, "facing": "south" }
+  ],
   "dressing": {
     "landing": "camp",
     "tunnel": { "theme": "wet", "density": "sparse", "composition": "workroom" },
@@ -197,5 +199,5 @@
     "flooded-sump": "wet",
     "workshop": "industrial"
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["pump-hall"] }
 }

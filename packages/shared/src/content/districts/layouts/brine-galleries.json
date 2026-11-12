@@ -141,7 +141,9 @@
     { "at": { "room": "wight-drifts", "dx": 42, "dy": 34 }, "radius": 14, "color": "#ff9a6a", "intensity": 0.45 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "brine-galleries-brine-pans-landmark", "prefab": "salt-cone-heap", "at": { "room": "brine-pans", "dx": 58, "dy": 11 }, "facing": "south" }
+  ],
   "dressing": {
     "salt-landing": "mine",
     "brine-pans": "mine",
@@ -149,5 +151,5 @@
     "gate-approach": "mine",
     "tally-house": "office"
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["brine-pans"] }
 }

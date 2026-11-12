@@ -50,9 +50,13 @@
     { "at": { "room": "lodge", "dx": 32, "dy": 41 }, "radius": 9, "color": "#6ad8b8", "intensity": 0.5 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "vesper-lodge-lodge-landmark", "prefab": "call-board-focal", "at": { "room": "lodge", "dx": 26, "dy": 23 }, "facing": "south" },
+    { "id": "vesper-lodge-gurney-park", "prefab": "gurney-row", "at": { "room": "lodge", "dx": 10, "dy": 8 }, "facing": "south" },
+    { "id": "vesper-lodge-screened-bay", "prefab": "gurney-screen", "at": { "room": "lodge", "dx": 40, "dy": 34 }, "facing": "south" }
+  ],
   "dressing": {
     "lodge": { "theme": "camp", "density": "dense" }
   },
-  "furnish": { "cast": ["ambient-porter-1", "ambient-porter-2", "ambient-orderly-1", "ambient-orderly-2", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4"] }
+  "furnish": { "cast": ["ambient-porter-1", "ambient-porter-2", "ambient-orderly-1", "ambient-orderly-2", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4"], "landmarks": ["lodge"] }
 }

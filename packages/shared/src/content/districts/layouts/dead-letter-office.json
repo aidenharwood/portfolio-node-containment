@@ -113,7 +113,9 @@
     { "at": { "room": "dispatch", "dx": 22, "dy": 10 }, "radius": 14, "color": "#ff8a4a", "intensity": 0.6 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "dead-letter-office-sorting-floor-landmark", "prefab": "pneumatic-focal", "at": { "room": "sorting-floor", "dx": 46, "dy": 6 }, "facing": "south" }
+  ],
   "dressing": {
     "dead-letter-stacks": "post",
     "franking-hall": { "theme": "post", "composition": "court" },
@@ -121,5 +123,5 @@
     "sorting-floor": { "theme": "post", "composition": "hall" },
     "dispatch": { "theme": "post", "composition": "hall" }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["sorting-floor"] }
 }

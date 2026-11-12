@@ -10,27 +10,35 @@
   "size": { "width": 108, "height": 101 },
   "steps": [
     { "kind": "room", "id": "stockroom", "rect": { "x": 1, "y": 1, "width": 106, "height": 23 }, "floor": "plating", "shape": "rect" },
-    { "kind": "room", "id": "dispensary", "rect": { "x": 77, "y": 36, "width": 30, "height": 30 }, "floor": "concrete", "shape": "rect" },
-    { "kind": "room", "id": "surgery", "rect": { "x": 1, "y": 26, "width": 74, "height": 50 }, "floor": "carpet", "shape": "rect" },
+    { "kind": "room", "id": "dispensary", "rect": { "x": 71, "y": 32, "width": 36, "height": 36 }, "floor": "concrete", "shape": "round" },
+    { "kind": "room", "id": "surgery", "rect": { "x": 1, "y": 39, "width": 66, "height": 23 }, "floor": "carpet", "shape": "rect" },
     { "kind": "room", "id": "cold-store", "rect": { "x": 1, "y": 78, "width": 106, "height": 22 }, "floor": "plating", "shape": "rect" },
-    { "kind": "patch", "rect": { "x": 14, "y": 34, "width": 10, "height": 6 }, "tile": "coolant" },
-    { "kind": "patch", "rect": { "x": 50, "y": 34, "width": 10, "height": 6 }, "tile": "coolant" },
-    { "kind": "patch", "rect": { "x": 14, "y": 62, "width": 10, "height": 6 }, "tile": "coolant" },
-    { "kind": "patch", "rect": { "x": 50, "y": 62, "width": 10, "height": 6 }, "tile": "coolant" },
+    { "kind": "room", "id": "theatre-one", "rect": { "x": 6, "y": 27, "width": 24, "height": 9 }, "floor": "plating", "shape": "rect" },
+    { "kind": "room", "id": "theatre-two", "rect": { "x": 37, "y": 27, "width": 24, "height": 9 }, "floor": "plating", "shape": "rect" },
+    { "kind": "room", "id": "recovery-one", "rect": { "x": 6, "y": 65, "width": 24, "height": 9 }, "floor": "carpet", "shape": "rect" },
+    { "kind": "room", "id": "recovery-two", "rect": { "x": 37, "y": 65, "width": 24, "height": 9 }, "floor": "carpet", "shape": "rect" },
     { "kind": "link", "from": "dispensary", "to": "surgery", "width": 2, "floor": "door" },
     { "kind": "link", "from": "dispensary", "to": "stockroom", "width": 7, "floor": "concrete" },
     { "kind": "link", "from": "dispensary", "to": "cold-store", "width": 7, "floor": "concrete" },
-    { "kind": "pillars", "room": "surgery", "everyX": 12, "everyY": 10, "inset": 5 },
     { "kind": "pillars", "room": "cold-store", "everyX": 13, "everyY": 8, "inset": 4 },
     { "kind": "pillars", "room": "stockroom", "everyX": 13, "everyY": 8, "inset": 4 },
-    { "kind": "exit", "id": "east", "room": "dispensary", "side": "east", "width": 13, "gate": false }
+    { "kind": "pillars", "room": "surgery", "everyX": 9, "everyY": 13, "inset": 5 },
+    { "kind": "link", "from": "surgery", "to": "theatre-one", "width": 3, "floor": "door" },
+    { "kind": "link", "from": "surgery", "to": "theatre-two", "width": 3, "floor": "door" },
+    { "kind": "link", "from": "surgery", "to": "recovery-one", "width": 3, "floor": "door" },
+    { "kind": "link", "from": "surgery", "to": "recovery-two", "width": 3, "floor": "door" },
+    { "kind": "exit", "id": "east", "room": "dispensary", "side": "east", "width": 13, "offset": 12, "gate": false }
   ],
   "tiles": [],
   "areas": [
     { "room": "stockroom", "name": "Stockroom" },
     { "room": "dispensary", "name": "Dispensary" },
     { "room": "surgery", "name": "The Surgery", "multiCombat": true },
-    { "room": "cold-store", "name": "Cold Store" }
+    { "room": "cold-store", "name": "Cold Store" },
+    { "room": "theatre-one", "name": "Theatre One" },
+    { "room": "theatre-two", "name": "Theatre Two" },
+    { "room": "recovery-one", "name": "Recovery One" },
+    { "room": "recovery-two", "name": "Recovery Two" }
   ],
   "anchors": {},
   "recovery": { "districtId": "vesper-lodge", "at": { "room": "stockroom", "dx": 30, "dy": 20 } },
@@ -41,7 +49,7 @@
     { "id": "vp-still-d", "object": "tincture-still", "at": { "room": "cold-store", "dx": 104, "dy": 20 } },
     { "id": "vp-still-e", "object": "tincture-still", "at": { "room": "cold-store", "dx": 51, "dy": 11 } },
     { "id": "vp-still-f", "object": "tincture-still", "at": { "room": "cold-store", "dx": 1, "dy": 1 } },
-    { "id": "vp-dispensary-papers", "object": "litter-papers", "at": { "room": "dispensary", "dx": 17, "dy": 2 } },
+    { "id": "vp-dispensary-papers", "object": "litter-papers", "at": { "room": "dispensary", "dx": 21, "dy": 4 } },
     { "id": "vp-stockroom-debris", "object": "litter-debris", "at": { "room": "stockroom", "dx": 25, "dy": 14 } },
     { "id": "vp-cold-puddle", "object": "litter-puddle", "at": { "room": "cold-store", "dx": 64, "dy": 2 } },
     { "id": "vp-stockroom-node-1", "object": "tincture-still", "at": { "room": "stockroom", "dx": 101, "dy": 9 } },
@@ -50,11 +58,11 @@
     { "id": "vp-cold-node-1", "object": "tincture-still", "at": { "room": "cold-store", "dx": 38, "dy": 3 } },
     { "id": "vp-cold-node-2", "object": "tincture-still", "at": { "room": "cold-store", "dx": 23, "dy": 16 } },
     { "id": "vp-cold-node-3", "object": "tincture-still", "at": { "room": "cold-store", "dx": 75, "dy": 8 } },
-    { "id": "vp-dispensary-litter-1", "object": "litter-papers", "at": { "room": "dispensary", "dx": 19, "dy": 14 } },
-    { "id": "vp-dispensary-litter-2", "object": "litter-debris", "at": { "room": "dispensary", "dx": 25, "dy": 18 } },
-    { "id": "vp-dispensary-litter-3", "object": "litter-puddle", "at": { "room": "dispensary", "dx": 13, "dy": 15 } },
-    { "id": "vp-dispensary-litter-4", "object": "litter-gravel", "at": { "room": "dispensary", "dx": 12, "dy": 8 } },
-    { "id": "vp-dispensary-litter-5", "object": "litter-rubble", "at": { "room": "dispensary", "dx": 26, "dy": 12 } }
+    { "id": "vp-dispensary-litter-1", "object": "litter-papers", "at": { "room": "dispensary", "dx": 23, "dy": 17 } },
+    { "id": "vp-dispensary-litter-2", "object": "litter-debris", "at": { "room": "dispensary", "dx": 30, "dy": 22 } },
+    { "id": "vp-dispensary-litter-3", "object": "litter-puddle", "at": { "room": "dispensary", "dx": 16, "dy": 18 } },
+    { "id": "vp-dispensary-litter-4", "object": "litter-gravel", "at": { "room": "dispensary", "dx": 15, "dy": 10 } },
+    { "id": "vp-dispensary-litter-5", "object": "litter-rubble", "at": { "room": "dispensary", "dx": 31, "dy": 15 } }
   ],
   "assemblies": [
     { "id": "vp-surgery-door", "assembly": "surgery-door", "at": { "link": ["dispensary", "surgery"], "index": 0 }, "facing": "west" }
@@ -69,9 +77,9 @@
     { "id": "vp-cold-wraith-b", "creature": "prescription-wraith", "at": { "room": "cold-store", "dx": 64, "dy": 18 } },
     { "id": "vp-cold-wraith-c", "creature": "prescription-wraith", "at": { "room": "cold-store", "dx": 29, "dy": 2 } },
     { "id": "vp-cold-wraith-d", "creature": "prescription-wraith", "at": { "room": "cold-store", "dx": 6, "dy": 16 } },
-    { "id": "vp-surgery-wraith-a", "creature": "prescription-wraith", "at": { "room": "surgery", "dx": 44, "dy": 3 } },
-    { "id": "vp-surgery-wraith-b", "creature": "prescription-wraith", "at": { "room": "surgery", "dx": 44, "dy": 46 } },
-    { "id": "vp-surgery-physician", "creature": "the-chief-physician", "at": { "room": "surgery", "dx": 22, "dy": 25 } },
+    { "id": "vp-surgery-wraith-a", "creature": "prescription-wraith", "at": { "room": "surgery", "dx": 39, "dy": 1 } },
+    { "id": "vp-surgery-wraith-b", "creature": "prescription-wraith", "at": { "room": "surgery", "dx": 39, "dy": 21 } },
+    { "id": "vp-surgery-physician", "creature": "the-chief-physician", "at": { "room": "surgery", "dx": 20, "dy": 11 } },
     { "id": "vp-wraith-stockroom-pack-1", "creature": "prescription-wraith", "at": { "room": "stockroom", "dx": 93, "dy": 9 } },
     { "id": "vp-wraith-stockroom-pack-2", "creature": "prescription-wraith", "at": { "room": "stockroom", "dx": 32, "dy": 21 } },
     { "id": "vp-wraith-stockroom-pack-3", "creature": "prescription-wraith", "at": { "room": "stockroom", "dx": 80, "dy": 17 } },
@@ -96,27 +104,33 @@
     { "id": "vp-wraith-cold-pack-10", "creature": "prescription-wraith", "at": { "room": "cold-store", "dx": 23, "dy": 9 } },
     { "id": "vp-wraith-cold-pack-11", "creature": "prescription-wraith", "at": { "room": "cold-store", "dx": 87, "dy": 14 } },
     { "id": "vp-wraith-cold-pack-12", "creature": "prescription-wraith", "at": { "room": "cold-store", "dx": 58, "dy": 1 } },
-    { "id": "vp-wraith-surgery-pack-1", "creature": "prescription-wraith", "at": { "room": "surgery", "dx": 68, "dy": 16 } },
-    { "id": "vp-wraith-surgery-pack-2", "creature": "prescription-wraith", "at": { "room": "surgery", "dx": 40, "dy": 28 } },
-    { "id": "vp-wraith-surgery-pack-3", "creature": "prescription-wraith", "at": { "room": "surgery", "dx": 18, "dy": 32 } },
-    { "id": "vp-wraith-surgery-pack-4", "creature": "prescription-wraith", "at": { "room": "surgery", "dx": 55, "dy": 26 } }
+    { "id": "vp-wraith-surgery-pack-1", "creature": "prescription-wraith", "at": { "room": "surgery", "dx": 61, "dy": 7 } },
+    { "id": "vp-wraith-surgery-pack-2", "creature": "prescription-wraith", "at": { "room": "surgery", "dx": 36, "dy": 12 } },
+    { "id": "vp-wraith-surgery-pack-3", "creature": "prescription-wraith", "at": { "room": "surgery", "dx": 16, "dy": 14 } },
+    { "id": "vp-wraith-surgery-pack-4", "creature": "prescription-wraith", "at": { "room": "surgery", "dx": 49, "dy": 11 } }
   ],
   "lights": [
-    { "at": { "room": "dispensary", "dx": 17, "dy": 15 }, "radius": 11, "color": "#ffe8b8", "intensity": 0.5 },
+    { "at": { "room": "dispensary", "dx": 21, "dy": 18 }, "radius": 11, "color": "#ffe8b8", "intensity": 0.5 },
     { "at": { "room": "stockroom", "dx": 83, "dy": 8 }, "radius": 13, "color": "#c88ad8", "intensity": 0.45 },
     { "at": { "room": "stockroom", "dx": 25, "dy": 8 }, "radius": 14, "color": "#c88ad8", "intensity": 0.45 },
-    { "at": { "room": "surgery", "dx": 59, "dy": 25 }, "radius": 13, "color": "#ffe8b8", "intensity": 0.55 },
-    { "at": { "room": "surgery", "dx": 18, "dy": 25 }, "radius": 14, "color": "#ff6a7a", "intensity": 0.65 },
+    { "at": { "room": "surgery", "dx": 53, "dy": 11 }, "radius": 13, "color": "#ffe8b8", "intensity": 0.55 },
+    { "at": { "room": "surgery", "dx": 16, "dy": 11 }, "radius": 14, "color": "#ff6a7a", "intensity": 0.65 },
     { "at": { "room": "cold-store", "dx": 83, "dy": 11 }, "radius": 13, "color": "#c88ad8", "intensity": 0.4 },
     { "at": { "room": "cold-store", "dx": 19, "dy": 13 }, "radius": 14, "color": "#ffe8b8", "intensity": 0.4 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "vesper-pharmacy-dispensary-landmark", "prefab": "apothecary-focal", "at": { "room": "dispensary", "dx": 14, "dy": 21 }, "facing": "south" }
+  ],
   "dressing": {
     "stockroom": "freight",
     "dispensary": "medical",
     "surgery": { "theme": "medical", "density": "sparse" },
-    "cold-store": "cold"
+    "cold-store": "cold",
+    "theatre-one": "medical",
+    "theatre-two": "medical",
+    "recovery-one": "ward",
+    "recovery-two": "ward"
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["dispensary"] }
 }

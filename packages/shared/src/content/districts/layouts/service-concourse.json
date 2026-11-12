@@ -64,7 +64,9 @@
     { "at": { "room": "concourse", "dx": 96, "dy": 2 }, "radius": 9, "color": "#ffd27f", "intensity": 0.45 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "service-concourse-container-stacks-landmark", "prefab": "stack-tower-yard", "at": { "room": "container-stacks", "dx": 15, "dy": 1 }, "facing": "south" }
+  ],
   "dressing": {
     "concourse": "freight",
     "freight-office": "office",
@@ -72,5 +74,5 @@
     "drivers-rest": "canteen",
     "salvage-lot": "freight"
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["container-stacks"] }
 }

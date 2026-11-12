@@ -146,7 +146,12 @@
     { "at": { "room": "east-boulevard", "dx": 6, "dy": 89 }, "radius": 9, "color": "#ffd27f", "intensity": 0.45 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "meridian-circuit-signal-court-landmark", "prefab": "signal-court-mast", "at": { "room": "signal-court", "dx": 4, "dy": 9 }, "facing": "south" },
+    { "id": "meridian-circuit-pump-court-landmark", "prefab": "pump-court-fountain", "at": { "room": "pump-court", "dx": 10, "dy": 5 }, "facing": "south" },
+    { "id": "meridian-circuit-lantern-court-landmark", "prefab": "lantern-court", "at": { "room": "lantern-court", "dx": 5, "dy": 13 }, "facing": "south" },
+    { "id": "meridian-circuit-ledger-court-landmark", "prefab": "ledger-court", "at": { "room": "ledger-court", "dx": 10, "dy": 15 }, "facing": "south" }
+  ],
   "dressing": {
     "north-boulevard": "civic",
     "south-boulevard": "civic",
@@ -165,5 +170,5 @@
     "east-stores": "freight",
     "duty-office": "office"
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["signal-court", "pump-court", "lantern-court", "ledger-court"] }
 }

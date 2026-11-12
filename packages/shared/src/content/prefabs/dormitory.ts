@@ -2,7 +2,7 @@ import { prefab, row, type Prefab } from './types.ts';
 
 export const DORMITORY_PREFABS: readonly Prefab[] = [
   prefab('bunk-row', ['dormitory'], ['wall', 'bay'], [...row('bunk-bed', 3), ...row('packing-crate', 3, 1)]),
-  prefab('bunk-block', ['dormitory'], ['island'], [...row('packing-crate', 3, 0), ...row('bunk-bed', 3, 1, 'north'), ...row('bunk-bed', 3, 2), ...row('packing-crate', 3, 3)]),
-  prefab('bunk-pair', ['dormitory'], ['wall', 'bay'], [[0, 0, 'bunk-bed'], [1, 0, 'storage-rack'], [2, 0, 'bunk-bed'], [0, 1, 'packing-crate'], [2, 1, 'packing-crate']]),
+  prefab('bunk-block', ['dormitory', 'camp'], ['island'], [...row('packing-crate', 3, 0), ...row('bunk-bed', 3, 1, 'north'), ...row('bunk-bed', 3, 2), ...row('packing-crate', 3, 3)]),
+  prefab('bunk-pair', ['dormitory', 'camp'], ['wall', 'bay'], [[0, 0, 'bunk-bed'], [1, 0, 'storage-rack'], [2, 0, 'bunk-bed'], [0, 1, 'packing-crate'], [2, 1, 'packing-crate']]),
   prefab('dormitory-corner', ['dormitory'], ['corner'], [[0, 0, 'storage-rack']]),
 ];

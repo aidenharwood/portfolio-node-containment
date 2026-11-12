@@ -20,6 +20,26 @@ This review goes with `2026-11-12-map-audit.md`, the findings `npm run audit` ge
 | -------- | ------- | --- |
 | The Verdant Fold | `west-crease` and `east-crease`: 80 walkable tiles each, nothing in them | A `grove-planters` set-piece in the quiet end of each, mirrored (`verdant-fold-setPieces-1` and `-2`). Room dressing could not help: each crease opens onto the grove along most of its length, and the composer keeps clear of openings. Made in the editor and saved through it. |
 
+## Second pass: landmarks and a full 3D look
+
+Every district was shot whole in 2D and at its landmark in 3D with headless Chrome, which renders the 3D view fully even when the browser pane is hidden. That covers all 31 districts in both views.
+
+| District | Finding | Fix |
+| -------- | ------- | --- |
+| Every district but the Atrium and the Verdant Fold | No landmark you could see from a distance | A focal set-piece in each, from 23 new landmark objects (`content/prefabs/landmark.ts`, models in `render/models/landmarkModels.ts`). The Atrium keeps its hand-composed plaza and the Fold its grove. |
+| Calder Deeps, Salt Cathedral, Cold Ward, Vesper Pharmacy, Vesper Wards | Great halls repeated one pattern of pillars and four pools | The halls were reshaped: the Old Workings is a round cavern, the Cathedral nave has a north and a south chapel, and the Pharmacy surgery has two theatres and two recovery wards off it. |
+| Service Concourse | Its gantry crane repeated the Service Yards' landmark | A Stack Tower: four containers stacked crosswise with a beacon on top. |
+| The Cryovault | Its containment tank repeated Sector 2's | A Cryo Core: a blue-lit glass column of coolant with frosted feed pipes. |
+| Porter's Lodge | Its brazier repeated the Calder Gatehouse's | A Ward Call Board: an oak board with a lamp for every bed and a brass bell. |
+| Furnace Causeway | A third brazier | A Slag Ladle on its trunnions, still glowing. |
+| Verdance Concourse | Its "landmark" was six planters, invisible from a distance | A Bell-Jar Orchard: one fruit tree under a brass-ribbed glass dome. |
+| Deep Concourse | Its four turns copied the Circuit's four plaza landmarks, so the Deep read like the main floor | Four survey beacons, red, green, blue and amber, one per turn, so you can tell where you are on the ring by colour. |
+| Salt Cathedral chapels | Each held the Founders' statue, a main-floor civic piece that is also Sector 3's landmark | A salt shrine of candles and offering sacks against each chapel's back wall. |
+| Calder Gatehouse | Carpeted like the Vesper wing; Calder is rust and concrete | Concrete floor. |
+| Porter's Lodge and Calder Gatehouse | 58×44 halls with about 3 placements per 100 tiles. The camp library had 7 prefabs, each limited to 3 per room, so no composition could fill them. | Bunks and mess tables added to the camp library (`bunk-block`, `bunk-pair`, `long-table`); this also furnishes the camp rooms in eight other districts. Each outpost got two themed set-pieces of its own: gurneys in the Lodge, salt sacks and mine carts in the Gatehouse. About 70 placements became about 170. |
+
+Every landmark object now stands in one district only, apart from the four Circuit plazas, which each hold one of their own.
+
 ## Not problems
 
 - **Deep Concourse `north-span`, `south-span`, `west-span`, `east-span`: "one way in and nothing to do".** These are bridges over the chasm. Their far ends cross on walk-under deck spans, which the heuristic counts as void. They are walkways by design.
@@ -33,6 +53,9 @@ These are judgement calls, so they are left unchanged.
 2. **Verdant Fold creases: "one way in and nothing to do".** They now hold planters but no reason to visit. I suggest a resource node (a herb or spore node from the Fold's crafting tier) in one of them, so a side pocket rewards a detour. [West](http://localhost:5173/editor.html?district=verdant-fold&room=west-crease) · [East](http://localhost:5173/editor.html?district=verdant-fold&room=east-crease)
 3. **Service Concourse `container-stacks` and `salvage-lot`: dressed side rooms, one way in, nothing to do.** I suggest a scrap or salvage resource node in each, matching their names. [Stacks](http://localhost:5173/editor.html?district=service-concourse&room=container-stacks) · [Lot](http://localhost:5173/editor.html?district=service-concourse&room=salvage-lot)
 4. **Verdance Concourse `irrigation-plant` and `compost-yard`: the same pattern.** I suggest a moss or soil node in the compost yard and a water valve or pump in the irrigation plant, perhaps tied to a Hydroponics side quest. [Plant](http://localhost:5173/editor.html?district=verdance-concourse&room=irrigation-plant) · [Yard](http://localhost:5173/editor.html?district=verdance-concourse&room=compost-yard)
+
+5. **Salt Cathedral `north-chapel` and `south-chapel`, Vesper Pharmacy `theatre-one`, `theatre-two`, `recovery-one` and `recovery-two`: the same pattern, from the second pass.** They are dressed and lit off their great halls but hold nothing to do. I suggest a salt node or a lore object in one chapel, and a medicine cabinet or herb node in one recovery ward. [North chapel](http://localhost:5173/editor.html?district=salt-cathedral&room=north-chapel) · [Theatre one](http://localhost:5173/editor.html?district=vesper-pharmacy&room=theatre-one)
+6. **Porter's Lodge and Calder Gatehouse are still near copies of each other in plan**, mirrored across the tram line. Their landmarks, floors and set-pieces now differ, but a second room or a mezzanine in one of them would make each outpost recognisable from its shape alone.
 
 None of these is a bug. Each is a room that looks finished but gives the player no reason to walk into it. Adding nodes or quest objects changes gameplay, so I have left those for you.
 

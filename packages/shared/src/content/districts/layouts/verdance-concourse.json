@@ -63,7 +63,9 @@
     { "at": { "room": "concourse", "dx": 97, "dy": 2 }, "radius": 9, "color": "#9fd8ff", "intensity": 0.45 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "verdance-concourse-seed-exchange-landmark", "prefab": "bell-jar-orchard", "at": { "room": "seed-exchange", "dx": 17, "dy": 4 }, "facing": "south" }
+  ],
   "dressing": {
     "concourse": "garden",
     "seed-exchange": { "theme": "garden", "density": "dense" },
@@ -71,5 +73,5 @@
     "gardeners-row": "garden",
     "compost-yard": "garden"
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["seed-exchange"] }
 }

@@ -8,7 +8,7 @@
   "ambience": { "darkness": 0.42, "tint": "#1a1410", "fog": "#1e1712" },
   "size": { "width": 60, "height": 46 },
   "steps": [
-    { "kind": "room", "id": "gatehouse", "rect": { "x": 1, "y": 1, "width": 58, "height": 44 }, "floor": "carpet", "shape": "rect" },
+    { "kind": "room", "id": "gatehouse", "rect": { "x": 1, "y": 1, "width": 58, "height": 44 }, "floor": "concrete", "shape": "rect" },
     { "kind": "pillars", "room": "gatehouse", "everyX": 9, "everyY": 9, "inset": 6 },
     { "kind": "patch", "rect": { "x": 5, "y": 1, "width": 1, "height": 44 }, "tile": "hazard" },
     { "kind": "track", "points": [{ "x": 3, "y": 0 }, { "x": 3, "y": 44 }] },
@@ -50,9 +50,13 @@
     { "at": { "room": "gatehouse", "dx": 32, "dy": 41 }, "radius": 9, "color": "#ffd27f", "intensity": 0.5 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "calder-gatehouse-gatehouse-landmark", "prefab": "hearth-circle", "at": { "room": "gatehouse", "dx": 26, "dy": 23 }, "facing": "south" },
+    { "id": "calder-gatehouse-salt-store", "prefab": "salt-sacks", "at": { "room": "gatehouse", "dx": 14, "dy": 8 }, "facing": "south" },
+    { "id": "calder-gatehouse-cart-line", "prefab": "mine-carts", "at": { "room": "gatehouse", "dx": 40, "dy": 8 }, "facing": "south" }
+  ],
   "dressing": {
     "gatehouse": { "theme": "camp", "density": "dense" }
   },
-  "furnish": { "cast": ["ambient-saltworker-1", "ambient-saltworker-2", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4", "ambient-technician-1", "ambient-technician-2", "ambient-technician-3"] }
+  "furnish": { "cast": ["ambient-saltworker-1", "ambient-saltworker-2", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4", "ambient-technician-1", "ambient-technician-2", "ambient-technician-3"], "landmarks": ["gatehouse"] }
 }

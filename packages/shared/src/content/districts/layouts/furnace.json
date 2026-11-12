@@ -144,7 +144,9 @@
     { "at": { "room": "reactor-heart", "dx": 15, "dy": 20 }, "radius": 14, "color": "#ff7a2a", "intensity": 0.85 }
   ],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "furnace-reactor-heart-landmark", "prefab": "reactor-focal", "at": { "room": "reactor-heart", "dx": 20, "dy": 2 }, "facing": "south" }
+  ],
   "dressing": {
     "ember-galleries": "industrial",
     "foundry": "industrial",
@@ -152,5 +154,5 @@
     "reactor-heart": { "theme": "industrial", "density": "sparse" },
     "coolant-lock": "camp"
   },
-  "furnish": { "cast": ["ambient-deckhand-1", "ambient-deckhand-2", "ambient-researcher-1", "ambient-researcher-2", "ambient-researcher-3", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4", "ambient-technician-1", "ambient-technician-2", "ambient-technician-3"] }
+  "furnish": { "cast": ["ambient-deckhand-1", "ambient-deckhand-2", "ambient-researcher-1", "ambient-researcher-2", "ambient-researcher-3", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4", "ambient-technician-1", "ambient-technician-2", "ambient-technician-3"], "landmarks": ["reactor-heart"] }
 }
