@@ -82,7 +82,7 @@ Site Meridian is **one large facility you can walk across**, not a set of rooms 
 | Dungeon floors | Winding round chambers with loops; boss room furthest from the lift | The boss room |
 | Pockets | Small, wrong and symmetrical where the original is not | Whatever it mirrors |
 
-**Floors.** A district has one base floor and at most one accent floor from `plating`, `concrete`, `rust` and `terrazzo`. Functional floors (`grate`, `soil`, `hazard`, `door`, `track`, `coolant`) do not count. The accent marks the rooms that matter, such as civic halls, wards or a nave, so walking room to room does not jump between tile sets. The renderer lays a brass threshold wherever two floors meet. `carpet` is retired: use `terrazzo`.
+**Floors.** A district has one base floor and at most one accent floor from `plating`, `concrete`, `rust` and `terrazzo`. Functional floors (`grate`, `soil`, `hazard`, `door`, `track`, `coolant`) do not count. The accent marks the rooms that matter, such as civic halls, wards or a nave, so walking room to room does not jump between tile sets. Where two of those floors meet, the renderer feathers one into the other along a ragged edge, so district joins read as one surface; a brass threshold still edges `soil` and `grate`. `carpet` is retired: use `terrazzo`.
 
 ## Reserved ground
 

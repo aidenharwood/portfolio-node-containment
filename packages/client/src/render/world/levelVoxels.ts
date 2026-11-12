@@ -89,7 +89,7 @@ export function paintTileRows(volume: DenseVolume, layout: TileLayout, region: T
       if (kind === 'wall') paintWall(volume, layout, tx, ty);
       else if (kind === 'glass') paintGlass(volume, tx, ty);
       else if (kind === 'track') paintTrack(volume, trackAxis(layout, tx, ty), tx, ty);
-      else paintFloor(volume, kind, tx, ty, kind === 'door' ? doorAxis(layout, tx, ty) : 'x', decals?.get(tileKey({ x: tx, y: ty })), seamsOf(layout, kind, tx, ty));
+      else paintFloor(volume, kind, tx, ty, kind === 'door' ? doorAxis(layout, tx, ty) : 'x', decals?.get(tileKey({ x: tx, y: ty })), seamsOf(layout, kind, tx, ty), blendNeighborsOf(layout, kind, tx, ty));
       if (kind === 'door') paintLintel(volume, layout, tx, ty);
     }
   }
@@ -105,11 +105,70 @@ interface Seams {
   readonly west: boolean;
 }
 
+const BLENDED: ReadonlySet<TileKindId> = new Set<TileKindId>(['plating', 'concrete', 'rust', 'carpet', 'terrazzo']);
+const BLEND_REACH = R;
+
+interface BlendNeighbor {
+  readonly kind: TileKindId;
+  readonly tx: number;
+  readonly ty: number;
+  readonly sign: number;
+}
+
+const blends = (a: TileKindId, b: TileKindId): boolean => a !== b && BLENDED.has(a) && BLENDED.has(b);
+
+function blendNeighborsOf(layout: TileLayout, kind: TileKindId, tx: number, ty: number): readonly BlendNeighbor[] {
+  if (!BLENDED.has(kind)) return [];
+  const neighbors: BlendNeighbor[] = [];
+  for (let dy = -1; dy <= 1; dy++) {
+    for (let dx = -1; dx <= 1; dx++) {
+      const other = layout.tileAt({ x: tx + dx, y: ty + dy });
+      if (blends(kind, other)) neighbors.push({ kind: other, tx: tx + dx, ty: ty + dy, sign: kind < other ? 1 : -1 });
+    }
+  }
+  return neighbors;
+}
+
+const BLEND_BASE: Partial<Record<TileKindId, number>> = {
+  plating: COLORS.plating,
+  concrete: COLORS.concrete,
+  rust: COLORS.rust,
+  carpet: COLORS.carpet,
+  terrazzo: COLORS.terrazzo,
+};
+
+interface FloorBlend {
+  readonly kind: TileKindId | null;
+  readonly tint: number;
+  readonly weight: number;
+}
+
+function floorBlend(own: TileKindId, neighbors: readonly BlendNeighbor[], vx: number, vz: number): FloorBlend | null {
+  let nearest: BlendNeighbor | null = null;
+  let best = Infinity;
+  for (const neighbor of neighbors) {
+    const dx = Math.max(neighbor.tx * R - (vx + 0.5), 0, vx + 0.5 - (neighbor.tx + 1) * R);
+    const dz = Math.max(neighbor.ty * R - (vz + 0.5), 0, vz + 0.5 - (neighbor.ty + 1) * R);
+    const distance = Math.hypot(dx, dz);
+    if (distance < best) {
+      best = distance;
+      nearest = neighbor;
+    }
+  }
+  if (!nearest || best >= BLEND_REACH) return null;
+  const frontier = (smoothNoise(vx, vz, 5, 53) - 0.5) * 1.8 * BLEND_REACH + (noise3(vx, vz, 0, 59) - 0.5) * 3;
+  return {
+    kind: nearest.sign * frontier > best ? nearest.kind : null,
+    tint: mix(BLEND_BASE[own] ?? COLORS.concrete, BLEND_BASE[nearest.kind] ?? COLORS.concrete, 0.5),
+    weight: 0.5 * (1 - best / BLEND_REACH),
+  };
+}
+
 function seamsOf(layout: TileLayout, kind: TileKindId, tx: number, ty: number): Seams | null {
   if (!SURFACES.has(kind) || kind === 'grate') return null;
   const differs = (x: number, y: number): boolean => {
     const other = layout.tileAt({ x, y });
-    return other !== kind && SURFACES.has(other);
+    return other !== kind && SURFACES.has(other) && !blends(kind, other);
   };
   const seams = { north: differs(tx, ty - 1), south: differs(tx, ty + 1), east: differs(tx + 1, ty), west: differs(tx - 1, ty) };
   return seams.north || seams.south || seams.east || seams.west ? seams : null;
@@ -119,7 +178,7 @@ function onSeam(seams: Seams, lx: number, lz: number): boolean {
   return (seams.west && lx === 0) || (seams.east && lx === R - 1) || (seams.north && lz === 0) || (seams.south && lz === R - 1);
 }
 
-function paintFloor(volume: DenseVolume, kind: TileKindId, tx: number, ty: number, axis: Axis, cells?: readonly DecalCell[], seams?: Seams | null): void {
+function paintFloor(volume: DenseVolume, kind: TileKindId, tx: number, ty: number, axis: Axis, cells?: readonly DecalCell[], seams?: Seams | null, blendNeighbors: readonly BlendNeighbor[] = []): void {
   const tile: FloorTile = { tx, ty, tone: noise3(tx, ty, 0, 11), axis };
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
@@ -130,8 +189,10 @@ function paintFloor(volume: DenseVolume, kind: TileKindId, tx: number, ty: numbe
         volume.set(vx, SUBFLOOR, vz, jitter(COLORS.coolantBed, 0.03, smoothNoise(vx, vz, 6, 41)));
         continue;
       }
-      const surface = floorVoxel(kind, lx, lz, vx, vz, tile);
-      if (!surface) continue;
+      const blend = blendNeighbors.length > 0 ? floorBlend(kind, blendNeighbors, vx, vz) : null;
+      const drawn = floorVoxel(blend?.kind ?? kind, lx, lz, vx, vz, tile);
+      if (!drawn) continue;
+      const surface = blend && drawn.kind === VOXEL_SOLID ? { color: mix(drawn.color, blend.tint, blend.weight), kind: drawn.kind } : drawn;
       if (seams && onSeam(seams, lx, lz)) {
         volume.set(vx, FLOOR, vz, jitter(COLORS.threshold, 0.02, tile.tone));
         continue;
