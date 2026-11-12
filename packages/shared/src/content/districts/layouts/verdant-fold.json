@@ -33,7 +33,9 @@
     { "id": "vf-grove-litter-1", "object": "litter-gravel", "at": { "room": "grove", "dx": 8, "dy": 2 } },
     { "id": "vf-grove-litter-2", "object": "litter-puddle", "at": { "room": "grove", "dx": 16, "dy": 6 } },
     { "id": "vf-grove-litter-3", "object": "litter-gravel", "at": { "room": "grove", "dx": 6, "dy": 11 } },
-    { "id": "vf-grove-litter-4", "object": "litter-puddle", "at": { "room": "grove", "dx": 23, "dy": 10 } }
+    { "id": "vf-grove-litter-4", "object": "litter-puddle", "at": { "room": "grove", "dx": 23, "dy": 10 } },
+    { "id": "vf-west-crease-vine", "object": "strangler-vine", "at": { "room": "west-crease", "dx": 2, "dy": 9 } },
+    { "id": "vf-east-crease-spores", "object": "spore-bloom", "at": { "room": "east-crease", "dx": 5, "dy": 9 } }
   ],
   "assemblies": [
     { "id": "fold-exit", "assembly": "verdant-fold-exit", "at": { "room": "grove", "dx": 12, "dy": 26 }, "facing": "north" }

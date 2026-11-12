@@ -40,6 +40,21 @@ Every district was shot whole in 2D and at its landmark in 3D with headless Chro
 
 Every landmark object now stands in one district only, apart from the four Circuit plazas, which each hold one of their own.
 
+### Dead-end rooms
+
+Twelve dressed side rooms had one way in and nothing to do. Each now holds a gathering node at the tier of its district, against the wall furthest from its door:
+
+| District | Room | Node |
+| -------- | ---- | ---- |
+| The Verdant Fold (tier 2) | `west-crease`, `east-crease` | Strangler vine, spore bloom |
+| Service Concourse (tier 1) | `container-stacks`, `salvage-lot` | Resin drum, scrap heap |
+| Verdance Concourse (tier 1) | `irrigation-plant`, `compost-yard` | Moss bed, strangler vine |
+| Salt Cathedral (tier 11) | `north-chapel`, `south-chapel` | Salt seam, geode cluster |
+| Vesper Pharmacy (tier 13) | `theatre-one`, `theatre-two` | Tincture stills |
+| Vesper Pharmacy (tier 13) | `recovery-one`, `recovery-two` | Physic cabinets |
+
+The audit now reports four dead ends, all of them the Deep Concourse bridge spans below.
+
 ## Not problems
 
 - **Deep Concourse `north-span`, `south-span`, `west-span`, `east-span`: "one way in and nothing to do".** These are bridges over the chasm. Their far ends cross on walk-under deck spans, which the heuristic counts as void. They are walkways by design.
@@ -50,14 +65,9 @@ Every landmark object now stands in one district only, apart from the four Circu
 These are judgement calls, so they are left unchanged.
 
 1. **Meridian Atrium `plaza` is sparse**: 2.0 placements per 100 tiles against a district median of 11.2. You asked for this when the plaza was stripped back to the core, its compass and two bench rings. If you want a little more life, I suggest two `bench-curve` pairs or a few `potted-fern` at the far ends of the plaza, away from the routes. [View](http://localhost:5173/editor.html?district=meridian-atrium&room=plaza)
-2. **Verdant Fold creases: "one way in and nothing to do".** They now hold planters but no reason to visit. I suggest a resource node (a herb or spore node from the Fold's crafting tier) in one of them, so a side pocket rewards a detour. [West](http://localhost:5173/editor.html?district=verdant-fold&room=west-crease) · [East](http://localhost:5173/editor.html?district=verdant-fold&room=east-crease)
-3. **Service Concourse `container-stacks` and `salvage-lot`: dressed side rooms, one way in, nothing to do.** I suggest a scrap or salvage resource node in each, matching their names. [Stacks](http://localhost:5173/editor.html?district=service-concourse&room=container-stacks) · [Lot](http://localhost:5173/editor.html?district=service-concourse&room=salvage-lot)
-4. **Verdance Concourse `irrigation-plant` and `compost-yard`: the same pattern.** I suggest a moss or soil node in the compost yard and a water valve or pump in the irrigation plant, perhaps tied to a Hydroponics side quest. [Plant](http://localhost:5173/editor.html?district=verdance-concourse&room=irrigation-plant) · [Yard](http://localhost:5173/editor.html?district=verdance-concourse&room=compost-yard)
+2. **Porter's Lodge and Calder Gatehouse are still near copies of each other in plan**, mirrored across the tram line. Their landmarks, floors and set-pieces now differ, but a second room or a mezzanine in one of them would make each outpost recognisable from its shape alone.
 
-5. **Salt Cathedral `north-chapel` and `south-chapel`, Vesper Pharmacy `theatre-one`, `theatre-two`, `recovery-one` and `recovery-two`: the same pattern, from the second pass.** They are dressed and lit off their great halls but hold nothing to do. I suggest a salt node or a lore object in one chapel, and a medicine cabinet or herb node in one recovery ward. [North chapel](http://localhost:5173/editor.html?district=salt-cathedral&room=north-chapel) · [Theatre one](http://localhost:5173/editor.html?district=vesper-pharmacy&room=theatre-one)
-6. **Porter's Lodge and Calder Gatehouse are still near copies of each other in plan**, mirrored across the tram line. Their landmarks, floors and set-pieces now differ, but a second room or a mezzanine in one of them would make each outpost recognisable from its shape alone.
-
-None of these is a bug. Each is a room that looks finished but gives the player no reason to walk into it. Adding nodes or quest objects changes gameplay, so I have left those for you.
+Neither is a bug.
 
 ## Known limits of the heuristics
 

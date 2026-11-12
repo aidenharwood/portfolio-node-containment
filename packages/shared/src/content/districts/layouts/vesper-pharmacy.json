@@ -62,7 +62,11 @@
     { "id": "vp-dispensary-litter-2", "object": "litter-debris", "at": { "room": "dispensary", "dx": 30, "dy": 22 } },
     { "id": "vp-dispensary-litter-3", "object": "litter-puddle", "at": { "room": "dispensary", "dx": 16, "dy": 18 } },
     { "id": "vp-dispensary-litter-4", "object": "litter-gravel", "at": { "room": "dispensary", "dx": 15, "dy": 10 } },
-    { "id": "vp-dispensary-litter-5", "object": "litter-rubble", "at": { "room": "dispensary", "dx": 31, "dy": 15 } }
+    { "id": "vp-dispensary-litter-5", "object": "litter-rubble", "at": { "room": "dispensary", "dx": 31, "dy": 15 } },
+    { "id": "vp-theatre-one-still", "object": "tincture-still", "at": { "room": "theatre-one", "dx": 1, "dy": 0 } },
+    { "id": "vp-theatre-two-still", "object": "tincture-still", "at": { "room": "theatre-two", "dx": 22, "dy": 0 } },
+    { "id": "vp-recovery-one-cabinet", "object": "herb-cabinet", "at": { "room": "recovery-one", "dx": 1, "dy": 8 }, "facing": "north" },
+    { "id": "vp-recovery-two-cabinet", "object": "herb-cabinet", "at": { "room": "recovery-two", "dx": 22, "dy": 8 }, "facing": "north" }
   ],
   "assemblies": [
     { "id": "vp-surgery-door", "assembly": "surgery-door", "at": { "link": ["dispensary", "surgery"], "index": 0 }, "facing": "west" }

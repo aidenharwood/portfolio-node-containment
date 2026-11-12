@@ -74,7 +74,9 @@
     { "id": "sc-steps-litter-2", "object": "litter-debris", "at": { "room": "nave-steps", "dx": 15, "dy": 9 } },
     { "id": "sc-steps-litter-3", "object": "litter-puddle", "at": { "room": "nave-steps", "dx": 15, "dy": 26 } },
     { "id": "sc-steps-litter-4", "object": "litter-gravel", "at": { "room": "nave-steps", "dx": 17, "dy": 17 } },
-    { "id": "sc-steps-litter-5", "object": "litter-rubble", "at": { "room": "nave-steps", "dx": 6, "dy": 25 } }
+    { "id": "sc-steps-litter-5", "object": "litter-rubble", "at": { "room": "nave-steps", "dx": 6, "dy": 25 } },
+    { "id": "sc-north-chapel-seam", "object": "salt-seam", "at": { "room": "north-chapel", "dx": 1, "dy": 1 } },
+    { "id": "sc-south-chapel-geode", "object": "geode-cluster", "at": { "room": "south-chapel", "dx": 47, "dy": 7 } }
   ],
   "assemblies": [
     { "id": "sc-nave-door", "assembly": "nave-door", "at": { "link": ["nave-steps", "the-nave"], "index": 0 }, "facing": "east" }

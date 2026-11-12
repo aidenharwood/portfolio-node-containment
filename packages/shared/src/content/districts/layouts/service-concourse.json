@@ -48,7 +48,9 @@
     { "id": "sc-litter-5", "object": "litter-rubble", "at": { "room": "concourse", "dx": 26, "dy": 7 } },
     { "id": "sc-litter-6", "object": "litter-papers", "at": { "room": "concourse", "dx": 64, "dy": 5 } },
     { "id": "sc-litter-7", "object": "litter-debris", "at": { "room": "concourse", "dx": 70, "dy": 10 } },
-    { "id": "sc-litter-8", "object": "litter-puddle", "at": { "room": "concourse", "dx": 88, "dy": 6 } }
+    { "id": "sc-litter-8", "object": "litter-puddle", "at": { "room": "concourse", "dx": 88, "dy": 6 } },
+    { "id": "sc-stacks-resin", "object": "resin-drum", "at": { "room": "container-stacks", "dx": 35, "dy": 0 } },
+    { "id": "sc-lot-scrap", "object": "scrap-heap", "at": { "room": "salvage-lot", "dx": 2, "dy": 13 } }
   ],
   "assemblies": [
     { "id": "sc-cable-run", "assembly": "cable-run", "at": { "room": "concourse", "dx": 1, "dy": 2 }, "facing": "east", "span": 9 }

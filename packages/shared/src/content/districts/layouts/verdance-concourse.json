@@ -44,7 +44,9 @@
     { "id": "vc-litter-5", "object": "litter-rubble", "at": { "room": "concourse", "dx": 61, "dy": 3 } },
     { "id": "vc-litter-6", "object": "litter-papers", "at": { "room": "concourse", "dx": 38, "dy": 1 } },
     { "id": "vc-litter-7", "object": "litter-debris", "at": { "room": "concourse", "dx": 9, "dy": 3 } },
-    { "id": "vc-litter-8", "object": "litter-puddle", "at": { "room": "concourse", "dx": 20, "dy": 11 } }
+    { "id": "vc-litter-8", "object": "litter-puddle", "at": { "room": "concourse", "dx": 20, "dy": 11 } },
+    { "id": "vc-irrigation-moss", "object": "moss-bed", "at": { "room": "irrigation-plant", "dx": 2, "dy": 0 } },
+    { "id": "vc-compost-vine", "object": "strangler-vine", "at": { "room": "compost-yard", "dx": 35, "dy": 13 } }
   ],
   "assemblies": [
     { "id": "vc-bridge-north", "assembly": "bridge", "at": { "room": "concourse", "dx": 47, "dy": 1 }, "facing": "east", "span": 3 },
