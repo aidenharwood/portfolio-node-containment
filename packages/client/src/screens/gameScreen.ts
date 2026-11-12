@@ -31,6 +31,7 @@ import { WorldMap } from '../hud/worldMap.ts';
 import { SettingsWindow } from '../hud/settingsWindow.ts';
 import { gameSettings } from '../state/gameSettings.ts';
 import { setTooltipEquipment } from '../ui/itemTooltip.ts';
+import { PartyFrame } from '../hud/partyFrame.ts';
 import { SidePanel } from '../hud/sidePanel.ts';
 import { SpeechLayer } from '../hud/speechLayer.ts';
 import { VitalsPanel } from '../hud/vitalsPanel.ts';
@@ -81,6 +82,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   const social = new SocialState(connection);
   const chat = new ChatLog(connection, social);
   const whisper = (name: string) => chat.focusInput(whisperPrefix(name));
+  const party = new PartyFrame(connection, social, menu, whisper);
   const dialogue = new DialogueBox(connection);
   const questTracking = new QuestTracking();
   const objectives = new ObjectiveTracker(questTracking);
@@ -184,6 +186,7 @@ export function createGameScreen(app: AppNavigator): Screen {
       if (marker) npcMarkers.set(npc.id, marker);
     }
     setTooltipEquipment(self.equipment);
+    party.update(self.characterId);
     objectiveObjects = objectiveObjectIds(self.quests, GAME_CONTENT.quests, questTracking.questId, GAME_CONTENT.worldObjects, GAME_CONTENT.recipes);
     objectiveCreatures = objectiveCreatureIds(self.quests, GAME_CONTENT.quests, questTracking.questId);
     refreshBeacons();
@@ -503,7 +506,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     h('div', { className: 'scanlines' }),
     zoneBanner,
     cameraHint,
-    h('div', { className: 'hud-top-left' }, vitals.targetElement),
+    h('div', { className: 'hud-top-left' }, vitals.targetElement, party.element),
     topRight,
     loadingMarker,
     sidePanel.element,
@@ -562,6 +565,7 @@ export function createGameScreen(app: AppNavigator): Screen {
       storage.dispose();
       market.dispose();
       contractBoard.dispose();
+      party.dispose();
       social.dispose();
       worldMap.dispose();
       settings.dispose();
