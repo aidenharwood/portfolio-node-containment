@@ -200,6 +200,10 @@ export class GameRenderer {
     this.applyAmbience(this.ambience);
   }
 
+  get loading(): boolean {
+    return this.zone?.loading ?? false;
+  }
+
   rebuildZone(): void {
     if (this.zone) {
       this.scene.remove(this.zone.root);

@@ -77,6 +77,9 @@ export class LevelScene {
   private readonly objectsByChunk: Map<ChunkKey, IndexedPlacement[]>;
   private readonly fixturesByChunk: Map<ChunkKey, FixtureSpot[]>;
   private readonly lightsByChunk: Map<ChunkKey, ZoneLight[]>;
+  private deferredCentre: ChunkKey | null = null;
+  private awaitingPaint = false;
+  private pendingNearby = true;
   private readonly ringMaterial = new MeshBasicMaterial({ color: 0xffb347, transparent: true, opacity: 0.8, blending: AdditiveBlending, depthWrite: false, toneMapped: false });
 
   constructor(zone: ActiveZone) {
@@ -84,6 +87,10 @@ export class LevelScene {
     this.objectsByChunk = groupByChunk(zone.definition.objects.map((placement, index) => ({ placement, index })), ({ placement }) => placement.position);
     this.fixturesByChunk = groupByChunk(ceilingFixtureSpots(zone), (spot) => spot.position);
     this.lightsByChunk = groupByChunk(zone.definition.lights, (light) => light.position);
+  }
+
+  get loading(): boolean {
+    return this.pendingNearby;
   }
 
   get builtChunks(): readonly ChunkKey[] {
@@ -97,7 +104,22 @@ export class LevelScene {
   stream(focus: TilePoint, budgetMs = BUILD_BUDGET_MS): void {
     const centre = chunkOf({ x: Math.round(focus.x), y: Math.round(focus.y) });
     const centreView = this.ensureChunk(centre);
-    if (centreView && !centreView.ready) this.buildChunk(centreView, Infinity);
+    if (centreView && !centreView.ready) {
+      const key = chunkKey(centre);
+      if (this.deferredCentre !== key) {
+        this.deferredCentre = key;
+        this.awaitingPaint = true;
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          this.awaitingPaint = false;
+        }));
+      }
+      if (this.awaitingPaint) {
+        this.pendingNearby = true;
+        return;
+      }
+      this.buildChunk(centreView, Infinity);
+    }
+    this.deferredCentre = null;
     const neighbours: ChunkCoord[] = [];
     for (let dy = -BUILD_RADIUS; dy <= BUILD_RADIUS; dy++) {
       for (let dx = -BUILD_RADIUS; dx <= BUILD_RADIUS; dx++) neighbours.push({ cx: centre.cx + dx, cy: centre.cy + dy });
@@ -108,6 +130,10 @@ export class LevelScene {
       const view = this.ensureChunk(coord);
       if (view && !view.ready) this.buildChunk(view, deadline);
     }
+    this.pendingNearby = neighbours.some((coord) => {
+      const entry = this.chunks.get(chunkKey(coord));
+      return entry ? !entry.view.ready : chunkRegion(coord, this.zone) !== null;
+    });
     for (const [key, { coord, view }] of this.chunks) {
       if (chunkDistance(coord, centre) <= RETAIN_RADIUS) continue;
       for (const object of view.objects) this.objects.delete(object.instanceId);

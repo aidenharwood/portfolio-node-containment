@@ -104,7 +104,27 @@
   pointer-events: none;
 }
 
+.hud-top-right {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 248px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.hud-top-right > * {
+  pointer-events: auto;
+}
+
 .hud-objectives {
+  pointer-events: none;
+}
+
+.hud-top-right > .hud-objectives {
   pointer-events: none;
 }
 
@@ -123,12 +143,14 @@
 }
 
 .objectives-list {
+  max-height: 30vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 10px 12px;
-  background: linear-gradient(90deg, rgba(3, 8, 11, 0.85), rgba(3, 8, 11, 0));
-  border-left: 2px solid var(--color-accent);
+  background: linear-gradient(270deg, rgba(3, 8, 11, 0.85), rgba(3, 8, 11, 0.35));
+  border-right: 2px solid var(--color-accent);
 }
 
 .objective-quest-name {
@@ -180,10 +202,7 @@
 }
 
 .hud-minimap {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 248px;
+  position: relative;
   padding: 8px;
 }
 
@@ -1210,7 +1229,7 @@
     width: 220px;
   }
 
-  .hud-minimap {
+  .hud-top-right {
     width: 180px;
   }
 
@@ -1676,7 +1695,7 @@
 }
 
 .hud-side {
-  height: min(400px, calc(100% - 346px));
+  height: max(180px, min(400px, calc(100% - var(--top-right-height, 270px) - 34px)));
 }
 
 .shop-window {
@@ -3210,5 +3229,45 @@
     left: 10px;
     bottom: 10px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.loading-marker {
+  position: absolute;
+  left: 50%;
+  bottom: 22%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  background: rgba(3, 8, 11, 0.8);
+  border: 1px solid var(--color-line-strong);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.loading-marker.visible {
+  opacity: 1;
+}
+
+.loading-marker-spinner {
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--color-accent);
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: loading-marker-spin 0.8s linear infinite;
+}
+
+@keyframes loading-marker-spin {
+  to {
+    transform: rotate(360deg);
   }
 }

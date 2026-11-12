@@ -49,7 +49,8 @@ import type { ClickMarker, PickTarget } from '../render/pickTarget.ts';
 import { h, replaceChildren, type Screen } from '../ui/dom.ts';
 import { isCoarsePointer } from '../ui/viewport.ts';
 
-const DRAG_THRESHOLD_PIXELS = { mouse: 6, touch: 10 } as const;
+const TOUCH_DRAG_THRESHOLD_PIXELS = 10;
+const LOADING_MIN_VISIBLE_MS = 450;
 const ORBIT_YAW_PER_PIXEL = 0.008;
 const ORBIT_PITCH_PER_PIXEL = 0.006;
 const ZOOM_STEP = 1.12;
@@ -98,8 +99,10 @@ export function createGameScreen(app: AppNavigator): Screen {
   const activity = new ActivityBar(connection, world);
   const clickIndicator = new ClickIndicator();
   const zoneBanner = h('div', { className: 'zone-banner' });
+  const loadingMarker = h('div', { className: 'loading-marker', role: 'status' }, h('span', { className: 'loading-marker-spinner' }), 'Loading');
+  let loadingVisibleUntil = 0;
   const cameraHint = h('div', { className: 'camera-hint' },
-    isCoarsePointer() ? 'Drag to rotate · Pinch to zoom · Hold for options' : 'Drag or Q / E to rotate · Scroll to zoom · Home to reset');
+    isCoarsePointer() ? 'Drag to rotate · Pinch to zoom · Hold for options' : 'Middle-drag or Q / E to rotate · Scroll to zoom · Home to reset');
 
   let hover: PickTarget | null = null;
   let clickMarker: ClickMarker | null = null;
@@ -142,6 +145,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   const worldMap = new WorldMap(connection, world, questTracking);
   const tramRide = new TramRide(connection, world);
   const minimap = new Minimap(world, walkTo, () => worldMap.toggle());
+  const topRight = h('div', { className: 'hud-top-right' }, minimap.element, objectives.element);
   const sidePanel = new SidePanel([
     createInventoryTab(connection, menu, { examine }, inventoryModes),
     createEquipmentTab(connection, world),
@@ -317,7 +321,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     }
     if (drag) {
       const travelled = Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY);
-      if (!drag.rotating && travelled > DRAG_THRESHOLD_PIXELS[drag.touch ? 'touch' : 'mouse']) {
+      if (!drag.rotating && drag.touch && travelled > TOUCH_DRAG_THRESHOLD_PIXELS) {
         drag.rotating = true;
         cameraHint.classList.add('dismissed');
       }
@@ -467,6 +471,8 @@ export function createGameScreen(app: AppNavigator): Screen {
   const loop = (now: number) => {
     renderer.render(now, { hover, clickMarker, objectiveObjectIds: objectiveObjects, npcMarkers, objectiveCreatureIds: objectiveCreatures, objectiveBeacons, guidanceRoute: guidanceRoute.current(now, questTracking.questId) });
     objectives.setVia(guidanceRoute.via);
+    if (renderer.loading) loadingVisibleUntil = now + LOADING_MIN_VISIBLE_MS;
+    loadingMarker.classList.toggle('visible', now < loadingVisibleUntil);
     refreshHover();
     speech.update(world, renderer, now);
     combatOverlay.update(world, renderer, now);
@@ -486,8 +492,9 @@ export function createGameScreen(app: AppNavigator): Screen {
     h('div', { className: 'scanlines' }),
     zoneBanner,
     cameraHint,
-    h('div', { className: 'hud-top-left' }, vitals.targetElement, objectives.element),
-    minimap.element,
+    h('div', { className: 'hud-top-left' }, vitals.targetElement),
+    topRight,
+    loadingMarker,
     sidePanel.element,
     chat.element,
     dialogue.element,
@@ -504,8 +511,12 @@ export function createGameScreen(app: AppNavigator): Screen {
     menu.element,
   );
 
-  const panelObserver = new ResizeObserver(() => element.style.setProperty('--side-panel-height', `${sidePanel.element.offsetHeight}px`));
+  const panelObserver = new ResizeObserver(() => {
+    element.style.setProperty('--side-panel-height', `${sidePanel.element.offsetHeight}px`);
+    element.style.setProperty('--top-right-height', `${topRight.offsetHeight}px`);
+  });
   panelObserver.observe(sidePanel.element);
+  panelObserver.observe(topRight);
 
   requestAnimationFrame(() => {
     renderer.resize();
