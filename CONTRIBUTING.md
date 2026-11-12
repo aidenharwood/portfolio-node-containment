@@ -22,7 +22,7 @@
 | Add an interactive object          | `shared/src/content/worldObjects.ts`                |
 | Write a quest                      | `shared/src/content/quests/*.ts`, then register it in `gameContent.ts` |
 | Build or modify a district         | `shared/src/content/districts/*.ts`                 |
-| Dress rooms with props and crowds | `shared/src/content/prefabs.ts`, `clutterObjects.ts`, `ambientNpcs.ts` (models in `client/src/render/models/clutterModels.ts`) |
+| Dress rooms with props and crowds | `shared/src/content/prefabs/*.ts`, `compositions.ts`, `clutterObjects.ts`, `ambientNpcs.ts` (models in `client/src/render/models/clutterModels.ts`) |
 | Place districts or add a connector | `shared/src/content/levels/*.ts`                    |
 | Add a recipe, material or resource node | `shared/src/content/{recipes,craftingItems,craftingObjects}.ts` |
 | Change a game rule                 | `shared/src/{character,gear,quests,rules}`          |

@@ -71,6 +71,7 @@ export interface DistrictExit {
 export interface Blueprint {
   readonly map: readonly string[];
   readonly rooms: Readonly<Record<string, TileRect>>;
+  readonly shapes: Readonly<Record<string, RoomShape>>;
   readonly exits: Readonly<Record<string, DistrictExit>>;
   readonly links: Readonly<Record<string, readonly TilePoint[]>>;
   at(room: string, dx: number, dy: number): TilePoint;
@@ -211,6 +212,7 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
   const { width, height } = size;
   const tiles: TileKindId[] = new Array(width * height).fill('void');
   const rooms: Record<string, TileRect> = {};
+  const shapes: Record<string, RoomShape> = {};
   const exits: Record<string, DistrictExit> = {};
   const links: Record<string, TilePoint[]> = {};
   const hollows: TileRect[] = [];
@@ -238,6 +240,7 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
 
   const drawRoom = (step: RoomStep): void => {
     rooms[step.id] = step.rect;
+    shapes[step.id] = step.shape;
     floors[step.id] = step.floor;
     for (let y = step.rect.y; y < step.rect.y + step.rect.height; y++) {
       for (let x = step.rect.x; x < step.rect.x + step.rect.width; x++) {
@@ -442,6 +445,7 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
   return {
     map,
     rooms,
+    shapes,
     exits,
     links,
     at,
