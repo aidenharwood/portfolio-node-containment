@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { GAME_CONTENT } from '../src/index.ts';
 import { parseTileLayout, type ObjectPlacement } from '../src/world/district.ts';
-import type { Facing, TilePoint } from '../src/world/geometry.ts';
+import { rectContains, type Facing, type TilePoint } from '../src/world/geometry.ts';
 import { objectFootprintTiles } from '../src/world/footprint.ts';
 import { TILE_KINDS } from '../src/world/tiles.ts';
 
@@ -59,5 +59,33 @@ describe('room dressing', () => {
         assert.ok(!dressed.has(`${object.position.x},${object.position.y}`), `${object.instanceId} lies under furniture`);
       }
     }
+  });
+});
+
+describe('the Meridian Atrium', () => {
+  const atrium = GAME_CONTENT.districts.get('meridian-atrium')!;
+  const inRoom = (room: string) => {
+    const rect = atrium.rooms![room]!;
+    return atrium.objects.filter((object) => rectContains(rect, object.position));
+  };
+  const count = (objects: readonly ObjectPlacement[], objectId: string) => objects.filter((object) => object.objectId === objectId).length;
+
+  test('declares the plaza its landmark', () => {
+    assert.deepEqual(atrium.landmarks, ['plaza']);
+  });
+
+  test('frames the plaza with four fountains and curved seating', () => {
+    const plaza = inRoom('plaza');
+    assert.equal(count(plaza, 'fountain-basin'), 4);
+    assert.ok(count(plaza, 'bench-curve') >= 8, `${count(plaza, 'bench-curve')} curved benches`);
+  });
+
+  test('lays a compass mosaic under the atrium core', () => {
+    const core = atrium.objects.find((object) => object.instanceId === 'atrium-core')!;
+    assert.ok(atrium.decals?.some((decal) => decal.kind === 'mosaic' && decal.pattern === 'compass' && rectContains(decal.rect, core.position)));
+  });
+
+  test('mans the quarantine gate with a guard booth', () => {
+    assert.ok(count(inRoom('quarantine-gate'), 'guard-booth') > 0);
   });
 });

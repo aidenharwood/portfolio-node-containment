@@ -14,7 +14,7 @@ export const CIVIC_PREFABS: readonly Prefab[] = [
   prefab('checkpoint', ['civic', 'works'], ['focal'], [[0, 0, 'guard-booth'], ...row('ticket-barrier', 4, 1, undefined, 2), [6, 0, 'guard-booth']], { decals: [{ kind: 'hazard-paint', pattern: 'stripe', rect: { x: 0, y: 2, width: 8, height: 1 } }], symmetric: true }),
   prefab('fountain-corner', ['civic'], ['island'], [[0, 0, 'fountain-basin'], [4, 0, 'bench-curve', 'west'], [0, 4, 'bench-curve', 'north']], { decals: [{ kind: 'rug', rect: { x: 0, y: 3, width: 5, height: 2 } }] }),
   prefab('kiosk-island', ['civic'], ['island'], [[0, 0, 'glass-kiosk'], [0, 3, 'briefing-bench', 'north'], [1, 3, 'trash-bin'], [2, 3, 'briefing-bench', 'north']]),
-  prefab('bench-ring', ['civic'], ['island'], [[1, 0, 'bench-curve'], [0, 1, 'bench-curve', 'east'], [2, 2, 'planter'], [4, 1, 'bench-curve', 'west'], [1, 4, 'bench-curve', 'north']], { symmetric: true }),
+  prefab('bench-ring', ['civic'], ['island'], [[2, 0, 'bench-curve'], [0, 2, 'bench-curve', 'east'], [3, 3, 'planter'], [6, 2, 'bench-curve', 'west'], [2, 6, 'bench-curve', 'north']], { symmetric: true }),
   prefab('info-stand', ['civic'], ['island'], [[0, 0, 'potted-fern'], [1, 0, 'directory-pylon'], [2, 0, 'potted-fern']]),
   prefab('banner-pair', ['civic'], ['edge'], [[0, 0, 'banner-mast'], [4, 0, 'banner-mast']], { symmetric: true }),
   prefab('pylon-bench', ['civic'], ['edge'], [[0, 0, 'directory-pylon'], [1, 0, 'briefing-bench'], [2, 0, 'planter']]),

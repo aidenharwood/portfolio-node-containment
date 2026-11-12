@@ -1,10 +1,12 @@
 import { install } from '../installations.ts';
 import { drawBlueprint, exit, link, patch, pillars, room } from '../../world/blueprint.ts';
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
+import type { FloorDecal } from '../../world/decals.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
-import type { TilePoint } from '../../world/geometry.ts';
+import type { Facing, TilePoint } from '../../world/geometry.ts';
 import { LITTER, positionsOf, scatterObjects } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
+import { setPiece, type SetPiece } from './setPiece.ts';
 
 const plan = drawBlueprint({ width: 126, height: 104 }, [
   room('requisitions', 1, 1, 30, 20, 'carpet'),
@@ -83,12 +85,6 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'plaza-pillar-ne', objectId: 'light-pillar', position: plan.at('plaza', 55, 6) },
     { instanceId: 'plaza-pillar-sw', objectId: 'light-pillar', position: plan.at('plaza', 0, 45) },
     { instanceId: 'plaza-pillar-se', objectId: 'light-pillar', position: plan.at('plaza', 61, 45) },
-    { instanceId: 'planter-nw', objectId: 'planter', position: plan.at('plaza', 6, 7) },
-    { instanceId: 'planter-ne', objectId: 'planter', position: plan.at('plaza', 55, 7) },
-    { instanceId: 'planter-sw', objectId: 'planter', position: plan.at('plaza', 6, 45) },
-    { instanceId: 'planter-se', objectId: 'planter', position: plan.at('plaza', 55, 45) },
-    { instanceId: 'plaza-bench-a', objectId: 'briefing-bench', position: plan.at('plaza', 13, 25) },
-    { instanceId: 'plaza-bench-b', objectId: 'briefing-bench', position: plan.at('plaza', 48, 25) },
     { instanceId: 'plaza-directory', objectId: 'intake-kiosk', position: plan.at('plaza', 29, 46) },
     { instanceId: 'plaza-papers', objectId: 'litter-papers', position: plan.at('plaza', 39, 35) },
     { instanceId: 'west-gate-sign', objectId: 'warning-sign', position: plan.at('west-gate', 9, 20), facing: 'north' },
@@ -176,12 +172,49 @@ const litter: ObjectPlacement[] = [
   ...scatterObjects(plan, 'east-gate', 'east-gate-litter', LITTER, 3, taken()),
 ];
 
+const atriumPiece = (room: string, name: string, prefab: string, dx: number, dy: number, facing: Facing = 'south'): SetPiece =>
+  setPiece(plan, room, prefab, dx, dy, facing, `atrium-${room}-${name}`);
+
+const setPieces: SetPiece[] = [
+  atriumPiece('plaza', 'fountain-nw', 'fountain-corner', 17, 17),
+  atriumPiece('plaza', 'fountain-ne', 'fountain-corner', 41, 17, 'west'),
+  atriumPiece('plaza', 'fountain-sw', 'fountain-corner', 17, 31, 'east'),
+  atriumPiece('plaza', 'fountain-se', 'fountain-corner', 41, 31, 'north'),
+  atriumPiece('plaza', 'ring-north', 'bench-ring', 28, 15),
+  atriumPiece('plaza', 'ring-south', 'bench-ring', 28, 31),
+  atriumPiece('plaza', 'monument-west', 'statue-court', 8, 23),
+  atriumPiece('plaza', 'monument-east', 'statue-court', 49, 23),
+  atriumPiece('plaza', 'banners', 'banner-pair', 29, 2),
+  atriumPiece('quarantine-gate', 'checkpoint', 'checkpoint', 27, 6),
+  atriumPiece('lift-bay', 'shelter', 'shelter-stop', 27, 22, 'west'),
+  atriumPiece('lift-bay', 'timetable', 'timetable-wall', 29, 14, 'west'),
+  atriumPiece('medbay', 'triage', 'triage-hub', 27, 10),
+  atriumPiece('requisitions', 'reception', 'reception', 15, 7, 'east'),
+  atriumPiece('response-office', 'reception', 'reception', 11, 11, 'west'),
+  atriumPiece('archives', 'reception', 'reception', 15, 7, 'west'),
+  atriumPiece('workshop', 'press', 'press-cell', 13, 12),
+  atriumPiece('engineering', 'press', 'press-cell', 16, 11),
+  atriumPiece('west-gate', 'info-north', 'info-stand', 1, 2),
+  atriumPiece('west-gate', 'info-south', 'info-stand', 1, 18),
+  atriumPiece('east-gate', 'kiosk', 'kiosk-island', 22, 1),
+];
+
+const plazaAt = (dx: number, dy: number): TilePoint => plan.at('plaza', dx, dy);
+const runner = (dx: number, dy: number, width: number, height: number): FloorDecal => ({ kind: 'runner', rect: { ...plazaAt(dx, dy), width, height } });
+
+const decals: FloorDecal[] = [
+  { kind: 'mosaic', pattern: 'compass', rect: { ...plazaAt(27, 22), width: 9, height: 9 } },
+  runner(30, 0, 3, 22),
+  runner(31, 31, 3, 19),
+  runner(0, 12, 62, 3),
+  runner(0, 38, 62, 3),
+];
 
 const dressing: Dressing = {
   'requisitions': 'office',
-  'quarantine-gate': { theme: 'civic', density: 'dense', condition: 'breached' },
+  'quarantine-gate': { theme: 'civic', density: 'dense', composition: 'court', condition: 'breached' },
   'archives': 'archive',
-  'plaza': { theme: 'civic', density: 'dense' },
+  'plaza': { theme: 'civic', density: 'dense', composition: 'radial' },
   'workshop': 'industrial',
   'west-gate': 'civic',
   'response-office': 'office',
@@ -218,6 +251,7 @@ export const MERIDIAN_ATRIUM: DistrictDefinition = furnish(plan, {
   ],
   npcs,
   objects: [...fixtures, ...litter],
+  decals,
   assemblies,
   lights: [
     { position: plan.spot('requisitions', 12, 3), radius: 11, color: '#ffd27f', intensity: 0.55 },
@@ -232,4 +266,4 @@ export const MERIDIAN_ATRIUM: DistrictDefinition = furnish(plan, {
     { position: plan.spot('medbay', 29, 11), radius: 14, color: '#d8fff0', intensity: 0.5 },
     { position: plan.spot('engineering', 12, 11), radius: 13, color: '#46c8a8', intensity: 0.4 },
   ],
-}, dressing);
+}, dressing, { setPieces, landmarks: ['plaza'] });
