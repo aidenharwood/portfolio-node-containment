@@ -13,12 +13,14 @@ import { COMPOSITIONS, inferComposition, type CompositionName, type DressingDens
 import { CONTRACT_OBJECTS } from '../contractObjects.ts';
 import { FURNITURE_OBJECTS } from '../furnitureObjects.ts';
 import { LITTER_OBJECTS } from '../litterObjects.ts';
-import type { DressingTheme } from '../prefabs/index.ts';
+import { PREFABS, type DressingTheme } from '../prefabs/index.ts';
 import { TRANSIT_OBJECTS } from '../transitObjects.ts';
 import { WATERWORKS_OBJECTS } from '../waterworksObjects.ts';
 import { composeRoom } from './compose.ts';
+import { pieceTiles, rotationOf, turnsOf, type Turn } from './composeLayout.ts';
 import { positionsOfWith } from './populate.ts';
 import { hashSeed, seededRandom, shuffle } from './seededRandom.ts';
+import type { SetPiece } from './setPiece.ts';
 
 export type { DressingDensity } from '../compositions.ts';
 
@@ -34,6 +36,8 @@ export type Dressing = Readonly<Record<string, DressingTheme | RoomDressing>>;
 
 export interface FurnishOptions {
   readonly cast?: readonly NpcId[];
+  readonly setPieces?: readonly SetPiece[];
+  readonly landmarks?: readonly string[];
 }
 
 const isFloorLitter = (objectId: string): boolean => objectId.startsWith('litter-') || objectId.startsWith('cable-run');
@@ -48,6 +52,11 @@ const DRESSING_OBJECTS: ReadonlyMap<WorldObjectId, WorldObjectDefinition> = new 
   [...CLUTTER_OBJECTS, ...FURNITURE_OBJECTS, ...TRANSIT_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...CONTRACT_OBJECTS].map((definition) => [definition.id, definition]),
 );
 const dressingObjectOf = (id: WorldObjectId): WorldObjectDefinition | undefined => DRESSING_OBJECTS.get(id);
+
+export function setPieceTurn(piece: Pick<SetPiece, 'prefab' | 'facing'>): Turn | undefined {
+  const prefab = PREFABS[piece.prefab];
+  return prefab ? turnsOf(prefab, dressingObjectOf)[rotationOf(piece.facing)] : undefined;
+}
 
 const THEME_CAST: Readonly<Record<DressingTheme, readonly NpcId[]>> = {
   civic: ambientCast('staffer', 'operative', 'clerk', 'security', 'janitor'),
@@ -107,6 +116,35 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
   const objects: ObjectPlacement[] = [];
   const decals: FloorDecal[] = [];
   const npcs: NpcPlacement[] = [];
+  const setPieceObjects: ObjectPlacement[] = [];
+  const setPiecesInRoom = new Map<string, number>();
+  const blocked = new Set(taken);
+
+  for (const piece of options.setPieces ?? []) {
+    const where = `District "${district.id}" set-piece "${piece.prefab}" in room "${piece.room}"`;
+    const turn = setPieceTurn(piece);
+    if (!plan.rooms[piece.room]) throw new Error(`${where} names an unknown room.`);
+    if (!turn) throw new Error(`${where} names an unknown prefab.`);
+    const index = (setPiecesInRoom.get(piece.room) ?? 0) + 1;
+    setPiecesInRoom.set(piece.room, index);
+    const tiles = pieceTiles(piece.origin, turn);
+    for (const tile of tiles) if (blocked.has(tileKey(tile))) throw new Error(`${where} overlaps something already placed at ${tileKey(tile)}.`);
+    for (const tile of tiles) blocked.add(tileKey(tile));
+    turn.pieces.forEach((part, n) => {
+      setPieceObjects.push({
+        instanceId: piece.instanceId === undefined ? `${district.id}-${piece.room}-set-${index}-${n + 1}` : `${piece.instanceId}/${n + 1}`,
+        objectId: part.objectId,
+        position: { x: piece.origin.x + part.dx, y: piece.origin.y + part.dy },
+        facing: part.facing,
+      });
+    });
+    for (const decal of turn.decals) decals.push({ ...decal, rect: { ...decal.rect, x: piece.origin.x + decal.rect.x, y: piece.origin.y + decal.rect.y } });
+    const clearance = PREFABS[piece.prefab]?.clearance ?? 1;
+    for (let y = piece.origin.y - clearance; y < piece.origin.y + turn.height + clearance; y++) {
+      for (let x = piece.origin.x - clearance; x < piece.origin.x + turn.width + clearance; x++) taken.add(tileKey({ x, y }));
+    }
+  }
+
   const safeRooms = new Set(district.areas.filter((area) => area.safe).map((area) => area.id));
 
   for (const [roomId, entry] of Object.entries(dressing)) {
@@ -157,11 +195,16 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
     });
   }
 
-  const covered = new Set(objects.flatMap((object) => objectFootprintTiles(dressingObjectOf(object.objectId), object)).map(tileKey));
+  const covered = new Set([...setPieceObjects, ...objects].flatMap((object) => objectFootprintTiles(dressingObjectOf(object.objectId), object)).map(tileKey));
   return {
     ...district,
     npcs: [...district.npcs, ...npcs.map((npc) => ({ ...npc, instanceId: `${district.id}-${npc.instanceId}` }))],
-    objects: [...district.objects.filter((object) => !(isFloorLitter(object.objectId) && covered.has(tileKey(object.position)))), ...objects.map((object) => ({ ...object, instanceId: `${district.id}-${object.instanceId}` }))],
+    objects: [
+      ...district.objects.filter((object) => !(isFloorLitter(object.objectId) && covered.has(tileKey(object.position)))),
+      ...setPieceObjects,
+      ...objects.map((object) => ({ ...object, instanceId: `${district.id}-${object.instanceId}` })),
+    ],
     ...(decals.length > 0 || district.decals ? { decals: [...(district.decals ?? []), ...decals] } : {}),
+    ...(options.landmarks ? { landmarks: options.landmarks } : {}),
   };
 }

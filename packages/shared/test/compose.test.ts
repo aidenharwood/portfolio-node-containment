@@ -5,10 +5,12 @@ import { composeRoom, inWalkingLane, type ComposeInput } from '../src/content/di
 import { centreBounds, distanceOutside, laneTilesOf, mirrorTurn, pieceTiles, turnsOf, type Turn } from '../src/content/districts/composeLayout.ts';
 import { prefab, PREFABS, row, type Prefab } from '../src/content/prefabs/index.ts';
 import type { WorldObjectDefinition } from '../src/world/entities.ts';
-import { drawBlueprint, GAME_CONTENT, room } from '../src/index.ts';
+import { drawBlueprint, GAME_CONTENT, pillars, room } from '../src/index.ts';
+import { furnish } from '../src/content/districts/furnish.ts';
+import { setPiece, type SetPiece } from '../src/content/districts/setPiece.ts';
 import type { DressingTheme } from '../src/content/prefabs/index.ts';
 import type { WorldObjectId } from '../src/ids.ts';
-import type { ObjectPlacement } from '../src/world/district.ts';
+import type { DistrictDefinition, ObjectPlacement } from '../src/world/district.ts';
 import { objectFootprintTiles } from '../src/world/footprint.ts';
 import { rectContains, tileKey, type Facing, type TilePoint, type TileRect } from '../src/world/geometry.ts';
 import { MAP_LEGEND, TILE_KINDS } from '../src/world/tiles.ts';
@@ -213,5 +215,94 @@ describe('room composer', () => {
       const blocked = new Set(composed.objects.flatMap(tilesOf).map(tileKey));
       for (const key of path) assert.ok(!blocked.has(key), `the door path is blocked at ${key} with seed ${seed}`);
     }
+  });
+});
+
+const PLAN = drawBlueprint({ width: 34, height: 24 }, [room('hall', 1, 1, 30, 20, 'plating'), pillars('hall', 40, 40, 2)]);
+const HALL = PLAN.rooms.hall as TileRect;
+const DAIS = prefab('test-dais', ['chapel'], ['island'], [[0, 0, 'planter'], [1, 0, 'briefing-bench'], [2, 0, 'planter']], {
+  decals: [{ kind: 'rug', rect: { x: 0, y: 0, width: 3, height: 1 } }],
+  clearance: 2,
+});
+const DISTRICT: DistrictDefinition = {
+  id: 'test',
+  name: 'Test',
+  subtitle: '',
+  tier: 1,
+  region: 'meridian-core',
+  map: PLAN.map,
+  rooms: PLAN.rooms,
+  ambience: { darkness: 0.5, tint: '#000000', fog: '#000000' },
+  areas: [],
+  npcs: [],
+  objects: [],
+  lights: [],
+};
+const unwalkableIn = (rect: TileRect): TilePoint => {
+  for (let y = rect.y; y < rect.y + rect.height; y++) {
+    for (let x = rect.x; x < rect.x + rect.width; x++) if (!TILE_KINDS[MAP_LEGEND[PLAN.map[y]?.[x] ?? ' '] ?? 'void'].walkable) return { x, y };
+  }
+  throw new Error('no pillar');
+};
+const boundsOf = (objects: readonly ObjectPlacement[], clearance: number): TileRect => {
+  const tiles = objects.flatMap(tilesOf);
+  const left = Math.min(...tiles.map((tile) => tile.x)) - clearance;
+  const top = Math.min(...tiles.map((tile) => tile.y)) - clearance;
+  return { x: left, y: top, width: Math.max(...tiles.map((tile) => tile.x)) + clearance - left + 1, height: Math.max(...tiles.map((tile) => tile.y)) + clearance - top + 1 };
+};
+
+describe('set-pieces', () => {
+  const placed = (setPieces: readonly SetPiece[]): DistrictDefinition => furnish(PLAN, DISTRICT, { hall: 'civic' }, { setPieces, landmarks: ['hall'] });
+
+  test('set-pieces keep fixed or generated ids, turn to their facing and lay their decals', () => {
+    withPrefabs([DAIS], () => {
+      const dressed = placed([setPiece(PLAN, 'hall', 'test-dais', 4, 4, 'east', 'dais'), setPiece(PLAN, 'hall', 'pew-rows', 12, 7)]);
+      const dais = dressed.objects.filter((object) => object.instanceId.startsWith('dais/'));
+      assert.deepEqual(dais.map((object) => object.instanceId), ['dais/1', 'dais/2', 'dais/3']);
+      assert.deepEqual(dais.map((object) => [object.objectId, object.position.x, object.position.y, object.facing]), [
+        ['planter', 5, 7, 'east'],
+        ['briefing-bench', 5, 6, 'east'],
+        ['planter', 5, 5, 'east'],
+      ]);
+      const pews = dressed.objects.filter((object) => object.instanceId.startsWith('test-hall-set-2-'));
+      assert.equal(pews.length, 12);
+      assert.deepEqual(pews.map((object) => object.instanceId), Array.from({ length: 12 }, (_, index) => `test-hall-set-2-${index + 1}`));
+      assert.ok(pews.every((object) => object.objectId === 'pew' && object.facing === 'south'));
+      assert.deepEqual(pews[0]?.position, { x: 13, y: 8 });
+      assert.ok(dressed.decals?.some((decal) => decal.kind === 'rug' && tileKey(decal.rect) === '5,5' && decal.rect.width === 1 && decal.rect.height === 3));
+      assert.deepEqual(dressed.landmarks, ['hall']);
+    });
+  });
+
+  test('nothing is composed on a set-piece or its clearance', () => {
+    withPrefabs([DAIS], () => {
+      const dressed = placed([setPiece(PLAN, 'hall', 'test-dais', 4, 4, 'east', 'dais'), setPiece(PLAN, 'hall', 'pew-rows', 12, 7)]);
+      const composed = dressed.objects.filter((object) => object.instanceId.includes('-dressing-'));
+      assert.ok(composed.length > 0);
+      const guarded = [
+        boundsOf(dressed.objects.filter((object) => object.instanceId.startsWith('dais/')), 2),
+        boundsOf(dressed.objects.filter((object) => object.instanceId.startsWith('test-hall-set-')), 1),
+      ];
+      for (const object of composed) {
+        for (const tile of tilesOf(object)) assert.ok(!guarded.some((rect) => rectContains(rect, tile)), `${object.instanceId} stands on a set-piece at ${tileKey(tile)}`);
+      }
+    });
+  });
+
+  test('a set-piece in the centre third suppresses the focal zone', () => {
+    withPrefabs([ALTAR], () => {
+      assert.equal(candlesOf(placed([]).objects).length, 3);
+      assert.equal(candlesOf(placed([setPiece(PLAN, 'hall', 'pew-rows', 12, 7)]).objects).length, 0);
+    });
+  });
+
+  test('set-pieces refuse unwalkable tiles, unknown prefabs and occupied ground', () => {
+    withPrefabs([DAIS], () => {
+      const pillar = unwalkableIn(HALL);
+      assert.throws(() => setPiece(PLAN, 'hall', 'test-dais', pillar.x - 1 - HALL.x, pillar.y - HALL.y), /test-dais.*hall|hall.*test-dais/);
+      assert.throws(() => setPiece(PLAN, 'hall', 'no-such-prefab', 4, 4), /no-such-prefab/);
+      const fixture: ObjectPlacement = { instanceId: 'fixture', objectId: 'notice-board', position: { x: 6, y: 5 } };
+      assert.throws(() => furnish(PLAN, { ...DISTRICT, objects: [fixture] }, { hall: 'civic' }, { setPieces: [setPiece(PLAN, 'hall', 'test-dais', 4, 4)] }), /overlaps/);
+    });
   });
 });

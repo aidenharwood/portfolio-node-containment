@@ -71,6 +71,7 @@ export interface DistrictDefinition {
   readonly creatures?: readonly CreaturePlacement[];
   readonly lights: readonly ZoneLight[];
   readonly decals?: readonly FloorDecal[];
+  readonly landmarks?: readonly string[];
 }
 
 export interface TileLayout {
