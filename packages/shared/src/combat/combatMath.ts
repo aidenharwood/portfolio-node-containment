@@ -2,6 +2,7 @@ import { deriveCombatProfile, type CombatProfile } from '../character/derivedSta
 import type { SkillExperience, SkillId } from '../character/skills.ts';
 import { equipmentStats, type EquipmentState } from '../gear/equipment.ts';
 import type { ItemCatalog } from '../gear/items.ts';
+import { footprintCentre, isInFootprint, nearestFootprintTile } from '../world/footprint.ts';
 import { chebyshevDistance, isCardinallyAdjacent, type TilePoint } from '../world/geometry.ts';
 import type { CreatureDefinition } from './creatures.ts';
 import { COMBAT_STYLE_INFO, UNARMED, WEAPON_KIND_INFO, type CombatStyle, type WeaponKind, type WeaponProfile } from './weapons.ts';
@@ -91,6 +92,45 @@ export function isWithinAttackRange(
   if (attack.style === 'melee') return attack.range <= 1 ? isCardinallyAdjacent(from, to) : isWithinReach(attack.range, from, to, hasLineOfSight);
   const distance = chebyshevDistance(from, to);
   return distance >= 1 && distance <= attack.range && hasLineOfSight(from, to);
+}
+
+export interface Body {
+  readonly position: TilePoint;
+  readonly size: number;
+}
+
+export function facingTiles(from: Body, to: Body): { from: TilePoint; to: TilePoint } {
+  const centre = footprintCentre(from.position, from.size);
+  const target = nearestFootprintTile(to.position, to.size, { x: Math.round(centre.x), y: Math.round(centre.y) });
+  return { from: nearestFootprintTile(from.position, from.size, target), to: target };
+}
+
+export const bodiesOverlap = (a: Body, b: Body): boolean =>
+  a.position.x < b.position.x + b.size && b.position.x < a.position.x + a.size && a.position.y < b.position.y + b.size && b.position.y < a.position.y + a.size;
+
+export function bodyDistance(a: Body, b: Body): number {
+  const tiles = facingTiles(a, b);
+  return chebyshevDistance(tiles.from, tiles.to);
+}
+
+export function isBodyWithinAttackRange(
+  attack: Pick<AttackProfile, 'style' | 'range'>,
+  from: Body,
+  to: Body,
+  hasLineOfSight: (from: TilePoint, to: TilePoint) => boolean,
+): boolean {
+  if (bodiesOverlap(from, to)) return false;
+  const tiles = facingTiles(from, to);
+  if (isWithinAttackRange(attack, tiles.from, tiles.to, hasLineOfSight)) return true;
+  if (attack.style !== 'melee' || attack.range > 1 || (from.size === 1 && to.size === 1)) return false;
+  for (let dy = 0; dy < from.size; dy++) {
+    for (let dx = 0; dx < from.size; dx++) {
+      const tile = { x: from.position.x + dx, y: from.position.y + dy };
+      const near = nearestFootprintTile(to.position, to.size, tile);
+      if (!isInFootprint(tile, to.position, to.size) && isCardinallyAdjacent(tile, near)) return true;
+    }
+  }
+  return false;
 }
 
 function isWithinReach(

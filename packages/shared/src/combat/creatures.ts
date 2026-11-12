@@ -1,5 +1,6 @@
 import type { GearMotif } from '../gear/items.ts';
 import type { ItemId } from '../ids.ts';
+import type { FootprintSize } from '../world/footprint.ts';
 import type { CombatStyle } from './weapons.ts';
 
 export type CreatureId = string;
@@ -80,6 +81,7 @@ export interface CreatureDefinition {
   readonly designation?: string;
   readonly examine: string;
   readonly model: CreatureModel;
+  readonly size?: FootprintSize;
   readonly level: number;
   readonly integrity: number;
   readonly defence: number;

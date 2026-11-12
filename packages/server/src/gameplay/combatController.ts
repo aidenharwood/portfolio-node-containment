@@ -150,7 +150,7 @@ export class CombatController {
 
     const sightline = (from: TilePoint, to: TilePoint) => hasLineOfSight(level.layout, from, to);
     if (player.containTargetId === creature.entityId) {
-      if (isWithinContainmentReach(player.position, creature.position, sightline) && !level.isSafe(player.position)) {
+      if (isWithinContainmentReach(player.position, { position: creature.position, size: creature.size }, sightline) && !level.isSafe(player.position)) {
         player.path = [];
         player.lastChaseTarget = null;
         this.containCreature(player, creature, level, tick);

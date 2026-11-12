@@ -7,6 +7,7 @@ import type {
   Facing,
   TilePoint,
 } from '@containment/shared';
+import { sizeOf, type FootprintSize } from '@containment/shared';
 
 export type CreatureState = 'alive' | 'dying' | 'despawned';
 
@@ -35,6 +36,10 @@ export class Creature {
     this.definition = definition;
     this.position = placement.position;
     this.integrity = definition.integrity;
+  }
+
+  get size(): FootprintSize {
+    return sizeOf(this.definition);
   }
 
   get home(): TilePoint {

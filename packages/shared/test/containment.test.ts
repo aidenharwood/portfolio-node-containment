@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import {
+  isWithinContainmentReach,
   CLEARANCE_TIERS,
   clearanceFlag,
   clearanceLevelFor,
@@ -131,5 +132,13 @@ describe('relentless training creatures', () => {
     creatures.set(mite.id, { ...mite, loot: [{ itemId: 'medgel', count: 1, chance: 0.5 }] });
     const issues = findContentIssues({ ...GAME_CONTENT, creatures });
     assert.ok(issues.some((issue) => issue.startsWith('creature lint-mite') && issue.includes('no loot')));
+  });
+});
+
+describe('containment reach', () => {
+  test('reach is measured to the nearest tile of a large specimen', () => {
+    const always = () => true;
+    assert.equal(isWithinContainmentReach({ x: 6, y: 4 }, { position: { x: 3, y: 4 }, size: 2 }, always), true);
+    assert.equal(isWithinContainmentReach({ x: 6, y: 4 }, { position: { x: 3, y: 4 }, size: 1 }, always), false);
   });
 });

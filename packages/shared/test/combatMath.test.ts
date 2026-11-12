@@ -8,6 +8,9 @@ import {
   hasLineOfSight,
   hitChance,
   isWithinAttackRange,
+  isBodyWithinAttackRange,
+  bodiesOverlap,
+  bodyDistance,
   parseTileLayout,
   playerAttackProfile,
   rollAttack,
@@ -66,5 +69,33 @@ describe('combat math', () => {
       { skill: 'fortitude', amount: 4 },
     ]);
     assert.deepEqual(combatExperience('melee', 0), []);
+  });
+});
+
+describe('body geometry', () => {
+  const always = () => true;
+  const boss = { position: { x: 3, y: 4 }, size: 2 };
+  const melee = { style: 'melee' as const, range: 1 };
+  const ranged = { style: 'ranged' as const, range: 5 };
+  const at = (x: number, y: number) => ({ position: { x, y }, size: 1 });
+
+  test('melee reaches a 2×2 body from any edge', () => {
+    assert.equal(isBodyWithinAttackRange(melee, at(2, 4), boss, always), true);
+    assert.equal(isBodyWithinAttackRange(melee, at(5, 5), boss, always), true);
+    assert.equal(isBodyWithinAttackRange(melee, at(4, 6), boss, always), true);
+    assert.equal(isBodyWithinAttackRange(melee, at(5, 6), boss, always), false);
+  });
+
+  test('nobody attacks from inside a body', () => {
+    assert.equal(isBodyWithinAttackRange(melee, at(3, 4), boss, always), false);
+    assert.equal(isBodyWithinAttackRange(ranged, at(4, 5), boss, always), false);
+    assert.equal(isBodyWithinAttackRange(melee, boss, at(4, 5), always), false);
+    assert.equal(bodiesOverlap(boss, at(4, 5)), true);
+  });
+
+  test('a large attacker measures from its nearest tile', () => {
+    assert.equal(isBodyWithinAttackRange(melee, boss, at(5, 4), always), true);
+    assert.equal(bodyDistance(at(0, 0), { position: { x: 3, y: 0 }, size: 2 }), 3);
+    assert.equal(bodyDistance(boss, at(9, 5)), 5);
   });
 });

@@ -1,5 +1,6 @@
 import { levelForExperience, type SkillExperience } from '../character/skills.ts';
 import { TIER_LEVEL_FLOORS, tierForLevel } from '../crafting/tiers.ts';
+import { nearestFootprintTile } from '../world/footprint.ts';
 import { chebyshevDistance, type TilePoint } from '../world/geometry.ts';
 import type { ContainmentClass, CreatureDefinition } from './creatures.ts';
 
@@ -29,8 +30,14 @@ export const containmentLevelFor = (creature: CreatureDefinition): number => cre
 
 export const clearanceTierFor = (creature: CreatureDefinition): number => tierForLevel(containmentLevelFor(creature));
 
-export const isWithinContainmentReach = (from: TilePoint, to: TilePoint, hasSightline: (from: TilePoint, to: TilePoint) => boolean): boolean =>
-  chebyshevDistance(from, to) <= CONTAINMENT_REACH && hasSightline(from, to);
+export function isWithinContainmentReach(
+  from: TilePoint,
+  to: { readonly position: TilePoint; readonly size: number },
+  hasSightline: (from: TilePoint, to: TilePoint) => boolean,
+): boolean {
+  const nearest = nearestFootprintTile(to.position, to.size, from);
+  return chebyshevDistance(from, nearest) <= CONTAINMENT_REACH && hasSightline(from, nearest);
+}
 
 export const CLEARANCE_TIERS = TIER_LEVEL_FLOORS.length;
 
