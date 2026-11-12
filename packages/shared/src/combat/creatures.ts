@@ -1,6 +1,7 @@
 import type { GearMotif } from '../gear/items.ts';
 import type { ItemId } from '../ids.ts';
 import type { FootprintSize } from '../world/footprint.ts';
+import type { EncounterDefinition } from './encounters.ts';
 import type { CombatStyle } from './weapons.ts';
 
 export type CreatureId = string;
@@ -96,4 +97,5 @@ export interface CreatureDefinition {
   readonly experience: number;
   readonly loot: readonly LootEntry[];
   readonly containment?: ContainmentProfile;
+  readonly encounter?: EncounterDefinition;
 }
