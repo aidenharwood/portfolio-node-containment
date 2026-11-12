@@ -111,6 +111,7 @@ function describeItem(item: ItemDefinition): (HTMLElement | null | false | undef
     line && h('p', { className: 'tooltip-meta' }, `${GEAR_MOTIF_INFO[line].name} line · ${GEAR_MOTIF_INFO[line].summary}`),
     equipment?.weapon && h('p', { className: 'tooltip-meta' }, weaponSummary(equipment.weapon)),
     equipment && renderStats(item),
+    item.consumable && item.consumable.heal > 0 && h('p', { className: 'tooltip-meta' }, `Heals ${item.consumable.heal} health`),
     requirementLines.length > 0 && h('p', { className: 'tooltip-requirements' }, `Requires ${requirementLines.join(', ')}`),
     h('p', { className: 'tooltip-examine' }, item.examine),
   ];
