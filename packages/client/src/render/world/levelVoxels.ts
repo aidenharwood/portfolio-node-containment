@@ -169,12 +169,18 @@ function smoothNoise(x: number, z: number, scale: number, salt: number): number 
   return top * (1 - fz) + bottom * fz;
 }
 
-function doorAxis(layout: TileLayout, tx: number, ty: number): Axis {
-  const walled = (x: number, y: number) => {
-    const neighbor = layout.tileAt({ x, y });
+function doorwayRunsAlongX(layout: TileLayout, tx: number, ty: number): boolean {
+  const walledBeyond = (dx: number): boolean => {
+    let x = tx + dx;
+    while (layout.tileAt({ x, y: ty }) === 'door') x += dx;
+    const neighbor = layout.tileAt({ x, y: ty });
     return neighbor === 'void' || isWallKind(neighbor);
   };
-  return walled(tx - 1, ty) || walled(tx + 1, ty) ? 'y' : 'x';
+  return walledBeyond(-1) || walledBeyond(1);
+}
+
+function doorAxis(layout: TileLayout, tx: number, ty: number): Axis {
+  return doorwayRunsAlongX(layout, tx, ty) ? 'y' : 'x';
 }
 
 function floorVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: number, tile: FloorTile): FloorVoxel | null {
@@ -420,7 +426,7 @@ function paintGlass(volume: DenseVolume, tx: number, ty: number): void {
 }
 
 function paintLintel(volume: DenseVolume, layout: TileLayout, tx: number, ty: number): void {
-  const alongX = isWallKind(layout.tileAt({ x: tx - 1, y: ty })) || isWallKind(layout.tileAt({ x: tx + 1, y: ty }));
+  const alongX = doorwayRunsAlongX(layout, tx, ty);
   for (let along = 0; along < R; along++) {
     for (let across = 3; across <= 4; across++) {
       const lx = alongX ? along : across;
