@@ -9,7 +9,7 @@ export interface DecalPaint {
   readonly emissive: boolean;
 }
 
-const KIND_COLORS: Partial<Record<FloorDecalKind, number>> = {
+export const DECAL_KIND_COLORS: Partial<Record<FloorDecalKind, number>> = {
   inlay: 0xc9b27a,
   mosaic: 0x3f7f9a,
   rug: 0x7a2f3a,
@@ -64,7 +64,7 @@ function paintOne(decal: FloorDecal, u: number, v: number, lx: number, lz: numbe
   if (!mask) return null;
   const solid = (color: number): DecalPaint => ({ color, emissive: false });
   const tinted = decal.tint ? hex(decal.tint) : undefined;
-  const fill = (fallback: number): number => tinted ?? KIND_COLORS[kind] ?? fallback;
+  const fill = (fallback: number): number => tinted ?? DECAL_KIND_COLORS[kind] ?? fallback;
   switch (kind) {
     case 'wear':
       return grain > 0.55 ? solid(lighten(base, 0.12)) : null;
