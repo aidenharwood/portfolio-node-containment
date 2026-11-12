@@ -18,8 +18,8 @@ Site Meridian is **one large facility you can walk across**, not a set of rooms 
 
 1. **Maps are drawn with blueprints** (`shared/src/world/blueprint.ts`), never typed as ASCII rows. A district sets `map`, `rooms` and `exits` from `drawBlueprint`. **Checked.**
 2. **Never draw walls.** Carve rooms, links and exits; every void tile touching floor becomes wall. Use `patch` with `wall` or `glass` only for partitions inside a space.
-3. **Place by room.** Every NPC, object, assembly and creature position comes from `plan.at(room, dx, dy)` (checked walkable when the module loads), `plan.spot` for things that sit on unwalkable tiles such as a tram car on its track, `plan.linkTile` for doors, or `plan.scatter`. No bare `{ x, y }` literals in district files. Everything must stand inside a named room or on a door tile. **Checked.**
-    - **Things that belong on a wall stand against one.** Doors, lifts, lockers, cabinets, placards, valves, vents and notice boards have a wall tile directly beside them and face away from it (**checked** for the wall, `findFixtureIssues`). A door never stands in an open exit; put it in a wall beside the opening or in a doorway of its own width. `scatterGroups` already does this: lockers, racks, cabinets, pipes, coolers and benches go along walls (`plan.scatterAlongWalls`), clear of doorways, and the rest go on open floor. The Knock is the one freestanding door, by design.
+3. **Place by room.** Every position in a layout file is room-relative, `{ "room", "dx", "dy" }`, or an exit or link tile (`{ "exit", "index" }`, `{ "link", "index" }`). An absolute `{ "x", "y" }` is only for a point in no room. Everything must stand inside a named room or on a door tile. **Checked.**
+    - **Things that belong on a wall stand against one.** Doors, lifts, lockers, cabinets, placards, valves, vents and notice boards have a wall tile directly beside them and face away from it (**checked** for the wall, `findFixtureIssues`). A door never stands in an open exit; put it in a wall beside the opening or in a doorway of its own width. The Knock is the one freestanding door, by design.
     - **Track through a room is walled off** unless the room is the platform or people must cross it there.
 4. **Areas are rooms.** Declare areas with `plan.area(room, name, options)`. An area's id and rectangle match a room. **Checked.**
 5. **Name the points other content needs.** Tram platforms, teleport landings, spawns and recovery points are entries in the district's `anchors`. Other content and tests read the anchor; they do not repeat its numbers. Tests use `inRoom(districtId, roomId)` and `anchor(districtId, anchorId)` from the server test harness.
@@ -93,8 +93,8 @@ Do not build on these; later wings attach here (see `docs/superpowers/specs/2026
 ## Adding a district
 
 1. Decide where it attaches on the level's plan, and which exits it needs. Check its tier against rule 13.
-2. Write `content/districts/<name>.ts`: a `drawBlueprint` call, then the `DistrictDefinition` built from the plan.
+2. Write its layout file, `content/districts/layouts/<district-id>.json`, and a `content/districts/<name>.ts` that loads it with `buildDistrict`.
 3. Give it at least one landmark, at least one filler room, and props in every room.
 4. Attach it in the level file with `joinDistricts`, and attach filler districts so it has two ways in.
 5. Register it in `gameContent.ts`. Run `npm run typecheck` and `npm test` and fix what `findContentIssues` reports.
-6. Look at it: run the game and walk it end to end.
+6. Look at it in the viewer (`npm run dev`, then `/editor.html?district=<district-id>`): read the plan, orbit the 3D view, and clear the issues panel. Then run the game and walk it end to end.

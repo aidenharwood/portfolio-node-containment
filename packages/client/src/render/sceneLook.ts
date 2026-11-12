@@ -37,6 +37,7 @@ export class SceneLook {
   private lightTimer = 0;
   private activeFieldLights = 0;
   private survey = false;
+  private readonly fogDensity: number;
   private lastAmbience: BlendedAmbience | null = null;
 
   constructor(canvas: HTMLCanvasElement, scene: Scene, camera: Camera, fogDensity = FOG_DENSITY) {
@@ -56,6 +57,7 @@ export class SceneLook {
     this.keyLight.shadow.camera.far = 40;
     this.keyLight.shadow.bias = -0.0008;
     this.keyLight.shadow.normalBias = 0.02;
+    this.fogDensity = fogDensity;
     this.fog.density = fogDensity;
     scene.fog = this.fog;
     scene.background = this.background;
@@ -77,6 +79,7 @@ export class SceneLook {
 
   setSurvey(on: boolean): void {
     this.survey = on;
+    this.fog.density = on ? 0 : this.fogDensity;
     if (this.lastAmbience) this.applyAmbience(this.lastAmbience);
   }
 

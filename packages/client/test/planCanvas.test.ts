@@ -32,3 +32,10 @@ test('tiles draw one shape per map tile and decals draw in their own colours', (
   assert.ok(mosaic);
   assert.equal(mosaic.color, '#3f7f9a');
 });
+
+test('issues with a tile draw a marker only while the issues layer is on', () => {
+  const issues = [{ message: 'something is wrong at 61,47', tile: { x: 61, y: 47 } }, { message: 'something with no tile' }];
+  const on = planDrawList(GAME_CONTENT, atrium.id, ['issues'], issues);
+  assert.deepEqual(on.map((shape) => [shape.kind, shape.x, shape.y, shape.width, shape.height]), [['issue', 61, 47, 1, 1]]);
+  assert.deepEqual(planDrawList(GAME_CONTENT, atrium.id, ['objects'], issues).filter((shape) => shape.kind === 'issue'), []);
+});

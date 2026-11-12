@@ -1,4 +1,4 @@
-import { parseTileLayout, planMarks, TILE_KINDS, type DistrictId, type Facing, type GameContent, type PlanMarkKind, type TilePoint, type TileKindId } from '@containment/shared';
+import { parseTileLayout, planMarks, TILE_KINDS, type DistrictId, type Facing, type GameContent, type PlanIssue, type PlanMarkKind, type TilePoint, type TileKindId } from '@containment/shared';
 import { DECAL_KIND_COLORS } from '../render/world/floorDecals.ts';
 import type { PlanLayer } from './viewState.ts';
 
@@ -52,7 +52,7 @@ const tileColor = (kind: TileKindId): string => {
 
 const hexOf = (value: number): string => `#${value.toString(16).padStart(6, '0')}`;
 
-export function planDrawList(content: GameContent, districtId: DistrictId, layers: readonly PlanLayer[]): PlanShape[] {
+export function planDrawList(content: GameContent, districtId: DistrictId, layers: readonly PlanLayer[], issues: readonly PlanIssue[] = []): PlanShape[] {
   const district = content.districts.get(districtId);
   if (!district) return [];
   const on = new Set(layers);
@@ -85,6 +85,9 @@ export function planDrawList(content: GameContent, districtId: DistrictId, layer
       continue;
     }
     shapes.push({ ...base, kind: 'mark', ...(mark.facing === undefined ? {} : { facing: mark.facing }) });
+  }
+  if (on.has('issues')) {
+    for (const issue of issues) if (issue.tile) shapes.push({ kind: 'issue', ...issue.tile, width: 1, height: 1, color: '#ff3b3b', label: issue.message });
   }
   return shapes;
 }

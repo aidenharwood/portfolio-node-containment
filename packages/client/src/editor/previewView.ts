@@ -1,5 +1,5 @@
 import { CHUNK_SIZE, type TilePoint } from '@containment/shared';
-import { MathUtils, PerspectiveCamera, Scene, Vector3 } from 'three';
+import { Group, Mesh, MeshBasicMaterial, MathUtils, PerspectiveCamera, PlaneGeometry, Scene, Vector3 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { SceneLook } from '../render/sceneLook.ts';
 import { createBlendedAmbience, sampleAmbience } from '../render/world/ambienceBlend.ts';
@@ -26,6 +26,9 @@ export class PreviewView {
   private readonly sceneLook: SceneLook;
   private readonly controls: OrbitControls;
   private readonly ambience = createBlendedAmbience();
+  private readonly issueMarkers = new Group();
+  private readonly issueGeometry = new PlaneGeometry(1, 1);
+  private readonly issueMaterial = new MeshBasicMaterial({ color: 0xff3b3b, transparent: true, opacity: 0.75, depthWrite: false, toneMapped: false });
   private level: LevelScene | null = null;
   private zone: ActiveZone | null = null;
   private reach: StreamReach = { build: 1, retain: 2 };
@@ -38,6 +41,7 @@ export class PreviewView {
     this.canvas.style.cssText = 'width:100%;height:100%;display:block';
     container.append(this.canvas);
     this.sceneLook = new SceneLook(this.canvas, this.scene, this.camera, PREVIEW_FOG);
+    this.scene.add(this.issueMarkers);
     this.controls = new OrbitControls(this.camera, this.canvas);
     this.controls.enableDamping = true;
     this.controls.minDistance = 1.5;
@@ -91,6 +95,16 @@ export class PreviewView {
     for (const listener of this.listeners) listener(this.cameraState());
   }
 
+  markIssues(tiles: readonly TilePoint[]): void {
+    this.issueMarkers.clear();
+    for (const tile of tiles) {
+      const marker = new Mesh(this.issueGeometry, this.issueMaterial);
+      marker.rotation.x = -Math.PI / 2;
+      marker.position.set(tile.x + 0.5, 0.06, tile.y + 0.5);
+      this.issueMarkers.add(marker);
+    }
+  }
+
   setSurvey(on: boolean): void {
     this.sceneLook.setSurvey(on);
   }
@@ -103,6 +117,8 @@ export class PreviewView {
     cancelAnimationFrame(this.frame);
     this.resizeObserver.disconnect();
     this.controls.dispose();
+    this.issueGeometry.dispose();
+    this.issueMaterial.dispose();
     this.level?.dispose();
     this.sceneLook.dispose();
   }

@@ -21,7 +21,8 @@
 | Write dialogue                     | `shared/src/content/dialogues/*.ts`                 |
 | Add an interactive object          | `shared/src/content/worldObjects.ts`                |
 | Write a quest                      | `shared/src/content/quests/*.ts`, then register it in `gameContent.ts` |
-| Build or modify a district         | `shared/src/content/districts/*.ts`                 |
+| Build or modify a district         | `shared/src/content/districts/layouts/<district-id>.json` (its module in `districts/*.ts` only loads it) |
+| Look at a district                 | `npm run plan -- <district> [room]`, or `npm run dev` and open `/editor.html` |
 | Dress rooms with props and crowds | `shared/src/content/prefabs/*.ts`, `compositions.ts`, `clutterObjects.ts`, `ambientNpcs.ts` (models in `client/src/render/models/clutterModels.ts`) |
 | Place districts or add a connector | `shared/src/content/levels/*.ts`                    |
 | Add a recipe, material or resource node | `shared/src/content/{recipes,craftingItems,craftingObjects}.ts` |
@@ -77,21 +78,21 @@ Object models face south (+y on the map) by default. Wall-mounted or doorway obj
 
 ### Add a district
 
-Read `WORLD_DESIGN.md` first: it holds the rules, and `findWorldDesignIssues` enforces most of them. A district is drawn from a blueprint and becomes part of the world when a level places it. `content/districts/brineGalleries.ts` is a full example.
+Read `WORLD_DESIGN.md` first: it holds the rules, and `findWorldDesignIssues` enforces most of them. A district is a JSON layout file drawn from blueprint steps, and becomes part of the world when a level places it. `content/districts/layouts/brine-galleries.json` is a full example, and `content/districts/brineGalleries.ts` shows the module that loads it.
 
 1. Give it a `tier` (1 is the Intake Wing and Atrium, 4 is Sector 3, Deepwatch and the Cryovault, 8 is Meridian Below, 9 is the Dead Letter Office, 10 is the Brine Galleries, 11 is the Salt Cathedral, 12 is the Vesper Wards and 13 is the Vesper Pharmacy). Crafting checks use it to decide which gear its materials may feed, and tier may not fall with distance from the level spawn.
    Also give it a `region` (`content/regions.ts`). Overworld districts must be reachable on foot from the Atrium; mark one `reachedOnlyByTram` only if it is meant to be.
-2. Draw it with `drawBlueprint` (`shared/src/world/blueprint.ts`): `room` for each named space (`rect`, `octagon` or `round`), `link` for the passages and doorways between rooms, `exit` for each way out of the district, `patch` for pools, track, partitions and floor strips, `pillars` for colonnades, `track` for a tram bed. Never draw walls; they appear around every floor tile. Set `map`, `rooms` and `exits` from the result.
-3. Declare areas with `plan.area(room, name, options)`. Combat is single-way by default; set `multiCombat: true` for boss fights with adds. Mark outposts, camps and hubs `safe: true`: friendly NPCs on a floor level must stand in one, creatures must be placed outside one, and gathering nodes belong in the hostile areas around it.
-4. Place `npcs`, `objects`, `assemblies` and `creatures` with `plan.at(room, dx, dy)`, which throws at load if the point is not floor. Use `plan.spot` for things on unwalkable tiles (a tram car on its track), `plan.linkTile` or `plan.exits` for doors, and `scatterGroups` and `scatterPacks` (`content/districts/populate.ts`) for bulk props, litter, nodes and creature packs.
-5. Export the points other content needs (tram platform, teleport landings, spawn, recovery) as the district's `anchors`. Other files and tests read the anchor.
+2. Write `content/districts/layouts/<district-id>.json` (the format is `DISTRICT_LAYOUT_SCHEMA` in `shared/src/world/layoutSchema.ts`). Its `steps` are drawn by `drawBlueprint` (`shared/src/world/blueprint.ts`): `room` for each named space (`rect`, `octagon` or `round`), `link` for the passages and doorways between rooms, `exit` for each way out of the district, `patch` for pools, track, partitions and floor strips, `pillars` for colonnades, `track` for a tram bed. Never draw walls; they appear around every floor tile. Use `tiles` only to paint single tiles over what the steps drew.
+3. Declare `areas` as `{ room, name, safe?, multiCombat? }`. Combat is single-way by default; set `multiCombat: true` for boss fights with adds. Mark outposts, camps and hubs `safe: true`: friendly NPCs on a floor level must stand in one, creatures must be placed outside one, and gathering nodes belong in the hostile areas around it.
+4. Place `npcs`, `objects`, `assemblies`, `creatures`, `lights`, `decals` and `setPieces` with an `at`: `{ "room": "plaza", "dx": 29, "dy": 25 }` inside a room, `{ "exit": "north", "index": 0 }` or `{ "link": ["a", "b"], "index": 0 }` for doors, and `{ "x": 3, "y": 4 }` only for a point in no room. A position outside its room fails at load with the JSON path, and `findContentIssues` reports anything placed on an unwalkable tile.
+5. List the points other content needs (tram platform, teleport landings, spawn, recovery) in `anchors`. Add `content/districts/<name>.ts`, which loads the file with `buildDistrict(layout)` and exports the anchors with `anchorsOf(district, [...])`. Other files and tests read the anchor.
 6. Register it in `DISTRICTS` in `content/gameContent.ts`.
 7. Place it on a level (`content/levels/*.ts`) with `joinDistricts` (`shared/src/world/levelPlan.ts`): name the exit it attaches by and the neighbour's exit it meets. Exits must face each other and be the same width.
 8. Connect it:
    - **Walking:** open exits are at least nine tiles wide and meet a neighbour's floor. Put a filler district between places (see `content/districts/verdanceConcourse.ts`) and give the new district two ways in unless it is a deliberate `deadEnd`.
    - **Gated:** a two-wide `exit` or `link` marked `gate` with a door object (`door: { conditions }`) on its tiles. See Doors in `ARCHITECTURE.md`.
    - **Across levels:** use an object whose interaction has conditions and a `teleport` effect, or a tram line. A teleport targets `{ districtId, position }`, with the position read from the destination's `anchors`.
-9. Run `npm test`. `findLevelIssues` flags overlaps, walkable tiles nothing can reach, duplicate instance ids, and spawns, teleports or recoveries on unwalkable tiles; `findWorldDesignIssues` flags the rest.
+9. Look at it: `npm run plan -- <district>` in a terminal, or `npm run dev` and open `/editor.html?district=<district>` for the plan, the 3D view and its issues. Run `npm test`. `findLevelIssues` flags overlaps, walkable tiles nothing can reach, duplicate instance ids, and spawns, teleports or recoveries on unwalkable tiles; `findWorldDesignIssues` flags the rest.
 
 ### Add a pocket dimension
 

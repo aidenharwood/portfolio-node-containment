@@ -12,7 +12,7 @@ test('a full view state survives a trip through the URL', () => {
 test('an unknown district and a negative zoom fall back to safe values', () => {
   const state = readViewState('?district=nope&zoom=-3', KNOWN);
   assert.equal(state.district, 'intake-wing');
-  assert.equal(state.zoom, 0.1);
+  assert.equal(state.zoom, 0.02);
 });
 
 test('missing or garbled numbers take the defaults', () => {

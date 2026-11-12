@@ -17,7 +17,7 @@ export interface ViewState {
 }
 
 const DEFAULTS = { view: 'split' as ViewMode, yaw: 45, pitch: 55, zoom: 1, layers: PLAN_LAYERS };
-const MIN_ZOOM = 0.1;
+const MIN_ZOOM = 0.02;
 const MAX_ZOOM = 8;
 const VIEWS: readonly ViewMode[] = ['split', '2d', '3d'];
 
