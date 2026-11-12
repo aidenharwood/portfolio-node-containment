@@ -4,8 +4,8 @@ import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../wo
 import { rectContains, tileKey, type Facing, type TilePoint, type TileRect } from '../../world/geometry.ts';
 import { MAP_LEGEND, TILE_KINDS } from '../../world/tiles.ts';
 import { ambientCast } from '../ambientNpcs.ts';
-import type { WorldObjectId } from '../../ids.ts';
-import { PREFABS, THEME_LAYOUTS, type DressingTheme, type Prefab, type PrefabPiece } from '../prefabs.ts';
+import { PREFABS, type DressingTheme, type Prefab, type PrefabPiece } from '../prefabs/index.ts';
+import { LEGACY_LAYOUTS } from '../prefabs/legacyLayouts.ts';
 import { positionsOf } from './populate.ts';
 
 export type DressingDensity = 'sparse' | 'normal' | 'dense';
@@ -246,7 +246,8 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
     }
     const openings = openingsOf(rect);
     const clear = new Set(floor.filter((point) => !nearOpening(openings, point) && !inWalkingLane(rect, point)).map(tileKey));
-    const layout = THEME_LAYOUTS[theme];
+    const layout = LEGACY_LAYOUTS[theme];
+    const prefabOf = (id: string): Prefab => PREFABS[id] as Prefab;
 
     let blockCount = 0;
     const place = (origin: TilePoint, pieces: readonly PrefabPiece[]): void => {
@@ -258,21 +259,20 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
       });
     };
 
-    if (layout.corner) {
-      const single = (back: Facing): Turn => turnOf([{ dx: 0, dy: 0, objectId: layout.corner as WorldObjectId, facing: INWARD[back] }]);
-      const corners: readonly (readonly [TilePoint, Facing])[] = [
-        [{ x: rect.x, y: rect.y }, 'north'],
-        [{ x: rect.x + rect.width - 1, y: rect.y }, 'north'],
-        [{ x: rect.x, y: rect.y + rect.height - 1 }, 'south'],
-        [{ x: rect.x + rect.width - 1, y: rect.y + rect.height - 1 }, 'south'],
-      ];
-      for (const [point, back] of corners) {
-        const turn = single(back);
-        if (fits(rect, clear, point, turn, back)) place(point, turn.pieces);
-      }
+    const cornerObject = (prefabOf(layout.corner).pieces[0] as PrefabPiece).objectId;
+    const single = (back: Facing): Turn => turnOf([{ dx: 0, dy: 0, objectId: cornerObject, facing: INWARD[back] }]);
+    const corners: readonly (readonly [TilePoint, Facing])[] = [
+      [{ x: rect.x, y: rect.y }, 'north'],
+      [{ x: rect.x + rect.width - 1, y: rect.y }, 'north'],
+      [{ x: rect.x, y: rect.y + rect.height - 1 }, 'south'],
+      [{ x: rect.x + rect.width - 1, y: rect.y + rect.height - 1 }, 'south'],
+    ];
+    for (const [point, back] of corners) {
+      const turn = single(back);
+      if (fits(rect, clear, point, turn, back)) place(point, turn.pieces);
     }
 
-    const wallPrefabs: readonly Prefab[] = [PREFABS[pick(layout.wall)], PREFABS[pick(layout.wall)]];
+    const wallPrefabs: readonly Prefab[] = [prefabOf(pick(layout.wall)), prefabOf(pick(layout.wall))];
     let wallDepth = 0;
     TURNS_BY_BACK.forEach((turnIndex, sideIndex) => {
       const back = BACK_SIDE[turnIndex] as Facing;
@@ -297,7 +297,7 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
 
     const fieldInset = wallDepth + FIELD_AISLE;
     const field = { x: rect.x + fieldInset, y: rect.y + fieldInset, width: rect.width - fieldInset * 2, height: rect.height - fieldInset * 2 };
-    const fieldPrefab = PREFABS[pick(layout.field)];
+    const fieldPrefab = prefabOf(pick(layout.field));
     const preferred = Math.floor(random() * 4);
     let best: { readonly turn: Turn; readonly origins: readonly TilePoint[] } | undefined;
     for (let step = 0; step < 4; step++) {

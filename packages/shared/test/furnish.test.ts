@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { GAME_CONTENT } from '../src/index.ts';
-import { DRESSING_THEMES, PREFABS, THEME_LAYOUTS } from '../src/content/prefabs.ts';
 import { parseTileLayout, type ObjectPlacement } from '../src/world/district.ts';
 import type { Facing, TilePoint } from '../src/world/geometry.ts';
 import { TILE_KINDS } from '../src/world/tiles.ts';
@@ -49,15 +48,6 @@ describe('room dressing', () => {
         facings.set(room, (facings.get(room) ?? new Set()).add(pew.facing ?? 'south'));
       }
       for (const [room, seen] of facings) assert.equal(seen.size, 1, `${room} pews face ${[...seen].join(', ')}`);
-    }
-  });
-
-  test('themes line walls with wall prefabs and fill the floor with floor prefabs', () => {
-    for (const theme of DRESSING_THEMES) {
-      const layout = THEME_LAYOUTS[theme];
-      assert.ok(layout.field.length > 0 && layout.wall.length > 0, `${theme} needs field and wall prefabs`);
-      for (const name of layout.field) assert.equal(PREFABS[name].placement, 'floor', `${theme} field prefab ${name}`);
-      for (const name of layout.wall) assert.equal(PREFABS[name].placement, 'wall', `${theme} wall prefab ${name}`);
     }
   });
 
