@@ -25,6 +25,7 @@ import {
   type ProjectileKind,
   type WeaponKind,
   type CombatStyle,
+  type HazardKind,
 } from '@containment/shared';
 import type { GameConnection } from '../net/gameConnection.ts';
 
@@ -51,6 +52,22 @@ export interface ClientEntity {
   movedAt: number;
   walkPhase: number;
   speech: { text: string; until: number } | null;
+  phase: number;
+  enraged: boolean;
+}
+
+export interface ClientTelegraph {
+  readonly entityId: EntityId;
+  readonly style: CombatStyle;
+  readonly tiles: readonly TilePoint[];
+  readonly startedAt: number;
+  readonly resolvesAt: number;
+}
+
+export interface ClientHazard {
+  readonly entityId: EntityId;
+  readonly hazard: HazardKind;
+  readonly tiles: readonly TilePoint[];
 }
 
 export interface ActiveZone {
@@ -108,6 +125,8 @@ export class WorldState {
   readonly entities = new Map<EntityId, ClientEntity>();
   readonly groundItems = new Map<string, GroundItemSnapshot>();
   readonly depletedObjects = new Set<string>();
+  readonly telegraphs = new Map<string, ClientTelegraph>();
+  readonly hazards = new Map<string, ClientHazard>();
   private readonly listeners = new Map<WorldEvent, Set<() => void>>();
   private readonly unsubscribers: (() => void)[] = [];
 
@@ -115,7 +134,32 @@ export class WorldState {
     this.unsubscribers.push(
       connection.on('world.entered', (message) => this.enterZone(message)),
       connection.on('world.entitySpawned', ({ entity }) => this.entities.set(entity.id, toClientEntity(entity))),
-      connection.on('world.entityDespawned', ({ entityId }) => this.entities.delete(entityId)),
+      connection.on('world.entityDespawned', ({ entityId }) => {
+        this.entities.delete(entityId);
+        this.clearEncounter(entityId);
+      }),
+      connection.on('encounter.telegraph', ({ entityId, mechanicId, style, tiles, windupTicks }) => {
+        const startedAt = performance.now();
+        this.telegraphs.set(`${entityId}/${mechanicId}`, { entityId, style, tiles, startedAt, resolvesAt: startedAt + windupTicks * this.tickMs });
+      }),
+      connection.on('encounter.resolved', ({ entityId, mechanicId }) => this.telegraphs.delete(`${entityId}/${mechanicId}`)),
+      connection.on('encounter.hazard', ({ entityId, mechanicId, hazard, tiles }) => this.hazards.set(`${entityId}/${mechanicId}`, { entityId, hazard, tiles })),
+      connection.on('encounter.phase', ({ entityId, phase }) => {
+        const entity = this.entities.get(entityId);
+        if (entity) entity.phase = phase;
+      }),
+      connection.on('encounter.enraged', ({ entityId }) => {
+        const entity = this.entities.get(entityId);
+        if (entity) entity.enraged = true;
+      }),
+      connection.on('encounter.cleared', ({ entityId }) => {
+        this.clearEncounter(entityId);
+        const entity = this.entities.get(entityId);
+        if (entity) {
+          entity.phase = 0;
+          entity.enraged = false;
+        }
+      }),
       connection.on('world.tick', (message) => this.applyMovements(message)),
       connection.on('world.chunksEntered', (message) => this.enterChunks(message)),
       connection.on('world.chunksLeft', ({ chunks }) => this.leaveChunks(new Set(chunks))),
@@ -242,7 +286,14 @@ export class WorldState {
     return walkableTilesNear(this.zone.grid, tile, from)[0] ?? null;
   }
 
+  private clearEncounter(entityId: EntityId): void {
+    for (const [key, telegraph] of this.telegraphs) if (telegraph.entityId === entityId) this.telegraphs.delete(key);
+    for (const [key, hazard] of this.hazards) if (hazard.entityId === entityId) this.hazards.delete(key);
+  }
+
   private enterZone(message: ServerMessageOf<'world.entered'>): void {
+    this.telegraphs.clear();
+    this.hazards.clear();
     const definition = GAME_CONTENT.levels.get(message.levelId);
     if (!definition) return;
     const definitionOf = (objectId: string) => GAME_CONTENT.worldObjects.get(objectId);
@@ -322,5 +373,7 @@ function toClientEntity(snapshot: EntitySnapshot): ClientEntity {
     movedAt: 0,
     walkPhase: 0,
     speech: null,
+    phase: snapshot.phase ?? 0,
+    enraged: snapshot.enraged ?? false,
   };
 }

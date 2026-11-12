@@ -13,6 +13,7 @@ export class VitalsPanel {
   private readonly targetText = h('span', { className: 'vitals-value' });
   private readonly targetClass = h('span', { className: 'target-class' });
   private readonly targetThreshold = h('span', { className: 'vitals-threshold' });
+  private readonly targetPhases = h('span', { className: 'vitals-phases' });
   private readonly containButton: HTMLButtonElement;
   private readonly containRow: HTMLElement;
   private readonly containHint = h('span', { className: 'contain-hint' });
@@ -35,7 +36,7 @@ export class VitalsPanel {
     );
     this.targetElement = h('section', { className: 'hud-target panel', hidden: true },
       h('div', { className: 'vitals-header' }, h('span', {}, this.targetName, ' ', this.targetLevel, ' ', this.targetClass), this.targetText),
-      h('div', { className: 'vitals-bar' }, this.targetFill, this.targetThreshold),
+      h('div', { className: 'vitals-bar' }, this.targetFill, this.targetThreshold, this.targetPhases),
       this.containRow,
     );
   }
@@ -59,7 +60,7 @@ export class VitalsPanel {
     }
     const combatLevel = world.self?.combatLevel ?? 0;
     const self = world.self;
-    const targetSignature = `${target.id}|${target.name}|${target.vitals.integrity}/${target.vitals.maxIntegrity}|${combatLevel}|${self?.skills.containment}|${JSON.stringify(self?.inventory)}`;
+    const targetSignature = `${target.id}|${target.name}|${target.vitals.integrity}/${target.vitals.maxIntegrity}|${combatLevel}|${target.phase}|${self?.skills.containment}|${JSON.stringify(self?.inventory)}`;
     if (targetSignature === this.targetSignature) return;
     this.targetSignature = targetSignature;
     const creature = target.creatureId ? GAME_CONTENT.creatures.get(target.creatureId) : undefined;
@@ -72,6 +73,14 @@ export class VitalsPanel {
     this.targetFill.dataset.state = ratio > 0.5 ? 'healthy' : ratio > 0.25 ? 'wounded' : 'critical';
     this.targetText.textContent = `${target.vitals.integrity} / ${target.vitals.maxIntegrity}`;
 
+    this.targetPhases.replaceChildren(
+      ...(creature?.encounter?.phases ?? []).map((phase, index) => {
+        const pip = h('span', { className: 'vitals-phase' });
+        pip.style.left = `${phase.belowIntegrity * 100}%`;
+        pip.dataset.reached = String(index < target.phase);
+        return pip;
+      }),
+    );
     const profile = creature?.containment;
     this.containTargetId = profile ? target.id : null;
     this.containRow.hidden = !profile;

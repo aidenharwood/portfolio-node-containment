@@ -17,6 +17,8 @@ import {
   Vector3,
   WebGLRenderer,
   MeshBasicMaterial,
+  Mesh,
+  OctahedronGeometry,
   type Object3D,
 } from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
@@ -32,6 +34,7 @@ import { createAreaBeacon, createClickMarker, createContainmentField, createGrou
 import { GroundItemLayer } from './items/groundItemLayer.ts';
 import { ProjectileLayer } from './projectileLayer.ts';
 import { RouteLayer } from './routeLayer.ts';
+import { EncounterLayer } from './encounterLayer.ts';
 import { samePickTarget, type ClickMarker, type PickTarget } from './pickTarget.ts';
 import { buildFieldLightGrid, clearFieldLights, FIELD_LIGHT_LIMIT, fieldLightFade, LIGHT_CONE_ANGLE, LIGHT_PENUMBRA, setFieldLights, type FieldLight } from './voxel/fieldLights.ts';
 import { hex, lighten } from './voxel/palette.ts';
@@ -68,6 +71,7 @@ interface EntityView {
 const FOOTPRINT_MODEL_SCALE: Readonly<Record<number, number>> = { 1: 1, 2: 1.75 };
 
 const CONTAINMENT_FIELD = 'containment-field';
+const ENRAGE_MARK = 'enrage-mark';
 const LIGHT_LIMITS = { shadowed: 4, field: FIELD_LIGHT_LIMIT };
 const NO_LIGHTS: LightAssignment<LightSource> = { shadowed: [], field: [], edge: Infinity, shadowEdge: Infinity };
 const LIGHT_INTENSITY_SCALE = 4;
@@ -119,6 +123,7 @@ export class GameRenderer {
   private readonly groundItems = new GroundItemLayer();
   private readonly projectiles = new ProjectileLayer();
   private readonly route = new RouteLayer();
+  private readonly encounters = new EncounterLayer();
   private readonly stopHitListener: () => void;
   private assignedLights: LightAssignment<LightSource> = NO_LIGHTS;
   private readonly fieldLights: FieldLight[] = Array.from({ length: FIELD_LIGHT_LIMIT }, () => ({ position: new Vector3(), color: new Color(), reach: 0 }));
@@ -148,7 +153,7 @@ export class GameRenderer {
     this.stopHitListener = world.onCombatHit((event) => this.launchProjectile(event));
     this.scene.fog = this.fog;
     this.scene.background = this.background;
-    this.scene.add(this.projectiles.root, this.groundItems.root, this.hemisphere, this.keyLight, this.keyLight.target, this.hoverRing, this.selfRing, this.click.group, this.route.mesh);
+    this.scene.add(this.projectiles.root, this.groundItems.root, this.hemisphere, this.keyLight, this.keyLight.target, this.hoverRing, this.selfRing, this.click.group, this.route.mesh, this.encounters.mesh);
 
     for (let index = 0; index < LIGHT_LIMITS.shadowed; index++) {
       const light = new SpotLight(0xffffff, 0, 6, LIGHT_CONE_ANGLE, LIGHT_PENUMBRA, 0);
@@ -264,6 +269,7 @@ export class GameRenderer {
     this.updateClickMarker(overlay.clickMarker, now);
     this.updateBeacons(overlay.objectiveBeacons, time);
     this.route.update(overlay.guidanceRoute, time);
+    this.encounters.update(this.world.telegraphs.values(), this.world.hazards.values(), now);
 
     this.cameraRig.camera.updateMatrixWorld();
     setFieldLights(this.fieldLights.slice(0, this.activeFieldLights), this.cameraRig.camera.matrixWorldInverse);
@@ -426,6 +432,7 @@ export class GameRenderer {
       }
 
       this.updateQuestMarker(view, this.markerFor(entity, overlay), now);
+      this.updateEnrageMark(view, entity.enraged, now);
     }
   }
 
@@ -456,6 +463,22 @@ export class GameRenderer {
     const view: EntityView = { rig, character, gear: entity.gear, yaw: FACING_YAW[entity.facing], marker: null, markerKind: null, scale };
     this.entities.set(entity.id, view);
     return view;
+  }
+
+  private updateEnrageMark(view: EntityView, enraged: boolean, now: number): void {
+    let mark = view.rig.root.getObjectByName(ENRAGE_MARK);
+    if (!enraged) {
+      mark?.removeFromParent();
+      return;
+    }
+    if (!mark) {
+      mark = new Mesh(new OctahedronGeometry(0.16), new MeshBasicMaterial({ color: 0xff3c28, toneMapped: false }));
+      mark.name = ENRAGE_MARK;
+      view.rig.root.add(mark);
+    }
+    const time = now / 1000;
+    mark.position.y = view.rig.height + 0.2 + Math.sin(time * 6) * 0.04;
+    mark.rotation.y = time * 3;
   }
 
   private markerFor(entity: ClientEntity, overlay: RenderOverlay): QuestMarkerKind | null {

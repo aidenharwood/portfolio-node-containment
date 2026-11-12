@@ -80,6 +80,7 @@ export class ChatLog {
     this.unsubscribers = [
       connection.on('chat.message', (message) => this.push(message)),
       connection.on('notice', ({ tone, text }) => this.push({ channel: 'notice', tone, text })),
+      connection.on('encounter.phase', ({ announce }) => this.push({ channel: 'notice', tone: 'warning', text: announce })),
       connection.on('error', ({ message }) => this.push({ channel: 'notice', tone: 'warning', text: message })),
       connection.on('party.invited', ({ inviterId, inviterName }) => this.push({
         channel: 'party',
