@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { describe, test } from 'node:test';
 import { drawBlueprint, type BlueprintStep } from '../src/world/blueprint.ts';
-import { anchorsOf, buildDistrict } from '../src/world/layout.ts';
+import { anchorsOf, buildDistrict, firstHollowOf } from '../src/world/layout.ts';
 import { printLayout } from '../src/world/printLayout.ts';
 import { DISTRICT_LAYOUT_SCHEMA } from '../src/world/layoutSchema.ts';
 
@@ -78,6 +78,18 @@ describe('anchorsOf', () => {
 
   test('throws for a missing anchor', () => {
     assert.throws(() => anchorsOf(district, ['door', 'vault']), /vault/);
+  });
+});
+
+describe('firstHollowOf', () => {
+  test('returns the corner of the first hollow step', () => {
+    const raw = source();
+    raw.steps = [...(raw.steps as unknown[]), { kind: 'hollow', rect: { x: 3, y: 4, width: 2, height: 2 } }];
+    assert.deepEqual(firstHollowOf(raw), { x: 3, y: 4 });
+  });
+
+  test('throws when the layout has no hollow', () => {
+    assert.throws(() => firstHollowOf(source()), /sample-district: .*hollow/);
   });
 });
 

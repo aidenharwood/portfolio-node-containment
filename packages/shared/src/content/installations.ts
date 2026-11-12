@@ -1,7 +1,6 @@
-import type { AssemblyId, InstanceId, WorldObjectId } from '../ids.ts';
-import { expandAssembly, type AssemblyDefinition, type AssemblyPiece, type AssemblyPlacement } from '../world/assemblies.ts';
+import type { AssemblyId, WorldObjectId } from '../ids.ts';
+import type { AssemblyDefinition, AssemblyPiece } from '../world/assemblies.ts';
 import type { WorldObjectDefinition, WorldObjectModel } from '../world/entities.ts';
-import type { Facing, TilePoint } from '../world/geometry.ts';
 
 export const INSTALLATION_CORE = 'C';
 
@@ -124,14 +123,6 @@ export function buildInstallations(objects: readonly WorldObjectDefinition[]): {
   const missing = [...KIND_OF.keys()].filter((coreId) => !objects.some((object) => object.id === coreId));
   if (missing.length > 0) throw new Error(`Installations name unknown objects: ${missing.join(', ')}.`);
   return { objects: built, assemblies };
-}
-
-export function install(instanceId: InstanceId, coreId: WorldObjectId & AssemblyId, core: TilePoint, facing: Facing = 'south'): AssemblyPlacement {
-  const kind = KIND_OF.get(coreId);
-  if (!kind) throw new Error(`"${coreId}" is not an installation.`);
-  const probe = expandAssembly(assemblyOf(coreId, kind, coreId), { instanceId, assemblyId: coreId, position: { x: 0, y: 0 }, facing });
-  const offset = probe.find((piece) => piece.objectId === coreId)?.position ?? { x: 0, y: 0 };
-  return { instanceId, assemblyId: coreId, position: { x: core.x - offset.x, y: core.y - offset.y }, facing };
 }
 
 export function installationLayoutOf(assemblyId: AssemblyId): AssemblyDefinition | undefined {

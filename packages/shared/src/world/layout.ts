@@ -108,6 +108,13 @@ export function buildDistrict(source: unknown): DistrictDefinition {
   });
 }
 
+export function firstHollowOf(source: unknown): TilePoint {
+  const layout = parseLayout(source);
+  const hollow = layout.steps.find((step): step is Extract<typeof step, { kind: 'hollow' }> => step.kind === 'hollow');
+  if (!hollow) throw new Error(`${layout.id}: the layout has no hollow step`);
+  return { x: hollow.rect.x, y: hollow.rect.y };
+}
+
 export function anchorsOf<K extends string>(district: DistrictDefinition, keys: readonly K[]): Readonly<Record<K, TilePoint>> {
   const entries = keys.map((key) => {
     const point = district.anchors?.[key];
