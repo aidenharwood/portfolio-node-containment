@@ -2,6 +2,10 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import {
   activeMechanicIds,
+  findEncounterIssues,
+  GAME_CONTENT,
+  telegraphHitCap,
+  type GameContent,
   enragedSpeedTicks,
   phaseIndexFor,
   seedHazard,
@@ -103,5 +107,53 @@ describe('hazards and limits', () => {
     assert.equal(telegraphHitShare(2), 0.25);
     assert.ok(Math.abs(telegraphHitShare(13) - 0.45) < 1e-9);
     assert.ok(telegraphHitShare(8) > telegraphHitShare(3));
+  });
+});
+
+describe('encounter integrity', () => {
+  const withBoss = (encounterOf: EncounterDefinition) => {
+    const creatures = new Map(GAME_CONTENT.creatures);
+    creatures.set('hollow-warden', { ...GAME_CONTENT.creatures.get('hollow-warden')!, encounter: encounterOf });
+    return findEncounterIssues({ ...GAME_CONTENT, creatures } as GameContent).filter((issue) => issue.includes('hollow-warden') || issue.includes('s2-warden'));
+  };
+  const slam = { kind: 'telegraph' as const, id: 'slam', shape: 'body' as const, reach: 1, windupTicks: 6, cooldownTicks: 20, style: 'melee' as const, accuracy: 10, maxHit: 5 };
+
+  test('the shipped content has no encounter issues', () => {
+    assert.deepEqual(findEncounterIssues(GAME_CONTENT), []);
+  });
+
+  test('a rushed surround telegraph is reported', () => {
+    assert.ok(withBoss({ mechanics: [{ ...slam, windupTicks: 3 }] }).some((issue) => issue.includes('needs at least 4')));
+  });
+
+  test('a telegraph over the tier cap is reported', () => {
+    assert.ok(withBoss({ mechanics: [{ ...slam, maxHit: telegraphHitCap(4) + 1 }] }).some((issue) => issue.includes('caps it at')));
+  });
+
+  test('thresholds must descend and enables must name mechanics', () => {
+    const issues = withBoss({
+      mechanics: [slam],
+      phases: [
+        { belowIntegrity: 0.4, announce: 'a', enables: [] },
+        { belowIntegrity: 0.6, announce: 'b', enables: ['ghost'] },
+      ],
+    });
+    assert.ok(issues.some((issue) => issue.includes('strictly descend')));
+    assert.ok(issues.some((issue) => issue.includes('unknown mechanic "ghost"')));
+  });
+
+  test('summons must exist, be weaker and not be bosses', () => {
+    const summon = (creatureId: string) => ({ kind: 'summon' as const, id: `s-${creatureId}`, creatureId, count: 1, maxAlive: 1 });
+    const issues = withBoss({ mechanics: [summon('nobody'), summon('the-host'), summon('the-understudy')] });
+    assert.ok(issues.some((issue) => issue.includes('unknown creature "nobody"')));
+    assert.ok(issues.some((issue) => issue.includes('outranks')));
+    assert.ok(issues.some((issue) => issue.includes('boss itself')));
+  });
+
+  test('a duplicate id and a single-combat area are reported', () => {
+    const issues = withBoss({ mechanics: [slam, slam] });
+    assert.ok(issues.some((issue) => issue.includes('used twice')));
+    const multi = GAME_CONTENT.districts.get('sector-two')!.areas.find((area) => area.id === 'inner-chamber')?.multiCombat === true;
+    assert.equal(issues.some((issue) => issue.includes('multi-combat')), !multi);
   });
 });

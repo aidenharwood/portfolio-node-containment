@@ -90,6 +90,7 @@ export * from './content/overworldIntegrity.ts';
 export * from './content/tramIntegrity.ts';
 export * from './content/safetyIntegrity.ts';
 export * from './content/footprintIntegrity.ts';
+export * from './content/encounterIntegrity.ts';
 export * from './content/worldDesignIntegrity.ts';
 export * from './content/tramNetwork.ts';
 export * from './content/questLocations.ts';
