@@ -1,0 +1,48 @@
+{
+  "id": "sample-district",
+  "name": "Sample District",
+  "subtitle": "A test district",
+  "tier": 1,
+  "region": "test-region",
+  "ambience": { "darkness": 0.3, "tint": "#101010", "fog": "#202020" },
+  "size": { "width": 24, "height": 16 },
+  "steps": [
+    { "kind": "room", "id": "hall", "rect": { "x": 1, "y": 1, "width": 14, "height": 12 }, "floor": "plating", "shape": "rect" },
+    { "kind": "room", "id": "side", "rect": { "x": 17, "y": 1, "width": 6, "height": 12 }, "floor": "carpet", "shape": "rect" },
+    { "kind": "link", "from": "hall", "to": "side", "width": 2, "floor": "door" },
+    { "kind": "exit", "id": "west", "room": "hall", "side": "west", "width": 3, "gate": false }
+  ],
+  "tiles": [],
+  "areas": [
+    { "room": "hall", "name": "Hall", "safe": true },
+    { "room": "side", "name": "Side Room" }
+  ],
+  "anchors": {
+    "door": { "exit": "west", "index": 0 },
+    "desk": { "room": "side", "dx": 2, "dy": 2 }
+  },
+  "objects": [
+    { "id": "hall-planter", "object": "planter", "at": { "room": "hall", "dx": 1, "dy": 1 } },
+    { "id": "hall-bench", "object": "briefing-bench", "at": { "room": "hall", "dx": 11, "dy": 9 }, "facing": "north" }
+  ],
+  "assemblies": [
+    { "id": "hall-cables", "assembly": "cable-run", "at": { "room": "hall", "dx": 1, "dy": 10 }, "facing": "east", "span": 3 }
+  ],
+  "npcs": [
+    { "id": "hall-ames", "npc": "staffer-ames", "at": { "room": "hall", "dx": 1, "dy": 7 } }
+  ],
+  "creatures": [],
+  "lights": [
+    { "at": { "room": "hall", "dx": 6, "dy": 5 }, "radius": 8, "color": "#9fd8ff", "intensity": 0.5 }
+  ],
+  "decals": [
+    { "kind": "mosaic", "pattern": "compass", "at": { "room": "hall", "dx": 8, "dy": 8 }, "width": 3, "height": 3 }
+  ],
+  "setPieces": [
+    { "id": "sample-ring", "prefab": "bench-ring", "at": { "room": "hall", "dx": 5, "dy": 0 }, "facing": "south" }
+  ],
+  "dressing": {
+    "side": "office"
+  },
+  "furnish": {}
+}

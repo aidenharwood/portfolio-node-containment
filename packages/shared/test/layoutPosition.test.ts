@@ -67,7 +67,6 @@ describe('layout schema', () => {
       lights: [],
       decals: [],
       setPieces: [],
-      scatter: [],
       dressing: {},
       furnish: {},
     });

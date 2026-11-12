@@ -63,6 +63,8 @@ export * from './world/chunks.ts';
 export * from './world/blueprint.ts';
 export * from './world/layoutSchema.ts';
 export * from './world/layoutPosition.ts';
+export * from './world/layout.ts';
+export * from './world/printLayout.ts';
 export * from './world/levelPlan.ts';
 export * from './world/trackway.ts';
 export * from './world/district.ts';

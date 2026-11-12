@@ -16,7 +16,6 @@ const DENSITIES = ['sparse', 'normal', 'dense'] as const;
 const COMPOSITION_NAMES = ['court', 'radial', 'concourse', 'hall', 'workroom', 'yard', 'nave'] as const;
 const DECAL_KINDS = ['inlay', 'mosaic', 'rug', 'runner', 'lane-paint', 'hazard-paint', 'wear', 'scorch', 'moss', 'water-stain', 'salt-crust', 'alien-vein', 'cracks'] as const;
 const DECAL_PATTERNS = ['solid', 'border', 'checker', 'compass', 'stripe'] as const;
-export const SCATTER_POOL_NAMES = ['litter', 'office-props', 'civic-props', 'industrial-props'] as const;
 
 const LAYOUT_ENUMS_MATCH: readonly true[] = [
   true satisfies Same<(typeof FACINGS)[number], Facing>,
@@ -85,12 +84,7 @@ export const DISTRICT_LAYOUT_SCHEMA = z
     anchors: z.record(LAYOUT_POSITION_SCHEMA),
     recovery: z.object({ districtId: z.string(), at: LAYOUT_POSITION_SCHEMA }).strict().optional(),
     objects: z.array(z.object({ id: z.string(), object: z.string(), at: LAYOUT_POSITION_SCHEMA, facing: facing.optional() }).strict()),
-    assemblies: z.array(
-      z.union([
-        z.object({ id: z.string(), install: z.string(), at: LAYOUT_POSITION_SCHEMA, facing: facing.optional() }).strict(),
-        z.object({ id: z.string(), assembly: z.string(), at: LAYOUT_POSITION_SCHEMA, facing: facing.optional(), span: int.positive().optional() }).strict(),
-      ]),
-    ),
+    assemblies: z.array(z.object({ id: z.string(), assembly: z.string(), at: LAYOUT_POSITION_SCHEMA, facing: facing.optional(), span: int.positive().optional() }).strict()),
     npcs: z.array(z.object({ id: z.string(), npc: z.string(), at: LAYOUT_POSITION_SCHEMA }).strict()),
     creatures: z.array(z.object({ id: z.string(), creature: z.string(), at: LAYOUT_POSITION_SCHEMA }).strict()),
     lights: z.array(z.object({ at: LAYOUT_POSITION_SCHEMA, radius: z.number(), color: z.string(), intensity: z.number() }).strict()),
@@ -98,7 +92,6 @@ export const DISTRICT_LAYOUT_SCHEMA = z
       z.object({ kind: z.enum(DECAL_KINDS), pattern: z.enum(DECAL_PATTERNS).optional(), tint: z.string().optional(), at: LAYOUT_POSITION_SCHEMA, width: int.positive(), height: int.positive() }).strict(),
     ),
     setPieces: z.array(z.object({ id: z.string().optional(), prefab: z.string(), at: roomPosition, facing }).strict()),
-    scatter: z.array(z.object({ room: z.string(), prefix: z.string(), pool: z.enum(SCATTER_POOL_NAMES), count: int.nonnegative(), avoid: z.array(LAYOUT_POSITION_SCHEMA).optional() }).strict()),
     dressing: z.record(z.union([z.enum(DRESSING_THEMES), ROOM_DRESSING_SCHEMA])),
     furnish: z
       .object({
@@ -112,4 +105,3 @@ export const DISTRICT_LAYOUT_SCHEMA = z
 
 export type DistrictLayout = z.infer<typeof DISTRICT_LAYOUT_SCHEMA>;
 export type LayoutPosition = z.infer<typeof LAYOUT_POSITION_SCHEMA>;
-export type ScatterPool = (typeof SCATTER_POOL_NAMES)[number];
