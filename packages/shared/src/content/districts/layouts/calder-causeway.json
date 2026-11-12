@@ -1,0 +1,76 @@
+{
+  "id": "calder-causeway",
+  "name": "Calder Causeway",
+  "subtitle": "Calder Wing — Sealed Salt Road",
+  "tier": 10,
+  "region": "calder",
+  "condition": "breached",
+  "ambience": { "darkness": 0.62, "tint": "#1a1210", "fog": "#20160f", "fixtures": "failing" },
+  "size": { "width": 67, "height": 70 },
+  "steps": [
+    { "kind": "room", "id": "causeway", "rect": { "x": 0, "y": 1, "width": 66, "height": 13 }, "floor": "concrete", "shape": "rect" },
+    { "kind": "room", "id": "salt-road", "rect": { "x": 53, "y": 14, "width": 13, "height": 56 }, "floor": "concrete", "shape": "rect" },
+    { "kind": "room", "id": "weighbridge", "rect": { "x": 6, "y": 20, "width": 40, "height": 30 }, "floor": "rust", "shape": "rect" },
+    { "kind": "link", "from": "causeway", "to": "weighbridge", "width": 7, "floor": "concrete" },
+    { "kind": "link", "from": "weighbridge", "to": "salt-road", "width": 5, "floor": "concrete" },
+    { "kind": "patch", "rect": { "x": 16, "y": 30, "width": 20, "height": 1 }, "tile": "hazard" },
+    { "kind": "patch", "rect": { "x": 16, "y": 40, "width": 20, "height": 1 }, "tile": "hazard" },
+    { "kind": "pillars", "room": "causeway", "everyX": 8, "everyY": 6, "inset": 3 },
+    { "kind": "track", "points": [{ "x": 0, "y": 52 }, { "x": 65, "y": 52 }] },
+    { "kind": "exit", "id": "west", "room": "causeway", "side": "west", "width": 13, "gate": false },
+    { "kind": "exit", "id": "south", "room": "salt-road", "side": "south", "width": 13, "gate": false }
+  ],
+  "tiles": [],
+  "areas": [
+    { "room": "causeway", "name": "Calder Causeway" },
+    { "room": "salt-road", "name": "Salt Road" },
+    { "room": "weighbridge", "name": "Weighbridge", "safe": true }
+  ],
+  "anchors": {},
+  "recovery": { "districtId": "waterworks", "at": { "x": 4, "y": 72 } },
+  "objects": [
+    { "id": "cc-sign", "object": "warning-sign", "at": { "room": "causeway", "dx": 2, "dy": 0 } },
+    { "id": "cc-pipes-a", "object": "pipe-cluster", "at": { "room": "causeway", "dx": 19, "dy": 0 } },
+    { "id": "cc-pipes-b", "object": "pipe-cluster", "at": { "room": "causeway", "dx": 50, "dy": 12 } },
+    { "id": "cc-puddle", "object": "litter-puddle", "at": { "room": "causeway", "dx": 28, "dy": 2 } },
+    { "id": "cc-rubble", "object": "litter-rubble", "at": { "room": "causeway", "dx": 59, "dy": 1 } },
+    { "id": "cc-gravel", "object": "litter-gravel", "at": { "room": "causeway", "dx": 9, "dy": 3 } },
+    { "id": "cc-litter-1", "object": "litter-papers", "at": { "room": "causeway", "dx": 47, "dy": 6 } },
+    { "id": "cc-litter-2", "object": "litter-debris", "at": { "room": "causeway", "dx": 7, "dy": 11 } },
+    { "id": "cc-litter-3", "object": "litter-puddle", "at": { "room": "causeway", "dx": 38, "dy": 5 } },
+    { "id": "cc-litter-4", "object": "litter-gravel", "at": { "room": "causeway", "dx": 64, "dy": 10 } },
+    { "id": "cc-litter-5", "object": "litter-rubble", "at": { "room": "causeway", "dx": 13, "dy": 11 } },
+    { "id": "cc-litter-6", "object": "litter-papers", "at": { "room": "causeway", "dx": 24, "dy": 9 } },
+    { "id": "cc-road-litter-1", "object": "litter-papers", "at": { "room": "salt-road", "dx": 7, "dy": 21 } },
+    { "id": "cc-road-litter-2", "object": "litter-debris", "at": { "room": "salt-road", "dx": 6, "dy": 9 } },
+    { "id": "cc-road-litter-3", "object": "litter-puddle", "at": { "room": "salt-road", "dx": 3, "dy": 43 } },
+    { "id": "cc-road-litter-4", "object": "litter-gravel", "at": { "room": "salt-road", "dx": 10, "dy": 36 } },
+    { "id": "cc-road-litter-5", "object": "litter-rubble", "at": { "room": "salt-road", "dx": 1, "dy": 23 } },
+    { "id": "cc-road-litter-6", "object": "litter-papers", "at": { "room": "salt-road", "dx": 9, "dy": 28 } },
+    { "id": "cc-road-litter-7", "object": "litter-debris", "at": { "room": "salt-road", "dx": 9, "dy": 50 } },
+    { "id": "cc-road-litter-8", "object": "litter-puddle", "at": { "room": "salt-road", "dx": 4, "dy": 36 } }
+  ],
+  "assemblies": [
+    { "id": "cc-line-bridge-1", "assembly": "bridge", "at": { "room": "salt-road", "dx": 1, "dy": 37 }, "facing": "south", "span": 2 },
+    { "id": "cc-line-bridge-2", "assembly": "bridge", "at": { "room": "salt-road", "dx": 4, "dy": 37 }, "facing": "south", "span": 2 },
+    { "id": "cc-line-bridge-3", "assembly": "bridge", "at": { "room": "salt-road", "dx": 7, "dy": 37 }, "facing": "south", "span": 2 },
+    { "id": "cc-line-bridge-4", "assembly": "bridge", "at": { "room": "salt-road", "dx": 10, "dy": 37 }, "facing": "south", "span": 2 }
+  ],
+  "npcs": [],
+  "creatures": [],
+  "lights": [
+    { "at": { "room": "salt-road", "dx": 6, "dy": 28 }, "radius": 9, "color": "#ffd27f", "intensity": 0.5 },
+    { "at": { "room": "weighbridge", "dx": 20, "dy": 15 }, "radius": 9, "color": "#ffb347", "intensity": 0.5 },
+    { "at": { "room": "causeway", "dx": 6, "dy": 2 }, "radius": 9, "color": "#ff9a6a", "intensity": 0.4 },
+    { "at": { "room": "causeway", "dx": 34, "dy": 2 }, "radius": 9, "color": "#ffd27f", "intensity": 0.35 },
+    { "at": { "room": "causeway", "dx": 62, "dy": 2 }, "radius": 9, "color": "#ff9a6a", "intensity": 0.45 }
+  ],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "causeway": "mine",
+    "salt-road": "mine",
+    "weighbridge": "mine"
+  },
+  "furnish": {}
+}

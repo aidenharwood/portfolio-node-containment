@@ -1,0 +1,76 @@
+{
+  "id": "service-concourse",
+  "name": "Service Concourse",
+  "subtitle": "Site Meridian — East Transit Corridor",
+  "tier": 1,
+  "region": "meridian-core",
+  "condition": "worn",
+  "ambience": { "darkness": 0.52, "tint": "#16110a", "fog": "#1a140c" },
+  "size": { "width": 100, "height": 47 },
+  "steps": [
+    { "kind": "room", "id": "concourse", "rect": { "x": 0, "y": 17, "width": 100, "height": 13 }, "floor": "concrete", "shape": "rect" },
+    { "kind": "room", "id": "freight-office", "rect": { "x": 6, "y": 1, "width": 38, "height": 14 }, "floor": "plating", "shape": "rect" },
+    { "kind": "room", "id": "container-stacks", "rect": { "x": 56, "y": 1, "width": 38, "height": 14 }, "floor": "rust", "shape": "rect" },
+    { "kind": "room", "id": "drivers-rest", "rect": { "x": 6, "y": 32, "width": 38, "height": 14 }, "floor": "carpet", "shape": "rect" },
+    { "kind": "room", "id": "salvage-lot", "rect": { "x": 56, "y": 32, "width": 38, "height": 14 }, "floor": "rust", "shape": "rect" },
+    { "kind": "link", "from": "concourse", "to": "freight-office", "width": 7, "floor": "concrete" },
+    { "kind": "link", "from": "concourse", "to": "container-stacks", "width": 7, "floor": "concrete" },
+    { "kind": "link", "from": "concourse", "to": "drivers-rest", "width": 7, "floor": "concrete" },
+    { "kind": "link", "from": "concourse", "to": "salvage-lot", "width": 7, "floor": "concrete" },
+    { "kind": "patch", "rect": { "x": 46, "y": 17, "width": 8, "height": 1 }, "tile": "hazard" },
+    { "kind": "patch", "rect": { "x": 46, "y": 29, "width": 8, "height": 1 }, "tile": "hazard" },
+    { "kind": "pillars", "room": "concourse", "everyX": 8, "everyY": 6, "inset": 3 },
+    { "kind": "track", "points": [{ "x": 98, "y": 36 }, { "x": 98, "y": 45 }] },
+    { "kind": "exit", "id": "west", "room": "concourse", "side": "west", "width": 13, "gate": false },
+    { "kind": "exit", "id": "east", "room": "concourse", "side": "east", "width": 13, "gate": false }
+  ],
+  "tiles": [],
+  "areas": [
+    { "room": "concourse", "name": "Service Concourse" },
+    { "room": "freight-office", "name": "Freight Office", "safe": true },
+    { "room": "container-stacks", "name": "Container Stacks" },
+    { "room": "drivers-rest", "name": "Drivers' Rest", "safe": true },
+    { "room": "salvage-lot", "name": "Salvage Lot" }
+  ],
+  "anchors": {},
+  "recovery": { "districtId": "meridian-atrium", "at": { "x": 38, "y": 76 } },
+  "objects": [
+    { "id": "sc-pipes-a", "object": "pipe-cluster", "at": { "room": "concourse", "dx": 16, "dy": 0 } },
+    { "id": "sc-pipes-b", "object": "pipe-cluster", "at": { "room": "concourse", "dx": 96, "dy": 12 } },
+    { "id": "sc-debris", "object": "litter-debris", "at": { "room": "concourse", "dx": 56, "dy": 1 } },
+    { "id": "sc-papers", "object": "litter-papers", "at": { "room": "concourse", "dx": 98, "dy": 3 } },
+    { "id": "sc-puddle", "object": "litter-puddle", "at": { "room": "concourse", "dx": 2, "dy": 3 } },
+    { "id": "sc-rubble", "object": "litter-rubble", "at": { "room": "concourse", "dx": 96, "dy": 1 } },
+    { "id": "sc-litter-1", "object": "litter-papers", "at": { "room": "concourse", "dx": 58, "dy": 11 } },
+    { "id": "sc-litter-2", "object": "litter-debris", "at": { "room": "concourse", "dx": 9, "dy": 9 } },
+    { "id": "sc-litter-3", "object": "litter-puddle", "at": { "room": "concourse", "dx": 35, "dy": 1 } },
+    { "id": "sc-litter-4", "object": "litter-gravel", "at": { "room": "concourse", "dx": 82, "dy": 1 } },
+    { "id": "sc-litter-5", "object": "litter-rubble", "at": { "room": "concourse", "dx": 26, "dy": 7 } },
+    { "id": "sc-litter-6", "object": "litter-papers", "at": { "room": "concourse", "dx": 64, "dy": 5 } },
+    { "id": "sc-litter-7", "object": "litter-debris", "at": { "room": "concourse", "dx": 70, "dy": 10 } },
+    { "id": "sc-litter-8", "object": "litter-puddle", "at": { "room": "concourse", "dx": 88, "dy": 6 } }
+  ],
+  "assemblies": [
+    { "id": "sc-cable-run", "assembly": "cable-run", "at": { "room": "concourse", "dx": 1, "dy": 2 }, "facing": "east", "span": 9 }
+  ],
+  "npcs": [],
+  "creatures": [],
+  "lights": [
+    { "at": { "room": "freight-office", "dx": 19, "dy": 7 }, "radius": 9, "color": "#ffd27f", "intensity": 0.5 },
+    { "at": { "room": "container-stacks", "dx": 19, "dy": 7 }, "radius": 9, "color": "#ffb347", "intensity": 0.5 },
+    { "at": { "room": "drivers-rest", "dx": 19, "dy": 7 }, "radius": 9, "color": "#ffcf4d", "intensity": 0.5 },
+    { "at": { "room": "salvage-lot", "dx": 19, "dy": 7 }, "radius": 9, "color": "#ff8a4d", "intensity": 0.5 },
+    { "at": { "room": "concourse", "dx": 3, "dy": 2 }, "radius": 9, "color": "#ffb347", "intensity": 0.45 },
+    { "at": { "room": "concourse", "dx": 96, "dy": 2 }, "radius": 9, "color": "#ffd27f", "intensity": 0.45 }
+  ],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "concourse": "freight",
+    "freight-office": "office",
+    "container-stacks": { "theme": "freight", "density": "dense" },
+    "drivers-rest": "canteen",
+    "salvage-lot": "freight"
+  },
+  "furnish": {}
+}

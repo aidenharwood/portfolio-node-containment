@@ -1,0 +1,75 @@
+{
+  "id": "verdance-concourse",
+  "name": "Verdance Concourse",
+  "subtitle": "Site Meridian — West Transit Corridor",
+  "tier": 1,
+  "region": "meridian-core",
+  "condition": "worn",
+  "ambience": { "darkness": 0.5, "tint": "#0a1a12", "fog": "#0c1e14" },
+  "size": { "width": 100, "height": 47 },
+  "steps": [
+    { "kind": "room", "id": "concourse", "rect": { "x": 0, "y": 17, "width": 100, "height": 13 }, "floor": "plating", "shape": "rect" },
+    { "kind": "room", "id": "seed-exchange", "rect": { "x": 6, "y": 1, "width": 38, "height": 14 }, "floor": "soil", "shape": "rect" },
+    { "kind": "room", "id": "irrigation-plant", "rect": { "x": 56, "y": 1, "width": 38, "height": 14 }, "floor": "grate", "shape": "rect" },
+    { "kind": "room", "id": "gardeners-row", "rect": { "x": 6, "y": 32, "width": 38, "height": 14 }, "floor": "carpet", "shape": "rect" },
+    { "kind": "room", "id": "compost-yard", "rect": { "x": 56, "y": 32, "width": 38, "height": 14 }, "floor": "soil", "shape": "rect" },
+    { "kind": "link", "from": "concourse", "to": "seed-exchange", "width": 7, "floor": "plating" },
+    { "kind": "link", "from": "concourse", "to": "irrigation-plant", "width": 7, "floor": "plating" },
+    { "kind": "link", "from": "concourse", "to": "gardeners-row", "width": 7, "floor": "plating" },
+    { "kind": "link", "from": "concourse", "to": "compost-yard", "width": 7, "floor": "plating" },
+    { "kind": "patch", "rect": { "x": 48, "y": 1, "width": 3, "height": 45 }, "tile": "coolant" },
+    { "kind": "pillars", "room": "concourse", "everyX": 8, "everyY": 6, "inset": 3 },
+    { "kind": "exit", "id": "west", "room": "concourse", "side": "west", "width": 13, "gate": false },
+    { "kind": "exit", "id": "east", "room": "concourse", "side": "east", "width": 13, "gate": false }
+  ],
+  "tiles": [],
+  "areas": [
+    { "room": "concourse", "name": "Verdance Concourse" },
+    { "room": "seed-exchange", "name": "Seed Exchange", "safe": true },
+    { "room": "irrigation-plant", "name": "Irrigation Plant" },
+    { "room": "gardeners-row", "name": "Gardeners' Row", "safe": true },
+    { "room": "compost-yard", "name": "Compost Yard" }
+  ],
+  "anchors": {},
+  "recovery": { "districtId": "meridian-atrium", "at": { "x": 38, "y": 76 } },
+  "objects": [
+    { "id": "vc-puddle", "object": "litter-puddle", "at": { "room": "concourse", "dx": 20, "dy": 2 } },
+    { "id": "vc-papers", "object": "litter-papers", "at": { "room": "concourse", "dx": 96, "dy": 1 } },
+    { "id": "vc-debris", "object": "litter-debris", "at": { "room": "concourse", "dx": 2, "dy": 12 } },
+    { "id": "vc-gravel", "object": "litter-gravel", "at": { "room": "concourse", "dx": 98, "dy": 2 } },
+    { "id": "vc-litter-1", "object": "litter-papers", "at": { "room": "concourse", "dx": 84, "dy": 5 } },
+    { "id": "vc-litter-2", "object": "litter-debris", "at": { "room": "concourse", "dx": 10, "dy": 11 } },
+    { "id": "vc-litter-3", "object": "litter-puddle", "at": { "room": "concourse", "dx": 37, "dy": 9 } },
+    { "id": "vc-litter-4", "object": "litter-gravel", "at": { "room": "concourse", "dx": 78, "dy": 3 } },
+    { "id": "vc-litter-5", "object": "litter-rubble", "at": { "room": "concourse", "dx": 61, "dy": 3 } },
+    { "id": "vc-litter-6", "object": "litter-papers", "at": { "room": "concourse", "dx": 38, "dy": 1 } },
+    { "id": "vc-litter-7", "object": "litter-debris", "at": { "room": "concourse", "dx": 9, "dy": 3 } },
+    { "id": "vc-litter-8", "object": "litter-puddle", "at": { "room": "concourse", "dx": 20, "dy": 11 } }
+  ],
+  "assemblies": [
+    { "id": "vc-bridge-north", "assembly": "bridge", "at": { "room": "concourse", "dx": 47, "dy": 1 }, "facing": "east", "span": 3 },
+    { "id": "vc-bridge-south", "assembly": "bridge", "at": { "room": "concourse", "dx": 47, "dy": 10 }, "facing": "east", "span": 3 },
+    { "id": "vc-cable-run", "assembly": "cable-run", "at": { "room": "concourse", "dx": 79, "dy": 12 }, "facing": "east", "span": 3 }
+  ],
+  "npcs": [],
+  "creatures": [],
+  "lights": [
+    { "at": { "room": "seed-exchange", "dx": 19, "dy": 7 }, "radius": 9, "color": "#7cf29a", "intensity": 0.5 },
+    { "at": { "room": "irrigation-plant", "dx": 19, "dy": 7 }, "radius": 9, "color": "#4fd8ff", "intensity": 0.5 },
+    { "at": { "room": "gardeners-row", "dx": 19, "dy": 7 }, "radius": 9, "color": "#ffd27f", "intensity": 0.5 },
+    { "at": { "room": "compost-yard", "dx": 19, "dy": 7 }, "radius": 9, "color": "#c8ff7a", "intensity": 0.5 },
+    { "at": { "room": "concourse", "dx": 3, "dy": 2 }, "radius": 9, "color": "#7cf29a", "intensity": 0.5 },
+    { "at": { "room": "concourse", "dx": 54, "dy": 2 }, "radius": 7, "color": "#4fd8ff", "intensity": 0.55 },
+    { "at": { "room": "concourse", "dx": 97, "dy": 2 }, "radius": 9, "color": "#9fd8ff", "intensity": 0.45 }
+  ],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "concourse": "garden",
+    "seed-exchange": { "theme": "garden", "density": "dense" },
+    "irrigation-plant": "wet",
+    "gardeners-row": "garden",
+    "compost-yard": "garden"
+  },
+  "furnish": {}
+}

@@ -1,0 +1,75 @@
+{
+  "id": "furnace-causeway",
+  "name": "Furnace Causeway",
+  "subtitle": "The Deep — Reactor Approach",
+  "tier": 4,
+  "region": "meridian-core",
+  "condition": "alien",
+  "ambience": { "darkness": 0.62, "tint": "#1a0a04", "fog": "#200c06", "fixtures": "failing" },
+  "size": { "width": 41, "height": 70 },
+  "steps": [
+    { "kind": "room", "id": "furnace-approach", "rect": { "x": 14, "y": 1, "width": 13, "height": 25 }, "floor": "grate", "shape": "rect" },
+    { "kind": "room", "id": "ember-landing", "rect": { "x": 1, "y": 26, "width": 39, "height": 18 }, "floor": "rust", "shape": "rect" },
+    { "kind": "room", "id": "causeway", "rect": { "x": 14, "y": 44, "width": 13, "height": 25 }, "floor": "grate", "shape": "rect" },
+    { "kind": "patch", "rect": { "x": 14, "y": 54, "width": 13, "height": 3 }, "tile": "coolant" },
+    { "kind": "patch", "rect": { "x": 5, "y": 31, "width": 6, "height": 6 }, "tile": "coolant" },
+    { "kind": "patch", "rect": { "x": 30, "y": 31, "width": 6, "height": 6 }, "tile": "coolant" },
+    { "kind": "pillars", "room": "furnace-approach", "everyX": 8, "everyY": 6, "inset": 4 },
+    { "kind": "pillars", "room": "ember-landing", "everyX": 9, "everyY": 6, "inset": 4 },
+    { "kind": "exit", "id": "south", "room": "causeway", "side": "south", "width": 13, "gate": false },
+    { "kind": "exit", "id": "north", "room": "furnace-approach", "side": "north", "width": 2, "offset": 5, "gate": true }
+  ],
+  "tiles": [],
+  "areas": [
+    { "room": "causeway", "name": "Furnace Causeway" },
+    { "room": "furnace-approach", "name": "Furnace Approach" },
+    { "room": "ember-landing", "name": "Ember Landing", "safe": true }
+  ],
+  "anchors": {
+    "furnaceGate": { "room": "furnace-approach", "dx": 6, "dy": 0 },
+    "landing": { "room": "ember-landing", "dx": 19, "dy": 4 }
+  },
+  "recovery": { "districtId": "deepwatch", "at": { "x": 8, "y": 44 } },
+  "objects": [
+    { "id": "fc-furnace-sign", "object": "warning-sign", "at": { "room": "furnace-approach", "dx": 2, "dy": 0 } },
+    { "id": "fc-ember-brazier", "object": "light-pillar", "at": { "room": "ember-landing", "dx": 19, "dy": 9 } },
+    { "id": "fc-pipes-a", "object": "pipe-cluster", "at": { "room": "causeway", "dx": 4, "dy": 0 } },
+    { "id": "fc-pipes-b", "object": "pipe-cluster", "at": { "room": "causeway", "dx": 8, "dy": 24 } },
+    { "id": "fc-debris", "object": "litter-debris", "at": { "room": "causeway", "dx": 5, "dy": 2 } },
+    { "id": "fc-puddle", "object": "litter-puddle", "at": { "room": "causeway", "dx": 7, "dy": 1 } },
+    { "id": "fc-rubble", "object": "litter-rubble", "at": { "room": "causeway", "dx": 8, "dy": 0 } },
+    { "id": "fc-gravel", "object": "litter-gravel", "at": { "room": "causeway", "dx": 3, "dy": 3 } },
+    { "id": "fc-landing-litter-1", "object": "litter-papers", "at": { "room": "ember-landing", "dx": 12, "dy": 2 } },
+    { "id": "fc-landing-litter-2", "object": "litter-debris", "at": { "room": "ember-landing", "dx": 27, "dy": 1 } },
+    { "id": "fc-landing-litter-3", "object": "litter-puddle", "at": { "room": "ember-landing", "dx": 11, "dy": 14 } },
+    { "id": "fc-landing-litter-4", "object": "litter-gravel", "at": { "room": "ember-landing", "dx": 34, "dy": 14 } },
+    { "id": "fc-landing-litter-5", "object": "litter-rubble", "at": { "room": "ember-landing", "dx": 27, "dy": 16 } },
+    { "id": "fc-landing-litter-6", "object": "litter-papers", "at": { "room": "ember-landing", "dx": 5, "dy": 14 } },
+    { "id": "fc-approach-litter-1", "object": "litter-papers", "at": { "room": "furnace-approach", "dx": 7, "dy": 24 } },
+    { "id": "fc-approach-litter-2", "object": "litter-debris", "at": { "room": "furnace-approach", "dx": 1, "dy": 17 } },
+    { "id": "fc-approach-litter-3", "object": "litter-puddle", "at": { "room": "furnace-approach", "dx": 2, "dy": 22 } },
+    { "id": "fc-approach-litter-4", "object": "litter-gravel", "at": { "room": "furnace-approach", "dx": 2, "dy": 8 } }
+  ],
+  "assemblies": [
+    { "id": "fc-bridge-north", "assembly": "bridge", "at": { "room": "causeway", "dx": 2, "dy": 9 }, "facing": "south", "span": 3 },
+    { "id": "fc-bridge-south", "assembly": "bridge", "at": { "room": "causeway", "dx": 9, "dy": 9 }, "facing": "south", "span": 3 },
+    { "id": "fc-cable-run", "assembly": "cable-run", "at": { "room": "furnace-approach", "dx": 9, "dy": 2 }, "facing": "south", "span": 14 }
+  ],
+  "npcs": [],
+  "creatures": [],
+  "lights": [
+    { "at": { "room": "ember-landing", "dx": 19, "dy": 9 }, "radius": 12, "color": "#ff7a2f", "intensity": 0.5 },
+    { "at": { "room": "furnace-approach", "dx": 6, "dy": 12 }, "radius": 9, "color": "#ff7a2f", "intensity": 0.5 },
+    { "at": { "room": "causeway", "dx": 3, "dy": 2 }, "radius": 6, "color": "#ff9a4d", "intensity": 0.45 },
+    { "at": { "room": "causeway", "dx": 6, "dy": 2 }, "radius": 6, "color": "#4fd8ff", "intensity": 0.5 },
+    { "at": { "room": "causeway", "dx": 8, "dy": 2 }, "radius": 7, "color": "#ff7a2a", "intensity": 0.55 }
+  ],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "furnace-approach": "industrial",
+    "ember-landing": "camp",
+    "causeway": { "theme": "industrial", "density": "sparse" }
+  },
+  "furnish": { "cast": ["ambient-deckhand-1", "ambient-deckhand-2", "ambient-researcher-1", "ambient-researcher-2", "ambient-researcher-3", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4", "ambient-technician-1", "ambient-technician-2", "ambient-technician-3"] }
+}

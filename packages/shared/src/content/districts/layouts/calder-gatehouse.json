@@ -1,0 +1,58 @@
+{
+  "id": "calder-gatehouse",
+  "name": "Calder Gatehouse",
+  "subtitle": "Site Calder — Outpost",
+  "tier": 10,
+  "region": "calder",
+  "condition": "worn",
+  "ambience": { "darkness": 0.42, "tint": "#1a1410", "fog": "#1e1712" },
+  "size": { "width": 60, "height": 46 },
+  "steps": [
+    { "kind": "room", "id": "gatehouse", "rect": { "x": 1, "y": 1, "width": 58, "height": 44 }, "floor": "carpet", "shape": "rect" },
+    { "kind": "pillars", "room": "gatehouse", "everyX": 9, "everyY": 9, "inset": 6 },
+    { "kind": "patch", "rect": { "x": 5, "y": 1, "width": 1, "height": 44 }, "tile": "hazard" },
+    { "kind": "track", "points": [{ "x": 3, "y": 0 }, { "x": 3, "y": 44 }] },
+    { "kind": "exit", "id": "west", "room": "gatehouse", "side": "west", "width": 2, "gate": true, "floor": "door" },
+    { "kind": "exit", "id": "east", "room": "gatehouse", "side": "east", "width": 13, "gate": false }
+  ],
+  "tiles": [],
+  "areas": [
+    { "room": "gatehouse", "name": "Calder Gatehouse", "safe": true }
+  ],
+  "anchors": {
+    "recovery": { "room": "gatehouse", "dx": 28, "dy": 20 },
+    "liftArrival": { "room": "gatehouse", "dx": 55, "dy": 4 },
+    "tramPlatform": { "room": "gatehouse", "dx": 9, "dy": 12 }
+  },
+  "recovery": { "districtId": "calder-gatehouse", "at": { "room": "gatehouse", "dx": 28, "dy": 20 } },
+  "objects": [
+    { "id": "cg-storage", "object": "storage-locker", "at": { "room": "gatehouse", "dx": 0, "dy": 1 }, "facing": "east" },
+    { "id": "cg-mailbox", "object": "market-mailbox", "at": { "room": "gatehouse", "dx": 0, "dy": 31 }, "facing": "east" },
+    { "id": "cg-contracts", "object": "contract-board", "at": { "room": "gatehouse", "dx": 10, "dy": 0 } },
+    { "id": "cg-med-bed", "object": "med-bed", "at": { "room": "gatehouse", "dx": 57, "dy": 1 }, "facing": "west" },
+    { "id": "cg-tram-stop", "object": "tram-stop", "at": { "room": "gatehouse", "dx": 7, "dy": 16 }, "facing": "east" }
+  ],
+  "assemblies": [
+    { "id": "cg-gate", "assembly": "calder-gate", "at": { "exit": "west", "index": 0 }, "facing": "east" },
+    { "id": "cg-lift", "assembly": "calder-lift-down", "at": { "room": "gatehouse", "dx": 56, "dy": 2 }, "facing": "west" },
+    { "id": "cg-tram-car", "assembly": "tram-car", "at": { "room": "gatehouse", "dx": 2, "dy": 8 }, "facing": "west" },
+    { "id": "cg-line-bridge", "assembly": "bridge", "at": { "room": "gatehouse", "dx": 1, "dy": 21 }, "facing": "east", "span": 2 }
+  ],
+  "npcs": [
+    { "id": "cg-brandt", "npc": "warden-brandt", "at": { "room": "gatehouse", "dx": 25, "dy": 3 } },
+    { "id": "cg-sorrel", "npc": "quartermaster-sorrel", "at": { "room": "gatehouse", "dx": 55, "dy": 31 } }
+  ],
+  "creatures": [],
+  "lights": [
+    { "at": { "room": "gatehouse", "dx": 25, "dy": 3 }, "radius": 11, "color": "#ffcf4d", "intensity": 0.6 },
+    { "at": { "room": "gatehouse", "dx": 3, "dy": 29 }, "radius": 9, "color": "#ffd27f", "intensity": 0.5 },
+    { "at": { "room": "gatehouse", "dx": 55, "dy": 29 }, "radius": 9, "color": "#ff9a6a", "intensity": 0.45 },
+    { "at": { "room": "gatehouse", "dx": 32, "dy": 41 }, "radius": 9, "color": "#ffd27f", "intensity": 0.5 }
+  ],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "gatehouse": { "theme": "camp", "density": "dense" }
+  },
+  "furnish": { "cast": ["ambient-saltworker-1", "ambient-saltworker-2", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4", "ambient-technician-1", "ambient-technician-2", "ambient-technician-3"] }
+}

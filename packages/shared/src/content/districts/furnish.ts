@@ -87,7 +87,24 @@ const THEME_CAST: Readonly<Record<DressingTheme, readonly NpcId[]>> = {
 
 const dressingOf = (entry: DressingTheme | RoomDressing): RoomDressing => (typeof entry === 'string' ? { theme: entry } : entry);
 
+export interface FurnishInput {
+  readonly plan: Blueprint;
+  readonly district: DistrictDefinition;
+  readonly dressing: Dressing;
+  readonly options: FurnishOptions;
+}
+
+let furnishRecorder: ((input: FurnishInput) => void) | undefined;
+
+export function captureFurnish(record: (input: FurnishInput) => void): () => void {
+  furnishRecorder = record;
+  return () => {
+    furnishRecorder = undefined;
+  };
+}
+
 export function furnish(plan: Blueprint, district: DistrictDefinition, dressing: Dressing, options: FurnishOptions = {}): DistrictDefinition {
+  furnishRecorder?.({ plan, district, dressing, options });
   const tileAt = (point: TilePoint) => MAP_LEGEND[plan.map[point.y]?.[point.x] ?? ' '] ?? 'void';
   const isWalkable = (point: TilePoint) => TILE_KINDS[tileAt(point)].walkable;
   const isOpenFloor = (point: TilePoint) => isWalkable(point) && tileAt(point) !== 'door' && tileAt(point) !== 'hazard';

@@ -1,0 +1,68 @@
+{
+  "id": "vesper-causeway",
+  "name": "Sanatorium Walk",
+  "subtitle": "Vesper Wing — Covered Walk",
+  "tier": 12,
+  "region": "vesper",
+  "condition": "breached",
+  "ambience": { "darkness": 0.58, "tint": "#0f1614", "fog": "#121a18", "fixtures": "failing" },
+  "size": { "width": 80, "height": 71 },
+  "steps": [
+    { "kind": "room", "id": "sanatorium-rise", "rect": { "x": 14, "y": 0, "width": 13, "height": 57 }, "floor": "concrete", "shape": "rect" },
+    { "kind": "room", "id": "walk", "rect": { "x": 14, "y": 57, "width": 66, "height": 13 }, "floor": "concrete", "shape": "rect" },
+    { "kind": "room", "id": "porters-yard", "rect": { "x": 32, "y": 20, "width": 40, "height": 30 }, "floor": "plating", "shape": "rect" },
+    { "kind": "link", "from": "walk", "to": "porters-yard", "width": 7, "floor": "concrete" },
+    { "kind": "link", "from": "sanatorium-rise", "to": "porters-yard", "width": 5, "floor": "concrete" },
+    { "kind": "pillars", "room": "walk", "everyX": 8, "everyY": 6, "inset": 3 },
+    { "kind": "exit", "id": "east", "room": "walk", "side": "east", "width": 13, "gate": false },
+    { "kind": "exit", "id": "north", "room": "sanatorium-rise", "side": "north", "width": 13, "gate": false }
+  ],
+  "tiles": [],
+  "areas": [
+    { "room": "walk", "name": "Sanatorium Walk" },
+    { "room": "sanatorium-rise", "name": "Sanatorium Rise" },
+    { "room": "porters-yard", "name": "Porters' Yard", "safe": true }
+  ],
+  "anchors": {},
+  "recovery": { "districtId": "hydroponics", "at": { "x": 7, "y": 64 } },
+  "objects": [
+    { "id": "vsw-sign", "object": "warning-sign", "at": { "room": "walk", "dx": 63, "dy": 0 } },
+    { "id": "vsw-bench", "object": "briefing-bench", "at": { "room": "walk", "dx": 46, "dy": 0 } },
+    { "id": "vsw-pipes", "object": "pipe-cluster", "at": { "room": "walk", "dx": 15, "dy": 12 } },
+    { "id": "vsw-papers", "object": "litter-papers", "at": { "room": "walk", "dx": 37, "dy": 2 } },
+    { "id": "vsw-debris", "object": "litter-debris", "at": { "room": "walk", "dx": 6, "dy": 1 } },
+    { "id": "vsw-puddle", "object": "litter-puddle", "at": { "room": "walk", "dx": 56, "dy": 3 } },
+    { "id": "vsw-litter-1", "object": "litter-papers", "at": { "room": "walk", "dx": 31, "dy": 3 } },
+    { "id": "vsw-litter-2", "object": "litter-debris", "at": { "room": "walk", "dx": 30, "dy": 11 } },
+    { "id": "vsw-litter-3", "object": "litter-puddle", "at": { "room": "walk", "dx": 1, "dy": 7 } },
+    { "id": "vsw-litter-4", "object": "litter-gravel", "at": { "room": "walk", "dx": 13, "dy": 6 } },
+    { "id": "vsw-litter-5", "object": "litter-rubble", "at": { "room": "walk", "dx": 55, "dy": 9 } },
+    { "id": "vsw-litter-6", "object": "litter-papers", "at": { "room": "walk", "dx": 48, "dy": 7 } },
+    { "id": "vsw-rise-litter-1", "object": "litter-papers", "at": { "room": "sanatorium-rise", "dx": 6, "dy": 46 } },
+    { "id": "vsw-rise-litter-2", "object": "litter-debris", "at": { "room": "sanatorium-rise", "dx": 10, "dy": 28 } },
+    { "id": "vsw-rise-litter-3", "object": "litter-puddle", "at": { "room": "sanatorium-rise", "dx": 4, "dy": 38 } },
+    { "id": "vsw-rise-litter-4", "object": "litter-gravel", "at": { "room": "sanatorium-rise", "dx": 5, "dy": 20 } },
+    { "id": "vsw-rise-litter-5", "object": "litter-rubble", "at": { "room": "sanatorium-rise", "dx": 11, "dy": 9 } },
+    { "id": "vsw-rise-litter-6", "object": "litter-papers", "at": { "room": "sanatorium-rise", "dx": 1, "dy": 7 } },
+    { "id": "vsw-rise-litter-7", "object": "litter-debris", "at": { "room": "sanatorium-rise", "dx": 2, "dy": 30 } },
+    { "id": "vsw-rise-litter-8", "object": "litter-puddle", "at": { "room": "sanatorium-rise", "dx": 8, "dy": 3 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [],
+  "lights": [
+    { "at": { "room": "sanatorium-rise", "dx": 6, "dy": 28 }, "radius": 9, "color": "#d8e7ef", "intensity": 0.5 },
+    { "at": { "room": "porters-yard", "dx": 20, "dy": 15 }, "radius": 9, "color": "#c8ffe0", "intensity": 0.5 },
+    { "at": { "room": "walk", "dx": 59, "dy": 2 }, "radius": 9, "color": "#6ad8b8", "intensity": 0.4 },
+    { "at": { "room": "walk", "dx": 31, "dy": 2 }, "radius": 9, "color": "#ffe8b8", "intensity": 0.35 },
+    { "at": { "room": "walk", "dx": 3, "dy": 2 }, "radius": 9, "color": "#6ad8b8", "intensity": 0.45 }
+  ],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "sanatorium-rise": "ward",
+    "walk": "civic",
+    "porters-yard": "ward"
+  },
+  "furnish": {}
+}

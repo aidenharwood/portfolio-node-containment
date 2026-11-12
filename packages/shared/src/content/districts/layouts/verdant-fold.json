@@ -1,0 +1,56 @@
+{
+  "id": "verdant-fold",
+  "name": "The Verdant Fold",
+  "subtitle": "A Garden Folded Out of Hydroponics",
+  "tier": 2,
+  "region": "meridian-core",
+  "condition": "uncanny",
+  "ambience": { "darkness": 0.55, "tint": "#140a1e", "fog": "#0c1a12" },
+  "size": { "width": 46, "height": 30 },
+  "steps": [
+    { "kind": "room", "id": "grove", "rect": { "x": 10, "y": 1, "width": 26, "height": 28 }, "floor": "soil", "shape": "round" },
+    { "kind": "room", "id": "west-crease", "rect": { "x": 1, "y": 9, "width": 8, "height": 12 }, "floor": "soil", "shape": "round" },
+    { "kind": "room", "id": "east-crease", "rect": { "x": 37, "y": 9, "width": 8, "height": 12 }, "floor": "soil", "shape": "round" },
+    { "kind": "patch", "rect": { "x": 14, "y": 7, "width": 5, "height": 3 }, "tile": "coolant" },
+    { "kind": "patch", "rect": { "x": 28, "y": 20, "width": 5, "height": 3 }, "tile": "coolant" },
+    { "kind": "patch", "rect": { "x": 20, "y": 11, "width": 7, "height": 6 }, "tile": "concrete" },
+    { "kind": "link", "from": "west-crease", "to": "grove", "width": 3, "floor": "soil" },
+    { "kind": "link", "from": "grove", "to": "east-crease", "width": 3, "floor": "soil" }
+  ],
+  "tiles": [],
+  "areas": [
+    { "room": "grove", "name": "The Folded Grove" },
+    { "room": "west-crease", "name": "The Left Crease" },
+    { "room": "east-crease", "name": "The Right Crease" }
+  ],
+  "anchors": {
+    "arrival": { "room": "grove", "dx": 13, "dy": 24 }
+  },
+  "objects": [
+    { "id": "fold-heartwood", "object": "fold-heartwood", "at": { "room": "grove", "dx": 13, "dy": 13 } },
+    { "id": "fold-planter-a", "object": "planter", "at": { "room": "grove", "dx": 3, "dy": 17 } },
+    { "id": "fold-planter-b", "object": "planter", "at": { "room": "grove", "dx": 23, "dy": 21 } },
+    { "id": "vf-grove-litter-1", "object": "litter-gravel", "at": { "room": "grove", "dx": 8, "dy": 2 } },
+    { "id": "vf-grove-litter-2", "object": "litter-puddle", "at": { "room": "grove", "dx": 16, "dy": 6 } },
+    { "id": "vf-grove-litter-3", "object": "litter-gravel", "at": { "room": "grove", "dx": 6, "dy": 11 } },
+    { "id": "vf-grove-litter-4", "object": "litter-puddle", "at": { "room": "grove", "dx": 23, "dy": 10 } }
+  ],
+  "assemblies": [
+    { "id": "fold-exit", "assembly": "verdant-fold-exit", "at": { "room": "grove", "dx": 12, "dy": 26 }, "facing": "north" }
+  ],
+  "npcs": [],
+  "creatures": [],
+  "lights": [
+    { "at": { "room": "west-crease", "dx": 4, "dy": 6 }, "radius": 5, "color": "#b57cff", "intensity": 0.5 },
+    { "at": { "room": "east-crease", "dx": 4, "dy": 6 }, "radius": 5, "color": "#b57cff", "intensity": 0.5 },
+    { "at": { "room": "grove", "dx": 19, "dy": 10 }, "radius": 11, "color": "#7cf29a", "intensity": 0.8 },
+    { "at": { "room": "grove", "dx": 6, "dy": 3 }, "radius": 9, "color": "#b57cff", "intensity": 0.6 },
+    { "at": { "room": "grove", "dx": 17, "dy": 25 }, "radius": 9, "color": "#9fd8ff", "intensity": 0.5 }
+  ],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "grove": { "theme": "garden", "density": "dense", "composition": "court" }
+  },
+  "furnish": {}
+}
