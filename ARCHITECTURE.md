@@ -174,6 +174,14 @@ The pure rules live in `shared/src/combat/combatMath.ts`: attack profiles, hit c
 
 Creatures are content (`content/creatures.ts`) placed through `DistrictDefinition.creatures`. Consumables are `item.consumable`. Quests use `defeat` and `useItem` objectives.
 
+**Footprints:** a creature's `size` is 1 or 2 (`shared/src/world/footprint.ts`), and its `position` is the north-west tile of its footprint.
+
+- Range, melee adjacency, aggro distance, line of sight and `CONTAINMENT_REACH` are measured between the nearest tiles of two bodies (`isBodyWithinAttackRange`, `bodyDistance`). Nobody attacks from inside a body, so a player standing under a 2×2 creature steps out first.
+- Creatures path on `LevelInstance.creatureGridFor(size)`, where a tile is open only when the whole footprint fits, so a 2×2 cannot use a 1-wide gap.
+- **Body blocking:** creature bodies block other creatures, never players. `LevelInstance` keeps a body occupancy map, rebuilt each tick and updated on every creature move. Paths plan around 2×2 bodies; a creature whose next step is held by another body waits a tick and repaths around every body.
+- Wander never stops on a chokepoint (`isWanderDestination`), and respawns and summons take the nearest free anchor (`freeAnchorNear`).
+- Loot from a large creature drops on its footprint tile nearest the killer. The client centres and scales the rig by size (`WorldState.bodyPosition`).
+
 ### Containment
 
 Bosses are anomalous specimens. A creature with `containment` (a `ContainmentProfile`: object class Safe, Euclid or Keter, special containment procedures, containment XP and bonus loot) can be contained instead of killed. The pure rules live in `shared/src/combat/containment.ts`.
@@ -184,6 +192,23 @@ Bosses are anomalous specimens. A creature with `containment` (a `ContainmentPro
 - **Pulled blows:** while a player could contain their target, their hits never take it below 1 integrity, and once it is weakened they hold fire with a notice. Attacking a weakened specimen again (`finishingTargetId`) finishes it normally.
 - **Client:** the context menu adds Contain, examine shows the object class and procedures, and the target panel shows the class, a threshold tick and a Contain button gated by the same shared rule. A contained creature spins down inside a shrinking field instead of falling.
 - **Integrity:** `findContainmentIssues` requires a seal for every tier, seal recipes that train Containment with inputs found by their tier, and a seal for every containable creature's tier. A unique item in containment loot must also be a rare regular drop.
+
+### Boss encounters
+
+A creature's optional `encounter` (`shared/src/combat/encounters.ts`) lists typed mechanics and integrity phases. Bosses have no bespoke code.
+
+| Mechanic | What it does |
+| --- | --- |
+| `telegraph` | Marks tiles (`line`, `cone`, `ring`, `body`, `circleOnTarget`) for `windupTicks`, then rolls an attack against every player still on them. |
+| `summon` | Adds transient creatures near the boss, once or every `everyTicks`, up to `maxAlive`. Adds give XP, drop no loot and never respawn. |
+| `hazard` | Seeds tiles near the boss that spread over the fight and burn players on them for a flat `damagePerTick`. |
+| `enrage` | Divides the attack interval by `speedFactor` once `afterTicks` have passed. |
+
+- **Phases:** each `EncounterPhase` starts below a fraction of integrity, can swap `attack` and `guard`, and `enables` mechanics that start inactive. Phases only advance within a fight.
+- **Server:** `EncounterController` runs from `CombatController.updateCreature` while the boss has a target, starting at most one telegraph at a time. Telegraphs and hazards hit every player on their tiles and ignore single-way combat. Losing the target, walking home, a reset at home, defeat, containment, or the boss's chunk going unwatched all clear the encounter and despawn its adds.
+- **Protocol:** `encounter.telegraph`, `encounter.resolved`, `encounter.hazard`, `encounter.phase`, `encounter.enraged` and `encounter.cleared`. Snapshots carry `phase` and `enraged`, and a player whose interest gains a boss mid-fight is sent its live telegraphs and hazards.
+- **Client:** `render/encounterLayer.ts` fills telegraph tiles towards impact and colours hazards by kind. The target panel shows a pip per phase, phase announcements appear as notices, and an enraged boss wears a red mark.
+- **Integrity:** `findEncounterIssues` requires telegraph windups of at least 3 ticks (4 for `body` and `ring`), a telegraph `maxHit` within the tier's share of a reference integrity (`telegraphHitCap`), descending phase thresholds, known `enables` ids, summons that exist and are weaker non-bosses, hazards that fit their room, and a multi-combat area for any boss with telegraphs or hazards.
 
 ### Weapons
 
