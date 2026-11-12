@@ -13,6 +13,7 @@ import { createStaticFileHandler } from './net/staticFiles.ts';
 import { attachWebSocketGateway } from './net/webSocketGateway.ts';
 import { openDatabase } from './persistence/database.ts';
 import { MarketRepository } from './persistence/marketRepository.ts';
+import { startTickTimer } from './tickTimer.ts';
 
 const contentIssues = findContentIssues(GAME_CONTENT);
 if (contentIssues.length > 0) {
@@ -36,7 +37,7 @@ const router = new MessageRouter(auth, characters, gameplay);
 const httpServer = createServer(createStaticFileHandler(config.clientDistPath));
 attachWebSocketGateway(httpServer, router);
 
-const tickTimer = setInterval(() => gameplay.tick(), config.tickMs);
+const stopTicking = startTickTimer(config.tickMs, () => gameplay.tick());
 sessions.purgeExpired();
 
 httpServer.listen(config.port, () => {
@@ -44,7 +45,7 @@ httpServer.listen(config.port, () => {
 });
 
 function shutdown(): void {
-  clearInterval(tickTimer);
+  stopTicking();
   gameplay.saveAll();
   database.close();
   process.exit(0);
