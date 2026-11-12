@@ -82,7 +82,7 @@ export const DISTRICT_LAYOUT_SCHEMA = z
     tiles: z.array(z.object({ x: int, y: int, tile }).strict()),
     areas: z.array(z.union([z.object({ room: z.string(), name: z.string(), ...areaOptions }).strict(), z.object({ id: z.string(), name: z.string(), rect, ...areaOptions }).strict()])),
     anchors: z.record(LAYOUT_POSITION_SCHEMA),
-    recovery: z.object({ districtId: z.string(), at: LAYOUT_POSITION_SCHEMA }).strict().optional(),
+    recovery: z.union([z.object({ districtId: z.string(), at: LAYOUT_POSITION_SCHEMA }).strict(), z.object({ districtId: z.string(), anchor: z.string() }).strict()]).optional(),
     objects: z.array(z.object({ id: z.string(), object: z.string(), at: LAYOUT_POSITION_SCHEMA, facing: facing.optional() }).strict()),
     assemblies: z.array(z.object({ id: z.string(), assembly: z.string(), at: LAYOUT_POSITION_SCHEMA, facing: facing.optional(), span: int.positive().optional() }).strict()),
     npcs: z.array(z.object({ id: z.string(), npc: z.string(), at: LAYOUT_POSITION_SCHEMA }).strict()),

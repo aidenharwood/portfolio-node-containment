@@ -1,3 +1,4 @@
+import type { GameSettings } from '../state/gameSettings.ts';
 import { GAME_CONTENT, WEAPON_KIND_INFO, type EntityId, type Facing, type ItemId, type NpcQuestMarker, type TilePoint } from '@containment/shared';
 import { Group, MathUtils, Plane, Raycaster, Scene, Vector2, Vector3, MeshBasicMaterial, Mesh, OctahedronGeometry, type Object3D } from 'three';
 import type { ClientEntity, CombatHitEvent, WorldState } from '../state/worldState.ts';
@@ -99,6 +100,10 @@ export class GameRenderer {
     this.cameraRig.resize(width, height);
   }
 
+  applyGraphics(settings: GameSettings): void {
+    if (this.look.applyGraphics(settings)) this.resize();
+  }
+
   private followAmbience(focus: Vector3, delta: number, snap: boolean): void {
     const level = this.world.zone?.definition;
     if (!level) return;
@@ -165,7 +170,7 @@ export class GameRenderer {
     this.zone.stream({ x: focus.x, y: focus.z });
     this.followAmbience(focus, delta, false);
     this.look.aimKeyLight(focus);
-    this.zone.update(time, overlay.objectiveObjectIds, this.world.depletedObjects, { open: this.world.openDoors, self: this.world.selfEntity?.to ?? null });
+    this.zone.update(time, overlay.objectiveObjectIds, this.world.depletedObjects, this.world.usedObjects, { open: this.world.openDoors, self: this.world.selfEntity?.to ?? null });
     this.zone.updateCutaway(this.cameraRig.camera.position, focus);
     this.look.updateLights(this.zone.lights, delta, time, focus);
     this.updateHover(overlay.hover, now);

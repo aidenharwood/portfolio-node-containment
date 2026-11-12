@@ -24,16 +24,14 @@
     { "room": "lodge", "name": "Porter's Lodge", "safe": true }
   ],
   "anchors": {
-    "recovery": { "room": "lodge", "dx": 30, "dy": 20 },
     "liftArrival": { "room": "lodge", "dx": 2, "dy": 4 },
     "tramPlatform": { "room": "lodge", "dx": 50, "dy": 12 }
   },
-  "recovery": { "districtId": "vesper-lodge", "at": { "room": "lodge", "dx": 30, "dy": 20 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "vl-storage", "object": "storage-locker", "at": { "room": "lodge", "dx": 57, "dy": 1 }, "facing": "west" },
     { "id": "vl-mailbox", "object": "market-mailbox", "at": { "room": "lodge", "dx": 57, "dy": 31 }, "facing": "west" },
     { "id": "vl-contracts", "object": "contract-board", "at": { "room": "lodge", "dx": 47, "dy": 0 } },
-    { "id": "vl-med-bed", "object": "med-bed", "at": { "room": "lodge", "dx": 0, "dy": 1 }, "facing": "east" },
     { "id": "vl-tram-stop", "object": "tram-stop", "at": { "room": "lodge", "dx": 52, "dy": 16 }, "facing": "west" }
   ],
   "assemblies": [

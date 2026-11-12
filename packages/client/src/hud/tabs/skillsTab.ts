@@ -10,6 +10,7 @@ import {
 import { h, replaceChildren } from '../../ui/dom.ts';
 import { skillIcon } from '../skillIcons.ts';
 import type { PanelTab } from '../sidePanel.ts';
+import { skillLayout } from './skillsLayout.ts';
 
 interface SkillTile {
   readonly element: HTMLButtonElement;
@@ -17,7 +18,7 @@ interface SkillTile {
   readonly fill: HTMLSpanElement;
 }
 
-export function createSkillsTab(): PanelTab {
+export function createSkillsTab(openSalvageGuide: () => void): PanelTab {
   let experienceById: Readonly<Record<SkillId, number>> | null = null;
   let shownId: SkillId | null = null;
   let pinned = false;
@@ -27,7 +28,7 @@ export function createSkillsTab(): PanelTab {
 
   const total = h('span', { className: 'tab-hint' });
   const list = h('div', { className: 'skill-grid' });
-  const element = h('div', { className: 'tab-skills' }, h('header', { className: 'tab-header' }, total), list);
+  const element = h('div', { className: 'tab-skills tab-fit' }, h('header', { className: 'tab-header' }, total), h('div', { className: 'fit-area' }, list));
   const details = h('div', { className: 'item-tooltip skill-tooltip panel', hidden: true, role: 'tooltip' });
   document.body.append(details);
 
@@ -46,6 +47,7 @@ export function createSkillsTab(): PanelTab {
       ),
       h('div', { className: 'skill-bar' }, h('span', { style: { width: `${levelProgress(experience) * 100}%` } })),
       h('p', { className: 'tooltip-examine' }, SKILL_INFO[id].summary),
+      id === 'salvage' && h('p', { className: 'tooltip-hint' }, 'Select to open the salvage guide'),
     );
   };
 
@@ -107,6 +109,11 @@ export function createSkillsTab(): PanelTab {
     });
     tile.addEventListener('animationend', () => tile.classList.remove('levelled'));
     tile.addEventListener('click', (event) => {
+      if (id === 'salvage') {
+        hide();
+        openSalvageGuide();
+        return;
+      }
       if (event.detail > 0 && lastPointerType === 'mouse') return;
       if (pinned && shownId === id) return hide();
       show(id);
@@ -128,6 +135,12 @@ export function createSkillsTab(): PanelTab {
     label: 'Skills',
     icon: 'skills',
     element,
+    fit(space) {
+      const layout = skillLayout(space);
+      list.style.setProperty('--cols', String(layout.columns));
+      list.style.setProperty('--rows', String(layout.rows));
+      list.dataset.mode = layout.mode;
+    },
     bindAttention(signal) {
       signalAttention = signal;
     },

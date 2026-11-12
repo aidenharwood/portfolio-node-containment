@@ -107,11 +107,11 @@ function describeItem(item: ItemDefinition): (HTMLElement | null | false | undef
   ];
   return [
     h('p', { className: `tooltip-name rarity-${item.rarity}` }, item.name),
-    h('p', { className: 'tooltip-meta' }, `${item.rarity}${item.unique ? ' unique' : ''}${equipment ? ` · ${EQUIPMENT_SLOT_LABELS[equipment.slot]}` : item.cosmetic ? ` · ${EQUIPMENT_SLOT_LABELS[item.cosmetic.slot]} cosmetic` : ` · ${item.category}`}`),
+    h('p', { className: 'tooltip-meta' }, `${item.rarity}${item.unique ? ' unique' : ''}${equipment ? ` · ${EQUIPMENT_SLOT_LABELS[equipment.slot]}` : ` · ${item.category}`}`),
     line && h('p', { className: 'tooltip-meta' }, `${GEAR_MOTIF_INFO[line].name} line · ${GEAR_MOTIF_INFO[line].summary}`),
-    item.cosmetic && h('p', { className: 'tooltip-meta' }, 'Worn over your gear. Changes no stats.'),
     equipment?.weapon && h('p', { className: 'tooltip-meta' }, weaponSummary(equipment.weapon)),
     equipment && renderStats(item),
+    item.consumable && item.consumable.heal > 0 && h('p', { className: 'tooltip-meta' }, `Restores ${item.consumable.heal} integrity`),
     requirementLines.length > 0 && h('p', { className: 'tooltip-requirements' }, `Requires ${requirementLines.join(', ')}`),
     h('p', { className: 'tooltip-examine' }, item.examine),
   ];

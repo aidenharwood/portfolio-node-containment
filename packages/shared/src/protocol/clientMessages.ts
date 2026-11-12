@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { AUGMENTS, BODY_TYPES, FACE_MARKS, HAIR_STYLES, PHYSIQUES } from '../character/appearance.ts';
 import { PRONOUN_SET_IDS } from '../character/pronouns.ts';
 import { CONTRACT_CADENCES } from '../contracts/contract.ts';
-import { EQUIPMENT_SLOTS, WARDROBE_SLOTS } from '../gear/slots.ts';
+import { EQUIPMENT_SLOTS } from '../gear/slots.ts';
 
 export const CREDENTIAL_RULES = {
   usernamePattern: /^[A-Za-z0-9_]{3,20}$/,
@@ -11,8 +11,8 @@ export const CREDENTIAL_RULES = {
 } as const;
 
 const tilePointSchema = z.object({
-  x: z.number().int().min(0).max(1024),
-  y: z.number().int().min(0).max(1024),
+  x: z.number().int().min(0).max(65_535),
+  y: z.number().int().min(0).max(65_535),
 });
 
 const appearanceSchema = z.object({
@@ -64,7 +64,6 @@ export const clientMessageSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('world.pickup'), groundItemId: z.string().max(64) }),
   z.object({ type: z.literal('inventory.swap'), from: z.number().int().min(0).max(64), to: z.number().int().min(0).max(64) }),
   z.object({ type: z.literal('equipment.unequip'), slot: z.enum(EQUIPMENT_SLOTS) }),
-  z.object({ type: z.literal('wardrobe.remove'), slot: z.enum(WARDROBE_SLOTS) }),
   z.object({ type: z.literal('chat.say'), text: z.string().min(1).max(160), channel: z.enum(['local', 'party', 'site']).optional() }),
   z.object({ type: z.literal('chat.whisper'), to: z.string().min(1).max(64), text: z.string().min(1).max(160) }),
   z.object({ type: z.literal('party.invite'), name: z.string().min(1).max(64) }),

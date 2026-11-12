@@ -4,6 +4,7 @@ import { setPiece, type SetPiece } from '../content/districts/setPiece.ts';
 import { drawBlueprint, type Blueprint } from './blueprint.ts';
 import type { AreaDefinition, DistrictDefinition } from './district.ts';
 import { tileKey, type TilePoint } from './geometry.ts';
+import { LAYOUT_SOURCES } from '../content/districts/layouts/index.ts';
 import { resolvePosition } from './layoutPosition.ts';
 import { DISTRICT_LAYOUT_SCHEMA, type DistrictLayout, type LayoutPosition } from './layoutSchema.ts';
 
@@ -71,6 +72,22 @@ function drawLayout(layout: DistrictLayout): Blueprint {
   return layout.tiles.length === 0 ? plan : drawBlueprint(layout.size, layout.steps, layout.tiles);
 }
 
+const foreignAnchors = new Map<string, TilePoint>();
+
+function foreignAnchor(districtId: string, name: string, path: string): TilePoint {
+  const key = `${districtId}:${name}`;
+  const known = foreignAnchors.get(key);
+  if (known) return known;
+  const source = (LAYOUT_SOURCES as Readonly<Record<string, unknown>>)[districtId];
+  if (source === undefined) throw new Error(`${path}: district "${districtId}" has no layout`);
+  const layout = parseLayout(source);
+  const position = layout.anchors[name];
+  if (!position) throw new Error(`${path}: district "${districtId}" has no anchor "${name}"`);
+  const point = resolvePosition(drawLayout(layout), position, path);
+  foreignAnchors.set(key, point);
+  return point;
+}
+
 export function buildDistrict(source: unknown): DistrictDefinition {
   const layout = parseLayout(source);
   const id = layout.id;
@@ -87,6 +104,15 @@ export function buildDistrict(source: unknown): DistrictDefinition {
   });
 
   const anchors = Object.fromEntries(Object.entries(layout.anchors).map(([name, position]) => [name, at(position, `anchors.${name}`)]));
+
+  const recoveryPosition = (recovery: NonNullable<DistrictLayout['recovery']>): TilePoint => {
+    if ('at' in recovery) return at(recovery.at, 'recovery.at');
+    if (recovery.districtId !== id) return foreignAnchor(recovery.districtId, recovery.anchor, `${id}: recovery.anchor`);
+    const own = anchors[recovery.anchor];
+    if (!own) throw new Error(`${id}: recovery.anchor: this district has no anchor "${recovery.anchor}"`);
+    return own;
+  };
+  const recovery = layout.recovery === undefined ? undefined : { districtId: layout.recovery.districtId, position: recoveryPosition(layout.recovery) };
 
   const setPieces: SetPiece[] = layout.setPieces.map((piece, index) => {
     try {
@@ -110,7 +136,7 @@ export function buildDistrict(source: unknown): DistrictDefinition {
     rooms: plan.rooms,
     exits: plan.exits,
     ...(Object.keys(anchors).length > 0 ? { anchors } : {}),
-    ...(layout.recovery === undefined ? {} : { recovery: { districtId: layout.recovery.districtId, position: at(layout.recovery.at, 'recovery.at') } }),
+    ...(recovery === undefined ? {} : { recovery }),
     areas,
     npcs: layout.npcs.map((npc, index) => ({ instanceId: npc.id, npcId: npc.npc, position: at(npc.at, `npcs[${index}].at`) })),
     objects: layout.objects.map((object, index) => ({

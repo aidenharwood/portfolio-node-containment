@@ -1,6 +1,7 @@
 import {
   CONTAIN_INTERACTION,
   GAME_CONTENT,
+  salvageSourceOf,
   npcQuestMarker,
   objectiveAreas,
   objectiveCreatureIds,
@@ -25,10 +26,14 @@ import { InventoryModeSlot } from '../hud/inventoryMode.ts';
 import { ShopWindow } from '../hud/shopWindow.ts';
 import { ActivityBar } from '../hud/activityBar.ts';
 import { CraftingWindow } from '../hud/craftingWindow.ts';
+import { SalvageGuideWindow } from '../hud/salvageGuideWindow.ts';
 import { StorageWindow } from '../hud/storageWindow.ts';
 import { TramRide } from '../hud/tramRide.ts';
 import { WorldMap } from '../hud/worldMap.ts';
+import { SettingsWindow } from '../hud/settingsWindow.ts';
+import { gameSettings } from '../state/gameSettings.ts';
 import { setTooltipEquipment } from '../ui/itemTooltip.ts';
+import { PartyFrame } from '../hud/partyFrame.ts';
 import { SidePanel } from '../hud/sidePanel.ts';
 import { SpeechLayer } from '../hud/speechLayer.ts';
 import { VitalsPanel } from '../hud/vitalsPanel.ts';
@@ -40,13 +45,13 @@ import { createEquipmentTab } from '../hud/tabs/equipmentTab.ts';
 import { createInventoryTab } from '../hud/tabs/inventoryTab.ts';
 import { createQuestsTab } from '../hud/tabs/questsTab.ts';
 import { GuidanceRoute } from '../state/guidanceRoute.ts';
-import { QuestTracking } from '../state/questTracking.ts';
+import { GuidanceTracking } from '../state/guidanceTracking.ts';
 import { SocialState } from '../state/socialState.ts';
 import { createSkillsTab } from '../hud/tabs/skillsTab.ts';
 import { actionsForTarget, type ActionContext } from '../input/worldActions.ts';
 import { GameRenderer } from '../render/gameRenderer.ts';
 import type { ClickMarker, PickTarget } from '../render/pickTarget.ts';
-import { h, replaceChildren, type Screen } from '../ui/dom.ts';
+import { h, isTextEntry, replaceChildren, type Screen } from '../ui/dom.ts';
 import { isCoarsePointer } from '../ui/viewport.ts';
 
 const TOUCH_DRAG_THRESHOLD_PIXELS = 10;
@@ -54,6 +59,11 @@ const LOADING_MIN_VISIBLE_MS = 450;
 const ORBIT_YAW_PER_PIXEL = 0.008;
 const ORBIT_PITCH_PER_PIXEL = 0.006;
 const ZOOM_STEP = 1.12;
+
+const isSalvageNode = (id: string): boolean => {
+  const definition = GAME_CONTENT.worldObjects.get(id);
+  return definition !== undefined && salvageSourceOf(definition) !== undefined;
+};
 
 interface PinchState {
   readonly distance: number;
@@ -79,11 +89,12 @@ export function createGameScreen(app: AppNavigator): Screen {
   const social = new SocialState(connection);
   const chat = new ChatLog(connection, social);
   const whisper = (name: string) => chat.focusInput(whisperPrefix(name));
+  const party = new PartyFrame(connection, social, menu, whisper);
   const dialogue = new DialogueBox(connection);
-  const questTracking = new QuestTracking();
-  const objectives = new ObjectiveTracker(questTracking);
+  const guidanceTracking = new GuidanceTracking(isSalvageNode);
+  const objectives = new ObjectiveTracker(guidanceTracking);
   const guidanceRoute = new GuidanceRoute(world);
-  questTracking.onChange(() => refreshGuidance());
+  guidanceTracking.onChange(() => refreshGuidance());
   const bubble = new InteractionBubble();
   const speech = new SpeechLayer();
   const combatOverlay = new CombatOverlay(world);
@@ -93,6 +104,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   const inventoryModes = new InventoryModeSlot();
   const shop = new ShopWindow(connection, world, menu, inventoryModes);
   const storage = new StorageWindow(connection, world, menu, inventoryModes);
+  const salvageGuideWindow = new SalvageGuideWindow(world, guidanceTracking);
   const market = new MarketWindow(connection, world);
   const contractBoard = new ContractBoardWindow(connection, world);
   const crafting = new CraftingWindow(connection, world);
@@ -142,15 +154,16 @@ export function createGameScreen(app: AppNavigator): Screen {
     connection.send({ type: 'world.walk', target });
   };
 
-  const worldMap = new WorldMap(connection, world, questTracking);
+  const worldMap = new WorldMap(connection, world, guidanceTracking);
   const tramRide = new TramRide(connection, world);
-  const minimap = new Minimap(world, walkTo, () => worldMap.toggle());
+  const settings = new SettingsWindow(gameSettings);
+  const minimap = new Minimap(world, walkTo, () => worldMap.toggle(), () => settings.toggle());
   const topRight = h('div', { className: 'hud-top-right' }, minimap.element, objectives.element);
   const sidePanel = new SidePanel([
     createInventoryTab(connection, menu, { examine }, inventoryModes),
     createEquipmentTab(connection, world),
-    createSkillsTab(),
-    createQuestsTab(menu, questTracking),
+    createSkillsTab(() => salvageGuideWindow.show()),
+    createQuestsTab(menu, guidanceTracking),
     createContractsTab(),
     createSocialTab(connection, social, { whisper }),
     createBestiaryTab(),
@@ -164,7 +177,12 @@ export function createGameScreen(app: AppNavigator): Screen {
     const self = world.self;
     const areas = world.zone?.definition.areas ?? [];
     if (!self) return;
-    objectiveBeacons = objectiveAreas(self.quests, GAME_CONTENT.quests, questTracking.questId).flatMap((target) =>
+    const preferred = guidanceTracking.questPreference();
+    if (preferred === false) {
+      objectiveBeacons = [];
+      return;
+    }
+    objectiveBeacons = objectiveAreas(self.quests, GAME_CONTENT.quests, preferred).flatMap((target) =>
       areas
         .filter((area) => area.districtId === target.districtId && area.id === target.areaId)
         .map((area) => ({ x: area.rect.x + Math.floor(area.rect.width / 2), y: area.rect.y + Math.floor(area.rect.height / 2) })),
@@ -174,18 +192,21 @@ export function createGameScreen(app: AppNavigator): Screen {
   const refreshGuidance = () => {
     const self = world.self;
     if (!self) return;
-    questTracking.bind(self.characterId);
+    guidanceTracking.bind(self.characterId);
+    const preferred = guidanceTracking.questPreference();
+    const resourceId = guidanceTracking.resourceId;
     npcMarkers = new Map();
     for (const npc of GAME_CONTENT.npcs.values()) {
-      const marker = npcQuestMarker(npc.id, self.quests, GAME_CONTENT.quests, questTracking.questId);
-      if (marker) npcMarkers.set(npc.id, marker);
+      const marker = npcQuestMarker(npc.id, self.quests, GAME_CONTENT.quests, preferred || null);
+      if (marker && (preferred !== false || marker === 'available')) npcMarkers.set(npc.id, marker);
     }
     setTooltipEquipment(self.equipment);
-    objectiveObjects = objectiveObjectIds(self.quests, GAME_CONTENT.quests, questTracking.questId, GAME_CONTENT.worldObjects, GAME_CONTENT.recipes);
-    objectiveCreatures = objectiveCreatureIds(self.quests, GAME_CONTENT.quests, questTracking.questId);
+    party.update(self.characterId);
+    objectiveObjects = resourceId ? new Set([resourceId]) : objectiveObjectIds(self.quests, GAME_CONTENT.quests, preferred || null, GAME_CONTENT.worldObjects, GAME_CONTENT.recipes);
+    objectiveCreatures = resourceId ? new Set() : objectiveCreatureIds(self.quests, GAME_CONTENT.quests, preferred || null);
     refreshBeacons();
     guidanceRoute.invalidate();
-    objectives.update(self.quests);
+    objectives.update(self);
     sidePanel.update(self);
   };
 
@@ -394,6 +415,10 @@ export function createGameScreen(app: AppNavigator): Screen {
 
   const onKeyDown = (event: KeyboardEvent) => {
     if (chat.isTyping()) return;
+    if (isTextEntry(event.target)) {
+      if (event.key === 'Escape' && event.target instanceof HTMLElement) event.target.blur();
+      return;
+    }
     const activatesFocused = (event.key === 'Enter' || event.key === ' ')
       && event.target instanceof Element
       && event.target.closest('button, [role="button"], input, textarea, select') !== null;
@@ -406,6 +431,10 @@ export function createGameScreen(app: AppNavigator): Screen {
       crafting.requestClose();
       return;
     }
+    if (event.key === 'Escape' && salvageGuideWindow.isOpen) {
+      salvageGuideWindow.hide();
+      return;
+    }
     if (event.key === 'Escape' && storage.isOpen) {
       storage.requestClose();
       return;
@@ -416,6 +445,10 @@ export function createGameScreen(app: AppNavigator): Screen {
     }
     if (event.key === 'Escape' && contractBoard.isOpen) {
       contractBoard.requestClose();
+      return;
+    }
+    if (event.key === 'Escape' && settings.isOpen) {
+      settings.requestClose();
       return;
     }
     if (event.key === 'Escape' && worldMap.isOpen) {
@@ -469,8 +502,8 @@ export function createGameScreen(app: AppNavigator): Screen {
   const unsubscribers = [world.on('zoneChanged', onZoneChanged), world.on('selfChanged', refreshGuidance)];
 
   const loop = (now: number) => {
-    renderer.render(now, { hover, clickMarker, objectiveObjectIds: objectiveObjects, npcMarkers, objectiveCreatureIds: objectiveCreatures, objectiveBeacons, guidanceRoute: guidanceRoute.current(now, questTracking.questId) });
-    objectives.setVia(guidanceRoute.via);
+    renderer.render(now, { hover, clickMarker, objectiveObjectIds: objectiveObjects, npcMarkers, objectiveCreatureIds: objectiveCreatures, objectiveBeacons, guidanceRoute: guidanceRoute.current(now, guidanceTracking.target) });
+    objectives.setRoute(guidanceRoute.via, guidanceRoute.exhausted, guidanceRoute.unreachable);
     if (renderer.loading) loadingVisibleUntil = now + LOADING_MIN_VISIBLE_MS;
     loadingMarker.classList.toggle('visible', now < loadingVisibleUntil);
     refreshHover();
@@ -492,7 +525,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     h('div', { className: 'scanlines' }),
     zoneBanner,
     cameraHint,
-    h('div', { className: 'hud-top-left' }, vitals.targetElement),
+    h('div', { className: 'hud-top-left' }, vitals.targetElement, party.element),
     topRight,
     loadingMarker,
     sidePanel.element,
@@ -501,15 +534,24 @@ export function createGameScreen(app: AppNavigator): Screen {
     shop.element,
     crafting.element,
     storage.element,
+    salvageGuideWindow.element,
     market.element,
     contractBoard.element,
     worldMap.element,
+    settings.element,
     activity.element,
     tramRide.element,
     clickIndicator.element,
     bubble.element,
     menu.element,
   );
+
+  const stopSettings = gameSettings.subscribe((next) => {
+    renderer.applyGraphics(next);
+    element.style.setProperty('--ui-scale', String(next.uiScale));
+    element.classList.toggle('no-scanlines', !next.scanlines);
+    sidePanel.refit();
+  });
 
   const panelObserver = new ResizeObserver(() => {
     element.style.setProperty('--side-panel-height', `${sidePanel.element.offsetHeight}px`);
@@ -541,10 +583,14 @@ export function createGameScreen(app: AppNavigator): Screen {
       shop.dispose();
       crafting.dispose();
       storage.dispose();
+      salvageGuideWindow.dispose();
       market.dispose();
       contractBoard.dispose();
+      party.dispose();
       social.dispose();
       worldMap.dispose();
+      settings.dispose();
+      stopSettings();
       tramRide.dispose();
       activity.dispose();
       menu.dispose();

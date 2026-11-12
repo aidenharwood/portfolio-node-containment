@@ -40,7 +40,7 @@
   "anchors": {
     "liftArrival": { "room": "lift-landing", "dx": 3, "dy": 3 }
   },
-  "recovery": { "districtId": "calder-gatehouse", "at": { "room": "old-workings", "dx": 9, "dy": 20 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "cd-sign", "object": "warning-sign", "at": { "room": "lift-landing", "dx": 19, "dy": 0 } },
     { "id": "cd-seam-a", "object": "salt-seam", "at": { "room": "old-workings", "dx": 19, "dy": 10 } },

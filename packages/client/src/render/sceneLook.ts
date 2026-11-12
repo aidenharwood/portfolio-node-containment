@@ -8,6 +8,7 @@ import { buildFieldLightGrid, clearFieldLights, FIELD_LIGHT_LIMIT, fieldLightFad
 import { lighten } from './voxel/palette.ts';
 import type { BlendedAmbience } from './world/ambienceBlend.ts';
 import type { LightSource } from './world/levelScene.ts';
+import { pixelRatioFor, shadowMapSizeFor, type GameSettings, type RenderScale } from '../state/gameSettings.ts';
 
 const LIGHT_INTENSITY_SCALE = 14;
 const LIGHT_REACH = 1.4;
@@ -28,6 +29,8 @@ const NO_LIGHTS: LightAssignment<LightSource> = { lights: [], edge: Infinity };
 export class SceneLook {
   readonly renderer: WebGLRenderer;
   private readonly composer: EffectComposer;
+  private readonly bloom = new UnrealBloomPass(new Vector2(256, 256), 0.5, 0.4, 0.9);
+  private renderScale: RenderScale = 'sharp';
   private readonly hemisphere = new HemisphereLight(0x9fc6d6, 0x05080a, 0.6);
   private readonly keyLight = new DirectionalLight(0xcfe8ff, 0.7);
   private readonly fog = new FogExp2(0x000000, FOG_DENSITY);
@@ -65,16 +68,30 @@ export class SceneLook {
 
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(scene, camera));
-    this.composer.addPass(new UnrealBloomPass(new Vector2(256, 256), 0.5, 0.4, 0.9));
+    this.composer.addPass(this.bloom);
     this.composer.addPass(new OutputPass());
   }
 
   resize(width: number, height: number): void {
-    const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.75);
+    const pixelRatio = pixelRatioFor(this.renderScale, window.devicePixelRatio);
     this.renderer.setPixelRatio(pixelRatio);
     this.renderer.setSize(width, height, false);
     this.composer.setPixelRatio(pixelRatio);
     this.composer.setSize(width, height);
+  }
+
+  applyGraphics(settings: GameSettings): boolean {
+    const scaleChanged = settings.renderScale !== this.renderScale;
+    this.renderScale = settings.renderScale;
+    this.bloom.enabled = settings.bloom;
+    const mapSize = shadowMapSizeFor(settings.shadows);
+    if (this.keyLight.shadow.mapSize.x !== mapSize) {
+      this.keyLight.shadow.mapSize.set(mapSize, mapSize);
+      this.keyLight.shadow.map?.dispose();
+      this.keyLight.shadow.map = null;
+    }
+    this.keyLight.castShadow = settings.shadows !== 'off';
+    return scaleChanged;
   }
 
   setSurvey(on: boolean): void {

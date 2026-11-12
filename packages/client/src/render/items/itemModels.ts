@@ -12,7 +12,7 @@ export interface ItemPalette {
 type ItemBuilder = (palette: ItemPalette) => VoxelModel;
 
 export function itemPalette(item: ItemDefinition): ItemPalette {
-  const visual = item.equipment?.visual ?? item.cosmetic?.visual;
+  const visual = item.equipment?.visual;
   if (visual) {
     return { primary: hex(visual.primary), secondary: hex(visual.secondary), emissive: visual.emissive ? hex(visual.emissive) : null };
   }

@@ -52,11 +52,10 @@
     "entrance": { "room": "uplink-lobby", "dx": 12, "dy": 5 },
     "chuteLanding": { "room": "operator-pit", "dx": 22, "dy": 5 }
   },
-  "recovery": { "districtId": "deepwatch", "at": { "room": "cable-run", "dx": 7, "dy": 24 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "sa-tram-stop", "object": "tram-stop", "at": { "room": "uplink-lobby", "dx": 2, "dy": 5 }, "facing": "north" },
     { "id": "sa-lobby-storage", "object": "storage-locker", "at": { "room": "uplink-lobby", "dx": 21, "dy": 5 }, "facing": "west" },
-    { "id": "sa-lobby-bed", "object": "med-bed", "at": { "room": "uplink-lobby", "dx": 20, "dy": 17 } },
     { "id": "sa-lobby-sign", "object": "warning-sign", "at": { "room": "uplink-lobby", "dx": 21, "dy": 12 }, "facing": "west" },
     { "id": "sa-console-a", "object": "relay-console", "at": { "room": "relay-floor", "dx": 1, "dy": 4 } },
     { "id": "sa-console-b", "object": "relay-console", "at": { "room": "relay-floor", "dx": 16, "dy": 4 } },

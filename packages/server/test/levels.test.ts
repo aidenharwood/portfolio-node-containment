@@ -188,10 +188,10 @@ describe('levels', () => {
     assert.ok(Math.max(Math.abs(harness.player.position.x - target.x), Math.abs(harness.player.position.y - target.y)) <= 3);
   });
 
-  test('incapacitation in the Intake Wing recovers in the Intake Wing', () => {
+  test('incapacitation in the Intake Wing recovers in the Intake Wing medbay', () => {
     const harness = createHarness({ prepare: placedAt(at('intake-wing', localInRoom('intake-wing', 'observation', { x: 2, y: 2 }))) });
     harness.gameplay.recoverIncapacitated(harness.player);
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'intake-wing');
-    assert.deepEqual(harness.player.position, anchor('intake-wing', 'start').position);
+    assert.deepEqual(harness.player.position, at('intake-wing', localInRoom('intake-wing', 'supply', { x: 22, y: 8 })).position);
   });
 });

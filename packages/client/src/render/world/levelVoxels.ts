@@ -1,6 +1,6 @@
 import { TILE_KINDS, tileKey, type DecalCell, type TileKindId, type TileLayout, type TileRect } from '@containment/shared';
 import { DenseVolume } from '../voxel/denseVolume.ts';
-import { darken, jitter, lighten, noise3 } from '../voxel/palette.ts';
+import { darken, jitter, lighten, mix, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE, VOXEL_GLASS, VOXEL_SOLID } from '../voxel/voxelKinds.ts';
 import { decalColor } from './floorDecals.ts';
 import { FLOOR_LAYERS, TILE_RESOLUTION, WALL_LAYERS, ZONE_VOLUME_HEIGHT } from './worldScale.ts';
@@ -84,32 +84,38 @@ export function paintTileRows(volume: DenseVolume, layout: TileLayout, region: T
       if (kind === 'wall') paintWall(volume, layout, tx, ty);
       else if (kind === 'glass') paintGlass(volume, tx, ty);
       else if (kind === 'track') paintTrack(volume, trackAxis(layout, tx, ty), tx, ty);
-      else paintFloor(volume, kind, tx, ty, decals?.get(tileKey({ x: tx, y: ty })));
+      else paintFloor(volume, kind, tx, ty, kind === 'door' ? doorAxis(layout, tx, ty) : 'x', decals?.get(tileKey({ x: tx, y: ty })));
       if (kind === 'door') paintLintel(volume, layout, tx, ty);
     }
   }
   return volume;
 }
 
-function paintFloor(volume: DenseVolume, kind: TileKindId, tx: number, ty: number, cells?: readonly DecalCell[]): void {
-  const tileNoise = noise3(tx, ty, 0, 11);
+function paintFloor(volume: DenseVolume, kind: TileKindId, tx: number, ty: number, axis: Axis, cells?: readonly DecalCell[]): void {
+  const tile: FloorTile = { tx, ty, tone: noise3(tx, ty, 0, 11), axis };
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
       const vx = tx * R + lx;
       const vz = ty * R + lz;
-      const grain = noise3(vx, FLOOR, vz, 3);
       volume.set(vx, SUBFLOOR, vz, kind === 'grate' ? COLORS.grateGlow : COLORS.subfloor, kind === 'grate' ? VOXEL_EMISSIVE : VOXEL_SOLID);
       if (kind === 'coolant') {
-        volume.set(vx, SUBFLOOR, vz, jitter(COLORS.coolantBed, 0.03, grain));
+        volume.set(vx, SUBFLOOR, vz, jitter(COLORS.coolantBed, 0.03, smoothNoise(vx, vz, 6, 41)));
         continue;
       }
-      const surface = floorVoxel(kind, lx, lz, vx, vz, tileNoise, grain);
+      const surface = floorVoxel(kind, lx, lz, vx, vz, tile);
       if (!surface) continue;
-      const decal = cells && kind !== 'door' ? decalColor(cells, lx, lz, surface.color, grain) : null;
+      const decal = cells && kind !== 'door' ? decalColor(cells, lx, lz, surface.color, noise3(vx, FLOOR, vz, 3)) : null;
       if (decal) volume.set(vx, FLOOR, vz, decal.color, decal.emissive ? VOXEL_EMISSIVE : VOXEL_SOLID);
       else volume.set(vx, FLOOR, vz, surface.color, surface.kind);
     }
   }
+}
+
+interface FloorTile {
+  readonly tx: number;
+  readonly ty: number;
+  readonly tone: number;
+  readonly axis: Axis;
 }
 
 interface FloorVoxel {
@@ -117,56 +123,74 @@ interface FloorVoxel {
   readonly kind: typeof VOXEL_SOLID | typeof VOXEL_EMISSIVE;
 }
 
-function floorVoxel(
-  kind: TileKindId,
-  lx: number,
-  lz: number,
-  vx: number,
-  vz: number,
-  tileNoise: number,
-  grain: number,
-): FloorVoxel | null {
+const even = (value: number): boolean => ((value % 2) + 2) % 2 === 0;
+
+const smoothstep = (t: number): number => t * t * (3 - 2 * t);
+
+function smoothNoise(x: number, z: number, scale: number, salt: number): number {
+  const gx = Math.floor(x / scale);
+  const gz = Math.floor(z / scale);
+  const fx = smoothstep((x - gx * scale) / scale);
+  const fz = smoothstep((z - gz * scale) / scale);
+  const top = noise3(gx, 0, gz, salt) * (1 - fx) + noise3(gx + 1, 0, gz, salt) * fx;
+  const bottom = noise3(gx, 0, gz + 1, salt) * (1 - fx) + noise3(gx + 1, 0, gz + 1, salt) * fx;
+  return top * (1 - fz) + bottom * fz;
+}
+
+function doorAxis(layout: TileLayout, tx: number, ty: number): Axis {
+  const walled = (x: number, y: number) => {
+    const neighbor = layout.tileAt({ x, y });
+    return neighbor === 'void' || isWallKind(neighbor);
+  };
+  return walled(tx - 1, ty) || walled(tx + 1, ty) ? 'y' : 'x';
+}
+
+function floorVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: number, tile: FloorTile): FloorVoxel | null {
   const solid = (color: number): FloorVoxel => ({ color, kind: VOXEL_SOLID });
   const edge = lx === 0 || lz === 0;
   switch (kind) {
     case 'plating': {
       if (edge) return solid(COLORS.platingSeam);
-      if ((lx === 1 || lx === R - 1) && (lz === 1 || lz === R - 1)) return solid(COLORS.rivet);
-      if (tileNoise > 0.86 && lx >= 3 && lx <= 4 && lz >= 3 && lz <= 4) return { color: COLORS.inlay, kind: VOXEL_EMISSIVE };
-      if (tileNoise < 0.1 && lx === lz) return solid(darken(COLORS.plating, 0.3));
-      return solid(jitter(COLORS.plating, 0.025, grain));
+      if (lx === 1 && lz === 1) return solid(COLORS.rivet);
+      if (tile.tone > 0.975 && lz >= 3 && lz <= 4 && lx >= 2 && lx <= 5) return { color: COLORS.inlay, kind: VOXEL_EMISSIVE };
+      return solid(jitter(COLORS.plating, 0.018, tile.tone));
     }
     case 'concrete': {
-      if (tileNoise > 0.82 && Math.abs(lx - lz) === 1 && lx > 1) return solid(darken(COLORS.concrete, 0.35));
-      return solid(jitter(COLORS.concrete, 0.06, grain));
+      if ((even(tile.tx) && lx === 0) || (even(tile.ty) && lz === 0)) return solid(darken(COLORS.concrete, 0.28));
+      return solid(jitter(COLORS.concrete, 0.03, noise3(Math.floor(tile.tx / 2), Math.floor(tile.ty / 2), 0, 13)));
     }
     case 'grate': {
       if (edge || lx === R - 1 || lz === R - 1) return solid(COLORS.grateFrame);
       if (lx % 2 === 1 && lz % 2 === 1) return null;
-      return solid(jitter(COLORS.grateBar, 0.03, grain));
+      return solid(COLORS.grateBar);
     }
     case 'rust': {
       if (edge) return solid(COLORS.rustSeam);
-      if (grain > 0.86) return solid(COLORS.rustBright);
-      if (tileNoise > 0.7 && noise3(vx, 0, vz, 31) > 0.72) return solid(jitter(COLORS.algae, 0.05, grain));
-      return solid(jitter(COLORS.rust, 0.07, grain));
+      const weather = smoothNoise(vx, vz, 7, 31);
+      if (weather > 0.7) return solid(darken(COLORS.rustBright, 0.1));
+      if (weather < 0.2) return solid(COLORS.algae);
+      return solid(jitter(COLORS.rust, 0.025, tile.tone));
     }
     case 'soil': {
-      if (grain > 0.9 && tileNoise > 0.35) return solid(jitter(COLORS.sproutBright, 0.08, grain));
-      if (grain > 0.78) return solid(jitter(COLORS.sprout, 0.1, grain));
-      if (edge && tileNoise > 0.6) return solid(COLORS.soilDark);
-      return solid(jitter(COLORS.soil, 0.09, grain));
+      const bed = smoothNoise(vx, vz, 9, 47);
+      const row = tile.axis === 'x' ? lz : lx;
+      const along = tile.axis === 'x' ? vx : vz;
+      if ((row === 2 || row === 5) && bed > 0.38) return solid(along % 3 === 0 && bed > 0.55 ? COLORS.sproutBright : COLORS.sprout);
+      return solid(jitter(COLORS.soil, 0.035, bed));
     }
     case 'carpet': {
-      if (Math.abs(lx - 3.5) + Math.abs(lz - 3.5) === 3) return solid(COLORS.carpetTrim);
-      return solid(jitter(COLORS.carpet, 0.035, grain));
+      if (even(tile.tx + tile.ty) && Math.abs(lx - 3.5) + Math.abs(lz - 3.5) === 2) return solid(mix(COLORS.carpet, COLORS.carpetTrim, 0.4));
+      return solid(COLORS.carpet);
     }
     case 'hazard':
-      return solid(Math.floor((vx + vz) / 2) % 2 === 0 ? jitter(COLORS.hazardYellow, 0.03, grain) : COLORS.hazardBlack);
+      return solid(even(Math.floor((vx + vz) / 4)) ? COLORS.hazardYellow : COLORS.hazardBlack);
     case 'door': {
-      if (edge) return solid(COLORS.grateFrame);
-      if ((lx + lz) % 4 === 0) return solid(COLORS.chevron);
-      return solid(jitter(COLORS.plating, 0.02, grain));
+      const along = tile.axis === 'x' ? lx : lz;
+      const across = tile.axis === 'x' ? lz : lx;
+      if (across === 0 || across === R - 1) return solid(COLORS.grateFrame);
+      const tip = Math.floor(Math.abs(across - 3.5));
+      if (along - 2 === tip || along - 3 === tip) return solid(COLORS.chevron);
+      return solid(COLORS.plating);
     }
     default:
       return null;

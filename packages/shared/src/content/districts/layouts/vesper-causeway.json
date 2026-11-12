@@ -24,7 +24,7 @@
     { "room": "porters-yard", "name": "Porters' Yard", "safe": true }
   ],
   "anchors": {},
-  "recovery": { "districtId": "hydroponics", "at": { "x": 7, "y": 64 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "vsw-sign", "object": "warning-sign", "at": { "room": "walk", "dx": 63, "dy": 0 } },
     { "id": "vsw-bench", "object": "briefing-bench", "at": { "room": "walk", "dx": 46, "dy": 0 } },

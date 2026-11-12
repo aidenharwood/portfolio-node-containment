@@ -1,5 +1,4 @@
 import {
-  trackedQuest,
   GAME_CONTENT,
   objectiveGoal,
   QUESTLINE_KIND_LABELS,
@@ -11,7 +10,8 @@ import {
   type QuestlineId,
   type SelfState,
 } from '@containment/shared';
-import type { QuestTracking } from '../../state/questTracking.ts';
+import { guidedQuest } from '../../state/guidanceGoals.ts';
+import type { GuidanceTracking } from '../../state/guidanceTracking.ts';
 import { h, replaceChildren } from '../../ui/dom.ts';
 import type { ContextMenu, MenuAction } from '../contextMenu.ts';
 import type { PanelTab } from '../sidePanel.ts';
@@ -26,7 +26,7 @@ const questlinePriority = (states: readonly QuestState[]): number => {
   return 2;
 };
 
-export function createQuestsTab(menu: ContextMenu, tracking: QuestTracking): PanelTab {
+export function createQuestsTab(menu: ContextMenu, tracking: GuidanceTracking): PanelTab {
   let selected: QuestId | null = null;
   let self: SelfState | null = null;
   const toggled = new Set<QuestlineId>();
@@ -41,7 +41,7 @@ export function createQuestsTab(menu: ContextMenu, tracking: QuestTracking): Pan
   };
 
   const trackedId = (): QuestId | null =>
-    self ? trackedQuest(self.quests, GAME_CONTENT.quests, tracking.questId)?.quest.id ?? null : null;
+    self ? guidedQuest(tracking.target, self.quests)?.quest.id ?? null : null;
 
   const open = (questId: QuestId | null) => {
     selected = questId;
@@ -51,7 +51,7 @@ export function createQuestsTab(menu: ContextMenu, tracking: QuestTracking): Pan
   const actionsFor = (quest: QuestDefinition, state: QuestState): MenuAction[] => {
     const actions: MenuAction[] = [{ verb: 'View', subject: quest.name, run: () => open(quest.id) }];
     if (state === 'active' && trackedId() !== quest.id) {
-      actions.unshift({ verb: 'Track', subject: quest.name, run: () => tracking.track(quest.id) });
+      actions.unshift({ verb: 'Track', subject: quest.name, run: () => tracking.trackQuest(quest.id) });
     }
     return actions;
   };
@@ -141,7 +141,7 @@ export function createQuestsTab(menu: ContextMenu, tracking: QuestTracking): Pan
             className: `button quest-track${isTracked ? ' active' : ''}`,
             type: 'button',
             disabled: isTracked,
-            onclick: () => tracking.track(quest.id),
+            onclick: () => tracking.trackQuest(quest.id),
           }, isTracked ? 'Tracking' : 'Track'),
         ),
         questline && h('p', { className: `quest-questline kind-${questline.kind}` }, `${QUESTLINE_KIND_LABELS[questline.kind]} · ${questline.name}`),

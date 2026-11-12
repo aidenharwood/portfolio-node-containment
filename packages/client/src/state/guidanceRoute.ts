@@ -7,15 +7,13 @@ import {
   regionsReaching,
   transitHops,
   withOpenDoors,
-  trackedQuest,
   GAME_CONTENT,
-  routeGoals,
   tileKey,
   walkableTilesNear,
   type LevelId,
   type LiveCreature,
   type NpcId,
-  type QuestId,
+  type GuidanceTarget,
   type ResolvedLevel,
   type RouteGoal,
   type RouteScene,
@@ -23,6 +21,7 @@ import {
   type TransitTarget,
   type WalkRegions,
 } from '@containment/shared';
+import { guidanceGoals } from './guidanceGoals.ts';
 import type { WorldState } from './worldState.ts';
 
 const REFRESH_MS = 2500;
@@ -80,6 +79,10 @@ export class GuidanceRoute {
   private stale = true;
   private nextHop: string | null = null;
   private goal: TilePoint | null = null;
+  private depleted = false;
+  private lost = false;
+  private reusable: TilePoint | null = null;
+  private plannedDoors = '';
   private readonly regionCache = new Map<LevelId, { readonly key: string; readonly regions: WalkRegions }>();
 
   constructor(world: WorldState) {
@@ -94,7 +97,15 @@ export class GuidanceRoute {
     return this.nextHop;
   }
 
-  current(now: number, preferred: QuestId | null): readonly TilePoint[] {
+  get exhausted(): boolean {
+    return this.depleted;
+  }
+
+  get unreachable(): boolean {
+    return this.lost;
+  }
+
+  current(now: number, target: GuidanceTarget | null): readonly TilePoint[] {
     const origin = this.world.selfEntity?.to;
     if (!origin) {
       this.nextHop = null;
@@ -108,7 +119,7 @@ export class GuidanceRoute {
       else this.stale = true;
     }
     if (this.stale || now - this.computedAt > REFRESH_MS) {
-      const planned = this.plan(origin, preferred);
+      const planned = this.plan(origin, target);
       if (!this.keepsCourse(origin, planned)) this.route = untangle(planned);
       this.computedAt = now;
       this.stale = false;
@@ -138,57 +149,87 @@ export class GuidanceRoute {
     return grid !== undefined && route.every((tile, index) => index === 0 || grid.isWalkable(tile));
   }
 
-  private plan(origin: TilePoint, preferred: QuestId | null): TilePoint[] {
+  private plan(origin: TilePoint, target: GuidanceTarget | null): TilePoint[] {
+    this.depleted = false;
+    this.lost = false;
+    const doors = this.doorsKey();
+    this.reusable = doors === this.plannedDoors && this.intact(origin) ? this.goal : null;
+    const route = this.planRoute(origin, target);
+    this.plannedDoors = doors;
+    this.lost = target !== null && route.length === 0;
+    return route;
+  }
+
+  private intact(origin: TilePoint): boolean {
+    const route = this.route;
+    const grid = this.world.zone?.grid;
+    return grid !== undefined && route.length > 1 && sameTile(route[0], origin) && route.every((tile, index) => index === 0 || grid.isWalkable(tile));
+  }
+
+  private doorsKey(): string {
+    return [...this.world.openDoors].sort().join('|');
+  }
+
+  private routeTo(origin: TilePoint, goal: RouteGoal): TilePoint[] | null {
+    if (sameTile(this.reusable ?? undefined, goal.point)) return [...this.route];
+    const path = this.pathTo(origin, goal);
+    return path ? [origin, ...path] : null;
+  }
+
+  private planRoute(origin: TilePoint, target: GuidanceTarget | null): TilePoint[] {
     this.nextHop = null;
     const previousGoal = this.goal;
     this.goal = null;
     const { self, zone } = this.world;
     if (!self || !zone) return [];
-    const tracked = trackedQuest(self.quests, GAME_CONTENT.quests, preferred);
-    if (!tracked) return [];
     const levelId = zone.definition.id;
-    const goals = routeGoals(tracked, this.scene(zone.definition), GAME_CONTENT);
+    const local = guidanceGoals(target, self.quests, this.scene(zone.definition));
+    this.depleted = local.allDepleted;
+    const goals = local.goals;
     const here = this.regionsOf(levelId)?.regionAt(origin) ?? -1;
     const sameRegion = goals.filter((goal) => {
       const regions = this.regionsOf(levelId);
       return regions !== undefined && regionsReaching(regions, goal).has(here);
     });
     const district = zone.layout.districtAt(origin);
-    const local = sameRegion.filter((goal) => zone.layout.districtAt(goal.point) === district);
-    for (const candidates of [local, sameRegion]) {
-      const path = this.nearestPath(origin, candidates, previousGoal);
+    const nearby = sameRegion.filter((goal) => zone.layout.districtAt(goal.point) === district);
+    const tried = new Set<RouteGoal>();
+    for (const candidates of [nearby, sameRegion]) {
+      const path = this.nearestPath(origin, candidates, previousGoal, tried);
       if (path) return path;
     }
     const targets: TransitTarget[] = [
       ...goals.map((goal) => ({ levelId, goal })),
       ...[...GAME_CONTENT.levels.values()]
         .filter((level) => level.id !== levelId)
-        .flatMap((level) => routeGoals(tracked, { level, npcPositions: new Map(), creatures: [], depletedInstances: new Set() }, GAME_CONTENT).map((goal) => ({ levelId: level.id, goal }))),
+        .flatMap((level) => guidanceGoals(target, self.quests, { level, npcPositions: new Map(), creatures: [], depletedInstances: this.world.usedObjects }).goals.map((goal) => ({ levelId: level.id, goal }))),
     ];
     const known = new Set(self.discoveredStations);
     const passages = new Set(self.openPassages);
     const hops = transitHops(GAME_CONTENT, { knowsStation: (stationId) => known.has(stationId), canUsePassage: (objectId) => passages.has(objectId) });
     const transit = planTransit({ levelId, position: origin }, targets, hops, (id) => this.regionsOf(id));
     const first = transit?.hops[0];
-    if (!transit || !first) return this.nearestPath(origin, goals, previousGoal) ?? [];
-    const path = this.pathTo(origin, first.board);
+    if (!transit || !first) return this.nearestPath(origin, goals, previousGoal, tried) ?? [];
+    const path = this.routeTo(origin, first.board);
     if (!path) return [];
     this.nextHop = first.label;
     this.goal = first.board.point;
-    return [origin, ...path];
+    return path;
   }
 
-  private nearestPath(origin: TilePoint, candidates: readonly RouteGoal[], previousGoal: TilePoint | null): TilePoint[] | null {
+  private nearestPath(origin: TilePoint, candidates: readonly RouteGoal[], previousGoal: TilePoint | null, tried: Set<RouteGoal>): TilePoint[] | null {
     const score = (goal: RouteGoal) => {
       const distance = octile(origin, goal.point);
       return previousGoal && chebyshev(previousGoal, goal.point) <= GOAL_STICK_RADIUS ? distance * GOAL_STICK_BIAS : distance;
     };
     const nearest = [...candidates].sort((a, b) => score(a) - score(b)).slice(0, CANDIDATE_LIMIT);
     for (const goal of nearest) {
-      const path = this.pathTo(origin, goal);
+      if (tried.has(goal)) continue;
+      tried.add(goal);
+      const path = this.routeTo(origin, goal);
       if (path) {
         this.goal = goal.point;
-        return [origin, ...path];
+        return path;
       }
     }
     return null;
@@ -228,11 +269,12 @@ export class GuidanceRoute {
       if (entity.npcId) npcPositions.set(entity.npcId, entity.to);
       if (entity.creatureId && entity.dyingAt === null) creatures.push({ creatureId: entity.creatureId, position: entity.to });
     }
+    const { depletedObjects, usedObjects } = this.world;
     return {
       level,
       npcPositions,
       creatures,
-      depletedInstances: this.world.depletedObjects,
+      depletedInstances: usedObjects.size > 0 ? new Set([...depletedObjects, ...usedObjects]) : depletedObjects,
     };
   }
 }

@@ -54,11 +54,10 @@
     "entrance": { "room": "flood-stair", "dx": 5, "dy": 12 },
     "sealedApproach": { "room": "stacks", "dx": 47, "dy": 19 }
   },
-  "recovery": { "districtId": "deepwatch", "at": { "link": ["sluice-hall", "drying-room"], "index": 0 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "da-tram-stop", "object": "tram-stop", "at": { "room": "flood-stair", "dx": 5, "dy": 2 }, "facing": "west" },
     { "id": "da-stair-storage", "object": "storage-locker", "at": { "room": "flood-stair", "dx": 19, "dy": 2 }, "facing": "west" },
-    { "id": "da-stair-bed", "object": "med-bed", "at": { "room": "flood-stair", "dx": 19, "dy": 17 } },
     { "id": "da-shelf-a", "object": "archive-shelf", "at": { "room": "stacks", "dx": 2, "dy": 0 } },
     { "id": "da-shelf-b", "object": "archive-shelf", "at": { "room": "stacks", "dx": 9, "dy": 0 } },
     { "id": "da-shelf-c", "object": "archive-shelf", "at": { "room": "stacks", "dx": 18, "dy": 0 } },

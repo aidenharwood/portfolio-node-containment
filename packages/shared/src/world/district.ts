@@ -118,10 +118,20 @@ export function parseTileLayout(map: readonly string[]): TileLayout {
 export function createWalkabilityGrid(layout: TileLayout, blockedTiles: Iterable<TilePoint>, deckTiles: Iterable<TilePoint> = []): WalkabilityGrid {
   const blocked = new Set([...blockedTiles].map(tileKey));
   const decks = new Set([...deckTiles].map(tileKey));
+  const lookup = (point: TilePoint): boolean => {
+    const key = tileKey(point);
+    return !blocked.has(key) && (decks.has(key) || TILE_KINDS[layout.tileAt(point)].walkable);
+  };
+  const { width, height } = layout;
+  const walkable = new Uint8Array(width * height);
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) walkable[y * width + x] = lookup({ x, y }) ? 1 : 0;
+  }
   return {
     isWalkable: (point) => {
-      const key = tileKey(point);
-      return !blocked.has(key) && (decks.has(key) || TILE_KINDS[layout.tileAt(point)].walkable);
+      const { x, y } = point;
+      if (x >= 0 && y >= 0 && x < width && y < height && Number.isInteger(x) && Number.isInteger(y)) return walkable[y * width + x] === 1;
+      return lookup(point);
     },
   };
 }

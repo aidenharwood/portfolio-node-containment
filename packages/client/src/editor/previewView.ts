@@ -169,7 +169,7 @@ export class PreviewView {
     const target = this.controls.target;
     const time = now / 1000;
     this.level.stream({ x: target.x, y: target.z }, BUILD_BUDGET_MS, this.reach);
-    this.level.update(time, NOTHING, NOTHING, { open: NOTHING, self: null });
+    this.level.update(time, NOTHING, NOTHING, NOTHING, { open: NOTHING, self: null });
     this.actors.update(time);
     this.level.updateCutaway(this.camera.position, target);
     this.sceneLook.aimKeyLight(target);

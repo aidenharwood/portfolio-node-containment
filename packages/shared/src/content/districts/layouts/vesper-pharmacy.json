@@ -41,7 +41,7 @@
     { "room": "recovery-two", "name": "Recovery Two" }
   ],
   "anchors": {},
-  "recovery": { "districtId": "vesper-lodge", "at": { "room": "stockroom", "dx": 30, "dy": 20 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "vp-still-a", "object": "tincture-still", "at": { "room": "stockroom", "dx": 104, "dy": 0 } },
     { "id": "vp-still-b", "object": "tincture-still", "at": { "room": "stockroom", "dx": 51, "dy": 8 } },

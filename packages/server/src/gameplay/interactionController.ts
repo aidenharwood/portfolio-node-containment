@@ -11,6 +11,7 @@ import {
   isDoorOpenFor,
   manhattanDistance,
   objectFootprintTiles,
+  objectUseFlag,
   pathThroughDoor,
   samePoint,
   storedCount,
@@ -43,9 +44,6 @@ const touches = (from: TilePoint, tiles: readonly TilePoint[]): boolean => tiles
 
 const nearestTile = (from: TilePoint, tiles: readonly TilePoint[]): TilePoint =>
   tiles.reduce((best, tile) => (manhattanDistance(from, tile) < manhattanDistance(from, best) ? tile : best), tiles[0] as TilePoint);
-
-export const objectUseFlag = (districtId: string, instanceId: string, interactionIndex: number): string =>
-  `object-used:${districtId}:${instanceId}:${interactionIndex}`;
 
 export class InteractionController {
   private readonly content: GameContent;

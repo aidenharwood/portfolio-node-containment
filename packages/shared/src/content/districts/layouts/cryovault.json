@@ -59,7 +59,7 @@
     "tramPlatform": { "room": "dock", "dx": 12, "dy": 6 },
     "entrance": { "room": "dock", "dx": 14, "dy": 13 }
   },
-  "recovery": { "districtId": "deepwatch", "at": { "room": "curator-office", "dx": 7, "dy": 8 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "cv-tram-stop", "object": "tram-stop", "at": { "room": "dock", "dx": 14, "dy": 2 }, "facing": "east" },
     { "id": "cv-dock-sign", "object": "warning-sign", "at": { "room": "dock", "dx": 14, "dy": 0 } },
@@ -75,7 +75,6 @@
     { "id": "cv-cold-pod-d", "object": "cold-pod", "at": { "room": "pod-hall", "dx": 19, "dy": 19 } },
     { "id": "cv-nook-heater", "object": "camp-heater", "at": { "room": "fenn-nook", "dx": 1, "dy": 1 } },
     { "id": "cv-nook-storage", "object": "storage-locker", "at": { "room": "fenn-nook", "dx": 14, "dy": 0 } },
-    { "id": "cv-nook-bed", "object": "med-bed", "at": { "room": "fenn-nook", "dx": 13, "dy": 13 } },
     { "id": "cv-nook-bench", "object": "briefing-bench", "at": { "room": "fenn-nook", "dx": 1, "dy": 12 } },
     { "id": "cv-crystal-a", "object": "rime-crystal", "at": { "room": "freezer-plant", "dx": 1, "dy": 1 } },
     { "id": "cv-crystal-b", "object": "rime-crystal", "at": { "room": "freezer-plant", "dx": 14, "dy": 1 } },

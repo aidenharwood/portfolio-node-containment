@@ -26,6 +26,7 @@
   "anchors": {
     "arrival": { "room": "grove", "dx": 13, "dy": 24 }
   },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "fold-heartwood", "object": "fold-heartwood", "at": { "room": "grove", "dx": 13, "dy": 13 } },
     { "id": "fold-planter-a", "object": "planter", "at": { "room": "grove", "dx": 3, "dy": 17 } },

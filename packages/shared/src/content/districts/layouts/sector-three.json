@@ -31,6 +31,7 @@
     "deepwatchArrival": { "room": "threshold", "dx": 27, "dy": 10 },
     "knockReturn": { "room": "threshold", "dx": 15, "dy": 7 }
   },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "s3-lantern-echo", "object": "lantern-echo", "at": { "room": "threshold", "dx": 26, "dy": 19 } },
     { "id": "s3-threshold-litter-1", "object": "litter-papers", "at": { "room": "threshold", "dx": 10, "dy": 20 } },

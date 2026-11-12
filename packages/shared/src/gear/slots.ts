@@ -35,12 +35,6 @@ export type GearShape<S extends EquipmentSlot = EquipmentSlot> = (typeof EQUIPME
 export const isShapeForSlot = (slot: EquipmentSlot, shape: ItemIconShape): boolean =>
   (EQUIPMENT_SHAPES[slot] as readonly ItemIconShape[]).includes(shape);
 
-export const WARDROBE_SLOTS = ['head', 'eyes', 'torso', 'hands', 'legs', 'feet', 'back'] as const satisfies readonly EquipmentSlot[];
-
-export type WardrobeSlot = (typeof WARDROBE_SLOTS)[number];
-
-export const isWardrobeSlot = (value: string): value is WardrobeSlot => (WARDROBE_SLOTS as readonly string[]).includes(value);
-
 export const EQUIPMENT_SLOT_LABELS: Readonly<Record<EquipmentSlot, string>> = {
   head: 'Head',
   eyes: 'Eyes',

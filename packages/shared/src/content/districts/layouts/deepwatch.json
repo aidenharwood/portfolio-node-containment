@@ -50,10 +50,10 @@
   ],
   "anchors": {
     "liftArrival": { "room": "platform-hall", "dx": 2, "dy": 2 },
-    "recovery": { "room": "infirmary", "dx": 7, "dy": 13 },
     "thresholdLanding": { "room": "concourse", "dx": 4, "dy": 2 },
     "tramPlatform": { "room": "platform-hall", "dx": 60, "dy": 8 }
   },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "dw-tram-stop", "object": "tram-stop", "at": { "room": "platform-hall", "dx": 62, "dy": 15 }, "facing": "east" },
     { "id": "dw-pillar-west", "object": "light-pillar", "at": { "room": "concourse", "dx": 0, "dy": 0 } },
@@ -72,10 +72,6 @@
     { "id": "dw-hall-bench-a", "object": "briefing-bench", "at": { "room": "platform-hall", "dx": 25, "dy": 3 } },
     { "id": "dw-hall-bench-b", "object": "briefing-bench", "at": { "room": "platform-hall", "dx": 40, "dy": 3 } },
     { "id": "dw-infirmary-storage", "object": "storage-locker", "at": { "room": "infirmary", "dx": 0, "dy": 0 }, "facing": "east" },
-    { "id": "dw-bed-a", "object": "med-bed", "at": { "room": "infirmary", "dx": 1, "dy": 15 } },
-    { "id": "dw-bed-b", "object": "med-bed", "at": { "room": "infirmary", "dx": 3, "dy": 15 } },
-    { "id": "dw-bed-c", "object": "med-bed", "at": { "room": "infirmary", "dx": 12, "dy": 15 } },
-    { "id": "dw-bed-d", "object": "med-bed", "at": { "room": "infirmary", "dx": 17, "dy": 15 } },
     { "id": "dw-stores-crate-a", "object": "supply-crate", "at": { "room": "stores", "dx": 0, "dy": 0 } },
     { "id": "dw-stores-crate-b", "object": "supply-crate", "at": { "room": "stores", "dx": 23, "dy": 0 } },
     { "id": "dw-stores-crate-c", "object": "supply-crate", "at": { "room": "stores", "dx": 0, "dy": 15 } },

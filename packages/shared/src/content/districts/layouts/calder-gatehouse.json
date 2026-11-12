@@ -20,16 +20,14 @@
     { "room": "gatehouse", "name": "Calder Gatehouse", "safe": true }
   ],
   "anchors": {
-    "recovery": { "room": "gatehouse", "dx": 28, "dy": 20 },
     "liftArrival": { "room": "gatehouse", "dx": 53, "dy": 14 },
     "tramPlatform": { "room": "gatehouse", "dx": 9, "dy": 12 }
   },
-  "recovery": { "districtId": "calder-gatehouse", "at": { "room": "gatehouse", "dx": 28, "dy": 20 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "cg-storage", "object": "storage-locker", "at": { "room": "gatehouse", "dx": 0, "dy": 12 }, "facing": "east" },
     { "id": "cg-mailbox", "object": "market-mailbox", "at": { "room": "gatehouse", "dx": 0, "dy": 31 }, "facing": "east" },
     { "id": "cg-contracts", "object": "contract-board", "at": { "room": "gatehouse", "dx": 14, "dy": 0 } },
-    { "id": "cg-med-bed", "object": "med-bed", "at": { "room": "gatehouse", "dx": 57, "dy": 28 }, "facing": "west" },
     { "id": "cg-tram-stop", "object": "tram-stop", "at": { "room": "gatehouse", "dx": 7, "dy": 16 }, "facing": "east" }
   ],
   "assemblies": [

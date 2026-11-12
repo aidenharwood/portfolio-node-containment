@@ -60,7 +60,7 @@
     "westSpan": { "room": "west-span", "dx": 2, "dy": 4 },
     "eastSpan": { "room": "east-span", "dx": 33, "dy": 4 }
   },
-  "recovery": { "districtId": "deepwatch", "at": { "room": "cold-wing", "dx": 7, "dy": 22 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "dc-cryovault-sign", "object": "warning-sign", "at": { "room": "cold-wing", "dx": 0, "dy": 48 }, "facing": "east" },
     { "id": "dc-array-sign", "object": "warning-sign", "at": { "room": "chasm-walk", "dx": 58, "dy": 12 }, "facing": "north" },

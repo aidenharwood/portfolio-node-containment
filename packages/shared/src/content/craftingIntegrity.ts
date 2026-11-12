@@ -77,7 +77,6 @@ export function findCraftingIssues(content: GameContent): string[] {
     }
     const output = content.items.get(recipe.output.itemId);
     if (output?.equipment && recipe.station !== 'fabricator') report(where, 'equipment is assembled at a fabricator');
-    if (output?.cosmetic && recipe.station !== 'fabricator') report(where, 'cosmetics are tailored at a fabricator');
     if (output?.consumable && recipe.station !== 'synthesiser') report(where, 'medicine is synthesised at a bio-synthesiser');
     if (output?.equipment && recipe.level < highestRequirement(output)) {
       report(where, `crafting level ${recipe.level} is below the item's equip requirement ${highestRequirement(output)}`);
@@ -100,8 +99,8 @@ export function findCraftingIssues(content: GameContent): string[] {
         const chance = source.loot.find((entry) => entry.itemId === item.id)?.chance ?? 0;
         if (chance >= 1) report(where, `${source.id} always drops it, so it is not a rare drop`);
       }
-    } else if ((item.equipment || item.cosmetic || item.consumable) && !outputs.has(item.id)) {
-      report(`item ${item.id}`, 'every piece of gear, cosmetic and consumable needs a crafting recipe');
+    } else if ((item.equipment || item.consumable) && !outputs.has(item.id)) {
+      report(`item ${item.id}`, 'every piece of gear and consumable needs a crafting recipe');
     }
   }
 

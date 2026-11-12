@@ -1,6 +1,7 @@
 import {
   trackedQuest,
   GAME_CONTENT,
+  salvageGuide,
   linesThrough,
   objectiveDistricts,
   POINT_OF_INTEREST_KINDS,
@@ -21,7 +22,7 @@ import {
   type TramStationId,
 } from '@containment/shared';
 import type { GameConnection } from '../net/gameConnection.ts';
-import type { QuestTracking } from '../state/questTracking.ts';
+import type { GuidanceTracking } from '../state/guidanceTracking.ts';
 import type { WorldState } from '../state/worldState.ts';
 import { h, replaceChildren } from '../ui/dom.ts';
 import { drawPoiIcon, poiLegend } from './poiIcons.ts';
@@ -66,6 +67,8 @@ interface PointerTrack {
   readonly startY: number;
 }
 
+const SALVAGE_GUIDE = salvageGuide(GAME_CONTENT);
+
 const levelOrder = (a: ResolvedLevel, b: ResolvedLevel): number =>
   (a.definition.kind === b.definition.kind ? 0 : a.definition.kind === 'floor' ? -1 : 1) || b.definition.depth - a.definition.depth;
 
@@ -76,7 +79,7 @@ export class WorldMap {
   private readonly canvas = h('canvas', { className: 'world-map-canvas' });
   private readonly connection: GameConnection;
   private readonly world: WorldState;
-  private readonly questTracking: QuestTracking;
+  private readonly questTracking: GuidanceTracking;
   private readonly unsubscribers: (() => void)[];
   private readonly pointers = new Map<number, PointerTrack>();
   private readonly resizeObserver: ResizeObserver;
@@ -91,7 +94,7 @@ export class WorldMap {
   private paintQueued = false;
   private readonly levelPoints = new Map<LevelId, readonly PointOfInterest[]>();
 
-  constructor(connection: GameConnection, world: WorldState, questTracking: QuestTracking) {
+  constructor(connection: GameConnection, world: WorldState, questTracking: GuidanceTracking) {
     this.connection = connection;
     this.world = world;
     this.questTracking = questTracking;
@@ -170,6 +173,11 @@ export class WorldMap {
   private objectiveDistrictIds(): Set<DistrictId> {
     const self = this.world.self;
     if (!self) return new Set();
+    const resourceId = this.questTracking.resourceId;
+    if (resourceId) {
+      const locations = SALVAGE_GUIDE.find((entry) => entry.objectId === resourceId)?.locations ?? [];
+      return new Set(locations.flatMap((location) => (location.districtId ? [location.districtId] : [])));
+    }
     const quest = trackedQuest(self.quests, GAME_CONTENT.quests, this.questTracking.questId);
     return quest ? objectiveDistricts(quest.objectives, GAME_CONTENT) : new Set();
   }

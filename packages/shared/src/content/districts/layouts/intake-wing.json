@@ -54,7 +54,7 @@
     "tramPlatform": { "room": "transit-bay", "dx": 6, "dy": 25 },
     "start": { "room": "arrival", "dx": 3, "dy": 4 }
   },
-  "recovery": { "districtId": "intake-wing", "at": { "room": "arrival", "dx": 3, "dy": 4 } },
+  "recovery": { "districtId": "intake-wing", "at": { "room": "supply", "dx": 22, "dy": 8 } },
   "objects": [
     { "id": "arrival-kiosk", "object": "intake-kiosk", "at": { "room": "arrival", "dx": 0, "dy": 1 }, "facing": "east" },
     { "id": "arrival-bench", "object": "briefing-bench", "at": { "room": "arrival", "dx": 17, "dy": 16 } },

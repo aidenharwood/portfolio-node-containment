@@ -17,6 +17,7 @@ export * from './combat/study.ts';
 export * from './combat/weapons.ts';
 
 export * from './crafting/gathering.ts';
+export * from './crafting/salvageGuide.ts';
 export * from './crafting/recipes.ts';
 export * from './crafting/tiers.ts';
 
@@ -32,7 +33,6 @@ export * from './gear/inventory.ts';
 export * from './gear/items.ts';
 export * from './gear/slots.ts';
 export * from './gear/storage.ts';
-export * from './gear/wardrobe.ts';
 export * from './gear/stats.ts';
 
 export * from './social/chatCommands.ts';
@@ -58,6 +58,7 @@ export * from './world/geometry.ts';
 export * from './world/lineOfSight.ts';
 export * from './world/pathfinding.ts';
 export * from './world/footprint.ts';
+export * from './world/objectUse.ts';
 export * from './world/tiles.ts';
 export * from './world/chunks.ts';
 export * from './world/blueprint.ts';

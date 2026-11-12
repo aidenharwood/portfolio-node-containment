@@ -48,13 +48,10 @@
     { "room": "settling-tanks", "name": "Settling Tanks" },
     { "room": "outfall", "name": "The Outfall", "multiCombat": true }
   ],
-  "anchors": {
-    "recovery": { "room": "pump-house", "dx": 3, "dy": 6 }
-  },
-  "recovery": { "districtId": "waterworks", "at": { "room": "pump-house", "dx": 3, "dy": 6 } },
+  "anchors": {},
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "ww-sign", "object": "warning-sign", "at": { "room": "pump-house", "dx": 0, "dy": 0 } },
-    { "id": "ww-med-bed", "object": "med-bed", "at": { "room": "pump-house", "dx": 0, "dy": 1 }, "facing": "east" },
     { "id": "ww-storage", "object": "storage-locker", "at": { "room": "pump-house", "dx": 0, "dy": 22 }, "facing": "east" },
     { "id": "ww-assay", "object": "waterworks-assay", "at": { "room": "pump-house", "dx": 25, "dy": 22 }, "facing": "west" },
     { "id": "ww-valve-a", "object": "waterworks-valve-a", "at": { "room": "valve-gallery", "dx": 0, "dy": 2 }, "facing": "east" },

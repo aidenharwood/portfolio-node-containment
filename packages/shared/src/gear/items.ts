@@ -8,7 +8,7 @@ export const ITEM_RARITIES = ['standard', 'issued', 'restricted', 'classified', 
 
 export type ItemRarity = (typeof ITEM_RARITIES)[number];
 
-export type ItemCategory = 'equipment' | 'cosmetic' | 'consumable' | 'material' | 'quest' | 'currency';
+export type ItemCategory = 'equipment' | 'consumable' | 'material' | 'quest' | 'currency';
 
 export type ItemIconShape =
   | 'helmet'
@@ -85,11 +85,6 @@ export interface EquipmentProperties {
   readonly weapon?: WeaponProfile;
 }
 
-export interface CosmeticProperties {
-  readonly slot: EquipmentSlot;
-  readonly visual: GearVisual;
-}
-
 export interface ConsumableProperties {
   readonly verb: string;
   readonly heal: number;
@@ -107,7 +102,6 @@ export interface ItemDefinition {
   readonly value: number;
   readonly unique?: boolean;
   readonly equipment?: EquipmentProperties;
-  readonly cosmetic?: CosmeticProperties;
   readonly consumable?: ConsumableProperties;
 }
 
@@ -116,7 +110,7 @@ export type ItemCatalog = ReadonlyMap<ItemId, ItemDefinition>;
 export const isStackable = (item: ItemDefinition): boolean => item.maxStack > 1;
 
 export const wornVisualOf = (item: ItemDefinition): { readonly slot: EquipmentSlot; readonly visual: GearVisual } | null =>
-  item.equipment ?? item.cosmetic ?? null;
+  item.equipment ?? null;
 
 export function gearLineOf(item: ItemDefinition): GearMotif | null {
   const equipment = item.equipment;

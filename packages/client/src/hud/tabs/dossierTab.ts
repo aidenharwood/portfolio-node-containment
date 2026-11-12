@@ -1,4 +1,4 @@
-import { appearanceItemIds, PROFILE_STAT_IDS, PROFILE_STAT_INFO, PRONOUN_SETS, STAT_INFO, type ProfileStatId, type SelfState } from '@containment/shared';
+import { equippedItemIds, PROFILE_STAT_IDS, PROFILE_STAT_INFO, PRONOUN_SETS, STAT_INFO, type ProfileStatId, type SelfState } from '@containment/shared';
 import type { GameConnection } from '../../net/gameConnection.ts';
 import type { WorldState } from '../../state/worldState.ts';
 import { AvatarPreview } from '../../ui/avatarPreview.ts';
@@ -48,7 +48,7 @@ ${STAT_INFO[info.gearStat].name}: ${STAT_INFO[info.gearStat].summary}` : info.de
         preview = new AvatarPreview({ appearance, gear: [], facing: 'south', walking: false }, { width: 96, height: 130, pedestal: true });
         portrait.append(preview.element);
       }
-      if (preview) preview.model.gear = appearanceItemIds(self.equipment, self.wardrobe);
+      if (preview) preview.model.gear = equippedItemIds(self.equipment);
       replaceChildren(
         details,
         h('p', { className: 'dossier-name' }, self.name),

@@ -27,7 +27,7 @@
     { "room": "weighbridge", "name": "Weighbridge", "safe": true }
   ],
   "anchors": {},
-  "recovery": { "districtId": "waterworks", "at": { "x": 4, "y": 72 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "cc-sign", "object": "warning-sign", "at": { "room": "causeway", "dx": 2, "dy": 0 } },
     { "id": "cc-pipes-a", "object": "pipe-cluster", "at": { "room": "causeway", "dx": 19, "dy": 0 } },

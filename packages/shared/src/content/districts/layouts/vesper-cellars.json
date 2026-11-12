@@ -49,7 +49,7 @@
   "anchors": {
     "liftArrival": { "room": "lift-landing", "dx": 16, "dy": 3 }
   },
-  "recovery": { "districtId": "vesper-lodge", "at": { "room": "mortuary", "dx": 29, "dy": 20 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "vcl-sign", "object": "warning-sign", "at": { "room": "lift-landing", "dx": 0, "dy": 0 } },
     { "id": "vcl-still-a", "object": "tincture-still", "at": { "room": "mortuary", "dx": 82, "dy": 0 } },

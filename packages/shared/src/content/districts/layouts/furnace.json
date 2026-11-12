@@ -53,11 +53,10 @@
     "entrance": { "room": "coolant-lock", "dx": 9, "dy": 12 },
     "reactorApproach": { "room": "ember-galleries", "dx": 67, "dy": 21 }
   },
-  "recovery": { "districtId": "deepwatch", "at": { "room": "foundry", "dx": 7, "dy": 20 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "fu-tram-stop", "object": "tram-stop", "at": { "room": "coolant-lock", "dx": 2, "dy": 13 }, "facing": "south" },
     { "id": "fu-lock-storage", "object": "storage-locker", "at": { "room": "coolant-lock", "dx": 19, "dy": 12 }, "facing": "west" },
-    { "id": "fu-lock-bed", "object": "med-bed", "at": { "room": "coolant-lock", "dx": 0, "dy": 10 } },
     { "id": "fu-seam-a", "object": "ember-seam", "at": { "room": "ember-galleries", "dx": 2, "dy": 0 } },
     { "id": "fu-seam-b", "object": "ember-seam", "at": { "room": "ember-galleries", "dx": 30, "dy": 0 } },
     { "id": "fu-seam-c", "object": "ember-seam", "at": { "room": "ember-galleries", "dx": 59, "dy": 0 } },

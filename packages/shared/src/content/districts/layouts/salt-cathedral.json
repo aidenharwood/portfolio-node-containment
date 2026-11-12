@@ -37,7 +37,7 @@
     { "room": "south-chapel", "name": "South Chapel" }
   ],
   "anchors": {},
-  "recovery": { "districtId": "calder-gatehouse", "at": { "room": "cloister", "dx": 28, "dy": 20 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "sc-geode-a", "object": "geode-cluster", "at": { "room": "cloister", "dx": 1, "dy": 0 } },
     { "id": "sc-geode-b", "object": "geode-cluster", "at": { "room": "cloister", "dx": 54, "dy": 8 } },

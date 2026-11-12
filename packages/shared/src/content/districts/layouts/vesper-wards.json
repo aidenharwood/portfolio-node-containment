@@ -65,7 +65,7 @@
     { "room": "linen-store", "name": "Linen Store" }
   ],
   "anchors": {},
-  "recovery": { "districtId": "hydroponics", "at": { "room": "linen-store", "dx": 6, "dy": 4 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "vw-admissions-sign", "object": "warning-sign", "at": { "room": "admissions", "dx": 25, "dy": 0 } },
     { "id": "vw-cabinet-a", "object": "herb-cabinet", "at": { "room": "north-ward", "dx": 116, "dy": 0 } },

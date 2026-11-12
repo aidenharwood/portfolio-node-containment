@@ -406,6 +406,7 @@ describe('the far side', () => {
 
     harness.interactWithObject('uc-junction-a');
     harness.ticksUntil(() => player.combatTargetId === null && player.path.length === 0, 2000);
+    assert.deepEqual(harness.sink.last('player.state')?.self.usedObjects, ['uc-junction-a'], 'the client learns which junctions are already restored');
     harness.interactWithObject('uc-junction-c');
     harness.ticksUntil(() => player.combatTargetId === null && player.path.length === 0, 2000);
     harness.interactWithObject('uc-junction-b');

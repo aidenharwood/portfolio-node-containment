@@ -234,15 +234,15 @@ describe('dormancy and interest-bounded intents', () => {
 describe('review fixes', () => {
   test('a same-level recovery refreshes the player for observers who see both ends', () => {
     const { gameplay, operatives } = deep([
-      { districtId: 'deep-concourse', position: localInRoom('deep-concourse', 'south-span', { x: 6, y: 10 }) },
-      { districtId: 'deepwatch', position: localInRoom('deepwatch', 'platform-hall', { x: 1, y: 2 }) },
+      { districtId: 'intake-wing', position: localInRoom('intake-wing', 'supply', { x: 4, y: 9 }) },
+      { districtId: 'intake-wing', position: localInRoom('intake-wing', 'supply', { x: 12, y: 9 }) },
     ]);
     const [a, b] = operatives;
     assert.ok(a && b);
     assert.ok(b.sink.last('world.entered')?.entities.some((entity) => entity.id === a.player.entityId));
     b.sink.messages.length = 0;
     gameplay.recoverIncapacitated(a.player);
-    assert.equal(gameplay.world.districtOf(a.player), 'deepwatch');
+    assert.equal(gameplay.world.districtOf(a.player), 'intake-wing');
     assert.ok(ofType(b.sink, 'world.entitySpawned').some((message) => message.entity.id === a.player.entityId));
   });
 

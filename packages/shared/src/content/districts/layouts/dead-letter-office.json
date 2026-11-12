@@ -35,14 +35,13 @@
     "spawn": { "room": "franking-hall", "dx": 4, "dy": 6 },
     "chuteArrival": { "room": "franking-hall", "dx": 3, "dy": 2 }
   },
-  "recovery": { "districtId": "dead-letter-office", "at": { "room": "franking-hall", "dx": 4, "dy": 6 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "dlo-hall-desk", "object": "franking-counter", "at": { "room": "franking-hall", "dx": 12, "dy": 0 } },
     { "id": "dlo-hall-cabinet-a", "object": "filing-cabinet", "at": { "room": "franking-hall", "dx": 19, "dy": 0 } },
     { "id": "dlo-hall-cabinet-b", "object": "filing-cabinet", "at": { "room": "franking-hall", "dx": 0, "dy": 15 }, "facing": "north" },
     { "id": "dlo-hall-board", "object": "notice-board", "at": { "room": "franking-hall", "dx": 2, "dy": 0 } },
     { "id": "dlo-hall-storage", "object": "storage-locker", "at": { "room": "franking-hall", "dx": 19, "dy": 15 }, "facing": "north" },
-    { "id": "dlo-hall-bed", "object": "med-bed", "at": { "room": "franking-hall", "dx": 17, "dy": 15 } },
     { "id": "dlo-sorting-pigeonhole-a", "object": "pigeonhole-thale", "at": { "room": "sorting-floor", "dx": 7, "dy": 0 } },
     { "id": "dlo-sorting-pigeonhole-b", "object": "pigeonhole-achterberg", "at": { "room": "sorting-floor", "dx": 62, "dy": 0 } },
     { "id": "dlo-sorting-rack-a", "object": "letter-rack", "at": { "room": "sorting-floor", "dx": 23, "dy": 0 } },

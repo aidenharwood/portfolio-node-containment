@@ -40,7 +40,7 @@
     { "room": "tally-house", "name": "Tally House" }
   ],
   "anchors": {},
-  "recovery": { "districtId": "waterworks", "at": { "room": "wight-drifts", "dx": 3, "dy": 15 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "bg-landing-sign", "object": "warning-sign", "at": { "room": "salt-landing", "dx": 0, "dy": 0 } },
     { "id": "bg-seam-a", "object": "salt-seam", "at": { "room": "brine-pans", "dx": 1, "dy": 0 } },

@@ -7,7 +7,7 @@ export interface PartyInvite {
   readonly receivedAt: number;
 }
 
-const INVITE_LIFETIME_MS = 60_000;
+export const INVITE_LIFETIME_MS = 60_000;
 
 export class SocialState {
   party: PartyView | null = null;

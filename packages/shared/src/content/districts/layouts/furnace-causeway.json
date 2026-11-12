@@ -29,7 +29,7 @@
     "furnaceGate": { "room": "furnace-approach", "dx": 6, "dy": 0 },
     "landing": { "room": "ember-landing", "dx": 19, "dy": 4 }
   },
-  "recovery": { "districtId": "deepwatch", "at": { "x": 8, "y": 44 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "fc-furnace-sign", "object": "warning-sign", "at": { "room": "furnace-approach", "dx": 2, "dy": 0 } },
     { "id": "fc-ember-brazier", "object": "light-pillar", "at": { "room": "ember-landing", "dx": 19, "dy": 9 } },
