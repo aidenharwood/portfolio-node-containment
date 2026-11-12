@@ -71,3 +71,19 @@ describe('walkableTilesNear', () => {
     assert.deepEqual(walkableTilesNear(grid, { x: 40, y: 40 }, { x: 1, y: 1 }), []);
   });
 });
+
+describe('findPath goals', () => {
+  const open = { isWalkable: (point: { x: number; y: number }) => point.x >= 0 && point.y >= 0 && point.x < 10 && point.y < 10 };
+
+  test('a custom goal replaces the destination test', () => {
+    const path = findPath(open, { from: { x: 0, y: 0 }, to: { x: 5, y: 5 }, isGoal: (point) => point.x === 3 });
+    assert.ok(path);
+    assert.equal(path.at(-1)?.x, 3);
+  });
+
+  test('a custom goal may lie beside an unwalkable destination', () => {
+    const blockedTarget = { isWalkable: (point: { x: number; y: number }) => open.isWalkable(point) && !(point.x === 5 && point.y === 5) };
+    const path = findPath(blockedTarget, { from: { x: 0, y: 0 }, to: { x: 5, y: 5 }, isGoal: (point) => point.x === 4 && point.y === 5 });
+    assert.deepEqual(path?.at(-1), { x: 4, y: 5 });
+  });
+});

@@ -16,6 +16,8 @@ export interface PathRequest {
   readonly from: TilePoint;
   readonly to: TilePoint;
   readonly arriveAdjacent?: boolean;
+  readonly isGoal?: (point: TilePoint) => boolean;
+  readonly goalSlack?: number;
   readonly maxSearchNodes?: number;
 }
 
@@ -31,15 +33,14 @@ const DEFAULT_MAX_SEARCH_NODES = 6000;
 
 export function findPath(grid: WalkabilityGrid, request: PathRequest): TilePoint[] | null {
   const { from, to } = request;
-  const isGoal = request.arriveAdjacent
-    ? (point: TilePoint) => isCardinallyAdjacent(point, to)
-    : (point: TilePoint) => samePoint(point, to);
-  const estimate = request.arriveAdjacent
-    ? (point: TilePoint) => Math.max(0, octileDistance(point, to) - STRAIGHT_STEP_COST)
-    : (point: TilePoint) => octileDistance(point, to);
+  const isGoal =
+    request.isGoal ??
+    (request.arriveAdjacent ? (point: TilePoint) => isCardinallyAdjacent(point, to) : (point: TilePoint) => samePoint(point, to));
+  const slack = request.goalSlack ?? (request.arriveAdjacent || request.isGoal ? STRAIGHT_STEP_COST : 0);
+  const estimate = (point: TilePoint) => Math.max(0, octileDistance(point, to) - slack);
 
   if (isGoal(from)) return [];
-  if (!request.arriveAdjacent && !grid.isWalkable(to)) return null;
+  if (!request.arriveAdjacent && !request.isGoal && !grid.isWalkable(to)) return null;
 
   const open = new MinHeap<SearchNode>((a, b) => a.estimatedTotal - b.estimatedTotal);
   const bestCost = new Map<string, number>([[tileKey(from), 0]]);
