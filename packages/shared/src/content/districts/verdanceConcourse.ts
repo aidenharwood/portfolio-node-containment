@@ -3,7 +3,7 @@ import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
-import { CIVIC_PROPS, INDUSTRIAL_PROPS, LITTER, OFFICE_PROPS, scatterGroups } from './populate.ts';
+import { LITTER, scatterGroups } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 100, height: 47 }, [
@@ -45,12 +45,7 @@ const assemblies: AssemblyPlacement[] = [
 const placed = [...npcs, ...fixtures, ...assemblies];
 
 const furnishings = scatterGroups(plan, placed, [
-  ['concourse', 'vc-prop', CIVIC_PROPS, 10],
   ['concourse', 'vc-litter', LITTER, 8],
-  ['seed-exchange', 'seed-exchange-prop', ['planter', 'planter', 'briefing-bench', 'storage-rack'], 8],
-  ['irrigation-plant', 'irrigation-plant-prop', INDUSTRIAL_PROPS, 8],
-  ['gardeners-row', 'gardeners-row-prop', OFFICE_PROPS, 8],
-  ['compost-yard', 'compost-yard-prop', ['planter', 'litter-gravel', 'storage-rack'], 8],
 ]);
 
 const dressing: Dressing = {

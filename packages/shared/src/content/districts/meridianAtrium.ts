@@ -3,7 +3,7 @@ import { drawBlueprint, exit, link, patch, pillars, room } from '../../world/blu
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
-import { CIVIC_PROPS, INDUSTRIAL_PROPS, LITTER, OFFICE_PROPS, positionsOf, scatterObjects } from './populate.ts';
+import { LITTER, positionsOf, scatterObjects } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 126, height: 104 }, [
@@ -176,17 +176,6 @@ const litter: ObjectPlacement[] = [
   ...scatterObjects(plan, 'east-gate', 'east-gate-litter', LITTER, 3, taken()),
 ];
 
-const props: ObjectPlacement[] = [
-  ...scatterObjects(plan, 'requisitions', 'requisitions-prop', OFFICE_PROPS, 8, taken()),
-  ...scatterObjects(plan, 'archives', 'archives-prop', ['server-rack', 'filing-cabinet'], 9, taken()),
-  ...scatterObjects(plan, 'response-office', 'office-prop', OFFICE_PROPS, 9, taken()),
-  ...scatterObjects(plan, 'workshop', 'workshop-prop', INDUSTRIAL_PROPS, 8, taken()),
-  ...scatterObjects(plan, 'engineering', 'engineering-prop', INDUSTRIAL_PROPS, 9, taken()),
-  ...scatterObjects(plan, 'lift-bay', 'transit-prop', CIVIC_PROPS, 6, taken()),
-  ...scatterObjects(plan, 'medbay', 'medbay-prop', ['planter', 'briefing-bench', 'water-cooler'], 10, taken()),
-  ...scatterObjects(plan, 'west-gate', 'west-gate-prop', CIVIC_PROPS, 5, taken()),
-  ...scatterObjects(plan, 'east-gate', 'east-gate-prop', CIVIC_PROPS, 5, taken()),
-];
 
 const dressing: Dressing = {
   'requisitions': 'office',
@@ -227,7 +216,7 @@ export const MERIDIAN_ATRIUM: DistrictDefinition = furnish(plan, {
     plan.area('engineering', 'Engineering Bay', { safe: true }),
   ],
   npcs,
-  objects: [...fixtures, ...litter, ...props],
+  objects: [...fixtures, ...litter],
   assemblies,
   lights: [
     { position: plan.spot('requisitions', 12, 3), radius: 11, color: '#ffd27f', intensity: 0.55 },

@@ -3,7 +3,7 @@ import { drawBlueprint, exit, link, patch, pillars, room, track } from '../../wo
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { WATERWORKS_ANCHORS } from './waterworks.ts';
-import { INDUSTRIAL_PROPS, LITTER, scatterGroups } from './populate.ts';
+import { LITTER, scatterGroups } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 67, height: 70 }, [
@@ -47,10 +47,8 @@ const assemblies: AssemblyPlacement[] = [1, 4, 7, 10].map((dx, index) => ({
 const placed = [...npcs, ...fixtures];
 
 const furnishings = scatterGroups(plan, placed, [
-  ['causeway', 'cc-prop', INDUSTRIAL_PROPS, 8],
   ['causeway', 'cc-litter', LITTER, 6],
   ['salt-road', 'cc-road-litter', LITTER, 8],
-  ['weighbridge', 'cc-weighbridge-prop', ['storage-rack', 'pipe-cluster', 'wall-locker', 'litter-gravel'], 10],
 ]);
 
 const dressing: Dressing = {

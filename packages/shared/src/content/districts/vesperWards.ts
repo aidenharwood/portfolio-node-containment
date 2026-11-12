@@ -76,10 +76,7 @@ const furnishings = scatterGroups(plan, placed, [
   ['north-ward', 'vw-north-node', ['herb-cabinet'], 4],
   ['south-ward', 'vw-south-node', ['herb-cabinet'], 3],
   ['linen-store', 'vw-linen-node', ['herb-cabinet'], 2],
-  ['north-ward', 'vw-north-prop', ['water-cooler', 'briefing-bench', 'wall-locker'], 12],
-  ['south-ward', 'vw-south-prop', ['water-cooler', 'briefing-bench', 'wall-locker'], 8],
   ['ward-corridor', 'vw-corridor-litter', LITTER, 6],
-  ['linen-store', 'vw-linen-prop', ['storage-rack', 'wall-locker'], 6],
 ]);
 
 const packs = scatterPacks(plan, [...placed, ...furnishings], [

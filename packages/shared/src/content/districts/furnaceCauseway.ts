@@ -3,7 +3,7 @@ import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { DEEPWATCH_ANCHORS } from './deepwatch.ts';
-import { INDUSTRIAL_PROPS, LITTER, scatterGroups } from './populate.ts';
+import { LITTER, scatterGroups } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 import { ambientCast } from '../ambientNpcs.ts';
 
@@ -46,7 +46,6 @@ const assemblies: AssemblyPlacement[] = [
 const placed = [...npcs, ...fixtures, ...assemblies];
 
 const furnishings = scatterGroups(plan, placed, [
-  ['ember-landing', 'fc-landing-prop', INDUSTRIAL_PROPS, 6],
   ['ember-landing', 'fc-landing-litter', LITTER, 6],
   ['furnace-approach', 'fc-approach-litter', LITTER, 4],
 ]);

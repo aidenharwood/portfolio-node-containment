@@ -1,7 +1,7 @@
 import { drawBlueprint, exit, link, patch, room } from '../../world/blueprint.ts';
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
-import { INDUSTRIAL_PROPS, LITTER, scatterGroups, scatterPacks } from './populate.ts';
+import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 116, height: 91 }, [
@@ -103,9 +103,7 @@ const furnishings = scatterGroups(plan, placed, [
   ['filtration-beds', 'ww-filtration-node', ['severed-conduit', 'scrap-heap'], 4],
   ['intake-screens', 'ww-intake-node', ['scrap-heap'], 3],
   ['outfall', 'ww-outfall-node', ['resin-drum'], 2],
-  ['filtration-beds', 'ww-filtration-prop', ['pipe-cluster', 'pump-housing', 'pipe-cluster'], 8],
   ['settling-tanks', 'ww-settling-litter', LITTER, 6],
-  ['intake-screens', 'ww-intake-prop', INDUSTRIAL_PROPS, 6],
   ['outfall', 'ww-outfall-litter', LITTER, 6],
 ]);
 

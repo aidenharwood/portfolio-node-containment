@@ -4,7 +4,7 @@ import { drawBlueprint, link, patch, pillars, room } from '../../world/blueprint
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { SECTOR_THREE_ANCHORS } from './sectorThree.ts';
-import { INDUSTRIAL_PROPS, LITTER, scatterGroups, scatterPacks } from './populate.ts';
+import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 100, height: 75 }, [
@@ -126,15 +126,8 @@ const placed = [...npcs, ...fixtures, ...assemblies, ...residents];
 const furnishings = scatterGroups(plan, placed, [
   ['inverted-plaza', 'mb-plaza-litter', LITTER, 8],
   ['inverted-plaza', 'mb-plaza-node', ['mirror-shard'], 2],
-  ['west-hall', 'mb-west-prop', ['light-pillar', 'briefing-bench', 'planter'], 4],
-  ['east-hall', 'mb-east-prop', INDUSTRIAL_PROPS, 4],
   ['arrival', 'mb-arrival-litter', LITTER, 3],
-  ['empty-medbay', 'mb-medbay-prop', ['water-cooler', 'wall-locker'], 4],
-  ['wrong-workshop', 'mb-workshop-prop', ['storage-rack', 'pipe-cluster'], 3],
   ['quiet-range', 'mb-range-litter', LITTER, 4],
-  ['mirror-commissary', 'mb-commissary-prop', ['briefing-bench', 'planter'], 3],
-  ['drowned-records', 'mb-records-prop', ['server-rack', 'filing-cabinet'], 4],
-  ['engineering-below', 'mb-engineering-prop', ['pipe-cluster', 'server-rack'], 3],
   ['the-front-door', 'mb-door-litter', ['litter-papers', 'litter-puddle'], 3],
 ]);
 

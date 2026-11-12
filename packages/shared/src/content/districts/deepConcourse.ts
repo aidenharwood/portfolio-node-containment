@@ -5,7 +5,7 @@ import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../wo
 import type { TilePoint } from '../../world/geometry.ts';
 import { DEEPWATCH_ANCHORS } from './deepwatch.ts';
 export const CONCOURSE_HOLLOW_FOR_DEEPWATCH: TilePoint = { x: 50, y: 50 };
-import { INDUSTRIAL_PROPS, LITTER, scatterGroups } from './populate.ts';
+import { LITTER, scatterGroups } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 import { ambientCast } from '../ambientNpcs.ts';
 
@@ -103,10 +103,6 @@ const assemblies: AssemblyPlacement[] = [
 const placed = [...npcs, ...fixtures, ...assemblies];
 
 const furnishings = scatterGroups(plan, placed, [
-  ['ring-hub', 'dc-hub-prop', INDUSTRIAL_PROPS, 10],
-  ['chasm-walk', 'dc-walk-prop', INDUSTRIAL_PROPS, 10],
-  ['cold-wing', 'dc-cold-prop', INDUSTRIAL_PROPS, 8],
-  ['records-wing', 'dc-records-prop', INDUSTRIAL_PROPS, 8],
   ['ring-hub', 'dc-hub-litter', LITTER, 10],
   ['chasm-walk', 'dc-walk-litter', LITTER, 10],
   ['cold-wing', 'dc-cold-litter', LITTER, 8],

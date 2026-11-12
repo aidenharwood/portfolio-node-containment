@@ -36,10 +36,7 @@ const assemblies: AssemblyPlacement[] = [
 const placed = [...npcs, ...fixtures, ...assemblies];
 
 const furnishings = scatterGroups(plan, placed, [
-  ['grove', 'vf-grove-planter', ['planter'], 6],
   ['grove', 'vf-grove-litter', ['litter-gravel', 'litter-puddle'], 4],
-  ['west-crease', 'vf-west-prop', ['planter', 'litter-puddle'], 2],
-  ['east-crease', 'vf-east-prop', ['planter', 'litter-puddle'], 2],
 ]);
 
 const dressing: Dressing = {

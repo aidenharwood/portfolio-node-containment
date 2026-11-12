@@ -44,7 +44,6 @@ const assemblies: AssemblyPlacement[] = [
 const placed = [...npcs, ...fixtures, ...assemblies];
 
 const furnishings = scatterGroups(plan, placed, [
-  ['reflecting-hall', 's3-hall-prop', ['light-pillar', 'briefing-bench'], 4],
   ['threshold', 's3-threshold-litter', LITTER, 4],
 ]);
 

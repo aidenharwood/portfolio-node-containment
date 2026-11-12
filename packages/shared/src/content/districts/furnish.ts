@@ -4,7 +4,8 @@ import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../wo
 import { rectContains, tileKey, type Facing, type TilePoint, type TileRect } from '../../world/geometry.ts';
 import { MAP_LEGEND, TILE_KINDS } from '../../world/tiles.ts';
 import { ambientCast } from '../ambientNpcs.ts';
-import { PREFABS, THEME_PREFABS, type DressingTheme, type Prefab, type PrefabPiece } from '../prefabs.ts';
+import type { WorldObjectId } from '../../ids.ts';
+import { PREFABS, THEME_LAYOUTS, type DressingTheme, type Prefab, type PrefabPiece } from '../prefabs.ts';
 import { positionsOf } from './populate.ts';
 
 export type DressingDensity = 'sparse' | 'normal' | 'dense';
@@ -22,8 +23,11 @@ export interface FurnishOptions {
   readonly cast?: readonly NpcId[];
 }
 
-const TILES_PER_PREFAB: Readonly<Record<DressingDensity, number>> = { sparse: 75, normal: 42, dense: 28 };
-const OBJECTS_PER_PREFAB = 3;
+const TILES_PER_BLOCK: Readonly<Record<DressingDensity, number>> = { sparse: 110, normal: 64, dense: 40 };
+const WALL_GAP: Readonly<Record<DressingDensity, number>> = { sparse: 6, normal: 3, dense: 2 };
+const MIN_GUTTER = 2;
+const FIELD_AISLE = 2;
+const CORNER_MARGIN = 2;
 const isFloorLitter = (objectId: string): boolean => objectId.startsWith('litter-') || objectId.startsWith('cable-run');
 const TILES_PER_PERSON = 170;
 const MAX_PEOPLE_PER_ROOM = 9;
@@ -64,8 +68,8 @@ const turnPiece = (piece: PrefabPiece, height: number): PrefabPiece => ({
 });
 
 const BACK_SIDE: readonly Facing[] = ['north', 'east', 'south', 'west'];
-const TURNS = [0, 1, 2, 3];
-const PLACEMENT_ATTEMPTS = 3;
+const INWARD: Readonly<Record<Facing, Facing>> = { north: 'south', south: 'north', east: 'west', west: 'east' };
+const TURNS_BY_BACK = [0, 2, 1, 3];
 
 interface Turn {
   readonly pieces: readonly PrefabPiece[];
@@ -118,6 +122,51 @@ const shuffle = <T>(items: T[], random: () => number): T[] => {
   return items;
 };
 
+const gutterFor = (width: number, height: number, density: DressingDensity): number => {
+  const target = TILES_PER_BLOCK[density];
+  const gutter = (-(width + height) + Math.sqrt((width - height) ** 2 + 4 * target)) / 2;
+  return Math.max(MIN_GUTTER, Math.round(gutter));
+};
+
+interface Lane {
+  readonly x?: number;
+  readonly y?: number;
+}
+
+const laneOf = (rect: TileRect): Lane => {
+  const long = Math.max(rect.width, rect.height) >= THOROUGHFARE_RATIO * Math.min(rect.width, rect.height);
+  if (!long) return { x: LANE_HALF_WIDTH, y: LANE_HALF_WIDTH };
+  return rect.width >= rect.height ? { y: THOROUGHFARE_HALF_WIDTH } : { x: THOROUGHFARE_HALF_WIDTH };
+};
+
+const centreOf = (rect: TileRect): TilePoint => ({ x: rect.x + (rect.width - 1) / 2, y: rect.y + (rect.height - 1) / 2 });
+
+const inWalkingLane = (rect: TileRect, point: TilePoint): boolean => {
+  const lane = laneOf(rect);
+  const centre = centreOf(rect);
+  return (lane.x !== undefined && Math.abs(point.x - centre.x) <= lane.x) || (lane.y !== undefined && Math.abs(point.y - centre.y) <= lane.y);
+};
+
+const gridOrigins = (rect: TileRect, field: TileRect, turn: Turn, density: DressingDensity): TilePoint[] => {
+  const gutter = gutterFor(turn.width, turn.height, density);
+  const lane = laneOf(rect);
+  const centre = centreOf(rect);
+  const spread = (start: number, span: number, size: number): number[] => {
+    const pitch = size + gutter;
+    const count = Math.max(0, Math.floor((span + gutter) / pitch));
+    const first = start + Math.floor((span - (count * pitch - gutter)) / 2);
+    return Array.from({ length: count }, (_, index) => first + index * pitch);
+  };
+  const axis = (start: number, span: number, size: number, roomStart: number, roomSpan: number, middle: number, half?: number): number[] => {
+    if (half === undefined) return spread(start, span, size);
+    const beyond = Math.floor(middle + half) + 1;
+    const far = spread(beyond, start + span - beyond, size);
+    return [...far.map((position) => 2 * roomStart + roomSpan - position - size).reverse(), ...far];
+  };
+  const columns = axis(field.x, field.width, turn.width, rect.x, rect.width, centre.x, lane.x);
+  return axis(field.y, field.height, turn.height, rect.y, rect.height, centre.y, lane.y).flatMap((y) => columns.map((x) => ({ x, y })));
+};
+
 const dressingOf = (entry: DressingTheme | RoomDressing): RoomDressing => (typeof entry === 'string' ? { theme: entry } : entry);
 
 export function furnish(plan: Blueprint, district: DistrictDefinition, dressing: Dressing, options: FurnishOptions = {}): DistrictDefinition {
@@ -127,7 +176,7 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
 
   const taken = new Set<string>(
     [
-      ...positionsOf(district.objects, district.assemblies ?? [], district.npcs, district.creatures ?? []),
+      ...positionsOf(district.objects.filter((object) => !isFloorLitter(object.objectId)), district.assemblies ?? [], district.npcs, district.creatures ?? []),
       ...Object.values(district.anchors ?? {}),
       ...Object.values(district.exits ?? {}).flatMap((exit) => exit.tiles),
       ...Object.values(plan.links).flat(),
@@ -135,26 +184,25 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
     ].map(tileKey),
   );
 
-  const nearOpening = (rect: TileRect, point: TilePoint): boolean => {
-    for (let dy = -OPENING_CLEARANCE - 1; dy <= OPENING_CLEARANCE + 1; dy++) {
-      for (let dx = -OPENING_CLEARANCE - 1; dx <= OPENING_CLEARANCE + 1; dx++) {
-        const near = { x: point.x + dx, y: point.y + dy };
-        if (isWalkable(near) && !rectContains(rect, near)) return true;
-        if (tileAt(near) === 'door') return true;
+  const openingsOf = (rect: TileRect): TilePoint[] => {
+    const openings: TilePoint[] = [];
+    for (let y = rect.y - 1; y <= rect.y + rect.height; y++) {
+      for (let x = rect.x - 1; x <= rect.x + rect.width; x++) {
+        const point = { x, y };
+        if (tileAt(point) === 'door') {
+          openings.push(point);
+          continue;
+        }
+        if (rectContains(rect, point) || !isWalkable(point)) continue;
+        const inside = [{ x: x + 1, y }, { x: x - 1, y }, { x, y: y + 1 }, { x, y: y - 1 }];
+        if (inside.some((neighbour) => rectContains(rect, neighbour) && isWalkable(neighbour))) openings.push(point);
       }
     }
-    return false;
+    return openings;
   };
 
-  const inWalkingLane = (rect: TileRect, point: TilePoint): boolean => {
-    const long = Math.max(rect.width, rect.height) >= THOROUGHFARE_RATIO * Math.min(rect.width, rect.height);
-    const centre = { x: rect.x + (rect.width - 1) / 2, y: rect.y + (rect.height - 1) / 2 };
-    if (long) {
-      const across = rect.width >= rect.height ? Math.abs(point.y - centre.y) : Math.abs(point.x - centre.x);
-      return across <= THOROUGHFARE_HALF_WIDTH;
-    }
-    return Math.abs(point.x - centre.x) <= LANE_HALF_WIDTH || Math.abs(point.y - centre.y) <= LANE_HALF_WIDTH;
-  };
+  const nearOpening = (openings: readonly TilePoint[], point: TilePoint): boolean =>
+    openings.some((opening) => Math.max(Math.abs(opening.x - point.x), Math.abs(opening.y - point.y)) <= OPENING_CLEARANCE + 1);
 
   const fits = (rect: TileRect, clear: ReadonlySet<string>, origin: TilePoint, turn: Turn, back?: Facing): boolean => {
     const { pieces, width, height } = turn;
@@ -182,8 +230,6 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
     return true;
   };
 
-  const objectsInRoom = (rect: TileRect): number => district.objects.filter((placement) => rectContains(rect, placement.position) && !isFloorLitter(placement.objectId)).length;
-
   const objects: ObjectPlacement[] = [];
   const npcs: NpcPlacement[] = [];
   const safeRooms = new Set(district.areas.filter((area) => area.safe).map((area) => area.id));
@@ -193,58 +239,73 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
     if (!rect) throw new Error(`District "${district.id}" dresses unknown room "${roomId}".`);
     const { theme, density = 'normal', people, cast } = dressingOf(entry);
     const random = seededRandom(`${district.id}:${roomId}:dressing`);
+    const pick = <T>(items: readonly T[]): T => items[Math.floor(random() * items.length)] as T;
     const floor: TilePoint[] = [];
     for (let y = rect.y; y < rect.y + rect.height; y++) {
       for (let x = rect.x; x < rect.x + rect.width; x++) if (isOpenFloor({ x, y })) floor.push({ x, y });
     }
+    const openings = openingsOf(rect);
+    const clear = new Set(floor.filter((point) => !nearOpening(openings, point) && !inWalkingLane(rect, point)).map(tileKey));
+    const layout = THEME_LAYOUTS[theme];
 
-    const wanted = Math.max(0, Math.round(floor.length / TILES_PER_PREFAB[density] - objectsInRoom(rect) / OBJECTS_PER_PREFAB));
-    const weighted = THEME_PREFABS[theme];
-    const totalWeight = weighted.reduce((sum, [, weight]) => sum + weight, 0);
-    const choosePrefab = (): Prefab => {
-      let roll = random() * totalWeight;
-      for (const [name, weight] of weighted) {
-        roll -= weight;
-        if (roll < 0) return PREFABS[name];
-      }
-      return PREFABS[(weighted[0] as (typeof weighted)[number])[0]];
-    };
-
-    const alignedTurn = Math.floor(random() * TURNS.length);
-    const clear = new Set(floor.filter((point) => !nearOpening(rect, point) && !inWalkingLane(rect, point)).map(tileKey));
-    const candidates = shuffle([...floor], random);
-    const findSpot = (prefab: Prefab): { readonly origin: TilePoint; readonly pieces: readonly PrefabPiece[] } | undefined => {
-      const turns = rotations(prefab);
-      const order = prefab.placement === 'aligned' ? [alignedTurn] : shuffle([...TURNS], random);
-      const start = Math.floor(random() * candidates.length);
-      for (let step = 0; step < candidates.length; step++) {
-        const origin = candidates[(start + step) % candidates.length] as TilePoint;
-        if (taken.has(tileKey(origin))) continue;
-        for (const index of order) {
-          const turn = turns[index] as Turn;
-          if (fits(rect, clear, origin, turn, prefab.placement === 'wall' ? BACK_SIDE[index] : undefined)) return { origin, pieces: turn.pieces };
-        }
-      }
-      return undefined;
-    };
-
-    let placedCount = 0;
-    for (let attempt = 0; placedCount < wanted && attempt < wanted * PLACEMENT_ATTEMPTS; attempt++) {
-      const spot = findSpot(choosePrefab());
-      if (!spot) continue;
-      const { origin, pieces } = spot;
-      placedCount += 1;
+    let blockCount = 0;
+    const place = (origin: TilePoint, pieces: readonly PrefabPiece[]): void => {
+      blockCount += 1;
       pieces.forEach((piece, index) => {
         const position = { x: origin.x + piece.dx, y: origin.y + piece.dy };
         taken.add(tileKey(position));
-        objects.push({
-          instanceId: `${roomId}-dressing-${placedCount}-${index + 1}`,
-          objectId: piece.objectId,
-          position,
-          ...(piece.facing ? { facing: piece.facing } : {}),
-        });
+        objects.push({ instanceId: `${roomId}-dressing-${blockCount}-${index + 1}`, objectId: piece.objectId, position, facing: piece.facing ?? 'south' });
       });
+    };
+
+    if (layout.corner) {
+      const single = (back: Facing): Turn => turnOf([{ dx: 0, dy: 0, objectId: layout.corner as WorldObjectId, facing: INWARD[back] }]);
+      const corners: readonly (readonly [TilePoint, Facing])[] = [
+        [{ x: rect.x, y: rect.y }, 'north'],
+        [{ x: rect.x + rect.width - 1, y: rect.y }, 'north'],
+        [{ x: rect.x, y: rect.y + rect.height - 1 }, 'south'],
+        [{ x: rect.x + rect.width - 1, y: rect.y + rect.height - 1 }, 'south'],
+      ];
+      for (const [point, back] of corners) {
+        const turn = single(back);
+        if (fits(rect, clear, point, turn, back)) place(point, turn.pieces);
+      }
     }
+
+    const wallPrefabs: readonly Prefab[] = [PREFABS[pick(layout.wall)], PREFABS[pick(layout.wall)]];
+    let wallDepth = 0;
+    TURNS_BY_BACK.forEach((turnIndex, sideIndex) => {
+      const back = BACK_SIDE[turnIndex] as Facing;
+      const turn = rotations(wallPrefabs[Math.floor(sideIndex / 2)] as Prefab)[turnIndex] as Turn;
+      const alongX = back === 'north' || back === 'south';
+      const length = alongX ? turn.width : turn.height;
+      const runStart = (alongX ? rect.x : rect.y) + CORNER_MARGIN;
+      const runLength = (alongX ? rect.width : rect.height) - CORNER_MARGIN * 2;
+      const pitch = length + WALL_GAP[density];
+      const count = Math.floor((runLength + WALL_GAP[density]) / pitch);
+      if (count <= 0) return;
+      wallDepth = Math.max(wallDepth, alongX ? turn.height : turn.width);
+      const first = runStart + Math.floor((runLength - (count * pitch - WALL_GAP[density])) / 2);
+      for (let slot = 0; slot < count; slot++) {
+        const along = first + slot * pitch;
+        const origin = alongX
+          ? { x: along, y: back === 'north' ? rect.y : rect.y + rect.height - turn.height }
+          : { x: back === 'west' ? rect.x : rect.x + rect.width - turn.width, y: along };
+        if (fits(rect, clear, origin, turn, back)) place(origin, turn.pieces);
+      }
+    });
+
+    const fieldInset = wallDepth + FIELD_AISLE;
+    const field = { x: rect.x + fieldInset, y: rect.y + fieldInset, width: rect.width - fieldInset * 2, height: rect.height - fieldInset * 2 };
+    const fieldPrefab = PREFABS[pick(layout.field)];
+    const preferred = Math.floor(random() * 4);
+    let best: { readonly turn: Turn; readonly origins: readonly TilePoint[] } | undefined;
+    for (let step = 0; step < 4; step++) {
+      const turn = rotations(fieldPrefab)[(preferred + step) % 4] as Turn;
+      const origins = gridOrigins(rect, field, turn, density).filter((origin) => fits(rect, clear, origin, turn));
+      if (!best || origins.length > best.origins.length) best = { turn, origins };
+    }
+    if (best) for (const origin of best.origins) if (fits(rect, clear, origin, best.turn)) place(origin, best.turn.pieces);
 
     if (!safeRooms.has(roomId)) continue;
     const crowd = cast ?? options.cast ?? THEME_CAST[theme];
@@ -266,9 +327,10 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
     });
   }
 
+  const covered = new Set(objects.map((object) => tileKey(object.position)));
   return {
     ...district,
     npcs: [...district.npcs, ...npcs.map((npc) => ({ ...npc, instanceId: `${district.id}-${npc.instanceId}` }))],
-    objects: [...district.objects, ...objects.map((object) => ({ ...object, instanceId: `${district.id}-${object.instanceId}` }))],
+    objects: [...district.objects.filter((object) => !(isFloorLitter(object.objectId) && covered.has(tileKey(object.position)))), ...objects.map((object) => ({ ...object, instanceId: `${district.id}-${object.instanceId}` }))],
   };
 }

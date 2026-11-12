@@ -4,7 +4,7 @@ import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { DEEPWATCH_ANCHORS } from './deepwatch.ts';
-import { INDUSTRIAL_PROPS, LITTER, OFFICE_PROPS, scatterGroups, scatterPacks } from './populate.ts';
+import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 import { ambientCast } from '../ambientNpcs.ts';
 
@@ -112,8 +112,6 @@ const furnishings = scatterGroups(plan, placed, [
   ['spool-store', 'sa-spool-node', ['signal-cable'], 2],
   ['relay-floor', 'sa-floor-litter', LITTER, 6],
   ['dish-gantry', 'sa-gantry-litter', LITTER, 8],
-  ['spool-store', 'sa-spool-prop', INDUSTRIAL_PROPS, 5],
-  ['operator-pit', 'sa-pit-prop', OFFICE_PROPS, 4],
 ]);
 
 const packs = scatterPacks(plan, [...placed, ...furnishings], [

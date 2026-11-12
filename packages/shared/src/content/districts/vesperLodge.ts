@@ -3,7 +3,7 @@ import { drawBlueprint, exit, patch, pillars, room, track } from '../../world/bl
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
-import { CIVIC_PROPS, OFFICE_PROPS, scatterGroups } from './populate.ts';
+import { scatterGroups } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 import { ambientCast } from '../ambientNpcs.ts';
 
@@ -46,8 +46,6 @@ const assemblies: AssemblyPlacement[] = [
 const placed = [...npcs, ...fixtures, ...assemblies];
 
 const furnishings = scatterGroups(plan, placed, [
-  ['lodge', 'vl-prop', OFFICE_PROPS, 14],
-  ['lodge', 'vl-civic', CIVIC_PROPS, 8],
 ]);
 
 const dressing: Dressing = {

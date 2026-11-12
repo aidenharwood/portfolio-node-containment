@@ -2,7 +2,7 @@ import { drawBlueprint, exit, link, patch, pillars, room } from '../../world/blu
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { WATERWORKS_ANCHORS } from './waterworks.ts';
-import { INDUSTRIAL_PROPS, LITTER, scatterGroups, scatterPacks } from './populate.ts';
+import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 120, height: 96 }, [
@@ -81,10 +81,8 @@ const furnishings = scatterGroups(plan, placed, [
   ['brine-pans', 'bg-pans-node', ['salt-seam'], 4],
   ['wight-drifts', 'bg-drifts-node', ['salt-seam'], 3],
   ['tally-house', 'bg-tally-node', ['salt-seam'], 2],
-  ['brine-pans', 'bg-pans-prop', ['pipe-cluster', 'pump-housing', 'pipe-cluster'], 8],
   ['wight-drifts', 'bg-drifts-litter', LITTER, 8],
   ['gate-approach', 'bg-approach-litter', LITTER, 5],
-  ['tally-house', 'bg-tally-prop', INDUSTRIAL_PROPS, 5],
 ]);
 
 const packs = scatterPacks(plan, [...placed, ...furnishings], [

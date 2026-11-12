@@ -4,7 +4,7 @@ import { drawBlueprint, link, patch, pillars, room } from '../../world/blueprint
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
-import { INDUSTRIAL_PROPS, LITTER, scatterGroups, scatterPacks } from './populate.ts';
+import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 110, height: 80 }, [
@@ -119,10 +119,8 @@ const furnishings = scatterGroups(plan, placed, [
   ['pump-hall', 'uc-hall-litter', LITTER, 8],
   ['flooded-sump', 'uc-sump-litter', LITTER, 8],
   ['warrens', 'uc-warrens-litter', LITTER, 6],
-  ['pipe-gallery', 'uc-gallery-prop', INDUSTRIAL_PROPS, 6],
   ['tunnel', 'uc-tunnel-litter', LITTER, 4],
   ['east-corridor', 'uc-corridor-litter', LITTER, 4],
-  ['junction-room', 'uc-junction-prop', INDUSTRIAL_PROPS, 3],
 ]);
 
 const packs = scatterPacks(plan, [...placed, ...furnishings], [

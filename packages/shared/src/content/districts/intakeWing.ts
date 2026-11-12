@@ -3,7 +3,7 @@ import { drawBlueprint, link, patch, pillars, room } from '../../world/blueprint
 import type { AssemblyPlacement } from '../../world/assemblies.ts';
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
-import { CIVIC_PROPS, LITTER, scatterGroups } from './populate.ts';
+import { LITTER, scatterGroups } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 124, height: 68 }, [
@@ -152,7 +152,6 @@ const residents: CreaturePlacement[] = [
 const placed = [...npcs, ...fixtures, ...assemblies, ...residents];
 
 const furnishings = scatterGroups(plan, placed, [
-  ['corridor', 'intake-corridor-prop', CIVIC_PROPS, 8],
   ['corridor', 'intake-corridor-litter', LITTER, 5],
 ]);
 

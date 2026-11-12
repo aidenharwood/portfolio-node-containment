@@ -82,11 +82,7 @@ const assemblies: AssemblyPlacement[] = [
 const placed = [...npcs, ...fixtures, ...assemblies, ...residents];
 
 const furnishings = scatterGroups(plan, placed, [
-  ['sorting-floor', 'dlo-sorting-prop', ['letter-rack', 'filing-cabinet'], 10],
   ['sorting-floor', 'dlo-sorting-litter', ['litter-papers'], 8],
-  ['returned-stacks', 'dlo-returned-prop', ['letter-rack', 'filing-cabinet', 'storage-rack'], 8],
-  ['dead-letter-stacks', 'dlo-stacks-prop', ['letter-rack', 'storage-rack'], 6],
-  ['franking-hall', 'dlo-hall-prop', ['planter', 'briefing-bench'], 3],
   ['dispatch', 'dlo-dispatch-litter', ['litter-papers'], 6],
 ]);
 

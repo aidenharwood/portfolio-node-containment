@@ -116,7 +116,6 @@ const furnishings = scatterGroups(plan, placed, [
   ['stacks', 'da-stacks-node', ['vellum-stack'], 2],
   ['drying-room', 'da-drying-node', ['vellum-stack', 'ink-pool'], 2],
   ['stacks', 'da-stacks-litter', LITTER, 8],
-  ['drying-room', 'da-drying-prop', ['archive-shelf', 'filing-cabinet'], 6],
   ['reading-rooms', 'da-reading-litter', ['litter-papers'], 6],
   ['sluice-hall', 'da-sluice-litter', LITTER, 4],
 ]);

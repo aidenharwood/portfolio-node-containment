@@ -2,7 +2,7 @@ import { drawBlueprint, exit, link, patch, pillars, room } from '../../world/blu
 import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
-import { INDUSTRIAL_PROPS, LITTER, OFFICE_PROPS, scatterGroups, scatterPacks } from './populate.ts';
+import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 112, height: 74 }, [
@@ -86,10 +86,6 @@ const furnishings = scatterGroups(plan, placed, [
   ['storage', 's2-storage-node', ['spore-bloom'], 3],
   ['isolation-ward', 's2-ward-node', ['scrap-heap'], 2],
   ['corridor', 's2-corridor-litter', LITTER, 10],
-  ['observation-gallery', 's2-gallery-prop', INDUSTRIAL_PROPS, 5],
-  ['research-lab', 's2-lab-prop', OFFICE_PROPS, 8],
-  ['isolation-ward', 's2-ward-prop', ['wall-locker', 'storage-rack', 'litter-debris'], 6],
-  ['storage', 's2-storage-prop', ['storage-rack', 'litter-rubble', 'wall-locker'], 8],
 ]);
 
 const packs = scatterPacks(plan, [...placed, ...furnishings], [

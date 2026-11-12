@@ -2,7 +2,7 @@ import { drawBlueprint, exit, link, pillars, room } from '../../world/blueprint.
 import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { HYDROPONICS_ANCHORS } from './hydroponics.ts';
-import { CIVIC_PROPS, LITTER, scatterGroups } from './populate.ts';
+import { LITTER, scatterGroups } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 
 const plan = drawBlueprint({ width: 80, height: 71 }, [
@@ -35,10 +35,8 @@ const fixtures: ObjectPlacement[] = [
 const placed = [...npcs, ...fixtures];
 
 const furnishings = scatterGroups(plan, placed, [
-  ['walk', 'vsw-prop', CIVIC_PROPS, 8],
   ['walk', 'vsw-litter', LITTER, 6],
   ['sanatorium-rise', 'vsw-rise-litter', LITTER, 8],
-  ['porters-yard', 'vsw-yard-prop', ['briefing-bench', 'planter', 'wall-locker', 'storage-rack'], 10],
 ]);
 
 const dressing: Dressing = {

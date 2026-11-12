@@ -3,7 +3,7 @@ import { drawBlueprint, exit, hollow, link, patch, pillars, room, track } from '
 import type { DistrictDefinition, ObjectPlacement } from '../../world/district.ts';
 import type { TilePoint } from '../../world/geometry.ts';
 import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
-import { CIVIC_PROPS, INDUSTRIAL_PROPS, LITTER, OFFICE_PROPS, scatterGroups } from './populate.ts';
+import { LITTER, scatterGroups } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 
 export const CIRCUIT_HOLLOW_FOR_ATRIUM: TilePoint = { x: 39, y: 88 };
@@ -72,26 +72,10 @@ const assemblies: AssemblyPlacement[] = ['lantern-court', 'ledger-court'].flatMa
 );
 
 const furnishings = scatterGroups(plan, landmarks, [
-  ['north-boulevard', 'circuit-north-prop', CIVIC_PROPS, 12],
-  ['south-boulevard', 'circuit-south-prop', CIVIC_PROPS, 12],
-  ['west-boulevard', 'circuit-west-prop', CIVIC_PROPS, 12],
-  ['east-boulevard', 'circuit-east-prop', CIVIC_PROPS, 12],
   ['north-boulevard', 'circuit-north-litter', LITTER, 10],
   ['south-boulevard', 'circuit-south-litter', LITTER, 10],
   ['west-boulevard', 'circuit-west-litter', LITTER, 10],
   ['east-boulevard', 'circuit-east-litter', LITTER, 10],
-  ['signal-court', 'signal-court-prop', CIVIC_PROPS, 6],
-  ['pump-court', 'pump-court-prop', INDUSTRIAL_PROPS, 6],
-  ['lantern-court', 'lantern-court-prop', CIVIC_PROPS, 6],
-  ['ledger-court', 'ledger-court-prop', OFFICE_PROPS, 6],
-  ['west-dormitory', 'west-dormitory-prop', ['briefing-bench', 'wall-locker', 'planter', 'water-cooler'], 16],
-  ['canteen', 'canteen-prop', ['briefing-bench', 'water-cooler', 'planter'], 16],
-  ['west-stores', 'west-stores-prop', INDUSTRIAL_PROPS, 10],
-  ['reading-room', 'reading-room-prop', ['filing-cabinet', 'planter'], 8],
-  ['east-barracks', 'east-barracks-prop', ['briefing-bench', 'wall-locker', 'planter', 'water-cooler'], 16],
-  ['mess-hall', 'mess-hall-prop', ['briefing-bench', 'water-cooler', 'planter'], 16],
-  ['east-stores', 'east-stores-prop', INDUSTRIAL_PROPS, 10],
-  ['duty-office', 'duty-office-prop', OFFICE_PROPS, 8],
 ]);
 
 const dressing: Dressing = {

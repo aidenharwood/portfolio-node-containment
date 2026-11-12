@@ -66,8 +66,6 @@ const placed = [...npcs, ...fixtures, ...assemblies, ...residents];
 const furnishings = scatterGroups(plan, placed, [
   ['stockroom', 'vp-stockroom-node', ['tincture-still'], 3],
   ['cold-store', 'vp-cold-node', ['tincture-still'], 3],
-  ['stockroom', 'vp-stockroom-prop', ['storage-rack', 'wall-locker', 'litter-papers'], 10],
-  ['cold-store', 'vp-cold-prop', ['storage-rack', 'wall-locker', 'litter-puddle'], 10],
   ['dispensary', 'vp-dispensary-litter', LITTER, 5],
 ]);
 

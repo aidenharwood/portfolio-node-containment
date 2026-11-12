@@ -96,8 +96,6 @@ const furnishings = scatterGroups(plan, placed, [
   ['greenhouse', 'hydro-greenhouse-node', ['spore-bloom'], 4],
   ['grow-hall', 'hydro-hall-node', ['strangler-vine', 'resin-drum', 'moss-bed'], 8],
   ['grow-hall', 'hydro-hall-litter', LITTER, 8],
-  ['nursery', 'hydro-nursery-planter', ['planter'], 5],
-  ['greenhouse', 'hydro-greenhouse-planter', ['planter'], 5],
 ]);
 
 const packs = scatterPacks(plan, [...placed, ...furnishings], [

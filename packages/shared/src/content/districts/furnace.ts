@@ -107,7 +107,6 @@ const furnishings = scatterGroups(plan, placed, [
   ['foundry', 'fu-foundry-node', ['ember-seam', 'slag-heap'], 2],
   ['ember-galleries', 'fu-galleries-litter', LITTER, 8],
   ['foundry', 'fu-foundry-litter', LITTER, 6],
-  ['slag-pit', 'fu-pit-prop', ['slag-heap', 'pipe-cluster', 'litter-gravel'], 5],
 ]);
 
 const packs = scatterPacks(plan, [...placed, ...furnishings], [

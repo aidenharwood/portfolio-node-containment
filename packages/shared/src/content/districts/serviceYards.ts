@@ -122,10 +122,7 @@ const furnishings = scatterGroups(plan, placed, [
   ['laundry', 'yd-laundry-node', ['textile-bin'], 4],
   ['culverts', 'yd-culvert-node', ['moss-bed'], 3],
   ['scrap-yard', 'yd-scrap-litter', LITTER, 10],
-  ['gantry-yard', 'yd-gantry-prop', ['storage-rack', 'pipe-cluster', 'wall-locker'], 10],
   ['laundry', 'yd-laundry-litter', LITTER, 6],
-  ['cold-store', 'yd-cold-prop', ['storage-rack', 'wall-locker'], 6],
-  ['loading-dock', 'yd-dock-prop', ['storage-rack', 'wall-locker'], 6],
 ]);
 
 const packs = scatterPacks(plan, [...placed, ...furnishings], [
