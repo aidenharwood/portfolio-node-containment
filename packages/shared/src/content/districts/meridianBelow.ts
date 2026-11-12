@@ -6,6 +6,7 @@ import type { TilePoint } from '../../world/geometry.ts';
 import { SECTOR_THREE_ANCHORS } from './sectorThree.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
+import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 
 const plan = drawBlueprint({ width: 100, height: 75 }, [
   room('arrival', 1, 1, 24, 22, 'grate'),
@@ -51,12 +52,6 @@ const npcs: NpcPlacement[] = [
   ];
 
 const fixtures: ObjectPlacement[] = [
-  { instanceId: 'mb-bed-a', objectId: 'med-bed', position: plan.at('empty-medbay', 2, 1) },
-  { instanceId: 'mb-bed-b', objectId: 'med-bed', position: plan.at('empty-medbay', 5, 1) },
-  { instanceId: 'mb-bed-c', objectId: 'med-bed', position: plan.at('empty-medbay', 8, 1) },
-  { instanceId: 'mb-bed-d', objectId: 'med-bed', position: plan.at('empty-medbay', 39, 1) },
-  { instanceId: 'mb-bed-e', objectId: 'med-bed', position: plan.at('empty-medbay', 42, 1) },
-  { instanceId: 'mb-bed-f', objectId: 'med-bed', position: plan.at('empty-medbay', 45, 1) },
   { instanceId: 'mb-plaza-pillar-nw', objectId: 'light-pillar', position: plan.at('inverted-plaza', 10, 4) },
   { instanceId: 'mb-plaza-pillar-ne', objectId: 'light-pillar', position: plan.at('inverted-plaza', 37, 4) },
   { instanceId: 'mb-plaza-pillar-sw', objectId: 'light-pillar', position: plan.at('inverted-plaza', 10, 28) },
@@ -161,7 +156,7 @@ export const MERIDIAN_BELOW: DistrictDefinition = furnish(plan, {
   subtitle: 'The Far Side of the Door',
   tier: 8,
   region: 'meridian-core',
-  recovery: { districtId: 'sector-three', position: SECTOR_THREE_ANCHORS.knockReturn },
+  recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.68, tint: '#120a1c', fog: '#140c22', fixtures: 'failing' },
   map: plan.map,
   rooms: plan.rooms,

@@ -5,6 +5,7 @@ import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../wo
 import type { TilePoint } from '../../world/geometry.ts';
 import { scatterGroups } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
+import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 
 const plan = drawBlueprint({ width: 46, height: 30 }, [
   room('grove', 10, 1, 26, 28, 'soil', 'round'),
@@ -54,6 +55,7 @@ export const VERDANT_FOLD: DistrictDefinition = furnish(plan, {
   rooms: plan.rooms,
   exits: plan.exits,
   anchors: VERDANT_FOLD_ANCHORS,
+  recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   areas: [
     plan.area('grove', 'The Folded Grove'),
     plan.area('west-crease', 'The Left Crease'),

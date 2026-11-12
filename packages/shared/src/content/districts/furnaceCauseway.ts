@@ -6,6 +6,7 @@ import { DEEPWATCH_ANCHORS } from './deepwatch.ts';
 import { LITTER, scatterGroups } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 import { ambientCast } from '../ambientNpcs.ts';
+import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 
 const plan = drawBlueprint({ width: 41, height: 70 }, [
   room('furnace-approach', 14, 1, 13, 25, 'grate'),
@@ -62,7 +63,7 @@ export const FURNACE_CAUSEWAY: DistrictDefinition = furnish(plan, {
   subtitle: 'The Deep — Reactor Approach',
   tier: 4,
   region: 'meridian-core',
-  recovery: { districtId: 'deepwatch', position: DEEPWATCH_ANCHORS.recovery },
+  recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.62, tint: '#1a0a04', fog: '#200c06', fixtures: 'failing' },
   map: plan.map,
   rooms: plan.rooms,

@@ -5,6 +5,7 @@ import type { DistrictDefinition, NpcPlacement, ObjectPlacement } from '../../wo
 import type { TilePoint } from '../../world/geometry.ts';
 import { LITTER, scatterGroups } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
+import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 
 const plan = drawBlueprint({ width: 38, height: 33 }, [
   room('threshold', 4, 1, 30, 22, 'concrete', 'octagon'),
@@ -63,6 +64,7 @@ export const SECTOR_THREE: DistrictDefinition = furnish(plan, {
   rooms: plan.rooms,
   exits: plan.exits,
   anchors: SECTOR_THREE_ANCHORS,
+  recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   areas: [
     plan.area('threshold', 'The Threshold', { safe: true }),
     plan.area('reflecting-hall', 'The Reflecting Hall', { safe: true }),

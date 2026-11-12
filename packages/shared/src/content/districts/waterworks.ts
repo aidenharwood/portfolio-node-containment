@@ -3,6 +3,7 @@ import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlaceme
 import type { TilePoint } from '../../world/geometry.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
+import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 
 const plan = drawBlueprint({ width: 116, height: 91 }, [
   room('filtration-beds', 1, 1, 114, 33, 'plating'),
@@ -38,7 +39,6 @@ const plan = drawBlueprint({ width: 116, height: 91 }, [
 ]);
 
 export const WATERWORKS_ANCHORS = {
-  recovery: plan.at('pump-house', 3, 6),
 } satisfies Record<string, TilePoint>;
 
 const npcs: NpcPlacement[] = [
@@ -48,7 +48,6 @@ const npcs: NpcPlacement[] = [
 const fixtures: ObjectPlacement[] = [
   
     { instanceId: 'ww-sign', objectId: 'warning-sign', position: plan.at('pump-house', 0, 0) },
-    { instanceId: 'ww-med-bed', objectId: 'med-bed', position: plan.at('pump-house', 0, 1), facing: 'east' },
     { instanceId: 'ww-storage', objectId: 'storage-locker', position: plan.at('pump-house', 0, 22), facing: 'east' },
     { instanceId: 'ww-assay', objectId: 'waterworks-assay', position: plan.at('pump-house', 25, 22), facing: 'west' },
     { instanceId: 'ww-valve-a', objectId: 'waterworks-valve-a', position: plan.at('valve-gallery', 0, 2), facing: 'east' },
@@ -130,7 +129,7 @@ export const WATERWORKS: DistrictDefinition = furnish(plan, {
   subtitle: 'Site Meridian — Reclamation and Outflow',
   tier: 3,
   region: 'meridian-core',
-  recovery: { districtId: 'waterworks', position: plan.at('pump-house', 3, 6) },
+  recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.66, tint: '#071419', fog: '#0a1a20', fixtures: 'failing' },
   map: plan.map,
   rooms: plan.rooms,

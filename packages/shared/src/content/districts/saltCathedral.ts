@@ -6,6 +6,7 @@ import type { TilePoint } from '../../world/geometry.ts';
 import { CALDER_GATEHOUSE_ANCHORS } from './calderGatehouse.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
+import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 
 const plan = drawBlueprint({ width: 108, height: 101 }, [
   room('cloister', 1, 1, 106, 23, 'plating'),
@@ -91,7 +92,7 @@ export const SALT_CATHEDRAL: DistrictDefinition = furnish(plan, {
   tier: 11,
   region: 'calder',
   deadEnd: true,
-  recovery: { districtId: 'calder-gatehouse', position: CALDER_GATEHOUSE_ANCHORS.recovery },
+  recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.6, tint: '#1a141c', fog: '#1e1820', fixtures: 'failing' },
   map: plan.map,
   rooms: plan.rooms,

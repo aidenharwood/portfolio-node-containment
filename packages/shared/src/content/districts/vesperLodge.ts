@@ -6,6 +6,7 @@ import type { TilePoint } from '../../world/geometry.ts';
 import { scatterGroups } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 import { ambientCast } from '../ambientNpcs.ts';
+import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 
 const plan = drawBlueprint({ width: 60, height: 46 }, [
   room('lodge', 1, 1, 58, 44, 'carpet'),
@@ -17,7 +18,6 @@ const plan = drawBlueprint({ width: 60, height: 46 }, [
 ]);
 
 export const VESPER_LODGE_ANCHORS = {
-  recovery: plan.at('lodge', 30, 20),
   liftArrival: plan.at('lodge', 2, 4),
   tramPlatform: plan.at('lodge', 50, 12),
 } satisfies Record<string, TilePoint>;
@@ -31,7 +31,6 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'vl-storage', objectId: 'storage-locker', position: plan.at('lodge', 57, 1), facing: 'west' },
     { instanceId: 'vl-mailbox', objectId: 'market-mailbox', position: plan.at('lodge', 57, 31), facing: 'west' },
     { instanceId: 'vl-contracts', objectId: 'contract-board', position: plan.at('lodge', 47, 0) },
-    { instanceId: 'vl-med-bed', objectId: 'med-bed', position: plan.at('lodge', 0, 1), facing: 'east' },
     { instanceId: 'vl-tram-stop', objectId: 'tram-stop', position: plan.at('lodge', 52, 16), facing: 'west' },
   ];
 
@@ -58,7 +57,7 @@ export const VESPER_LODGE: DistrictDefinition = furnish(plan, {
   subtitle: 'Site Vesper — Outpost',
   tier: 12,
   region: 'vesper',
-  recovery: { districtId: 'vesper-lodge', position: plan.at('lodge', 30, 20) },
+  recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.4, tint: '#101614', fog: '#141a18' },
   map: plan.map,
   rooms: plan.rooms,

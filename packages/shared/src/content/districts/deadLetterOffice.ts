@@ -5,6 +5,7 @@ import type { CreaturePlacement, DistrictDefinition, NpcPlacement, ObjectPlaceme
 import type { TilePoint } from '../../world/geometry.ts';
 import { scatterGroups, scatterPacks } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
+import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 
 const plan = drawBlueprint({ width: 72, height: 52 }, [
   room('dead-letter-stacks', 1, 1, 23, 16, 'rust'),
@@ -39,7 +40,6 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'dlo-hall-cabinet-b', objectId: 'filing-cabinet', position: plan.at('franking-hall', 0, 15), facing: 'north' },
     { instanceId: 'dlo-hall-board', objectId: 'notice-board', position: plan.at('franking-hall', 2, 0) },
     { instanceId: 'dlo-hall-storage', objectId: 'storage-locker', position: plan.at('franking-hall', 19, 15), facing: 'north' },
-    { instanceId: 'dlo-hall-bed', objectId: 'med-bed', position: plan.at('franking-hall', 17, 15) },
     { instanceId: 'dlo-sorting-pigeonhole-a', objectId: 'pigeonhole-thale', position: plan.at('sorting-floor', 7, 0) },
     { instanceId: 'dlo-sorting-pigeonhole-b', objectId: 'pigeonhole-achterberg', position: plan.at('sorting-floor', 62, 0) },
     { instanceId: 'dlo-sorting-rack-a', objectId: 'letter-rack', position: plan.at('sorting-floor', 23, 0) },
@@ -105,7 +105,7 @@ export const DEAD_LETTER_OFFICE: DistrictDefinition = furnish(plan, {
   subtitle: 'Where the Post Went Instead',
   tier: 9,
   region: 'meridian-core',
-  recovery: { districtId: 'dead-letter-office', position: DEAD_LETTER_OFFICE_ANCHORS.spawn },
+  recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.64, tint: '#1a1408', fog: '#18120a', fixtures: 'failing' },
   map: plan.map,
   rooms: plan.rooms,

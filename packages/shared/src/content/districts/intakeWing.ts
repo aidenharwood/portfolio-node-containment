@@ -176,7 +176,7 @@ export const INTAKE_WING: DistrictDefinition = furnish(plan, {
   tier: 1,
   region: 'meridian-core',
   reachedOnlyByTram: true,
-  recovery: { districtId: 'intake-wing', position: plan.at('arrival', 3, 4) },
+  recovery: { districtId: 'intake-wing', position: plan.at('supply', 22, 8) },
   ambience: { darkness: 0.56, tint: '#071219', fog: '#0b1a22' },
   map: plan.map,
   rooms: plan.rooms,

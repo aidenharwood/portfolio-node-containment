@@ -6,6 +6,7 @@ import type { TilePoint } from '../../world/geometry.ts';
 import { VESPER_LODGE_ANCHORS } from './vesperLodge.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
+import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 
 const plan = drawBlueprint({ width: 110, height: 84 }, [
   room('lift-landing', 89, 1, 20, 18, 'carpet'),
@@ -97,7 +98,7 @@ export const VESPER_CELLARS: DistrictDefinition = furnish(plan, {
   subtitle: 'Vesper Wing — Cellars',
   tier: 13,
   region: 'vesper',
-  recovery: { districtId: 'vesper-lodge', position: VESPER_LODGE_ANCHORS.recovery },
+  recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.72, tint: '#0c1416', fog: '#0f181a', fixtures: 'failing' },
   map: plan.map,
   rooms: plan.rooms,

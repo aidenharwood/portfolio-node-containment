@@ -6,6 +6,7 @@ import type { TilePoint } from '../../world/geometry.ts';
 import { scatterGroups } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 import { ambientCast } from '../ambientNpcs.ts';
+import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 
 const plan = drawBlueprint({ width: 68, height: 48 }, [
   room('command-post', 1, 1, 16, 12, 'carpet'),
@@ -41,7 +42,6 @@ const plan = drawBlueprint({ width: 68, height: 48 }, [
 
 export const DEEPWATCH_ANCHORS = {
   liftArrival: plan.at('platform-hall', 2, 2),
-  recovery: plan.at('infirmary', 7, 13),
   thresholdLanding: plan.at('concourse', 4, 2),
   tramPlatform: plan.at('platform-hall', 60, 8),
 } satisfies Record<string, TilePoint>;
@@ -72,10 +72,6 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'dw-hall-bench-a', objectId: 'briefing-bench', position: plan.at('platform-hall', 25, 3) },
     { instanceId: 'dw-hall-bench-b', objectId: 'briefing-bench', position: plan.at('platform-hall', 40, 3) },
     { instanceId: 'dw-infirmary-storage', objectId: 'storage-locker', position: plan.at('infirmary', 0, 0), facing: 'east' },
-    { instanceId: 'dw-bed-a', objectId: 'med-bed', position: plan.at('infirmary', 1, 15) },
-    { instanceId: 'dw-bed-b', objectId: 'med-bed', position: plan.at('infirmary', 3, 15) },
-    { instanceId: 'dw-bed-c', objectId: 'med-bed', position: plan.at('infirmary', 12, 15) },
-    { instanceId: 'dw-bed-d', objectId: 'med-bed', position: plan.at('infirmary', 17, 15) },
     { instanceId: 'dw-stores-crate-a', objectId: 'supply-crate', position: plan.at('stores', 0, 0) },
     { instanceId: 'dw-stores-crate-b', objectId: 'supply-crate', position: plan.at('stores', 23, 0) },
     { instanceId: 'dw-stores-crate-c', objectId: 'supply-crate', position: plan.at('stores', 0, 15) },
@@ -135,6 +131,7 @@ export const DEEPWATCH: DistrictDefinition = furnish(plan, {
   rooms: plan.rooms,
   exits: plan.exits,
   anchors: DEEPWATCH_ANCHORS,
+  recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   areas: [
     plan.area('command-post', 'Command Post', { safe: true }),
     plan.area('concourse', 'Threshold Concourse', { safe: true }),

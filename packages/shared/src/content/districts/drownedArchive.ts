@@ -7,6 +7,7 @@ import { DEEPWATCH_ANCHORS } from './deepwatch.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 import { ambientCast } from '../ambientNpcs.ts';
+import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 
 const plan = drawBlueprint({ width: 86, height: 62 }, [
   room('flood-stair', 1, 1, 20, 18, 'plating'),
@@ -54,7 +55,6 @@ const npcs: NpcPlacement[] = [
 const fixtures: ObjectPlacement[] = [
   { instanceId: 'da-tram-stop', objectId: 'tram-stop', position: plan.at('flood-stair', 5, 2), facing: 'west' },
     { instanceId: 'da-stair-storage', objectId: 'storage-locker', position: plan.at('flood-stair', 19, 2), facing: 'west' },
-    { instanceId: 'da-stair-bed', objectId: 'med-bed', position: plan.at('flood-stair', 19, 17) },
     { instanceId: 'da-shelf-a', objectId: 'archive-shelf', position: plan.at('stacks', 2, 0) },
     { instanceId: 'da-shelf-b', objectId: 'archive-shelf', position: plan.at('stacks', 9, 0) },
     { instanceId: 'da-shelf-c', objectId: 'archive-shelf', position: plan.at('stacks', 18, 0) },
@@ -143,7 +143,7 @@ export const DROWNED_ARCHIVE: DistrictDefinition = furnish(plan, {
   tier: 6,
   region: 'meridian-core',
   deadEnd: true,
-  recovery: { districtId: 'deepwatch', position: DEEPWATCH_ANCHORS.recovery },
+  recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.66, tint: '#0e0a18', fog: '#0c0816', fixtures: 'failing' },
   map: plan.map,
   rooms: plan.rooms,

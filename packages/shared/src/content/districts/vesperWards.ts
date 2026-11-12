@@ -4,6 +4,7 @@ import type { TilePoint } from '../../world/geometry.ts';
 import { HYDROPONICS_ANCHORS } from './hydroponics.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
+import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 
 const plan = drawBlueprint({ width: 120, height: 96 }, [
   room('north-ward', 1, 1, 118, 30, 'plating'),
@@ -101,7 +102,7 @@ export const VESPER_WARDS: DistrictDefinition = furnish(plan, {
   subtitle: 'Vesper Wing — General Wards',
   tier: 12,
   region: 'vesper',
-  recovery: { districtId: 'hydroponics', position: HYDROPONICS_ANCHORS.tramPlatform },
+  recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.6, tint: '#0f1614', fog: '#121a18', fixtures: 'failing' },
   map: plan.map,
   rooms: plan.rooms,

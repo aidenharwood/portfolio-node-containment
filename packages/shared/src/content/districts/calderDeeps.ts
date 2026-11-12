@@ -6,6 +6,7 @@ import type { TilePoint } from '../../world/geometry.ts';
 import { CALDER_GATEHOUSE_ANCHORS } from './calderGatehouse.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
+import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 
 const plan = drawBlueprint({ width: 110, height: 84 }, [
   room('lift-landing', 1, 1, 20, 18, 'carpet'),
@@ -101,7 +102,7 @@ export const CALDER_DEEPS: DistrictDefinition = furnish(plan, {
   subtitle: 'Calder Wing — The Lowest Gallery',
   tier: 11,
   region: 'calder',
-  recovery: { districtId: 'calder-gatehouse', position: CALDER_GATEHOUSE_ANCHORS.recovery },
+  recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.72, tint: '#160f0c', fog: '#1c130e', fixtures: 'failing' },
   map: plan.map,
   rooms: plan.rooms,

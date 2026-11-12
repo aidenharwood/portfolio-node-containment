@@ -4,6 +4,7 @@ import type { TilePoint } from '../../world/geometry.ts';
 import { WATERWORKS_ANCHORS } from './waterworks.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
+import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 
 const plan = drawBlueprint({ width: 120, height: 96 }, [
   room('salt-landing', 50, 1, 26, 20, 'concrete'),
@@ -106,7 +107,7 @@ export const BRINE_GALLERIES: DistrictDefinition = furnish(plan, {
   subtitle: 'Calder Wing — Saltworks Level',
   tier: 10,
   region: 'calder',
-  recovery: { districtId: 'waterworks', position: WATERWORKS_ANCHORS.recovery },
+  recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.64, tint: '#1c1210', fog: '#24170f', fixtures: 'failing' },
   map: plan.map,
   rooms: plan.rooms,

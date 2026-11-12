@@ -6,6 +6,7 @@ import { DEEPWATCH_ANCHORS } from './deepwatch.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 import { ambientCast } from '../ambientNpcs.ts';
+import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 
 const plan = drawBlueprint({ width: 86, height: 62 }, [
   room('freezer-plant', 1, 1, 16, 20, 'grate'),
@@ -68,7 +69,6 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'cv-cold-pod-d', objectId: 'cold-pod', position: plan.at('pod-hall', 19, 19) },
     { instanceId: 'cv-nook-heater', objectId: 'camp-heater', position: plan.at('fenn-nook', 1, 1) },
     { instanceId: 'cv-nook-storage', objectId: 'storage-locker', position: plan.at('fenn-nook', 14, 0) },
-    { instanceId: 'cv-nook-bed', objectId: 'med-bed', position: plan.at('fenn-nook', 13, 13) },
     { instanceId: 'cv-nook-bench', objectId: 'briefing-bench', position: plan.at('fenn-nook', 1, 12) },
     { instanceId: 'cv-crystal-a', objectId: 'rime-crystal', position: plan.at('freezer-plant', 1, 1) },
     { instanceId: 'cv-crystal-b', objectId: 'rime-crystal', position: plan.at('freezer-plant', 14, 1) },
@@ -152,7 +152,7 @@ export const CRYOVAULT: DistrictDefinition = furnish(plan, {
   tier: 4,
   region: 'meridian-core',
   deadEnd: true,
-  recovery: { districtId: 'deepwatch', position: DEEPWATCH_ANCHORS.recovery },
+  recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.6, tint: '#081420', fog: '#0c1a28', fixtures: 'failing' },
   map: plan.map,
   rooms: plan.rooms,

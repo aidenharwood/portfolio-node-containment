@@ -6,6 +6,7 @@ import type { TilePoint } from '../../world/geometry.ts';
 import { scatterGroups } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 import { ambientCast } from '../ambientNpcs.ts';
+import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 
 const plan = drawBlueprint({ width: 60, height: 46 }, [
   room('gatehouse', 1, 1, 58, 44, 'carpet'),
@@ -17,7 +18,6 @@ const plan = drawBlueprint({ width: 60, height: 46 }, [
 ]);
 
 export const CALDER_GATEHOUSE_ANCHORS = {
-  recovery: plan.at('gatehouse', 28, 20),
   liftArrival: plan.at('gatehouse', 55, 4),
   tramPlatform: plan.at('gatehouse', 9, 12),
 } satisfies Record<string, TilePoint>;
@@ -31,7 +31,6 @@ const fixtures: ObjectPlacement[] = [
     { instanceId: 'cg-storage', objectId: 'storage-locker', position: plan.at('gatehouse', 0, 1), facing: 'east' },
     { instanceId: 'cg-mailbox', objectId: 'market-mailbox', position: plan.at('gatehouse', 0, 31), facing: 'east' },
     { instanceId: 'cg-contracts', objectId: 'contract-board', position: plan.at('gatehouse', 10, 0) },
-    { instanceId: 'cg-med-bed', objectId: 'med-bed', position: plan.at('gatehouse', 57, 1), facing: 'west' },
     { instanceId: 'cg-tram-stop', objectId: 'tram-stop', position: plan.at('gatehouse', 7, 16), facing: 'east' },
   ];
 
@@ -58,7 +57,7 @@ export const CALDER_GATEHOUSE: DistrictDefinition = furnish(plan, {
   subtitle: 'Site Calder — Outpost',
   tier: 10,
   region: 'calder',
-  recovery: { districtId: 'calder-gatehouse', position: plan.at('gatehouse', 28, 20) },
+  recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.42, tint: '#1a1410', fog: '#1e1712' },
   map: plan.map,
   rooms: plan.rooms,

@@ -5,6 +5,7 @@ import type { TilePoint } from '../../world/geometry.ts';
 import { WATERWORKS_ANCHORS } from './waterworks.ts';
 import { LITTER, scatterGroups } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
+import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 
 const plan = drawBlueprint({ width: 67, height: 70 }, [
   room('causeway', 0, 1, 66, 13, 'concrete'),
@@ -63,7 +64,7 @@ export const CALDER_CAUSEWAY: DistrictDefinition = furnish(plan, {
   subtitle: 'Calder Wing — Sealed Salt Road',
   tier: 10,
   region: 'calder',
-  recovery: { districtId: 'waterworks', position: WATERWORKS_ANCHORS.recovery },
+  recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.62, tint: '#1a1210', fog: '#20160f', fixtures: 'failing' },
   map: plan.map,
   rooms: plan.rooms,

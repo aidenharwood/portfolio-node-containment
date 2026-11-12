@@ -7,6 +7,7 @@ import { DEEPWATCH_ANCHORS } from './deepwatch.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 import { ambientCast } from '../ambientNpcs.ts';
+import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 
 const plan = drawBlueprint({ width: 86, height: 62 }, [
   room('uplink-lobby', 1, 1, 22, 18, 'plating'),
@@ -52,7 +53,6 @@ const npcs: NpcPlacement[] = [
 const fixtures: ObjectPlacement[] = [
   { instanceId: 'sa-tram-stop', objectId: 'tram-stop', position: plan.at('uplink-lobby', 2, 5), facing: 'north' },
     { instanceId: 'sa-lobby-storage', objectId: 'storage-locker', position: plan.at('uplink-lobby', 21, 5), facing: 'west' },
-    { instanceId: 'sa-lobby-bed', objectId: 'med-bed', position: plan.at('uplink-lobby', 20, 17) },
     { instanceId: 'sa-lobby-sign', objectId: 'warning-sign', position: plan.at('uplink-lobby', 21, 12), facing: 'west' },
     { instanceId: 'sa-console-a', objectId: 'relay-console', position: plan.at('relay-floor', 1, 4) },
     { instanceId: 'sa-console-b', objectId: 'relay-console', position: plan.at('relay-floor', 16, 4) },
@@ -137,7 +137,7 @@ export const SIGNAL_ARRAY: DistrictDefinition = furnish(plan, {
   tier: 5,
   region: 'meridian-core',
   deadEnd: true,
-  recovery: { districtId: 'deepwatch', position: DEEPWATCH_ANCHORS.recovery },
+  recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.62, tint: '#16100a', fog: '#140e0a', fixtures: 'failing' },
   map: plan.map,
   rooms: plan.rooms,

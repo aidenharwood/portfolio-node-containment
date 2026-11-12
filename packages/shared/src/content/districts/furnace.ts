@@ -7,6 +7,7 @@ import { DEEPWATCH_ANCHORS } from './deepwatch.ts';
 import { LITTER, scatterGroups, scatterPacks } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 import { ambientCast } from '../ambientNpcs.ts';
+import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 
 const plan = drawBlueprint({ width: 86, height: 62 }, [
   room('ember-galleries', 1, 1, 84, 22, 'rust'),
@@ -54,7 +55,6 @@ const npcs: NpcPlacement[] = [
 const fixtures: ObjectPlacement[] = [
   { instanceId: 'fu-tram-stop', objectId: 'tram-stop', position: plan.at('coolant-lock', 2, 13), facing: 'south' },
     { instanceId: 'fu-lock-storage', objectId: 'storage-locker', position: plan.at('coolant-lock', 19, 12), facing: 'west' },
-    { instanceId: 'fu-lock-bed', objectId: 'med-bed', position: plan.at('coolant-lock', 0, 10) },
     { instanceId: 'fu-seam-a', objectId: 'ember-seam', position: plan.at('ember-galleries', 2, 0) },
     { instanceId: 'fu-seam-b', objectId: 'ember-seam', position: plan.at('ember-galleries', 30, 0) },
     { instanceId: 'fu-seam-c', objectId: 'ember-seam', position: plan.at('ember-galleries', 59, 0) },
@@ -130,7 +130,7 @@ export const FURNACE: DistrictDefinition = furnish(plan, {
   tier: 7,
   region: 'meridian-core',
   deadEnd: true,
-  recovery: { districtId: 'deepwatch', position: DEEPWATCH_ANCHORS.recovery },
+  recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.55, tint: '#1c0a04', fog: '#1a0c06', fixtures: 'failing' },
   map: plan.map,
   rooms: plan.rooms,

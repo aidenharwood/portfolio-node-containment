@@ -8,6 +8,7 @@ export const CONCOURSE_HOLLOW_FOR_DEEPWATCH: TilePoint = { x: 50, y: 50 };
 import { LITTER, scatterGroups } from './populate.ts';
 import { furnish, type Dressing } from './furnish.ts';
 import { ambientCast } from '../ambientNpcs.ts';
+import { ATRIUM_ANCHORS } from './meridianAtrium.ts';
 
 const plan = drawBlueprint({ width: 168, height: 148 }, [
   room('nw-turn', 1, 1, 21, 21, 'grate', 'octagon'),
@@ -138,7 +139,7 @@ export const DEEP_CONCOURSE: DistrictDefinition = furnish(plan, {
   subtitle: 'The Deep — Station Ring',
   tier: 4,
   region: 'meridian-core',
-  recovery: { districtId: 'deepwatch', position: DEEPWATCH_ANCHORS.recovery },
+  recovery: { districtId: 'meridian-atrium', position: ATRIUM_ANCHORS.recovery },
   ambience: { darkness: 0.66, tint: '#06101a', fog: '#08141e', fixtures: 'failing' },
   map: plan.map,
   rooms: plan.rooms,
