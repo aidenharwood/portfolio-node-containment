@@ -151,7 +151,22 @@ export type WorldObjectModel =
   | 'barricade'
   | 'debrisPile'
   | 'kioskBurnt'
-  | 'collapsedSlab';
+  | 'collapsedSlab'
+  | 'fountainBasin'
+  | 'fountainGrand'
+  | 'monumentStatue'
+  | 'benchCurve'
+  | 'bannerMast'
+  | 'glassKiosk'
+  | 'directoryPylon'
+  | 'receptionDesk'
+  | 'mapTable'
+  | 'triageStation'
+  | 'transitShelter'
+  | 'timetableBoard'
+  | 'ticketBarrier'
+  | 'guardBooth'
+  | 'hydraulicPress';
 
 export interface ObjectInteraction {
   readonly verb: string;

@@ -1,5 +1,6 @@
 import type { WorldObjectDefinition } from '../world/entities.ts';
 import { RUIN_OBJECTS } from './ruinObjects.ts';
+import { SET_PIECE_OBJECTS } from './setPieceObjects.ts';
 import { ATRIUM_ANCHORS } from './districts/meridianAtrium.ts';
 import { MERIDIAN_BELOW_ANCHORS } from './districts/meridianBelow.ts';
 import { SECTOR_THREE_ANCHORS } from './districts/sectorThree.ts';
@@ -443,4 +444,5 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     interactions: [],
   },
   ...RUIN_OBJECTS,
+  ...SET_PIECE_OBJECTS,
 ];

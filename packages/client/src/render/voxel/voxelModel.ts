@@ -1,5 +1,5 @@
 import { meshVoxels, type VoxelMeshes } from './voxelMesher.ts';
-import { VOXEL_EMPTY, VOXEL_SOLID, type VoxelKind, type VoxelSource } from './voxelKinds.ts';
+import { VOXEL_EMPTY, VOXEL_SOLID, type VoxelBounds, type VoxelKind, type VoxelSource } from './voxelKinds.ts';
 
 const OFFSET = 512;
 const SPAN = 1024;
@@ -71,6 +71,11 @@ export class VoxelModel implements VoxelSource {
 
   get isEmpty(): boolean {
     return this.cells.size === 0;
+  }
+
+  get bounds(): VoxelBounds | null {
+    if (this.isEmpty) return null;
+    return { min: [this.min[0], this.min[1], this.min[2]], max: [this.max[0] + 1, this.max[1] + 1, this.max[2] + 1] };
   }
 
   mesh(voxelSize: number, pivot: readonly [number, number, number] = [0, 0, 0]): VoxelMeshes {

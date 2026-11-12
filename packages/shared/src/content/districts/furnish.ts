@@ -16,6 +16,7 @@ import { FURNITURE_OBJECTS } from '../furnitureObjects.ts';
 import { LITTER_OBJECTS } from '../litterObjects.ts';
 import { PREFABS, type DressingTheme } from '../prefabs/index.ts';
 import { RUIN_OBJECTS } from '../ruinObjects.ts';
+import { SET_PIECE_OBJECTS } from '../setPieceObjects.ts';
 import { TRANSIT_OBJECTS } from '../transitObjects.ts';
 import { WATERWORKS_OBJECTS } from '../waterworksObjects.ts';
 import { composeRoom } from './compose.ts';
@@ -54,7 +55,7 @@ const GATHERING_POINTS: ReadonlySet<WorldObjectId> = new Set<WorldObjectId>(['br
 const CARDINAL: readonly TilePoint[] = [{ x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }];
 
 const DRESSING_OBJECTS: ReadonlyMap<WorldObjectId, WorldObjectDefinition> = new Map(
-  [...CLUTTER_OBJECTS, ...FURNITURE_OBJECTS, ...TRANSIT_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...CONTRACT_OBJECTS, ...RUIN_OBJECTS].map((definition) => [definition.id, definition]),
+  [...CLUTTER_OBJECTS, ...FURNITURE_OBJECTS, ...TRANSIT_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...CONTRACT_OBJECTS, ...RUIN_OBJECTS, ...SET_PIECE_OBJECTS].map((definition) => [definition.id, definition]),
 );
 export const dressingObjectOf = (id: WorldObjectId): WorldObjectDefinition | undefined => DRESSING_OBJECTS.get(id);
 

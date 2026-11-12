@@ -207,7 +207,7 @@ function findTierIssues(content: GameContent, level: ResolvedLevel, rebuilt: Rea
   }
 }
 
-const WALL_FIXTURE_MODELS: ReadonlySet<string> = new Set(['bulkhead', 'transitLift', 'wallLift', 'valveWheel', 'ventPanel', 'noticeBoard', 'wallShelf', 'warningSign', 'locker', 'storageLocker', 'herbCabinet']);
+const WALL_FIXTURE_MODELS: ReadonlySet<string> = new Set(['bulkhead', 'transitLift', 'wallLift', 'valveWheel', 'ventPanel', 'noticeBoard', 'wallShelf', 'warningSign', 'locker', 'storageLocker', 'herbCabinet', 'timetableBoard']);
 
 const BACK_EDGE_OFFSET: Record<Facing, TilePoint> = { south: { x: 0, y: -1 }, north: { x: 0, y: 1 }, east: { x: -1, y: 0 }, west: { x: 1, y: 0 } };
 
