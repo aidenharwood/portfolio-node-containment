@@ -3052,9 +3052,7 @@
   gap: 6px;
 }
 
-.social-member,
-.social-friend,
-.social-invite {
+.social-friend {
   background: var(--color-surface-inset);
   border: 1px solid var(--color-line);
   border-radius: var(--radius);
@@ -3062,10 +3060,6 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-}
-
-.social-member.self {
-  border-color: var(--color-line-strong);
 }
 
 .social-member-head {
@@ -3087,19 +3081,6 @@
   margin: 0;
   color: var(--color-text-muted);
   font-size: 11px;
-}
-
-.social-integrity {
-  height: 4px;
-  background: rgba(255, 94, 94, 0.2);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.social-integrity span {
-  display: block;
-  height: 100%;
-  background: var(--color-success);
 }
 
 .social-actions {
@@ -3125,10 +3106,6 @@
   padding: 4px 8px;
 }
 
-.social-leave {
-  align-self: flex-start;
-}
-
 .presence-dot {
   width: 7px;
   height: 7px;
@@ -3141,8 +3118,127 @@
   box-shadow: 0 0 6px var(--color-success);
 }
 
-.social-invites .social-invite {
+.party-frame {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.party-frame[hidden] {
+  display: none;
+}
+
+.party-roster,
+.party-invite {
+  padding: 6px 8px 7px;
+  --bevel: 6px;
+}
+
+.party-invite {
   border-color: var(--color-gold);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.party-invite-text {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-text);
+}
+
+.party-invite-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.party-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 5px;
+}
+
+.party-title {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8fd8ff;
+}
+
+.party-leave {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.party-leave:hover,
+.party-leave:focus-visible {
+  color: var(--color-danger);
+}
+
+.party-members {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.party-member {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 3px 4px;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.party-member.self {
+  cursor: default;
+}
+
+.party-member:not(.self):hover {
+  background: var(--color-surface-inset);
+}
+
+.party-member-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.party-name {
+  color: var(--color-text);
+  font-size: 12px;
+}
+
+.party-meta {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 10px;
+}
+
+.party-integrity {
+  height: 5px;
+  background: rgba(60, 8, 12, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+}
+
+.party-integrity span {
+  display: block;
+  height: 100%;
+  background: var(--color-success);
+  transition: width 0.2s ease;
 }
 
 .contract-window {
