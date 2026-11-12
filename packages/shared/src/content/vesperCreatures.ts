@@ -106,6 +106,14 @@ export const VESPER_CREATURES: readonly CreatureDefinition[] = [
     defence: 74,
     attack: { style: 'psionic', accuracy: 36, maxHit: 21, range: 3, speedTicks: 5 },
     guard: 'warden',
+    encounter: {
+      mechanics: [{ kind: 'telegraph', id: 'alms', shape: 'circleOnTarget', reach: 1, windupTicks: 4, cooldownTicks: 12, style: 'psionic', accuracy: 36, maxHit: 32 }],
+      phases: [
+        { belowIntegrity: 0.75, announce: 'The Almoner counts you out in coin.', attack: { style: 'ranged', accuracy: 96, maxHit: 20, range: 4, speedTicks: 5 }, guard: 'skirmisher', enables: [] },
+        { belowIntegrity: 0.5, announce: 'The Almoner closes the ledger and comes round the desk.', attack: { style: 'melee', accuracy: 104, maxHit: 21, range: 1, speedTicks: 5 }, guard: 'bulwark', enables: [] },
+        { belowIntegrity: 0.25, announce: 'The Almoner takes the last of the alms for itself.', attack: { style: 'psionic', accuracy: 40, maxHit: 22, range: 3, speedTicks: 4 }, guard: 'warden', enables: [] },
+      ],
+    },
     aggressive: true,
     aggroRadius: 5,
     leashRadius: 7,
@@ -130,6 +138,19 @@ export const VESPER_CREATURES: readonly CreatureDefinition[] = [
     defence: 72,
     attack: { style: 'melee', accuracy: 108, maxHit: 22, range: 1, speedTicks: 5 },
     guard: 'bulwark',
+    encounter: {
+      mechanics: [
+        { kind: 'telegraph', id: 'rounds', shape: 'ring', reach: 2, windupTicks: 5, cooldownTicks: 16, style: 'psionic', accuracy: 40, maxHit: 34 },
+        { kind: 'summon', id: 'orderlies', creatureId: 'ward-orderly', count: 2, maxAlive: 2 },
+        { kind: 'hazard', id: 'defibrillation', hazard: 'static', seedTiles: 4, spreadEveryTicks: 5, damagePerTick: 5, maxTiles: 24 },
+        { kind: 'enrage', id: 'last-rites', afterTicks: 180, speedFactor: 1.5 },
+      ],
+      phases: [
+        { belowIntegrity: 0.75, announce: 'The Chief Physician begins the rounds.', enables: ['rounds'] },
+        { belowIntegrity: 0.5, announce: 'The Chief Physician calls for orderlies.', enables: ['orderlies'] },
+        { belowIntegrity: 0.25, announce: 'The Chief Physician charges the paddles.', guard: 'warden', enables: ['defibrillation'] },
+      ],
+    },
     aggressive: true,
     aggroRadius: 5,
     leashRadius: 7,

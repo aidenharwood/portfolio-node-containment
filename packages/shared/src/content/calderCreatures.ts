@@ -108,6 +108,13 @@ export const CALDER_CREATURES: readonly CreatureDefinition[] = [
     defence: 66,
     attack: { style: 'melee', accuracy: 90, maxHit: 21, range: 1, speedTicks: 5 },
     guard: 'bulwark',
+    encounter: {
+      mechanics: [
+        { kind: 'telegraph', id: 'shovel-sweep', shape: 'cone', reach: 4, windupTicks: 5, cooldownTicks: 16, style: 'melee', accuracy: 88, maxHit: 30 },
+        { kind: 'summon', id: 'night-shift', creatureId: 'deep-shift-wight', count: 1, everyTicks: 45, maxAlive: 2 },
+        { kind: 'enrage', id: 'overtime', afterTicks: 150, speedFactor: 1.5 },
+      ],
+    },
     aggressive: true,
     aggroRadius: 5,
     leashRadius: 7,
@@ -133,6 +140,28 @@ export const CALDER_CREATURES: readonly CreatureDefinition[] = [
     defence: 64,
     attack: { style: 'psionic', accuracy: 32, maxHit: 18, range: 3, speedTicks: 5 },
     guard: 'warden',
+    encounter: {
+      mechanics: [
+        { kind: 'hazard', id: 'salting', hazard: 'salt', seedTiles: 3, spreadEveryTicks: 6, damagePerTick: 4, maxTiles: 20 },
+        { kind: 'telegraph', id: 'sermon', shape: 'line', reach: 7, windupTicks: 4, cooldownTicks: 14, style: 'psionic', accuracy: 34, maxHit: 30 },
+      ],
+      phases: [
+        {
+          belowIntegrity: 0.6,
+          announce: 'The Salt Bishop raises the crozier and the nave answers.',
+          attack: { style: 'melee', accuracy: 88, maxHit: 20, range: 1, speedTicks: 5 },
+          guard: 'bulwark',
+          enables: [],
+        },
+        {
+          belowIntegrity: 0.25,
+          announce: 'The Salt Bishop crumbles to a pillar of salt that still preaches.',
+          attack: { style: 'psionic', accuracy: 36, maxHit: 20, range: 3, speedTicks: 4 },
+          guard: 'warden',
+          enables: [],
+        },
+      ],
+    },
     aggressive: true,
     aggroRadius: 5,
     leashRadius: 7,

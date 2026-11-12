@@ -85,6 +85,14 @@ export const OFFICE_CREATURES: readonly CreatureDefinition[] = [
     defence: 54,
     attack: { style: 'melee', accuracy: 84, maxHit: 15, range: 1, speedTicks: 5 },
     guard: 'warden',
+    encounter: {
+      mechanics: [
+        { kind: 'telegraph', id: 'parcels', shape: 'circleOnTarget', reach: 1, windupTicks: 4, cooldownTicks: 14, style: 'ranged', accuracy: 80, maxHit: 22 },
+        { kind: 'telegraph', id: 'express-parcels', shape: 'circleOnTarget', reach: 1, windupTicks: 4, cooldownTicks: 7, style: 'ranged', accuracy: 80, maxHit: 22 },
+        { kind: 'summon', id: 'couriers', creatureId: 'courier-echo', count: 1, everyTicks: 40, maxAlive: 2 },
+      ],
+      phases: [{ belowIntegrity: 0.5, announce: 'The Postmaster marks everything for express delivery.', enables: ['express-parcels'] }],
+    },
     aggressive: true,
     aggroRadius: 5,
     leashRadius: 7,

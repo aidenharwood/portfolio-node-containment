@@ -59,6 +59,18 @@ export const CRYOVAULT_CREATURES: readonly CreatureDefinition[] = [
     defence: 19,
     attack: { style: 'melee', accuracy: 32, maxHit: 7, range: 1, speedTicks: 5 },
     guard: 'bulwark',
+    encounter: {
+      mechanics: [],
+      phases: [
+        {
+          belowIntegrity: 0.5,
+          announce: 'The Curator rearranges the exhibits and steps back behind the glass.',
+          attack: { style: 'ranged', accuracy: 30, maxHit: 7, range: 4, speedTicks: 5 },
+          guard: 'skirmisher',
+          enables: [],
+        },
+      ],
+    },
     aggressive: true,
     aggroRadius: 4,
     leashRadius: 6,
@@ -149,6 +161,17 @@ export const SIGNAL_ARRAY_CREATURES: readonly CreatureDefinition[] = [
     defence: 25,
     attack: { style: 'psionic', accuracy: 13, maxHit: 9, range: 5, speedTicks: 5 },
     guard: 'warden',
+    encounter: {
+      mechanics: [{ kind: 'telegraph', id: 'chorus', shape: 'ring', reach: 3, windupTicks: 5, cooldownTicks: 16, style: 'psionic', accuracy: 14, maxHit: 14 }],
+      phases: [
+        {
+          belowIntegrity: 0.4,
+          announce: 'The Choir loses its harmony and every voice turns on you.',
+          attack: { style: 'psionic', accuracy: 16, maxHit: 11, range: 5, speedTicks: 4 },
+          enables: [],
+        },
+      ],
+    },
     aggressive: true,
     aggroRadius: 5,
     leashRadius: 7,
@@ -238,6 +261,13 @@ export const ARCHIVE_CREATURES: readonly CreatureDefinition[] = [
     defence: 33,
     attack: { style: 'psionic', accuracy: 18, maxHit: 11, range: 4, speedTicks: 5 },
     guard: 'warden',
+    encounter: {
+      mechanics: [
+        { kind: 'telegraph', id: 'redaction', shape: 'line', reach: 6, windupTicks: 4, cooldownTicks: 14, style: 'psionic', accuracy: 20, maxHit: 18 },
+        { kind: 'summon', id: 'clerk', creatureId: 'redactor', count: 1, maxAlive: 1 },
+      ],
+      phases: [{ belowIntegrity: 0.5, announce: 'The Last Archivist calls a Redactor to strike you from the record.', enables: ['clerk'] }],
+    },
     aggressive: true,
     aggroRadius: 5,
     leashRadius: 7,
@@ -328,6 +358,12 @@ export const FURNACE_CREATURES: readonly CreatureDefinition[] = [
     defence: 42,
     attack: { style: 'melee', accuracy: 68, maxHit: 12, range: 1, speedTicks: 5 },
     guard: 'bulwark',
+    encounter: {
+      mechanics: [
+        { kind: 'hazard', id: 'spill', hazard: 'fire', seedTiles: 3, spreadEveryTicks: 6, damagePerTick: 3, maxTiles: 24 },
+        { kind: 'enrage', id: 'overheat', afterTicks: 150, speedFactor: 1.5 },
+      ],
+    },
     aggressive: true,
     aggroRadius: 4,
     leashRadius: 6,
@@ -417,6 +453,28 @@ export const FAR_SIDE_CREATURES: readonly CreatureDefinition[] = [
     defence: 50,
     attack: { style: 'psionic', accuracy: 28, maxHit: 13, range: 3, speedTicks: 5 },
     guard: 'warden',
+    encounter: {
+      mechanics: [
+        { kind: 'summon', id: 'first-knock', creatureId: 'knockling', count: 2, maxAlive: 2 },
+        { kind: 'summon', id: 'second-knock', creatureId: 'knockling', count: 2, maxAlive: 2 },
+      ],
+      phases: [
+        {
+          belowIntegrity: 0.66,
+          announce: 'The Host opens, and something knocks from inside.',
+          attack: { style: 'melee', accuracy: 66, maxHit: 15, range: 1, speedTicks: 5 },
+          guard: 'bulwark',
+          enables: ['first-knock'],
+        },
+        {
+          belowIntegrity: 0.33,
+          announce: 'The Host pulls back and throws its voice down the hall.',
+          attack: { style: 'ranged', accuracy: 60, maxHit: 14, range: 4, speedTicks: 5 },
+          guard: 'skirmisher',
+          enables: ['second-knock'],
+        },
+      ],
+    },
     aggressive: true,
     aggroRadius: 5,
     leashRadius: 7,

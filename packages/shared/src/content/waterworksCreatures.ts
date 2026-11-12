@@ -59,6 +59,13 @@ export const WATERWORKS_CREATURES: readonly CreatureDefinition[] = [
     defence: 9,
     attack: { style: 'ranged', accuracy: 11, maxHit: 6, range: 2, speedTicks: 5 },
     guard: 'skirmisher',
+    encounter: {
+      mechanics: [
+        { kind: 'telegraph', id: 'seep', shape: 'ring', reach: 2, windupTicks: 5, cooldownTicks: 18, style: 'ranged', accuracy: 12, maxHit: 8 },
+        { kind: 'summon', id: 'brood', creatureId: 'sump-bloat', count: 2, maxAlive: 2 },
+      ],
+      phases: [{ belowIntegrity: 0.5, announce: 'The Sump Mother splits, and the brood spills out.', enables: ['brood'] }],
+    },
     aggressive: true,
     aggroRadius: 4,
     leashRadius: 6,

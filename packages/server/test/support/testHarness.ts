@@ -51,6 +51,7 @@ export interface Harness {
   readonly saved: CharacterRecord[];
   send(message: GameplayMessage): void;
   ticksUntil(predicate: () => boolean, limit?: number): void;
+  fightUntil(predicate: () => boolean, limit?: number): void;
   interactWithObject(instanceId: string, interactionIndex?: number): void;
   talkTo(instanceId: string): void;
   approach(instanceId: string): void;
@@ -129,6 +130,13 @@ export function createHarness(options: HarnessOptions = {}): Harness {
     send: (message) => gameplay.handle(player, message),
     ticksUntil(predicate, limit = 200) {
       for (let tick = 0; tick < limit && !predicate(); tick++) gameplay.tick();
+      if (!predicate()) throw new Error('Condition not reached within tick limit.');
+    },
+    fightUntil(predicate, limit = 200) {
+      for (let tick = 0; tick < limit && !predicate(); tick++) {
+        if (!player.isIncapacitated) player.setIntegrity(player.maxIntegrity);
+        gameplay.tick();
+      }
       if (!predicate()) throw new Error('Condition not reached within tick limit.');
     },
     interactWithObject(instanceId, interactionIndex = 0) {

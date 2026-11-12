@@ -56,7 +56,7 @@ function defeat(harness: Harness, instanceId: string): void {
   heal(harness);
   harness.approach(instanceId);
   harness.send({ type: 'world.interact', targetKind: 'creature', instanceId, interactionIndex: 0 });
-  harness.ticksUntil(() => !creature.isAlive, 8000);
+  harness.fightUntil(() => !creature.isAlive, 8000);
   harness.ticksUntil(() => harness.player.combatTargetId === null, 2000);
 }
 

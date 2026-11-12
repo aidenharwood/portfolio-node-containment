@@ -124,7 +124,7 @@ export const SECTOR_TWO: DistrictDefinition = furnish(plan, {
     plan.area('airlock', 'Quarantine Airlock'),
     plan.area('corridor', 'Breach Corridor'),
     plan.area('research-lab', 'Halvorsen\'s Lab'),
-    plan.area('inner-chamber', 'Inner Chamber'),
+    plan.area('inner-chamber', 'Inner Chamber', { multiCombat: true }),
     plan.area('storage', 'Infested Storage'),
     plan.area('isolation-ward', 'Isolation Ward'),
     plan.area('observation-gallery', 'Observation Gallery'),

@@ -141,6 +141,9 @@ export const CREATURES: readonly CreatureDefinition[] = [
     defence: 5,
     attack: { style: 'melee', accuracy: 7, maxHit: 3, range: 1, speedTicks: 5 },
     guard: 'bulwark',
+    encounter: {
+      mechanics: [{ kind: 'telegraph', id: 'hollow-slam', shape: 'body', reach: 1, windupTicks: 6, cooldownTicks: 20, style: 'melee', accuracy: 8, maxHit: 6 }],
+    },
     aggressive: true,
     aggroRadius: 3,
     leashRadius: 5,
@@ -246,6 +249,9 @@ export const CREATURES: readonly CreatureDefinition[] = [
     defence: 8,
     attack: { style: 'melee', accuracy: 11, maxHit: 5, range: 1, speedTicks: 5 },
     guard: 'bulwark',
+    encounter: {
+      mechanics: [{ kind: 'summon', id: 'call-the-drones', creatureId: 'scrap-drone', count: 2, everyTicks: 30, maxAlive: 2 }],
+    },
     aggressive: true,
     aggroRadius: 4,
     leashRadius: 5,
