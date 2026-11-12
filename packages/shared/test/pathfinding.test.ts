@@ -50,6 +50,18 @@ describe('findPath', () => {
   });
 });
 
+describe('createWalkabilityGrid', () => {
+  test('answers off-map and fractional tiles as well as tiles on the map', () => {
+    const decked = createWalkabilityGrid(layout, [{ x: 1, y: 1 }], [{ x: 2, y: 2 }]);
+    assert.equal(decked.isWalkable({ x: 1, y: 1 }), false);
+    assert.equal(decked.isWalkable({ x: 2, y: 2 }), true);
+    assert.equal(decked.isWalkable({ x: 3, y: 1 }), true);
+    assert.equal(decked.isWalkable({ x: -1, y: 1 }), false);
+    assert.equal(decked.isWalkable({ x: 7, y: 1 }), false);
+    assert.equal(decked.isWalkable({ x: 3.5, y: 1 }), grid.isWalkable({ x: 3.5, y: 1 }));
+  });
+});
+
 describe('walkableTilesNear', () => {
   test('keeps a walkable target as it is', () => {
     assert.deepEqual(walkableTilesNear(grid, { x: 3, y: 1 }, { x: 1, y: 1 }), [{ x: 3, y: 1 }]);
