@@ -11,8 +11,8 @@ export const CREDENTIAL_RULES = {
 } as const;
 
 const tilePointSchema = z.object({
-  x: z.number().int().min(0).max(1024),
-  y: z.number().int().min(0).max(1024),
+  x: z.number().int().min(0).max(65_535),
+  y: z.number().int().min(0).max(65_535),
 });
 
 const appearanceSchema = z.object({
