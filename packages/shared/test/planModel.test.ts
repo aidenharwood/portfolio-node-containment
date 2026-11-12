@@ -61,6 +61,13 @@ describe('issuesFor', () => {
     assert.deepEqual(issuesFromMessages(GAME_CONTENT, 'meridian-circuit', ['level main-floor: 16 walkable tiles are unreachable from the spawn (first at 601,163)']), []);
   });
 
+  test('a zone issue keeps its district tile', () => {
+    assert.deepEqual(issuesFromMessages(GAME_CONTENT, atrium.id, ['zone meridian-atrium: two objects share tile 3,4', 'zone meridian-atrium: unknown object "plantr"']), [
+      { message: 'two objects share tile 3,4', tile: { x: 3, y: 4 } },
+      { message: 'unknown object "plantr"' },
+    ]);
+  });
+
   test('issues about other districts are left out', () => {
     assert.deepEqual(issuesFromMessages(GAME_CONTENT, atrium.id, ['district sector-two: something at 3,4']), []);
   });

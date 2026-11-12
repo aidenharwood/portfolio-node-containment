@@ -68,6 +68,41 @@ describe('layout errors', () => {
   });
 });
 
+describe('layout geometry errors', () => {
+  const withSteps = (extra: unknown[]) => {
+    const raw = source();
+    raw.steps = [...(raw.steps as unknown[]), ...extra];
+    return raw;
+  };
+
+  test('a step naming an unknown room names the step', () => {
+    assert.throws(() => buildDistrict(withSteps([{ kind: 'pillars', room: 'halle', everyX: 4, everyY: 4, inset: 2 }])), (error: Error) => error.message.startsWith('sample-district: steps[4].room') && error.message.includes('"halle"'));
+  });
+
+  test('a room outside the district size names the step', () => {
+    assert.throws(() => buildDistrict(withSteps([{ kind: 'room', id: 'far', rect: { x: 20, y: 1, width: 8, height: 4 }, floor: 'plating', shape: 'rect' }])), (error: Error) => error.message.startsWith('sample-district: steps[4].rect') && error.message.includes('24x16'));
+  });
+
+  test('a painted tile outside the district names the tile', () => {
+    const raw = source();
+    raw.tiles = [{ x: 99, y: 0, tile: 'hazard' }];
+    assert.throws(() => buildDistrict(raw), (error: Error) => error.message.startsWith('sample-district: tiles[0]') && error.message.includes('24x16'));
+  });
+
+  test('painting over an exit or link tile is refused', () => {
+    const district = buildDistrict(source());
+    const exitTile = district.exits?.west?.tiles[0];
+    assert.ok(exitTile);
+    const raw = source();
+    raw.tiles = [{ ...exitTile, tile: 'wall' }];
+    assert.throws(() => buildDistrict(raw), (error: Error) => error.message.startsWith('sample-district: tiles[0]') && error.message.includes('exit'));
+  });
+
+  test('any other drawing failure still names the district', () => {
+    assert.throws(() => buildDistrict(withSteps([{ kind: 'link', from: 'hall', to: 'side', width: 40, floor: 'door' }])), (error: Error) => error.message.startsWith('sample-district: steps'));
+  });
+});
+
 describe('anchorsOf', () => {
   const district = buildDistrict(source());
 

@@ -1,9 +1,9 @@
 import type { ZodIssue } from 'zod';
 import { furnish } from '../content/districts/furnish.ts';
 import { setPiece, type SetPiece } from '../content/districts/setPiece.ts';
-import { drawBlueprint } from './blueprint.ts';
+import { drawBlueprint, type Blueprint } from './blueprint.ts';
 import type { AreaDefinition, DistrictDefinition } from './district.ts';
-import type { TilePoint } from './geometry.ts';
+import { tileKey, type TilePoint } from './geometry.ts';
 import { resolvePosition } from './layoutPosition.ts';
 import { DISTRICT_LAYOUT_SCHEMA, type DistrictLayout, type LayoutPosition } from './layoutSchema.ts';
 
@@ -26,10 +26,55 @@ export function parseLayout(source: unknown): DistrictLayout {
 
 const nonEmpty = <T>(key: string, values: readonly T[]): Record<string, readonly T[]> => (values.length > 0 ? { [key]: values } : {});
 
+function checkGeometry(layout: DistrictLayout): void {
+  const { id, size } = layout;
+  const fail = (path: string, reason: string): never => {
+    throw new Error(`${id}: ${path}: ${reason}`);
+  };
+  const outside = (x: number, y: number): boolean => x < 0 || y < 0 || x >= size.width || y >= size.height;
+  const rooms = new Set<string>();
+  layout.steps.forEach((step, index) => {
+    const path = `steps[${index}]`;
+    const needRoom = (field: string, room: string): void => {
+      if (!rooms.has(room)) fail(`${path}.${field}`, `room "${room}" is not drawn by an earlier step`);
+    };
+    if ('rect' in step && (outside(step.rect.x, step.rect.y) || outside(step.rect.x + step.rect.width - 1, step.rect.y + step.rect.height - 1))) {
+      fail(`${path}.rect`, `${step.rect.x},${step.rect.y} ${step.rect.width}x${step.rect.height} is outside the district's ${size.width}x${size.height}`);
+    }
+    if (step.kind === 'room') rooms.add(step.id);
+    if (step.kind === 'link') {
+      needRoom('from', step.from);
+      needRoom('to', step.to);
+    }
+    if (step.kind === 'exit' || step.kind === 'pillars') needRoom('room', step.room);
+  });
+  layout.tiles.forEach((tile, index) => {
+    if (outside(tile.x, tile.y)) fail(`tiles[${index}]`, `${tile.x},${tile.y} is outside the district's ${size.width}x${size.height}`);
+  });
+}
+
+function drawLayout(layout: DistrictLayout): Blueprint {
+  checkGeometry(layout);
+  let plan: Blueprint;
+  try {
+    plan = drawBlueprint(layout.size, layout.steps);
+  } catch (error) {
+    throw new Error(`${layout.id}: steps: ${(error as Error).message}`);
+  }
+  const doorways = new Map<string, string>();
+  for (const [name, exit] of Object.entries(plan.exits)) for (const tile of exit.tiles) doorways.set(tileKey(tile), `exit "${name}"`);
+  for (const [name, tiles] of Object.entries(plan.links)) for (const tile of tiles) doorways.set(tileKey(tile), `link "${name.replace('>', '" to "')}"`);
+  layout.tiles.forEach((tile, index) => {
+    const doorway = doorways.get(tileKey(tile));
+    if (doorway) throw new Error(`${layout.id}: tiles[${index}]: ${tile.x},${tile.y} is part of ${doorway}; change that step instead of painting over it`);
+  });
+  return layout.tiles.length === 0 ? plan : drawBlueprint(layout.size, layout.steps, layout.tiles);
+}
+
 export function buildDistrict(source: unknown): DistrictDefinition {
   const layout = parseLayout(source);
   const id = layout.id;
-  const plan = drawBlueprint(layout.size, layout.steps, layout.tiles);
+  const plan = drawLayout(layout);
   const at = (position: LayoutPosition, path: string): TilePoint => resolvePosition(plan, position, `${id}: ${path}`);
 
   const areas: AreaDefinition[] = layout.areas.map((area, index) => {

@@ -70,7 +70,7 @@ export function issuesFromMessages(content: GameContent, districtId: DistrictId,
     const [, scope, owner, message] = match as unknown as [string, string, string, string];
     const found = TILE_PATTERN.exec(message);
     const tile = found ? { x: Number(found[1]), y: Number(found[2]) } : undefined;
-    if (scope === 'district') {
+    if (scope === 'district' || scope === 'zone') {
       if (owner === districtId) issues.push(tile ? { message, tile } : { message });
       continue;
     }

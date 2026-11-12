@@ -1,3 +1,4 @@
+import { objectFootprintTiles } from '../world/footprint.ts';
 import { SKILL_LEVEL_CAP } from '../character/skills.ts';
 import type { DialogueDefinition } from '../dialogue/dialogue.ts';
 import type { Condition } from '../rules/conditions.ts';
@@ -235,6 +236,13 @@ export function findContentIssues(content: GameContent): string[] {
       const key = `${placement.position.x},${placement.position.y}`;
       if (occupied.has(key)) report(where, `two objects share tile ${key}`);
       occupied.add(key);
+    }
+    for (const placement of zone.objects) {
+      const buried = objectFootprintTiles(content.worldObjects.get(placement.objectId), placement).find((tile) => {
+        const kind = layout.tileAt(tile);
+        return kind === 'void' || TILE_KINDS[kind].structure === 'wall';
+      });
+      if (buried) report(where, `"${placement.instanceId}" (${placement.objectId}) stands in a wall or void at ${buried.x},${buried.y}`);
     }
   }
 
