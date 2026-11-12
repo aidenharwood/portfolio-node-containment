@@ -1,7 +1,8 @@
-import { TILE_KINDS, type TileKindId, type TileLayout, type TileRect } from '@containment/shared';
+import { TILE_KINDS, tileKey, type DecalCell, type TileKindId, type TileLayout, type TileRect } from '@containment/shared';
 import { DenseVolume } from '../voxel/denseVolume.ts';
 import { darken, jitter, lighten, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE, VOXEL_GLASS, VOXEL_SOLID } from '../voxel/voxelKinds.ts';
+import { decalColor } from './floorDecals.ts';
 import { FLOOR_LAYERS, TILE_RESOLUTION, WALL_LAYERS, ZONE_VOLUME_HEIGHT } from './worldScale.ts';
 
 const R = TILE_RESOLUTION;
@@ -73,7 +74,9 @@ export function createTileVolume(region: TileRect): DenseVolume {
   return new DenseVolume((region.width + 2) * R, ZONE_VOLUME_HEIGHT, (region.height + 2) * R, (region.x - 1) * R, (region.y - 1) * R);
 }
 
-export function paintTileRows(volume: DenseVolume, layout: TileLayout, region: TileRect, fromRow: number, toRow: number): DenseVolume {
+type DecalMap = ReadonlyMap<string, readonly DecalCell[]>;
+
+export function paintTileRows(volume: DenseVolume, layout: TileLayout, region: TileRect, fromRow: number, toRow: number, decals?: DecalMap): DenseVolume {
   for (let ty = Math.max(fromRow, region.y - 1); ty < Math.min(toRow, region.y + region.height + 1); ty++) {
     for (let tx = region.x - 1; tx < region.x + region.width + 1; tx++) {
       const kind = layout.tileAt({ x: tx, y: ty });
@@ -81,14 +84,14 @@ export function paintTileRows(volume: DenseVolume, layout: TileLayout, region: T
       if (kind === 'wall') paintWall(volume, layout, tx, ty);
       else if (kind === 'glass') paintGlass(volume, tx, ty);
       else if (kind === 'track') paintTrack(volume, trackAxis(layout, tx, ty), tx, ty);
-      else paintFloor(volume, kind, tx, ty);
+      else paintFloor(volume, kind, tx, ty, decals?.get(tileKey({ x: tx, y: ty })));
       if (kind === 'door') paintLintel(volume, layout, tx, ty);
     }
   }
   return volume;
 }
 
-function paintFloor(volume: DenseVolume, kind: TileKindId, tx: number, ty: number): void {
+function paintFloor(volume: DenseVolume, kind: TileKindId, tx: number, ty: number, cells?: readonly DecalCell[]): void {
   const tileNoise = noise3(tx, ty, 0, 11);
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
@@ -101,7 +104,10 @@ function paintFloor(volume: DenseVolume, kind: TileKindId, tx: number, ty: numbe
         continue;
       }
       const surface = floorVoxel(kind, lx, lz, vx, vz, tileNoise, grain);
-      if (surface) volume.set(vx, FLOOR, vz, surface.color, surface.kind);
+      if (!surface) continue;
+      const decal = cells && kind !== 'door' ? decalColor(cells, lx, lz, surface.color, grain) : null;
+      if (decal) volume.set(vx, FLOOR, vz, decal.color, decal.emissive ? VOXEL_EMISSIVE : VOXEL_SOLID);
+      else volume.set(vx, FLOOR, vz, surface.color, surface.kind);
     }
   }
 }

@@ -26,6 +26,7 @@ import { createVoxelObject, type VoxelLayer, type VoxelObjectOptions } from '../
 import { FadeBatch } from './fadeBatch.ts';
 import { FACING_STEP, type FillLight, type SconceSpot } from './wallLights.ts';
 import { LiquidSurface } from './liquidSurface.ts';
+import { decalsForLevel } from './floorDecals.ts';
 import { buildFloorScatter } from './floorScatter.ts';
 import { createTileVolume, paintTileRows } from './levelVoxels.ts';
 import { MODEL_VOXEL_SIZE, TILE_RESOLUTION, ZONE_MESH_ORIGIN, ZONE_VOLUME_HEIGHT, ZONE_VOXEL_SIZE } from './worldScale.ts';
@@ -241,12 +242,13 @@ export class ChunkView {
 
   private planStructure(zone: ActiveZone, region: TileRect, occupied: ReadonlySet<string>): void {
     const { layout } = zone;
+    const decals = decalsForLevel(zone.definition);
     const volume = createTileVolume(region);
     const meshOptions = { voxelSize: ZONE_VOXEL_SIZE, origin: ZONE_MESH_ORIGIN };
     const R = TILE_RESOLUTION;
     const lastRow = region.y + region.height;
     for (let row = region.y - 1; row <= lastRow; row += STRIP_ROWS) {
-      this.steps.push(() => paintTileRows(volume, layout, region, row, row + STRIP_ROWS));
+      this.steps.push(() => paintTileRows(volume, layout, region, row, row + STRIP_ROWS, decals));
     }
     const floorClip = {
       min: [region.x * R, 0, region.y * R] as const,
@@ -261,7 +263,7 @@ export class ChunkView {
         this.root.add(floor);
       });
       this.steps.push(() => {
-        const scatter = buildFloorScatter(layout, strip, (tile) => occupied.has(tileKey(tile)));
+        const scatter = buildFloorScatter(layout, strip, (tile) => occupied.has(tileKey(tile)), decals);
         if (scatter.isEmpty) return;
         const litter = createVoxelObject(scatter.mesh(MODEL_VOXEL_SIZE), { castShadow: false });
         litter.name = 'floorScatter';

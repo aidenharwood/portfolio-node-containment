@@ -1,5 +1,6 @@
-import type { TileKindId, TileLayout, TilePoint, TileRect } from '@containment/shared';
+import { tileKey, type DecalCell, type FloorDecalKind, type TileKindId, type TileLayout, type TilePoint, type TileRect } from '@containment/shared';
 import { darken, jitter, lighten, noise3 } from '../voxel/palette.ts';
+import { decalBlocksScatter } from './floorDecals.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 
 const VOXELS_PER_TILE = 16;
@@ -28,6 +29,18 @@ const PALETTES: Partial<Record<TileKindId, ScatterPalette>> = {
   hazard: { density: 0.35, pebbles: STONE, grit: [0x2a2a20, 0x4a4a3a], pieces: ['grit', 'pebble', 'bolt'] },
   grate: { density: 0.18, pebbles: STONE, grit: [0x2b3a44], pieces: ['bolt', 'grit'] },
 };
+
+const DECAL_PIECES: Partial<Record<FloorDecalKind, readonly ScatterPiece[]>> = {
+  moss: ['leaf', 'tuft'],
+  scorch: ['flake'],
+  cracks: ['shard'],
+};
+
+function piecesFor(palette: ScatterPalette, cells: readonly DecalCell[] | undefined): readonly ScatterPiece[] {
+  if (!cells) return palette.pieces;
+  const extra = cells.flatMap(({ decal }) => DECAL_PIECES[decal.kind] ?? []);
+  return extra.length === 0 ? palette.pieces : [...palette.pieces, ...extra];
+}
 
 const pick = <T>(list: readonly T[], roll: number): T => list[Math.min(list.length - 1, Math.floor(roll * list.length))] as T;
 
@@ -72,19 +85,21 @@ function paintPiece(model: VoxelModel, piece: ScatterPiece, x: number, z: number
   }
 }
 
-export function buildFloorScatter(layout: TileLayout, region: TileRect, isOccupied: (tile: TilePoint) => boolean): VoxelModel {
+export function buildFloorScatter(layout: TileLayout, region: TileRect, isOccupied: (tile: TilePoint) => boolean, decals?: ReadonlyMap<string, readonly DecalCell[]>): VoxelModel {
   const model = new VoxelModel();
   for (let ty = region.y; ty < region.y + region.height; ty++) {
     for (let tx = region.x; tx < region.x + region.width; tx++) {
       const palette = PALETTES[layout.tileAt({ x: tx, y: ty })];
-      if (!palette || isOccupied({ x: tx, y: ty })) continue;
+      const cells = decals?.get(tileKey({ x: tx, y: ty }));
+      if (!palette || isOccupied({ x: tx, y: ty }) || decalBlocksScatter(cells)) continue;
+      const pieces = piecesFor(palette, cells);
       if (noise3(tx, ty, 0, 91) > palette.density) continue;
       const count = 1 + Math.floor(noise3(tx, ty, 1, 92) * 3);
       for (let index = 0; index < count; index++) {
         const seed = tx * 131 + ty * 71 + index * 17;
         const lx = Math.floor(noise3(tx, index, ty, 93) * (VOXELS_PER_TILE - EDGE_MARGIN * 2 - 3)) + EDGE_MARGIN - HALF;
         const lz = Math.floor(noise3(ty, index, tx, 94) * (VOXELS_PER_TILE - EDGE_MARGIN * 2 - 3)) + EDGE_MARGIN - HALF;
-        const piece = pick(palette.pieces, noise3(tx, ty, index, 95));
+        const piece = pick(pieces, noise3(tx, ty, index, 95));
         paintPiece(model, piece, tx * VOXELS_PER_TILE + lx, ty * VOXELS_PER_TILE + lz, palette, seed);
       }
     }
