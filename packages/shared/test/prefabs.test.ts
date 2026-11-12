@@ -17,6 +17,7 @@ const ATRIUM_PREFABS = [
   'reception',
   'map-room',
   'shelter-stop',
+  'platform-shelter',
   'barrier-line',
   'timetable-wall',
   'triage-hub',

@@ -85,4 +85,12 @@ describe('the Meridian Atrium', () => {
   test('mans the quarantine gate with a guard booth', () => {
     assert.ok(count(inRoom('quarantine-gate'), 'guard-booth') > 0);
   });
+
+  test('puts the shelter and timetable by the tram stop', () => {
+    const stop = atrium.objects.find((object) => object.instanceId === 'atrium-tram-stop')!.position;
+    for (const objectId of ['transit-shelter', 'timetable-board']) {
+      const piece = atrium.objects.find((object) => object.objectId === objectId)!.position;
+      assert.ok(Math.max(Math.abs(piece.x - stop.x), Math.abs(piece.y - stop.y)) <= 8, `${objectId} at ${piece.x},${piece.y} is far from the stop`);
+    }
+  });
 });
