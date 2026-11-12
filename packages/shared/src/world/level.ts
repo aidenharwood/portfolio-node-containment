@@ -1,6 +1,19 @@
 import type { ConnectorId, DistrictId, LevelId } from '../ids.ts';
-import type { ZoneAmbience, ZoneLight } from './district.ts';
+import type { DistrictDefinition, ZoneAmbience, ZoneLight } from './district.ts';
 import type { TilePoint } from './geometry.ts';
+
+export interface LevelContext {
+  districtOf(id: DistrictId): DistrictDefinition;
+  hollowOf(id: DistrictId): TilePoint;
+}
+
+export type LevelRecipe = (context: LevelContext) => LevelDefinition;
+
+export function anchorOf(context: LevelContext, districtId: DistrictId, name: string): TilePoint {
+  const point = context.districtOf(districtId).anchors?.[name];
+  if (!point) throw new Error(`District "${districtId}" has no anchor "${name}".`);
+  return point;
+}
 
 export interface DistrictPlacement {
   readonly districtId: DistrictId;
