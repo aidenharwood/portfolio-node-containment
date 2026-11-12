@@ -2,15 +2,16 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { COMPOSITIONS, inferComposition, type CompositionName } from '../src/content/compositions.ts';
 import { composeRoom, inWalkingLane, type ComposeInput } from '../src/content/districts/compose.ts';
-import { mirrorTurn, pieceTiles, turnsOf, type Turn } from '../src/content/districts/composeLayout.ts';
-import { prefab } from '../src/content/prefabs/index.ts';
+import { centreBounds, distanceOutside, laneTilesOf, mirrorTurn, pieceTiles, turnsOf, type Turn } from '../src/content/districts/composeLayout.ts';
+import { prefab, PREFABS, row, type Prefab } from '../src/content/prefabs/index.ts';
 import type { WorldObjectDefinition } from '../src/world/entities.ts';
-import { GAME_CONTENT } from '../src/index.ts';
+import { drawBlueprint, GAME_CONTENT, room } from '../src/index.ts';
 import type { DressingTheme } from '../src/content/prefabs/index.ts';
 import type { WorldObjectId } from '../src/ids.ts';
 import type { ObjectPlacement } from '../src/world/district.ts';
 import { objectFootprintTiles } from '../src/world/footprint.ts';
 import { rectContains, tileKey, type Facing, type TilePoint, type TileRect } from '../src/world/geometry.ts';
+import { MAP_LEGEND, TILE_KINDS } from '../src/world/tiles.ts';
 
 const ROOM: TileRect = { x: 1, y: 1, width: 30, height: 20 };
 const DOOR: TilePoint = { x: 0, y: 8 };
@@ -42,6 +43,19 @@ const blocksOf = (objects: readonly ObjectPlacement[]): Map<string, ObjectPlacem
 };
 const tilesOf = (object: ObjectPlacement): TilePoint[] => objectFootprintTiles(objectOf(object.objectId), object);
 const MIRRORED: Readonly<Record<Facing, Facing>> = { north: 'north', south: 'south', east: 'west', west: 'east' };
+const ALTAR = prefab('test-altar', ['chapel', 'civic'], ['focal'], row('candle-stand', 3));
+
+const withPrefabs = (extra: readonly Prefab[], run: () => void): void => {
+  const library = PREFABS as Record<string, Prefab>;
+  for (const each of extra) library[each.id] = each;
+  try {
+    run();
+  } finally {
+    for (const each of extra) delete library[each.id];
+  }
+};
+
+const candlesOf = (objects: readonly ObjectPlacement[]): TilePoint[] => objects.filter((object) => object.objectId === 'candle-stand').flatMap(tilesOf);
 
 describe('room composer', () => {
   test('the same seed composes the same room and another seed composes a different one', () => {
@@ -126,5 +140,78 @@ describe('room composer', () => {
       for (const tile of pieceTiles({ x: 0, y: 0 }, turn)) assert.ok(tile.x >= 0 && tile.y >= 0 && tile.x < turn.width && tile.y < turn.height);
     }
     assert.deepEqual(mirrorTurn(turns[0] as Turn, 'x').pieces.map((piece) => [piece.dx, piece.facing]), [[1, 'south'], [0, 'south']]);
+  });
+
+  test('a nave sets its focal piece at the far end from its door, centred across the room and unmirrored', () => {
+    withPrefabs([ALTAR], () => {
+      const west = candlesOf(composeRoom(inputFor(ROOM, DOOR, 'chapel', 'nave')).objects);
+      assert.equal(west.length, 3);
+      for (const tile of west) assert.ok(tile.x >= ROOM.x + Math.ceil((2 * ROOM.width) / 3), `focal tile ${tileKey(tile)} is not at the east end`);
+      const ys = west.map((tile) => tile.y);
+      assert.ok(Math.abs(Math.min(...ys) + Math.max(...ys) - (2 * ROOM.y + ROOM.height - 1)) <= 1, `focal rows ${ys.join(',')} are off the centre line`);
+      const east = candlesOf(composeRoom(inputFor(ROOM, { x: ROOM.x + ROOM.width, y: 8 }, 'chapel', 'nave')).objects);
+      assert.equal(east.length, 3);
+      for (const tile of east) assert.ok(tile.x < ROOM.x + Math.floor(ROOM.width / 3), `focal tile ${tileKey(tile)} is not at the west end`);
+    });
+  });
+
+  test('a hall sets its focal piece first, at the far end from its door', () => {
+    withPrefabs([ALTAR], () => {
+      for (const seed of ['a', 'b', 'c']) {
+        const candles = candlesOf(composeRoom(inputFor(ROOM, DOOR, 'civic', 'hall', seed)).objects);
+        assert.equal(candles.length, 3, `hall ${seed} placed ${candles.length} focal tiles`);
+        for (const tile of candles) assert.ok(tile.x >= ROOM.x + Math.ceil((2 * ROOM.width) / 3), `focal tile ${tileKey(tile)} is not at the east end`);
+      }
+    });
+  });
+
+  test('a far-end focal is skipped when its end third is occupied, and a centre focal when the centre third is', () => {
+    withPrefabs([ALTAR], () => {
+      const farEnd = inputFor(ROOM, DOOR, 'chapel', 'nave');
+      farEnd.occupied.add(tileKey({ x: ROOM.x + ROOM.width - 2, y: ROOM.y + 1 }));
+      assert.equal(candlesOf(composeRoom(farEnd).objects).length, 0);
+      assert.equal(candlesOf(composeRoom(inputFor(ROOM, DOOR, 'civic', 'court')).objects).length, 3);
+      const blocked = inputFor(ROOM, DOOR, 'civic', 'court');
+      blocked.occupied.add(tileKey({ x: ROOM.x + Math.floor(ROOM.width / 2), y: ROOM.y + Math.floor(ROOM.height / 2) }));
+      assert.equal(candlesOf(composeRoom(blocked).objects).length, 0);
+    });
+  });
+
+  test('a ring lane runs a clear path from an off-centre door to the annulus', () => {
+    const plan = drawBlueprint({ width: 32, height: 32 }, [room('hub', 1, 1, 30, 30, 'plating', 'octagon')]);
+    const rect = plan.rooms.hub as TileRect;
+    const door = { x: 0, y: 8 };
+    const walkable = (point: TilePoint): boolean => TILE_KINDS[MAP_LEGEND[plan.map[point.y]?.[point.x] ?? ' '] ?? 'void'].walkable;
+    const hub = centreBounds(rect);
+    assert.ok(walkable({ x: 1, y: 8 }));
+    assert.ok(distanceOutside(hub, { x: hub.left, y: door.y }) > 4);
+    const lane = laneTilesOf(rect, 'ring', undefined, [door]);
+    const seen = new Set<string>([tileKey({ x: 1, y: 8 })]);
+    const queue: TilePoint[] = [{ x: 1, y: 8 }];
+    let reached = false;
+    while (queue.length > 0 && !reached) {
+      const point = queue.shift() as TilePoint;
+      const distance = distanceOutside(hub, point);
+      if (distance >= 2 && distance <= 4) reached = true;
+      for (const step of [{ x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }]) {
+        const next = { x: point.x + step.x, y: point.y + step.y };
+        if (seen.has(tileKey(next)) || !lane.has(tileKey(next)) || !walkable(next)) continue;
+        seen.add(tileKey(next));
+        queue.push(next);
+      }
+    }
+    assert.ok(reached, 'the path from the door never meets the annulus');
+    const clear = new Set<string>();
+    for (let y = rect.y; y < rect.y + rect.height; y++) for (let x = rect.x; x < rect.x + rect.width; x++) if (walkable({ x, y })) clear.add(tileKey({ x, y }));
+    const path = [...lane].filter((key) => {
+      const [x, y] = key.split(',').map(Number) as [number, number];
+      return distanceOutside(hub, { x, y }) > 4;
+    });
+    assert.ok(path.length > 0);
+    for (const seed of ['a', 'b', 'c']) {
+      const composed = composeRoom({ ...inputFor(rect, door, 'civic', 'radial', seed), clear, isWall: (point) => !walkable(point) && tileKey(point) !== tileKey(door) });
+      const blocked = new Set(composed.objects.flatMap(tilesOf).map(tileKey));
+      for (const key of path) assert.ok(!blocked.has(key), `the door path is blocked at ${key} with seed ${seed}`);
+    }
   });
 });

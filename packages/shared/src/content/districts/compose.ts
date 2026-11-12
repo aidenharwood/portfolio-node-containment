@@ -8,9 +8,14 @@ import {
   CORNER_SLOTS,
   cornerOrigin,
   edgeRuns,
+  endOrigin,
+  endRotations,
+  endThird,
+  farEndOf,
   inFirstHalf,
   laneTilesOf,
   mainAxisOf,
+  middleThird,
   mirrorFacing,
   mirrorOrigin,
   mirrorTurn,
@@ -169,18 +174,21 @@ export function composeRoom(input: ComposeInput): Composed {
   };
 
   const fillFocal = (zone: CompositionZone): void => {
-    const third = { x: rect.x + Math.floor(rect.width / 3), y: rect.y + Math.floor(rect.height / 3), width: Math.ceil(rect.width / 3), height: Math.ceil(rect.height / 3) };
-    for (let y = third.y; y < third.y + third.height; y++) {
-      for (let x = third.x; x < third.x + third.width; x++) if (occupied.has(tileKey({ x, y }))) return;
+    const end = zone.at === 'far-end' ? farEndOf(rect, input.openings) : undefined;
+    const guard = end ? endThird(rect, end) : middleThird(rect);
+    for (let y = guard.y; y < guard.y + guard.height; y++) {
+      for (let x = guard.x; x < guard.x + guard.width; x++) if (occupied.has(tileKey({ x, y }))) return;
     }
     if (zone.max === 0) return;
     for (const prefab of shuffle([...candidatesFor(zone)], random)) {
       if (!allowed(prefab, undefined)) continue;
-      for (let rotation = 0; rotation < 4; rotation++) {
+      for (const rotation of end ? endRotations(end) : [0, 1, 2, 3]) {
         const turn = turnOf(prefab, rotation);
-        const origin = { x: rect.x + Math.floor((rect.width - turn.width) / 2), y: rect.y + Math.floor((rect.height - turn.height) / 2) };
+        const origin = end
+          ? endOrigin(rect, end, turn, prefab.clearance ?? 1)
+          : { x: rect.x + Math.floor((rect.width - turn.width) / 2), y: rect.y + Math.floor((rect.height - turn.height) / 2) };
         const slot = { origin, turn, backs: [] };
-        if (formal && placementSignature(origin, turn) !== placementSignature(mirrorOrigin(origin, turn, rect, axis), mirrorTurn(turn, axis))) continue;
+        if (!end && formal && placementSignature(origin, turn) !== placementSignature(mirrorOrigin(origin, turn, rect, axis), mirrorTurn(turn, axis))) continue;
         if (!fits(slot, prefab.clearance ?? 1, true)) continue;
         commit(slot);
         record(prefab, 1);

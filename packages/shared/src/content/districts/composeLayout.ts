@@ -1,7 +1,7 @@
 import type { WorldObjectId } from '../../ids.ts';
 import type { WorldObjectDefinition } from '../../world/entities.ts';
 import { objectFootprintSize } from '../../world/footprint.ts';
-import { tileKey, type Facing, type TilePoint, type TileRect } from '../../world/geometry.ts';
+import { rectContains, tileKey, type Facing, type TilePoint, type TileRect } from '../../world/geometry.ts';
 import type { CompositionLane } from '../compositions.ts';
 import type { Prefab, PrefabDecal } from '../prefabs/index.ts';
 
@@ -100,6 +100,60 @@ export const mainAxisOf = (rect: TileRect): MirrorAxis => (rect.height > rect.wi
 export const inFirstHalf = (origin: TilePoint, turn: Turn, rect: TileRect, axis: MirrorAxis): boolean =>
   axis === 'x' ? origin.x + turn.width <= rect.x + Math.floor(rect.width / 2) : origin.y + turn.height <= rect.y + Math.floor(rect.height / 2);
 
+const ROTATION_OF: Readonly<Record<Facing, number>> = { south: 0, west: 1, north: 2, east: 3 };
+
+export const rotationOf = (facing: Facing): number => ROTATION_OF[facing];
+
+export interface RoomEnd {
+  readonly axis: MirrorAxis;
+  readonly high: boolean;
+}
+
+const openingGroups = (openings: readonly TilePoint[]): TilePoint[][] => {
+  const groups: TilePoint[][] = [];
+  for (const opening of openings) {
+    const touching = groups.filter((group) => group.some((other) => Math.max(Math.abs(other.x - opening.x), Math.abs(other.y - opening.y)) <= 1));
+    const merged = [...touching.flat(), opening];
+    for (const group of touching) groups.splice(groups.indexOf(group), 1);
+    groups.push(merged);
+  }
+  return groups;
+};
+
+export function farEndOf(rect: TileRect, openings: readonly TilePoint[]): RoomEnd {
+  const axis = mainAxisOf(rect);
+  const main = openingGroups(openings).reduce<TilePoint[] | undefined>((widest, group) => (!widest || group.length > widest.length ? group : widest), undefined);
+  if (!main) return { axis, high: true };
+  const position = main.reduce((sum, point) => sum + (axis === 'x' ? point.x : point.y), 0) / main.length;
+  const centre = axis === 'x' ? rect.x + (rect.width - 1) / 2 : rect.y + (rect.height - 1) / 2;
+  return { axis, high: position <= centre };
+}
+
+export const endThird = (rect: TileRect, end: RoomEnd): TileRect => {
+  const span = Math.ceil((end.axis === 'x' ? rect.width : rect.height) / 3);
+  if (end.axis === 'x') return { x: end.high ? rect.x + rect.width - span : rect.x, y: rect.y, width: span, height: rect.height };
+  return { x: rect.x, y: end.high ? rect.y + rect.height - span : rect.y, width: rect.width, height: span };
+};
+
+export const middleThird = (rect: TileRect): TileRect => ({
+  x: rect.x + Math.floor(rect.width / 3),
+  y: rect.y + Math.floor(rect.height / 3),
+  width: Math.ceil(rect.width / 3),
+  height: Math.ceil(rect.height / 3),
+});
+
+export const endRotations = (end: RoomEnd): number[] => {
+  const facing: Facing = end.axis === 'x' ? (end.high ? 'west' : 'east') : end.high ? 'north' : 'south';
+  const first = rotationOf(facing);
+  return [0, 1, 2, 3].map((offset) => (first + offset) % 4);
+};
+
+export const endOrigin = (rect: TileRect, end: RoomEnd, turn: Turn, inset: number): TilePoint => {
+  const across = { x: rect.x + Math.floor((rect.width - turn.width) / 2), y: rect.y + Math.floor((rect.height - turn.height) / 2) };
+  if (end.axis === 'x') return { x: end.high ? rect.x + rect.width - turn.width - inset : rect.x + inset, y: across.y };
+  return { x: across.x, y: end.high ? rect.y + rect.height - turn.height - inset : rect.y + inset };
+};
+
 export const pieceTiles = (origin: TilePoint, turn: Turn): TilePoint[] =>
   turn.pieces.flatMap((piece) => {
     const tiles: TilePoint[] = [];
@@ -163,17 +217,23 @@ const inwardOf = (rect: TileRect, opening: TilePoint): TilePoint => {
 };
 
 const ringPath = (rect: TileRect, focal: Bounds, opening: TilePoint): TilePoint[] => {
-  const step = inwardOf(rect, opening);
-  const across = { x: step.y, y: step.x };
-  const centre = { x: (focal.left + focal.right) / 2, y: (focal.top + focal.bottom) / 2 };
+  const centre = { x: Math.round((focal.left + focal.right) / 2), y: Math.round((focal.top + focal.bottom) / 2) };
   const tiles: TilePoint[] = [];
-  let point = { x: opening.x + step.x, y: opening.y + step.y };
-  while (point.x >= rect.x && point.y >= rect.y && point.x < rect.x + rect.width && point.y < rect.y + rect.height) {
-    for (let offset = -RING_PATH_HALF_WIDTH; offset <= RING_PATH_HALF_WIDTH; offset++) tiles.push({ x: point.x + across.x * offset, y: point.y + across.y * offset });
-    if (distanceOutside(focal, point) <= RING_OUTER) break;
-    if ((step.x !== 0 && point.x === Math.round(centre.x)) || (step.y !== 0 && point.y === Math.round(centre.y))) break;
-    point = { x: point.x + step.x, y: point.y + step.y };
-  }
+  const walk = (start: TilePoint, step: TilePoint): TilePoint => {
+    const across = { x: step.y, y: step.x };
+    let point = start;
+    while (rectContains(rect, point)) {
+      for (let offset = -RING_PATH_HALF_WIDTH; offset <= RING_PATH_HALF_WIDTH; offset++) tiles.push({ x: point.x + across.x * offset, y: point.y + across.y * offset });
+      if (distanceOutside(focal, point) <= RING_OUTER) break;
+      if ((step.x !== 0 && point.x === centre.x) || (step.y !== 0 && point.y === centre.y)) break;
+      point = { x: point.x + step.x, y: point.y + step.y };
+    }
+    return point;
+  };
+  const inward = inwardOf(rect, opening);
+  const bend = walk({ x: opening.x + inward.x, y: opening.y + inward.y }, inward);
+  if (!rectContains(rect, bend) || distanceOutside(focal, bend) <= RING_OUTER) return tiles;
+  walk(bend, inward.x !== 0 ? { x: 0, y: Math.sign(centre.y - bend.y) } : { x: Math.sign(centre.x - bend.x), y: 0 });
   return tiles;
 };
 
