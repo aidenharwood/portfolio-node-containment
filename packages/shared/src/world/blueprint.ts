@@ -68,7 +68,15 @@ export interface DistrictExit {
   readonly gate: boolean;
 }
 
+export interface PaintedTile {
+  readonly x: number;
+  readonly y: number;
+  readonly tile: TileKindId;
+}
+
 export interface Blueprint {
+  readonly size: { readonly width: number; readonly height: number };
+  readonly steps: readonly BlueprintStep[];
   readonly map: readonly string[];
   readonly rooms: Readonly<Record<string, TileRect>>;
   readonly shapes: Readonly<Record<string, RoomShape>>;
@@ -208,7 +216,7 @@ function overlapStart(aStart: number, aLength: number, bStart: number, bLength: 
   return offset === undefined ? start + Math.floor((end - start - width) / 2) : start + offset;
 }
 
-export function drawBlueprint(size: { readonly width: number; readonly height: number }, steps: readonly BlueprintStep[]): Blueprint {
+export function drawBlueprint(size: { readonly width: number; readonly height: number }, steps: readonly BlueprintStep[], painted: readonly PaintedTile[] = []): Blueprint {
   const { width, height } = size;
   const tiles: TileKindId[] = new Array(width * height).fill('void');
   const rooms: Record<string, TileRect> = {};
@@ -341,6 +349,7 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
     }
   }
   for (const wall of walls) setTile(wall, 'wall');
+  for (const paint of painted) setTile(paint, paint.tile);
 
   const map = Array.from({ length: height }, (_, y) =>
     Array.from({ length: width }, (_, x) => SYMBOL_OF.get(tiles[y * width + x] as TileKindId) as string).join(''),
@@ -443,6 +452,8 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
   };
 
   return {
+    size,
+    steps,
     map,
     rooms,
     shapes,
