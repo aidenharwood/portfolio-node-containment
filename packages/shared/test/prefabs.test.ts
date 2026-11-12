@@ -5,6 +5,25 @@ import { DRESSING_THEMES, findPrefabIssues, PREFABS, prefabsWithRole, type Prefa
 
 const objectOf = (id: string) => GAME_CONTENT.worldObjects.get(id);
 
+const ATRIUM_PREFABS = [
+  'fountain-court',
+  'statue-court',
+  'fountain-corner',
+  'kiosk-island',
+  'bench-ring',
+  'info-stand',
+  'banner-pair',
+  'pylon-bench',
+  'reception',
+  'map-room',
+  'shelter-stop',
+  'barrier-line',
+  'timetable-wall',
+  'triage-hub',
+  'press-cell',
+  'checkpoint',
+];
+
 const sample = (overrides: Partial<Prefab>): Prefab => ({ id: 'sample', themes: ['civic'], roles: ['island'], pieces: [], ...overrides });
 
 describe('prefab libraries', () => {
@@ -33,6 +52,20 @@ describe('prefab libraries', () => {
       withFootprint,
     );
     assert.ok(issues.some((issue) => issue.includes('overlap')), issues.join('; '));
+  });
+
+  test('the Atrium prefabs exist, with civic focal, island and edge choices', () => {
+    for (const id of ATRIUM_PREFABS) assert.ok(PREFABS[id], `${id} is missing`);
+    for (const role of ['focal', 'island', 'edge'] as const) assert.ok(prefabsWithRole('civic', role).length >= 3, `civic has fewer than 3 ${role} prefabs`);
+    assert.equal(PREFABS['fountain-court']?.symmetric, true);
+    assert.equal(PREFABS['checkpoint']?.symmetric, true);
+  });
+
+  test('pieces may stand under a walk-under canopy but not on its posts', () => {
+    const underCanopy = (dx: number, dy: number) =>
+      findPrefabIssues(sample({ pieces: [{ dx: 0, dy: 0, objectId: 'transit-shelter' }, { dx, dy, objectId: 'briefing-bench' }] }), objectOf);
+    assert.deepEqual(underCanopy(1, 1), []);
+    assert.ok(underCanopy(2, 1).some((issue) => issue.includes('overlap')));
   });
 
   test('unknown objects and empty roles are reported', () => {

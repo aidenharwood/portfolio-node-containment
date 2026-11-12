@@ -45,7 +45,7 @@ const blocksOf = (objects: readonly ObjectPlacement[]): Map<string, ObjectPlacem
 };
 const tilesOf = (object: ObjectPlacement): TilePoint[] => objectFootprintTiles(objectOf(object.objectId), object);
 const MIRRORED: Readonly<Record<Facing, Facing>> = { north: 'north', south: 'south', east: 'west', west: 'east' };
-const ALTAR = prefab('test-altar', ['chapel', 'civic'], ['focal'], row('candle-stand', 3));
+const ALTAR = prefab('test-altar', ['chapel', 'canteen'], ['focal'], row('candle-stand', 3));
 
 const withPrefabs = (extra: readonly Prefab[], run: () => void): void => {
   const library = PREFABS as Record<string, Prefab>;
@@ -99,9 +99,11 @@ describe('room composer', () => {
     for (const seed of ['a', 'b', 'c']) {
       for (const theme of ['civic', 'office', 'industrial', 'canteen'] as const) {
         const composed = composeRoom(inputFor(ROOM, DOOR, theme, 'court', seed));
+        const focalPlaced = PREFABS[composed.prefabs?.[0] ?? '']?.roles.includes('focal') === true;
         for (const object of composed.objects) {
+          const isFocal = focalPlaced && blockOf(object) === 'test-room-dressing-1';
           for (const tile of tilesOf(object)) {
-            assert.ok(!inWalkingLane(ROOM, tile), `${object.instanceId} stands in the lane at ${tileKey(tile)}`);
+            if (!isFocal) assert.ok(!inWalkingLane(ROOM, tile), `${object.instanceId} stands in the lane at ${tileKey(tile)}`);
             assert.ok(Math.max(Math.abs(tile.x - DOOR.x), Math.abs(tile.y - DOOR.y)) > 3, `${object.instanceId} blocks the door at ${tileKey(tile)}`);
           }
         }
@@ -160,7 +162,7 @@ describe('room composer', () => {
   test('a hall sets its focal piece first, at the far end from its door', () => {
     withPrefabs([ALTAR], () => {
       for (const seed of ['a', 'b', 'c']) {
-        const candles = candlesOf(composeRoom(inputFor(ROOM, DOOR, 'civic', 'hall', seed)).objects);
+        const candles = candlesOf(composeRoom(inputFor(ROOM, DOOR, 'canteen', 'hall', seed)).objects);
         assert.equal(candles.length, 3, `hall ${seed} placed ${candles.length} focal tiles`);
         for (const tile of candles) assert.ok(tile.x >= ROOM.x + Math.ceil((2 * ROOM.width) / 3), `focal tile ${tileKey(tile)} is not at the east end`);
       }
@@ -172,8 +174,8 @@ describe('room composer', () => {
       const farEnd = inputFor(ROOM, DOOR, 'chapel', 'nave');
       farEnd.occupied.add(tileKey({ x: ROOM.x + ROOM.width - 2, y: ROOM.y + 1 }));
       assert.equal(candlesOf(composeRoom(farEnd).objects).length, 0);
-      assert.equal(candlesOf(composeRoom(inputFor(ROOM, DOOR, 'civic', 'court')).objects).length, 3);
-      const blocked = inputFor(ROOM, DOOR, 'civic', 'court');
+      assert.equal(candlesOf(composeRoom(inputFor(ROOM, DOOR, 'canteen', 'court')).objects).length, 3);
+      const blocked = inputFor(ROOM, DOOR, 'canteen', 'court');
       blocked.occupied.add(tileKey({ x: ROOM.x + Math.floor(ROOM.width / 2), y: ROOM.y + Math.floor(ROOM.height / 2) }));
       assert.equal(candlesOf(composeRoom(blocked).objects).length, 0);
     });
@@ -252,7 +254,7 @@ const boundsOf = (objects: readonly ObjectPlacement[], clearance: number): TileR
 };
 
 describe('set-pieces', () => {
-  const placed = (setPieces: readonly SetPiece[]): DistrictDefinition => furnish(PLAN, DISTRICT, { hall: 'civic' }, { setPieces, landmarks: ['hall'] });
+  const placed = (setPieces: readonly SetPiece[]): DistrictDefinition => furnish(PLAN, DISTRICT, { hall: 'canteen' }, { setPieces, landmarks: ['hall'] });
 
   test('set-pieces keep fixed or generated ids, turn to their facing and lay their decals', () => {
     withPrefabs([DAIS], () => {

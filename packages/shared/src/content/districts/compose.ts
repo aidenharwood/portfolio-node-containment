@@ -1,5 +1,6 @@
 import type { FloorDecal } from '../../world/decals.ts';
 import type { ObjectPlacement } from '../../world/district.ts';
+import { isWallFixture } from '../../world/footprint.ts';
 import { rectContains, tileKey, type Facing, type TilePoint, type TileRect } from '../../world/geometry.ts';
 import type { CompositionZone, DressingDensity, RoomComposition } from '../compositions.ts';
 import { prefabsWithRole, type DressingTheme, type Prefab } from '../prefabs/index.ts';
@@ -44,6 +45,7 @@ export interface ComposeInput {
   readonly clear: ReadonlySet<string>;
   readonly openings: readonly TilePoint[];
   readonly isWall: (point: TilePoint) => boolean;
+  readonly isStructuralWall?: (point: TilePoint) => boolean;
   readonly objectOf: ObjectLookup;
   readonly occupied: Set<string>;
 }
@@ -106,6 +108,7 @@ export function composeRoom(input: ComposeInput): Composed {
 
   const fits = (slot: Slot, clearance: number, ignoreLane = false): boolean => {
     const { origin, turn, backs } = slot;
+    const isBacking = turn.pieces.some((piece) => isWallFixture(objectOf(piece.objectId))) ? (input.isStructuralWall ?? input.isWall) : input.isWall;
     for (const tile of pieceTiles(origin, turn)) if (!usable(tile, ignoreLane)) return false;
     for (const back of backs) {
       const length = back === 'north' || back === 'south' ? turn.width : turn.height;
@@ -114,7 +117,7 @@ export function composeRoom(input: ComposeInput): Composed {
           back === 'north' || back === 'south'
             ? { x: origin.x + index, y: back === 'north' ? origin.y - 1 : origin.y + turn.height }
             : { x: back === 'west' ? origin.x - 1 : origin.x + turn.width, y: origin.y + index };
-        if (!input.isWall(point)) return false;
+        if (!isBacking(point)) return false;
       }
     }
     const reach = (side: Facing): number => (backs.includes(side) ? 0 : clearance);

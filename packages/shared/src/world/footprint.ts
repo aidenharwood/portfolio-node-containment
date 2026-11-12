@@ -50,3 +50,7 @@ export function objectFootprintTiles(definition: WorldObjectDefinition | undefin
   }
   return tiles;
 }
+
+export const WALL_FIXTURE_MODELS: ReadonlySet<string> = new Set(['bulkhead', 'transitLift', 'wallLift', 'valveWheel', 'ventPanel', 'noticeBoard', 'wallShelf', 'warningSign', 'locker', 'storageLocker', 'herbCabinet', 'timetableBoard']);
+
+export const isWallFixture = (definition: WorldObjectDefinition | undefined): boolean => definition !== undefined && WALL_FIXTURE_MODELS.has(definition.model);

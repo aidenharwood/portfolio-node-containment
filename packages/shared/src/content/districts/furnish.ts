@@ -181,6 +181,7 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
       clear,
       openings,
       isWall: (point) => !isWalkable(point),
+      isStructuralWall: (point) => TILE_KINDS[tileAt(point)].structure === 'wall',
       objectOf: dressingObjectOf,
       occupied: taken,
     });

@@ -49,7 +49,7 @@ const furnishings = scatterGroups(plan, placed, [
 
 const dressing: Dressing = {
   'threshold': 'civic',
-  'reflecting-hall': { theme: 'civic', density: 'sparse' },
+  'reflecting-hall': { theme: 'civic', density: 'normal' },
 };
 
 export const SECTOR_THREE: DistrictDefinition = furnish(plan, {

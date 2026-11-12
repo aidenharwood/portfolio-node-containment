@@ -3,11 +3,12 @@ import { describe, test } from 'node:test';
 import { GAME_CONTENT } from '../src/index.ts';
 import { parseTileLayout, type ObjectPlacement } from '../src/world/district.ts';
 import type { Facing, TilePoint } from '../src/world/geometry.ts';
+import { objectFootprintTiles } from '../src/world/footprint.ts';
 import { TILE_KINDS } from '../src/world/tiles.ts';
 
 const STEP: Readonly<Record<Facing, TilePoint>> = { north: { x: 0, y: -1 }, south: { x: 0, y: 1 }, east: { x: 1, y: 0 }, west: { x: -1, y: 0 } };
 const AGAINST_WALL = new Set(['vending-machine', 'filing-cabinet', 'sorting-case', 'server-rack','shuttered-kiosk', 'water-cooler', 'specimen-tank']);
-const SEATED_AT = new Set(['office-desk', 'monitor-bank']);
+const SEATED_AT = new Set(['office-desk', 'monitor-bank', 'reception-desk', 'map-table']);
 
 const districts = [...GAME_CONTENT.districts.values()];
 const dressingOf = (objects: readonly ObjectPlacement[]) => objects.filter((object) => object.instanceId.includes('-dressing-'));
@@ -22,7 +23,7 @@ describe('room dressing', () => {
 
   test('dressed chairs face a desk or console', () => {
     for (const district of districts) {
-      const at = new Map(district.objects.map((object) => [`${object.position.x},${object.position.y}`, object.objectId]));
+      const at = new Map(district.objects.flatMap((object) => objectFootprintTiles(GAME_CONTENT.worldObjects.get(object.objectId), object).map((tile) => [`${tile.x},${tile.y}`, object.objectId] as const)));
       for (const chair of dressingOf(district.objects).filter((object) => object.objectId === 'office-chair')) {
         const ahead = offset(chair.position, chair.facing ?? 'south');
         assert.ok(SEATED_AT.has(at.get(`${ahead.x},${ahead.y}`) ?? ''), `${chair.instanceId} faces ${at.get(`${ahead.x},${ahead.y}`) ?? 'nothing'}`);

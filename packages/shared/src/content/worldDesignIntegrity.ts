@@ -1,7 +1,7 @@
 import type { DistrictId } from '../ids.ts';
 import { parseTileLayout, type DistrictDefinition, type ObjectPlacement, type TileLayout } from '../world/district.ts';
 import type { WorldObjectDefinition } from '../world/entities.ts';
-import { objectFootprintTiles } from '../world/footprint.ts';
+import { objectFootprintTiles, WALL_FIXTURE_MODELS } from '../world/footprint.ts';
 import { CARDINAL_OFFSETS, chebyshevDistance, rectContains, tileKey, type Facing, type TilePoint, type TileRect } from '../world/geometry.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
 import { TILE_KINDS } from '../world/tiles.ts';
@@ -206,8 +206,6 @@ function findTierIssues(content: GameContent, level: ResolvedLevel, rebuilt: Rea
     }
   }
 }
-
-const WALL_FIXTURE_MODELS: ReadonlySet<string> = new Set(['bulkhead', 'transitLift', 'wallLift', 'valveWheel', 'ventPanel', 'noticeBoard', 'wallShelf', 'warningSign', 'locker', 'storageLocker', 'herbCabinet', 'timetableBoard']);
 
 const BACK_EDGE_OFFSET: Record<Facing, TilePoint> = { south: { x: 0, y: -1 }, north: { x: 0, y: 1 }, east: { x: -1, y: 0 }, west: { x: 1, y: 0 } };
 

@@ -58,8 +58,11 @@ export function findPrefabIssues(prefab: Prefab, objectOf: (id: WorldObjectId) =
       return;
     }
     const { width, height } = objectFootprintSize(definition, piece.facing);
+    const canopy = definition.deck === true && !definition.blocksMovement;
     for (let dy = 0; dy < height; dy++) {
       for (let dx = 0; dx < width; dx++) {
+        const post = (dx === 0 || dx === width - 1) && (dy === 0 || dy === height - 1);
+        if (canopy && !post) continue;
         const key = `${piece.dx + dx},${piece.dy + dy}`;
         const other = owner.get(key);
         if (other !== undefined) issues.push(`${prefab.id} pieces ${other + 1} and ${index + 1} overlap at ${key}`);
