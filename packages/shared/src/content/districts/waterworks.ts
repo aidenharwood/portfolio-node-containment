@@ -90,10 +90,10 @@ const residents: CreaturePlacement[] = [
     { instanceId: 'ww-tanks-bloat-b', creatureId: 'sump-bloat', position: plan.at('settling-tanks', 25, 22) },
     { instanceId: 'ww-tanks-bloat-c', creatureId: 'sump-bloat', position: plan.at('settling-tanks', 1, 12) },
     { instanceId: 'ww-tanks-bloat-d', creatureId: 'sump-bloat', position: plan.at('settling-tanks', 48, 12) },
-    { instanceId: 'ww-tanks-bloat-e', creatureId: 'sump-bloat', position: plan.at('settling-tanks', 7, 27) },
+    { instanceId: 'ww-tanks-bloat-e', creatureId: 'sump-bloat', position: plan.at('settling-tanks', 7, 26) },
     { instanceId: 'ww-outfall-skimmer-a', creatureId: 'silt-skimmer', position: plan.at('outfall', 2, 1) },
     { instanceId: 'ww-outfall-skimmer-b', creatureId: 'silt-skimmer', position: plan.at('outfall', 31, 2) },
-    { instanceId: 'ww-outfall-mother', creatureId: 'sump-mother', position: plan.at('outfall', 12, 23) },
+    { instanceId: 'ww-outfall-mother', creatureId: 'sump-mother', position: plan.at('outfall', 12, 22) },
   ];
 
 const placed = [...npcs, ...fixtures, ...residents];

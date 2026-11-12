@@ -4,6 +4,7 @@ import { CARDINAL_OFFSETS, chebyshevDistance, rectContains, tileKey, type TilePo
 import type { ResolvedLevel } from '../world/levelLayout.ts';
 import { TILE_KINDS } from '../world/tiles.ts';
 import type { GameContent } from './gameContent.ts';
+import { findFootprintIssues } from './footprintIntegrity.ts';
 import { overworldLevelOf } from './overworldIntegrity.ts';
 
 export const MIN_EXIT_WIDTH = 9;
@@ -241,5 +242,6 @@ export function findWorldDesignIssues(content: GameContent): string[] {
     findFixtureIssues(content, level, issues);
   }
   findLineIssues(content, issues);
+  issues.push(...findFootprintIssues(content));
   return issues;
 }

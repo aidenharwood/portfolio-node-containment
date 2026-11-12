@@ -109,7 +109,7 @@ const residents: CreaturePlacement[] = [
     { instanceId: 'cv-plant-mote-e', creatureId: 'frost-mote', position: plan.at('freezer-plant', 1, 16) },
     { instanceId: 'cv-husk-ward-a', creatureId: 'rime-husk', position: plan.at('husk-ward', 8, 2) },
     { instanceId: 'cv-husk-ward-b', creatureId: 'rime-husk', position: plan.at('husk-ward', 28, 2) },
-    { instanceId: 'cv-husk-ward-c', creatureId: 'rime-husk', position: plan.at('husk-ward', 13, 12) },
+    { instanceId: 'cv-husk-ward-c', creatureId: 'rime-husk', position: plan.at('husk-ward', 13, 11) },
     { instanceId: 'cv-husk-ward-d', creatureId: 'rime-husk', position: plan.at('husk-ward', 31, 22) },
     { instanceId: 'cv-husk-ward-e', creatureId: 'rime-husk', position: plan.at('husk-ward', 6, 23) },
     { instanceId: 'cv-husk-office-a', creatureId: 'rime-husk', position: plan.at('curator-office', 3, 22) },

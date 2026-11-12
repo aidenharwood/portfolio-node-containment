@@ -85,7 +85,7 @@ const residents: CreaturePlacement[] = [
     { instanceId: 'hydro-crawler-hall-d', creatureId: 'thorn-crawler', position: plan.at('grow-hall', 42, 44) },
     { instanceId: 'hydro-drifter-a', creatureId: 'spore-drifter', position: plan.at('greenhouse', 9, 13) },
     { instanceId: 'hydro-drifter-b', creatureId: 'spore-drifter', position: plan.at('greenhouse', 28, 3) },
-    { instanceId: 'hydro-drifter-c', creatureId: 'spore-drifter', position: plan.at('heart-bed', 2, 2) },
+    { instanceId: 'hydro-drifter-c', creatureId: 'spore-drifter', position: plan.at('heart-bed', 2, 1) },
     { instanceId: 'hydro-drifter-d', creatureId: 'spore-drifter', position: plan.at('grow-hall', 3, 58) },
   ];
 
