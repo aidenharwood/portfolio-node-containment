@@ -1,4 +1,4 @@
-import type { DistrictId, TilePoint } from '@containment/shared';
+import type { DistrictId, LevelId, TilePoint } from '@containment/shared';
 
 export const PLAN_LAYERS = ['tiles', 'rooms', 'objects', 'dressing', 'npcs', 'lights', 'decals', 'issues'] as const;
 export type PlanLayer = (typeof PLAN_LAYERS)[number];
@@ -7,6 +7,7 @@ export type ViewMode = 'split' | '2d' | '3d';
 
 export interface ViewState {
   readonly district: DistrictId;
+  readonly level?: LevelId;
   readonly room?: string;
   readonly view: ViewMode;
   readonly yaw: number;
@@ -32,7 +33,7 @@ const focusOf = (text: string | null): TilePoint | undefined => {
   return match ? { x: Number(match[1]), y: Number(match[2]) } : undefined;
 };
 
-export function readViewState(search: string, known: ReadonlySet<DistrictId>): ViewState {
+export function readViewState(search: string, known: ReadonlySet<DistrictId>, levels: ReadonlySet<LevelId> = new Set()): ViewState {
   const params = new URLSearchParams(search);
   const requested = params.get('district');
   const district = requested !== null && known.has(requested) ? requested : ([...known][0] ?? '');
@@ -40,9 +41,11 @@ export function readViewState(search: string, known: ReadonlySet<DistrictId>): V
   const layersText = params.get('layers');
   const layers = layersText === null ? DEFAULTS.layers : PLAN_LAYERS.filter((layer) => layersText.split(',').includes(layer));
   const room = params.get('room');
+  const level = params.get('level');
   const focus = focusOf(params.get('focus'));
   return {
     district,
+    ...(level !== null && levels.has(level) ? { level } : {}),
     ...(room === null || room === '' ? {} : { room }),
     view,
     yaw: numberOf(params.get('yaw'), DEFAULTS.yaw),
@@ -56,6 +59,7 @@ export function readViewState(search: string, known: ReadonlySet<DistrictId>): V
 export function writeViewState(state: ViewState): string {
   const params = new URLSearchParams();
   params.set('district', state.district);
+  if (state.level) params.set('level', state.level);
   if (state.room) params.set('room', state.room);
   params.set('view', state.view);
   params.set('yaw', String(Math.round(state.yaw * 10) / 10));

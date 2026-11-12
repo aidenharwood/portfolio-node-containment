@@ -26,3 +26,11 @@ test('a huge zoom is clamped and unknown layers are dropped', () => {
   assert.equal(state.zoom, 8);
   assert.deepEqual(state.layers, ['objects']);
 });
+
+test('a known level wins over the district and an unknown level is dropped', () => {
+  const levels = new Set(['main-floor']);
+  assert.equal(readViewState('?level=main-floor&district=x', KNOWN, levels).level, 'main-floor');
+  assert.equal(readViewState('?level=nowhere&district=meridian-atrium', KNOWN, levels).level, undefined);
+  const state = readViewState('?level=main-floor', KNOWN, levels);
+  assert.equal(readViewState(writeViewState(state), KNOWN, levels).level, 'main-floor');
+});

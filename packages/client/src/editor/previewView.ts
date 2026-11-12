@@ -20,6 +20,7 @@ const BASE_DISTANCE = 11;
 const PREVIEW_FOG = 0.006;
 const BUILD_BUDGET_MS = 12;
 const NOTHING: ReadonlySet<string> = new Set();
+const MAX_REACH = 8;
 
 export class PreviewView {
   private readonly canvas = document.createElement('canvas');
@@ -75,7 +76,7 @@ export class PreviewView {
     this.level = new LevelScene(zone);
     this.scene.add(this.level.root);
     this.sceneLook.resetLights();
-    const span = Math.ceil(Math.max(zone.layout.width, zone.layout.height) / CHUNK_SIZE) + 1;
+    const span = Math.min(MAX_REACH, Math.ceil(Math.max(zone.layout.width, zone.layout.height) / CHUNK_SIZE) + 1);
     this.reach = { build: span, retain: span };
   }
 

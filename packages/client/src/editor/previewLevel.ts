@@ -28,3 +28,7 @@ export function previewZone(content: GameContent, districtId: DistrictId): Activ
   const definition = previewLevel(content, districtId);
   return { definition, layout: definition.layout, grid: createObjectWalkabilityGrid(definition.layout, definition.objects, (objectId) => content.worldObjects.get(objectId)) };
 }
+
+export function zoneOfLevel(content: GameContent, definition: ResolvedLevel): ActiveZone {
+  return { definition, layout: definition.layout, grid: createObjectWalkabilityGrid(definition.layout, definition.objects, (objectId) => content.worldObjects.get(objectId)) };
+}

@@ -22,7 +22,7 @@
 | Add an interactive object          | `shared/src/content/worldObjects.ts`                |
 | Write a quest                      | `shared/src/content/quests/*.ts`, then register it in `gameContent.ts` |
 | Build or modify a district         | `shared/src/content/districts/layouts/<district-id>.json` (its module in `districts/*.ts` only loads it) |
-| Look at a district                 | `npm run plan -- <district> [room]`, or `npm run dev` and open `/editor.html` |
+| Look at or edit a district or level | `npm run plan -- <district> [room]`, or `npm run dev`, open `/editor.html` and press Edit |
 | Dress rooms with props and crowds | `shared/src/content/prefabs/*.ts`, `compositions.ts`, `clutterObjects.ts`, `ambientNpcs.ts` (models in `client/src/render/models/clutterModels.ts`) |
 | Place districts or add a connector | `shared/src/content/levels/*.ts`                    |
 | Add a recipe, material or resource node | `shared/src/content/{recipes,craftingItems,craftingObjects}.ts` |
@@ -92,7 +92,7 @@ Read `WORLD_DESIGN.md` first: it holds the rules, and `findWorldDesignIssues` en
    - **Walking:** open exits are at least nine tiles wide and meet a neighbour's floor. Put a filler district between places (see `content/districts/verdanceConcourse.ts`) and give the new district two ways in unless it is a deliberate `deadEnd`.
    - **Gated:** a two-wide `exit` or `link` marked `gate` with a door object (`door: { conditions }`) on its tiles. See Doors in `ARCHITECTURE.md`.
    - **Across levels:** use an object whose interaction has conditions and a `teleport` effect, or a tram line. A teleport targets `{ districtId, position }`, with the position read from the destination's `anchors`.
-9. Look at it: `npm run plan -- <district>` in a terminal, or `npm run dev` and open `/editor.html?district=<district>` for the plan, the 3D view and its issues. Run `npm test`. `findLevelIssues` flags overlaps, walkable tiles nothing can reach, duplicate instance ids, and spawns, teleports or recoveries on unwalkable tiles; `findWorldDesignIssues` flags the rest.
+9. Build and tune it in the editor: `npm run dev`, open `/editor.html?district=<district>`, press Edit, and drag, rotate, add from the palette, paint tiles and set room dressing. `Ctrl+S` saves through the dev server, which refuses a layout that does not load and writes the canonical file; Check runs every content check against your edits. Then look at it: `npm run plan -- <district>` in a terminal, or `npm run dev` and open `/editor.html?district=<district>` for the plan, the 3D view and its issues. Run `npm test`. `findLevelIssues` flags overlaps, walkable tiles nothing can reach, duplicate instance ids, and spawns, teleports or recoveries on unwalkable tiles; `findWorldDesignIssues` flags the rest.
 
 ### Add a pocket dimension
 

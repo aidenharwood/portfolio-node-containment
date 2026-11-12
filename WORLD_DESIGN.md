@@ -97,4 +97,4 @@ Do not build on these; later wings attach here (see `docs/superpowers/specs/2026
 3. Give it at least one landmark, at least one filler room, and props in every room.
 4. Attach it in the level file with `joinDistricts`, and attach filler districts so it has two ways in.
 5. Register it in `gameContent.ts`. Run `npm run typecheck` and `npm test` and fix what `findContentIssues` reports.
-6. Look at it in the viewer (`npm run dev`, then `/editor.html?district=<district-id>`): read the plan, orbit the 3D view, and clear the issues panel. Then run the game and walk it end to end.
+6. Build it in the editor (`npm run dev`, then `/editor.html?district=<district-id>`, Edit): place and tune everything there, orbit the 3D view, open its level to check the seams, and save with the issues panel clear. Then run the game and walk it end to end.

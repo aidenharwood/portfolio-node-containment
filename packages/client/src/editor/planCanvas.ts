@@ -40,7 +40,7 @@ const MARK_LAYER: Readonly<Record<PlanMarkKind, PlanLayer>> = {
   light: 'lights',
 };
 
-const tileColor = (kind: TileKindId): string => {
+export const tileColor = (kind: TileKindId): string => {
   if (kind === 'void') return '#05080a';
   if (kind === 'door') return '#b8932a';
   if (kind === 'track') return '#4a3a2a';
@@ -115,6 +115,7 @@ export class PlanCanvas {
   private selectionRect: TileBox | null = null;
   private ghostRect: TileBox | null = null;
   private editing = false;
+  private tiles: HTMLCanvasElement | null = null;
   private editPointer = false;
   private pointerListeners: Record<'down' | 'move' | 'up', ((tile: TilePoint, event?: PointerEvent) => void)[]> = { down: [], move: [], up: [] };
 
@@ -177,6 +178,20 @@ export class PlanCanvas {
     });
   }
 
+  setTiles(image: { readonly width: number; readonly height: number; readonly pixels: Uint8ClampedArray } | null): void {
+    if (!image) {
+      this.tiles = null;
+      this.draw();
+      return;
+    }
+    const bitmap = document.createElement('canvas');
+    bitmap.width = image.width;
+    bitmap.height = image.height;
+    bitmap.getContext('2d')?.putImageData(new ImageData(new Uint8ClampedArray(image.pixels), image.width, image.height), 0, 0);
+    this.tiles = bitmap;
+    this.draw();
+  }
+
   setEditing(on: boolean): void {
     this.editing = on;
     this.canvas.style.cursor = on ? 'default' : 'crosshair';
@@ -220,6 +235,10 @@ export class PlanCanvas {
   }
 
   fit(): void {
+    if (this.tiles) {
+      this.fitRect({ x: 0, y: 0, width: this.tiles.width, height: this.tiles.height });
+      return;
+    }
     const tiles = this.shapes.filter((shape) => shape.kind === 'tile');
     if (tiles.length === 0) return;
     this.fitRect({ x: 0, y: 0, width: Math.max(...tiles.map((shape) => shape.x)) + 1, height: Math.max(...tiles.map((shape) => shape.y)) + 1 });
@@ -251,6 +270,10 @@ export class PlanCanvas {
     context.fillRect(0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
     context.save();
     context.translate(this.offsetX, this.offsetY);
+    if (this.tiles) {
+      context.imageSmoothingEnabled = false;
+      context.drawImage(this.tiles, 0, 0, this.tiles.width * s, this.tiles.height * s);
+    }
     for (const shape of this.shapes) {
       const x = shape.x * s;
       const y = shape.y * s;

@@ -293,3 +293,19 @@ body {
   gap: 6px;
   margin-top: 10px;
 }
+
+#editor > .bar {
+  grid-row: 1;
+}
+
+#editor > .tools {
+  grid-row: 2;
+}
+
+#editor > .views {
+  grid-row: 3;
+}
+
+#editor > .issues {
+  grid-row: 4;
+}
