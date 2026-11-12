@@ -4,16 +4,15 @@ import {
   doorKeyOf,
   chunkKeyOf,
   chunkOf,
-  TILE_KINDS,
   type ChunkCoord,
   type ChunkKey,
   type InstanceId,
   type TilePoint,
-  type ZoneLight,
 } from '@containment/shared';
 import { AdditiveBlending, Group, MeshBasicMaterial, type Vector3 } from 'three';
 import type { ActiveZone } from '../../state/worldState.ts';
-import { ChunkView, chunkRegion, type ChunkContents, type FixtureSpot, type IndexedPlacement, type LightSource, type ObjectView, type WallPiece } from './chunkView.ts';
+import { planWallLighting, type FillLight, type SconceSpot } from './wallLights.ts';
+import { ChunkView, chunkRegion, type ChunkContents, type IndexedPlacement, type LightSource, type ObjectView, type WallPiece } from './chunkView.ts';
 
 export type { LightSource, ObjectView, WallPiece } from './chunkView.ts';
 
@@ -27,34 +26,10 @@ const DOOR_OPEN_RANGE = 2.6;
 const doorGroupOf = (view: ObjectView): string => assemblyInstanceOf(view.instanceId) ?? view.instanceId;
 const FADE_RADIUS = 1.4;
 const FADE_REACH = 7;
-const FIXTURE_SPACING = 4;
-const FIXTURE_MIN_SEPARATION = 2.5;
-const FIXTURE_OVERHEAD_ALLOWANCE = 1.2;
 const DEPLETED_HEIGHT = 0.35;
 const BUILD_RADIUS = 1;
 const RETAIN_RADIUS = 2;
 const BUILD_BUDGET_MS = 5;
-
-function ceilingFixtureSpots(zone: ActiveZone): FixtureSpot[] {
-  const occupied = new Set(zone.definition.objects.map((placement) => `${placement.position.x},${placement.position.y}`));
-  const isOpenFloor = (x: number, y: number) => TILE_KINDS[zone.layout.tileAt({ x, y })].walkable && !occupied.has(`${x},${y}`);
-  const positions: TilePoint[] = [];
-  const areas = [...zone.definition.areas].sort((a, b) => a.rect.width * a.rect.height - b.rect.width * b.rect.height);
-  for (const { rect } of areas) {
-    const columns = Math.max(1, Math.round(rect.width / FIXTURE_SPACING));
-    const rows = Math.max(1, Math.round(rect.height / FIXTURE_SPACING));
-    for (let column = 0; column < columns; column++) {
-      for (let row = 0; row < rows; row++) {
-        const x = Math.floor(rect.x + ((column + 0.5) * rect.width) / columns);
-        const y = Math.floor(rect.y + ((row + 0.5) * rect.height) / rows);
-        if (!isOpenFloor(x, y)) continue;
-        if (positions.some((existing) => Math.hypot(existing.x - x, existing.y - y) < FIXTURE_MIN_SEPARATION)) continue;
-        positions.push({ x, y });
-      }
-    }
-  }
-  return positions.map((position, index) => ({ position, index, failing: zone.definition.ambienceAt(position).fixtures === 'failing' }));
-}
 
 function groupByChunk<T>(entries: readonly T[], positionOf: (entry: T) => TilePoint): Map<ChunkKey, T[]> {
   const grouped = new Map<ChunkKey, T[]>();
@@ -75,8 +50,8 @@ export class LevelScene {
   private readonly zone: ActiveZone;
   private readonly chunks = new Map<ChunkKey, { readonly coord: ChunkCoord; readonly view: ChunkView }>();
   private readonly objectsByChunk: Map<ChunkKey, IndexedPlacement[]>;
-  private readonly fixturesByChunk: Map<ChunkKey, FixtureSpot[]>;
-  private readonly lightsByChunk: Map<ChunkKey, ZoneLight[]>;
+  private readonly sconcesByChunk: Map<ChunkKey, SconceSpot[]>;
+  private readonly fillsByChunk: Map<ChunkKey, FillLight[]>;
   private deferredCentre: ChunkKey | null = null;
   private awaitingPaint = false;
   private pendingNearby = true;
@@ -85,8 +60,9 @@ export class LevelScene {
   constructor(zone: ActiveZone) {
     this.zone = zone;
     this.objectsByChunk = groupByChunk(zone.definition.objects.map((placement, index) => ({ placement, index })), ({ placement }) => placement.position);
-    this.fixturesByChunk = groupByChunk(ceilingFixtureSpots(zone), (spot) => spot.position);
-    this.lightsByChunk = groupByChunk(zone.definition.lights, (light) => light.position);
+    const lighting = planWallLighting(zone);
+    this.sconcesByChunk = groupByChunk(lighting.sconces, (spot) => spot.floor);
+    this.fillsByChunk = groupByChunk(lighting.fills, (fill) => fill.position);
   }
 
   get loading(): boolean {
@@ -204,7 +180,7 @@ export class LevelScene {
     };
     for (const view of this.readyViews()) {
       for (const wall of view.walls) apply(wall, blocksView(wall.tile, 0));
-      for (const fixture of view.fixtures) apply(fixture, blocksView(fixture.tile, FIXTURE_OVERHEAD_ALLOWANCE));
+      for (const fixture of view.fixtures) apply(fixture, blocksView(fixture.tile, 0));
       view.applyFades();
     }
   }
@@ -224,8 +200,8 @@ export class LevelScene {
     if (!region) return null;
     const contents: ChunkContents = {
       objects: this.objectsByChunk.get(key) ?? [],
-      fixtures: this.fixturesByChunk.get(key) ?? [],
-      lights: this.lightsByChunk.get(key) ?? [],
+      sconces: this.sconcesByChunk.get(key) ?? [],
+      fills: this.fillsByChunk.get(key) ?? [],
     };
     const view = new ChunkView(this.zone, region, contents, this.ringMaterial);
     this.chunks.set(key, { coord, view });

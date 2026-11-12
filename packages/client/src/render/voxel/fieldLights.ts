@@ -1,11 +1,6 @@
 import { Color, DataTexture, MathUtils, NearestFilter, RGBAFormat, UnsignedByteType, Vector2, Vector3, Vector4, type Material, type Matrix4 } from 'three';
 
 export const FIELD_LIGHT_LIMIT = 96;
-export const LIGHT_CONE_ANGLE = MathUtils.degToRad(55);
-export const LIGHT_PENUMBRA = 0.7;
-const CONE_COS = Math.cos(LIGHT_CONE_ANGLE).toFixed(6);
-const PENUMBRA_COS = Math.cos(LIGHT_CONE_ANGLE * (1 - LIGHT_PENUMBRA)).toFixed(6);
-const CONE_SPREAD = Math.tan(LIGHT_CONE_ANGLE);
 const GRID_CELL = 2;
 const GRID_CELLS = 64;
 const CELL_TEXELS = 4;
@@ -28,15 +23,12 @@ gridTexture.needsUpdate = true;
 const uniforms = {
   fieldLightPositions: { value: Array.from({ length: FIELD_LIGHT_LIMIT }, () => new Vector4()) },
   fieldLightColors: { value: Array.from({ length: FIELD_LIGHT_LIMIT }, () => new Vector3()) },
-  fieldLightUp: { value: new Vector3(0, 1, 0) },
   fieldLightGrid: { value: gridTexture },
   fieldLightGridOrigin: { value: new Vector2() },
   fieldLightGridEnabled: { value: 0 },
 };
 
-const worldUp = new Vector3();
-
-export const fieldLightFootprint = (light: FieldLight): number => Math.min(light.reach, Math.max(0, light.position.y) * CONE_SPREAD);
+export const fieldLightFootprint = (light: FieldLight): number => light.reach;
 
 export function buildFieldLightGrid(lights: readonly FieldLight[], centre: Vector3): void {
   const originX = Math.round(centre.x) - (GRID_CELLS * GRID_CELL) / 2;
@@ -94,7 +86,6 @@ export function setFieldLights(lights: readonly FieldLight[], viewMatrix: Matrix
     color.set(light.color.r, light.color.g, light.color.b);
   }
   uniforms.fieldLightGridEnabled.value = count > 0 ? 1 : 0;
-  uniforms.fieldLightUp.value.copy(worldUp.set(0, 1, 0).transformDirection(viewMatrix));
 }
 
 export function clearFieldLights(): void {
@@ -117,7 +108,6 @@ export function receiveFieldLights<T extends Material>(material: T): T {
 #define FIELD_CELL_TEXELS ${CELL_TEXELS}
 uniform vec4 fieldLightPositions[ FIELD_LIGHT_LIMIT ];
 uniform vec3 fieldLightColors[ FIELD_LIGHT_LIMIT ];
-uniform vec3 fieldLightUp;
 uniform sampler2D fieldLightGrid;
 uniform vec2 fieldLightGridOrigin;
 uniform int fieldLightGridEnabled;
@@ -144,9 +134,9 @@ if ( fieldLightGridEnabled == 1 && fieldCell.x >= 0 && fieldCell.y >= 0 && field
 			if ( fieldDistance >= fieldLight.w ) continue;
 			IncidentLight fieldIncident;
 			fieldIncident.direction = fieldVector / fieldDistance;
-			float fieldSpot = getSpotAttenuation( ${CONE_COS}, ${PENUMBRA_COS}, dot( fieldIncident.direction, fieldLightUp ) );
-			if ( fieldSpot <= 0.0 ) continue;
-			fieldIncident.color = fieldLightColors[ fieldIndex ] * fieldSpot * getDistanceAttenuation( fieldDistance, fieldLight.w, 0.0 );
+			float fieldRatio = fieldDistance / fieldLight.w;
+			float fieldFalloff = 1.0 - fieldRatio * fieldRatio;
+			fieldIncident.color = fieldLightColors[ fieldIndex ] * ( fieldFalloff * fieldFalloff );
 			fieldIncident.visible = true;
 			RE_Direct( fieldIncident, geometryPosition, geometryNormal, geometryViewDir, geometryClearcoatNormal, material, reflectedLight );
 		}
@@ -154,7 +144,7 @@ if ( fieldLightGridEnabled == 1 && fieldCell.x >= 0 && fieldCell.y >= 0 && field
 }`,
       );
   };
-  material.customProgramCacheKey = () => `field-light-grid-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}`;
+  material.customProgramCacheKey = () => `field-light-point-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}`;
   return material;
 }
 

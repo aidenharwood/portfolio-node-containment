@@ -11,22 +11,22 @@ import {
   type TilePoint,
   type TileRect,
   type WorldObjectDefinition,
-  type ZoneLight,
 } from '@containment/shared';
-import { Group, Matrix4, Mesh, Quaternion, RingGeometry, Vector3, type BufferGeometry, type Material, type Object3D } from 'three';
+import { Box3, Color, Group, Matrix4, Mesh, Quaternion, RingGeometry, Vector3, type BufferGeometry, type Material, type Object3D } from 'three';
 import type { ActiveZone } from '../../state/worldState.ts';
 import { buildObjectModel, type AnimatedPart } from '../models/objectModels.ts';
-import { hex, noise3 } from '../voxel/palette.ts';
+import { hex } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE } from '../voxel/voxelKinds.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 import { mergeVoxelGeometries, type VoxelGeometryPart } from '../voxel/mergeVoxelGeometry.ts';
 import { meshVoxels, type VoxelMeshes } from '../voxel/voxelMesher.ts';
 import { createVoxelObject, type VoxelLayer, type VoxelObjectOptions } from '../voxel/voxelMaterials.ts';
 import { FadeBatch } from './fadeBatch.ts';
+import { FACING_STEP, type FillLight, type SconceSpot } from './wallLights.ts';
 import { LiquidSurface } from './liquidSurface.ts';
 import { buildFloorScatter } from './floorScatter.ts';
 import { createTileVolume, paintTileRows } from './levelVoxels.ts';
-import { MODEL_VOXEL_SIZE, TILE_RESOLUTION, WALL_HEIGHT, ZONE_MESH_ORIGIN, ZONE_VOLUME_HEIGHT, ZONE_VOXEL_SIZE } from './worldScale.ts';
+import { MODEL_VOXEL_SIZE, TILE_RESOLUTION, ZONE_MESH_ORIGIN, ZONE_VOLUME_HEIGHT, ZONE_VOXEL_SIZE } from './worldScale.ts';
 
 export interface LightSource {
   readonly position: Vector3;
@@ -34,7 +34,6 @@ export interface LightSource {
   readonly intensity: number;
   readonly radius: number;
   readonly flicker: boolean;
-  readonly shadow: boolean;
   readonly seed: number;
 }
 
@@ -56,12 +55,6 @@ export interface ObjectView {
   readonly seed: number;
 }
 
-export interface FixtureSpot {
-  readonly position: TilePoint;
-  readonly index: number;
-  readonly failing: boolean;
-}
-
 export interface IndexedPlacement {
   readonly placement: ObjectPlacement;
   readonly index: number;
@@ -69,14 +62,21 @@ export interface IndexedPlacement {
 
 export interface ChunkContents {
   readonly objects: readonly IndexedPlacement[];
-  readonly fixtures: readonly FixtureSpot[];
-  readonly lights: readonly ZoneLight[];
+  readonly sconces: readonly SconceSpot[];
+  readonly fills: readonly FillLight[];
 }
 
 const OBJECT_FACING_YAW: Readonly<Record<Facing, number>> = { south: 0, east: Math.PI / 2, north: Math.PI, west: -Math.PI / 2 };
-export const CEILING_FIXTURE_HEIGHT = WALL_HEIGHT - 0.06;
-const CEILING_LIGHT_COLOR = 0xe6f2ff;
+const SCONCE_LIGHT_COLOR = 0xffe2b8;
 const FAILING_LIGHT_COLOR = 0xff8a6a;
+const SCONCE_LIGHT_HEIGHT = 1.45;
+const SCONCE_LIGHT_OFFSET = 0.4;
+const FILL_LIGHT_HEIGHT = 1.6;
+const GLOW_MIN_FACES = 12;
+const GLOW_INTENSITY = 0.45;
+const GLOW_MIN_RADIUS = 1.6;
+const GLOW_MAX_RADIUS = 3.2;
+const FACING_TOWARD_WALL_YAW: Readonly<Record<Facing, number>> = { north: 0, south: Math.PI, west: Math.PI / 2, east: -Math.PI / 2 };
 
 export function chunkRegion(chunk: ChunkCoord, zone: ActiveZone): TileRect | null {
   const x = chunk.cx * CHUNK_SIZE;
@@ -117,7 +117,8 @@ const bandsOf = (region: TileRect): number[] => {
   for (let band = Math.floor(region.y / BAND_ROWS); band <= Math.floor((region.y + region.height - 1) / BAND_ROWS); band++) bands.push(band);
   return bands;
 };
-const FIXTURE_MESH_CACHE = new Map<boolean, VoxelMeshes>();
+const SCONCE_MESH_CACHE = new Map<boolean, VoxelMeshes>();
+const GLOW_CACHE = new Map<string, Glow | null>();
 
 const isStaticDecor = (definition: WorldObjectDefinition, parts: ObjectMeshes): boolean =>
   definition.interactions.length === 0 && !definition.door && !definition.light && parts.animated.length === 0;
@@ -169,18 +170,17 @@ export class ChunkView {
     if (hasStructure(zone, region)) this.planStructure(zone, region, new Set(contents.objects.map(({ placement }) => tileKey(placement.position))));
     contents.objects.forEach(({ placement, index }) => this.steps.push(() => this.addObject(placement, index)));
     bandsOf(region).forEach((band) => this.steps.push(() => this.buildDecor(band)));
-    contents.fixtures.forEach((spot) => this.steps.push(() => this.addCeilingFixture(spot)));
+    contents.sconces.forEach((spot) => this.steps.push(() => this.addSconce(spot)));
     this.steps.push(() => {
       this.buildFixtures();
-      contents.lights.forEach((light, index) => {
+      contents.fills.forEach(({ position, light }, index) => {
         this.lights.push({
-          position: new Vector3(light.position.x, WALL_HEIGHT + 0.6, light.position.y),
+          position: new Vector3(position.x, FILL_LIGHT_HEIGHT, position.y),
           color: hex(light.color),
           intensity: light.intensity,
           radius: light.radius,
           flicker: false,
-          shadow: true,
-          seed: light.position.x * 13 + light.position.y + index,
+          seed: position.x * 13 + position.y + index,
         });
       });
     });
@@ -289,6 +289,7 @@ export class ChunkView {
     const seed = assembly ? assemblySeed(assembly) : (placement.position.x * 31 + placement.position.y * 17 + index) % 97;
     const parts = objectMeshesFor(definition.model, seed % MODEL_VARIANTS);
     const scale = definition.modelScale ?? 1;
+    this.addObjectLight(definition, placement, parts, `${definition.model}:${seed % MODEL_VARIANTS}`, scale, seed);
     if (isStaticDecor(definition, parts)) {
       this.addDecor(parts.base, placement, scale);
       return;
@@ -314,17 +315,17 @@ export class ChunkView {
     this.root.add(group, objectiveRing);
     const height = parts.heightVoxels * MODEL_VOXEL_SIZE * scale;
     this.objects.push({ instanceId: placement.instanceId, placement, definition, group, objectiveRing, height, animated, seed });
+  }
 
+  private addObjectLight(definition: WorldObjectDefinition, placement: ObjectPlacement, parts: ObjectMeshes, cacheKey: string, scale: number, seed: number): void {
+    const glow = glowOf(cacheKey, parts);
+    if (!definition.light && !glow) return;
+    const local = glow ? glow.centre.clone() : new Vector3(0, parts.heightVoxels * MODEL_VOXEL_SIZE + 0.2, 0);
+    const position = local.multiplyScalar(scale).applyAxisAngle(UP, OBJECT_FACING_YAW[placement.facing ?? 'south']).add(new Vector3(placement.position.x, 0, placement.position.y));
     if (definition.light) {
-      this.lights.push({
-        position: new Vector3(placement.position.x, Math.max(height + 0.35, WALL_HEIGHT + 0.3), placement.position.y),
-        color: hex(definition.light.color),
-        intensity: definition.light.intensity,
-        radius: definition.light.radius,
-        flicker: definition.light.flicker ?? false,
-        shadow: false,
-        seed,
-      });
+      this.lights.push({ position, color: hex(definition.light.color), intensity: definition.light.intensity, radius: definition.light.radius, flicker: definition.light.flicker ?? false, seed });
+    } else if (glow) {
+      this.lights.push({ position, color: glow.color, intensity: GLOW_INTENSITY, radius: Math.min(GLOW_MAX_RADIUS, GLOW_MIN_RADIUS + glow.size * scale * 1.5), flicker: false, seed });
     }
   }
 
@@ -359,7 +360,7 @@ export class ChunkView {
 
   private buildFixtures(): void {
     this.addBatch(
-      'ceilingFixtures',
+      'wallFixtures',
       this.fixturePieces.map(({ tile }) => tile),
       this.fixturePieces.map(({ meshes }) => meshes),
       { castShadow: false, receiveShadow: false },
@@ -368,36 +369,71 @@ export class ChunkView {
     this.fixturePieces.length = 0;
   }
 
-  private addCeilingFixture({ position, index, failing }: FixtureSpot): void {
-    const meshes = ceilingFixtureMeshes(failing);
-    const placed = (geometry: BufferGeometry | null) => geometry?.clone().translate(position.x, 0, position.y) ?? null;
-    this.fixturePieces.push({ tile: position, meshes: { solid: placed(meshes.solid), emissive: placed(meshes.emissive), glass: placed(meshes.glass) } });
+  private addSconce(spot: SconceSpot): void {
+    const meshes = sconceMeshes(spot.failing);
+    const transform = new Matrix4().compose(new Vector3(spot.floor.x, 0, spot.floor.y), new Quaternion().setFromAxisAngle(UP, FACING_TOWARD_WALL_YAW[spot.facing]), new Vector3(1, 1, 1));
+    const placed = (geometry: BufferGeometry | null) => geometry?.clone().applyMatrix4(transform) ?? null;
+    this.fixturePieces.push({ tile: spot.wall, meshes: { solid: placed(meshes.solid), emissive: placed(meshes.emissive), glass: placed(meshes.glass) } });
+    const step = FACING_STEP[spot.facing];
+    const reach = 0.5 - SCONCE_LIGHT_OFFSET;
     this.lights.push({
-      position: new Vector3(position.x, CEILING_FIXTURE_HEIGHT + 0.95, position.y),
-      color: failing ? FAILING_LIGHT_COLOR : CEILING_LIGHT_COLOR,
-      intensity: failing ? 1.05 : 1.2,
-      radius: failing ? 6.5 : 6,
-      flicker: failing ? index % 3 === 0 : noise3(position.x, position.y, 0, 77) > 0.93,
-      shadow: true,
-      seed: position.x * 7 + position.y,
+      position: new Vector3(spot.floor.x + step.x * reach, SCONCE_LIGHT_HEIGHT, spot.floor.y + step.y * reach),
+      color: spot.color ?? (spot.failing ? FAILING_LIGHT_COLOR : SCONCE_LIGHT_COLOR),
+      intensity: spot.intensity,
+      radius: spot.radius,
+      flicker: spot.flicker,
+      seed: spot.seed,
     });
   }
 }
 
-function ceilingFixtureMeshes(failing: boolean): VoxelMeshes {
-  const cached = FIXTURE_MESH_CACHE.get(failing);
+interface Glow {
+  readonly centre: Vector3;
+  readonly color: number;
+  readonly size: number;
+}
+
+function glowOf(cacheKey: string, parts: ObjectMeshes): Glow | null {
+  const cached = GLOW_CACHE.get(cacheKey);
+  if (cached !== undefined) return cached;
+  const geometries = [parts.base.emissive, ...parts.animated.map(({ meshes }) => meshes.emissive)].filter((geometry): geometry is BufferGeometry => geometry !== null);
+  const bounds = new Box3();
+  const sum = new Color(0, 0, 0);
+  let vertices = 0;
+  for (const geometry of geometries) {
+    geometry.computeBoundingBox();
+    if (geometry.boundingBox) bounds.union(geometry.boundingBox);
+    const colors = geometry.getAttribute('color');
+    if (!colors) continue;
+    for (let index = 0; index < colors.count; index++) {
+      sum.r += colors.getX(index);
+      sum.g += colors.getY(index);
+      sum.b += colors.getZ(index);
+    }
+    vertices += colors.count;
+  }
+  let glow: Glow | null = null;
+  if (vertices / 4 >= GLOW_MIN_FACES) {
+    sum.multiplyScalar(1 / vertices);
+    sum.multiplyScalar(1 / Math.max(sum.r, sum.g, sum.b, 0.001));
+    glow = { centre: bounds.getCenter(new Vector3()), color: sum.getHex(), size: bounds.getSize(new Vector3()).length() };
+  }
+  GLOW_CACHE.set(cacheKey, glow);
+  return glow;
+}
+
+function sconceMeshes(failing: boolean): VoxelMeshes {
+  const cached = SCONCE_MESH_CACHE.get(failing);
   if (cached) return cached;
-  const panelY = Math.round(CEILING_FIXTURE_HEIGHT / MODEL_VOXEL_SIZE);
-  const panelColor = failing ? 0xd9846a : 0xb4d4e6;
-  const panelStripe = failing ? 0x8a3a2a : 0x8fb3c8;
+  const frame = 0x2a343b;
+  const glow = failing ? 0xff9a72 : 0xffe6bf;
   const model = new VoxelModel();
-  model.fill(-6, panelY, -3, 5, panelY + 1, 2, (x, y, z) => {
-    const rim = x === -6 || x === 5 || z === -3 || z === 2 || y === panelY + 1;
-    return rim ? 0x2a343b : null;
-  });
-  model.fill(-5, panelY, -2, 4, panelY, 1, (x) => (x === 0 ? panelStripe : panelColor), VOXEL_EMISSIVE);
-  for (const x of [-5, 4]) model.fill(x, panelY + 2, 0, x, panelY + 12, 0, 0x1b2228);
+  model.fill(-2, 19, -8, 1, 27, -8, frame);
+  model.fill(-1, 20, -7, 0, 21, -7, frame);
+  model.fill(-2, 22, -7, 1, 22, -5, frame);
+  model.fill(-2, 23, -7, 1, 25, -5, (x, y) => (failing && x === 1 && y === 25 ? 0x5a3a30 : glow), VOXEL_EMISSIVE);
+  model.fill(-2, 26, -7, 1, 26, -5, frame);
   const meshes = model.mesh(MODEL_VOXEL_SIZE);
-  FIXTURE_MESH_CACHE.set(failing, meshes);
+  SCONCE_MESH_CACHE.set(failing, meshes);
   return meshes;
 }

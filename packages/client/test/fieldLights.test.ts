@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { Color, Vector3 } from 'three';
-import { buildFieldLightGrid, FIELD_LIGHTS_PER_CELL, fieldLightsAt, LIGHT_CONE_ANGLE, type FieldLight } from '../src/render/voxel/fieldLights.ts';
+import { buildFieldLightGrid, FIELD_LIGHTS_PER_CELL, fieldLightsAt, type FieldLight } from '../src/render/voxel/fieldLights.ts';
 
 const random = (() => {
   let state = 7;
@@ -12,9 +12,7 @@ const random = (() => {
 })();
 
 const reaches = (light: FieldLight, point: Vector3): boolean => {
-  const toLight = light.position.clone().sub(point);
-  const distance = toLight.length();
-  return distance < light.reach && toLight.normalize().y > Math.cos(LIGHT_CONE_ANGLE);
+  return light.position.distanceTo(point) < light.reach;
 };
 
 test('the light grid lists every field light that can reach a point', () => {
@@ -39,11 +37,11 @@ test('the light grid lists every field light that can reach a point', () => {
   assert.ok(checked > 1000);
 });
 
-test('a cell lists only lights whose footprint touches it', () => {
+test('a cell lists only lights whose reach touches it', () => {
   const centre = new Vector3(0, 0, 0);
-  const light: FieldLight = { position: new Vector3(10, 3, 10), color: new Color(1, 1, 1), reach: 9 };
+  const light: FieldLight = { position: new Vector3(10, 1.5, 10), color: new Color(1, 1, 1), reach: 6 };
   buildFieldLightGrid([light], centre);
   assert.deepEqual(fieldLightsAt(10, 10), [0]);
-  assert.deepEqual(fieldLightsAt(25, 10), []);
+  assert.deepEqual(fieldLightsAt(20, 10), []);
   assert.deepEqual(fieldLightsAt(-20, -20), []);
 });

@@ -11,7 +11,6 @@ import {
   PCFSoftShadowMap,
   Raycaster,
   Scene,
-  SpotLight,
   SRGBColorSpace,
   Vector2,
   Vector3,
@@ -36,10 +35,10 @@ import { ProjectileLayer } from './projectileLayer.ts';
 import { RouteLayer } from './routeLayer.ts';
 import { EncounterLayer } from './encounterLayer.ts';
 import { samePickTarget, type ClickMarker, type PickTarget } from './pickTarget.ts';
-import { buildFieldLightGrid, clearFieldLights, FIELD_LIGHT_LIMIT, fieldLightFade, LIGHT_CONE_ANGLE, LIGHT_PENUMBRA, setFieldLights, type FieldLight } from './voxel/fieldLights.ts';
+import { buildFieldLightGrid, clearFieldLights, FIELD_LIGHT_LIMIT, fieldLightFade, setFieldLights, type FieldLight } from './voxel/fieldLights.ts';
 import { hex, lighten } from './voxel/palette.ts';
 import { copyAmbience, createBlendedAmbience, easeAmbience, sampleAmbience, type BlendedAmbience } from './world/ambienceBlend.ts';
-import { assignLights, shadowStrength, type LightAssignment } from './lightAssignment.ts';
+import { assignLights, type LightAssignment } from './lightAssignment.ts';
 import { LevelScene, type LightSource } from './world/levelScene.ts';
 
 export interface RenderOverlay {
@@ -72,16 +71,17 @@ const FOOTPRINT_MODEL_SCALE: Readonly<Record<number, number>> = { 1: 1, 2: 1.75 
 
 const CONTAINMENT_FIELD = 'containment-field';
 const ENRAGE_MARK = 'enrage-mark';
-const LIGHT_LIMITS = { shadowed: 4, field: FIELD_LIGHT_LIMIT };
-const NO_LIGHTS: LightAssignment<LightSource> = { shadowed: [], field: [], edge: Infinity, shadowEdge: Infinity };
-const LIGHT_INTENSITY_SCALE = 4;
-const LIGHT_REACH = 1.5;
-const AMBIENT_BASE = 2.5;
-const AMBIENT_DARKNESS_WEIGHT = 2.4;
-const AMBIENT_FLOOR = 0.45;
+const NO_LIGHTS: LightAssignment<LightSource> = { lights: [], edge: Infinity };
+const LIGHT_INTENSITY_SCALE = 14;
+const LIGHT_REACH = 1.4;
+const AMBIENT_BASE = 2.6;
+const AMBIENT_DARKNESS_WEIGHT = 1.7;
+const AMBIENT_FLOOR = 1.25;
+const AMBIENT_SKY_LIFT = 0.74;
+const AMBIENT_GROUND_LIFT = 0.32;
 const KEY_BASE = 1;
-const KEY_DARKNESS_WEIGHT = 0.9;
-const KEY_FLOOR = 0.2;
+const KEY_DARKNESS_WEIGHT = 0.7;
+const KEY_FLOOR = 0.45;
 const LIGHT_REASSIGN_SECONDS = 0.25;
 const HURT_ANIMATION_MS = 300;
 const MUZZLE_REACH = 0.5;
@@ -106,7 +106,6 @@ export class GameRenderer {
   private readonly scene = new Scene();
   private readonly hemisphere = new HemisphereLight(0x9fc6d6, 0x05080a, 0.6);
   private readonly keyLight = new DirectionalLight(0xcfe8ff, 0.7);
-  private readonly lightPool: SpotLight[] = [];
   private readonly entities = new Map<EntityId, EntityView>();
   private readonly hoverRing = createGroundRing(0xffd23f, 0.34, 0.42);
   private readonly selfRing = createGroundRing(0x4fd8ff, 0.3, 0.36);
@@ -155,17 +154,6 @@ export class GameRenderer {
     this.scene.background = this.background;
     this.scene.add(this.projectiles.root, this.groundItems.root, this.hemisphere, this.keyLight, this.keyLight.target, this.hoverRing, this.selfRing, this.click.group, this.route.mesh, this.encounters.mesh);
 
-    for (let index = 0; index < LIGHT_LIMITS.shadowed; index++) {
-      const light = new SpotLight(0xffffff, 0, 6, LIGHT_CONE_ANGLE, LIGHT_PENUMBRA, 0);
-      light.castShadow = true;
-      light.shadow.mapSize.set(512, 512);
-      light.shadow.camera.near = 0.3;
-      light.shadow.bias = -0.0006;
-      light.shadow.normalBias = 0.03;
-      this.lightPool.push(light);
-      this.scene.add(light, light.target);
-    }
-
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene, this.cameraRig.camera));
     this.bloom = new UnrealBloomPass(new Vector2(256, 256), 0.5, 0.4, 0.9);
@@ -188,8 +176,8 @@ export class GameRenderer {
     this.fog.color.copy(ambience.fog);
     this.background.copy(ambience.fog).multiplyScalar(0.55);
     const tint = ambience.tint.getHex();
-    this.hemisphere.color.setHex(lighten(tint, 0.68));
-    this.hemisphere.groundColor.setHex(tint);
+    this.hemisphere.color.setHex(lighten(tint, AMBIENT_SKY_LIFT));
+    this.hemisphere.groundColor.setHex(lighten(tint, AMBIENT_GROUND_LIFT));
     this.hemisphere.intensity = Math.max(AMBIENT_FLOOR, AMBIENT_BASE - ambience.darkness * AMBIENT_DARKNESS_WEIGHT);
     this.keyLight.intensity = Math.max(KEY_FLOOR, KEY_BASE - ambience.darkness * KEY_DARKNESS_WEIGHT);
   }
@@ -524,27 +512,13 @@ export class GameRenderer {
     const reassigned = this.lightTimer <= 0;
     if (reassigned) {
       this.lightTimer = LIGHT_REASSIGN_SECONDS;
-      this.assignedLights = assignLights(this.zone.lights, focus, LIGHT_LIMITS);
+      this.assignedLights = assignLights(this.zone.lights, focus, FIELD_LIGHT_LIMIT);
     }
-    const { shadowed, field, edge, shadowEdge } = this.assignedLights;
+    const { lights: field, edge } = this.assignedLights;
     const strength = (source: LightSource) => {
       const flicker = source.flicker ? 0.78 + 0.22 * (Math.sin(time * 7.3 + source.seed) * 0.5 + Math.sin(time * 17.1 + source.seed * 3) * 0.5) : 1;
       return source.intensity * LIGHT_INTENSITY_SCALE * flicker * fieldLightFade(Math.sqrt(source.position.distanceToSquared(focus)), edge);
     };
-    this.lightPool.forEach((light, index) => {
-      const source = shadowed[index];
-      if (!source) {
-        light.intensity = 0;
-        return;
-      }
-      light.position.copy(source.position);
-      light.target.position.set(source.position.x, 0, source.position.z);
-      light.color.setHex(source.color);
-      light.distance = source.radius * LIGHT_REACH;
-      light.shadow.camera.far = light.distance;
-      light.shadow.intensity = shadowStrength(source.position.distanceTo(focus), shadowEdge);
-      light.intensity = strength(source);
-    });
     this.activeFieldLights = field.length;
     field.forEach((source, index) => {
       const target = this.fieldLights[index]!;
