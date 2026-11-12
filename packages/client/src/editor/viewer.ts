@@ -1,6 +1,7 @@
 import { findContentIssues, GAME_CONTENT, issuesFromMessages, LAYOUT_CHOICES, LAYOUT_SOURCES, type DistrictId, type GameContent, type PlanIssue, type TileKindId, type TilePoint } from '@containment/shared';
 import { EditorDocument } from './document.ts';
 import { EditController, type Tool } from './editController.ts';
+import { contentWith, type EditedDistrict } from './contentWith.ts';
 import { boundsOf } from './hitTest.ts';
 import { Palette, paletteEntries } from './palette.ts';
 import { PlanCanvas, planDrawList, type PlanShape } from './planCanvas.ts';
@@ -334,6 +335,7 @@ export function startViewer(root: HTMLElement): void {
   editorDocument.onChange((id) => touched.add(id));
   let messages = findContentIssues(GAME_CONTENT);
   let checkedContent: GameContent = GAME_CONTENT;
+  let checkedWhole: GameContent = GAME_CONTENT;
   const liveContent = (): GameContent =>
     touched.size === 0 ? GAME_CONTENT : { ...GAME_CONTENT, districts: new Map([...GAME_CONTENT.districts, ...[...touched].map((id) => [id, editorDocument.district(id)] as const)]) };
   const services: ViewerServices = {
@@ -342,10 +344,12 @@ export function startViewer(root: HTMLElement): void {
     liveContent,
     issuesFor: (content, districtId) => {
       if (content !== checkedContent) {
-        messages = findContentIssues(content);
+        const edits = new Map<DistrictId, EditedDistrict>([...touched].map((id) => [id, { district: editorDocument.district(id), layout: editorDocument.layout(id) }]));
+        checkedWhole = contentWith(GAME_CONTENT, edits);
+        messages = findContentIssues(checkedWhole);
         checkedContent = content;
       }
-      return issuesFromMessages(content, districtId, messages);
+      return issuesFromMessages(checkedWhole, districtId, messages);
     },
     check: () => undefined,
   };
