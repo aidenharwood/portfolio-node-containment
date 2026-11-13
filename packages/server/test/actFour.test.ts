@@ -15,7 +15,7 @@ import {
   type TilePoint,
   type WorldLocation,
 } from '@containment/shared';
-import { at, createHarness, districtOf, finishDialogue, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
+import { anchor, at, createHarness, districtOf, finishDialogue, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 
@@ -89,19 +89,19 @@ describe('act four: postmarked', () => {
     assert.equal(districtOf(player), 'calder-causeway', 'the Waterworks east wall opens onto the causeway on foot');
     assert.equal(stepOf(harness, 'postmarked'), 2);
 
-    travel(harness, at('brine-galleries', localInRoom('brine-galleries', 'brine-pans', { x: 16, y: 15 })));
+    travel(harness, at('brine-galleries', localInRoom('brine-galleries', 'brine-pans', { x: 20, y: 29 })));
     for (const suffix of ['a', 'b', 'c', 'd', 'e', 'f']) defeat(harness, `bg-pans-crawler-${suffix}`);
     assert.equal(stepOf(harness, 'postmarked'), 3);
 
-    travel(harness, at('brine-galleries', localInRoom('brine-galleries', 'gate-approach', { x: 52, y: 3 })));
-    walkTo(harness, levelPoint('calder-gatehouse', localInRoom('calder-gatehouse', 'gatehouse', { x: 2, y: 17 })));
+    travel(harness, at('brine-galleries', localInRoom('brine-galleries', 'gate-approach', { x: 28, y: 12 })));
+    walkTo(harness, levelPoint('calder-gatehouse', localInRoom('calder-gatehouse', 'gatehouse', { x: 2, y: 21 })));
     assert.equal(districtOf(player), 'brine-galleries', 'the gatehouse door stays shut until the intercom is answered');
 
     use(harness, 'bg-intercom');
     assert.ok(player.hasFlag(CALDER_GATE_FLAG));
     assert.equal(stepOf(harness, 'postmarked'), 4);
 
-    walkTo(harness, levelPoint('calder-gatehouse', localInRoom('calder-gatehouse', 'gatehouse', { x: 2, y: 17 })));
+    walkTo(harness, levelPoint('calder-gatehouse', localInRoom('calder-gatehouse', 'gatehouse', { x: 2, y: 21 })));
     assert.equal(districtOf(player), 'calder-gatehouse');
     talk(harness, 'cg-brandt', 'We are Meridian');
     assert.equal(stepOf(harness, 'postmarked'), 'completed');
@@ -115,13 +115,13 @@ describe('act four: postmarked', () => {
     talk(harness, 'cg-brandt', 'Is there anything Calder needs?', "I'll end the shift.");
     assert.equal(stepOf(harness, 'salt-of-the-earth'), 0);
 
-    for (const [instanceId, position] of [['bg-tally-a', { x: 5, y: 26 }], ['bg-tally-b', { x: 22, y: 29 }], ['bg-tally-c', { x: 37, y: 26 }]] as const) {
-      travel(harness, at('brine-galleries', position));
+    for (const [instanceId, position] of [['bg-tally-a', { x: 5, y: 12 }], ['bg-tally-b', { x: 31, y: 38 }], ['bg-tally-c', { x: 58, y: 26 }]] as const) {
+      travel(harness, at('brine-galleries', localInRoom('brine-galleries', 'wight-drifts', position)));
       use(harness, instanceId);
     }
     assert.equal(stepOf(harness, 'salt-of-the-earth'), 1);
 
-    travel(harness, at('brine-galleries', localInRoom('brine-galleries', 'wight-drifts', { x: 21, y: 13 })));
+    travel(harness, at('brine-galleries', localInRoom('brine-galleries', 'wight-drifts', { x: 25, y: 20 })));
     for (const suffix of ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']) defeat(harness, `bg-drifts-wight-${suffix}`);
     assert.equal(stepOf(harness, 'salt-of-the-earth'), 2);
 
@@ -155,7 +155,8 @@ describe('act four: postmarked', () => {
     };
     const harness = createHarness({ prepare: stocked });
     const { player } = harness;
-    assert.ok(harness.sink.last('player.state')?.self.discoveredStations.includes('calder-platform'), 'arriving in the gatehouse discovers its tram platform');
+    walkTo(harness, anchor('calder-gatehouse', 'tramPlatform').position);
+    assert.ok(harness.sink.last('player.state')?.self.discoveredStations.includes('calder-platform'), 'walking onto the gatehouse platform discovers its tram station');
 
     talk(harness, 'cg-sorrel', 'What are you short of?', "I'll stock you up.");
     assert.equal(stepOf(harness, 'short-rations'), 1, 'stores already in the pack satisfy the gathering step');

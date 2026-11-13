@@ -9,6 +9,7 @@ const INTAKE_OFFSET_X = 56;
 const CIRCUIT_BED_ROW = 133;
 const INTAKE_BRANCH_X = 43;
 const YARDS_BED_ROW = 87;
+const GATEHOUSE_BED_ROW = 56;
 
 const DISTRICT_IDS = [
   'meridian-atrium',
@@ -50,7 +51,7 @@ export const MAIN_FLOOR_RECIPE: LevelRecipe = (context) => {
     { districtId: 'vesper-lodge', exit: 'east', to: 'vesper-wards', toExit: 'west' },
     { districtId: 'vesper-pharmacy', exit: 'east', to: 'vesper-lodge', toExit: 'west' },
     { districtId: 'calder-causeway', exit: 'west', to: 'waterworks', toExit: 'east' },
-    { districtId: 'brine-galleries', exit: 'north', to: 'calder-causeway', toExit: 'south' },
+    { districtId: 'brine-galleries', exit: 'west', to: 'calder-causeway', toExit: 'east' },
     { districtId: 'calder-gatehouse', exit: 'west', to: 'brine-galleries', toExit: 'east' },
     { districtId: 'salt-cathedral', exit: 'west', to: 'calder-gatehouse', toExit: 'east' },
   ], TRACKWAY_MARGIN);
@@ -66,12 +67,8 @@ export const MAIN_FLOOR_RECIPE: LevelRecipe = (context) => {
   const circuitEast = trackPoint('meridian-circuit', widthOf(circuit), CIRCUIT_BED_ROW);
   const yardsWest = trackPoint('service-yards', -2, YARDS_BED_ROW);
   const yardsEast = trackPoint('service-yards', widthOf(context.districtOf('service-yards')), YARDS_BED_ROW);
-  const saltRoadWest = trackPoint('calder-causeway', -2, 52);
-  const saltRoadEast = trackPoint('calder-causeway', widthOf(context.districtOf('calder-causeway')), 52);
-  const gatehouseNorth = trackPoint('calder-gatehouse', 3, -2);
-  const gatehouseSouth = trackPoint('calder-gatehouse', 3, context.districtOf('calder-gatehouse').map.length);
+  const gatehouseWest = trackPoint('calder-gatehouse', -2, GATEHOUSE_BED_ROW);
   const intakeWest = trackPoint('intake-wing', -2, 65);
-  const intakeEast = trackPoint('intake-wing', widthOf(context.districtOf('intake-wing')), 65);
   const intakeBranch = trackPoint('meridian-circuit', INTAKE_BRANCH_X, circuit.map.length);
 
   const meridianLine = drawTrackway(placements, districts, {
@@ -80,13 +77,11 @@ export const MAIN_FLOOR_RECIPE: LevelRecipe = (context) => {
     ambience: { darkness: 0.72, tint: '#0a0f12', fog: '#0c1216' },
     routes: [
       [lodgeNorth, trackCorner(lodgeNorth, pharmacyCorner), pharmacyCorner, trackCorner(pharmacyCorner, returnLeg), intakeWest],
-      [intakeEast, trackCorner(gatehouseSouth, returnLeg), gatehouseSouth],
       [lodgeSouth, trackCorner(lodgeSouth, verdanceWest), verdanceWest],
       [verdanceEast, trackCorner(concourseJog, verdanceEast), trackCorner(concourseJog, circuitWest), circuitWest],
       [circuitEast, trackCorner(yardsWest, circuitEast), yardsWest],
       [intakeBranch, trackCorner(intakeBranch, intakeWest), intakeWest],
-      [yardsEast, trackCorner(saltRoadWest, yardsEast), saltRoadWest],
-      [saltRoadEast, trackCorner(gatehouseNorth, saltRoadEast), gatehouseNorth],
+      [yardsEast, trackCorner(gatehouseWest, yardsEast), gatehouseWest],
     ],
   });
 

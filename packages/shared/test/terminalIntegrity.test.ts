@@ -211,3 +211,7 @@ test('the Atrium terminal follows every rule', () => {
 test('the Service Yards terminal follows every rule', () => {
   assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"yards-depot"')), []);
 });
+
+test('the Calder Gatehouse terminal follows every rule', () => {
+  assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"calder-platform"')), []);
+});
