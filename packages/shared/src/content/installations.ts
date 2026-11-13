@@ -56,7 +56,6 @@ export const INSTALLATION_KINDS: readonly InstallationKind[] = [
   {
     coreIds: [
       'sealed-bulkhead',
-      'sector-three-seal',
       'sector-three-return',
       'sector-three-deepwatch-door',
       'deepwatch-threshold-door',
@@ -74,6 +73,11 @@ export const INSTALLATION_KINDS: readonly InstallationKind[] = [
     coreModel: 'bulkheadLeafLeft',
     layout: ['Cr'],
     parts: { r: { suffix: 'leaf-right', model: 'bulkheadLeafRight' } },
+  },
+  {
+    coreIds: ['sector-three-seal'],
+    layout: ['Cr'],
+    parts: { r: { suffix: 'plate', model: 'sealPlate' } },
   },
   {
     coreIds: ['the-knock', 'far-side-return'],

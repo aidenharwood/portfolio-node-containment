@@ -47,7 +47,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     id: 'issue-locker',
     name: 'Issue Locker',
     examine: 'A personal locker with your intake number stencilled on the door. It is already unlocked, which is unsettling.',
-    model: 'locker',
+    model: 'issueLocker',
     blocksMovement: true,
     interactions: [
       {
@@ -106,7 +106,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     name: 'ANM-0447 "Patient Lantern"',
     examine:
       'A brass maritime lantern suspended in coolant. Its light shows the room as it will be one hour from now. Class: Restless.',
-    model: 'lantern',
+    model: 'patientLantern',
     blocksMovement: true,
     light: { radius: 6, color: '#ffb347', intensity: 1, flicker: true },
     interactions: [],
@@ -115,7 +115,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     id: 'sample-cabinet',
     name: 'Sample Cabinet',
     examine: 'A refrigerated cabinet of labelled vials. Several labels have been crossed out and rewritten in a different hand.',
-    model: 'crate',
+    model: 'sampleCabinet',
     blocksMovement: true,
     light: { radius: 1.6, color: '#ffb347', intensity: 0.5 },
     interactions: [
@@ -387,7 +387,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     id: 'sector-three-seal',
     name: 'Sector 3 Seal',
     examine: 'A pressure seal that should open onto bedrock. It does not.',
-    model: 'bulkhead',
+    model: 'sealHatch',
     blocksMovement: true,
     light: { radius: 3, color: '#b57cff', intensity: 0.7, flicker: true },
     interactions: [
@@ -438,7 +438,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     id: 'lantern-echo',
     name: 'Lantern Echo',
     examine: 'A brass lantern identical to ANM-0447. Its light shows this room as it was an hour ago. You are in it.',
-    model: 'lantern',
+    model: 'patientLantern',
     blocksMovement: true,
     light: { radius: 4, color: '#ffb347', intensity: 0.8, flicker: true },
     interactions: [],

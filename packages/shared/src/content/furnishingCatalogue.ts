@@ -50,6 +50,7 @@ export const FURNISHING_PROFILES: Readonly<Record<WorldObjectId, FurnishingProfi
   ...each(LITTER, flat()),
   ...each(['wall-shelf', 'notice-board', 'warning-sign', 'wall-locker'], wall()),
   'timetable-board': wall(['civic', 'camp', 'freight', 'office']),
+  'departure-board': wall(['transit']),
 
   bookcase: backed(['archive', 'office', 'dormitory', 'camp', 'chapel', 'ward'], { inRows: true }),
   'filing-cabinet': backed([...RECORDS, ...CLINICAL, 'lab', 'camp', 'freight', 'civic', 'garden'], { inRows: true }),
@@ -132,6 +133,8 @@ export const FURNISHING_PROFILES: Readonly<Record<WorldObjectId, FurnishingProfi
   'shuttered-kiosk': free(['civic', 'freight']),
   'banner-mast': free(['civic', 'works', 'camp']),
   'fountain-basin': free(['civic', 'garden']),
+  'buffer-stop': free(['transit']),
+  'platform-gate': free(['transit']),
 };
 
 export const ROOM_SIGNATURES: Readonly<Record<DressingTheme, readonly WorldObjectId[]>> = {
@@ -153,7 +156,7 @@ export const ROOM_SIGNATURES: Readonly<Record<DressingTheme, readonly WorldObjec
   camp: ['brazier-hearth', 'bunk-bed', 'canteen-table', 'map-table', 'sandbags'],
   cold: ['crate-stack', 'gas-cylinders', 'cold-pod', 'cryo-core', 'wall-locker'],
   works: ['works-barrier', 'traffic-cone', 'survey-stake', 'reserved-plot', 'decon-arch'],
-  transit: ['briefing-bench', 'bench-curve'],
+  transit: ['briefing-bench', 'bench-curve', 'departure-board', 'buffer-stop', 'platform-gate'],
 };
 
 export const ROOM_FLOORS: Readonly<Partial<Record<TileKindId, readonly DressingTheme[]>>> = {
