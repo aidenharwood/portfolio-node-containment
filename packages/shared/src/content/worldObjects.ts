@@ -76,7 +76,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     id: 'diagnostic-terminal',
     name: 'Diagnostic Terminal',
     examine: 'A biometric calibration station. The screen reads: PLACE HAND. HOLD STILL. DO NOT BLINK.',
-    model: 'terminal',
+    model: 'diagnosticTerminal',
     blocksMovement: true,
     light: { radius: 2.5, color: '#4fd8ff', intensity: 0.7 },
     interactions: [
@@ -253,7 +253,7 @@ export const WORLD_OBJECTS: readonly WorldObjectDefinition[] = [
     id: 'halvorsen-terminal',
     name: "Halvorsen's Lab Terminal",
     examine: 'A research terminal still logged in to Dr. Mira Halvorsen. The cursor blinks very patiently.',
-    model: 'terminal',
+    model: 'halvorsenTerminal',
     blocksMovement: true,
     light: { radius: 2.5, color: '#9fd8ff', intensity: 0.7, flicker: true },
     interactions: [

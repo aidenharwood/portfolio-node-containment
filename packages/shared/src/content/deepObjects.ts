@@ -171,7 +171,7 @@ export const DEEP_QUEST_OBJECTS: readonly WorldObjectDefinition[] = [
     id: 'council-terminal',
     name: 'Council Uplink',
     examine: 'A secure terminal wired straight to the Directorate Council chamber. The cursor blinks with what feels like disapproval.',
-    model: 'terminal',
+    model: 'councilTerminal',
     blocksMovement: true,
     light: { radius: 2, color: '#4fd8ff', intensity: 0.5 },
     interactions: [
@@ -229,7 +229,7 @@ export const DEEP_QUEST_OBJECTS: readonly WorldObjectDefinition[] = [
     id: 'relay-console',
     name: 'Relay Console',
     examine: 'A transmission console for one of the eight outbound relays. The tuning drifts towards a frequency that should not exist.',
-    model: 'terminal',
+    model: 'relayConsole',
     blocksMovement: true,
     light: { radius: 2, color: '#ffb87a', intensity: 0.5, flicker: true },
     interactions: [
@@ -251,7 +251,7 @@ export const DEEP_QUEST_OBJECTS: readonly WorldObjectDefinition[] = [
     id: 'outbox-terminal',
     name: 'Array Outbox',
     examine: 'The terminal that sorts the Array\'s post. Forty years of letters to the other eight Sites, and every one marked DELIVERED. A return chute in the wall is stamped DEAD LETTERS, but nothing has ever come back up it.',
-    model: 'terminal',
+    model: 'outboxTerminal',
     blocksMovement: true,
     light: { radius: 2, color: '#8afff0', intensity: 0.6 },
     interactions: [
@@ -387,7 +387,7 @@ export const DEEP_QUEST_OBJECTS: readonly WorldObjectDefinition[] = [
     id: 'reactor-console',
     name: 'Reactor Console',
     examine: 'The reactor\'s manual control console. A logbook is chained to it, its pages black with forty years of figures.',
-    model: 'terminal',
+    model: 'reactorConsole',
     blocksMovement: true,
     light: { radius: 2, color: '#ff8a4a', intensity: 0.6 },
     interactions: [

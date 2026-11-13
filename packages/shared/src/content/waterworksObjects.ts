@@ -55,7 +55,7 @@ export const WATERWORKS_OBJECTS: readonly WorldObjectDefinition[] = [
     id: 'waterworks-assay',
     name: 'Assay Bench',
     examine: 'A water quality bench with a centrifuge, three reagent racks and a laminated sheet titled WHAT THE COLOURS MEAN.',
-    model: 'terminal',
+    model: 'waterworksAssay',
     blocksMovement: true,
     light: { radius: 2, color: '#7cf29a', intensity: 0.55 },
     interactions: [
