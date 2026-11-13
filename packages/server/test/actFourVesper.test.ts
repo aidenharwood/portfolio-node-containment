@@ -86,11 +86,11 @@ describe('act four: the Vesper Wing', () => {
     assert.equal(stepOf(harness, 'referral'), 0);
     assert.equal(countItem(player.record.inventory, 'vesper-referral'), 1);
 
-    travel(harness, at('hydroponics', localInRoom('hydroponics', 'platform', { x: 19, y: 16 })));
+    travel(harness, inRoom('hydroponics', 'platform'));
     talk(harness, 'hydro-oyelaran', "I'll open it.");
     assert.equal(stepOf(harness, 'referral'), 1);
 
-    travel(harness, at('hydroponics', localInRoom('hydroponics', 'seed-vault', { x: 3, y: 3 })));
+    travel(harness, inRoom('hydroponics', 'seed-vault'));
     walkTo(harness, levelPoint('vesper-causeway', localInRoom('vesper-causeway', 'walk')));
     assert.equal(districtOf(player), 'vesper-causeway', 'the seed vault opens west onto the Sanatorium Walk on foot');
     assert.equal(stepOf(harness, 'referral'), 2);

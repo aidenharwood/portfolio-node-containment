@@ -53,7 +53,7 @@ describe('the Atrium hub', () => {
 
 describe('Verdance Hydroponics', () => {
   test('Overgrowth: crawlers, fibre, the seed vault and a report to Dr. Oyelaran', () => {
-    const harness = createHarness({ prepare: placed(at('hydroponics', localInRoom('hydroponics', 'platform', { x: 3, y: 2 })), veteran()) });
+    const harness = createHarness({ prepare: placed(inRoom('hydroponics', 'platform'), veteran()) });
     harness.talkTo('hydro-oyelaran');
     finishDialogue(harness, (text) => text === 'Can I help?' || text === "I'll do it.");
     assert.equal(harness.player.record.quests.overgrowth?.status, 'active');
@@ -78,7 +78,7 @@ describe('Verdance Hydroponics', () => {
   });
 
   test('strangler fibre needs Salvage 4', () => {
-    const harness = createHarness({ prepare: placed(at('hydroponics', localInRoom('hydroponics', 'platform', { x: 3, y: 2 }))) });
+    const harness = createHarness({ prepare: placed(inRoom('hydroponics', 'platform')) });
     harness.interactWithObject('hydro-vine-nursery-a');
     assert.equal(harness.player.activity, null);
     assert.match(harness.sink.last('notice')?.text ?? '', /Salvage level 4/);

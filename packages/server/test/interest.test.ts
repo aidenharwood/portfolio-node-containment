@@ -223,14 +223,14 @@ describe('dormancy and interest-bounded intents', () => {
   });
 
   test('walking to a tile outside the interest set is refused', () => {
-    const { gameplay, operatives } = deep([{ districtId: 'hydroponics', position: localInRoom('hydroponics', 'grow-hall', { x: 28, y: 63 }) }]);
+    const { gameplay, operatives } = deep([{ districtId: 'hydroponics', position: localInRoom('hydroponics', 'seed-vault') }]);
     const [a] = operatives;
     assert.ok(a);
     assert.equal(gameplay.world.walk(a.player, levelPoint('meridian-atrium', localInRoom('meridian-atrium', 'response-office'))), false);
   });
 
   test('interacting with an npc outside the interest set is refused', () => {
-    const { gameplay, operatives } = deep([{ districtId: 'hydroponics', position: localInRoom('hydroponics', 'grow-hall', { x: 28, y: 63 }) }]);
+    const { gameplay, operatives } = deep([{ districtId: 'hydroponics', position: localInRoom('hydroponics', 'seed-vault') }]);
     const [a] = operatives;
     assert.ok(a);
     gameplay.handle(a.player, { type: 'world.interact', targetKind: 'npc', instanceId: 'atrium-sel', interactionIndex: 0 });

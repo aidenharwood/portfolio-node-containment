@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { visitedLevelFlag, type CharacterRecord, type QuestProgress } from '@containment/shared';
-import { at, createHarness, districtOf, localInRoom } from './support/testHarness.ts';
+import { anchor, at, createHarness, districtOf, localInRoom } from './support/testHarness.ts';
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 
 const beside = (overgrowthDone: boolean) => (record: CharacterRecord): CharacterRecord => ({
   ...record,
-  location: at('hydroponics', localInRoom('hydroponics', 'heart-bed', { x: 3, y: 3 })),
+  location: anchor('hydroponics', 'foldReturn'),
   quests: overgrowthDone ? { ...record.quests, overgrowth: completed('overgrowth') } : record.quests,
 });
 

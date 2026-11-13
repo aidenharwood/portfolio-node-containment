@@ -90,7 +90,7 @@ describe('market', () => {
   });
 
   test('an outpost mailbox only connects from a regional outpost', () => {
-    const harness = createHarness({ prepare: (record) => ({ ...atExchange(record), location: at('hydroponics', localInRoom('hydroponics', 'platform', { x: 3, y: 16 })) }) });
+    const harness = createHarness({ prepare: (record) => ({ ...atExchange(record), location: inRoom('hydroponics', 'platform') }) });
     harness.gameplay.openMarket(harness.player, 'collect');
     assert.equal(harness.sink.last('market.opened'), undefined);
   });
