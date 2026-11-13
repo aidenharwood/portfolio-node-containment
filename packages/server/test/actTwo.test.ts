@@ -11,7 +11,7 @@ import {
   type WorldLocation,
 } from '@containment/shared';
 import { containSpecimen } from './support/containment.ts';
-import { anchor, createHarness, finishDialogue, type Harness, at, districtOf, levelPoint, localInRoom } from './support/testHarness.ts';
+import { anchor, createHarness, finishDialogue, type Harness, at, districtOf, inRoom, levelPoint, localInRoom } from './support/testHarness.ts';
 
 const active = (questId: string, stepIndex = 0): QuestProgress => ({ questId, status: 'active', stepIndex, objectiveProgress: [0, 0, 0] });
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
@@ -20,7 +20,7 @@ const VETERAN = createStartingSkills({ closeQuarters: experienceForLevel(99), fo
 const KIT: EquipmentState = { torso: 'composite-plate', legs: 'intake-trousers', feet: 'work-boots', primary: 'the-knocker' };
 
 const NEAR_SEL: WorldLocation = at('meridian-atrium', localInRoom('meridian-atrium', 'archives', { x: 8, y: 16 }));
-const NEAR_THALE: WorldLocation = at('deepwatch', localInRoom('deepwatch', 'command-post', { x: 3, y: 3 }));
+const NEAR_THALE: WorldLocation = inRoom('deepwatch', 'command-post');
 const NEAR_HALVORSEN: WorldLocation = at('sector-three', localInRoom('sector-three', 'threshold', { x: 16, y: 15 }));
 const CRYOVAULT_DOOR: WorldLocation = anchor('deep-concourse', 'cryovaultDoor');
 const ARRAY_DOOR: WorldLocation = anchor('deep-concourse', 'arrayDoor');
@@ -90,7 +90,7 @@ describe('act two: the answer', () => {
     talk(harness, 'dw-thale');
     assert.equal(stepOf(harness, 'a-council-of-one'), 2);
 
-    travel(harness, at('deepwatch', localInRoom('deepwatch', 'concourse', { x: 14, y: 2 })));
+    travel(harness, anchor('deepwatch', 'thresholdLanding'));
     use(harness, 'dw-threshold/0,0');
     assert.equal(districtOf(player), 'sector-three');
     talk(harness, 's3-halvorsen');

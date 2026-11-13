@@ -5,9 +5,10 @@ import { createCharacterRecord } from '../src/characters/characterFactory.ts';
 import { CharacterRepository } from '../src/characters/characterRepository.ts';
 import { openDatabase } from '../src/persistence/database.ts';
 import { restoreLocation, storeLocation } from '../src/characters/storedLocation.ts';
-import { anchor, at, createHarness, exitPoint, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
+import { anchor, at, createHarness, exitPoint, inRoom, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
 
 const MAIN_FLOOR_SPAWN = anchor('meridian-atrium', 'transit');
+const LIFT_ARRIVAL = GAME_CONTENT.districts.get('deepwatch')?.anchors?.liftArrival ?? { x: 0, y: 0 };
 
 const WEST_GATE = at('meridian-atrium', localInRoom('meridian-atrium', 'west-gate', { x: 2, y: 2 }));
 const EAST_GATE = at('meridian-atrium', localInRoom('meridian-atrium', 'east-gate', { x: 27, y: 2 }));
@@ -62,8 +63,8 @@ describe('levels', () => {
   });
 
   test('locations are stored district-local and restored to level coordinates', () => {
-    const current = at('deepwatch', localInRoom('deepwatch', 'platform-hall', { x: 2, y: 2 }));
-    assert.deepEqual(storeLocation(current, GAME_CONTENT), { districtId: 'deepwatch', position: localInRoom('deepwatch', 'platform-hall', { x: 2, y: 2 }) });
+    const current = at('deepwatch', LIFT_ARRIVAL);
+    assert.deepEqual(storeLocation(current, GAME_CONTENT), { districtId: 'deepwatch', position: LIFT_ARRIVAL });
     assert.deepEqual(restoreLocation(storeLocation(current, GAME_CONTENT), GAME_CONTENT), current);
   });
 
@@ -84,7 +85,7 @@ describe('levels', () => {
   });
 
   test('level-coordinate locations from before district-local storage pass through unchanged', () => {
-    const current = at('deepwatch', localInRoom('deepwatch', 'platform-hall', { x: 2, y: 2 }));
+    const current = at('deepwatch', LIFT_ARRIVAL);
     assert.deepEqual(restoreLocation(current, GAME_CONTENT), current);
   });
 
@@ -126,11 +127,11 @@ describe('levels', () => {
   });
 
   test('Deepwatch opens onto the Deep Concourse on foot, and a gated pressure door leads on', () => {
-    const harness = createHarness({ prepare: placedAt(at('deepwatch', localInRoom('deepwatch', 'stores', { x: 12, y: 12 })), ['clearance.signal-array']) });
+    const harness = createHarness({ prepare: placedAt(inRoom('deepwatch', 'stores'), ['clearance.signal-array']) });
     walkAlong(harness, [
       exitPoint('deepwatch', 'south'),
-      levelPoint('deep-concourse', localInRoom('deep-concourse', 'south-span', { x: 6, y: 18 })),
-      levelPoint('deep-concourse', localInRoom('deep-concourse', 'south-span', { x: 6, y: 33 })),
+      levelPoint('deep-concourse', localInRoom('deep-concourse', 'south-span')),
+      anchor('deep-concourse', 'southSpan').position,
       anchor('deep-concourse', 'arrayDoor').position,
     ]);
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'deep-concourse');
@@ -169,13 +170,13 @@ describe('levels', () => {
   });
 
   test('Deepwatch reaches the Furnace Causeway on foot', () => {
-    const harness = createHarness({ prepare: placedAt(at('deepwatch', localInRoom('deepwatch', 'concourse', { x: 15, y: 3 }))) });
+    const harness = createHarness({ prepare: placedAt(inRoom('deepwatch', 'concourse')) });
     walkAlong(harness, [
       exitPoint('deepwatch', 'north'),
-      levelPoint('deep-concourse', localInRoom('deep-concourse', 'north-span', { x: 6, y: 18 })),
-      levelPoint('deep-concourse', localInRoom('deep-concourse', 'north-span', { x: 6, y: 2 })),
+      levelPoint('deep-concourse', localInRoom('deep-concourse', 'north-span')),
+      anchor('deep-concourse', 'northSpan').position,
       anchor('deep-concourse', 'causewayGate').position,
-      levelPoint('furnace-causeway', localInRoom('furnace-causeway', 'causeway', { x: 6, y: 20 })),
+      levelPoint('furnace-causeway', localInRoom('furnace-causeway', 'causeway')),
     ]);
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'furnace-causeway');
   });

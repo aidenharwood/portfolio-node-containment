@@ -5,6 +5,8 @@ import { SHIPPED_CONTEXT } from './shippedContext.ts';
 
 const DISTRICT_IDS = ['deepwatch', 'deep-concourse', 'furnace-causeway', 'cryovault', 'signal-array', 'drowned-archive', 'furnace'];
 
+const SPUR_ROW = 88;
+
 const widthOf = (district: { readonly map: readonly string[] }): number => district.map[0]?.length ?? 0;
 
 export const THE_DEEP_RECIPE: LevelRecipe = (context) => {
@@ -29,10 +31,9 @@ export const THE_DEEP_RECIPE: LevelRecipe = (context) => {
   const archiveSouth = trackPoint('drowned-archive', 2, archive.map.length);
   const furnaceWest = trackPoint('furnace', -2, 58);
   const furnaceEast = trackPoint('furnace', widthOf(furnace), 58);
-  const furnaceSouth = trackPoint('furnace', 75, furnace.map.length);
   const arrayWest = trackPoint('signal-array', -2, 2);
   const arrayEast = trackPoint('signal-array', widthOf(array), 2);
-  const concourseNorth = trackPoint('deep-concourse', 115, -2);
+  const spurEdge = trackPoint('deep-concourse', -2, SPUR_ROW);
 
   const trackway = drawTrackway(placements, districts, {
     id: 'abyssal-trackway',
@@ -43,7 +44,7 @@ export const THE_DEEP_RECIPE: LevelRecipe = (context) => {
       [furnaceEast, trackCorner(archiveNorth, furnaceEast), archiveNorth],
       [archiveSouth, trackCorner(archiveSouth, arrayEast), arrayEast],
       [arrayWest, trackCorner(cryovaultSouth, arrayWest), cryovaultSouth],
-      [furnaceSouth, concourseNorth],
+      [spurEdge, trackCorner(cryovaultNorth, spurEdge), cryovaultNorth],
     ],
   });
 

@@ -52,7 +52,7 @@ export const COLD_STORAGE: QuestDefinition = {
   steps: [
     {
       id: 'descend',
-      journal: 'The Cryovault lift is in the lift gallery, in the south-east of Deepwatch.',
+      journal: 'The Cryovault lift is in the lift gallery, on the east side of Deepwatch.',
       objectives: [{ type: 'enterArea', districtId: 'cryovault', areaId: 'dock', label: 'Descend to the Cryovault' }],
     },
     {

@@ -223,3 +223,7 @@ test("the Vesper Porter's Lodge terminal follows every rule", () => {
 test('the Intake Transit Bay terminal follows every rule', () => {
   assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"intake-transit"')), []);
 });
+
+test('the Deepwatch terminal follows every rule', () => {
+  assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"deepwatch-platform"')), []);
+});

@@ -11,6 +11,7 @@ const onPlatform = (districtId: string, local: { x: number; y: number }, station
 
 const INTAKE_PLATFORM = GAME_CONTENT.districts.get('intake-wing')?.anchors?.tramPlatform ?? { x: 0, y: 0 };
 const ATRIUM_PLATFORM = GAME_CONTENT.districts.get('meridian-atrium')?.anchors?.transit ?? { x: 0, y: 0 };
+const DEEPWATCH_PLATFORM = GAME_CONTENT.districts.get('deepwatch')?.anchors?.tramPlatform ?? { x: 0, y: 0 };
 
 function stationPoint(stationId: string) {
   const station = GAME_CONTENT.tram.stations.get(stationId);
@@ -54,7 +55,7 @@ test('a ride departs, keeps the rider still and arrives on the destination platf
 });
 
 test('the Abyssal Circuit runs between the Deep districts', () => {
-  const harness = createHarness({ prepare: onPlatform('deepwatch', localInRoom('deepwatch', 'platform-hall', { x: 60, y: 3 }), ['furnace-lock']) });
+  const harness = createHarness({ prepare: onPlatform('deepwatch', DEEPWATCH_PLATFORM, ['furnace-lock']) });
   boardAndDepart(harness, 'furnace-lock');
   assert.equal(harness.sink.last('tram.departed')?.rideTicks, 10);
   harness.ticksUntil(() => harness.sink.last('tram.arrived') !== undefined, 12);

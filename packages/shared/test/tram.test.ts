@@ -94,13 +94,14 @@ test('a station cut off from the track is reported', () => {
   assert.ok(!issues.some((issue) => issue.includes('closed loop')));
 });
 
-test('the trunk crosses rooms only under bridges', () => {
-  const level = GAME_CONTENT.levels.get('main-floor');
+function roomsWithBareTrack(levelId: string, districtIds?: readonly string[]): string[] {
+  const level = GAME_CONTENT.levels.get(levelId);
   assert.ok(level);
   const bridgePieces = new Set(level.objects.filter((object) => object.objectId.startsWith('bridge-')).map((object) => `${object.position.x},${object.position.y}`));
   const bridged = (point: TilePoint): boolean => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => bridgePieces.has(`${point.x + (dx as number)},${point.y + (dy as number)}`));
   const bare: string[] = [];
   for (const placement of level.districts) {
+    if (districtIds && !districtIds.includes(placement.districtId)) continue;
     const rooms = GAME_CONTENT.districts.get(placement.districtId)?.rooms ?? {};
     for (const [roomId, rect] of Object.entries(rooms)) {
       if (roomId === 'tram-terminal') continue;
@@ -112,6 +113,13 @@ test('the trunk crosses rooms only under bridges', () => {
       }
     }
   }
-  const rooms = [...new Set(bare.map((entry) => entry.split(' ')[0]))];
-  assert.deepEqual(rooms, []);
+  return [...new Set(bare.map((entry) => entry.split(' ')[0] as string))];
+}
+
+test('the trunk crosses rooms only under bridges', () => {
+  assert.deepEqual(roomsWithBareTrack('main-floor'), []);
+});
+
+test('the Deep ring crosses rooms only under bridges', () => {
+  assert.deepEqual(roomsWithBareTrack('the-deep', ['deep-concourse', 'deepwatch', 'furnace-causeway']), []);
 });
