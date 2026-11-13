@@ -95,6 +95,7 @@ export * from './content/vesperObjects.ts';
 export * from './content/regionIntegrity.ts';
 export * from './content/overworldIntegrity.ts';
 export * from './content/tramIntegrity.ts';
+export * from './content/terminalIntegrity.ts';
 export * from './content/safetyIntegrity.ts';
 export * from './content/footprintIntegrity.ts';
 export * from './content/encounterIntegrity.ts';

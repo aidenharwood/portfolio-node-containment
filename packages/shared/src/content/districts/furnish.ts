@@ -74,6 +74,7 @@ const THEME_CAST: Readonly<Record<DressingTheme, readonly NpcId[]>> = {
   camp: ambientCast('operative', 'technician', 'security'),
   cold: ambientCast('deckhand', 'researcher'),
   works: ambientCast('technician'),
+  transit: ambientCast('staffer', 'operative'),
 };
 
 const dressingOf = (entry: DressingTheme | RoomDressing): RoomDressing => (typeof entry === 'string' ? { theme: entry } : entry);

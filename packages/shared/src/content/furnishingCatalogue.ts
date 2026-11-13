@@ -64,7 +64,7 @@ export const FURNISHING_PROFILES: Readonly<Record<WorldObjectId, FurnishingProfi
   'bunk-bed': backed(['dormitory', 'camp'], { inRows: true }),
 
   'briefing-bench': seat('view', except('industrial', 'mine', 'wet', 'chapel')),
-  'bench-curve': seat('view', ['civic', 'garden', 'ward', 'camp', 'medical', 'office']),
+  'bench-curve': seat('view', ['civic', 'garden', 'ward', 'camp', 'medical', 'office', 'transit']),
   pew: seat('view', ['chapel'], { inRows: true }),
   armchair: seat('view', ['dormitory', 'archive', 'garden', 'canteen', 'office', 'camp', 'civic', 'ward', 'medical']),
   'office-chair': seat('surface', ['office', 'archive', 'lab', 'civic', 'medical', 'ward', 'industrial', 'post', 'camp', 'cold', 'freight', 'works'], { inRows: true }),
@@ -153,6 +153,7 @@ export const ROOM_SIGNATURES: Readonly<Record<DressingTheme, readonly WorldObjec
   camp: ['brazier-hearth', 'bunk-bed', 'canteen-table', 'map-table', 'sandbags'],
   cold: ['crate-stack', 'gas-cylinders', 'cold-pod', 'cryo-core', 'wall-locker'],
   works: ['works-barrier', 'traffic-cone', 'survey-stake', 'reserved-plot', 'decon-arch'],
+  transit: ['briefing-bench', 'bench-curve'],
 };
 
 export const ROOM_FLOORS: Readonly<Partial<Record<TileKindId, readonly DressingTheme[]>>> = {
