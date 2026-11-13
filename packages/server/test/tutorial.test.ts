@@ -47,7 +47,7 @@ describe('orientation protocol tutorial', () => {
     assert.ok(player.record.skills.research > researchBefore);
     assert.equal(currentStep(harness), 4);
 
-    harness.send({ type: 'world.walk', target: levelPoint('intake-wing', GAME_CONTENT.districts.get('intake-wing')?.anchors?.observationFloor ?? { x: 0, y: 0 }) });
+    harness.send({ type: 'world.walk', target: anchor('intake-wing', 'observationFloor').position });
     harness.ticksUntil(() => currentStep(harness) === 5);
 
     harness.talkTo('intake-varga');

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { GAME_CONTENT, TRAM_BOARDING_TICKS, tramStationFlag, type CharacterRecord } from '@containment/shared';
-import { at, createHarness, districtOf, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
+import { anchor, at, createHarness, districtOf, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
 
 const onPlatform = (districtId: string, local: { x: number; y: number }, stations: readonly string[]) => (record: CharacterRecord): CharacterRecord => ({
   ...record,
@@ -9,7 +9,6 @@ const onPlatform = (districtId: string, local: { x: number; y: number }, station
   flags: [...record.flags, ...stations.map(tramStationFlag)],
 });
 
-const INTAKE_PLATFORM = GAME_CONTENT.districts.get('intake-wing')?.anchors?.tramPlatform ?? { x: 0, y: 0 };
 const ATRIUM_PLATFORM = GAME_CONTENT.districts.get('meridian-atrium')?.anchors?.transit ?? { x: 0, y: 0 };
 const DEEPWATCH_PLATFORM = GAME_CONTENT.districts.get('deepwatch')?.anchors?.tramPlatform ?? { x: 0, y: 0 };
 
@@ -64,7 +63,7 @@ test('the Abyssal Circuit runs between the Deep districts', () => {
 });
 
 test('a tram does not run to stations off its own lines', () => {
-  const harness = createHarness({ prepare: onPlatform('intake-wing', INTAKE_PLATFORM, ['verdance-platform', 'deepwatch-platform']) });
+  const harness = createHarness({ prepare: (record) => ({ ...record, location: anchor('intake-wing', 'tramPlatform'), flags: [...record.flags, ...['verdance-platform', 'deepwatch-platform'].map(tramStationFlag)] }) });
   for (const destinationStationId of ['verdance-platform', 'deepwatch-platform']) {
     harness.send({ type: 'tram.board', destinationStationId });
     assert.equal(harness.player.activity, null);

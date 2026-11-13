@@ -182,10 +182,11 @@ describe('levels', () => {
   });
 
   test('a saved position on an unwalkable tile spawns nearby in the same district', () => {
-    const inTheTank = localInRoom('intake-wing', 'observation');
-    const harness = createHarness({ prepare: placedAt(at('intake-wing', inTheTank)) });
+    const inTheTank = anchor('intake-wing', 'observationTank');
+    assert.equal(GAME_CONTENT.levels.get(inTheTank.levelId)?.layout.tileAt(inTheTank.position), 'coolant');
+    const harness = createHarness({ prepare: placedAt(inTheTank) });
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'intake-wing');
-    const target = levelPoint('intake-wing', inTheTank);
+    const target = inTheTank.position;
     assert.ok(Math.max(Math.abs(harness.player.position.x - target.x), Math.abs(harness.player.position.y - target.y)) <= 3);
   });
 

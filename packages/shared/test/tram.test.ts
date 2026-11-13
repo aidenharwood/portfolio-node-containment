@@ -94,7 +94,7 @@ test('a station cut off from the track is reported', () => {
   assert.ok(!issues.some((issue) => issue.includes('closed loop')));
 });
 
-function roomsWithBareTrack(levelId: string, districtIds?: readonly string[]): string[] {
+function roomsWithBareTrack(levelId: string, districtIds?: readonly string[], wantBridged = false): string[] {
   const level = GAME_CONTENT.levels.get(levelId);
   assert.ok(level);
   const bridgePieces = new Set(level.objects.filter((object) => object.objectId.startsWith('bridge-')).map((object) => `${object.position.x},${object.position.y}`));
@@ -108,7 +108,7 @@ function roomsWithBareTrack(levelId: string, districtIds?: readonly string[]): s
       for (let y = rect.y; y < rect.y + rect.height; y++) {
         for (let x = rect.x; x < rect.x + rect.width; x++) {
           const point = level.layout.toLevelPoint(placement.districtId, { x, y });
-          if (level.layout.tileAt(point) === 'track' && !bridged(point)) bare.push(`${placement.districtId}/${roomId} ${x},${y}`);
+          if (level.layout.tileAt(point) === 'track' && bridged(point) === wantBridged) bare.push(`${placement.districtId}/${roomId} ${x},${y}`);
         }
       }
     }
@@ -116,8 +116,11 @@ function roomsWithBareTrack(levelId: string, districtIds?: readonly string[]): s
   return [...new Set(bare.map((entry) => entry.split(' ')[0] as string))];
 }
 
+const roomsWithBridgedTrack = (levelId: string): string[] => roomsWithBareTrack(levelId, undefined, true);
+
 test('the trunk crosses rooms only under bridges', () => {
   assert.deepEqual(roomsWithBareTrack('main-floor'), []);
+  assert.ok(roomsWithBridgedTrack('main-floor').length > 0);
 });
 
 test('the Deep ring crosses rooms only under bridges', () => {

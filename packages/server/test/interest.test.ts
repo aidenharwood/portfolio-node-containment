@@ -17,6 +17,12 @@ interface Operative {
   readonly sink: RecordingSink;
 }
 
+function supplyCounterLocal(): TilePoint {
+  const point = GAME_CONTENT.districts.get('intake-wing')?.anchors?.supplyCounter;
+  assert.ok(point);
+  return point;
+}
+
 function deep(placements: readonly Placement[], random: () => number = () => 0.99) {
   const gameplay = new Gameplay(GAME_CONTENT, { save: () => undefined, findByName: () => null }, {
     tickMs: 300,
@@ -235,7 +241,7 @@ describe('review fixes', () => {
   test('a same-level recovery refreshes the player for observers who see both ends', () => {
     const { gameplay, operatives } = deep([
       { districtId: 'intake-wing', position: localInRoom('intake-wing', 'supply') },
-      { districtId: 'intake-wing', position: GAME_CONTENT.districts.get('intake-wing')?.anchors?.supplyCounter ?? { x: 0, y: 0 } },
+      { districtId: 'intake-wing', position: supplyCounterLocal() },
     ]);
     const [a, b] = operatives;
     assert.ok(a && b);

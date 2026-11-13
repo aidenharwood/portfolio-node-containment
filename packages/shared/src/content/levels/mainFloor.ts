@@ -5,7 +5,6 @@ import { SHIPPED_CONTEXT } from './shippedContext.ts';
 
 const CHASM_WIDTH = 24;
 const TRACKWAY_MARGIN = { x: 8, y: 8 };
-const INTAKE_OFFSET_X = 42;
 const CIRCUIT_BED_ROW = 133;
 const INTAKE_BRANCH_X = 43;
 const YARDS_BED_ROW = 87;
@@ -13,6 +12,7 @@ const GATEHOUSE_BED_ROW = 56;
 const LODGE_BED_ROW = 56;
 const STUB_LENGTH = 12;
 const INTAKE_BED_X = 1;
+const INTAKE_OFFSET_X = INTAKE_BRANCH_X - INTAKE_BED_X;
 
 const DISTRICT_IDS = [
   'meridian-atrium',
