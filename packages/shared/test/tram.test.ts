@@ -124,5 +124,6 @@ test('the trunk crosses rooms only under bridges', () => {
 });
 
 test('the Deep ring crosses rooms only under bridges', () => {
-  assert.deepEqual(roomsWithBareTrack('the-deep', ['deep-concourse', 'deepwatch', 'furnace-causeway']), []);
+  assert.deepEqual(roomsWithBareTrack('the-deep', ['deep-concourse', 'deepwatch', 'furnace-causeway', 'cryovault', 'signal-array']), []);
+  assert.ok(roomsWithBridgedTrack('the-deep').length > 0);
 });

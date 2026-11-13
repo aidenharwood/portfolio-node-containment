@@ -4,7 +4,7 @@ import { addItem, createDefaultDraft, GAME_CONTENT, type CharacterRecord, type D
 import { createCharacterRecord } from '../src/characters/characterFactory.ts';
 import { Gameplay } from '../src/gameplay/gameplay.ts';
 import type { Player } from '../src/world/player.ts';
-import { at, levelPoint, RecordingSink, localInRoom } from './support/testHarness.ts';
+import { at, exitPoint, levelPoint, RecordingSink, localInRoom } from './support/testHarness.ts';
 
 interface Placement {
   readonly districtId: DistrictId;
@@ -91,7 +91,7 @@ describe('chunked interest', () => {
     const { operatives, walk } = deep([{ districtId: 'deepwatch', position: localInRoom('deepwatch', 'platform-hall') }]);
     const [a] = operatives;
     assert.ok(a);
-    walk(a, levelPoint('deepwatch', localInRoom('deepwatch', 'concourse')));
+    walk(a, exitPoint('deepwatch', 'north'));
     const [left, entered] = interestMessages(a.sink).slice(-2);
     assert.equal(left?.type, 'world.chunksLeft');
     assert.equal(left?.chunks.length, 3);
@@ -101,23 +101,24 @@ describe('chunked interest', () => {
 
   test('an entity crossing into view spawns for the observer', () => {
     const { operatives, walk } = deep([
-      { districtId: 'deepwatch', position: localInRoom('deepwatch', 'platform-hall') },
-      { districtId: 'deep-concourse', position: localInRoom('deep-concourse', 'east-span') },
+      { districtId: 'deep-concourse', position: localInRoom('deep-concourse', 'ring-hub') },
+      { districtId: 'deepwatch', position: localInRoom('deepwatch', 'concourse') },
     ]);
     const [a, b] = operatives;
     assert.ok(a && b);
     assert.ok(!b.sink.last('world.entered')?.entities.some((entity) => entity.id === a.player.entityId));
-    walk(a, levelPoint('deepwatch', localInRoom('deepwatch', 'concourse')));
+    walk(a, exitPoint('deepwatch', 'north'));
     assert.ok(ofType(b.sink, 'world.entitySpawned').some((message) => message.entity.id === a.player.entityId));
   });
 
   test('a same-level teleport swaps interest', () => {
     const { gameplay, operatives } = deep([
-      { districtId: 'deepwatch', position: localInRoom('deepwatch', 'lift-gallery') },
+      { districtId: 'deepwatch', position: localInRoom('deepwatch', 'concourse') },
       { districtId: 'deepwatch', position: localInRoom('deepwatch', 'concourse') },
     ]);
     const [a, b] = operatives;
     assert.ok(a && b);
+    assert.ok(b.sink.last('world.entered')?.entities.some((entity) => entity.id === a.player.entityId) || ofType(b.sink, 'world.entitySpawned').some((message) => message.entity.id === a.player.entityId));
     a.sink.messages.length = 0;
     gameplay.teleport(a.player, at('drowned-archive', localInRoom('drowned-archive', 'sealed-room', { x: 27, y: 24 })));
     assert.equal(a.player.levelId, 'the-deep');
