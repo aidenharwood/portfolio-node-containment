@@ -2,7 +2,7 @@ import type { DistrictId } from '../ids.ts';
 import { parseTileLayout, type DistrictDefinition, type ObjectPlacement, type TileLayout } from '../world/district.ts';
 import type { WorldObjectDefinition } from '../world/entities.ts';
 import { objectFootprintTiles, WALL_FIXTURE_MODELS } from '../world/footprint.ts';
-import { CARDINAL_OFFSETS, chebyshevDistance, rectContains, tileKey, type Facing, type TilePoint, type TileRect } from '../world/geometry.ts';
+import { CARDINAL_OFFSETS, chebyshevDistance, rectContains, tileKey, type Facing, type TilePoint } from '../world/geometry.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
 import { TILE_KINDS } from '../world/tiles.ts';
 import type { GameContent } from './gameContent.ts';
@@ -101,7 +101,7 @@ function trackNear(layout: ResolvedLevel['layout'], platform: TilePoint): TilePo
   return tiles;
 }
 
-function trackReachableFrom(layout: ResolvedLevel['layout'], start: readonly TilePoint[], isCut: (point: TilePoint) => boolean = () => false): Set<string> {
+function trackReachableFrom(layout: ResolvedLevel['layout'], start: readonly TilePoint[]): Set<string> {
   const seen = new Set(start.map(tileKey));
   const queue = [...start];
   for (let index = 0; index < queue.length; index++) {
@@ -109,7 +109,7 @@ function trackReachableFrom(layout: ResolvedLevel['layout'], start: readonly Til
     for (let dy = -1; dy <= 1; dy++) {
       for (let dx = -1; dx <= 1; dx++) {
         const point = { x: here.x + dx, y: here.y + dy };
-        if (layout.tileAt(point) !== 'track' || seen.has(tileKey(point)) || isCut(point)) continue;
+        if (layout.tileAt(point) !== 'track' || seen.has(tileKey(point))) continue;
         seen.add(tileKey(point));
         queue.push(point);
       }
