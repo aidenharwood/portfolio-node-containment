@@ -58,7 +58,7 @@ describe('scaling for crowds', () => {
   });
 
   test('in a multi-combat boss arena, everyone who damaged a creature gets credit and personal loot', () => {
-    const { gameplay, players } = crowd(2, { capacity: 10, districtId: 'undercroft', position: localInRoom('undercroft', 'workshop', { x: 1, y: 8 }) });
+    const { gameplay, players } = crowd(2, { capacity: 10, districtId: 'undercroft', position: localInRoom('undercroft', 'workshop') });
     const level = gameplay.world.levelOf(players[0] as Player);
     const leech = level.creatureByInstance('uc-foreman-add-a');
     assert.ok(leech);

@@ -15,7 +15,7 @@ import {
   type TilePoint,
   type WorldLocation,
 } from '@containment/shared';
-import { anchor, at, createHarness, districtOf, finishDialogue, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
+import { anchor, at, createHarness, districtOf, finishDialogue, inRoom, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 
@@ -164,13 +164,13 @@ describe('act four: the Vesper Wing', () => {
     use(harness, 'vl-lift/1,0');
     assert.equal(player.levelId, 'vesper-cellars');
     assert.equal(stepOf(harness, 'the-cold-ward'), 1);
-    travel(harness, at('vesper-cellars', localInRoom('vesper-cellars', 'mortuary', { x: 42, y: 16 })));
+    travel(harness, anchor('vesper-cellars', 'mortuaryFloor'));
     for (const suffix of ['a', 'b', 'c', 'd', 'e', 'f']) defeat(harness, `vcl-mortuary-attendant-${suffix}`);
     assert.equal(stepOf(harness, 'the-cold-ward'), 2);
-    travel(harness, at('vesper-cellars', localInRoom('vesper-cellars', 'almoners-office', { x: 34, y: 2 })));
+    travel(harness, inRoom('vesper-cellars', 'almoners-office'));
     defeat(harness, 'vcl-office-almoner');
     assert.equal(stepOf(harness, 'the-cold-ward'), 3);
-    travel(harness, at('vesper-cellars', localInRoom('vesper-cellars', 'lift-landing', { x: 17, y: 2 })));
+    travel(harness, anchor('vesper-cellars', 'liftArrival'));
     use(harness, 'vcl-lift/1,0');
     assert.equal(districtOf(player), 'vesper-lodge');
     talk(harness, 'vl-ashby', 'They can.');
@@ -179,7 +179,7 @@ describe('act four: the Vesper Wing', () => {
     talk(harness, 'vl-ashby', 'Is anyone still admitted?', "I'll file them.");
     assert.equal(countItem(player.record.inventory, 'discharge-papers'), 1);
     use(harness, 'vl-lift/1,0');
-    travel(harness, at('vesper-cellars', localInRoom('vesper-cellars', 'almoners-office', { x: 3, y: 29 })));
+    travel(harness, inRoom('vesper-cellars', 'almoners-office'));
     use(harness, 'vcl-ledger');
     assert.equal(stepOf(harness, 'discharged'), 1);
     travel(harness, LODGE);

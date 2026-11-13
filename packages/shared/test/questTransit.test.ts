@@ -41,6 +41,12 @@ const at = (districtId: string, x: number, y: number): WorldLocation => {
   return location;
 };
 
+const anchorAt = (districtId: string, anchorId: string): WorldLocation => {
+  const point = GAME_CONTENT.districts.get(districtId)?.anchors?.[anchorId];
+  assert.ok(point, `missing anchor ${districtId}/${anchorId}`);
+  return at(districtId, point.x, point.y);
+};
+
 const targetsFor = (log: QuestLog): TransitTarget[] => {
   const tracked = trackedQuest(log, GAME_CONTENT.quests, null);
   assert.ok(tracked);
@@ -90,7 +96,7 @@ describe('quest transit routing', () => {
   test('a target on another level routes through a lift the player can use', () => {
     const lift = GAME_CONTENT.levels.get(at('meridian-atrium', 0, 0).levelId)?.objects.find((placement) => placement.objectId === 'atrium-service-lift');
     assert.ok(lift);
-    const below = at('undercroft', 5, 4);
+    const below = anchorAt('undercroft', 'liftArrival');
     const target: TransitTarget = { levelId: below.levelId, goal: { point: below.position, arriveAdjacent: false } };
     const origin = at('meridian-atrium', 6, 31);
 

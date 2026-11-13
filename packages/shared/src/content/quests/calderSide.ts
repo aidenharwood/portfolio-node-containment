@@ -81,7 +81,7 @@ export const CLOCKING_OFF: QuestDefinition = {
   steps: [
     {
       id: 'clock',
-      journal: "Brandt gave me Foreman Ostrava's punch card. The shift clock is in the corner of his office in the Calder Deeps.",
+      journal: "Brandt gave me Foreman Ostrava's punch card. The shift clock is on the far wall of his office in the Calder Deeps.",
       objectives: [{ type: 'interactWith', objectId: 'deeps-time-clock', label: "Clock off Ostrava's shift" }],
     },
     {

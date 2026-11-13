@@ -15,7 +15,7 @@ import {
   type TilePoint,
   type WorldLocation,
 } from '@containment/shared';
-import { anchor, at, createHarness, districtOf, finishDialogue, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
+import { anchor, at, createHarness, districtOf, finishDialogue, inRoom, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 
@@ -169,14 +169,14 @@ describe('act four: postmarked', () => {
     assert.equal(player.levelId, 'calder-deeps');
     assert.equal(stepOf(harness, 'the-lowest-gallery'), 1);
 
-    travel(harness, at('calder-deeps', localInRoom('calder-deeps', 'old-workings', { x: 28, y: 21 })));
+    travel(harness, anchor('calder-deeps', 'workingsFloor'));
     for (const suffix of ['a', 'b', 'c', 'd', 'e', 'f']) defeat(harness, `cd-workings-wight-${suffix}`);
     assert.equal(stepOf(harness, 'the-lowest-gallery'), 2);
-    travel(harness, at('calder-deeps', localInRoom('calder-deeps', 'foremans-office', { x: 18, y: 2 })));
+    travel(harness, inRoom('calder-deeps', 'foremans-office'));
     defeat(harness, 'cd-office-foreman');
     assert.equal(stepOf(harness, 'the-lowest-gallery'), 3);
 
-    travel(harness, at('calder-deeps', localInRoom('calder-deeps', 'lift-landing', { x: 2, y: 2 })));
+    travel(harness, anchor('calder-deeps', 'liftArrival'));
     use(harness, 'cd-lift/1,0');
     assert.equal(districtOf(player), 'calder-gatehouse');
     talk(harness, 'cg-brandt', 'He can rest now.');
@@ -185,7 +185,7 @@ describe('act four: postmarked', () => {
     talk(harness, 'cg-brandt', 'Is the log closed?', "I'll clock him off.");
     assert.equal(countItem(player.record.inventory, 'foremans-card'), 1);
     use(harness, 'cg-lift/1,0');
-    travel(harness, at('calder-deeps', localInRoom('calder-deeps', 'foremans-office', { x: 58, y: 30 })));
+    travel(harness, inRoom('calder-deeps', 'foremans-office'));
     use(harness, 'cd-time-clock');
     assert.equal(stepOf(harness, 'clocking-off'), 1);
     assert.equal(countItem(player.record.inventory, 'foremans-card'), 0);
