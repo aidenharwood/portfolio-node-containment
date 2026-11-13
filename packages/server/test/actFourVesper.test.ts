@@ -15,7 +15,7 @@ import {
   type TilePoint,
   type WorldLocation,
 } from '@containment/shared';
-import { at, createHarness, districtOf, finishDialogue, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
+import { anchor, at, createHarness, districtOf, finishDialogue, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 
@@ -75,7 +75,7 @@ function walkTo(harness: Harness, target: TilePoint): void {
 }
 
 const travel = (harness: Harness, location: WorldLocation) => harness.gameplay.teleport(harness.player, location);
-const LODGE = at('vesper-lodge', localInRoom('vesper-lodge', 'lodge', { x: 32, y: 12 }));
+const LODGE = at('vesper-lodge', localInRoom('vesper-lodge', 'lodge'));
 
 describe('act four: the Vesper Wing', () => {
   test('Referral leads from the Medbay through the seed vault to the Porter\'s Lodge', () => {
@@ -91,20 +91,20 @@ describe('act four: the Vesper Wing', () => {
     assert.equal(stepOf(harness, 'referral'), 1);
 
     travel(harness, at('hydroponics', localInRoom('hydroponics', 'seed-vault', { x: 3, y: 3 })));
-    walkTo(harness, levelPoint('vesper-causeway', localInRoom('vesper-causeway', 'walk', { x: 56, y: 2 })));
+    walkTo(harness, levelPoint('vesper-causeway', localInRoom('vesper-causeway', 'walk')));
     assert.equal(districtOf(player), 'vesper-causeway', 'the seed vault opens west onto the Sanatorium Walk on foot');
     assert.equal(stepOf(harness, 'referral'), 2);
 
-    travel(harness, at('vesper-wards', localInRoom('vesper-wards', 'north-ward', { x: 54, y: 20 })));
+    travel(harness, at('vesper-wards', localInRoom('vesper-wards', 'north-ward')));
     for (const suffix of ['a', 'b', 'c', 'd', 'e', 'f']) defeat(harness, `vw-north-orderly-${suffix}`);
     assert.equal(stepOf(harness, 'referral'), 3);
 
-    travel(harness, at('vesper-wards', localInRoom('vesper-wards', 'ward-corridor', { x: 2, y: 3 })));
-    walkTo(harness, levelPoint('vesper-lodge', localInRoom('vesper-lodge', 'lodge', { x: 55, y: 17 })));
+    travel(harness, anchor('vesper-wards', 'gateApproach'));
+    walkTo(harness, anchor('vesper-lodge', 'gateInside').position);
     assert.equal(districtOf(player), 'vesper-wards', 'the lodge door stays shut until the bell is answered');
     use(harness, 'vw-bell');
     assert.ok(player.hasFlag(VESPER_GATE_FLAG));
-    walkTo(harness, levelPoint('vesper-lodge', localInRoom('vesper-lodge', 'lodge', { x: 55, y: 17 })));
+    walkTo(harness, anchor('vesper-lodge', 'gateInside').position);
     assert.equal(districtOf(player), 'vesper-lodge');
 
     talk(harness, 'vl-ashby', 'Meridian, reporting');
@@ -117,12 +117,12 @@ describe('act four: the Vesper Wing', () => {
     const { player } = harness;
 
     talk(harness, 'vl-ashby', 'What do the patients need?', "I'll do the rounds.");
-    for (const [instanceId, position] of [['vw-chart-a', { x: 37, y: 26 }], ['vw-chart-b', { x: 21, y: 29 }], ['vw-chart-c', { x: 5, y: 26 }]] as const) {
-      travel(harness, at('vesper-wards', position));
+    for (const [instanceId, anchorId] of [['vw-chart-a', 'chartA'], ['vw-chart-b', 'chartB'], ['vw-chart-c', 'chartC']] as const) {
+      travel(harness, anchor('vesper-wards', anchorId));
       use(harness, instanceId);
     }
     assert.equal(stepOf(harness, 'night-rounds'), 1);
-    travel(harness, at('vesper-wards', localInRoom('vesper-wards', 'south-ward', { x: 27, y: 3 })));
+    travel(harness, at('vesper-wards', localInRoom('vesper-wards', 'south-ward')));
     for (const suffix of ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']) defeat(harness, `vw-south-nurse-${suffix}`);
     assert.equal(stepOf(harness, 'night-rounds'), 2);
     travel(harness, LODGE);
@@ -131,10 +131,10 @@ describe('act four: the Vesper Wing', () => {
 
     talk(harness, 'vl-ashby', 'Who wrote the charts?', "I'll give him one.");
     assert.ok(player.hasFlag(VESPER_SURGERY_FLAG));
-    travel(harness, at('vesper-lodge', localInRoom('vesper-lodge', 'lodge', { x: 1, y: 17 })));
-    walkTo(harness, levelPoint('vesper-pharmacy', localInRoom('vesper-pharmacy', 'dispensary', { x: 17, y: 15 })));
+    travel(harness, anchor('vesper-lodge', 'liftArrival'));
+    walkTo(harness, anchor('vesper-pharmacy', 'dispensaryFloor').position);
     assert.equal(stepOf(harness, 'second-opinion'), 1);
-    walkTo(harness, levelPoint('vesper-pharmacy', localInRoom('vesper-pharmacy', 'surgery', { x: 71, y: 25 })));
+    walkTo(harness, anchor('vesper-pharmacy', 'surgeryEntry').position);
     defeat(harness, 'vp-surgery-physician');
     assert.equal(stepOf(harness, 'second-opinion'), 2);
 
@@ -152,7 +152,8 @@ describe('act four: the Vesper Wing', () => {
     };
     const harness = createHarness({ prepare: stocked });
     const { player } = harness;
-    assert.ok(harness.sink.last('player.state')?.self.discoveredStations.includes('vesper-platform'));
+    walkTo(harness, anchor('vesper-lodge', 'tramPlatform').position);
+    assert.ok(harness.sink.last('player.state')?.self.discoveredStations.includes('vesper-platform'), 'walking onto the lodge platform discovers its tram station');
 
     talk(harness, 'vl-lowe', 'Are you short of anything?', "I'll bring it.");
     assert.equal(stepOf(harness, 'prescription-for-one'), 1);

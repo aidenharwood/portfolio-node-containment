@@ -10,6 +10,8 @@ const CIRCUIT_BED_ROW = 133;
 const INTAKE_BRANCH_X = 43;
 const YARDS_BED_ROW = 87;
 const GATEHOUSE_BED_ROW = 56;
+const LODGE_BED_ROW = 56;
+const LODGE_STUB = 12;
 
 const DISTRICT_IDS = [
   'meridian-atrium',
@@ -47,7 +49,7 @@ export const MAIN_FLOOR_RECIPE: LevelRecipe = (context) => {
     { districtId: 'waterworks', exit: 'west', to: 'service-yards', toExit: 'east' },
     { districtId: 'intake-wing', from: 'meridian-circuit', offset: { x: INTAKE_OFFSET_X, y: circuit.map.length + CHASM_WIDTH } },
     { districtId: 'vesper-causeway', exit: 'east', to: 'hydroponics', toExit: 'west' },
-    { districtId: 'vesper-wards', exit: 'south', to: 'vesper-causeway', toExit: 'north' },
+    { districtId: 'vesper-wards', exit: 'east', to: 'vesper-causeway', toExit: 'west' },
     { districtId: 'vesper-lodge', exit: 'east', to: 'vesper-wards', toExit: 'west' },
     { districtId: 'vesper-pharmacy', exit: 'east', to: 'vesper-lodge', toExit: 'west' },
     { districtId: 'calder-causeway', exit: 'west', to: 'waterworks', toExit: 'east' },
@@ -56,10 +58,9 @@ export const MAIN_FLOOR_RECIPE: LevelRecipe = (context) => {
     { districtId: 'salt-cathedral', exit: 'west', to: 'calder-gatehouse', toExit: 'east' },
   ], TRACKWAY_MARGIN);
 
-  const returnLeg = trackPoint('intake-wing', 0, 65);
-  const lodgeNorth = trackPoint('vesper-lodge', 55, -2);
-  const lodgeSouth = trackPoint('vesper-lodge', 55, context.districtOf('vesper-lodge').map.length);
-  const pharmacyCorner = trackPoint('vesper-pharmacy', -5, -5);
+  const lodgeEast = trackPoint('vesper-lodge', widthOf(context.districtOf('vesper-lodge')), LODGE_BED_ROW);
+  const lodgeStubStart = trackPoint('vesper-lodge', -2, LODGE_BED_ROW);
+  const lodgeStubEnd = trackPoint('vesper-lodge', -LODGE_STUB, LODGE_BED_ROW);
   const verdanceWest = trackPoint('hydroponics', -2, 91);
   const verdanceEast = trackPoint('hydroponics', widthOf(context.districtOf('hydroponics')), 91);
   const concourseJog = trackPoint('verdance-concourse', 2, 0);
@@ -76,8 +77,8 @@ export const MAIN_FLOOR_RECIPE: LevelRecipe = (context) => {
     name: 'Meridian Line',
     ambience: { darkness: 0.72, tint: '#0a0f12', fog: '#0c1216' },
     routes: [
-      [lodgeNorth, trackCorner(lodgeNorth, pharmacyCorner), pharmacyCorner, trackCorner(pharmacyCorner, returnLeg), intakeWest],
-      [lodgeSouth, trackCorner(lodgeSouth, verdanceWest), verdanceWest],
+      [lodgeStubEnd, lodgeStubStart],
+      [lodgeEast, trackCorner(verdanceWest, lodgeEast), verdanceWest],
       [verdanceEast, trackCorner(concourseJog, verdanceEast), trackCorner(concourseJog, circuitWest), circuitWest],
       [circuitEast, trackCorner(yardsWest, circuitEast), yardsWest],
       [intakeBranch, trackCorner(intakeBranch, intakeWest), intakeWest],

@@ -21,7 +21,7 @@ export const TRAM_STATIONS: readonly TramStationDefinition[] = [
   { id: 'yards-depot', name: 'Service Yards Depot', districtId: 'service-yards', areaId: 'tram-terminal', platform: SERVICE_YARDS_ANCHORS.tramPlatform },
   { id: 'verdance-platform', name: 'Verdance Platform', districtId: 'hydroponics', areaId: 'tram-terminal', platform: HYDROPONICS_ANCHORS.tramPlatform },
   { id: 'calder-platform', name: 'Calder Gatehouse Platform', districtId: 'calder-gatehouse', areaId: 'tram-terminal', platform: CALDER_GATEHOUSE_ANCHORS.tramPlatform },
-  { id: 'vesper-platform', name: "Vesper Porter's Lodge Platform", districtId: 'vesper-lodge', areaId: 'lodge', platform: VESPER_LODGE_ANCHORS.tramPlatform },
+  { id: 'vesper-platform', name: "Vesper Porter's Lodge Platform", districtId: 'vesper-lodge', areaId: 'tram-terminal', platform: VESPER_LODGE_ANCHORS.tramPlatform },
   { id: 'deepwatch-platform', name: 'Deepwatch Platform Hall', districtId: 'deepwatch', areaId: 'platform-hall', platform: DEEPWATCH_ANCHORS.tramPlatform },
   { id: 'cryovault-dock', name: 'Cryovault Receiving Dock', districtId: 'cryovault', areaId: 'dock', platform: CRYOVAULT_ANCHORS.tramPlatform },
   { id: 'array-lobby', name: 'Signal Array Uplink Lobby', districtId: 'signal-array', areaId: 'uplink-lobby', platform: SIGNAL_ARRAY_ANCHORS.tramPlatform },
