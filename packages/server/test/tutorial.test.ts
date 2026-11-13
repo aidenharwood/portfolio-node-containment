@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { countItem, tramStationFlag, type CharacterRecord, type QuestProgress } from '@containment/shared';
-import { anchor, createHarness, finishDialogue, type Harness, at, districtOf, levelPoint, localInRoom } from './support/testHarness.ts';
+import { countItem, GAME_CONTENT, tramStationFlag, type CharacterRecord, type QuestProgress } from '@containment/shared';
+import { anchor, createHarness, finishDialogue, type Harness, at, districtOf, inRoom, levelPoint, localInRoom } from './support/testHarness.ts';
 
 const ORIENTATION = 'orientation-protocol';
 const TRANSIT = 'cleared-for-transit';
@@ -15,7 +15,7 @@ const completed = (questId: string): QuestProgress => ({ questId, status: 'compl
 
 const readyToLeave = (record: CharacterRecord): CharacterRecord => ({
   ...record,
-  location: at('intake-wing', localInRoom('intake-wing', 'supply', { x: 14, y: 14 })),
+  location: inRoom('intake-wing', 'supply'),
   quests: { [ORIENTATION]: completed(ORIENTATION), 'field-fabrication': completed('field-fabrication'), 'live-fire': completed('live-fire') },
   inventory: [{ itemId: 'meridian-scrip', quantity: 30 }, ...record.inventory.slice(1)],
 });
@@ -47,7 +47,7 @@ describe('orientation protocol tutorial', () => {
     assert.ok(player.record.skills.research > researchBefore);
     assert.equal(currentStep(harness), 4);
 
-    harness.send({ type: 'world.walk', target: levelPoint('intake-wing', localInRoom('intake-wing', 'observation', { x: 9, y: 16 })) });
+    harness.send({ type: 'world.walk', target: levelPoint('intake-wing', GAME_CONTENT.districts.get('intake-wing')?.anchors?.observationFloor ?? { x: 0, y: 0 }) });
     harness.ticksUntil(() => currentStep(harness) === 5);
 
     harness.talkTo('intake-varga');
@@ -80,7 +80,7 @@ describe('orientation protocol tutorial', () => {
   test('leaving Reyes on the first line still hands over the clearance card', () => {
     const harness = createHarness();
     harness.talkTo('intake-reyes');
-    harness.send({ type: 'world.walk', target: levelPoint('intake-wing', localInRoom('intake-wing', 'arrival', { x: 1, y: 15 })) });
+    harness.send({ type: 'world.walk', target: levelPoint('intake-wing', localInRoom('intake-wing', 'arrival')) });
     assert.equal(harness.player.dialogue, null);
     assert.equal(currentStep(harness), 1);
     assert.equal(countItem(harness.player.record.inventory, 'clearance-card-l1'), 1);
@@ -108,17 +108,17 @@ describe('orientation protocol tutorial', () => {
   test('walking away closes an open dialogue', () => {
     const harness = createHarness();
     harness.talkTo('intake-reyes');
-    harness.send({ type: 'world.walk', target: levelPoint('intake-wing', localInRoom('intake-wing', 'arrival', { x: 1, y: 15 })) });
+    harness.send({ type: 'world.walk', target: levelPoint('intake-wing', localInRoom('intake-wing', 'arrival')) });
     assert.equal(harness.player.dialogue, null);
     assert.equal(harness.sink.last('dialogue.closed')?.type, 'dialogue.closed');
   });
 
   test('leaving the world persists the character', () => {
     const harness = createHarness();
-    harness.send({ type: 'world.walk', target: levelPoint('intake-wing', localInRoom('intake-wing', 'arrival', { x: 1, y: 15 })) });
+    harness.send({ type: 'world.walk', target: levelPoint('intake-wing', localInRoom('intake-wing', 'arrival')) });
     harness.ticksUntil(() => harness.player.path.length === 0);
     harness.gameplay.leaveWorld(harness.player);
-    assert.deepEqual(harness.saved.at(-1)?.location.position, levelPoint('intake-wing', localInRoom('intake-wing', 'arrival', { x: 1, y: 15 })));
+    assert.deepEqual(harness.saved.at(-1)?.location.position, levelPoint('intake-wing', localInRoom('intake-wing', 'arrival')));
   });
 });
 
@@ -152,7 +152,7 @@ describe('cleared for transit', () => {
   });
 
   test('the intake tram will not run to the Atrium before the pass is bought', () => {
-    const harness = createHarness({ prepare: (record) => ({ ...readyToLeave(record), location: at('intake-wing', localInRoom('intake-wing', 'transit-bay', { x: 14, y: 3 })) }) });
+    const harness = createHarness({ prepare: (record) => ({ ...readyToLeave(record), location: anchor('intake-wing', 'tramPlatform') }) });
     harness.send({ type: 'tram.board', destinationStationId: 'atrium-transit' });
     assert.equal(harness.player.activity, null);
     assert.match(harness.sink.last('notice')?.text ?? '', /not found that station/);
@@ -163,7 +163,7 @@ describe('cleared for transit', () => {
     const harness = createHarness({
       prepare: (record) => ({
         ...readyToLeave(record),
-        location: at('intake-wing', localInRoom('intake-wing', 'transit-bay', { x: 14, y: 3 })),
+        location: anchor('intake-wing', 'tramPlatform'),
         flags: [...record.flags, tramStationFlag('atrium-transit')],
         inventory: [{ itemId: 'transit-pass', quantity: 1 }, ...record.inventory.slice(1)],
         quests: { ...readyToLeave(record).quests, [TRANSIT]: { questId: TRANSIT, status: 'active', stepIndex: 3, objectiveProgress: [0] } },

@@ -32,7 +32,7 @@ export const ORIENTATION_PROTOCOL: QuestDefinition = {
     },
     {
       id: 'observation',
-      journal: 'Calibrated. Next is the Observation Deck, the wide room in the middle of the north side. A beacon marks it.',
+      journal: 'Calibrated. Next is the Observation Deck, the last room along the north side, at the east end. A beacon marks it.',
       objectives: [{ type: 'enterArea', districtId: 'intake-wing', areaId: 'observation', label: 'Enter the observation deck' }],
     },
     {
@@ -42,7 +42,7 @@ export const ORIENTATION_PROTOCOL: QuestDefinition = {
     },
     {
       id: 'retrieve-sample',
-      journal: 'Dr. Varga needs a resonance sample from the cabinet in the Storeroom, south-west across the concourse.',
+      journal: 'Dr. Varga needs a resonance sample from the cabinet in the Storeroom, south-east across the concourse.',
       objectives: [
         { type: 'obtainItem', itemId: 'resonance-sample', count: 1, label: 'Retrieve a resonance sample' },
       ],

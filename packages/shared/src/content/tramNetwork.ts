@@ -16,7 +16,7 @@ import { FURNACE_ANCHORS } from './districts/furnace.ts';
 import { SIGNAL_ARRAY_ANCHORS } from './districts/signalArray.ts';
 
 export const TRAM_STATIONS: readonly TramStationDefinition[] = [
-  { id: 'intake-transit', name: 'Intake Transit Bay', districtId: 'intake-wing', areaId: 'transit-bay', platform: INTAKE_WING_ANCHORS.tramPlatform, alwaysKnown: true },
+  { id: 'intake-transit', name: 'Intake Transit Bay', districtId: 'intake-wing', areaId: 'tram-terminal', platform: INTAKE_WING_ANCHORS.tramPlatform, alwaysKnown: true },
   { id: 'atrium-transit', name: 'Atrium Transit Bay', districtId: 'meridian-atrium', areaId: 'tram-terminal', platform: ATRIUM_ANCHORS.transit },
   { id: 'yards-depot', name: 'Service Yards Depot', districtId: 'service-yards', areaId: 'tram-terminal', platform: SERVICE_YARDS_ANCHORS.tramPlatform },
   { id: 'verdance-platform', name: 'Verdance Platform', districtId: 'hydroponics', areaId: 'tram-terminal', platform: HYDROPONICS_ANCHORS.tramPlatform },

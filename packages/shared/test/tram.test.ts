@@ -93,3 +93,25 @@ test('a station cut off from the track is reported', () => {
   assert.ok(issues.some((issue) => issue.includes('no drawn track runs from') && issue.includes('"yards-depot"')));
   assert.ok(!issues.some((issue) => issue.includes('closed loop')));
 });
+
+test('the trunk crosses rooms only under bridges', () => {
+  const level = GAME_CONTENT.levels.get('main-floor');
+  assert.ok(level);
+  const bridgePieces = new Set(level.objects.filter((object) => object.objectId.startsWith('bridge-')).map((object) => `${object.position.x},${object.position.y}`));
+  const bridged = (point: TilePoint): boolean => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => bridgePieces.has(`${point.x + (dx as number)},${point.y + (dy as number)}`));
+  const bare: string[] = [];
+  for (const placement of level.districts) {
+    const rooms = GAME_CONTENT.districts.get(placement.districtId)?.rooms ?? {};
+    for (const [roomId, rect] of Object.entries(rooms)) {
+      if (roomId === 'tram-terminal') continue;
+      for (let y = rect.y; y < rect.y + rect.height; y++) {
+        for (let x = rect.x; x < rect.x + rect.width; x++) {
+          const point = level.layout.toLevelPoint(placement.districtId, { x, y });
+          if (level.layout.tileAt(point) === 'track' && !bridged(point)) bare.push(`${placement.districtId}/${roomId} ${x},${y}`);
+        }
+      }
+    }
+  }
+  const rooms = [...new Set(bare.map((entry) => entry.split(' ')[0]))];
+  assert.deepEqual(rooms, []);
+});

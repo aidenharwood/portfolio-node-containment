@@ -17,7 +17,7 @@ import { anchor, createHarness, finishDialogue, type Harness, at, districtOf, in
 
 const ATRIUM_NEAR_KADE: WorldLocation = at('meridian-atrium', localInRoom('meridian-atrium', 'response-office', { x: 3, y: 3 }));
 const ATRIUM_NEAR_SEL: WorldLocation = at('meridian-atrium', localInRoom('meridian-atrium', 'archives', { x: 8, y: 16 }));
-const RANGE_GALLERY: WorldLocation = at('intake-wing', localInRoom('intake-wing', 'range-gallery', { x: 18, y: 2 }));
+const RANGE_GALLERY: WorldLocation = inRoom('intake-wing', 'range-gallery');
 
 const activeAt = (questId: string, stepIndex = 0, objectiveCount = 1): QuestProgress => ({
   questId,
@@ -386,7 +386,7 @@ describe('the far side', () => {
   test('The Far Side runs from Varga, through the Undercroft, to Halvorsen and back to Sel', () => {
     const skills = createStartingSkills({ closeQuarters: experienceForLevel(40), fortitude: experienceForLevel(45) });
     const harness = createHarness({
-      prepare: prepared(at('intake-wing', localInRoom('intake-wing', 'diagnostics', { x: 14, y: 14 })), { 'the-knocking': completed('the-knocking'), 'the-far-side': activeAt('the-far-side') }, {
+      prepare: prepared(inRoom('intake-wing', 'diagnostics'), { 'the-knocking': completed('the-knocking'), 'the-far-side': activeAt('the-far-side') }, {
         skills,
         vitals: { integrity: maxIntegrityFor(skills) },
         equipment: { torso: 'composite-plate', legs: 'intake-trousers', feet: 'work-boots', primary: 'shock-maul' },

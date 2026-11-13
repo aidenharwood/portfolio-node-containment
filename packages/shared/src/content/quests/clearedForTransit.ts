@@ -9,7 +9,7 @@ export const CLEARED_FOR_TRANSIT: QuestDefinition = {
   steps: [
     {
       id: 'see-hale',
-      journal: 'Nobody rides out of Intake until Supply Clerk Hale has signed off their kit. Hale works the Supply Office in the north-east of the wing.',
+      journal: 'Nobody rides out of Intake until Supply Clerk Hale has signed off their kit. Hale works the Supply Office at the east end of the wing.',
       objectives: [{ type: 'talkTo', npcId: 'supply-clerk-hale', label: 'Speak with Supply Clerk Hale' }],
     },
     {
@@ -24,7 +24,7 @@ export const CLEARED_FOR_TRANSIT: QuestDefinition = {
     },
     {
       id: 'board',
-      journal: 'The tram waits at the platform in the Transit Bay, south-east of the concourse. Boarding it shows every station I have found. The world map (M) shows every line.',
+      journal: 'The tram waits at the platform off the Transit Bay, at the west end of the concourse. Boarding it shows every station I have found. The world map (M) shows every line.',
       objectives: [{ type: 'interactWith', objectId: 'tram-car-door', label: 'Board the tram' }],
     },
     {

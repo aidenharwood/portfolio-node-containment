@@ -5,13 +5,14 @@ import { SHIPPED_CONTEXT } from './shippedContext.ts';
 
 const CHASM_WIDTH = 24;
 const TRACKWAY_MARGIN = { x: 8, y: 8 };
-const INTAKE_OFFSET_X = 56;
+const INTAKE_OFFSET_X = 42;
 const CIRCUIT_BED_ROW = 133;
 const INTAKE_BRANCH_X = 43;
 const YARDS_BED_ROW = 87;
 const GATEHOUSE_BED_ROW = 56;
 const LODGE_BED_ROW = 56;
-const LODGE_STUB = 12;
+const STUB_LENGTH = 12;
+const INTAKE_BED_X = 1;
 
 const DISTRICT_IDS = [
   'meridian-atrium',
@@ -60,7 +61,7 @@ export const MAIN_FLOOR_RECIPE: LevelRecipe = (context) => {
 
   const lodgeEast = trackPoint('vesper-lodge', widthOf(context.districtOf('vesper-lodge')), LODGE_BED_ROW);
   const lodgeStubStart = trackPoint('vesper-lodge', -2, LODGE_BED_ROW);
-  const lodgeStubEnd = trackPoint('vesper-lodge', -LODGE_STUB, LODGE_BED_ROW);
+  const lodgeStubEnd = trackPoint('vesper-lodge', -STUB_LENGTH, LODGE_BED_ROW);
   const verdanceWest = trackPoint('hydroponics', -2, 91);
   const verdanceEast = trackPoint('hydroponics', widthOf(context.districtOf('hydroponics')), 91);
   const concourseJog = trackPoint('verdance-concourse', 2, 0);
@@ -69,8 +70,11 @@ export const MAIN_FLOOR_RECIPE: LevelRecipe = (context) => {
   const yardsWest = trackPoint('service-yards', -2, YARDS_BED_ROW);
   const yardsEast = trackPoint('service-yards', widthOf(context.districtOf('service-yards')), YARDS_BED_ROW);
   const gatehouseWest = trackPoint('calder-gatehouse', -2, GATEHOUSE_BED_ROW);
-  const intakeWest = trackPoint('intake-wing', -2, 65);
+  const intake = context.districtOf('intake-wing');
   const intakeBranch = trackPoint('meridian-circuit', INTAKE_BRANCH_X, circuit.map.length);
+  const intakeNorth = trackPoint('intake-wing', INTAKE_BED_X, -2);
+  const intakeSouth = trackPoint('intake-wing', INTAKE_BED_X, intake.map.length);
+  const intakeStubEnd = trackPoint('intake-wing', INTAKE_BED_X, intake.map.length + STUB_LENGTH - 2);
 
   const meridianLine = drawTrackway(placements, districts, {
     id: 'meridian-line-trackway',
@@ -81,8 +85,9 @@ export const MAIN_FLOOR_RECIPE: LevelRecipe = (context) => {
       [lodgeEast, trackCorner(verdanceWest, lodgeEast), verdanceWest],
       [verdanceEast, trackCorner(concourseJog, verdanceEast), trackCorner(concourseJog, circuitWest), circuitWest],
       [circuitEast, trackCorner(yardsWest, circuitEast), yardsWest],
-      [intakeBranch, trackCorner(intakeBranch, intakeWest), intakeWest],
       [yardsEast, trackCorner(gatehouseWest, yardsEast), gatehouseWest],
+      [intakeBranch, intakeNorth],
+      [intakeSouth, intakeStubEnd],
     ],
   });
 

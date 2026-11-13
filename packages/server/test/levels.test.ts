@@ -181,7 +181,7 @@ describe('levels', () => {
   });
 
   test('a saved position on an unwalkable tile spawns nearby in the same district', () => {
-    const inTheTank = localInRoom('intake-wing', 'observation', { x: 9, y: 8 });
+    const inTheTank = localInRoom('intake-wing', 'observation');
     const harness = createHarness({ prepare: placedAt(at('intake-wing', inTheTank)) });
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'intake-wing');
     const target = levelPoint('intake-wing', inTheTank);
@@ -189,9 +189,9 @@ describe('levels', () => {
   });
 
   test('incapacitation in the Intake Wing recovers in the Intake Wing medbay', () => {
-    const harness = createHarness({ prepare: placedAt(at('intake-wing', localInRoom('intake-wing', 'observation', { x: 2, y: 2 }))) });
+    const harness = createHarness({ prepare: placedAt(anchor('intake-wing', 'observationFloor')) });
     harness.gameplay.recoverIncapacitated(harness.player);
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'intake-wing');
-    assert.deepEqual(harness.player.position, at('intake-wing', localInRoom('intake-wing', 'supply', { x: 22, y: 8 })).position);
+    assert.deepEqual(harness.player.position, anchor('intake-wing', 'recovery').position);
   });
 });

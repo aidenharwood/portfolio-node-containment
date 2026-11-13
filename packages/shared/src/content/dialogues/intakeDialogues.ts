@@ -120,12 +120,12 @@ export const VARGA_DIALOGUE: DialogueDefinition = {
     },
     task: {
       speaker: 'npc',
-      text: "I need a resonance sample from the cabinet in the south-west storeroom. It's keyed to orientation staff — you count, for today. Bring it back sealed.",
+      text: "I need a resonance sample from the cabinet in the south-east storeroom. It's keyed to orientation staff — you count, for today. Bring it back sealed.",
       next: null,
     },
     waiting: {
       speaker: 'npc',
-      text: "The cabinet is in the storeroom, south-west, past the corridor. Sealed sample, please. Don't shake it.",
+      text: "The cabinet is in the storeroom, south-east, past the corridor. Sealed sample, please. Don't shake it.",
       next: null,
     },
     deliver: {
@@ -351,7 +351,7 @@ export const OSEI_DIALOGUE: DialogueDefinition = {
     },
     rest: {
       speaker: 'npc',
-      text: "Medgel costs scrip. Beds don't. Supply Office, north-east, two of them by the window. Lie down, let the canopy work, then come back.",
+      text: "Medgel costs scrip. Beds don't. Supply Office, east end, two of them by the window. Lie down, let the canopy work, then come back.",
       next: null,
     },
     debrief: {
@@ -366,7 +366,7 @@ export const OSEI_DIALOGUE: DialogueDefinition = {
     },
     transit: {
       speaker: 'npc',
-      text: 'Hale sells the pass. The tram is in the Transit Bay, east end of the concourse. Go on.',
+      text: 'Hale sells the pass. The tram is at the platform off the Transit Bay, west end of the concourse. Go on.',
       next: null,
     },
     idle: {
@@ -413,7 +413,7 @@ export const HALE_DIALOGUE: DialogueDefinition = {
     },
     board: {
       speaker: 'npc',
-      text: "Tram's in the Transit Bay, east end. Climb aboard, pick the Atrium. Don't lean on the doors.",
+      text: "Tram's at the platform off the Transit Bay, west end. Climb aboard, pick the Atrium. Don't lean on the doors.",
       next: null,
     },
     greeting: {

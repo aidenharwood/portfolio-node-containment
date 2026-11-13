@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { countItem, type CharacterRecord, type QuestProgress, type WorldLocation } from '@containment/shared';
-import { createHarness, finishDialogue, type Harness, at, levelPoint, localInRoom } from './support/testHarness.ts';
+import { anchor, createHarness, finishDialogue, type Harness, inRoom, levelPoint, localInRoom } from './support/testHarness.ts';
 
-const WORKSHOP: WorldLocation = at('intake-wing', localInRoom('intake-wing', 'workshop', { x: 15, y: 17 }));
+const WORKSHOP: WorldLocation = anchor('intake-wing', 'workshopFloor');
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 
@@ -79,7 +79,7 @@ describe('gathering, refining and assembly', () => {
     const harness = createHarness({
       prepare: (record) => ({
         ...atWorkshop({ 'field-fabrication': completed('field-fabrication') })(record),
-        location: at('intake-wing', localInRoom('intake-wing', 'range-gallery', { x: 18, y: 2 })),
+        location: inRoom('intake-wing', 'range-gallery'),
         inventory: [{ itemId: 'stun-baton', quantity: 1 }, ...record.inventory.slice(1)],
       }),
     });
@@ -125,7 +125,7 @@ describe('gathering, refining and assembly', () => {
     harness.interactWithObject('intake-refinery/1,0');
     harness.send({ type: 'crafting.make', recipeId: 'refinery:alloy-plate', quantity: 5 });
     assert.equal(harness.player.activity?.kind, 'craft');
-    harness.send({ type: 'world.walk', target: levelPoint('intake-wing', localInRoom('intake-wing', 'workshop', { x: 21, y: 10 })) });
+    harness.send({ type: 'world.walk', target: levelPoint('intake-wing', localInRoom('intake-wing', 'workshop')) });
     assert.equal(harness.player.activity, null);
     assert.equal(harness.player.craftingStation, null);
     assert.equal(harness.sink.last('crafting.closed')?.type, 'crafting.closed');

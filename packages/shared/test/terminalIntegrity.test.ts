@@ -219,3 +219,7 @@ test('the Calder Gatehouse terminal follows every rule', () => {
 test("the Vesper Porter's Lodge terminal follows every rule", () => {
   assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"vesper-platform"')), []);
 });
+
+test('the Intake Transit Bay terminal follows every rule', () => {
+  assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"intake-transit"')), []);
+});

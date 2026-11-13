@@ -9,6 +9,7 @@ const onPlatform = (districtId: string, local: { x: number; y: number }, station
   flags: [...record.flags, ...stations.map(tramStationFlag)],
 });
 
+const INTAKE_PLATFORM = GAME_CONTENT.districts.get('intake-wing')?.anchors?.tramPlatform ?? { x: 0, y: 0 };
 const ATRIUM_PLATFORM = GAME_CONTENT.districts.get('meridian-atrium')?.anchors?.transit ?? { x: 0, y: 0 };
 
 function stationPoint(stationId: string) {
@@ -62,7 +63,7 @@ test('the Abyssal Circuit runs between the Deep districts', () => {
 });
 
 test('a tram does not run to stations off its own lines', () => {
-  const harness = createHarness({ prepare: onPlatform('intake-wing', localInRoom('intake-wing', 'transit-bay', { x: 14, y: 3 }), ['verdance-platform', 'deepwatch-platform']) });
+  const harness = createHarness({ prepare: onPlatform('intake-wing', INTAKE_PLATFORM, ['verdance-platform', 'deepwatch-platform']) });
   for (const destinationStationId of ['verdance-platform', 'deepwatch-platform']) {
     harness.send({ type: 'tram.board', destinationStationId });
     assert.equal(harness.player.activity, null);

@@ -234,8 +234,8 @@ describe('dormancy and interest-bounded intents', () => {
 describe('review fixes', () => {
   test('a same-level recovery refreshes the player for observers who see both ends', () => {
     const { gameplay, operatives } = deep([
-      { districtId: 'intake-wing', position: localInRoom('intake-wing', 'supply', { x: 4, y: 9 }) },
-      { districtId: 'intake-wing', position: localInRoom('intake-wing', 'supply', { x: 12, y: 9 }) },
+      { districtId: 'intake-wing', position: localInRoom('intake-wing', 'supply') },
+      { districtId: 'intake-wing', position: GAME_CONTENT.districts.get('intake-wing')?.anchors?.supplyCounter ?? { x: 0, y: 0 } },
     ]);
     const [a, b] = operatives;
     assert.ok(a && b);
