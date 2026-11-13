@@ -72,6 +72,11 @@ function talk(harness: Harness, instanceId: string, ...choices: string[]): void 
 
 const travel = (harness: Harness, location: WorldLocation) => harness.gameplay.teleport(harness.player, location);
 
+function walkInto(harness: Harness, location: WorldLocation): void {
+  harness.send({ type: 'world.walk', target: location.position });
+  harness.ticksUntil(() => harness.player.path.length === 0, 2000);
+}
+
 describe('act two: the answer', () => {
   test('A Council of One opens Deepwatch, visits the Knock and hands over to Cold Storage', () => {
     const harness = createHarness({ prepare: veteranAt(NEAR_SEL, {}) });
@@ -111,6 +116,7 @@ describe('act two: the answer', () => {
 
     use(harness, 'dc-cryovault-door/0,0');
     assert.equal(districtOf(player), 'cryovault');
+    walkInto(harness, anchor('cryovault', 'entrance'));
     assert.equal(stepOf(harness, 'cold-storage'), 1);
 
     for (const pod of ['cv-pod-a', 'cv-pod-b', 'cv-pod-c', 'cv-pod-d']) use(harness, pod);
@@ -144,6 +150,7 @@ describe('act two: the answer', () => {
     travel(harness, ARRAY_DOOR);
     use(harness, 'dc-array-door/0,0');
     assert.equal(districtOf(player), 'signal-array');
+    walkInto(harness, anchor('signal-array', 'entrance'));
     assert.equal(stepOf(harness, 'dead-air'), 2);
 
     talk(harness, 'sa-achterberg');

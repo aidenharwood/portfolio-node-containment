@@ -23,8 +23,8 @@ export const TRAM_STATIONS: readonly TramStationDefinition[] = [
   { id: 'calder-platform', name: 'Calder Gatehouse Platform', districtId: 'calder-gatehouse', areaId: 'tram-terminal', platform: CALDER_GATEHOUSE_ANCHORS.tramPlatform },
   { id: 'vesper-platform', name: "Vesper Porter's Lodge Platform", districtId: 'vesper-lodge', areaId: 'tram-terminal', platform: VESPER_LODGE_ANCHORS.tramPlatform },
   { id: 'deepwatch-platform', name: 'Deepwatch Platform', districtId: 'deepwatch', areaId: 'tram-terminal', platform: DEEPWATCH_ANCHORS.tramPlatform },
-  { id: 'cryovault-dock', name: 'Cryovault Receiving Dock', districtId: 'cryovault', areaId: 'dock', platform: CRYOVAULT_ANCHORS.tramPlatform },
-  { id: 'array-lobby', name: 'Signal Array Uplink Lobby', districtId: 'signal-array', areaId: 'uplink-lobby', platform: SIGNAL_ARRAY_ANCHORS.tramPlatform },
+  { id: 'cryovault-dock', name: 'Cryovault Receiving Dock', districtId: 'cryovault', areaId: 'tram-terminal', platform: CRYOVAULT_ANCHORS.tramPlatform },
+  { id: 'array-lobby', name: 'Signal Array Uplink Lobby', districtId: 'signal-array', areaId: 'tram-terminal', platform: SIGNAL_ARRAY_ANCHORS.tramPlatform },
   { id: 'archive-stair', name: 'Archive Flood Stair', districtId: 'drowned-archive', areaId: 'flood-stair', platform: DROWNED_ARCHIVE_ANCHORS.tramPlatform },
   { id: 'furnace-lock', name: 'Furnace Coolant Lock', districtId: 'furnace', areaId: 'coolant-lock', platform: FURNACE_ANCHORS.tramPlatform },
 ];
