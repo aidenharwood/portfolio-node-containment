@@ -36,7 +36,7 @@ export const ODUYA_DIALOGUE: DialogueDefinition = {
     },
     officeProgress: {
       speaker: 'npc',
-      text: "Sorting Floor east, Stacks south, Dispatch beyond both. Mind the clerks. If one of them stamps you, check your name is still on you.",
+      text: "Sorting Floor north, Stacks either side, Dispatch beyond the floor. Mind the clerks. If one of them stamps you, check your name is still on you.",
       next: null,
     },
     letter: {

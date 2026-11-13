@@ -6,14 +6,22 @@
   "region": "meridian-core",
   "condition": "uncanny",
   "ambience": { "darkness": 0.55, "tint": "#140a1e", "fog": "#0c1a12" },
-  "size": { "width": 46, "height": 30 },
+  "size": { "width": 51, "height": 33 },
   "steps": [
-    { "kind": "room", "id": "grove", "rect": { "x": 10, "y": 1, "width": 26, "height": 28 }, "floor": "soil", "shape": "round" },
-    { "kind": "room", "id": "west-crease", "rect": { "x": 1, "y": 9, "width": 8, "height": 12 }, "floor": "soil", "shape": "round" },
-    { "kind": "room", "id": "east-crease", "rect": { "x": 37, "y": 9, "width": 8, "height": 12 }, "floor": "soil", "shape": "round" },
-    { "kind": "patch", "rect": { "x": 14, "y": 7, "width": 5, "height": 3 }, "tile": "coolant" },
-    { "kind": "patch", "rect": { "x": 28, "y": 20, "width": 5, "height": 3 }, "tile": "coolant" },
-    { "kind": "patch", "rect": { "x": 20, "y": 11, "width": 7, "height": 6 }, "tile": "concrete" },
+    { "kind": "room", "id": "grove", "rect": { "x": 12, "y": 1, "width": 27, "height": 31 }, "floor": "soil", "shape": "octagon" },
+    { "kind": "room", "id": "west-crease", "rect": { "x": 2, "y": 10, "width": 8, "height": 13 }, "floor": "soil", "shape": "round" },
+    { "kind": "room", "id": "east-crease", "rect": { "x": 41, "y": 10, "width": 8, "height": 13 }, "floor": "soil", "shape": "round" },
+    { "kind": "patch", "rect": { "x": 24, "y": 13, "width": 3, "height": 7 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 23, "y": 14, "width": 5, "height": 5 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 22, "y": 15, "width": 7, "height": 3 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 18, "y": 12, "width": 3, "height": 1 }, "tile": "coolant" },
+    { "kind": "patch", "rect": { "x": 30, "y": 12, "width": 3, "height": 1 }, "tile": "coolant" },
+    { "kind": "patch", "rect": { "x": 18, "y": 20, "width": 3, "height": 1 }, "tile": "coolant" },
+    { "kind": "patch", "rect": { "x": 30, "y": 20, "width": 3, "height": 1 }, "tile": "coolant" },
+    { "kind": "patch", "rect": { "x": 15, "y": 9, "width": 3, "height": 1 }, "tile": "coolant" },
+    { "kind": "patch", "rect": { "x": 33, "y": 9, "width": 3, "height": 1 }, "tile": "coolant" },
+    { "kind": "patch", "rect": { "x": 15, "y": 23, "width": 3, "height": 1 }, "tile": "coolant" },
+    { "kind": "patch", "rect": { "x": 33, "y": 23, "width": 3, "height": 1 }, "tile": "coolant" },
     { "kind": "link", "from": "west-crease", "to": "grove", "width": 3, "floor": "soil" },
     { "kind": "link", "from": "grove", "to": "east-crease", "width": 3, "floor": "soil" }
   ],
@@ -24,47 +32,38 @@
     { "room": "east-crease", "name": "The Right Crease" }
   ],
   "anchors": {
-    "arrival": { "room": "grove", "dx": 13, "dy": 24 }
+    "arrival": { "room": "grove", "dx": 13, "dy": 27 }
   },
   "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
-    { "id": "fold-heartwood", "object": "fold-heartwood", "at": { "room": "grove", "dx": 13, "dy": 13 } },
-    { "id": "fold-planter-a", "object": "planter", "at": { "room": "grove", "dx": 3, "dy": 17 } },
-    { "id": "fold-planter-b", "object": "planter", "at": { "room": "grove", "dx": 23, "dy": 21 } },
+    { "id": "fold-heartwood", "object": "fold-heartwood", "at": { "room": "grove", "dx": 13, "dy": 15 } },
+    { "id": "fold-planter-a", "object": "planter", "at": { "room": "grove", "dx": 4, "dy": 15 } },
+    { "id": "fold-planter-b", "object": "planter", "at": { "room": "grove", "dx": 22, "dy": 15 } },
     { "id": "vf-grove-litter-1", "object": "litter-gravel", "at": { "room": "grove", "dx": 8, "dy": 2 } },
-    { "id": "vf-grove-litter-2", "object": "litter-puddle", "at": { "room": "grove", "dx": 16, "dy": 6 } },
-    { "id": "vf-grove-litter-3", "object": "litter-gravel", "at": { "room": "grove", "dx": 6, "dy": 11 } },
-    { "id": "vf-grove-litter-4", "object": "litter-puddle", "at": { "room": "grove", "dx": 23, "dy": 10 } },
-    { "id": "vf-west-crease-vine", "object": "strangler-vine", "at": { "room": "west-crease", "dx": 2, "dy": 9 } },
-    { "id": "vf-east-crease-spores", "object": "spore-bloom", "at": { "room": "east-crease", "dx": 5, "dy": 9 } },
-    { "id": "furn-verdant-fold-grove-1", "object": "planter", "at": { "room": "grove", "dx": 8, "dy": 13 } },
-    { "id": "furn-verdant-fold-grove-2", "object": "planter", "at": { "room": "grove", "dx": 18, "dy": 13 } },
-    { "id": "furn-verdant-fold-grove-3", "object": "planter", "at": { "room": "grove", "dx": 13, "dy": 8 } },
-    { "id": "furn-verdant-fold-grove-4", "object": "planter", "at": { "room": "grove", "dx": 13, "dy": 18 } },
-    { "id": "furn-verdant-fold-grove-5", "object": "potted-fern", "at": { "room": "grove", "dx": 9, "dy": 9 } },
-    { "id": "furn-verdant-fold-grove-6", "object": "potted-fern", "at": { "room": "grove", "dx": 17, "dy": 9 } },
-    { "id": "furn-verdant-fold-grove-7", "object": "potted-fern", "at": { "room": "grove", "dx": 9, "dy": 17 } },
-    { "id": "furn-verdant-fold-grove-8", "object": "potted-fern", "at": { "room": "grove", "dx": 17, "dy": 17 } },
-    { "id": "furn-verdant-fold-grove-9", "object": "bench-curve", "at": { "room": "grove", "dx": 12, "dy": 4 }, "facing": "south" },
-    { "id": "furn-verdant-fold-grove-10", "object": "bench-curve", "at": { "room": "grove", "dx": 12, "dy": 22 }, "facing": "north" }
+    { "id": "vf-grove-litter-2", "object": "litter-puddle", "at": { "room": "grove", "dx": 17, "dy": 7 } },
+    { "id": "vf-grove-litter-3", "object": "litter-gravel", "at": { "room": "grove", "dx": 6, "dy": 12 } },
+    { "id": "vf-grove-litter-4", "object": "litter-puddle", "at": { "room": "grove", "dx": 24, "dy": 11 } },
+    { "id": "vf-west-crease-vine", "object": "strangler-vine", "at": { "room": "west-crease", "dx": 3, "dy": 9 } },
+    { "id": "vf-east-crease-spores", "object": "spore-bloom", "at": { "room": "east-crease", "dx": 4, "dy": 9 } },
+    { "id": "furn-verdant-fold-grove-1", "object": "potted-fern", "at": { "room": "grove", "dx": 9, "dy": 4 } },
+    { "id": "furn-verdant-fold-grove-2", "object": "potted-fern", "at": { "room": "grove", "dx": 17, "dy": 4 } },
+    { "id": "furn-verdant-fold-west-crease-1", "object": "potted-fern", "at": { "room": "west-crease", "dx": 3, "dy": 3 } },
+    { "id": "furn-verdant-fold-east-crease-1", "object": "potted-fern", "at": { "room": "east-crease", "dx": 4, "dy": 3 } }
   ],
   "assemblies": [
-    { "id": "fold-exit", "assembly": "verdant-fold-exit", "at": { "room": "grove", "dx": 12, "dy": 26 }, "facing": "north" }
+    { "id": "fold-exit", "assembly": "verdant-fold-exit", "at": { "room": "grove", "dx": 12, "dy": 29 }, "facing": "north" }
   ],
   "npcs": [],
   "creatures": [],
   "lights": [
-    { "at": { "room": "west-crease", "dx": 4, "dy": 6 }, "radius": 5, "color": "#b57cff", "intensity": 0.5 },
-    { "at": { "room": "east-crease", "dx": 4, "dy": 6 }, "radius": 5, "color": "#b57cff", "intensity": 0.5 },
-    { "at": { "room": "grove", "dx": 19, "dy": 10 }, "radius": 11, "color": "#7cf29a", "intensity": 0.8 },
+    { "at": { "room": "west-crease", "dx": 4, "dy": 7 }, "radius": 5, "color": "#b57cff", "intensity": 0.5 },
+    { "at": { "room": "east-crease", "dx": 4, "dy": 7 }, "radius": 5, "color": "#b57cff", "intensity": 0.5 },
+    { "at": { "room": "grove", "dx": 20, "dy": 11 }, "radius": 11, "color": "#7cf29a", "intensity": 0.8 },
     { "at": { "room": "grove", "dx": 6, "dy": 3 }, "radius": 9, "color": "#b57cff", "intensity": 0.6 },
-    { "at": { "room": "grove", "dx": 17, "dy": 25 }, "radius": 9, "color": "#9fd8ff", "intensity": 0.5 }
+    { "at": { "room": "grove", "dx": 18, "dy": 28 }, "radius": 9, "color": "#9fd8ff", "intensity": 0.5 }
   ],
   "decals": [],
-  "setPieces": [
-    { "id": "verdant-fold-setPieces-1", "prefab": "grove-planters", "at": { "room": "west-crease", "dx": 2, "dy": 2 }, "facing": "south" },
-    { "id": "verdant-fold-setPieces-2", "prefab": "grove-planters", "at": { "room": "east-crease", "dx": 3, "dy": 2 }, "facing": "south" }
-  ],
+  "setPieces": [],
   "dressing": {
     "grove": "garden",
     "west-crease": "garden",

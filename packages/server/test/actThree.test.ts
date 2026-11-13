@@ -12,7 +12,7 @@ import {
   type WorldLocation,
 } from '@containment/shared';
 import { containSpecimen } from './support/containment.ts';
-import { createHarness, finishDialogue, type Harness, at, districtOf, localInRoom } from './support/testHarness.ts';
+import { anchor, createHarness, finishDialogue, type Harness, at, districtOf, inRoom, localInRoom } from './support/testHarness.ts';
 
 const active = (questId: string, stepIndex = 0): QuestProgress => ({ questId, status: 'active', stepIndex, objectiveProgress: [0, 0, 0] });
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
@@ -23,7 +23,7 @@ const KIT: EquipmentState = { torso: 'threshold-plate', legs: 'threshold-trouser
 const NEAR_SEL: WorldLocation = at('meridian-atrium', localInRoom('meridian-atrium', 'archives', { x: 8, y: 16 }));
 const NEAR_ACHTERBERG: WorldLocation = at('signal-array', localInRoom('signal-array', 'uplink-lobby', { x: 18, y: 14 }));
 const NEAR_CHUTE: WorldLocation = at('signal-array', localInRoom('signal-array', 'operator-pit', { x: 22, y: 2 }));
-const NEAR_HALVORSEN: WorldLocation = at('sector-three', localInRoom('sector-three', 'threshold', { x: 16, y: 15 }));
+const NEAR_HALVORSEN: WorldLocation = inRoom('sector-three', 'threshold');
 
 const PRIOR_QUESTS = ['orientation-protocol', 'field-fabrication', 'live-fire', 'the-knocking', 'the-far-side', 'a-council-of-one', 'cold-storage', 'dead-air', 'original-contract', 'stoking-the-fire', 'the-answer'];
 
@@ -101,7 +101,7 @@ describe('act three: return to sender', () => {
 
   test('The Dead Letter Office: clerks, pigeonholes, the Postmaster and the founder\'s letter', () => {
     const harness = createHarness({
-      prepare: veteranAt(at('dead-letter-office', localInRoom('dead-letter-office', 'franking-hall', { x: 3, y: 12 })), { 'the-ninth-letter': completed('the-ninth-letter'), 'dead-letter-office': active('dead-letter-office') }),
+      prepare: veteranAt(anchor('dead-letter-office', 'spawn'), { 'the-ninth-letter': completed('the-ninth-letter'), 'dead-letter-office': active('dead-letter-office') }),
     });
     const { player } = harness;
 

@@ -59,7 +59,7 @@ export const DEAD_LETTER_OFFICE: QuestDefinition = {
     },
     {
       id: 'postmaster',
-      journal: 'Every pigeonhole is stamped with the same initials: P.M. The Postmaster is in Dispatch, south of the Sorting Floor, signing. A Containment Seal Mk.V or better will hold it.',
+      journal: 'Every pigeonhole is stamped with the same initials: P.M. The Postmaster is in Dispatch, north of the Sorting Floor, signing. A Containment Seal Mk.V or better will hold it.',
       objectives: [{ type: 'contain', creatureId: 'the-postmaster', count: 1, label: 'Contain the Postmaster' }],
     },
     {

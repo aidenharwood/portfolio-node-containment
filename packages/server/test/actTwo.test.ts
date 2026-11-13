@@ -22,7 +22,7 @@ const KIT: EquipmentState = { torso: 'composite-plate', legs: 'intake-trousers',
 
 const NEAR_SEL: WorldLocation = at('meridian-atrium', localInRoom('meridian-atrium', 'archives', { x: 8, y: 16 }));
 const NEAR_THALE: WorldLocation = inRoom('deepwatch', 'command-post');
-const NEAR_HALVORSEN: WorldLocation = at('sector-three', localInRoom('sector-three', 'threshold', { x: 16, y: 15 }));
+const NEAR_HALVORSEN: WorldLocation = inRoom('sector-three', 'threshold');
 const CRYOVAULT_DOOR: WorldLocation = anchor('deep-concourse', 'cryovaultDoor');
 const ARRAY_DOOR: WorldLocation = anchor('deep-concourse', 'arrayDoor');
 const ARCHIVE_DOOR: WorldLocation = anchor('deep-concourse', 'archiveDoor');
