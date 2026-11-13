@@ -45,7 +45,7 @@ describe('scaling for crowds', () => {
   });
 
   test('outside multi-combat areas, a creature fights one operative at a time', () => {
-    const { gameplay, players } = crowd(2, { capacity: 10, districtId: 'sector-two', position: localInRoom('sector-two', 'corridor', { x: 23, y: 2 }) });
+    const { gameplay, players } = crowd(2, { capacity: 10, districtId: 'sector-two', position: localInRoom('sector-two', 'corridor') });
     const [first, second] = players as [Player, Player];
     const mite = gameplay.world.levelOf(first).creatureByInstance('s2-mite-corridor-a');
     assert.ok(mite);
