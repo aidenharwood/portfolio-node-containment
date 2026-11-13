@@ -5,7 +5,7 @@ import { SINGLE_WAY_TARGET_TAKEN } from '../src/gameplay/combatController.ts';
 import { createCharacterRecord } from '../src/characters/characterFactory.ts';
 import { Gameplay } from '../src/gameplay/gameplay.ts';
 import type { Player } from '../src/world/player.ts';
-import { RecordingSink, at, localInRoom } from './support/testHarness.ts';
+import { RecordingSink, anchorPoint, at, localInRoom } from './support/testHarness.ts';
 
 function crowd(count: number, options: { capacity: number; districtId: string; position: { x: number; y: number } }) {
   const gameplay = new Gameplay(GAME_CONTENT, { save: () => undefined, findByName: () => null }, {
@@ -58,7 +58,7 @@ describe('scaling for crowds', () => {
   });
 
   test('in a multi-combat boss arena, everyone who damaged a creature gets credit and personal loot', () => {
-    const { gameplay, players } = crowd(2, { capacity: 10, districtId: 'undercroft', position: localInRoom('undercroft', 'workshop') });
+    const { gameplay, players } = crowd(2, { capacity: 10, districtId: 'undercroft', position: anchorPoint('undercroft', 'sealLanding') });
     const level = gameplay.world.levelOf(players[0] as Player);
     const leech = level.creatureByInstance('uc-foreman-add-a');
     assert.ok(leech);
