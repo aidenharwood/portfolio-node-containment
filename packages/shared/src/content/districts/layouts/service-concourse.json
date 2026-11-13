@@ -54,7 +54,7 @@
     { "id": "furn-service-concourse-concourse-1", "object": "traffic-cone", "at": { "room": "concourse", "dx": 95, "dy": 11 } },
     { "id": "furn-service-concourse-freight-office-1", "object": "reception-desk", "at": { "room": "freight-office", "dx": 17, "dy": 7 } },
     { "id": "furn-service-concourse-freight-office-2", "object": "notice-board", "at": { "room": "freight-office", "dx": 37, "dy": 6 }, "facing": "west" },
-    { "id": "furn-service-concourse-freight-office-3", "object": "water-cooler", "at": { "room": "freight-office", "dx": 36, "dy": 12 } },
+    { "id": "furn-service-concourse-freight-office-3", "object": "water-cooler", "at": { "room": "freight-office", "dx": 35, "dy": 13 }, "facing": "north" },
     { "id": "furn-service-concourse-freight-office-4", "object": "potted-fern", "at": { "room": "freight-office", "dx": 1, "dy": 12 } },
     { "id": "furn-service-concourse-drivers-rest-1", "object": "armchair", "at": { "room": "drivers-rest", "dx": 27, "dy": 4 } },
     { "id": "furn-service-concourse-drivers-rest-2", "object": "armchair", "at": { "room": "drivers-rest", "dx": 29, "dy": 4 } },
@@ -114,7 +114,7 @@
     "concourse": "freight",
     "freight-office": "office",
     "container-stacks": "freight",
-    "drivers-rest": "canteen",
+    "drivers-rest": { "theme": "canteen", "also": ["dormitory"] },
     "salvage-lot": "freight"
   },
   "furnish": { "landmarks": ["container-stacks"] }

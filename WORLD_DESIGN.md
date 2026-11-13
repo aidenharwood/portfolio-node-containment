@@ -27,7 +27,7 @@ Site Meridian is **one large facility you can walk across**, not a set of rooms 
     - **Dress every room by hand.** Nothing composes a room for you. Every piece of furniture is placed deliberately in the layout file, chosen for what the room is for and who works there: a counter in front of the quartermaster, bunks along a dormitory wall, pews facing the altar, beds in each ward bay. Read the room's quests, NPCs and name before you place anything. Use `setPieces` for prefabs (`content/prefabs/`, placed as `{ "prefab", "at": { "room", "dx", "dy" }, "facing" }`) and `objects` for single pieces. Order beats scatter: rows, aisles and bays that follow the room's walls and columns, a clear walking line between its openings, and a few deliberate exceptions (a toppled bench in a breached hall). Leave quest props, nodes and creatures room to work, and keep boss arenas open in the middle. Do not scatter furniture with `scatterObjects`; it is for litter, nodes and creatures.
     - **Prefer plain models.** A prop is read from across a room. Keep new models to a few blocks of colour with a clear silhouette; slats, rivets, noise and trim make a room look busy, not rich.
     - **Set-pieces** are prefabs placed by hand. They never overlap what is already there, and they keep a clear ring around them that crowds stay out of. Name each district's landmark rooms in `furnish.landmarks`; each one holds a set-piece whose prefab has the `focal` role.
-    - **Dressing** names each room's `theme` (`civic`, `office`, `canteen`, `freight`, `ward`, `chapel`…, see `DRESSING_THEMES` in `content/prefabs/types.ts`). It only decides who stands about: generic NPCs (`content/ambientNpcs.ts`) gather near the benches, stools and pews in safe rooms. Set `people` or `cast` on a room to override.
+    - **Dressing** names each room's `theme` (`civic`, `office`, `canteen`, `freight`, `ward`, `chapel`…, see `DRESSING_THEMES` in `content/prefabs/types.ts`): what the room is for. The theme decides which props belong there (see Placement below) and who stands about: generic NPCs (`content/ambientNpcs.ts`) gather near the benches, stools and pews in safe rooms. A room that is honestly two things says so with `also`, such as `{ "theme": "garden", "also": ["dormitory"] }` for the gardeners' quarters. Set `people` or `cast` on a room to override the crowd.
     - **Decals** paint the floor: inlays, mosaics, rugs, runners, lane paint and hazard paint come with prefabs, and anything else (wear, scorch, moss, salt crust) is placed by hand in the layout's `decals`. They lie on walkable floor only and change nothing in play.
     - **Condition** labels how far a district has decayed (`pristine`, `worn`, `breached`, `overgrown`, `flooded`, `alien`, `uncanny`): the Atrium is pristine, the Circuit and the yards worn, the wings breached or flooded, the Deep alien. It adds nothing by itself; show it with what you place, such as barricades, rubble, sandbags and toppled furniture. An `uncanny` pocket mirrors its original strictly and gets it quietly wrong, with benches facing the wall and bookcases turned around.
 7. **Ids are forever.** Do not rename an area, an instance id or a district: saves, quests and flags refer to them.
@@ -36,13 +36,45 @@ Site Meridian is **one large facility you can walk across**, not a set of rooms 
 
 `findFurnishingIssues` (`content/furnishingIntegrity.ts`) runs inside `findContentIssues`. Fix what it reports by moving a piece the least distance; never by editing a blueprint.
 
-- **Doors stay clear.** No set-piece covers a door, exit, anchor, link or track tile. **Checked.**
+- **Nothing stands in a doorway.** No prop covers a door, exit, anchor, link or track tile. **Checked.**
 - **Every floor tile can be reached.** After dressing, each room is flood-filled from its openings and anchors on the level's walkability grid; every walkable tile of the room must be reached. **Checked.**
 - **Landmarks are set-pieces.** Every room named in `landmarks` exists and holds a set-piece with a `focal` prefab. **Checked.**
 - **Rooms are dressed.** A dressed room with more than 150 walkable tiles holds at least three kinds of object, litter aside. **Checked.**
 - **Decals lie on walkable floor**, never on a door. **Checked.**
 - **Wall fixtures stand against a wall**, counting multi-tile footprints (the back edge must touch the wall). **Checked** (`findFixtureIssues`).
-- **Prefabs are valid.** Pieces name real objects and do not overlap once footprints count, roles are not empty, `wall` and `bay` prefabs have a back row, each prefab id appears once across the libraries and keys `PREFABS`, and every object footprint is at least 1×1. **Checked.**
+- **Prefabs are valid.** Pieces name real objects and do not overlap once footprints count (only the corner posts of a walk-under canopy block), roles are not empty, `wall` and `bay` prefabs have a back row, each prefab id appears once across the libraries and keys `PREFABS`, and every object footprint is at least 1×1. **Checked.**
+
+### Placement
+
+Every prop you can place has a profile in `FURNISHING_PROFILES` (`content/furnishingCatalogue.ts`): how it stands, which room themes it belongs in, and whether it comes in rows. Read the profile before you place a prop, and give a new prop one when you add it. `findPlacementIssues` (`content/placementIntegrity.ts`) checks the rules below inside `findContentIssues`; fix what it reports by moving or turning a piece, or by choosing one that belongs, never by widening a profile to fit one room.
+
+| Mount | How it stands | Examples |
+| ----- | ------------- | -------- |
+| `wall` | Hangs on a wall, back edge against it | notice board, wall shelf, sign, locker |
+| `backed` | On the floor with a back: against a wall or glass, against racking, or back to back with another backed piece | bookcase, filing cabinet, vending machine, cooking range, washer, bunk |
+| `free` | Reads from every side; a `surface` is something seats serve | desks, tables, counters, workbenches, racks, beds, crates, planters |
+| `seat` | A `view` seat looks out over open floor or a window; a `surface` seat faces a desk, table, counter or console | benches, pews, armchairs; office chairs; stools |
+| `flat` | Walked over | litter, cable runs, reserved plots |
+
+- **Every room has a purpose.** Each room of a furnished district names a theme. **Checked.**
+- **Props belong where they stand.** A prop stands only in rooms whose theme, or one of whose `also` themes, is among its homes: no cooking range in a chapel, no ledger trolley in a laundry. Ruin pieces, sandbags, crates, lamps and landmark set-pieces belong anywhere. **Checked.**
+- **A room shows what it is for.** A themed room of 60 walkable tiles or more holds at least one of its theme's signature pieces (`ROOM_SIGNATURES`): a canteen has tables or a serving counter, a dormitory has bunks, a ward has beds. **Checked.**
+- **Room floors fit the room.** `ceramic` is for medical, ward, lab, cold and canteen rooms; `boards` for archive, dormitory, office, camp, canteen, chapel, garden and post rooms. **Checked.**
+- **Doorways stay clear.** No blocking prop stands on or beside an opening up to 6 tiles wide, and a wider opening keeps a clear gap at least 3 tiles wide. Openings are read off the assembled level, so a gate into a neighbouring district or a hollow counts. **Checked.**
+- **Backs go against something.** A `backed` piece has a wall, glass, racking or another backed piece turned the other way along its whole back edge. **Checked.**
+- **Seats face something.** Benches, pews and armchairs have open floor or a window in front of them. Chairs face a desk, table, counter, console or station; stools stand within two tiles of one. A desk draws no chair of its own: put an `office-chair` at its working side. **Checked.**
+- **No metronome.** No more than 4 of one prop stand on a fixed pitch in a line (`RHYTHM_LIMIT`), and no set-piece appears more than 4 times in one room (`REPEAT_LIMIT`). Row furniture (pews, beds, bunks, shelving, desks, tables, counters, cabinets) and prefabs marked `rows` are exempt, because a nave, a ward and a stack are rows by nature. **Checked.**
+- **Anything players use stays usable.** Every interactive object keeps a walkable tile beside it after dressing. **Checked.**
+- **Uncanny pockets break orientation on purpose.** In an `uncanny` district the backed and seat rules are waived, so its benches may face the wall and its bookcases may be turned round. Every other rule still holds.
+
+The rest is judgement, and reviewers hold it:
+
+- **Dress a passage by what it passes.** A boulevard or corridor gets a small group at each doorway that belongs to the room behind it (luggage outside a dormitory, a vending alcove by the canteen, pallets at the stores, ledger trolleys by the reading room) and stays empty between. Flank gates with banner masts and junctions with directory pylons.
+- **Group, don't spread.** Place props in groups of two to six that make one scene each: a desk with its chair and cabinet, a bench with a planter and a bin, carts beside the salt they carry, a work lamp beside the work. A lone prop needs a reason.
+- **Work with the architecture.** Put groups between columns, backed pieces against walls and partitions, and keep a walking line at least two tiles wide between a room's openings.
+- **Stacks run in short ranges** at right angles to the main aisle, back to back, with cross aisles between. Break a range or two where the district is breached or flooded.
+- **Decay is placed, not sprinkled.** Put rubble, toppled benches, barricades and sandbags where the story says something happened.
+- **Dressing ids carry no state.** `furn-…` objects have no interactions and nothing refers to them, so re-dressing a room may renumber them. Anything a quest, flag or test needs keeps a fixed id like any fixture.
 
 ### Joining districts
 

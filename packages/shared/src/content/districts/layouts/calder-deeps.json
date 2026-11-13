@@ -191,7 +191,7 @@
     "lift-landing": "mine",
     "old-workings": "mine",
     "flooded-drift": "wet",
-    "foremans-office": "mine",
+    "foremans-office": { "theme": "office", "also": ["mine"] },
     "salt-pockets": "mine"
   },
   "furnish": { "landmarks": ["old-workings"] }

@@ -47,11 +47,12 @@ export interface Prefab {
   readonly pieces: readonly PrefabPiece[];
   readonly decals?: readonly PrefabDecal[];
   readonly clearance?: number;
+  readonly rows?: boolean;
 }
 
 export type PieceSpec = readonly [dx: number, dy: number, objectId: WorldObjectId, facing?: Facing];
 
-export type PrefabOptions = Partial<Pick<Prefab, 'decals' | 'clearance'>>;
+export type PrefabOptions = Partial<Pick<Prefab, 'decals' | 'clearance' | 'rows'>>;
 
 export const prefab = (
   id: string,

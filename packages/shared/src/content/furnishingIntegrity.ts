@@ -6,14 +6,14 @@ import type { ResolvedLevel } from '../world/levelLayout.ts';
 import type { WalkabilityGrid } from '../world/pathfinding.ts';
 import { TILE_KINDS } from '../world/tiles.ts';
 import type { GameContent } from './gameContent.ts';
+import { FURNISHING_PROFILES } from './furnishingCatalogue.ts';
+import { findPlacementIssues } from './placementIntegrity.ts';
 import { findPrefabIssues, findPrefabLibraryIssues, PREFABS } from './prefabs/index.ts';
 
 export const VARIETY_ROOM_TILES = 150;
 export const MIN_KINDS_IN_LARGE_ROOM = 3;
 
 type Report = (problem: string) => void;
-
-const SET_PIECE_ID = /(\/\d+|-set-\d+-\d+)$/;
 
 const isWalkableTile = (layout: TileLayout, point: TilePoint): boolean => TILE_KINDS[layout.tileAt(point)].walkable;
 
@@ -36,10 +36,10 @@ function findClearanceIssues(content: GameContent, district: DistrictDefinition,
     return rooms.some((rect) => rectContains(rect, point)) ? undefined : 'a link outside every room';
   };
   for (const object of district.objects) {
-    if (!SET_PIECE_ID.test(object.instanceId)) continue;
-    const tiles = objectFootprintTiles(content.worldObjects.get(object.objectId), object);
-    const covered = tiles.map(forbidden).find((what) => what !== undefined);
-    if (covered) report(`"${object.instanceId}" covers ${covered}`);
+    const definition = content.worldObjects.get(object.objectId);
+    if (!definition || definition.interactions.length > 0 || definition.door || definition.countsAs || FURNISHING_PROFILES[object.objectId]?.mount === 'flat') continue;
+    const covered = objectFootprintTiles(definition, object).find((tile) => forbidden(tile) !== undefined);
+    if (covered) report(`"${object.instanceId}" at ${covered.x},${covered.y} covers ${forbidden(covered)}`);
   }
 }
 
@@ -152,5 +152,6 @@ export function findFurnishingIssues(content: GameContent): string[] {
   }
   for (const level of content.levels.values()) findReachabilityIssues(content, level, issues);
   findDefinitionIssues(content, issues);
+  issues.push(...findPlacementIssues(content));
   return issues;
 }

@@ -165,7 +165,16 @@
     { "id": "furn-dead-letter-office-dispatch-7", "object": "mail-sacks", "at": { "room": "dispatch", "dx": 27, "dy": 5 } },
     { "id": "furn-dead-letter-office-dispatch-8", "object": "mail-sacks", "at": { "room": "dispatch", "dx": 28, "dy": 5 } },
     { "id": "furn-dead-letter-office-dispatch-9", "object": "crate-stack", "at": { "room": "dispatch", "dx": 20, "dy": 2 } },
-    { "id": "furn-dead-letter-office-dispatch-10", "object": "crate-stack", "at": { "room": "dispatch", "dx": 24, "dy": 2 } }
+    { "id": "furn-dead-letter-office-dispatch-10", "object": "crate-stack", "at": { "room": "dispatch", "dx": 24, "dy": 2 } },
+    { "id": "furn-dead-letter-office-franking-hall-chair-1", "object": "office-chair", "at": { "room": "franking-hall", "dx": 12, "dy": 1 }, "facing": "north" },
+    { "id": "furn-dead-letter-office-franking-hall-chair-2", "object": "office-chair", "at": { "room": "franking-hall", "dx": 9, "dy": 11 }, "facing": "north" },
+    { "id": "furn-dead-letter-office-franking-hall-chair-3", "object": "office-chair", "at": { "room": "franking-hall", "dx": 10, "dy": 11 }, "facing": "north" },
+    { "id": "furn-dead-letter-office-sorting-floor-chair-4", "object": "office-chair", "at": { "room": "sorting-floor", "dx": 9, "dy": 8 }, "facing": "north" },
+    { "id": "furn-dead-letter-office-sorting-floor-chair-5", "object": "office-chair", "at": { "room": "sorting-floor", "dx": 10, "dy": 8 }, "facing": "north" },
+    { "id": "furn-dead-letter-office-sorting-floor-chair-6", "object": "office-chair", "at": { "room": "sorting-floor", "dx": 25, "dy": 8 }, "facing": "north" },
+    { "id": "furn-dead-letter-office-sorting-floor-chair-7", "object": "office-chair", "at": { "room": "sorting-floor", "dx": 26, "dy": 8 }, "facing": "north" },
+    { "id": "furn-dead-letter-office-sorting-floor-chair-8", "object": "office-chair", "at": { "room": "sorting-floor", "dx": 61, "dy": 8 }, "facing": "north" },
+    { "id": "furn-dead-letter-office-sorting-floor-chair-9", "object": "office-chair", "at": { "room": "sorting-floor", "dx": 62, "dy": 8 }, "facing": "north" }
   ],
   "assemblies": [
     { "id": "dlo-return", "assembly": "office-return-chute", "at": { "room": "franking-hall", "dx": 0, "dy": 0 }, "facing": "east" }

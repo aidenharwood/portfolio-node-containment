@@ -2,7 +2,7 @@ import type { CreatureId } from '../combat/creatures.ts';
 import type { AreaId, InstanceId, NpcId, WorldObjectId, DistrictId, RegionId } from '../ids.ts';
 import { tileKey, type Facing, type TilePoint, type TileRect } from './geometry.ts';
 import type { Condition } from '../content/conditions.ts';
-import type { PrefabRole } from '../content/prefabs/types.ts';
+import type { DressingTheme, PrefabRole } from '../content/prefabs/types.ts';
 import type { AssemblyPlacement } from './assemblies.ts';
 import type { FloorDecal } from './decals.ts';
 import type { DistrictExit } from './blueprint.ts';
@@ -54,6 +54,8 @@ export interface ZoneAmbience {
 
 export interface DressedRoom {
   readonly room: string;
+  readonly theme?: DressingTheme;
+  readonly also?: readonly DressingTheme[];
   readonly setPieces: readonly { readonly prefab: string; readonly roles: readonly PrefabRole[] }[];
 }
 

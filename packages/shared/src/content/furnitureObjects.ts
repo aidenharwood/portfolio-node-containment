@@ -19,6 +19,8 @@ export const FURNITURE_OBJECTS: readonly WorldObjectDefinition[] = [
   furniture('armchair', 'Armchair', 'A heavy upholstered chair, worn shiny where a thousand shift-ends have sat in it.', 'armchair'),
   furniture('serving-counter', 'Serving Counter', 'A steel counter with warming trays. Today is something brown, as it was yesterday.', 'servingCounter'),
   furniture('cook-range', 'Cooking Range', 'A six-ring range and a pot big enough to bathe in. Something in it is still simmering.', 'cookRange'),
+  furniture('dispensing-counter', 'Dispensing Counter', 'A counter of dark oak with a brass rail and a row of stoppered jars. Every jar is labelled in the same careful hand.', 'dispensingCounter'),
+  furniture('linen-cart', 'Linen Cart', 'A canvas bin on castors, heaped with grey sheets on their way to or from the washers. Nobody can tell which.', 'linenCart'),
   furniture('washer', 'Industrial Washer', 'A drum washer the size of a wardrobe. Through the porthole, grey sheets turn and turn.', 'washer'),
   furniture('water-cooler', 'Water Cooler', 'Filtered water, slightly blue. The cups ran out in the first week of the breach.', 'waterCooler'),
 ];

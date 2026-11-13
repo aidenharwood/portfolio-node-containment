@@ -226,7 +226,7 @@
     { "id": "furn-meridian-below-drowned-records-35", "object": "bookcase", "at": { "room": "drowned-records", "dx": 6, "dy": 0 }, "facing": "north" },
     { "id": "furn-meridian-below-drowned-records-36", "object": "bookcase", "at": { "room": "drowned-records", "dx": 7, "dy": 0 }, "facing": "north" },
     { "id": "furn-meridian-below-drowned-records-37", "object": "bookcase", "at": { "room": "drowned-records", "dx": 8, "dy": 0 }, "facing": "north" },
-    { "id": "furn-meridian-below-drowned-records-38", "object": "bookcase", "at": { "room": "drowned-records", "dx": 9, "dy": 0 }, "facing": "north" },
+    { "id": "furn-meridian-below-drowned-records-38", "object": "bookcase", "at": { "room": "drowned-records", "dx": 8, "dy": 1 }, "facing": "north" },
     { "id": "furn-meridian-below-drowned-records-39", "object": "bookcase", "at": { "room": "drowned-records", "dx": 14, "dy": 0 }, "facing": "north" },
     { "id": "furn-meridian-below-drowned-records-40", "object": "bookcase", "at": { "room": "drowned-records", "dx": 15, "dy": 0 }, "facing": "north" },
     { "id": "furn-meridian-below-drowned-records-41", "object": "bookcase", "at": { "room": "drowned-records", "dx": 16, "dy": 0 }, "facing": "north" },
@@ -331,8 +331,9 @@
     "wrong-workshop": "industrial",
     "quiet-range": "camp",
     "mirror-commissary": "office",
-    "the-front-door": "works",
-    "drowned-records": "archive"
+    "the-front-door": "civic",
+    "drowned-records": "archive",
+    "the-well": "wet"
   },
   "furnish": { "landmarks": ["inverted-plaza"] }
 }

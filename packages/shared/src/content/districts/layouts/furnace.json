@@ -144,7 +144,11 @@
     { "id": "furn-furnace-reactor-heart-3", "object": "tool-cart", "at": { "room": "reactor-heart", "dx": 27, "dy": 3 } },
     { "id": "furn-furnace-coolant-lock-1", "object": "crate-stack", "at": { "room": "coolant-lock", "dx": 1, "dy": 9 } },
     { "id": "furn-furnace-coolant-lock-2", "object": "crate-stack", "at": { "room": "coolant-lock", "dx": 2, "dy": 9 } },
-    { "id": "furn-furnace-coolant-lock-3", "object": "floor-lamp", "at": { "room": "coolant-lock", "dx": 12, "dy": 2 } }
+    { "id": "furn-furnace-coolant-lock-3", "object": "floor-lamp", "at": { "room": "coolant-lock", "dx": 12, "dy": 2 } },
+    { "id": "furn-furnace-slag-pit-4", "object": "pipe-cluster", "at": { "room": "slag-pit", "dx": 19, "dy": 7 } },
+    { "id": "furn-furnace-slag-pit-5", "object": "pipe-cluster", "at": { "room": "slag-pit", "dx": 19, "dy": 8 } },
+    { "id": "furn-furnace-slag-pit-6", "object": "gas-cylinders", "at": { "room": "slag-pit", "dx": 19, "dy": 15 } },
+    { "id": "furn-furnace-slag-pit-7", "object": "cable-spool", "at": { "room": "slag-pit", "dx": 16, "dy": 15 } }
   ],
   "assemblies": [
     { "id": "fu-blast-door", "assembly": "furnace-door", "at": { "exit": "south", "index": 0 }, "facing": "north" },

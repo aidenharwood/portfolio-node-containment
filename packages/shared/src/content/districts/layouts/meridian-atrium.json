@@ -280,7 +280,6 @@
     { "id": "furn-meridian-atrium-response-office-24", "object": "storage-rack", "at": { "room": "response-office", "dx": 29, "dy": 9 } },
     { "id": "furn-meridian-atrium-response-office-25", "object": "storage-rack", "at": { "room": "response-office", "dx": 29, "dy": 10 } },
     { "id": "furn-meridian-atrium-response-office-26", "object": "storage-rack", "at": { "room": "response-office", "dx": 29, "dy": 11 } },
-    { "id": "furn-meridian-atrium-response-office-27", "object": "gas-cylinders", "at": { "room": "response-office", "dx": 29, "dy": 13 } },
     { "id": "furn-meridian-atrium-response-office-28", "object": "office-desk", "at": { "room": "response-office", "dx": 20, "dy": 9 } },
     { "id": "furn-meridian-atrium-response-office-29", "object": "office-desk", "at": { "room": "response-office", "dx": 21, "dy": 9 } },
     { "id": "furn-meridian-atrium-response-office-30", "object": "office-chair", "at": { "room": "response-office", "dx": 20, "dy": 10 }, "facing": "north" },
@@ -305,7 +304,15 @@
     { "id": "furn-meridian-atrium-engineering-3", "object": "pipe-cluster", "at": { "room": "engineering", "dx": 29, "dy": 7 } },
     { "id": "furn-meridian-atrium-engineering-4", "object": "pipe-cluster", "at": { "room": "engineering", "dx": 29, "dy": 8 } },
     { "id": "furn-meridian-atrium-engineering-5", "object": "cable-spool", "at": { "room": "engineering", "dx": 20, "dy": 20 } },
-    { "id": "furn-meridian-atrium-engineering-6", "object": "floor-lamp", "at": { "room": "engineering", "dx": 8, "dy": 11 } }
+    { "id": "furn-meridian-atrium-engineering-6", "object": "floor-lamp", "at": { "room": "engineering", "dx": 8, "dy": 11 } },
+    { "id": "furn-meridian-atrium-requisitions-chair-1", "object": "office-chair", "at": { "room": "requisitions", "dx": 2, "dy": 1 }, "facing": "north" },
+    { "id": "furn-meridian-atrium-requisitions-chair-2", "object": "office-chair", "at": { "room": "requisitions", "dx": 12, "dy": 1 }, "facing": "north" },
+    { "id": "furn-meridian-atrium-archives-chair-3", "object": "office-chair", "at": { "room": "archives", "dx": 2, "dy": 18 }, "facing": "south" },
+    { "id": "furn-meridian-atrium-response-office-chair-4", "object": "office-chair", "at": { "room": "response-office", "dx": 2, "dy": 1 }, "facing": "north" },
+    { "id": "furn-meridian-atrium-response-office-chair-5", "object": "office-chair", "at": { "room": "response-office", "dx": 12, "dy": 1 }, "facing": "north" },
+    { "id": "furn-meridian-atrium-response-office-chair-6", "object": "office-chair", "at": { "room": "response-office", "dx": 26, "dy": 1 }, "facing": "north" },
+    { "id": "furn-meridian-atrium-archives-chair-7", "object": "office-chair", "at": { "room": "archives", "dx": 11, "dy": 6 }, "facing": "north" },
+    { "id": "furn-meridian-atrium-archives-chair-8", "object": "office-chair", "at": { "room": "archives", "dx": 13, "dy": 6 }, "facing": "north" }
   ],
   "assemblies": [
     { "id": "sector2-bulkhead", "assembly": "sealed-bulkhead", "at": { "exit": "north", "index": 0 }, "facing": "south" },

@@ -94,7 +94,7 @@
     { "id": "dw-infirmary-cooler", "object": "water-cooler", "at": { "room": "infirmary", "dx": 19, "dy": 0 }, "facing": "west" },
     { "id": "dw-infirmary-desk", "object": "office-desk", "at": { "room": "infirmary", "dx": 0, "dy": 3 }, "facing": "east" },
     { "id": "dw-infirmary-notices", "object": "notice-board", "at": { "room": "infirmary", "dx": 2, "dy": 0 } },
-    { "id": "furn-deepwatch-command-post-1", "object": "filing-cabinet", "at": { "room": "command-post", "dx": 1, "dy": 11 } },
+    { "id": "furn-deepwatch-command-post-1", "object": "filing-cabinet", "at": { "room": "command-post", "dx": 1, "dy": 11 }, "facing": "north" },
     { "id": "furn-deepwatch-command-post-2", "object": "potted-fern", "at": { "room": "command-post", "dx": 14, "dy": 11 } },
     { "id": "furn-deepwatch-concourse-1", "object": "briefing-bench", "at": { "room": "concourse", "dx": 21, "dy": 10 }, "facing": "north" },
     { "id": "furn-deepwatch-concourse-2", "object": "briefing-bench", "at": { "room": "concourse", "dx": 22, "dy": 10 }, "facing": "north" },
@@ -111,7 +111,10 @@
     { "id": "furn-deepwatch-stores-1", "object": "reception-desk", "at": { "room": "stores", "dx": 10, "dy": 4 } },
     { "id": "furn-deepwatch-stores-2", "object": "crate-stack", "at": { "room": "stores", "dx": 3, "dy": 4 } },
     { "id": "furn-deepwatch-stores-3", "object": "pallet-stack", "at": { "room": "stores", "dx": 4, "dy": 4 } },
-    { "id": "furn-deepwatch-lift-gallery-1", "object": "trash-bin", "at": { "room": "lift-gallery", "dx": 13, "dy": 15 } }
+    { "id": "furn-deepwatch-lift-gallery-1", "object": "trash-bin", "at": { "room": "lift-gallery", "dx": 13, "dy": 15 } },
+    { "id": "furn-deepwatch-command-post-chair-1", "object": "office-chair", "at": { "room": "command-post", "dx": 1, "dy": 3 }, "facing": "west" },
+    { "id": "furn-deepwatch-stores-chair-2", "object": "office-chair", "at": { "room": "stores", "dx": 2, "dy": 14 }, "facing": "south" },
+    { "id": "furn-deepwatch-infirmary-chair-3", "object": "office-chair", "at": { "room": "infirmary", "dx": 1, "dy": 3 }, "facing": "west" }
   ],
   "assemblies": [
     { "id": "dw-tram", "assembly": "deepwatch-deep-line", "at": { "room": "platform-hall", "dx": 0, "dy": 1 }, "facing": "east" },
@@ -147,7 +150,7 @@
     { "prefab": "map-room", "at": { "room": "command-post", "dx": 8, "dy": 3 }, "facing": "south" },
     { "prefab": "info-stand", "at": { "room": "concourse", "dx": 27, "dy": 1 }, "facing": "south" },
     { "prefab": "tool-bench", "at": { "room": "workshop", "dx": 2, "dy": 0 }, "facing": "south" },
-    { "prefab": "gas-rack", "at": { "room": "workshop", "dx": 0, "dy": 1 }, "facing": "east" },
+    { "prefab": "gas-rack", "at": { "room": "workshop", "dx": 1, "dy": 0 }, "facing": "east" },
     { "prefab": "bench-planters", "at": { "room": "platform-hall", "dx": 15, "dy": 15 }, "facing": "north" },
     { "prefab": "bench-planters", "at": { "room": "platform-hall", "dx": 47, "dy": 15 }, "facing": "north" },
     { "prefab": "platform-shelter", "at": { "room": "platform-hall", "dx": 55, "dy": 11 }, "facing": "south" },
@@ -157,7 +160,7 @@
     { "prefab": "cabinet-row", "at": { "room": "infirmary", "dx": 19, "dy": 10 }, "facing": "west" },
     { "prefab": "shelving-aisle", "at": { "room": "stores", "dx": 3, "dy": 9 }, "facing": "south" },
     { "prefab": "shelving-aisle", "at": { "room": "stores", "dx": 17, "dy": 9 }, "facing": "south" },
-    { "prefab": "bench-planters", "at": { "room": "lift-gallery", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "prefab": "bench-planters", "at": { "room": "lift-gallery", "dx": 5, "dy": 1 }, "facing": "south" },
     { "prefab": "bench-planters", "at": { "room": "lift-gallery", "dx": 6, "dy": 15 }, "facing": "north" }
   ],
   "dressing": {

@@ -57,7 +57,10 @@
     { "id": "furn-vesper-lodge-lodge-22", "object": "mail-sacks", "at": { "room": "lodge", "dx": 52, "dy": 32 } },
     { "id": "furn-vesper-lodge-lodge-23", "object": "book-trolley", "at": { "room": "lodge", "dx": 51, "dy": 34 } },
     { "id": "furn-vesper-lodge-lodge-24", "object": "potted-fern", "at": { "room": "lodge", "dx": 1, "dy": 30 } },
-    { "id": "furn-vesper-lodge-lodge-25", "object": "potted-fern", "at": { "room": "lodge", "dx": 53, "dy": 0 } }
+    { "id": "furn-vesper-lodge-lodge-25", "object": "potted-fern", "at": { "room": "lodge", "dx": 53, "dy": 0 } },
+    { "id": "furn-vesper-lodge-lodge-chair-1", "object": "office-chair", "at": { "room": "lodge", "dx": 31, "dy": 5 }, "facing": "north" },
+    { "id": "furn-vesper-lodge-lodge-chair-2", "object": "office-chair", "at": { "room": "lodge", "dx": 32, "dy": 5 }, "facing": "north" },
+    { "id": "furn-vesper-lodge-lodge-chair-3", "object": "office-chair", "at": { "room": "lodge", "dx": 33, "dy": 5 }, "facing": "north" }
   ],
   "assemblies": [
     { "id": "vl-gate", "assembly": "vesper-gate", "at": { "exit": "east", "index": 0 }, "facing": "west" },

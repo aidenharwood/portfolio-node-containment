@@ -66,7 +66,9 @@
     { "id": "verdant-fold-setPieces-2", "prefab": "grove-planters", "at": { "room": "east-crease", "dx": 3, "dy": 2 }, "facing": "south" }
   ],
   "dressing": {
-    "grove": "garden"
+    "grove": "garden",
+    "west-crease": "garden",
+    "east-crease": "garden"
   },
   "furnish": {}
 }

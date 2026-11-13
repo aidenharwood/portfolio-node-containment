@@ -4,7 +4,7 @@ import { VOXEL_EMISSIVE, VOXEL_GLASS } from '../voxel/voxelKinds.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 import type { ObjectModelParts } from './objectModels.ts';
 
-type FurnitureModel = Extract<WorldObjectModel, 'officeDesk' | 'wallShelf' | 'filingCabinet' | 'storageRack' | 'noticeBoard' | 'waterCooler' | 'bookcase' | 'armchair' | 'servingCounter' | 'cookRange' | 'washer'>;
+type FurnitureModel = Extract<WorldObjectModel, 'officeDesk' | 'wallShelf' | 'filingCabinet' | 'storageRack' | 'noticeBoard' | 'waterCooler' | 'bookcase' | 'armchair' | 'servingCounter' | 'cookRange' | 'washer' | 'dispensingCounter' | 'linenCart'>;
 
 const parts = (base: VoxelModel, heightVoxels: number, animated: ObjectModelParts['animated'] = []): ObjectModelParts => ({ base, animated, heightVoxels });
 
@@ -18,7 +18,6 @@ const DESK_TOP = 0x7a8a94;
 const BINDER_TONES = [0x2f5a8a, 0x8a2f2f, 0x2f7a4a, 0xc99a1c, 0x3a3f44, 0x6a4a8a];
 const BOX_TONES = [0x8a7350, 0x6f5c3e, 0xa08a62];
 const NOTE_TONES = [0xf2efe6, 0xf5e27a, 0xf2b8c6, 0xb8daf2, 0xd8f2b8];
-const MUG_TONES = [0xd84a3a, 0xf2efe6, 0x3a8ad8, 0x2f2f33];
 
 const officeDesk = (seed: number): ObjectModelParts => {
   const model = new VoxelModel();
@@ -33,14 +32,7 @@ const officeDesk = (seed: number): ObjectModelParts => {
   model.fill(-3, 23, -6, 2, 23, -6, 0x1a2026);
   model.fill(-4, 22, -6, 3, 22, -6, 0x1a2026);
   model.fill(-3, 16, -5, 2, 21, -5, (x, y) => (y % 2 === 0 && x < 1 - ((y + seed) % 3) ? 0x9fe8ff : 0x1f6f8a), VOXEL_EMISSIVE);
-  model.fill(-3, 13, -3, 2, 13, -2, (x) => (x % 2 === 0 ? 0x2a3036 : 0x3a4248));
-  model.fill(3, 13, -5, 5, 13, -3, pick(NOTE_TONES, seed, 1));
-  model.fill(3, 14, -5, 4, 14, -4, pick(NOTE_TONES, seed, 2));
-  model.fill(-6, 13, -4, -6, 14, -3, pick(MUG_TONES, seed, 3));
-  model.fill(-3, 6, 1, 2, 7, 5, 0x2a3036);
-  model.fill(-3, 8, 5, 2, 15, 6, (x, y) => (y === 15 || x === -3 || x === 2 ? 0x2a3036 : 0x3a4a56));
-  model.fill(-1, 2, 3, 0, 5, 3, 0x5d6b74);
-  model.fill(-3, 0, 3, 2, 1, 3, 0x2a3036).fill(-1, 0, 1, 0, 1, 5, 0x2a3036);
+  model.fill(-3, 13, -3, 2, 13, -2, 0x2a3036);
   return parts(model, 24);
 };
 
@@ -243,6 +235,29 @@ const washer = (_seed: number): ObjectModelParts => {
   return parts(model, 18);
 };
 
+const DARK_OAK = 0x3f2a1c;
+const BRASS = 0xc9a24a;
+const JAR_TONES = [0x7fbf6a, 0xd8a24a, 0x9a5ad8, 0xd85a4a, 0x6ac8d8];
+
+const dispensingCounter = (seed: number): ObjectModelParts => {
+  const model = new VoxelModel();
+  model.fill(-8, 0, -6, 7, 11, 3, (_x, y) => (y <= 1 ? darken(DARK_OAK, 0.3) : y === 11 ? lighten(DARK_OAK, 0.18) : DARK_OAK));
+  model.fill(-8, 9, 4, 7, 9, 4, BRASS);
+  for (const [index, x] of [-6, -1, 4].entries()) model.fill(x, 12, -4, x + 1, 15, -3, pick(JAR_TONES, seed, index), VOXEL_GLASS).fill(x, 16, -4, x + 1, 16, -3, BRASS);
+  return parts(model, 17);
+};
+
+const CANVAS = 0x8a8170;
+const LINEN = 0xd8d6cc;
+
+const linenCart = (_seed: number): ObjectModelParts => {
+  const model = new VoxelModel();
+  for (const x of [-6, 5]) for (const z of [-5, 4]) model.fill(x, 0, z, x, 1, z, 0x2a3036);
+  model.fill(-6, 2, -5, 5, 10, 4, (_x, y) => (y === 2 ? 0x5d6b74 : CANVAS));
+  model.fill(-5, 11, -4, 4, 12, 3, (x, _y, z) => ((x + z) % 4 === 0 ? darken(LINEN, 0.12) : LINEN));
+  return parts(model, 13);
+};
+
 export const FURNITURE_BUILDERS: Readonly<Record<FurnitureModel, (seed: number) => ObjectModelParts>> = {
   officeDesk,
   wallShelf,
@@ -255,4 +270,6 @@ export const FURNITURE_BUILDERS: Readonly<Record<FurnitureModel, (seed: number) 
   servingCounter,
   cookRange,
   washer,
+  dispensingCounter,
+  linenCart,
 };

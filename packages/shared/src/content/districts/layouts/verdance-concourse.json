@@ -133,7 +133,7 @@
     "concourse": "garden",
     "seed-exchange": "garden",
     "irrigation-plant": "wet",
-    "gardeners-row": "garden",
+    "gardeners-row": { "theme": "garden", "also": ["dormitory"] },
     "compost-yard": "garden"
   },
   "furnish": { "landmarks": ["seed-exchange"] }

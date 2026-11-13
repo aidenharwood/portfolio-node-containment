@@ -115,6 +115,8 @@ export type WorldObjectModel =
   | 'servingCounter'
   | 'cookRange'
   | 'washer'
+  | 'dispensingCounter'
+  | 'linenCart'
   | 'barrel'
   | 'palletStack'
   | 'gasCylinders'

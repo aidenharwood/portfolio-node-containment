@@ -59,7 +59,7 @@
     { "id": "furn-calder-causeway-causeway-8", "object": "planter-toppled", "at": { "room": "causeway", "dx": 47, "dy": 7 } },
     { "id": "furn-calder-causeway-salt-road-1", "object": "floor-lamp", "at": { "room": "salt-road", "dx": 0, "dy": 4 } },
     { "id": "furn-calder-causeway-salt-road-2", "object": "floor-lamp", "at": { "room": "salt-road", "dx": 0, "dy": 12 } },
-    { "id": "furn-calder-causeway-salt-road-3", "object": "floor-lamp", "at": { "room": "salt-road", "dx": 0, "dy": 20 } },
+    { "id": "furn-calder-causeway-salt-road-3", "object": "floor-lamp", "at": { "room": "salt-road", "dx": 1, "dy": 19 } },
     { "id": "furn-calder-causeway-salt-road-4", "object": "floor-lamp", "at": { "room": "salt-road", "dx": 0, "dy": 28 } },
     { "id": "furn-calder-causeway-salt-road-5", "object": "floor-lamp", "at": { "room": "salt-road", "dx": 12, "dy": 8 } },
     { "id": "furn-calder-causeway-salt-road-6", "object": "floor-lamp", "at": { "room": "salt-road", "dx": 12, "dy": 16 } },
@@ -92,7 +92,8 @@
     { "id": "furn-calder-causeway-weighbridge-20", "object": "filing-cabinet", "at": { "room": "weighbridge", "dx": 36, "dy": 0 } },
     { "id": "furn-calder-causeway-weighbridge-21", "object": "filing-cabinet", "at": { "room": "weighbridge", "dx": 37, "dy": 0 } },
     { "id": "furn-calder-causeway-weighbridge-22", "object": "floor-lamp", "at": { "room": "weighbridge", "dx": 10, "dy": 4 } },
-    { "id": "furn-calder-causeway-weighbridge-23", "object": "floor-lamp", "at": { "room": "weighbridge", "dx": 30, "dy": 27 } }
+    { "id": "furn-calder-causeway-weighbridge-23", "object": "floor-lamp", "at": { "room": "weighbridge", "dx": 30, "dy": 27 } },
+    { "id": "furn-calder-causeway-weighbridge-chair-1", "object": "office-chair", "at": { "room": "weighbridge", "dx": 32, "dy": 2 }, "facing": "north" }
   ],
   "assemblies": [
     { "id": "cc-line-bridge-1", "assembly": "bridge", "at": { "room": "salt-road", "dx": 1, "dy": 37 }, "facing": "south", "span": 2 },
@@ -122,7 +123,7 @@
   "dressing": {
     "causeway": "mine",
     "salt-road": "mine",
-    "weighbridge": "mine"
+    "weighbridge": { "theme": "mine", "also": ["office"] }
   },
   "furnish": { "landmarks": ["weighbridge"] }
 }

@@ -51,7 +51,10 @@
     { "id": "furn-calder-gatehouse-gatehouse-20", "object": "floor-lamp", "at": { "room": "gatehouse", "dx": 20, "dy": 20 } },
     { "id": "furn-calder-gatehouse-gatehouse-21", "object": "floor-lamp", "at": { "room": "gatehouse", "dx": 36, "dy": 30 } },
     { "id": "furn-calder-gatehouse-gatehouse-22", "object": "mine-cart", "at": { "room": "gatehouse", "dx": 20, "dy": 36 } },
-    { "id": "furn-calder-gatehouse-gatehouse-23", "object": "mine-cart", "at": { "room": "gatehouse", "dx": 21, "dy": 36 } }
+    { "id": "furn-calder-gatehouse-gatehouse-23", "object": "mine-cart", "at": { "room": "gatehouse", "dx": 21, "dy": 36 } },
+    { "id": "furn-calder-gatehouse-gatehouse-chair-1", "object": "office-chair", "at": { "room": "gatehouse", "dx": 24, "dy": 5 }, "facing": "north" },
+    { "id": "furn-calder-gatehouse-gatehouse-chair-2", "object": "office-chair", "at": { "room": "gatehouse", "dx": 25, "dy": 5 }, "facing": "north" },
+    { "id": "furn-calder-gatehouse-gatehouse-chair-3", "object": "office-chair", "at": { "room": "gatehouse", "dx": 26, "dy": 5 }, "facing": "north" }
   ],
   "assemblies": [
     { "id": "cg-gate", "assembly": "calder-gate", "at": { "exit": "west", "index": 0 }, "facing": "east" },

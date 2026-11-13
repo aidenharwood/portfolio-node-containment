@@ -24,6 +24,7 @@ import type { SetPiece } from './setPiece.ts';
 
 export interface RoomDressing {
   readonly theme: DressingTheme;
+  readonly also?: readonly DressingTheme[];
   readonly people?: number;
   readonly cast?: readonly NpcId[];
 }
@@ -132,12 +133,12 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
   for (const [roomId, entry] of Object.entries(dressing)) {
     const rect = plan.rooms[roomId];
     if (!rect) throw new Error(`District "${district.id}" dresses unknown room "${roomId}".`);
-    const { theme, people, cast } = dressingOf(entry);
+    const { theme, also, people, cast } = dressingOf(entry);
     const floor: TilePoint[] = [];
     for (let y = rect.y; y < rect.y + rect.height; y++) {
       for (let x = rect.x; x < rect.x + rect.width; x++) if (isOpenFloor({ x, y })) floor.push({ x, y });
     }
-    log.set(roomId, logOf(roomId));
+    log.set(roomId, { ...logOf(roomId), theme, ...(also ? { also } : {}) });
 
     if (!safeRooms.has(roomId)) continue;
     const random = seededRandom(`${district.id}:${roomId}:crowd`);
@@ -173,6 +174,6 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
     ],
     ...(decals.length > 0 || district.decals ? { decals: [...(district.decals ?? []), ...decals] } : {}),
     ...(options.landmarks ? { landmarks: options.landmarks } : {}),
-    ...(log.size > 0 ? { dressingLog: [...log.values()] } : {}),
+    dressingLog: [...log.values()],
   };
 }

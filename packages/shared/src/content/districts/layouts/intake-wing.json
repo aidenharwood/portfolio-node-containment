@@ -226,7 +226,9 @@
     { "id": "furn-intake-wing-range-8", "object": "sandbags", "at": { "room": "range", "dx": 16, "dy": 12 } },
     { "id": "furn-intake-wing-range-9", "object": "sandbags", "at": { "room": "range", "dx": 17, "dy": 12 } },
     { "id": "furn-intake-wing-range-10", "object": "works-barrier", "at": { "room": "range", "dx": 30, "dy": 13 } },
-    { "id": "furn-intake-wing-range-11", "object": "works-barrier", "at": { "room": "range", "dx": 31, "dy": 13 } }
+    { "id": "furn-intake-wing-range-11", "object": "works-barrier", "at": { "room": "range", "dx": 31, "dy": 13 } },
+    { "id": "furn-intake-wing-supply-chair-1", "object": "office-chair", "at": { "room": "supply", "dx": 7, "dy": 1 }, "facing": "north" },
+    { "id": "furn-intake-wing-supply-chair-2", "object": "office-chair", "at": { "room": "supply", "dx": 21, "dy": 1 }, "facing": "north" }
   ],
   "assemblies": [
     { "id": "intake-refinery", "assembly": "refinery", "at": { "room": "workshop", "dx": 32, "dy": 6 }, "facing": "west" },

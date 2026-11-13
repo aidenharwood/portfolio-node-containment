@@ -53,6 +53,7 @@ const areaOptions = { safe: z.boolean().optional(), multiCombat: z.boolean().opt
 const ROOM_DRESSING_SCHEMA = z
   .object({
     theme: z.enum(DRESSING_THEMES),
+    also: z.array(z.enum(DRESSING_THEMES)).optional(),
     people: int.nonnegative().optional(),
     cast: z.array(z.string()).optional(),
   })

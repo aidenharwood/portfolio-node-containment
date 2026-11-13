@@ -184,7 +184,11 @@
     { "id": "furn-sector-two-airlock-2", "object": "gas-cylinders", "at": { "room": "airlock", "dx": 0, "dy": 11 } },
     { "id": "furn-sector-two-airlock-3", "object": "mop-bucket", "at": { "room": "airlock", "dx": 12, "dy": 3 } },
     { "id": "furn-sector-two-isolation-ward-1", "object": "wheelchair", "at": { "room": "isolation-ward", "dx": 15, "dy": 9 } },
-    { "id": "furn-sector-two-isolation-ward-2", "object": "screen-partition", "at": { "room": "isolation-ward", "dx": 20, "dy": 12 }, "facing": "east" }
+    { "id": "furn-sector-two-isolation-ward-2", "object": "screen-partition", "at": { "room": "isolation-ward", "dx": 20, "dy": 12 }, "facing": "east" },
+    { "id": "furn-sector-two-corridor-7", "object": "specimen-tank", "at": { "room": "corridor", "dx": 29, "dy": 0 } },
+    { "id": "furn-sector-two-corridor-8", "object": "specimen-tank", "at": { "room": "corridor", "dx": 30, "dy": 0 } },
+    { "id": "furn-sector-two-corridor-9", "object": "monitor-bank", "at": { "room": "corridor", "dx": 51, "dy": 20 }, "facing": "north" },
+    { "id": "furn-sector-two-corridor-10", "object": "gurney", "at": { "room": "corridor", "dx": 75, "dy": 10 } }
   ],
   "assemblies": [],
   "npcs": [],
