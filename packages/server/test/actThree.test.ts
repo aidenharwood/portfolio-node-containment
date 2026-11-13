@@ -12,7 +12,7 @@ import {
   type WorldLocation,
 } from '@containment/shared';
 import { containSpecimen } from './support/containment.ts';
-import { anchor, createHarness, finishDialogue, type Harness, at, districtOf, inRoom, localInRoom } from './support/testHarness.ts';
+import { anchor, createHarness, finishDialogue, type Harness, districtOf, inRoom } from './support/testHarness.ts';
 
 const active = (questId: string, stepIndex = 0): QuestProgress => ({ questId, status: 'active', stepIndex, objectiveProgress: [0, 0, 0] });
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
@@ -21,8 +21,8 @@ const VETERAN = createStartingSkills({ closeQuarters: experienceForLevel(99), fo
 const KIT: EquipmentState = { torso: 'threshold-plate', legs: 'threshold-trousers', feet: 'threshold-boots', primary: 'the-knocker' };
 
 const NEAR_SEL: WorldLocation = inRoom('meridian-atrium', 'archives');
-const NEAR_ACHTERBERG: WorldLocation = at('signal-array', localInRoom('signal-array', 'uplink-lobby', { x: 18, y: 14 }));
-const NEAR_CHUTE: WorldLocation = at('signal-array', localInRoom('signal-array', 'operator-pit', { x: 22, y: 2 }));
+const NEAR_ACHTERBERG: WorldLocation = inRoom('signal-array', 'uplink-lobby');
+const NEAR_CHUTE: WorldLocation = anchor('signal-array', 'chuteLanding');
 const NEAR_HALVORSEN: WorldLocation = inRoom('sector-three', 'threshold');
 
 const PRIOR_QUESTS = ['orientation-protocol', 'field-fabrication', 'live-fire', 'the-knocking', 'the-far-side', 'a-council-of-one', 'cold-storage', 'dead-air', 'original-contract', 'stoking-the-fire', 'the-answer'];
