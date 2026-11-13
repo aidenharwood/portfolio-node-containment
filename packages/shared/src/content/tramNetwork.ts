@@ -25,8 +25,8 @@ export const TRAM_STATIONS: readonly TramStationDefinition[] = [
   { id: 'deepwatch-platform', name: 'Deepwatch Platform Hall', districtId: 'deepwatch', areaId: 'tram-terminal', platform: DEEPWATCH_ANCHORS.tramPlatform },
   { id: 'cryovault-dock', name: 'Cryovault Receiving Dock', districtId: 'cryovault', areaId: 'tram-terminal', platform: CRYOVAULT_ANCHORS.tramPlatform },
   { id: 'array-lobby', name: 'Signal Array Uplink Lobby', districtId: 'signal-array', areaId: 'tram-terminal', platform: SIGNAL_ARRAY_ANCHORS.tramPlatform },
-  { id: 'archive-stair', name: 'Archive Flood Stair', districtId: 'drowned-archive', areaId: 'flood-stair', platform: DROWNED_ARCHIVE_ANCHORS.tramPlatform },
-  { id: 'furnace-lock', name: 'Furnace Coolant Lock', districtId: 'furnace', areaId: 'coolant-lock', platform: FURNACE_ANCHORS.tramPlatform },
+  { id: 'archive-stair', name: 'Archive Flood Stair', districtId: 'drowned-archive', areaId: 'tram-terminal', platform: DROWNED_ARCHIVE_ANCHORS.tramPlatform },
+  { id: 'furnace-lock', name: 'Furnace Coolant Lock', districtId: 'furnace', areaId: 'tram-terminal', platform: FURNACE_ANCHORS.tramPlatform },
 ];
 
 export const TRAM_LINES: readonly TramLineDefinition[] = [

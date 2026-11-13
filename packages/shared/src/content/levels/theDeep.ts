@@ -26,9 +26,11 @@ export const THE_DEEP_RECIPE: LevelRecipe = (context) => {
   const cryovaultNorth = trackPoint('cryovault', 96, -2);
   const cryovaultStub = trackPoint('cryovault', 96, -14);
   const cryovaultSouth = trackPoint('cryovault', 96, cryovault.map.length);
-  const archiveNorth = trackPoint('drowned-archive', 2, -2);
-  const archiveSouth = trackPoint('drowned-archive', 2, archive.map.length);
-  const furnaceEast = trackPoint('furnace', widthOf(furnace), 58);
+  const archiveNorth = trackPoint('drowned-archive', 1, -2);
+  const archiveSouth = trackPoint('drowned-archive', 1, archive.map.length);
+  const furnaceEast = trackPoint('furnace', widthOf(furnace), 62);
+  const furnaceWest = trackPoint('furnace', -2, 62);
+  const furnaceStub = trackPoint('furnace', -14, 62);
   const arrayWest = trackPoint('signal-array', -2, 1);
   const arrayEast = trackPoint('signal-array', widthOf(array), 1);
 
@@ -41,6 +43,7 @@ export const THE_DEEP_RECIPE: LevelRecipe = (context) => {
       [archiveSouth, trackCorner(archiveSouth, arrayEast), arrayEast],
       [arrayWest, trackCorner(cryovaultSouth, arrayWest), cryovaultSouth],
       [cryovaultNorth, cryovaultStub],
+      [furnaceWest, furnaceStub],
     ],
   });
 

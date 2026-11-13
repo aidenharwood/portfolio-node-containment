@@ -78,7 +78,7 @@ describe('chunked interest', () => {
   test('a far player receives no movement ticks', () => {
     const { operatives, walk } = deep([
       { districtId: 'cryovault', position: localInRoom('cryovault', 'dock', { x: 3, y: 3 }) },
-      { districtId: 'drowned-archive', position: localInRoom('drowned-archive', 'flood-stair', { x: 3, y: 3 }) },
+      { districtId: 'drowned-archive', position: localInRoom('drowned-archive', 'flood-stair') },
     ]);
     const [a, b] = operatives;
     assert.ok(a && b);
@@ -120,7 +120,7 @@ describe('chunked interest', () => {
     assert.ok(a && b);
     assert.ok(b.sink.last('world.entered')?.entities.some((entity) => entity.id === a.player.entityId) || ofType(b.sink, 'world.entitySpawned').some((message) => message.entity.id === a.player.entityId));
     a.sink.messages.length = 0;
-    gameplay.teleport(a.player, at('drowned-archive', localInRoom('drowned-archive', 'sealed-room', { x: 27, y: 24 })));
+    gameplay.teleport(a.player, at('drowned-archive', localInRoom('drowned-archive', 'sealed-room')));
     assert.equal(a.player.levelId, 'the-deep');
     assert.equal(ofType(a.sink, 'world.entered').length, 0);
     assert.ok(ofType(a.sink, 'world.chunksLeft').length > 0);
@@ -157,7 +157,7 @@ describe('chunked interest', () => {
     const { gameplay, operatives } = deep([
       { districtId: 'cryovault', position: localInRoom('cryovault', 'dock', { x: 3, y: 3 }) },
       { districtId: 'cryovault', position: localInRoom('cryovault', 'dock', { x: 9, y: 3 }) },
-      { districtId: 'drowned-archive', position: localInRoom('drowned-archive', 'flood-stair', { x: 3, y: 3 }) },
+      { districtId: 'drowned-archive', position: localInRoom('drowned-archive', 'flood-stair') },
     ]);
     const [speaker, near, far] = operatives;
     assert.ok(speaker && near && far);
@@ -260,7 +260,7 @@ describe('review fixes', () => {
     const level = gameplay.world.levelOf(o.player);
     const creature = [...level.creatures.values()].find((candidate) => level.isInterestOf(o.player, candidate.home));
     assert.ok(creature && level.isInterestOf(o.player, creature.home));
-    creature.position = levelPoint('drowned-archive', localInRoom('drowned-archive', 'flood-stair', { x: 3, y: 3 }));
+    creature.position = levelPoint('drowned-archive', localInRoom('drowned-archive', 'flood-stair'));
     creature.targetId = 'player:gone';
     o.sink.messages.length = 0;
     gameplay.tick();

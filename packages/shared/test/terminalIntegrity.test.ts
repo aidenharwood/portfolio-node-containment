@@ -227,3 +227,19 @@ test('the Intake Transit Bay terminal follows every rule', () => {
 test('the Deepwatch terminal follows every rule', () => {
   assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"deepwatch-platform"')), []);
 });
+
+test('the Cryovault terminal follows every rule', () => {
+  assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"cryovault-dock"')), []);
+});
+
+test('the Signal Array terminal follows every rule', () => {
+  assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"array-lobby"')), []);
+});
+
+test('the Drowned Archive terminal follows every rule', () => {
+  assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"archive-stair"')), []);
+});
+
+test('the Furnace terminal follows every rule', () => {
+  assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"furnace-lock"')), []);
+});

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import {
+  GAME_CONTENT,
   countItem,
   createStartingSkills,
   experienceForLevel,
@@ -71,6 +72,14 @@ function talk(harness: Harness, instanceId: string, ...choices: string[]): void 
 }
 
 const travel = (harness: Harness, location: WorldLocation) => harness.gameplay.teleport(harness.player, location);
+
+function standsIn(harness: Harness, districtId: string, roomId: string): boolean {
+  const rect = GAME_CONTENT.districts.get(districtId)?.rooms?.[roomId];
+  assert.ok(rect, `missing room ${districtId}/${roomId}`);
+  const corner = levelPoint(districtId, { x: rect.x, y: rect.y });
+  const { x, y } = harness.player.position;
+  return x >= corner.x && x < corner.x + rect.width && y >= corner.y && y < corner.y + rect.height;
+}
 
 function walkInto(harness: Harness, location: WorldLocation): void {
   harness.send({ type: 'world.walk', target: location.position });
@@ -188,6 +197,7 @@ describe('act two: the answer', () => {
     travel(harness, ARCHIVE_DOOR);
     use(harness, 'dc-archive-door/0,0');
     assert.equal(districtOf(player), 'drowned-archive');
+    walkInto(harness, anchor('drowned-archive', 'entrance'));
     assert.equal(stepOf(harness, 'original-contract'), 2);
 
     talk(harness, 'da-pim');
@@ -195,7 +205,7 @@ describe('act two: the answer', () => {
 
     travel(harness, anchor('drowned-archive', 'sealedApproach'));
     use(harness, 'da-sealed-door/0,0');
-    assert.equal(player.position.y, anchor('drowned-archive', 'sealedApproach').position.y, 'the reading room stays sealed until the sluices are open');
+    assert.ok(!standsIn(harness, 'drowned-archive', 'sealed-room'), 'the reading room stays sealed until the sluices are open');
 
     for (const valve of ['da-sluice-a', 'da-sluice-b', 'da-sluice-c']) use(harness, valve);
     assert.equal(stepOf(harness, 'original-contract'), 4);
@@ -203,7 +213,7 @@ describe('act two: the answer', () => {
 
     travel(harness, anchor('drowned-archive', 'sealedApproach'));
     use(harness, 'da-sealed-door/0,0');
-    assert.ok(player.position.y >= levelPoint('drowned-archive', localInRoom('drowned-archive', 'sealed-room', { x: 0, y: 0 })).y, 'the drained door opens into the reading room');
+    assert.ok(standsIn(harness, 'drowned-archive', 'sealed-room'), 'the drained door opens into the reading room');
 
     containSpecimen(harness, 'da-last-archivist');
     assert.equal(stepOf(harness, 'original-contract'), 5);
@@ -240,7 +250,7 @@ describe('act two: the answer', () => {
 
     travel(harness, anchor('furnace', 'reactorApproach'));
     use(harness, 'fu-reactor-door/0,0');
-    assert.ok(player.position.y >= levelPoint('furnace', localInRoom('furnace', 'reactor-heart', { x: 0, y: 0 })).y, 'the vented door opens into the reactor heart');
+    assert.ok(standsIn(harness, 'furnace', 'reactor-heart'), 'the vented door opens into the reactor heart');
 
     containSpecimen(harness, 'fu-stoker');
     assert.equal(stepOf(harness, 'stoking-the-fire'), 6);
