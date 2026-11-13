@@ -11,7 +11,7 @@ import {
   type WorldLocation,
 } from '@containment/shared';
 import { containSpecimen } from './support/containment.ts';
-import { at, createHarness, finishDialogue, type Harness, localInRoom } from './support/testHarness.ts';
+import { inRoom, at, createHarness, finishDialogue, type Harness, localInRoom } from './support/testHarness.ts';
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 
@@ -19,11 +19,11 @@ const FIGHTER = createStartingSkills({ closeQuarters: experienceForLevel(60), fo
 const KIT: EquipmentState = { torso: 'composite-plate', legs: 'intake-trousers', feet: 'work-boots', primary: 'stun-baton' };
 const TUTORIAL = ['orientation-protocol', 'field-fabrication', 'live-fire', 'cleared-for-transit'];
 
-const PUMP_HOUSE: WorldLocation = at('waterworks', localInRoom('waterworks', 'pump-house', { x: 13, y: 21 }));
-const VALVE_GALLERY: WorldLocation = at('waterworks', localInRoom('waterworks', 'valve-gallery', { x: 13, y: 17 }));
-const FILTRATION_BEDS: WorldLocation = at('waterworks', localInRoom('waterworks', 'filtration-beds'));
-const SETTLING_TANKS: WorldLocation = at('waterworks', localInRoom('waterworks', 'settling-tanks', { x: 25, y: 12 }));
-const OUTFALL: WorldLocation = at('waterworks', localInRoom('waterworks', 'outfall', { x: 1, y: 13 }));
+const PUMP_HOUSE: WorldLocation = inRoom('waterworks', 'pump-house');
+const VALVE_GALLERY: WorldLocation = inRoom('waterworks', 'valve-gallery');
+const FILTRATION_BEDS: WorldLocation = inRoom('waterworks', 'filtration-beds');
+const SETTLING_TANKS: WorldLocation = inRoom('waterworks', 'settling-tanks');
+const OUTFALL: WorldLocation = inRoom('waterworks', 'outfall');
 
 function graduateAt(location: WorldLocation) {
   return (record: CharacterRecord): CharacterRecord => ({

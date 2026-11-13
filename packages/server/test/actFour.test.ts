@@ -80,7 +80,7 @@ describe('act four: postmarked', () => {
     assert.equal(stepOf(harness, 'postmarked'), 0);
     assert.equal(countItem(player.record.inventory, 'calder-letter'), 1);
 
-    travel(harness, at('waterworks', localInRoom('waterworks', 'pump-house', { x: 13, y: 20 })));
+    travel(harness, inRoom('waterworks', 'pump-house'));
     talk(harness, 'ww-ngata', "I'll follow the road.");
     assert.equal(stepOf(harness, 'postmarked'), 1);
 
