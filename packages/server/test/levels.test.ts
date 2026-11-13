@@ -14,7 +14,7 @@ const WEST_GATE = inRoom('meridian-atrium', 'west-gate');
 const EAST_GATE = inRoom('meridian-atrium', 'east-gate');
 
 const ROUTE_TO_HYDROPONICS: readonly TilePoint[] = [
-  levelPoint('meridian-circuit', localInRoom('meridian-circuit', 'west-boulevard', { x: 6, y: 90 })),
+  levelPoint('meridian-circuit', localInRoom('meridian-circuit', 'west-boulevard')),
   exitPoint('meridian-circuit', 'west'),
   anchor('verdance-concourse', 'walkEastReach').position,
   anchor('verdance-concourse', 'walkEastOfCanal').position,
@@ -24,7 +24,7 @@ const ROUTE_TO_HYDROPONICS: readonly TilePoint[] = [
 ];
 
 const ROUTE_TO_SERVICE_YARDS: readonly TilePoint[] = [
-  levelPoint('meridian-circuit', localInRoom('meridian-circuit', 'east-boulevard', { x: 6, y: 90 })),
+  levelPoint('meridian-circuit', localInRoom('meridian-circuit', 'east-boulevard')),
   exitPoint('meridian-circuit', 'east'),
   anchor('service-concourse', 'walkWestReach').position,
   anchor('service-concourse', 'walkMid').position,
