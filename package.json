@@ -15,6 +15,7 @@
     "typecheck": "tsc -p packages/shared && tsc -p packages/server && tsc -p packages/client",
     "bench:tick": "node --no-warnings=ExperimentalWarning packages/server/bench/tickLoad.ts",
     "plan": "node --no-warnings=ExperimentalWarning scripts/plan.ts",
+    "baseline": "node --no-warnings=ExperimentalWarning scripts/worldBaseline.ts",
     "audit": "node --no-warnings=ExperimentalWarning scripts/audit.ts"
   },
   "engines": {

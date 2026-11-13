@@ -45,7 +45,7 @@
     { "room": "observation-gallery", "name": "Observation Gallery" }
   ],
   "anchors": {},
-  "recovery": { "districtId": "meridian-atrium", "at": { "x": 38, "y": 76 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "s2-airlock-sign", "object": "warning-sign", "at": { "room": "airlock", "dx": 12, "dy": 0 } },
     { "id": "s2-corridor-sign", "object": "warning-sign", "at": { "room": "corridor", "dx": 35, "dy": 0 } },

@@ -48,7 +48,7 @@
     "tramPlatform": { "room": "platform", "dx": 6, "dy": 34 },
     "foldReturn": { "room": "grow-hall", "dx": 19, "dy": 47 }
   },
-  "recovery": { "districtId": "meridian-atrium", "at": { "x": 38, "y": 76 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "hydro-tram-stop", "object": "tram-stop", "at": { "room": "platform", "dx": 2, "dy": 34 }, "facing": "east" },
     { "id": "hydro-platform-sign", "object": "warning-sign", "at": { "room": "platform", "dx": 21, "dy": 0 } },

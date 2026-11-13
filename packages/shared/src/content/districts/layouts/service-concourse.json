@@ -33,7 +33,7 @@
     { "room": "salvage-lot", "name": "Salvage Lot" }
   ],
   "anchors": {},
-  "recovery": { "districtId": "meridian-atrium", "at": { "x": 38, "y": 76 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "sc-pipes-a", "object": "pipe-cluster", "at": { "room": "concourse", "dx": 16, "dy": 0 } },
     { "id": "sc-pipes-b", "object": "pipe-cluster", "at": { "room": "concourse", "dx": 96, "dy": 12 } },

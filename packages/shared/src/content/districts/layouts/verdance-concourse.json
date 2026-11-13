@@ -31,7 +31,7 @@
     { "room": "compost-yard", "name": "Compost Yard" }
   ],
   "anchors": {},
-  "recovery": { "districtId": "meridian-atrium", "at": { "x": 38, "y": 76 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "vc-puddle", "object": "litter-puddle", "at": { "room": "concourse", "dx": 20, "dy": 2 } },
     { "id": "vc-papers", "object": "litter-papers", "at": { "room": "concourse", "dx": 96, "dy": 1 } },
