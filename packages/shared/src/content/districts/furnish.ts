@@ -1,16 +1,14 @@
 import type { NpcId, WorldObjectId } from '../../ids.ts';
 import type { Blueprint } from '../../world/blueprint.ts';
-import type { FloorDecal, FloorDecalKind } from '../../world/decals.ts';
+import type { FloorDecal } from '../../world/decals.ts';
 import type { DistrictDefinition, DressedRoom, NpcPlacement, ObjectPlacement } from '../../world/district.ts';
 import type { WorldObjectDefinition } from '../../world/entities.ts';
 import { objectFootprintTiles } from '../../world/footprint.ts';
-import { rectContains, tileKey, type TilePoint, type TileRect } from '../../world/geometry.ts';
+import { rectContains, tileKey, type TilePoint } from '../../world/geometry.ts';
 import { MAP_LEGEND, TILE_KINDS } from '../../world/tiles.ts';
 import { ambientCast } from '../ambientNpcs.ts';
 import { ASSEMBLY_OBJECTS } from '../assemblyObjects.ts';
 import { CLUTTER_OBJECTS } from '../clutterObjects.ts';
-import { COMPOSITIONS, inferComposition, type CompositionName, type DressingDensity } from '../compositions.ts';
-import type { Condition } from '../conditions.ts';
 import { CONTRACT_OBJECTS } from '../contractObjects.ts';
 import { FURNITURE_OBJECTS } from '../furnitureObjects.ts';
 import { LITTER_OBJECTS } from '../litterObjects.ts';
@@ -19,20 +17,13 @@ import { RUIN_OBJECTS } from '../ruinObjects.ts';
 import { SET_PIECE_OBJECTS } from '../setPieceObjects.ts';
 import { TRANSIT_OBJECTS } from '../transitObjects.ts';
 import { WATERWORKS_OBJECTS } from '../waterworksObjects.ts';
-import { composeRoom } from './compose.ts';
-import { applyCondition } from './condition.ts';
-import { pieceTiles, rotationOf, turnsOf, type Turn } from './composeLayout.ts';
+import { pieceTiles, rotationOf, turnsOf, type Turn } from './prefabTurns.ts';
 import { positionsOfWith } from './populate.ts';
 import { hashSeed, seededRandom, shuffle } from './seededRandom.ts';
 import type { SetPiece } from './setPiece.ts';
 
-export type { DressingDensity } from '../compositions.ts';
-
 export interface RoomDressing {
   readonly theme: DressingTheme;
-  readonly density?: DressingDensity;
-  readonly composition?: CompositionName;
-  readonly condition?: Condition;
   readonly people?: number;
   readonly cast?: readonly NpcId[];
 }
@@ -43,7 +34,6 @@ export interface FurnishOptions {
   readonly cast?: readonly NpcId[];
   readonly setPieces?: readonly SetPiece[];
   readonly landmarks?: readonly string[];
-  readonly decalSwaps?: Readonly<Partial<Record<FloorDecalKind, FloorDecalKind>>>;
 }
 
 const isFloorLitter = (objectId: string): boolean => objectId.startsWith('litter-') || objectId.startsWith('cable-run');
@@ -102,30 +92,12 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
     ].map(tileKey),
   );
 
-  const openingsOf = (rect: TileRect): TilePoint[] => {
-    const openings: TilePoint[] = [];
-    for (let y = rect.y - 1; y <= rect.y + rect.height; y++) {
-      for (let x = rect.x - 1; x <= rect.x + rect.width; x++) {
-        const point = { x, y };
-        if (tileAt(point) === 'door') {
-          openings.push(point);
-          continue;
-        }
-        if (rectContains(rect, point) || !isWalkable(point)) continue;
-        const inside = [{ x: x + 1, y }, { x: x - 1, y }, { x, y: y + 1 }, { x, y: y - 1 }];
-        if (inside.some((neighbour) => rectContains(rect, neighbour) && isWalkable(neighbour))) openings.push(point);
-      }
-    }
-    return openings;
-  };
-
-  const objects: ObjectPlacement[] = [];
   const decals: FloorDecal[] = [];
   const npcs: NpcPlacement[] = [];
   const setPieceObjects: ObjectPlacement[] = [];
   const setPiecesInRoom = new Map<string, number>();
   const log = new Map<string, DressedRoom>();
-  const logOf = (room: string): DressedRoom => log.get(room) ?? { room, formal: false, prefabs: [], additions: [], setPieces: [] };
+  const logOf = (room: string): DressedRoom => log.get(room) ?? { room, setPieces: [] };
   const blocked = new Set(taken);
 
   for (const piece of options.setPieces ?? []) {
@@ -160,42 +132,19 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
   for (const [roomId, entry] of Object.entries(dressing)) {
     const rect = plan.rooms[roomId];
     if (!rect) throw new Error(`District "${district.id}" dresses unknown room "${roomId}".`);
-    const { theme, density = 'normal', composition, people, cast, condition: roomCondition } = dressingOf(entry);
-    const condition = roomCondition ?? district.condition ?? 'pristine';
+    const { theme, people, cast } = dressingOf(entry);
     const floor: TilePoint[] = [];
     for (let y = rect.y; y < rect.y + rect.height; y++) {
       for (let x = rect.x; x < rect.x + rect.width; x++) if (isOpenFloor({ x, y })) floor.push({ x, y });
     }
-    const compositionName = composition ?? inferComposition(rect, plan.shapes[roomId] ?? 'rect', theme);
-    const base = COMPOSITIONS[compositionName];
-    const formal = base.formal || condition === 'uncanny';
-    const clear = new Set(floor.map(tileKey).filter((key) => !taken.has(key)));
-    const openings = openingsOf(rect);
-    const composedRoom = composeRoom({
-      roomId,
-      rect,
-      theme,
-      density,
-      composition: formal === base.formal ? base : { ...base, formal },
-      seed: `${district.id}:${roomId}:dressing`,
-      clear,
-      openings,
-      isWall: (point) => !isWalkable(point),
-      isStructuralWall: (point) => TILE_KINDS[tileAt(point)].structure === 'wall',
-      objectOf: dressingObjectOf,
-      occupied: taken,
-    });
-    const composed = applyCondition({ condition, rect, seed: `${district.id}:${roomId}:condition`, composed: composedRoom, clear, occupied: taken, objectOf: dressingObjectOf, roomId, openings });
-    objects.push(...composed.objects);
-    decals.push(...composed.decals);
-    log.set(roomId, { ...logOf(roomId), composition: compositionName, formal, prefabs: composed.prefabs ?? [], additions: composed.additions ?? [] });
+    log.set(roomId, logOf(roomId));
 
     if (!safeRooms.has(roomId)) continue;
     const random = seededRandom(`${district.id}:${roomId}:crowd`);
     const crowd = cast ?? options.cast ?? THEME_CAST[theme];
     const headcount = people ?? Math.min(MAX_PEOPLE_PER_ROOM, Math.floor(floor.length / TILES_PER_PERSON));
     const inset = { x: rect.x + PEOPLE_INSET, y: rect.y + PEOPLE_INSET, width: rect.width - PEOPLE_INSET * 2, height: rect.height - PEOPLE_INSET * 2 };
-    const gathering = new Set(composed.objects.filter((object) => GATHERING_POINTS.has(object.objectId)).map((object) => tileKey(object.position)));
+    const gathering = new Set([...setPieceObjects, ...district.objects].filter((object) => rectContains(rect, object.position)).filter((object) => GATHERING_POINTS.has(object.objectId)).map((object) => tileKey(object.position)));
     const nearGathering = (point: TilePoint): boolean => CARDINAL.some((step) => gathering.has(tileKey({ x: point.x + step.x, y: point.y + step.y })));
     const standing = shuffle(
       floor.filter((point) => rectContains(inset, point) && !taken.has(tileKey(point))),
@@ -214,16 +163,15 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
     });
   }
 
-  const covered = new Set([...setPieceObjects, ...objects].flatMap((object) => objectFootprintTiles(dressingObjectOf(object.objectId), object)).map(tileKey));
+  const covered = new Set(setPieceObjects.flatMap((object) => objectFootprintTiles(dressingObjectOf(object.objectId), object)).map(tileKey));
   return {
     ...district,
     npcs: [...district.npcs, ...npcs.map((npc) => ({ ...npc, instanceId: `${district.id}-${npc.instanceId}` }))],
     objects: [
       ...district.objects.filter((object) => !(isFloorLitter(object.objectId) && covered.has(tileKey(object.position)))),
       ...setPieceObjects,
-      ...objects.map((object) => ({ ...object, instanceId: `${district.id}-${object.instanceId}` })),
     ],
-    ...(decals.length > 0 || district.decals ? { decals: [...(district.decals ?? []), ...decals.map((decal) => ({ ...decal, kind: options.decalSwaps?.[decal.kind] ?? decal.kind }))] } : {}),
+    ...(decals.length > 0 || district.decals ? { decals: [...(district.decals ?? []), ...decals] } : {}),
     ...(options.landmarks ? { landmarks: options.landmarks } : {}),
     ...(log.size > 0 ? { dressingLog: [...log.values()] } : {}),
   };

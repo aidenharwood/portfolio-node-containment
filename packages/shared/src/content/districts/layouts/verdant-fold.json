@@ -36,7 +36,17 @@
     { "id": "vf-grove-litter-3", "object": "litter-gravel", "at": { "room": "grove", "dx": 6, "dy": 11 } },
     { "id": "vf-grove-litter-4", "object": "litter-puddle", "at": { "room": "grove", "dx": 23, "dy": 10 } },
     { "id": "vf-west-crease-vine", "object": "strangler-vine", "at": { "room": "west-crease", "dx": 2, "dy": 9 } },
-    { "id": "vf-east-crease-spores", "object": "spore-bloom", "at": { "room": "east-crease", "dx": 5, "dy": 9 } }
+    { "id": "vf-east-crease-spores", "object": "spore-bloom", "at": { "room": "east-crease", "dx": 5, "dy": 9 } },
+    { "id": "furn-verdant-fold-grove-1", "object": "planter", "at": { "room": "grove", "dx": 8, "dy": 13 } },
+    { "id": "furn-verdant-fold-grove-2", "object": "planter", "at": { "room": "grove", "dx": 18, "dy": 13 } },
+    { "id": "furn-verdant-fold-grove-3", "object": "planter", "at": { "room": "grove", "dx": 13, "dy": 8 } },
+    { "id": "furn-verdant-fold-grove-4", "object": "planter", "at": { "room": "grove", "dx": 13, "dy": 18 } },
+    { "id": "furn-verdant-fold-grove-5", "object": "potted-fern", "at": { "room": "grove", "dx": 9, "dy": 9 } },
+    { "id": "furn-verdant-fold-grove-6", "object": "potted-fern", "at": { "room": "grove", "dx": 17, "dy": 9 } },
+    { "id": "furn-verdant-fold-grove-7", "object": "potted-fern", "at": { "room": "grove", "dx": 9, "dy": 17 } },
+    { "id": "furn-verdant-fold-grove-8", "object": "potted-fern", "at": { "room": "grove", "dx": 17, "dy": 17 } },
+    { "id": "furn-verdant-fold-grove-9", "object": "bench-curve", "at": { "room": "grove", "dx": 12, "dy": 4 }, "facing": "south" },
+    { "id": "furn-verdant-fold-grove-10", "object": "bench-curve", "at": { "room": "grove", "dx": 12, "dy": 22 }, "facing": "north" }
   ],
   "assemblies": [
     { "id": "fold-exit", "assembly": "verdant-fold-exit", "at": { "room": "grove", "dx": 12, "dy": 26 }, "facing": "north" }
@@ -56,7 +66,7 @@
     { "id": "verdant-fold-setPieces-2", "prefab": "grove-planters", "at": { "room": "east-crease", "dx": 3, "dy": 2 }, "facing": "south" }
   ],
   "dressing": {
-    "grove": { "theme": "garden", "density": "dense", "composition": "court" }
+    "grove": "garden"
   },
   "furnish": {}
 }

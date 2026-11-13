@@ -48,7 +48,28 @@
     { "id": "fc-approach-litter-1", "object": "litter-papers", "at": { "room": "furnace-approach", "dx": 7, "dy": 24 } },
     { "id": "fc-approach-litter-2", "object": "litter-debris", "at": { "room": "furnace-approach", "dx": 1, "dy": 17 } },
     { "id": "fc-approach-litter-3", "object": "litter-puddle", "at": { "room": "furnace-approach", "dx": 2, "dy": 22 } },
-    { "id": "fc-approach-litter-4", "object": "litter-gravel", "at": { "room": "furnace-approach", "dx": 2, "dy": 8 } }
+    { "id": "fc-approach-litter-4", "object": "litter-gravel", "at": { "room": "furnace-approach", "dx": 2, "dy": 8 } },
+    { "id": "furn-furnace-causeway-furnace-approach-1", "object": "pipe-cluster", "at": { "room": "furnace-approach", "dx": 12, "dy": 6 } },
+    { "id": "furn-furnace-causeway-furnace-approach-2", "object": "pipe-cluster", "at": { "room": "furnace-approach", "dx": 12, "dy": 7 } },
+    { "id": "furn-furnace-causeway-furnace-approach-3", "object": "pipe-cluster", "at": { "room": "furnace-approach", "dx": 12, "dy": 8 } },
+    { "id": "furn-furnace-causeway-furnace-approach-4", "object": "pipe-cluster", "at": { "room": "furnace-approach", "dx": 12, "dy": 9 } },
+    { "id": "furn-furnace-causeway-furnace-approach-5", "object": "pipe-cluster", "at": { "room": "furnace-approach", "dx": 12, "dy": 13 } },
+    { "id": "furn-furnace-causeway-furnace-approach-6", "object": "pipe-cluster", "at": { "room": "furnace-approach", "dx": 12, "dy": 14 } },
+    { "id": "furn-furnace-causeway-furnace-approach-7", "object": "pipe-cluster", "at": { "room": "furnace-approach", "dx": 12, "dy": 15 } },
+    { "id": "furn-furnace-causeway-furnace-approach-8", "object": "pipe-cluster", "at": { "room": "furnace-approach", "dx": 12, "dy": 16 } },
+    { "id": "furn-furnace-causeway-furnace-approach-9", "object": "floor-lamp", "at": { "room": "furnace-approach", "dx": 0, "dy": 8 } },
+    { "id": "furn-furnace-causeway-furnace-approach-10", "object": "floor-lamp", "at": { "room": "furnace-approach", "dx": 0, "dy": 20 } },
+    { "id": "furn-furnace-causeway-furnace-approach-11", "object": "gas-cylinders", "at": { "room": "furnace-approach", "dx": 12, "dy": 22 } },
+    { "id": "furn-furnace-causeway-ember-landing-1", "object": "floor-lamp", "at": { "room": "ember-landing", "dx": 12, "dy": 13 } },
+    { "id": "furn-furnace-causeway-ember-landing-2", "object": "floor-lamp", "at": { "room": "ember-landing", "dx": 27, "dy": 13 } },
+    { "id": "furn-furnace-causeway-ember-landing-3", "object": "barrel", "at": { "room": "ember-landing", "dx": 1, "dy": 1 } },
+    { "id": "furn-furnace-causeway-ember-landing-4", "object": "barrel", "at": { "room": "ember-landing", "dx": 2, "dy": 1 } },
+    { "id": "furn-furnace-causeway-causeway-1", "object": "floor-lamp", "at": { "room": "causeway", "dx": 0, "dy": 4 } },
+    { "id": "furn-furnace-causeway-causeway-2", "object": "floor-lamp", "at": { "room": "causeway", "dx": 12, "dy": 4 } },
+    { "id": "furn-furnace-causeway-causeway-3", "object": "floor-lamp", "at": { "room": "causeway", "dx": 0, "dy": 20 } },
+    { "id": "furn-furnace-causeway-causeway-4", "object": "floor-lamp", "at": { "room": "causeway", "dx": 12, "dy": 20 } },
+    { "id": "furn-furnace-causeway-causeway-5", "object": "barrel", "at": { "room": "causeway", "dx": 1, "dy": 16 } },
+    { "id": "furn-furnace-causeway-causeway-6", "object": "barrel", "at": { "room": "causeway", "dx": 11, "dy": 16 } }
   ],
   "assemblies": [
     { "id": "fc-bridge-north", "assembly": "bridge", "at": { "room": "causeway", "dx": 2, "dy": 9 }, "facing": "south", "span": 3 },
@@ -66,12 +87,16 @@
   ],
   "decals": [],
   "setPieces": [
-    { "id": "furnace-causeway-ember-landing-landmark", "prefab": "slag-ladle-focal", "at": { "room": "ember-landing", "dx": 24, "dy": 7 }, "facing": "south" }
+    { "id": "furnace-causeway-ember-landing-landmark", "prefab": "slag-ladle-focal", "at": { "room": "ember-landing", "dx": 24, "dy": 7 }, "facing": "south" },
+    { "prefab": "bunk-pair", "at": { "room": "ember-landing", "dx": 2, "dy": 16 }, "facing": "north" },
+    { "prefab": "bunk-pair", "at": { "room": "ember-landing", "dx": 33, "dy": 16 }, "facing": "north" },
+    { "prefab": "table-set", "at": { "room": "ember-landing", "dx": 7, "dy": 12 }, "facing": "south" },
+    { "prefab": "crates", "at": { "room": "ember-landing", "dx": 35, "dy": 1 }, "facing": "south" }
   ],
   "dressing": {
     "furnace-approach": "industrial",
     "ember-landing": "camp",
-    "causeway": { "theme": "industrial", "density": "sparse" }
+    "causeway": "industrial"
   },
   "furnish": { "cast": ["ambient-deckhand-1", "ambient-deckhand-2", "ambient-researcher-1", "ambient-researcher-2", "ambient-researcher-3", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4", "ambient-technician-1", "ambient-technician-2", "ambient-technician-3"], "landmarks": ["ember-landing"] }
 }

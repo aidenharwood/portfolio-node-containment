@@ -58,21 +58,11 @@ describe('furnishing integrity', () => {
     assert.ok(issues.some((issue) => issue.includes('decal') && issue.includes(`${door.x},${door.y}`)), issues.join('\n'));
   });
 
-  test('composed dressing beside a room opening is reported', () => {
+  test('a set-piece on a door tile is reported', () => {
     const door = plan.linkTile('hall', 'annex');
-    const crowding: ObjectPlacement = { instanceId: 'test-yard-hall-dressing-1-1', objectId: 'planter', position: { x: door.x - 1, y: door.y } };
-    const issues = findFurnishingIssues(contentWith(baseDistrict({ objects: [crowding] })));
-    assert.ok(issues.some((issue) => issue.includes('test-yard-hall-dressing-1-1') && issue.includes('opening')), issues.join('\n'));
-  });
-
-  test('an uncanny mirror piece on or beside a door is reported', () => {
-    const door = plan.linkTile('hall', 'annex');
-    const onDoor: ObjectPlacement = { instanceId: 'test-yard-hall-mirror-1', objectId: 'planter', position: door };
-    const covered = findFurnishingIssues(contentWith(baseDistrict({ objects: [onDoor] })));
-    assert.ok(covered.some((issue) => issue.includes('test-yard-hall-mirror-1') && issue.includes('door tile')), covered.join('\n'));
-    const beside: ObjectPlacement = { ...onDoor, position: { x: door.x - 2, y: door.y } };
-    const crowded = findFurnishingIssues(contentWith(baseDistrict({ objects: [beside] })));
-    assert.ok(crowded.some((issue) => issue.includes('test-yard-hall-mirror-1') && issue.includes('opening')), crowded.join('\n'));
+    const onDoor: ObjectPlacement = { instanceId: 'test-yard-hall-set-1-1', objectId: 'planter', position: door };
+    const issues = findFurnishingIssues(contentWith(baseDistrict({ objects: [onDoor] })));
+    assert.ok(issues.some((issue) => issue.includes('test-yard-hall-set-1-1') && issue.includes('door tile')), issues.join('\n'));
   });
 
   test('a landmark room without a focal set-piece is reported', () => {
@@ -87,27 +77,22 @@ describe('furnishing integrity', () => {
     assert.deepEqual(findFurnishingIssues(contentWith(district)).filter((issue) => issue.includes('landmark')), []);
   });
 
-  test('a 20×20 room dressed with one prefab is reported', () => {
-    const district = baseDistrict({ dressingLog: [{ room: 'hall', composition: 'court', formal: false, prefabs: ['planter-bay', 'planter-bay'], additions: [], setPieces: [] }] });
-    const issues = findFurnishingIssues(contentWith(district));
-    assert.ok(issues.some((issue) => issue.includes('room "hall"') && issue.includes('distinct prefab')), issues.join('\n'));
+  test('a dressed 20×20 room holding fewer than three kinds of object is reported', () => {
+    const bare = furnish(plan, baseDistrict(), { hall: 'civic' }, { setPieces: [setPiece(plan, 'hall', 'ferns', 8, 9)] });
+    const issues = findFurnishingIssues(contentWith(bare));
+    assert.ok(issues.some((issue) => issue.includes('room "hall"') && issue.includes('kind(s) of object')), issues.join('\n'));
   });
 
-  test('an informal room using one prefab more than three times is reported', () => {
-    const prefabs = ['a', 'a', 'a', 'a', 'b', 'c'];
-    const informal = findFurnishingIssues(contentWith(baseDistrict({ dressingLog: [{ room: 'hall', composition: 'court', formal: false, prefabs, additions: [], setPieces: [] }] })));
-    assert.ok(informal.some((issue) => issue.includes('"a"') && issue.includes('4 times')), informal.join('\n'));
-    const formal = findFurnishingIssues(contentWith(baseDistrict({ dressingLog: [{ room: 'hall', composition: 'radial', formal: true, prefabs, additions: [], setPieces: [] }] })));
-    assert.deepEqual(formal, []);
+  test('a dressed room with three kinds of object passes the dressing check', () => {
+    const dressed = furnish(plan, baseDistrict(), { hall: 'civic' }, { setPieces: [setPiece(plan, 'hall', 'ferns', 2, 2), setPiece(plan, 'hall', 'barrels', 12, 12), setPiece(plan, 'hall', 'crates', 6, 14)] });
+    assert.deepEqual(findFurnishingIssues(contentWith(dressed)).filter((issue) => issue.includes('kind(s) of object')), []);
   });
 
-  test('furnish logs each dressed room with its composition and prefabs', () => {
-    const district = furnish(plan, baseDistrict(), { hall: { theme: 'civic', composition: 'court' }, annex: 'office' });
-    const hall = district.dressingLog?.find((entry) => entry.room === 'hall');
-    const annex = district.dressingLog?.find((entry) => entry.room === 'annex');
-    assert.equal(hall?.composition, 'court');
-    assert.equal(annex?.composition, 'workroom');
-    assert.ok((hall?.prefabs.length ?? 0) > 0);
+  test('furnish logs each dressed room with its set-pieces and adds no props of its own', () => {
+    const district = furnish(plan, baseDistrict(), { hall: 'civic', annex: 'office' }, { setPieces: [setPiece(plan, 'hall', 'ferns', 8, 9)] });
+    assert.deepEqual(district.dressingLog?.find((entry) => entry.room === 'hall')?.setPieces.map((piece) => piece.prefab), ['ferns']);
+    assert.deepEqual(district.dressingLog?.find((entry) => entry.room === 'annex')?.setPieces, []);
+    assert.equal(district.objects.length, 3);
   });
 });
 

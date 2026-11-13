@@ -31,10 +31,6 @@ describe('world audit', () => {
       const expected = Object.entries(conditions).find(([, ids]) => ids.includes(district.id))?.[0];
       assert.equal(district.condition, expected, district.id);
     }
-    for (const id of ['salt-cathedral', 'calder-deeps']) {
-      const kinds = new Set(GAME_CONTENT.districts.get(id)?.decals?.map((decal) => decal.kind));
-      assert.ok(kinds.has('salt-crust') && !kinds.has('alien-vein'), `${id} decals: ${[...kinds].join(', ')}`);
-    }
   });
 
   test('an NPC outside a safe area on a floor level is reported', () => {

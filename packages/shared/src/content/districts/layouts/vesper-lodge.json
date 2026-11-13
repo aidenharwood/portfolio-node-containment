@@ -32,7 +32,32 @@
     { "id": "vl-storage", "object": "storage-locker", "at": { "room": "lodge", "dx": 57, "dy": 1 }, "facing": "west" },
     { "id": "vl-mailbox", "object": "market-mailbox", "at": { "room": "lodge", "dx": 57, "dy": 31 }, "facing": "west" },
     { "id": "vl-contracts", "object": "contract-board", "at": { "room": "lodge", "dx": 47, "dy": 0 } },
-    { "id": "vl-tram-stop", "object": "tram-stop", "at": { "room": "lodge", "dx": 52, "dy": 16 }, "facing": "west" }
+    { "id": "vl-tram-stop", "object": "tram-stop", "at": { "room": "lodge", "dx": 52, "dy": 16 }, "facing": "west" },
+    { "id": "furn-vesper-lodge-lodge-1", "object": "office-desk", "at": { "room": "lodge", "dx": 31, "dy": 4 } },
+    { "id": "furn-vesper-lodge-lodge-2", "object": "office-desk", "at": { "room": "lodge", "dx": 32, "dy": 4 } },
+    { "id": "furn-vesper-lodge-lodge-3", "object": "office-desk", "at": { "room": "lodge", "dx": 33, "dy": 4 } },
+    { "id": "furn-vesper-lodge-lodge-4", "object": "serving-counter", "at": { "room": "lodge", "dx": 4, "dy": 31 }, "facing": "west" },
+    { "id": "furn-vesper-lodge-lodge-5", "object": "serving-counter", "at": { "room": "lodge", "dx": 4, "dy": 32 }, "facing": "west" },
+    { "id": "furn-vesper-lodge-lodge-6", "object": "serving-counter", "at": { "room": "lodge", "dx": 4, "dy": 33 }, "facing": "west" },
+    { "id": "furn-vesper-lodge-lodge-7", "object": "serving-counter", "at": { "room": "lodge", "dx": 4, "dy": 34 }, "facing": "west" },
+    { "id": "furn-vesper-lodge-lodge-8", "object": "serving-counter", "at": { "room": "lodge", "dx": 4, "dy": 35 }, "facing": "west" },
+    { "id": "furn-vesper-lodge-lodge-9", "object": "briefing-bench", "at": { "room": "lodge", "dx": 20, "dy": 28 }, "facing": "north" },
+    { "id": "furn-vesper-lodge-lodge-10", "object": "briefing-bench", "at": { "room": "lodge", "dx": 21, "dy": 28 }, "facing": "north" },
+    { "id": "furn-vesper-lodge-lodge-11", "object": "briefing-bench", "at": { "room": "lodge", "dx": 22, "dy": 28 }, "facing": "north" },
+    { "id": "furn-vesper-lodge-lodge-12", "object": "briefing-bench", "at": { "room": "lodge", "dx": 23, "dy": 28 }, "facing": "north" },
+    { "id": "furn-vesper-lodge-lodge-13", "object": "briefing-bench", "at": { "room": "lodge", "dx": 24, "dy": 28 }, "facing": "north" },
+    { "id": "furn-vesper-lodge-lodge-14", "object": "briefing-bench", "at": { "room": "lodge", "dx": 25, "dy": 28 }, "facing": "north" },
+    { "id": "furn-vesper-lodge-lodge-15", "object": "briefing-bench", "at": { "room": "lodge", "dx": 33, "dy": 28 }, "facing": "north" },
+    { "id": "furn-vesper-lodge-lodge-16", "object": "briefing-bench", "at": { "room": "lodge", "dx": 34, "dy": 28 }, "facing": "north" },
+    { "id": "furn-vesper-lodge-lodge-17", "object": "briefing-bench", "at": { "room": "lodge", "dx": 35, "dy": 28 }, "facing": "north" },
+    { "id": "furn-vesper-lodge-lodge-18", "object": "briefing-bench", "at": { "room": "lodge", "dx": 36, "dy": 28 }, "facing": "north" },
+    { "id": "furn-vesper-lodge-lodge-19", "object": "briefing-bench", "at": { "room": "lodge", "dx": 37, "dy": 28 }, "facing": "north" },
+    { "id": "furn-vesper-lodge-lodge-20", "object": "briefing-bench", "at": { "room": "lodge", "dx": 38, "dy": 28 }, "facing": "north" },
+    { "id": "furn-vesper-lodge-lodge-21", "object": "mail-sacks", "at": { "room": "lodge", "dx": 52, "dy": 31 } },
+    { "id": "furn-vesper-lodge-lodge-22", "object": "mail-sacks", "at": { "room": "lodge", "dx": 52, "dy": 32 } },
+    { "id": "furn-vesper-lodge-lodge-23", "object": "book-trolley", "at": { "room": "lodge", "dx": 51, "dy": 34 } },
+    { "id": "furn-vesper-lodge-lodge-24", "object": "potted-fern", "at": { "room": "lodge", "dx": 1, "dy": 30 } },
+    { "id": "furn-vesper-lodge-lodge-25", "object": "potted-fern", "at": { "room": "lodge", "dx": 53, "dy": 0 } }
   ],
   "assemblies": [
     { "id": "vl-gate", "assembly": "vesper-gate", "at": { "exit": "east", "index": 0 }, "facing": "west" },
@@ -55,10 +80,17 @@
   "setPieces": [
     { "id": "vesper-lodge-lodge-landmark", "prefab": "call-board-focal", "at": { "room": "lodge", "dx": 26, "dy": 23 }, "facing": "south" },
     { "id": "vesper-lodge-gurney-park", "prefab": "gurney-row", "at": { "room": "lodge", "dx": 10, "dy": 8 }, "facing": "south" },
-    { "id": "vesper-lodge-screened-bay", "prefab": "gurney-screen", "at": { "room": "lodge", "dx": 40, "dy": 34 }, "facing": "south" }
+    { "id": "vesper-lodge-screened-bay", "prefab": "gurney-screen", "at": { "room": "lodge", "dx": 40, "dy": 34 }, "facing": "south" },
+    { "prefab": "cabinet-row", "at": { "room": "lodge", "dx": 27, "dy": 0 }, "facing": "south" },
+    { "prefab": "table-set", "at": { "room": "lodge", "dx": 14, "dy": 2 }, "facing": "south" },
+    { "prefab": "table-set", "at": { "room": "lodge", "dx": 20, "dy": 2 }, "facing": "south" },
+    { "prefab": "refreshments", "at": { "room": "lodge", "dx": 40, "dy": 0 }, "facing": "south" },
+    { "prefab": "cabinet-row", "at": { "room": "lodge", "dx": 0, "dy": 33 }, "facing": "east" },
+    { "prefab": "wheelchairs", "at": { "room": "lodge", "dx": 24, "dy": 43 }, "facing": "north" },
+    { "prefab": "cabinet-row", "at": { "room": "lodge", "dx": 8, "dy": 43 }, "facing": "north" }
   ],
   "dressing": {
-    "lodge": { "theme": "camp", "density": "dense" }
+    "lodge": "camp"
   },
   "furnish": { "cast": ["ambient-porter-1", "ambient-porter-2", "ambient-orderly-1", "ambient-orderly-2", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4"], "landmarks": ["lodge"] }
 }

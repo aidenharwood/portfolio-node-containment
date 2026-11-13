@@ -7,16 +7,16 @@ const atrium = GAME_CONTENT.districts.get('meridian-atrium') as DistrictDefiniti
 const layout = parseLayout(LAYOUT_SOURCES['meridian-atrium']);
 
 test('a set-piece piece selects its set-piece entry first', () => {
-  const piece = atrium.objects.find((object) => object.instanceId === 'atrium-plaza-ring-north/1');
+  const piece = atrium.objects.find((object) => object.instanceId === 'atrium-plaza-core-ring/1');
   assert.ok(piece);
-  const index = layout.setPieces.findIndex((entry) => entry.id === 'atrium-plaza-ring-north');
+  const index = layout.setPieces.findIndex((entry) => entry.id === 'atrium-plaza-core-ring');
   assert.deepEqual(hitsAt(layout, atrium, piece.position)[0], { kind: 'entry', ref: { collection: 'setPieces', index } });
 });
 
-test('a dressing piece selects its room dressing', () => {
-  const dressing = atrium.objects.find((object) => object.instanceId.startsWith('meridian-atrium-requisitions-dressing-'));
-  assert.ok(dressing);
-  assert.deepEqual(hitsAt(layout, atrium, dressing.position)[0], { kind: 'dressing', room: 'requisitions' });
+test('a member of a room’s generated crowd selects its room dressing', () => {
+  const crowd = atrium.npcs.find((npc) => npc.instanceId.startsWith('meridian-atrium-requisitions-crowd-'));
+  assert.ok(crowd);
+  assert.deepEqual(hitsAt(layout, atrium, crowd.position)[0], { kind: 'dressing', room: 'requisitions' });
 });
 
 test('a placed object selects its entry, with the room underneath', () => {
@@ -32,8 +32,10 @@ test('a placed object selects its entry, with the room underneath', () => {
 test('an empty floor tile yields only its room', () => {
   const plaza = atrium.rooms?.plaza;
   assert.ok(plaza);
-  const tile = { x: plaza.x + 3, y: plaza.y + 20 };
-  assert.ok(!atrium.objects.some((object) => object.position.x === tile.x && object.position.y === tile.y));
+  const occupied = (x: number, y: number) => [...atrium.objects, ...atrium.npcs].some((thing) => thing.position.x === x && thing.position.y === y);
+  const free = Array.from({ length: 10 }, (_, step) => ({ x: plaza.x + 3 + step, y: plaza.y + 20 })).find((point) => !occupied(point.x, point.y));
+  assert.ok(free);
+  const tile = free;
   const hits = hitsAt(layout, atrium, tile).filter((hit) => hit.kind !== 'entry' || hit.ref.collection !== 'decals');
   assert.deepEqual(hits, [{ kind: 'room', room: 'plaza' }]);
 });

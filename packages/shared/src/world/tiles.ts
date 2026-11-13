@@ -13,6 +13,8 @@ export const TILE_KIND_IDS = [
   'soil',
   'track',
   'terrazzo',
+  'ceramic',
+  'boards',
 ] as const;
 
 export type TileKindId = (typeof TILE_KIND_IDS)[number];
@@ -40,6 +42,8 @@ export const TILE_KINDS: Readonly<Record<TileKindId, TileKind>> = {
   soil: { id: 'soil', structure: 'floor', walkable: true },
   track: { id: 'track', structure: 'floor', walkable: false },
   terrazzo: { id: 'terrazzo', structure: 'floor', walkable: true },
+  ceramic: { id: 'ceramic', structure: 'floor', walkable: true },
+  boards: { id: 'boards', structure: 'floor', walkable: true },
 };
 
 export const MAP_LEGEND: Readonly<Record<string, TileKindId>> = {
@@ -57,4 +61,6 @@ export const MAP_LEGEND: Readonly<Record<string, TileKindId>> = {
   ':': 'soil',
   T: 'track',
   ';': 'terrazzo',
+  '+': 'ceramic',
+  '-': 'boards',
 };

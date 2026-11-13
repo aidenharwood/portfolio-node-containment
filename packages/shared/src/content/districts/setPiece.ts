@@ -1,6 +1,6 @@
 import type { Blueprint } from '../../world/blueprint.ts';
 import type { Facing, TilePoint } from '../../world/geometry.ts';
-import { pieceTiles } from './composeLayout.ts';
+import { pieceTiles } from './prefabTurns.ts';
 import { setPieceTurn } from './furnish.ts';
 
 export interface SetPiece {

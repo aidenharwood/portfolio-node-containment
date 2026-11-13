@@ -37,7 +37,23 @@
     { "id": "s3-threshold-litter-1", "object": "litter-papers", "at": { "room": "threshold", "dx": 10, "dy": 20 } },
     { "id": "s3-threshold-litter-2", "object": "litter-debris", "at": { "room": "threshold", "dx": 17, "dy": 18 } },
     { "id": "s3-threshold-litter-3", "object": "litter-puddle", "at": { "room": "threshold", "dx": 23, "dy": 6 } },
-    { "id": "s3-threshold-litter-4", "object": "litter-gravel", "at": { "room": "threshold", "dx": 8, "dy": 9 } }
+    { "id": "s3-threshold-litter-4", "object": "litter-gravel", "at": { "room": "threshold", "dx": 8, "dy": 9 } },
+    { "id": "furn-sector-three-threshold-1", "object": "briefing-bench", "at": { "room": "threshold", "dx": 18, "dy": 7 } },
+    { "id": "furn-sector-three-threshold-2", "object": "briefing-bench", "at": { "room": "threshold", "dx": 19, "dy": 7 } },
+    { "id": "furn-sector-three-threshold-3", "object": "briefing-bench", "at": { "room": "threshold", "dx": 20, "dy": 7 } },
+    { "id": "furn-sector-three-threshold-4", "object": "floor-lamp", "at": { "room": "threshold", "dx": 4, "dy": 5 } },
+    { "id": "furn-sector-three-reflecting-hall-1", "object": "briefing-bench", "at": { "room": "reflecting-hall", "dx": 8, "dy": 6 }, "facing": "north" },
+    { "id": "furn-sector-three-reflecting-hall-2", "object": "briefing-bench", "at": { "room": "reflecting-hall", "dx": 9, "dy": 6 }, "facing": "north" },
+    { "id": "furn-sector-three-reflecting-hall-3", "object": "briefing-bench", "at": { "room": "reflecting-hall", "dx": 10, "dy": 6 }, "facing": "north" },
+    { "id": "furn-sector-three-reflecting-hall-4", "object": "briefing-bench", "at": { "room": "reflecting-hall", "dx": 11, "dy": 6 }, "facing": "north" },
+    { "id": "furn-sector-three-reflecting-hall-5", "object": "briefing-bench", "at": { "room": "reflecting-hall", "dx": 18, "dy": 6 }, "facing": "north" },
+    { "id": "furn-sector-three-reflecting-hall-6", "object": "briefing-bench", "at": { "room": "reflecting-hall", "dx": 19, "dy": 6 }, "facing": "north" },
+    { "id": "furn-sector-three-reflecting-hall-7", "object": "briefing-bench", "at": { "room": "reflecting-hall", "dx": 20, "dy": 6 }, "facing": "north" },
+    { "id": "furn-sector-three-reflecting-hall-8", "object": "briefing-bench", "at": { "room": "reflecting-hall", "dx": 21, "dy": 6 }, "facing": "north" },
+    { "id": "furn-sector-three-reflecting-hall-9", "object": "floor-lamp", "at": { "room": "reflecting-hall", "dx": 2, "dy": 1 } },
+    { "id": "furn-sector-three-reflecting-hall-10", "object": "floor-lamp", "at": { "room": "reflecting-hall", "dx": 27, "dy": 1 } },
+    { "id": "furn-sector-three-reflecting-hall-11", "object": "planter", "at": { "room": "reflecting-hall", "dx": 0, "dy": 6 } },
+    { "id": "furn-sector-three-reflecting-hall-12", "object": "planter", "at": { "room": "reflecting-hall", "dx": 29, "dy": 6 } }
   ],
   "assemblies": [
     { "id": "s3-return", "assembly": "sector-three-return", "at": { "room": "threshold", "dx": 0, "dy": 10 }, "facing": "east" },
@@ -56,11 +72,13 @@
   ],
   "decals": [],
   "setPieces": [
-    { "id": "sector-three-threshold-landmark", "prefab": "statue-court", "at": { "room": "threshold", "dx": 8, "dy": 12 }, "facing": "south" }
+    { "id": "sector-three-threshold-landmark", "prefab": "statue-court", "at": { "room": "threshold", "dx": 8, "dy": 12 }, "facing": "south" },
+    { "prefab": "crates", "at": { "room": "threshold", "dx": 22, "dy": 14 }, "facing": "south" },
+    { "prefab": "lamp-cart", "at": { "room": "threshold", "dx": 19, "dy": 19 }, "facing": "south" }
   ],
   "dressing": {
     "threshold": "civic",
-    "reflecting-hall": { "theme": "civic", "density": "sparse" }
+    "reflecting-hall": "civic"
   },
   "furnish": { "landmarks": ["threshold"] }
 }

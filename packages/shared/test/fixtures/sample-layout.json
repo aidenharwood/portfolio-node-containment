@@ -39,7 +39,7 @@
     { "kind": "mosaic", "pattern": "compass", "at": { "room": "hall", "dx": 8, "dy": 8 }, "width": 3, "height": 3 }
   ],
   "setPieces": [
-    { "id": "sample-ring", "prefab": "bench-ring", "at": { "room": "hall", "dx": 5, "dy": 0 }, "facing": "south" }
+    { "id": "sample-ring", "prefab": "bench-planters", "at": { "room": "hall", "dx": 5, "dy": 0 }, "facing": "south" }
   ],
   "dressing": {
     "side": "office"

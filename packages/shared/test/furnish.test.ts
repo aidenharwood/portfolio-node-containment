@@ -70,9 +70,9 @@ describe('the Meridian Atrium', () => {
   };
   const count = (objects: readonly ObjectPlacement[], objectId: string) => objects.filter((object) => object.objectId === objectId).length;
 
-  test('keeps the plaza to the core and two seating rings', () => {
+  test('keeps the plaza to the core and one ring of benches facing it', () => {
     const plaza = inRoom('plaza');
-    assert.equal(count(plaza, 'bench-curve'), 8);
+    assert.equal(count(plaza, 'bench-curve'), 4);
     for (const busy of ['fountain-basin', 'monument-statue', 'banner-mast']) assert.equal(count(plaza, busy), 0, `${busy} in the plaza`);
     assert.ok(!atrium.decals?.some((decal) => decal.kind === 'runner'), 'runners in the plaza');
   });

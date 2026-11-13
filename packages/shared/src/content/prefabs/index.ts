@@ -2,7 +2,6 @@ import type { WorldObjectDefinition } from '../../world/entities.ts';
 import { objectFootprintSize } from '../../world/footprint.ts';
 import type { WorldObjectId } from '../../ids.ts';
 import { ARCHIVE_PREFABS } from './archive.ts';
-import { CAMP_PREFABS } from './camp.ts';
 import { CANTEEN_PREFABS } from './canteen.ts';
 import { CIVIC_PREFABS } from './civic.ts';
 import { COLD_PREFABS } from './cold.ts';
@@ -21,18 +20,15 @@ import { RUIN_PREFABS } from './ruin.ts';
 import { TRANSIT_PREFABS } from './transit.ts';
 import { WET_PREFABS } from './wet.ts';
 import { WORKS_PREFABS } from './works.ts';
-import { type DressingTheme, type Prefab, type PrefabRole } from './types.ts';
+import type { Prefab, PrefabRole } from './types.ts';
 
 export * from './types.ts';
 
-const LIBRARIES: readonly (readonly Prefab[])[] = [ARCHIVE_PREFABS, CAMP_PREFABS, CANTEEN_PREFABS, CIVIC_PREFABS, COLD_PREFABS, DORMITORY_PREFABS, FREIGHT_PREFABS, GARDEN_PREFABS, INDUSTRIAL_PREFABS, LAB_PREFABS, LANDMARK_PREFABS, MEDICAL_PREFABS, MINE_PREFABS, OFFICE_PREFABS, POST_PREFABS, RITUAL_PREFABS, RUIN_PREFABS, TRANSIT_PREFABS, WET_PREFABS, WORKS_PREFABS];
+const LIBRARIES: readonly (readonly Prefab[])[] = [ARCHIVE_PREFABS, CANTEEN_PREFABS, CIVIC_PREFABS, COLD_PREFABS, DORMITORY_PREFABS, FREIGHT_PREFABS, GARDEN_PREFABS, INDUSTRIAL_PREFABS, LAB_PREFABS, LANDMARK_PREFABS, MEDICAL_PREFABS, MINE_PREFABS, OFFICE_PREFABS, POST_PREFABS, RITUAL_PREFABS, RUIN_PREFABS, TRANSIT_PREFABS, WET_PREFABS, WORKS_PREFABS];
 
 export const PREFABS: Readonly<Record<string, Prefab>> = Object.fromEntries(LIBRARIES.flat().map((prefab) => [prefab.id, prefab]));
 
 export type PrefabName = string;
-
-export const prefabsWithRole = (theme: DressingTheme, role: PrefabRole): readonly Prefab[] =>
-  Object.values(PREFABS).filter((prefab) => prefab.themes.includes(theme) && prefab.roles.includes(role));
 
 export function findPrefabLibraryIssues(libraries: readonly (readonly Prefab[])[] = LIBRARIES, merged: Readonly<Record<string, Prefab>> = PREFABS): string[] {
   const issues: string[] = [];

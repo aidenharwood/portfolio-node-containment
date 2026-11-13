@@ -1,22 +1,18 @@
-import { createObjectWalkabilityGrid, parseTileLayout, type DistrictDefinition, type DressedRoom, type TileLayout } from '../world/district.ts';
+import { createObjectWalkabilityGrid, parseTileLayout, type DistrictDefinition, type TileLayout } from '../world/district.ts';
 import { doorTilesOf, withOpenDoors } from '../world/doors.ts';
-import { objectFootprintSize, objectFootprintTiles } from '../world/footprint.ts';
-import { CARDINAL_OFFSETS, chebyshevDistance, rectContains, tileKey, type TilePoint, type TileRect } from '../world/geometry.ts';
+import { objectFootprintTiles } from '../world/footprint.ts';
+import { CARDINAL_OFFSETS, rectContains, tileKey, type TilePoint, type TileRect } from '../world/geometry.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
 import type { WalkabilityGrid } from '../world/pathfinding.ts';
 import { TILE_KINDS } from '../world/tiles.ts';
-import { CONDITION_RULES } from './conditions.ts';
-import { MAX_PREFAB_REPEATS } from './districts/compose.ts';
 import type { GameContent } from './gameContent.ts';
 import { findPrefabIssues, findPrefabLibraryIssues, PREFABS } from './prefabs/index.ts';
 
-export const OPENING_CLEARANCE = 2;
 export const VARIETY_ROOM_TILES = 150;
-export const MIN_PREFABS_IN_LARGE_ROOM = 3;
+export const MIN_KINDS_IN_LARGE_ROOM = 3;
 
 type Report = (problem: string) => void;
 
-const COMPOSED_ID = /-(dressing|ruin|mirror)-\d/;
 const SET_PIECE_ID = /(\/\d+|-set-\d+-\d+)$/;
 
 const isWalkableTile = (layout: TileLayout, point: TilePoint): boolean => TILE_KINDS[layout.tileAt(point)].walkable;
@@ -27,23 +23,8 @@ const tilesOf = (rect: TileRect): TilePoint[] => {
   return tiles;
 };
 
-function openingsOf(layout: TileLayout, rect: TileRect): TilePoint[] {
-  const around = tilesOf({ x: rect.x - 1, y: rect.y - 1, width: rect.width + 2, height: rect.height + 2 });
-  return around.filter((point) => {
-    if (layout.tileAt(point) === 'door') return true;
-    if (rectContains(rect, point) || !isWalkableTile(layout, point)) return false;
-    return CARDINAL_OFFSETS.some((offset) => {
-      const inside = { x: point.x + offset.x, y: point.y + offset.y };
-      return rectContains(rect, inside) && isWalkableTile(layout, inside);
-    });
-  });
-}
-
 function findClearanceIssues(content: GameContent, district: DistrictDefinition, layout: TileLayout, report: Report): void {
   const rooms = Object.values(district.rooms ?? {});
-  const openings = new Map(Object.entries(district.rooms ?? {}).map(([room, rect]) => [room, openingsOf(layout, rect)]));
-  const roomOf = (instanceId: string): string | undefined =>
-    [...openings.keys()].filter((room) => instanceId.startsWith(`${district.id}-${room}-`)).sort((a, b) => b.length - a.length)[0];
   const reserved = new Map<string, string>();
   for (const [id, point] of Object.entries(district.anchors ?? {})) reserved.set(tileKey(point), `anchor "${id}"`);
   for (const [id, exit] of Object.entries(district.exits ?? {})) for (const tile of exit.tiles) reserved.set(tileKey(tile), `exit "${id}"`);
@@ -55,17 +36,10 @@ function findClearanceIssues(content: GameContent, district: DistrictDefinition,
     return rooms.some((rect) => rectContains(rect, point)) ? undefined : 'a link outside every room';
   };
   for (const object of district.objects) {
-    const composed = COMPOSED_ID.test(object.instanceId);
-    if (!composed && !SET_PIECE_ID.test(object.instanceId)) continue;
+    if (!SET_PIECE_ID.test(object.instanceId)) continue;
     const tiles = objectFootprintTiles(content.worldObjects.get(object.objectId), object);
     const covered = tiles.map(forbidden).find((what) => what !== undefined);
-    if (covered) {
-      report(`"${object.instanceId}" covers ${covered}`);
-      continue;
-    }
-    if (!composed) continue;
-    const crowded = (openings.get(roomOf(object.instanceId) ?? '') ?? [...openings.values()].flat()).find((opening) => tiles.some((tile) => chebyshevDistance(tile, opening) <= OPENING_CLEARANCE));
-    if (crowded) report(`"${object.instanceId}" stands within ${OPENING_CLEARANCE} tiles of the room opening at ${crowded.x},${crowded.y}`);
+    if (covered) report(`"${object.instanceId}" covers ${covered}`);
   }
 }
 
@@ -80,22 +54,20 @@ function findLandmarkIssues(district: DistrictDefinition, report: Report): void 
   }
 }
 
-function findVarietyIssues(district: DistrictDefinition, layout: TileLayout, report: Report): void {
-  for (const entry of district.dressingLog ?? []) findRoomVarietyIssues(entry, district.rooms?.[entry.room], layout, report);
-}
+const isLitter = (objectId: string): boolean => objectId.startsWith('litter-') || objectId.startsWith('cable-run');
 
-function findRoomVarietyIssues(entry: DressedRoom, rect: TileRect | undefined, layout: TileLayout, report: Report): void {
-  if (!rect) return;
-  const walkable = tilesOf(rect).filter((point) => isWalkableTile(layout, point)).length;
-  const distinct = new Set([...entry.prefabs, ...entry.additions, ...entry.setPieces.map((piece) => piece.prefab)]).size;
-  if (walkable > VARIETY_ROOM_TILES && distinct < MIN_PREFABS_IN_LARGE_ROOM) {
-    report(`room "${entry.room}" has ${walkable} walkable tiles but uses ${distinct} distinct prefab(s); rooms over ${VARIETY_ROOM_TILES} tiles need ${MIN_PREFABS_IN_LARGE_ROOM}`);
-  }
-  if (entry.formal) return;
-  const uses = new Map<string, number>();
-  for (const prefab of [...entry.prefabs, ...entry.additions]) uses.set(prefab, (uses.get(prefab) ?? 0) + 1);
-  for (const [prefab, count] of uses) {
-    if (count > MAX_PREFAB_REPEATS) report(`room "${entry.room}" uses prefab "${prefab}" ${count} times; an informal room uses each at most ${MAX_PREFAB_REPEATS} times`);
+function findDressedIssues(content: GameContent, district: DistrictDefinition, layout: TileLayout, report: Report): void {
+  for (const { room } of district.dressingLog ?? []) {
+    const rect = district.rooms?.[room];
+    if (!rect) continue;
+    const walkable = tilesOf(rect).filter((point) => isWalkableTile(layout, point)).length;
+    if (walkable <= VARIETY_ROOM_TILES) continue;
+    const kinds = new Set(
+      district.objects
+        .filter((object) => !isLitter(object.objectId) && objectFootprintTiles(content.worldObjects.get(object.objectId), object).some((tile) => rectContains(rect, tile)))
+        .map((object) => object.objectId),
+    );
+    if (kinds.size < MIN_KINDS_IN_LARGE_ROOM) report(`room "${room}" has ${walkable} walkable tiles but only ${kinds.size} kind(s) of object; dress rooms over ${VARIETY_ROOM_TILES} tiles by hand with at least ${MIN_KINDS_IN_LARGE_ROOM}`);
   }
 }
 
@@ -155,22 +127,6 @@ function findReachabilityIssues(content: GameContent, level: ResolvedLevel, issu
   }
 }
 
-function findConditionIssues(content: GameContent, issues: string[]): void {
-  for (const [condition, rule] of Object.entries(CONDITION_RULES)) {
-    for (const [source, target] of Object.entries(rule.swaps)) {
-      const from = content.worldObjects.get(source);
-      const to = target === undefined ? undefined : content.worldObjects.get(target);
-      if (!from) issues.push(`condition ${condition}: swap source "${source}" is no object`);
-      if (!to) issues.push(`condition ${condition}: swap target "${target}" is no object`);
-      if (!from || !to) continue;
-      const a = objectFootprintSize(from);
-      const b = objectFootprintSize(to);
-      if (a.width !== b.width || a.height !== b.height) issues.push(`condition ${condition}: "${source}" (${a.width}×${a.height}) swaps to "${target}" (${b.width}×${b.height}); swaps keep their footprint`);
-    }
-    for (const prefab of rule.adds) if (!PREFABS[prefab]) issues.push(`condition ${condition}: adds unknown prefab "${prefab}"`);
-  }
-}
-
 function findDefinitionIssues(content: GameContent, issues: string[]): void {
   const objectOf = (id: string) => content.worldObjects.get(id);
   for (const prefab of Object.values(PREFABS)) issues.push(...findPrefabIssues(prefab, objectOf).map((issue) => `prefab ${issue}`));
@@ -191,11 +147,10 @@ export function findFurnishingIssues(content: GameContent): string[] {
     const report: Report = (problem) => issues.push(`district ${district.id}: ${problem}`);
     findClearanceIssues(content, district, layout, report);
     findLandmarkIssues(district, report);
-    findVarietyIssues(district, layout, report);
+    findDressedIssues(content, district, layout, report);
     findDecalIssues(district, layout, report);
   }
   for (const level of content.levels.values()) findReachabilityIssues(content, level, issues);
-  findConditionIssues(content, issues);
   findDefinitionIssues(content, issues);
   return issues;
 }

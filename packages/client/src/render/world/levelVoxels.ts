@@ -33,6 +33,10 @@ const COLORS = {
   terrazzoChip: 0x45484b,
   terrazzoWarm: 0x4a4038,
   terrazzoStrip: 0x4a4232,
+  ceramic: 0x4a565c,
+  ceramicGrout: 0x2a3236,
+  boards: 0x3b2b1e,
+  boardsSeam: 0x1c140d,
   threshold: 0x463d2c,
   hazardYellow: 0xc99a1c,
   hazardBlack: 0x17170f,
@@ -96,7 +100,7 @@ export function paintTileRows(volume: DenseVolume, layout: TileLayout, region: T
   return volume;
 }
 
-const SURFACES: ReadonlySet<TileKindId> = new Set<TileKindId>(['plating', 'concrete', 'rust', 'carpet', 'terrazzo', 'soil', 'grate']);
+const SURFACES: ReadonlySet<TileKindId> = new Set<TileKindId>(['plating', 'concrete', 'rust', 'carpet', 'terrazzo', 'ceramic', 'boards', 'soil', 'grate']);
 
 interface Seams {
   readonly north: boolean;
@@ -105,7 +109,7 @@ interface Seams {
   readonly west: boolean;
 }
 
-const BLENDED: ReadonlySet<TileKindId> = new Set<TileKindId>(['plating', 'concrete', 'rust', 'carpet', 'terrazzo']);
+const BLENDED: ReadonlySet<TileKindId> = new Set<TileKindId>(['plating', 'concrete', 'rust', 'carpet', 'terrazzo', 'ceramic', 'boards']);
 const BLEND_REACH = R;
 
 interface BlendNeighbor {
@@ -135,6 +139,8 @@ const BLEND_BASE: Partial<Record<TileKindId, number>> = {
   rust: COLORS.rust,
   carpet: COLORS.carpet,
   terrazzo: COLORS.terrazzo,
+  ceramic: COLORS.ceramic,
+  boards: COLORS.boards,
 };
 
 interface FloorBlend {
@@ -287,6 +293,18 @@ function floorVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: nu
       if (chip > 0.965) return solid(COLORS.terrazzoWarm);
       if (chip > 0.9) return solid(COLORS.terrazzoChip);
       return solid(jitter(COLORS.terrazzo, 0.012, noise3(Math.floor(tile.tx / 2), Math.floor(tile.ty / 2), 0, 29)));
+    }
+    case 'ceramic': {
+      if (lx % 4 === 0 || lz % 4 === 0) return solid(COLORS.ceramicGrout);
+      return solid(jitter(COLORS.ceramic, 0.012, noise3(tile.tx * 2 + (lx >> 2), tile.ty * 2 + (lz >> 2), 0, 37)));
+    }
+    case 'boards': {
+      const across = tile.axis === 'x' ? lz : lx;
+      const along = tile.axis === 'x' ? vx : vz;
+      const plank = Math.floor((tile.axis === 'x' ? vz : vx) / 2);
+      if (across % 2 === 0) return solid(COLORS.boardsSeam);
+      if ((along + plank * 5) % 24 === 0) return solid(COLORS.boardsSeam);
+      return solid(jitter(COLORS.boards, 0.05, noise3(plank, Math.floor((along + plank * 5) / 24), 0, 43)));
     }
     case 'hazard':
       return solid(even(Math.floor((vx + vz) / 4)) ? COLORS.hazardYellow : COLORS.hazardBlack);

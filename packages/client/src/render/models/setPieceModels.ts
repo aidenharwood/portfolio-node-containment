@@ -324,30 +324,19 @@ const monumentStatue = (seed: number): ObjectModelParts => {
   return parts(model, 63);
 };
 
-const benchCurve = (seed: number): ObjectModelParts => {
+const benchCurve = (_seed: number): ObjectModelParts => {
   const model = new VoxelModel();
-  const front = (x: number) => Math.round(-4 + ((x + 0.5) / 23.5) ** 2 * 8);
-  for (let x = -22; x <= 21; x++) {
+  const front = (x: number) => Math.round(((x + 0.5) / 22) ** 2 * 5);
+  for (let x = -21; x <= 20; x++) {
     const centre = front(x);
-    model.fill(x, 7, centre - 2, x, 7, centre + 2, STEEL_DARK);
-    model.fill(x, 8, centre - 2, x, 8, centre + 2, (vx, vy, z) => ((z - centre + 4) % 2 === 0 ? jitter(OAK, 0.05, noise3(vx, vy, z, seed)) : darken(OAK, 0.18)));
-    const lean = (y: number) => (y >= 13 ? 1 : 0);
-    for (const y of [9, 10, 12, 13, 15, 16]) model.set(x, y, centre - 3 - lean(y), jitter(y % 3 === 0 ? OAK : lighten(OAK, 0.06), 0.05, noise3(x, y, 0, seed + 1)));
-    model.set(x, 17, centre - 4, x % 6 === 0 ? BRASS : STEEL);
+    model.fill(x, 6, centre - 2, x, 7, centre + 2, (_vx, y) => (y === 7 ? OAK : darken(OAK, 0.25)));
+    model.fill(x, 8, centre - 3, x, 13, centre - 3, (_vx, y) => (y === 13 ? darken(OAK, 0.1) : OAK));
   }
-  for (const legX of [-20, -7, 6, 19]) {
+  for (const legX of [-17, 16]) {
     const centre = front(legX);
-    model.fill(legX, 1, centre - 1, legX + 1, 6, centre + 1, grained(STEEL, 0.03, seed + 2));
-    model.fill(legX, 0, centre - 2, legX + 1, 0, centre + 2, BRASS_DARK);
-    model.fill(legX, 9, centre - 3, legX + 1, 12, centre - 3, STEEL_DARK);
-    model.fill(legX, 13, centre - 4, legX + 1, 16, centre - 4, STEEL_DARK);
+    model.fill(legX - 1, 0, centre - 2, legX + 1, 5, centre + 1, STEEL_DARK);
   }
-  for (const [x0, x1] of [[-24, -23], [22, 23]] as const) {
-    const centre = front(x0 < 0 ? x0 : x1);
-    model.fill(x0, 0, centre - 2, x1, 11, centre + 2, (x, y, z) => (y === 11 ? BRASS : y === 0 ? STEEL_DEEP : jitter(STEEL, 0.03, noise3(x, y, z, seed + 3))));
-  }
-  model.fill(-3, 13, -7, 2, 14, -7, (x, y) => (y === 13 && x > -3 && x < 2 ? BRASS_DARK : BRASS));
-  return parts(model, 18);
+  return parts(model, 14);
 };
 
 const bannerMast = (seed: number): ObjectModelParts => {

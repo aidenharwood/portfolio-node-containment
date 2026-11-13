@@ -1,39 +1,13 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { GAME_CONTENT, type WorldObjectDefinition } from '../src/index.ts';
-import { DRESSING_THEMES, findPrefabIssues, PREFABS, prefabsWithRole, type Prefab } from '../src/content/prefabs/index.ts';
+import { findPrefabIssues, PREFABS, type Prefab } from '../src/content/prefabs/index.ts';
 
 const objectOf = (id: string) => GAME_CONTENT.worldObjects.get(id);
 
-const ATRIUM_PREFABS = [
-  'fountain-court',
-  'statue-court',
-  'fountain-corner',
-  'kiosk-island',
-  'bench-ring',
-  'info-stand',
-  'banner-pair',
-  'pylon-bench',
-  'reception',
-  'map-room',
-  'shelter-stop',
-  'platform-shelter',
-  'barrier-line',
-  'timetable-wall',
-  'triage-hub',
-  'press-cell',
-  'checkpoint',
-];
-
-const sample = (overrides: Partial<Prefab>): Prefab => ({ id: 'sample', themes: ['civic'], roles: ['island'], pieces: [], ...overrides });
+const sample = (overrides: Partial<Prefab>): Prefab => ({ id: 'sample', roles: ['island'], pieces: [], ...overrides });
 
 describe('prefab libraries', () => {
-  test('every theme has bay, island and corner prefabs', () => {
-    for (const theme of DRESSING_THEMES) {
-      for (const role of ['bay', 'island', 'corner'] as const) assert.ok(prefabsWithRole(theme, role).length > 0, `${theme} lacks ${role}`);
-    }
-  });
-
   test('every prefab is keyed by its id and passes validation', () => {
     for (const [key, prefab] of Object.entries(PREFABS)) {
       assert.equal(key, prefab.id);
@@ -53,15 +27,6 @@ describe('prefab libraries', () => {
       withFootprint,
     );
     assert.ok(issues.some((issue) => issue.includes('overlap')), issues.join('; '));
-  });
-
-  test('the Atrium prefabs exist and are placed only by hand', () => {
-    for (const id of ATRIUM_PREFABS) {
-      assert.ok(PREFABS[id], `${id} is missing`);
-      assert.deepEqual(PREFABS[id]?.themes, [], `${id} would be scattered by the composer`);
-    }
-    assert.equal(PREFABS['fountain-court']?.symmetric, true);
-    assert.equal(PREFABS['checkpoint']?.symmetric, true);
   });
 
   test('pieces may stand under a walk-under canopy but not on its posts', () => {

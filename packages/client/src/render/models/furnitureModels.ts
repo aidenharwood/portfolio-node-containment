@@ -4,7 +4,7 @@ import { VOXEL_EMISSIVE, VOXEL_GLASS } from '../voxel/voxelKinds.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 import type { ObjectModelParts } from './objectModels.ts';
 
-type FurnitureModel = Extract<WorldObjectModel, 'officeDesk' | 'wallShelf' | 'filingCabinet' | 'storageRack' | 'noticeBoard' | 'waterCooler'>;
+type FurnitureModel = Extract<WorldObjectModel, 'officeDesk' | 'wallShelf' | 'filingCabinet' | 'storageRack' | 'noticeBoard' | 'waterCooler' | 'bookcase' | 'armchair' | 'servingCounter' | 'cookRange' | 'washer'>;
 
 const parts = (base: VoxelModel, heightVoxels: number, animated: ObjectModelParts['animated'] = []): ObjectModelParts => ({ base, animated, heightVoxels });
 
@@ -186,6 +186,63 @@ const waterCooler = (seed: number): ObjectModelParts => {
   return parts(model, 27);
 };
 
+const TIMBER = 0x5a3f2a;
+const BOOK_TONES = [0x3a4a5a, 0x5a3a3a, 0x3a5a44, 0x6a5a3a, 0x4a4a52];
+
+const bookcase = (seed: number): ObjectModelParts => {
+  const model = new VoxelModel();
+  model.fill(-8, 0, -8, 7, 27, -2, (x, y, z) => (x === -8 || x === 7 || y === 0 || y === 27 || z === -8 || y % 7 === 0 ? TIMBER : null));
+  for (const shelf of [0, 7, 14, 21]) {
+    for (let x = -7; x <= 6; x++) {
+      const height = 4 + Math.floor(noise3(x, shelf, 0, seed) * 2);
+      model.fill(x, shelf + 1, -7, x, shelf + height, -3, pick(BOOK_TONES, seed, Math.floor((x + 8) / 2), shelf));
+    }
+  }
+  return parts(model, 28);
+};
+
+const UPHOLSTERY = 0x4a3a5a;
+
+const armchair = (_seed: number): ObjectModelParts => {
+  const model = new VoxelModel();
+  model.fill(-6, 0, -6, 5, 6, 5, (_x, y) => (y === 0 ? darken(UPHOLSTERY, 0.4) : UPHOLSTERY));
+  model.fill(-6, 7, -6, 5, 15, -3, lighten(UPHOLSTERY, 0.06));
+  for (const x of [-6, 4]) model.fill(x, 7, -3, x + 1, 10, 5, darken(UPHOLSTERY, 0.12));
+  model.fill(-4, 7, -2, 3, 7, 4, lighten(UPHOLSTERY, 0.12));
+  return parts(model, 16);
+};
+
+const COUNTER_STEEL = 0x8d969e;
+
+const servingCounter = (seed: number): ObjectModelParts => {
+  const model = new VoxelModel();
+  model.fill(-8, 0, -6, 7, 11, 3, (_x, y, z) => (y === 11 ? lighten(COUNTER_STEEL, 0.15) : z === 3 && y % 4 === 0 ? darken(COUNTER_STEEL, 0.3) : COUNTER_STEEL));
+  for (const x of [-6, 0]) model.fill(x, 12, -4, x + 4, 12, 1, pick([0x8a5a2a, 0xb89a4a, 0x6a7a3a], seed, x));
+  model.fill(-8, 18, -6, 7, 18, -5, 0x9fe8ff, VOXEL_GLASS);
+  for (const x of [-8, 7]) model.fill(x, 12, -6, x, 17, -6, COUNTER_STEEL);
+  return parts(model, 19);
+};
+
+const cookRange = (_seed: number): ObjectModelParts => {
+  const model = new VoxelModel();
+  model.fill(-8, 0, -8, 7, 12, 3, (_x, y, z) => (y === 12 ? 0x2a3036 : z === 3 && y > 2 && y < 9 ? 0x1a2026 : COUNTER_STEEL));
+  for (const x of [-5, 2]) for (const z of [-5, 0]) model.fill(x, 13, z, x + 2, 13, z + 2, 0xd8642a, VOXEL_EMISSIVE);
+  model.fill(-6, 14, -6, -1, 19, -1, (x, y, z) => (y === 19 && x > -6 && x < -1 && z > -6 && z < -1 ? 0xb89a4a : darken(COUNTER_STEEL, 0.1)));
+  return parts(model, 20);
+};
+
+const washer = (_seed: number): ObjectModelParts => {
+  const model = new VoxelModel();
+  model.fill(-7, 0, -8, 6, 17, 3, (_x, y) => (y === 0 ? 0x5d6b74 : y === 17 ? lighten(COUNTER_STEEL, 0.15) : 0xc4ccd2));
+  for (let x = -5; x <= 4; x++) for (let y = 3; y <= 12; y++) {
+    const r = Math.hypot(x + 0.5, y - 7.5);
+    if (r <= 5) model.set(x, y, 4, r > 4 ? COUNTER_STEEL : 0x6a8a9a, r > 4 ? undefined : VOXEL_GLASS);
+  }
+  model.fill(-5, 14, 4, -2, 15, 4, 0x2a3036);
+  model.set(3, 15, 4, 0x3fbf7f, VOXEL_EMISSIVE);
+  return parts(model, 18);
+};
+
 export const FURNITURE_BUILDERS: Readonly<Record<FurnitureModel, (seed: number) => ObjectModelParts>> = {
   officeDesk,
   wallShelf,
@@ -193,4 +250,9 @@ export const FURNITURE_BUILDERS: Readonly<Record<FurnitureModel, (seed: number) 
   storageRack,
   noticeBoard,
   waterCooler,
+  bookcase,
+  armchair,
+  servingCounter,
+  cookRange,
+  washer,
 };

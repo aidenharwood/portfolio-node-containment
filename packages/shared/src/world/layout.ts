@@ -175,7 +175,6 @@ export function buildDistrict(source: unknown): DistrictDefinition {
     ...(layout.furnish.cast === undefined ? {} : { cast: layout.furnish.cast }),
     ...(setPieces.length > 0 ? { setPieces } : {}),
     ...(layout.furnish.landmarks === undefined ? {} : { landmarks: layout.furnish.landmarks }),
-    ...(layout.furnish.decalSwaps === undefined ? {} : { decalSwaps: layout.furnish.decalSwaps }),
   });
 }
 

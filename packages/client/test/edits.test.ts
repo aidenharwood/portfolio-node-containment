@@ -116,8 +116,8 @@ describe('room and step edits', () => {
   });
 
   test('dressing can be set and cleared', () => {
-    const set = ok(setDressing(sample(), 'hall', { theme: 'civic', density: 'sparse' }));
-    assert.deepEqual(set.dressing.hall, { theme: 'civic', density: 'sparse' });
+    const set = ok(setDressing(sample(), 'hall', { theme: 'civic', people: 2 }));
+    assert.deepEqual(set.dressing.hall, { theme: 'civic', people: 2 });
     assert.equal(ok(setDressing(set, 'side', null)).dressing.side, undefined);
   });
 });

@@ -8,7 +8,7 @@
   "ambience": { "darkness": 0.42, "tint": "#1a1410", "fog": "#1e1712" },
   "size": { "width": 60, "height": 46 },
   "steps": [
-    { "kind": "room", "id": "gatehouse", "rect": { "x": 1, "y": 1, "width": 58, "height": 44 }, "floor": "concrete", "shape": "octagon" },
+    { "kind": "room", "id": "gatehouse", "rect": { "x": 1, "y": 1, "width": 58, "height": 44 }, "floor": "boards", "shape": "octagon" },
     { "kind": "pillars", "room": "gatehouse", "everyX": 9, "everyY": 9, "inset": 6 },
     { "kind": "patch", "rect": { "x": 5, "y": 1, "width": 1, "height": 44 }, "tile": "hazard" },
     { "kind": "track", "points": [{ "x": 3, "y": 0 }, { "x": 3, "y": 44 }] },
@@ -28,7 +28,30 @@
     { "id": "cg-storage", "object": "storage-locker", "at": { "room": "gatehouse", "dx": 0, "dy": 12 }, "facing": "east" },
     { "id": "cg-mailbox", "object": "market-mailbox", "at": { "room": "gatehouse", "dx": 0, "dy": 31 }, "facing": "east" },
     { "id": "cg-contracts", "object": "contract-board", "at": { "room": "gatehouse", "dx": 14, "dy": 0 } },
-    { "id": "cg-tram-stop", "object": "tram-stop", "at": { "room": "gatehouse", "dx": 7, "dy": 16 }, "facing": "east" }
+    { "id": "cg-tram-stop", "object": "tram-stop", "at": { "room": "gatehouse", "dx": 7, "dy": 16 }, "facing": "east" },
+    { "id": "furn-calder-gatehouse-gatehouse-1", "object": "office-desk", "at": { "room": "gatehouse", "dx": 24, "dy": 4 } },
+    { "id": "furn-calder-gatehouse-gatehouse-2", "object": "office-desk", "at": { "room": "gatehouse", "dx": 25, "dy": 4 } },
+    { "id": "furn-calder-gatehouse-gatehouse-3", "object": "office-desk", "at": { "room": "gatehouse", "dx": 26, "dy": 4 } },
+    { "id": "furn-calder-gatehouse-gatehouse-4", "object": "filing-cabinet", "at": { "room": "gatehouse", "dx": 28, "dy": 0 } },
+    { "id": "furn-calder-gatehouse-gatehouse-5", "object": "filing-cabinet", "at": { "room": "gatehouse", "dx": 29, "dy": 0 } },
+    { "id": "furn-calder-gatehouse-gatehouse-6", "object": "filing-cabinet", "at": { "room": "gatehouse", "dx": 30, "dy": 0 } },
+    { "id": "furn-calder-gatehouse-gatehouse-7", "object": "serving-counter", "at": { "room": "gatehouse", "dx": 53, "dy": 29 }, "facing": "west" },
+    { "id": "furn-calder-gatehouse-gatehouse-8", "object": "serving-counter", "at": { "room": "gatehouse", "dx": 53, "dy": 30 }, "facing": "west" },
+    { "id": "furn-calder-gatehouse-gatehouse-9", "object": "serving-counter", "at": { "room": "gatehouse", "dx": 53, "dy": 31 }, "facing": "west" },
+    { "id": "furn-calder-gatehouse-gatehouse-10", "object": "serving-counter", "at": { "room": "gatehouse", "dx": 53, "dy": 32 }, "facing": "west" },
+    { "id": "furn-calder-gatehouse-gatehouse-11", "object": "serving-counter", "at": { "room": "gatehouse", "dx": 53, "dy": 33 }, "facing": "west" },
+    { "id": "furn-calder-gatehouse-gatehouse-12", "object": "storage-rack", "at": { "room": "gatehouse", "dx": 57, "dy": 28 } },
+    { "id": "furn-calder-gatehouse-gatehouse-13", "object": "storage-rack", "at": { "room": "gatehouse", "dx": 57, "dy": 29 } },
+    { "id": "furn-calder-gatehouse-gatehouse-14", "object": "storage-rack", "at": { "room": "gatehouse", "dx": 57, "dy": 30 } },
+    { "id": "furn-calder-gatehouse-gatehouse-15", "object": "storage-rack", "at": { "room": "gatehouse", "dx": 57, "dy": 31 } },
+    { "id": "furn-calder-gatehouse-gatehouse-16", "object": "storage-rack", "at": { "room": "gatehouse", "dx": 57, "dy": 32 } },
+    { "id": "furn-calder-gatehouse-gatehouse-17", "object": "crate-stack", "at": { "room": "gatehouse", "dx": 50, "dy": 36 } },
+    { "id": "furn-calder-gatehouse-gatehouse-18", "object": "crate-stack", "at": { "room": "gatehouse", "dx": 51, "dy": 36 } },
+    { "id": "furn-calder-gatehouse-gatehouse-19", "object": "sack-pile", "at": { "room": "gatehouse", "dx": 52, "dy": 36 } },
+    { "id": "furn-calder-gatehouse-gatehouse-20", "object": "floor-lamp", "at": { "room": "gatehouse", "dx": 20, "dy": 20 } },
+    { "id": "furn-calder-gatehouse-gatehouse-21", "object": "floor-lamp", "at": { "room": "gatehouse", "dx": 36, "dy": 30 } },
+    { "id": "furn-calder-gatehouse-gatehouse-22", "object": "mine-cart", "at": { "room": "gatehouse", "dx": 20, "dy": 36 } },
+    { "id": "furn-calder-gatehouse-gatehouse-23", "object": "mine-cart", "at": { "room": "gatehouse", "dx": 21, "dy": 36 } }
   ],
   "assemblies": [
     { "id": "cg-gate", "assembly": "calder-gate", "at": { "exit": "west", "index": 0 }, "facing": "east" },
@@ -51,10 +74,18 @@
   "setPieces": [
     { "id": "calder-gatehouse-gatehouse-landmark", "prefab": "hearth-circle", "at": { "room": "gatehouse", "dx": 26, "dy": 23 }, "facing": "south" },
     { "id": "calder-gatehouse-salt-store", "prefab": "salt-sacks", "at": { "room": "gatehouse", "dx": 14, "dy": 8 }, "facing": "south" },
-    { "id": "calder-gatehouse-cart-line", "prefab": "mine-carts", "at": { "room": "gatehouse", "dx": 40, "dy": 8 }, "facing": "south" }
+    { "id": "calder-gatehouse-cart-line", "prefab": "mine-carts", "at": { "room": "gatehouse", "dx": 40, "dy": 8 }, "facing": "south" },
+    { "prefab": "bunk-pair", "at": { "room": "gatehouse", "dx": 34, "dy": 0 }, "facing": "south" },
+    { "prefab": "bunk-pair", "at": { "room": "gatehouse", "dx": 38, "dy": 0 }, "facing": "south" },
+    { "prefab": "bunk-pair", "at": { "room": "gatehouse", "dx": 12, "dy": 42 }, "facing": "north" },
+    { "prefab": "bunk-pair", "at": { "room": "gatehouse", "dx": 16, "dy": 42 }, "facing": "north" },
+    { "prefab": "bunk-pair", "at": { "room": "gatehouse", "dx": 34, "dy": 42 }, "facing": "north" },
+    { "prefab": "bunk-pair", "at": { "room": "gatehouse", "dx": 38, "dy": 42 }, "facing": "north" },
+    { "prefab": "long-table", "at": { "room": "gatehouse", "dx": 36, "dy": 10 }, "facing": "south" },
+    { "prefab": "long-table", "at": { "room": "gatehouse", "dx": 36, "dy": 18 }, "facing": "south" }
   ],
   "dressing": {
-    "gatehouse": { "theme": "camp", "density": "dense", "composition": "court" }
+    "gatehouse": "camp"
   },
   "furnish": { "cast": ["ambient-saltworker-1", "ambient-saltworker-2", "ambient-operative-1", "ambient-operative-2", "ambient-operative-3", "ambient-operative-4", "ambient-technician-1", "ambient-technician-2", "ambient-technician-3"], "landmarks": ["gatehouse"] }
 }
