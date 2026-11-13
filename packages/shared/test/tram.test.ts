@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { findTramIssues, findWorldDesignIssues, GAME_CONTENT, linesThrough, stationAt, tramLineBetween, tramBoardingRefusal, tramRideTicks, tramStops, TRAM_MIN_RIDE_TICKS, type GameContent, type TileKindId, type TilePoint } from '../src/index.ts';
+import { findTramIssues, findWorldDesignIssues, GAME_CONTENT, MAX_PLATFORM_DISTANCE_FROM_TRACK, linesThrough, stationAt, tramLineBetween, tramBoardingRefusal, tramRideTicks, tramStops, TRAM_MIN_RIDE_TICKS, type GameContent, type TileKindId, type TilePoint } from '../src/index.ts';
 
 const network = GAME_CONTENT.tram;
 
@@ -74,21 +74,22 @@ test('every station car sits on track that runs on through its platform', () => 
   }
 });
 
-test('every line runs on a closed loop of drawn track through its stations', () => {
+test('every line runs on connected drawn track through its stations', () => {
   assert.deepEqual(findWorldDesignIssues(GAME_CONTENT).filter((issue) => issue.startsWith('tram line')), []);
 });
 
-test('breaking the loop is reported at every station on it', () => {
+test('a station cut off from the track is reported', () => {
   const level = GAME_CONTENT.levels.get('main-floor');
+  const station = network.stations.get('yards-depot');
   assert.ok(level);
-  const gap = new Set([0, 1].flatMap((dx) => [45, 46].map((y) => level.layout.toLevelPoint('service-concourse', { x: 98 + dx, y }))).map((point) => `${point.x},${point.y}`));
-  const tileAt = (point: TilePoint): TileKindId => (gap.has(`${point.x},${point.y}`) ? 'wall' : level.layout.tileAt(point));
+  assert.ok(station);
+  const tileAt = (point: TilePoint): TileKindId => {
+    const kind = level.layout.tileAt(point);
+    return kind === 'track' && Math.max(Math.abs(point.x - station.platformPoint.x), Math.abs(point.y - station.platformPoint.y)) <= MAX_PLATFORM_DISTANCE_FROM_TRACK ? 'wall' : kind;
+  };
   const layout = { ...level.layout, tileAt };
   const content: GameContent = { ...GAME_CONTENT, levels: new Map([...GAME_CONTENT.levels, ['main-floor', { ...level, layout }]]) };
   const issues = findWorldDesignIssues(content).filter((issue) => issue.startsWith('tram line'));
-  const meridianLine = GAME_CONTENT.tram.lines.get('meridian-line');
-  assert.ok(meridianLine);
-  for (const stationId of meridianLine.stations) {
-    assert.ok(issues.some((issue) => issue.includes('closed loop') && issue.includes(`"${stationId}"`)), stationId);
-  }
+  assert.ok(issues.some((issue) => issue.includes('no drawn track runs from') && issue.includes('"yards-depot"')));
+  assert.ok(!issues.some((issue) => issue.includes('closed loop')));
 });

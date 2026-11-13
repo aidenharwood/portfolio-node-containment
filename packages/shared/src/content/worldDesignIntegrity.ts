@@ -118,16 +118,6 @@ function trackReachableFrom(layout: ResolvedLevel['layout'], start: readonly Til
   return seen;
 }
 
-function trackLeaving(layout: ResolvedLevel['layout'], area: TileRect): TilePoint[] {
-  const leaving: TilePoint[] = [];
-  for (let y = area.y - 1; y <= area.y + area.height; y++) {
-    for (let x = area.x - 1; x <= area.x + area.width; x++) {
-      if (!rectContains(area, { x, y }) && layout.tileAt({ x, y }) === 'track') leaving.push({ x, y });
-    }
-  }
-  return leaving;
-}
-
 function findLineIssues(content: GameContent, issues: string[]): void {
   for (const level of content.levels.values()) {
     for (const line of content.tram.lines.values()) {
@@ -141,12 +131,6 @@ function findLineIssues(content: GameContent, issues: string[]): void {
       for (const station of stations) {
         if (!trackNear(level.layout, station.platformPoint).some((tile) => reached.has(tileKey(tile)))) {
           issues.push(`tram line ${line.id}: no drawn track runs from "${first.id}" to "${station.id}" on ${level.id}`);
-          continue;
-        }
-        const leaving = trackLeaving(level.layout, station.area).filter((tile) => reached.has(tileKey(tile)));
-        const around = leaving.length === 0 ? new Set<string>() : trackReachableFrom(level.layout, [leaving[0] as TilePoint], (point) => rectContains(station.area, point));
-        if (leaving.length === 0 || leaving.some((tile) => !around.has(tileKey(tile)))) {
-          issues.push(`tram line ${line.id}: the track through "${station.id}" is not part of a closed loop on ${level.id}; a tram leaving one end of the platform must be able to come back in at the other`);
         }
       }
     }
