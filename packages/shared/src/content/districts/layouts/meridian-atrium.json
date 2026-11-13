@@ -246,6 +246,7 @@
     { "id": "furn-meridian-atrium-tram-terminal-5", "object": "floor-lamp", "at": { "room": "tram-terminal", "dx": 2, "dy": 12 } },
     { "id": "furn-meridian-atrium-tram-terminal-6", "object": "floor-lamp", "at": { "room": "tram-terminal", "dx": 31, "dy": 12 } },
     { "id": "furn-meridian-atrium-tram-terminal-7", "object": "trash-bin", "at": { "room": "tram-terminal", "dx": 24, "dy": 15 } },
+    { "id": "furn-meridian-atrium-tram-terminal-8", "object": "departure-board", "at": { "room": "tram-terminal", "dx": 8, "dy": 0 }, "facing": "south" },
     { "id": "furn-meridian-atrium-medbay-1", "object": "screen-partition", "at": { "room": "medbay", "dx": 25, "dy": 9 } }
   ],
   "assemblies": [

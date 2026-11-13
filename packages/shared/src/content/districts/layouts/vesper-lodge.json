@@ -53,7 +53,8 @@
     { "id": "furn-vesper-lodge-tram-terminal-3", "object": "briefing-bench", "at": { "room": "tram-terminal", "dx": 5, "dy": 4 }, "facing": "south" },
     { "id": "furn-vesper-lodge-tram-terminal-4", "object": "floor-lamp", "at": { "room": "tram-terminal", "dx": 2, "dy": 3 } },
     { "id": "furn-vesper-lodge-tram-terminal-5", "object": "floor-lamp", "at": { "room": "tram-terminal", "dx": 30, "dy": 3 } },
-    { "id": "furn-vesper-lodge-tram-terminal-6", "object": "trash-bin", "at": { "room": "tram-terminal", "dx": 27, "dy": 4 } }
+    { "id": "furn-vesper-lodge-tram-terminal-6", "object": "trash-bin", "at": { "room": "tram-terminal", "dx": 27, "dy": 4 } },
+    { "id": "furn-vesper-lodge-tram-terminal-7", "object": "departure-board", "at": { "room": "tram-terminal", "dx": 4, "dy": 0 }, "facing": "south" }
   ],
   "assemblies": [
     { "id": "vl-lift", "assembly": "vesper-lift-down", "at": { "room": "lodge", "dx": 0, "dy": 2 }, "facing": "east" },

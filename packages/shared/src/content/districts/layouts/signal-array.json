@@ -105,6 +105,7 @@
     { "id": "furn-signal-array-tram-terminal-7", "object": "floor-lamp", "at": { "room": "tram-terminal", "dx": 17, "dy": 9 } },
     { "id": "furn-signal-array-tram-terminal-8", "object": "trash-bin", "at": { "room": "tram-terminal", "dx": 19, "dy": 9 } },
     { "id": "furn-signal-array-tram-terminal-9", "object": "intake-kiosk", "at": { "room": "tram-terminal", "dx": 21, "dy": 9 }, "facing": "east" },
+    { "id": "furn-signal-array-tram-terminal-10", "object": "departure-board", "at": { "room": "tram-terminal", "dx": 0, "dy": 5 }, "facing": "east" },
     { "id": "furn-signal-array-uplink-lobby-1", "object": "reception-desk", "at": { "room": "uplink-lobby", "dx": 29, "dy": 9 } },
     { "id": "furn-signal-array-uplink-lobby-2", "object": "office-chair", "at": { "room": "uplink-lobby", "dx": 30, "dy": 8 }, "facing": "south" },
     { "id": "furn-signal-array-uplink-lobby-3", "object": "office-chair", "at": { "room": "uplink-lobby", "dx": 31, "dy": 8 }, "facing": "south" },

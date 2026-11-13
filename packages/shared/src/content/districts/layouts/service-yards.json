@@ -171,7 +171,8 @@
     { "id": "furn-service-yards-tram-terminal-3", "object": "briefing-bench", "at": { "room": "tram-terminal", "dx": 5, "dy": 5 }, "facing": "south" },
     { "id": "furn-service-yards-tram-terminal-4", "object": "floor-lamp", "at": { "room": "tram-terminal", "dx": 2, "dy": 4 } },
     { "id": "furn-service-yards-tram-terminal-5", "object": "floor-lamp", "at": { "room": "tram-terminal", "dx": 30, "dy": 4 } },
-    { "id": "furn-service-yards-tram-terminal-6", "object": "trash-bin", "at": { "room": "tram-terminal", "dx": 27, "dy": 5 } }
+    { "id": "furn-service-yards-tram-terminal-6", "object": "trash-bin", "at": { "room": "tram-terminal", "dx": 27, "dy": 5 } },
+    { "id": "furn-service-yards-tram-terminal-7", "object": "departure-board", "at": { "room": "tram-terminal", "dx": 4, "dy": 0 }, "facing": "south" }
   ],
   "assemblies": [
     { "id": "yd-culvert-bridge", "assembly": "bridge", "at": { "room": "culverts", "dx": 13, "dy": 12 }, "facing": "east", "span": 3 },

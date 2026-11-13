@@ -100,7 +100,8 @@
     { "id": "furn-furnace-tram-terminal-6", "object": "trash-bin", "at": { "room": "tram-terminal", "dx": 10, "dy": 1 } },
     { "id": "furn-furnace-tram-terminal-7", "object": "bench-curve", "at": { "room": "tram-terminal", "dx": 8, "dy": 7 }, "facing": "south" },
     { "id": "furn-furnace-tram-terminal-8", "object": "floor-lamp", "at": { "room": "tram-terminal", "dx": 13, "dy": 7 } },
-    { "id": "furn-furnace-tram-terminal-9", "object": "floor-lamp", "at": { "room": "tram-terminal", "dx": 1, "dy": 5 } }
+    { "id": "furn-furnace-tram-terminal-9", "object": "floor-lamp", "at": { "room": "tram-terminal", "dx": 1, "dy": 5 } },
+    { "id": "furn-furnace-tram-terminal-10", "object": "departure-board", "at": { "room": "tram-terminal", "dx": 9, "dy": 0 }, "facing": "south" }
   ],
   "assemblies": [
     { "id": "fu-blast-door", "assembly": "furnace-door", "at": { "exit": "south", "index": 0 }, "facing": "north" },

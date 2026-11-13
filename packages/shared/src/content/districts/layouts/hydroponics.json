@@ -121,7 +121,8 @@
     { "id": "furn-hydroponics-tram-terminal-3", "object": "briefing-bench", "at": { "room": "tram-terminal", "dx": 5, "dy": 3 }, "facing": "south" },
     { "id": "furn-hydroponics-tram-terminal-4", "object": "floor-lamp", "at": { "room": "tram-terminal", "dx": 2, "dy": 2 } },
     { "id": "furn-hydroponics-tram-terminal-5", "object": "floor-lamp", "at": { "room": "tram-terminal", "dx": 30, "dy": 2 } },
-    { "id": "furn-hydroponics-tram-terminal-6", "object": "trash-bin", "at": { "room": "tram-terminal", "dx": 28, "dy": 3 } }
+    { "id": "furn-hydroponics-tram-terminal-6", "object": "trash-bin", "at": { "room": "tram-terminal", "dx": 28, "dy": 3 } },
+    { "id": "furn-hydroponics-tram-terminal-7", "object": "departure-board", "at": { "room": "tram-terminal", "dx": 4, "dy": 0 }, "facing": "south" }
   ],
   "assemblies": [
     { "id": "hydro-fold-anomaly", "assembly": "verdance-anomaly", "at": { "room": "grow-hall", "dx": 8, "dy": 16 }, "facing": "south" },

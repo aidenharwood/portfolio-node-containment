@@ -116,6 +116,7 @@
     { "id": "furn-drowned-archive-tram-terminal-7", "object": "floor-lamp", "at": { "room": "tram-terminal", "dx": 12, "dy": 13 } },
     { "id": "furn-drowned-archive-tram-terminal-8", "object": "trash-bin", "at": { "room": "tram-terminal", "dx": 12, "dy": 14 } },
     { "id": "furn-drowned-archive-tram-terminal-9", "object": "floor-lamp", "at": { "room": "tram-terminal", "dx": 4, "dy": 14 } },
+    { "id": "furn-drowned-archive-tram-terminal-10", "object": "departure-board", "at": { "room": "tram-terminal", "dx": 12, "dy": 1 }, "facing": "west" },
     { "id": "furn-drowned-archive-flood-stair-1", "object": "bunk-bed", "at": { "room": "flood-stair", "dx": 0, "dy": 15 }, "facing": "east" },
     { "id": "furn-drowned-archive-flood-stair-2", "object": "bunk-bed", "at": { "room": "flood-stair", "dx": 0, "dy": 16 }, "facing": "east" },
     { "id": "furn-drowned-archive-flood-stair-3", "object": "bunk-bed", "at": { "room": "flood-stair", "dx": 0, "dy": 17 }, "facing": "east" },

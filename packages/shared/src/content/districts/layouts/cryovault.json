@@ -120,6 +120,7 @@
     { "id": "furn-cryovault-tram-terminal-4", "object": "briefing-bench", "at": { "room": "tram-terminal", "dx": 2, "dy": 9 }, "facing": "east" },
     { "id": "furn-cryovault-tram-terminal-5", "object": "floor-lamp", "at": { "room": "tram-terminal", "dx": 2, "dy": 12 } },
     { "id": "furn-cryovault-tram-terminal-6", "object": "trash-bin", "at": { "room": "tram-terminal", "dx": 2, "dy": 14 } },
+    { "id": "furn-cryovault-tram-terminal-7", "object": "departure-board", "at": { "room": "tram-terminal", "dx": 0, "dy": 11 }, "facing": "east" },
     { "id": "furn-cryovault-fenn-nook-1", "object": "floor-lamp", "at": { "room": "fenn-nook", "dx": 4, "dy": 11 } }
   ],
   "assemblies": [

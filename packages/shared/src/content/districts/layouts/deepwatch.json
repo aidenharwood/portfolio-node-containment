@@ -114,7 +114,8 @@
     { "id": "furn-deepwatch-tram-terminal-1", "object": "bench-curve", "at": { "room": "tram-terminal", "dx": 9, "dy": 6 }, "facing": "south" },
     { "id": "furn-deepwatch-tram-terminal-2", "object": "briefing-bench", "at": { "room": "tram-terminal", "dx": 13, "dy": 6 }, "facing": "south" },
     { "id": "furn-deepwatch-tram-terminal-3", "object": "briefing-bench", "at": { "room": "tram-terminal", "dx": 14, "dy": 6 }, "facing": "south" },
-    { "id": "furn-deepwatch-tram-terminal-4", "object": "intake-kiosk", "at": { "room": "tram-terminal", "dx": 2, "dy": 6 }, "facing": "east" }
+    { "id": "furn-deepwatch-tram-terminal-4", "object": "intake-kiosk", "at": { "room": "tram-terminal", "dx": 2, "dy": 6 }, "facing": "east" },
+    { "id": "furn-deepwatch-tram-terminal-5", "object": "departure-board", "at": { "room": "tram-terminal", "dx": 10, "dy": 0 }, "facing": "south" }
   ],
   "assemblies": [
     { "id": "dw-tram", "assembly": "deepwatch-deep-line", "at": { "room": "platform-hall", "dx": 0, "dy": 1 }, "facing": "east" },

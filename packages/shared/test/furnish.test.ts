@@ -92,5 +92,6 @@ describe('the Meridian Atrium', () => {
     const near = (point: TilePoint) => Math.max(Math.abs(point.x - stop.x), Math.abs(point.y - stop.y)) <= 8;
     assert.ok(terminal.some((object) => (object.objectId === 'bench-curve' || object.objectId === 'briefing-bench') && near(object.position)), 'no bench near the stop');
     assert.ok(terminal.some((object) => object.instanceId === 'transit-directory'), 'the directory has left the transit bay');
+    assert.ok(terminal.some((object) => object.objectId === 'departure-board'), 'the transit bay has no departure board');
   });
 });

@@ -44,7 +44,8 @@
     { "id": "furn-calder-gatehouse-tram-terminal-8", "object": "briefing-bench", "at": { "room": "tram-terminal", "dx": 3, "dy": 4 }, "facing": "south" },
     { "id": "furn-calder-gatehouse-tram-terminal-9", "object": "briefing-bench", "at": { "room": "tram-terminal", "dx": 4, "dy": 4 }, "facing": "south" },
     { "id": "furn-calder-gatehouse-tram-terminal-10", "object": "floor-lamp", "at": { "room": "tram-terminal", "dx": 18, "dy": 3 } },
-    { "id": "furn-calder-gatehouse-tram-terminal-11", "object": "trash-bin", "at": { "room": "tram-terminal", "dx": 29, "dy": 3 } }
+    { "id": "furn-calder-gatehouse-tram-terminal-11", "object": "trash-bin", "at": { "room": "tram-terminal", "dx": 29, "dy": 3 } },
+    { "id": "furn-calder-gatehouse-tram-terminal-12", "object": "departure-board", "at": { "room": "tram-terminal", "dx": 4, "dy": 0 }, "facing": "south" }
   ],
   "assemblies": [
     { "id": "cg-lift", "assembly": "calder-lift-down", "at": { "room": "gatehouse", "dx": 57, "dy": 12 }, "facing": "west" },

@@ -157,6 +157,7 @@
     { "id": "furn-intake-wing-tram-terminal-7", "object": "trash-bin", "at": { "room": "tram-terminal", "dx": 9, "dy": 26 } },
     { "id": "furn-intake-wing-tram-terminal-8", "object": "floor-lamp", "at": { "room": "tram-terminal", "dx": 9, "dy": 31 } },
     { "id": "furn-intake-wing-tram-terminal-9", "object": "briefing-bench", "at": { "room": "tram-terminal", "dx": 8, "dy": 33 }, "facing": "west" },
+    { "id": "furn-intake-wing-tram-terminal-10", "object": "departure-board", "at": { "room": "tram-terminal", "dx": 9, "dy": 22 }, "facing": "west" },
     { "id": "furn-intake-wing-corridor-1", "object": "banner-mast", "at": { "room": "corridor", "dx": 1, "dy": 4 } },
     { "id": "furn-intake-wing-corridor-2", "object": "banner-mast", "at": { "room": "corridor", "dx": 1, "dy": 14 } },
     { "id": "furn-intake-wing-observation-1", "object": "floor-lamp", "at": { "room": "observation", "dx": 13, "dy": 19 } },
