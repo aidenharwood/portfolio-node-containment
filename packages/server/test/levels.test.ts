@@ -130,7 +130,7 @@ describe('levels', () => {
     const harness = createHarness({ prepare: placedAt(inRoom('deepwatch', 'stores'), ['clearance.signal-array']) });
     walkAlong(harness, [
       exitPoint('deepwatch', 'south'),
-      levelPoint('deep-concourse', localInRoom('deep-concourse', 'south-span')),
+      inRoom('deep-concourse', 'south-span').position,
       anchor('deep-concourse', 'southSpan').position,
       anchor('deep-concourse', 'arrayDoor').position,
     ]);
@@ -173,7 +173,7 @@ describe('levels', () => {
     const harness = createHarness({ prepare: placedAt(inRoom('deepwatch', 'concourse')) });
     walkAlong(harness, [
       exitPoint('deepwatch', 'north'),
-      levelPoint('deep-concourse', localInRoom('deep-concourse', 'north-span')),
+      inRoom('deep-concourse', 'north-span').position,
       anchor('deep-concourse', 'northSpan').position,
       anchor('deep-concourse', 'causewayGate').position,
       levelPoint('furnace-causeway', localInRoom('furnace-causeway', 'causeway')),
