@@ -5,10 +5,10 @@ import { createCharacterRecord } from '../src/characters/characterFactory.ts';
 import { CharacterRepository } from '../src/characters/characterRepository.ts';
 import { openDatabase } from '../src/persistence/database.ts';
 import { restoreLocation, storeLocation } from '../src/characters/storedLocation.ts';
-import { anchor, at, createHarness, exitPoint, inRoom, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
+import { anchor, anchorPoint, at, createHarness, exitPoint, inRoom, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
 
 const MAIN_FLOOR_SPAWN = anchor('meridian-atrium', 'transit');
-const LIFT_ARRIVAL = GAME_CONTENT.districts.get('deepwatch')?.anchors?.liftArrival ?? { x: 0, y: 0 };
+const LIFT_ARRIVAL = anchorPoint('deepwatch', 'liftArrival');
 
 const WEST_GATE = at('meridian-atrium', localInRoom('meridian-atrium', 'west-gate', { x: 2, y: 2 }));
 const EAST_GATE = at('meridian-atrium', localInRoom('meridian-atrium', 'east-gate', { x: 27, y: 2 }));

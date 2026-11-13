@@ -183,6 +183,12 @@ export function inRoom(districtId: DistrictId, roomId: string, offset?: TilePoin
   return at(districtId, localInRoom(districtId, roomId, offset));
 }
 
+export function anchorPoint(districtId: DistrictId, anchorId: string): TilePoint {
+  const point = GAME_CONTENT.districts.get(districtId)?.anchors?.[anchorId];
+  if (!point) throw new Error(`District "${districtId}" has no anchor "${anchorId}".`);
+  return point;
+}
+
 export function anchor(districtId: DistrictId, anchorId: string): WorldLocation {
   const point = GAME_CONTENT.districts.get(districtId)?.anchors?.[anchorId];
   if (!point) throw new Error(`District "${districtId}" has no anchor "${anchorId}".`);

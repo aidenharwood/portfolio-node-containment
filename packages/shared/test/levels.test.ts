@@ -15,6 +15,12 @@ import {
   type WorldObjectDefinition,
 } from '../src/index.ts';
 
+const anchorPoint = (districtId: string, anchorId: string): TilePoint => {
+  const point = GAME_CONTENT.districts.get(districtId)?.anchors?.[anchorId];
+  assert.ok(point, `missing anchor ${districtId}/${anchorId}`);
+  return point;
+};
+
 const AMBIENCE = { darkness: 0.4, tint: '#000000', fog: '#000000' };
 
 const room = (id: string, map: readonly string[], extras: Partial<DistrictDefinition> = {}): DistrictDefinition => ({
@@ -100,7 +106,7 @@ describe('levels', () => {
   test('the Verdance Concourse joins the Atrium and Hydroponics', () => {
     const mainFloor = GAME_CONTENT.levels.get('main-floor');
     assert.ok(mainFloor);
-    const target = locate(GAME_CONTENT, 'hydroponics', GAME_CONTENT.districts.get('hydroponics')?.anchors?.tramPlatform ?? { x: 0, y: 0 });
+    const target = locate(GAME_CONTENT, 'hydroponics', anchorPoint('hydroponics', 'tramPlatform'));
     assert.ok(target);
     assert.ok(reachableFrom(GAME_CONTENT, 'main-floor', mainFloor.spawn).has(tileKey(target.position)));
   });
@@ -108,14 +114,14 @@ describe('levels', () => {
   test('the Service Concourse joins the Atrium and the Service Yards', () => {
     const mainFloor = GAME_CONTENT.levels.get('main-floor');
     assert.ok(mainFloor);
-    const target = locate(GAME_CONTENT, 'service-yards', GAME_CONTENT.districts.get('service-yards')?.anchors?.tramPlatform ?? { x: 0, y: 0 });
+    const target = locate(GAME_CONTENT, 'service-yards', anchorPoint('service-yards', 'tramPlatform'));
     assert.ok(target);
     assert.ok(reachableFrom(GAME_CONTENT, 'main-floor', mainFloor.spawn).has(tileKey(target.position)));
   });
 
   test('the Intake Wing is reached by tram, not on foot', () => {
     const mainFloor = GAME_CONTENT.levels.get('main-floor');
-    const intake = locate(GAME_CONTENT, 'intake-wing', GAME_CONTENT.districts.get('intake-wing')?.anchors?.start ?? { x: 0, y: 0 });
+    const intake = locate(GAME_CONTENT, 'intake-wing', anchorPoint('intake-wing', 'start'));
     assert.ok(mainFloor && intake);
     assert.ok(!reachableFrom(GAME_CONTENT, 'main-floor', mainFloor.spawn).has(tileKey(intake.position)));
     assert.ok([...GAME_CONTENT.tram.stations.values()].some((station) => station.districtId === 'intake-wing'));
@@ -126,7 +132,7 @@ describe('levels', () => {
     assert.ok(deep);
     const reachable = reachableFrom(GAME_CONTENT, 'the-deep', deep.spawn);
     for (const [districtId, anchorId] of [['deep-concourse', 'cryovaultDoor'], ['furnace-causeway', 'furnaceGate']] as const) {
-      const point = locate(GAME_CONTENT, districtId, GAME_CONTENT.districts.get(districtId)?.anchors?.[anchorId] ?? { x: 0, y: 0 });
+      const point = locate(GAME_CONTENT, districtId, anchorPoint(districtId, anchorId));
       assert.ok(point && reachable.has(tileKey(point.position)), districtId);
     }
   });

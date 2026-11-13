@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { GAME_CONTENT, TRAM_BOARDING_TICKS, tramStationFlag, type CharacterRecord } from '@containment/shared';
-import { anchor, at, createHarness, districtOf, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
+import { anchor, anchorPoint, at, createHarness, districtOf, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
 
 const onPlatform = (districtId: string, local: { x: number; y: number }, stations: readonly string[]) => (record: CharacterRecord): CharacterRecord => ({
   ...record,
@@ -9,8 +9,8 @@ const onPlatform = (districtId: string, local: { x: number; y: number }, station
   flags: [...record.flags, ...stations.map(tramStationFlag)],
 });
 
-const ATRIUM_PLATFORM = GAME_CONTENT.districts.get('meridian-atrium')?.anchors?.transit ?? { x: 0, y: 0 };
-const DEEPWATCH_PLATFORM = GAME_CONTENT.districts.get('deepwatch')?.anchors?.tramPlatform ?? { x: 0, y: 0 };
+const ATRIUM_PLATFORM = anchorPoint('meridian-atrium', 'transit');
+const DEEPWATCH_PLATFORM = anchorPoint('deepwatch', 'tramPlatform');
 
 function stationPoint(stationId: string) {
   const station = GAME_CONTENT.tram.stations.get(stationId);

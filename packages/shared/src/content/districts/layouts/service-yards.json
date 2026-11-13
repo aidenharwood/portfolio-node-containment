@@ -48,7 +48,7 @@
   "anchors": {
     "tramPlatform": { "room": "tram-terminal", "dx": 12, "dy": 7 }
   },
-  "recovery": { "districtId": "meridian-atrium", "at": { "room": "laundry", "dx": 7, "dy": 25 } },
+  "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "yd-dock-scrap-a", "object": "scrap-heap", "at": { "room": "loading-dock", "dx": 10, "dy": 5 } },
     { "id": "yd-dock-scrap-b", "object": "scrap-heap", "at": { "room": "loading-dock", "dx": 10, "dy": 18 } },

@@ -22,6 +22,7 @@ import {
   type TramStation,
   type WorldObjectDefinition,
 } from '../src/index.ts';
+import { findContentIssues } from '../src/content/contentIntegrity.ts';
 
 const DISTRICT_ID = 'terminal-test';
 const LEVEL_ID = 'terminal-floor';
@@ -242,4 +243,14 @@ test('the Drowned Archive terminal follows every rule', () => {
 
 test('the Furnace terminal follows every rule', () => {
   assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"furnace-lock"')), []);
+});
+
+test('the shipped world has no terminal issues', () => {
+  assert.deepEqual(findTerminalIssues(GAME_CONTENT), []);
+});
+
+test('the content check reports a station that leaves its terminal', () => {
+  const stations = new Map([...GAME_CONTENT.tram.stations].map(([id, station]) => [id, id === 'furnace-lock' ? { ...station, areaId: 'coolant-lock' } : station]));
+  const content: GameContent = { ...GAME_CONTENT, tram: { ...GAME_CONTENT.tram, stations } };
+  assert.ok(findContentIssues(content).some((issue) => issue.startsWith('Tram station "furnace-lock" stands in "coolant-lock"')));
 });

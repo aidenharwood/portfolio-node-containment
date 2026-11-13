@@ -82,7 +82,7 @@ test('every recovery point is walkable ground', () => {
       continue;
     }
     const raw = layouts.get(district.id)?.recovery;
-    if (raw && raw.districtId !== district.id && 'at' in raw && 'x' in raw.at) problems.push(`${district.id}: recovery is a raw point in ${raw.districtId}`);
+    if (raw && raw.districtId !== district.id && 'at' in raw) problems.push(`${district.id}: recovery places one of its own positions in ${raw.districtId}`);
     const location = locate(GAME_CONTENT, recovery.districtId, recovery.position);
     const level = location && GAME_CONTENT.levels.get(location.levelId);
     if (!location || !level) {
