@@ -84,7 +84,7 @@ describe('act four: postmarked', () => {
     talk(harness, 'ww-ngata', "I'll follow the road.");
     assert.equal(stepOf(harness, 'postmarked'), 1);
 
-    travel(harness, at('waterworks', localInRoom('waterworks', 'calder-checkpoint', { x: 6, y: 30 })));
+    travel(harness, anchor('waterworks', 'checkpointGate'));
     walkTo(harness, levelPoint('calder-causeway', localInRoom('calder-causeway', 'causeway', { x: 9, y: 2 })));
     assert.equal(districtOf(player), 'calder-causeway', 'the Waterworks east wall opens onto the causeway on foot');
     assert.equal(stepOf(harness, 'postmarked'), 2);

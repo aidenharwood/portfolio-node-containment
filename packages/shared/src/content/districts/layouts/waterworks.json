@@ -55,7 +55,9 @@
     { "room": "outfall", "name": "The Outfall", "multiCombat": true },
     { "room": "calder-checkpoint", "name": "Calder Checkpoint" }
   ],
-  "anchors": {},
+  "anchors": {
+    "checkpointGate": { "room": "calder-checkpoint", "dx": 6, "dy": 30 }
+  },
   "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "ww-sign", "object": "warning-sign", "at": { "room": "pump-house", "dx": 0, "dy": 0 } },

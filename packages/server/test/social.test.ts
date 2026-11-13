@@ -17,7 +17,7 @@ import type { Player } from '../src/world/player.ts';
 import { at, createHarness, RecordingSink, type Harness, localInRoom } from './support/testHarness.ts';
 
 const PLAZA = at('meridian-atrium', localInRoom('meridian-atrium', 'plaza', { x: 19, y: 3 }));
-const DOCKS = at('service-yards', localInRoom('service-yards', 'loading-dock', { x: 8, y: 20 }));
+const DOCKS = at('service-yards', localInRoom('service-yards', 'loading-dock'));
 
 const placed = (location: WorldLocation) => (record: CharacterRecord): CharacterRecord => ({ ...record, location });
 

@@ -32,7 +32,12 @@
     { "room": "gardeners-row", "name": "Gardeners' Row", "safe": true },
     { "room": "compost-yard", "name": "Compost Yard" }
   ],
-  "anchors": {},
+  "anchors": {
+    "walkEastReach": { "room": "concourse", "dx": 70, "dy": 6 },
+    "walkEastOfCanal": { "room": "concourse", "dx": 50, "dy": 6 },
+    "walkWestOfCanal": { "room": "concourse", "dx": 30, "dy": 6 },
+    "walkWestReach": { "room": "concourse", "dx": 10, "dy": 6 }
+  },
   "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "vc-puddle", "object": "litter-puddle", "at": { "room": "concourse", "dx": 47, "dy": 3 } },

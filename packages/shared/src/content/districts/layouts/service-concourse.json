@@ -34,7 +34,11 @@
     { "room": "drivers-rest", "name": "Drivers' Rest", "safe": true },
     { "room": "salvage-lot", "name": "Salvage Lot" }
   ],
-  "anchors": {},
+  "anchors": {
+    "walkWestReach": { "room": "concourse", "dx": 10, "dy": 6 },
+    "walkMid": { "room": "concourse", "dx": 40, "dy": 6 },
+    "walkEastReach": { "room": "concourse", "dx": 70, "dy": 6 }
+  },
   "recovery": { "districtId": "meridian-atrium", "anchor": "recovery" },
   "objects": [
     { "id": "sc-pipes-a", "object": "pipe-cluster", "at": { "room": "concourse", "dx": 29, "dy": 9 } },

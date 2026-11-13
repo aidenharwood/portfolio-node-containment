@@ -15,20 +15,20 @@ const EAST_GATE = at('meridian-atrium', localInRoom('meridian-atrium', 'east-gat
 const ROUTE_TO_HYDROPONICS: readonly TilePoint[] = [
   levelPoint('meridian-circuit', localInRoom('meridian-circuit', 'west-boulevard', { x: 6, y: 90 })),
   exitPoint('meridian-circuit', 'west'),
-  levelPoint('verdance-concourse', localInRoom('verdance-concourse', 'concourse', { x: 70, y: 6 })),
-  levelPoint('verdance-concourse', localInRoom('verdance-concourse', 'concourse', { x: 50, y: 6 })),
-  levelPoint('verdance-concourse', localInRoom('verdance-concourse', 'concourse', { x: 30, y: 6 })),
-  levelPoint('verdance-concourse', localInRoom('verdance-concourse', 'concourse', { x: 10, y: 6 })),
+  anchor('verdance-concourse', 'walkEastReach').position,
+  anchor('verdance-concourse', 'walkEastOfCanal').position,
+  anchor('verdance-concourse', 'walkWestOfCanal').position,
+  anchor('verdance-concourse', 'walkWestReach').position,
   levelPoint('hydroponics', localInRoom('hydroponics', 'platform')),
 ];
 
 const ROUTE_TO_SERVICE_YARDS: readonly TilePoint[] = [
   levelPoint('meridian-circuit', localInRoom('meridian-circuit', 'east-boulevard', { x: 6, y: 90 })),
   exitPoint('meridian-circuit', 'east'),
-  levelPoint('service-concourse', localInRoom('service-concourse', 'concourse', { x: 10, y: 6 })),
-  levelPoint('service-concourse', localInRoom('service-concourse', 'concourse', { x: 40, y: 6 })),
-  levelPoint('service-concourse', localInRoom('service-concourse', 'concourse', { x: 70, y: 6 })),
-  levelPoint('service-concourse', localInRoom('service-concourse', 'concourse', { x: 78, y: 6 })),
+  anchor('service-concourse', 'walkWestReach').position,
+  anchor('service-concourse', 'walkMid').position,
+  anchor('service-concourse', 'walkEastReach').position,
+  exitPoint('service-concourse', 'east'),
   levelPoint('service-yards', localInRoom('service-yards', 'yard-office', { x: 4, y: 12 })),
 ];
 
