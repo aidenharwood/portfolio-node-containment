@@ -42,7 +42,7 @@ export class ContractController {
     if (ledger === player.record.contracts) return;
     player.update({ contracts: ledger });
     if (announce && rolled.length > 0) {
-      this.host.notify(player, 'info', `New ${rolled.map((cadence) => CADENCE_LABEL[cadence]).join(' and ')} contracts are up on the Contract Board in the Atrium Plaza.`);
+      this.host.notify(player, 'info', `New ${rolled.map((cadence) => CADENCE_LABEL[cadence]).join(' and ')} contracts are up on the Contract Board in the Atrium Contract Hall.`);
     }
   }
 

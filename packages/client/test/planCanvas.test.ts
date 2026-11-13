@@ -5,6 +5,11 @@ import { planDrawList } from '../src/editor/planCanvas.ts';
 
 const atrium = GAME_CONTENT.districts.get('meridian-atrium') as DistrictDefinition;
 
+const withMosaic = (): GameContent => {
+  const district: DistrictDefinition = { ...atrium, decals: [{ kind: 'mosaic', pattern: 'compass', rect: { x: 60, y: 40, width: 9, height: 9 } }] };
+  return { ...GAME_CONTENT, districts: new Map([...GAME_CONTENT.districts, [district.id, district]]) };
+};
+
 const withKiosk = (facing: Facing): GameContent => {
   const district: DistrictDefinition = { ...atrium, objects: [{ instanceId: 'kiosk', objectId: 'glass-kiosk', position: { x: 40, y: 30 }, facing }] };
   return { ...GAME_CONTENT, districts: new Map([...GAME_CONTENT.districts, [district.id, district]]) };
@@ -26,7 +31,7 @@ test('layers that are off draw nothing', () => {
 });
 
 test('tiles draw one shape per map tile and decals draw in their own colours', () => {
-  const shapes = planDrawList(GAME_CONTENT, atrium.id, ['tiles', 'decals']);
+  const shapes = planDrawList(withMosaic(), atrium.id, ['tiles', 'decals']);
   assert.equal(shapes.filter((shape) => shape.kind === 'tile').length, (atrium.map[0]?.length ?? 0) * atrium.map.length);
   const mosaic = shapes.find((shape) => shape.kind === 'decal' && shape.label === 'mosaic');
   assert.ok(mosaic);

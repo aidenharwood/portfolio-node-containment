@@ -86,7 +86,7 @@ export function renderContractBoard(self: SelfState, options: ContractBoardOptio
         ),
         current && current.entries.length > 0
           ? h('ul', { className: 'contract-list' }, ...current.entries.map((entry) => entryCard(cadence, entry, options)))
-          : h('p', { className: 'tab-hint' }, current ? 'No contracts match your clearance yet. Finish Induction to get on the board.' : 'Visit the Contract Board in the Atrium Plaza to pick up this board.'),
+          : h('p', { className: 'tab-hint' }, current ? 'No contracts match your clearance yet. Finish Induction to get on the board.' : 'Visit the Contract Board in the Atrium Contract Hall to pick up this board.'),
         current && current.entries.length > 0 && h('p', { className: 'tab-hint' },
           unpaid === 0 ? 'Board cleared. Bonus paid.' : `Clear the whole board for ${SWEEP_BONUS_COMMENDATIONS[cadence]} bonus commendations.`),
       );

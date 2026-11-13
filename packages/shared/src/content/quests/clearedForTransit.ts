@@ -30,7 +30,7 @@ export const CLEARED_FOR_TRANSIT: QuestDefinition = {
     {
       id: 'ride',
       journal: 'Choose Atrium Transit Bay from the tram destinations and ride up to the Meridian Atrium.',
-      objectives: [{ type: 'enterArea', districtId: 'meridian-atrium', areaId: 'lift-bay', label: 'Ride the tram to the Atrium' }],
+      objectives: [{ type: 'enterArea', districtId: 'meridian-atrium', areaId: 'tram-terminal', label: 'Ride the tram to the Atrium' }],
       onComplete: [{ type: 'takeItem', itemId: 'transit-pass' }],
     },
   ],

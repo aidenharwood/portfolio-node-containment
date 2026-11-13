@@ -203,3 +203,7 @@ test('two doors on one side count as separate openings', () => {
 test('the Verdance terminal follows every rule', () => {
   assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"verdance-platform"')), []);
 });
+
+test('the Atrium terminal follows every rule', () => {
+  assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"atrium-transit"')), []);
+});

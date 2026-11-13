@@ -219,12 +219,12 @@ export const SEL_DIALOGUE: DialogueDefinition = {
     },
     councilGo: {
       speaker: 'npc',
-      text: "The Deep Line lift is set into the west wall of the transit bay. Director Thale is... thorough. Tell her the truth, even when it's strange. Especially then.",
+      text: "The Deep Line lift is set into the north wall of the Lift Hall. Director Thale is... thorough. Tell her the truth, even when it's strange. Especially then.",
       next: null,
     },
     councilProgress: {
       speaker: 'npc',
-      text: 'The Deep Line lift is in the transit bay. Thale is waiting at Deepwatch. Try not to keep the Council waiting; it has a long memory and very little patience.',
+      text: 'The Deep Line lift is in the Lift Hall. Thale is waiting at Deepwatch. Try not to keep the Council waiting; it has a long memory and very little patience.',
       next: null,
     },
     deadAirIntro: {
@@ -590,7 +590,7 @@ export const KADE_DIALOGUE: DialogueDefinition = {
     },
     arrival: {
       speaker: 'npc',
-      text: "Off the tram and still upright. Osei says you can stand up straight, which from Osei is a medal. Sergeant Kade, Response Division. Welcome to the Atrium. Everything you need is around this plaza: Requisitions and storage north-west, fabrication west, the medbay south, my office east.",
+      text: "Off the tram and still upright. Osei says you can stand up straight, which from Osei is a medal. Sergeant Kade, Response Division. Welcome to the Atrium. Everything you need is around this plaza: Requisitions and the exchange west, storage in the Bunkhouse south-west, fabrication east, the medbay south, my office north-east.",
       next: 'knockingHook',
     },
     knockingHook: {

@@ -7,10 +7,12 @@ const atrium = GAME_CONTENT.districts.get('meridian-atrium') as DistrictDefiniti
 const layout = parseLayout(LAYOUT_SOURCES['meridian-atrium']);
 
 test('a set-piece piece selects its set-piece entry first', () => {
-  const piece = atrium.objects.find((object) => object.instanceId === 'atrium-plaza-core-ring/1');
+  const circuit = GAME_CONTENT.districts.get('meridian-circuit') as DistrictDefinition;
+  const circuitLayout = parseLayout(LAYOUT_SOURCES['meridian-circuit']);
+  const piece = circuit.objects.find((object) => object.instanceId.startsWith('meridian-circuit-signal-court-landmark/'));
   assert.ok(piece);
-  const index = layout.setPieces.findIndex((entry) => entry.id === 'atrium-plaza-core-ring');
-  assert.deepEqual(hitsAt(layout, atrium, piece.position)[0], { kind: 'entry', ref: { collection: 'setPieces', index } });
+  const index = circuitLayout.setPieces.findIndex((entry) => entry.id === 'meridian-circuit-signal-court-landmark');
+  assert.deepEqual(hitsAt(circuitLayout, circuit, piece.position)[0], { kind: 'entry', ref: { collection: 'setPieces', index } });
 });
 
 test('a member of a room’s generated crowd selects its room dressing', () => {

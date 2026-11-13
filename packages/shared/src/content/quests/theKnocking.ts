@@ -10,12 +10,12 @@ export const THE_KNOCKING: QuestDefinition = {
   steps: [
     {
       id: 'report-to-kade',
-      journal: 'I have arrived in the Meridian Atrium, the hub of Site Meridian. Sergeant Kade of the Response Division meets every new arrival in the Response Office, east of the plaza.',
+      journal: 'I have arrived in the Meridian Atrium, the hub of Site Meridian. Sergeant Kade of the Response Division meets every new arrival in the Contract Hall, in the north-east of the Atrium.',
       objectives: [{ type: 'talkTo', npcId: 'sergeant-kade', label: 'Report to Sergeant Kade' }],
     },
     {
       id: 'ask-sel',
-      journal: 'Kade says the Sector 2 file is sealed above his clearance. Archivist Sel keeps every file in the Site, sealed or not, in the Archives north-east of the plaza.',
+      journal: 'Kade says the Sector 2 file is sealed above his clearance. Archivist Sel keeps every file in the Site, sealed or not, in the Archives north-west of the plaza.',
       objectives: [{ type: 'talkTo', npcId: 'archivist-sel', label: 'Ask Archivist Sel about Sector 2' }],
     },
     {

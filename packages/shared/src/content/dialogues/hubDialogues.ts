@@ -42,7 +42,7 @@ export const ANAND_DIALOGUE: DialogueDefinition = {
     },
     craft: {
       speaker: 'npc',
-      text: "Course you can. Moss into gel base at a refinery, gel base into Medgel at a bio-synthesiser. There's one in the Fabrication Hall and one behind me. Better compounds need lumen spores from the hydroponics deck.",
+      text: "Course you can. Moss into gel base at a refinery, gel base into Medgel at a bio-synthesiser. There's one in the Biochemistry Lab and one behind me. Better compounds need lumen spores from the hydroponics deck.",
       next: 'greeting',
     },
   },

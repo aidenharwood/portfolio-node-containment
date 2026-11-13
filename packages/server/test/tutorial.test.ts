@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { countItem, tramStationFlag, type CharacterRecord, type QuestProgress } from '@containment/shared';
-import { createHarness, finishDialogue, type Harness, at, districtOf, levelPoint, localInRoom } from './support/testHarness.ts';
+import { anchor, createHarness, finishDialogue, type Harness, at, districtOf, levelPoint, localInRoom } from './support/testHarness.ts';
 
 const ORIENTATION = 'orientation-protocol';
 const TRANSIT = 'cleared-for-transit';
@@ -159,6 +159,25 @@ describe('cleared for transit', () => {
     assert.equal(districtOf(harness.player), 'intake-wing');
   });
 
+  test('a trainee on the last step who rides from Intake to the Atrium terminal finishes the quest on arrival without walking', () => {
+    const harness = createHarness({
+      prepare: (record) => ({
+        ...readyToLeave(record),
+        location: at('intake-wing', localInRoom('intake-wing', 'transit-bay', { x: 14, y: 3 })),
+        flags: [...record.flags, tramStationFlag('atrium-transit')],
+        inventory: [{ itemId: 'transit-pass', quantity: 1 }, ...record.inventory.slice(1)],
+        quests: { ...readyToLeave(record).quests, [TRANSIT]: { questId: TRANSIT, status: 'active', stepIndex: 3, objectiveProgress: [0] } },
+      }),
+    });
+    assert.equal(currentStep(harness, TRANSIT), 3);
+    harness.send({ type: 'tram.board', destinationStationId: 'atrium-transit' });
+    harness.ticksUntil(() => harness.sink.last('tram.arrived') !== undefined, 40);
+    assert.equal(districtOf(harness.player), 'meridian-atrium');
+    assert.equal(harness.player.path.length, 0);
+    assert.equal(currentStep(harness, TRANSIT), 'completed');
+    assert.equal(countItem(harness.player.record.inventory, 'transit-pass'), 0);
+  });
+
   test('veterans who already started the storyline are not sent back to Intake', () => {
     const harness = createHarness({
       prepare: (record) => ({
@@ -200,7 +219,7 @@ describe('returning trainees', () => {
     const harness = createHarness({
       prepare: (record) => ({
         ...readyToLeave(record),
-        location: at('meridian-atrium', localInRoom('meridian-atrium', 'lift-bay', { x: 12, y: 2 })),
+        location: anchor('meridian-atrium', 'transit'),
         quests: { ...readyToLeave(record).quests, [TRANSIT]: { questId: TRANSIT, status: 'active', stepIndex: 3, objectiveProgress: [0] } },
       }),
     });
@@ -211,7 +230,7 @@ describe('returning trainees', () => {
 
   test('the Intake station is always on the board, so anyone can ride back', () => {
     const harness = createHarness({
-      prepare: (record) => ({ ...record, location: at('meridian-atrium', localInRoom('meridian-atrium', 'lift-bay', { x: 12, y: 2 })), quests: { [ORIENTATION]: completed(ORIENTATION), 'the-knocking': completed('the-knocking') } }),
+      prepare: (record) => ({ ...record, location: anchor('meridian-atrium', 'transit'), quests: { [ORIENTATION]: completed(ORIENTATION), 'the-knocking': completed('the-knocking') } }),
     });
     harness.send({ type: 'tram.board', destinationStationId: 'intake-transit' });
     assert.equal(harness.player.activity?.kind, 'tram');
