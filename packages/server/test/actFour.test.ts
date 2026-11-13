@@ -85,15 +85,15 @@ describe('act four: postmarked', () => {
     assert.equal(stepOf(harness, 'postmarked'), 1);
 
     travel(harness, anchor('waterworks', 'checkpointGate'));
-    walkTo(harness, levelPoint('calder-causeway', localInRoom('calder-causeway', 'causeway', { x: 9, y: 2 })));
+    walkTo(harness, inRoom('calder-causeway', 'causeway').position);
     assert.equal(districtOf(player), 'calder-causeway', 'the Waterworks east wall opens onto the causeway on foot');
     assert.equal(stepOf(harness, 'postmarked'), 2);
 
-    travel(harness, at('brine-galleries', localInRoom('brine-galleries', 'brine-pans', { x: 20, y: 29 })));
+    travel(harness, inRoom('brine-galleries', 'brine-pans'));
     for (const suffix of ['a', 'b', 'c', 'd', 'e', 'f']) defeat(harness, `bg-pans-crawler-${suffix}`);
     assert.equal(stepOf(harness, 'postmarked'), 3);
 
-    travel(harness, at('brine-galleries', localInRoom('brine-galleries', 'gate-approach', { x: 28, y: 12 })));
+    travel(harness, inRoom('brine-galleries', 'gate-approach'));
     walkTo(harness, levelPoint('calder-gatehouse', localInRoom('calder-gatehouse', 'gatehouse', { x: 2, y: 21 })));
     assert.equal(districtOf(player), 'brine-galleries', 'the gatehouse door stays shut until the intercom is answered');
 
@@ -115,13 +115,13 @@ describe('act four: postmarked', () => {
     talk(harness, 'cg-brandt', 'Is there anything Calder needs?', "I'll end the shift.");
     assert.equal(stepOf(harness, 'salt-of-the-earth'), 0);
 
-    for (const [instanceId, position] of [['bg-tally-a', { x: 5, y: 12 }], ['bg-tally-b', { x: 31, y: 38 }], ['bg-tally-c', { x: 58, y: 26 }]] as const) {
-      travel(harness, at('brine-galleries', localInRoom('brine-galleries', 'wight-drifts', position)));
+    for (const instanceId of ['bg-tally-a', 'bg-tally-b', 'bg-tally-c']) {
+      travel(harness, inRoom('brine-galleries', 'wight-drifts'));
       use(harness, instanceId);
     }
     assert.equal(stepOf(harness, 'salt-of-the-earth'), 1);
 
-    travel(harness, at('brine-galleries', localInRoom('brine-galleries', 'wight-drifts', { x: 25, y: 20 })));
+    travel(harness, inRoom('brine-galleries', 'wight-drifts'));
     for (const suffix of ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']) defeat(harness, `bg-drifts-wight-${suffix}`);
     assert.equal(stepOf(harness, 'salt-of-the-earth'), 2);
 
