@@ -138,7 +138,7 @@ export const CALDER_OBJECTS: readonly WorldObjectDefinition[] = [
     id: 'deeps-time-clock',
     name: 'Shift Time Clock',
     examine: 'The punch clock for the lowest gallery. Its hands stopped forty years ago at the end of a shift that never ended.',
-    model: 'kiosk',
+    model: 'timeClock',
     blocksMovement: true,
     light: { radius: 1.6, color: '#ffd27f', intensity: 0.45 },
     interactions: [

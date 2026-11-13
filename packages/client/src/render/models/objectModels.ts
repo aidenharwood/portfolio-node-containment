@@ -17,6 +17,7 @@ import { HUB_BUILDERS } from './hubModels.ts';
 import { INSTALLATION_BUILDERS } from './installationModels.ts';
 import { LITTER_BUILDERS } from './litterModels.ts';
 import { QUEST_CONSOLE_BUILDERS } from './questConsoleModels.ts';
+import { QUEST_FIXTURE_BUILDERS } from './questFixtureModels.ts';
 import { TRANSIT_BUILDERS } from './transitModels.ts';
 
 export interface AnimatedPart {
@@ -344,6 +345,7 @@ const BUILDERS: Readonly<Record<WorldObjectModel, ObjectBuilder>> = {
   ...HUB_BUILDERS,
   ...TRANSIT_BUILDERS,
   ...QUEST_CONSOLE_BUILDERS,
+  ...QUEST_FIXTURE_BUILDERS,
   ...INSTALLATION_BUILDERS,
   ...DEEP_OBJECT_BUILDERS,
   ...ASSEMBLY_BUILDERS,

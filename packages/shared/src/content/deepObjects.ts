@@ -207,7 +207,7 @@ export const DEEP_QUEST_OBJECTS: readonly WorldObjectDefinition[] = [
     id: 'curator-ledger',
     name: "The Curator's Ledger",
     examine: 'A frost-locked desk terminal with the Cold Storage manifest still open. Beside it sits a stasis core in a cradle of ice.',
-    model: 'terminal',
+    model: 'curatorLedger',
     blocksMovement: true,
     light: { radius: 2, color: '#c8f0ff', intensity: 0.6 },
     interactions: [
@@ -342,7 +342,7 @@ export const DEEP_QUEST_OBJECTS: readonly WorldObjectDefinition[] = [
     id: 'charter-lectern',
     name: 'Charter Lectern',
     examine: 'A reading lectern bolted to the floor. A document lies on it under glass, perfectly dry in a drowned room.',
-    model: 'kiosk',
+    model: 'charterLectern',
     blocksMovement: true,
     light: { radius: 2.5, color: '#b57cff', intensity: 0.7 },
     interactions: [

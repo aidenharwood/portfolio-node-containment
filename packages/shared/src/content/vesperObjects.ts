@@ -141,7 +141,7 @@ export const VESPER_OBJECTS: readonly WorldObjectDefinition[] = [
     id: 'cellar-ledger',
     name: 'Cold Ward Ledger',
     examine: 'The admissions ledger for the cold ward. Every patient is listed as ADMITTED. Not one has been discharged.',
-    model: 'kiosk',
+    model: 'cellarLedger',
     blocksMovement: true,
     light: { radius: 1.6, color: '#6ad8b8', intensity: 0.45 },
     interactions: [

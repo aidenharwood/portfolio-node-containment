@@ -33,7 +33,7 @@ export const OFFICE_OBJECTS: readonly WorldObjectDefinition[] = [
     id: 'return-chute',
     name: 'Return Chute',
     examine: 'A crease in the air behind the Array outbox, exactly the width of an envelope and, somehow, exactly the width of you.',
-    model: 'anomaly',
+    model: 'returnChute',
     blocksMovement: true,
     light: CHUTE_LIGHT,
     interactions: [
@@ -52,7 +52,7 @@ export const OFFICE_OBJECTS: readonly WorldObjectDefinition[] = [
     id: 'office-return-chute',
     name: 'Chute to the Array',
     examine: 'The way back up. Every few seconds a letter falls out of it, addressed to someone who stopped waiting a long time ago.',
-    model: 'anomaly',
+    model: 'returnChute',
     blocksMovement: true,
     light: CHUTE_LIGHT,
     interactions: [{ verb: 'Climb up', effects: [{ type: 'teleport', districtId: 'signal-array', position: SIGNAL_ARRAY_ANCHORS.chuteLanding }] }],
