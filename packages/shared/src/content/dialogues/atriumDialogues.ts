@@ -502,7 +502,7 @@ export const SEL_DIALOGUE: DialogueDefinition = {
     },
     knockingProgress: {
       speaker: 'npc',
-      text: "Override from Lund. Bulkhead on the north wall. Log from Halvorsen's lab terminal. And {name}: if anything in there knocks, do not answer.",
+      text: "Override from Lund. Bulkhead in the north wall of Hydroponics. Log from Halvorsen's lab terminal. And {name}: if anything in there knocks, do not answer.",
       next: null,
     },
     knockingDeliver: {

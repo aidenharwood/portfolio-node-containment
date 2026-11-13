@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { clearanceFlag, createStartingSkills, experienceForLevel, maxIntegrityFor, type CharacterRecord } from '@containment/shared';
-import { createHarness, at } from './support/testHarness.ts';
+import { createHarness, inRoom } from './support/testHarness.ts';
 
 test('containing the Hollow Warden clears the warden step of The Knocking', () => {
   const harness = createHarness({
@@ -9,7 +9,7 @@ test('containing the Hollow Warden clears the warden step of The Knocking', () =
       const skills = createStartingSkills({ closeQuarters: experienceForLevel(30), fortitude: experienceForLevel(40), containment: experienceForLevel(6) });
       return {
         ...record,
-        location: at('sector-two', { x: 25, y: 7 }),
+        location: inRoom('sector-two', 'inner-chamber'),
         quests: {
           'live-fire': { questId: 'live-fire', status: 'completed', stepIndex: 0, objectiveProgress: [] },
           'the-knocking': { questId: 'the-knocking', status: 'active', stepIndex: 6, objectiveProgress: [0] },

@@ -30,9 +30,9 @@ describe('installations', () => {
   });
 
   test('both leaves of a double door share one door', () => {
-    const meridian = GAME_CONTENT.districts.get('meridian-atrium');
-    assert.ok(meridian);
-    const leaves = districtObjects(meridian, GAME_CONTENT.assemblies).filter((placement) => placement.instanceId.startsWith('sector2-bulkhead/'));
+    const hydroponics = GAME_CONTENT.districts.get('hydroponics');
+    assert.ok(hydroponics);
+    const leaves = districtObjects(hydroponics, GAME_CONTENT.assemblies).filter((placement) => placement.instanceId.startsWith('sector2-bulkhead/'));
     assert.equal(leaves.length, 2);
     const doors = doorTilesOf(leaves, definitionOf);
     assert.deepEqual(leaves.map((leaf) => doors.get(tileKey(leaf.position))), ['sealed-bulkhead', 'sealed-bulkhead']);

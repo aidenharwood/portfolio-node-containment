@@ -20,7 +20,7 @@ interface Baseline {
   readonly landmarks: string[];
 }
 
-const MOVED: Record<string, string> = {};
+const MOVED: Record<string, string> = { 'sector2-bulkhead': 'hydroponics' };
 
 const baseline: Record<string, Baseline> = JSON.parse(readFileSync(new URL('./fixtures/worldBaseline.json', import.meta.url), 'utf8'));
 
@@ -76,7 +76,11 @@ test('every recovery point is walkable ground', () => {
   const grids = new Map<string, ReturnType<typeof createObjectWalkabilityGrid>>();
   for (const district of GAME_CONTENT.districts.values()) {
     const recovery = district.recovery;
-    if (!recovery) continue;
+    if (!recovery) {
+      const spawns = [...GAME_CONTENT.levels.values()].some((level) => level.definition.spawn.districtId === district.id);
+      if (!spawns) problems.push(`${district.id}: has no recovery point`);
+      continue;
+    }
     const raw = layouts.get(district.id)?.recovery;
     if (raw && raw.districtId !== district.id && 'at' in raw && 'x' in raw.at) problems.push(`${district.id}: recovery is a raw point in ${raw.districtId}`);
     const location = locate(GAME_CONTENT, recovery.districtId, recovery.position);

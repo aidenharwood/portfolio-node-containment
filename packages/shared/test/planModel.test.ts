@@ -56,9 +56,11 @@ describe('issuesFor', () => {
   });
 
   test('a level issue is moved into the district it lands in', () => {
-    const issues = issuesFromMessages(GAME_CONTENT, atrium.id, ['level main-floor: 16 walkable tiles are unreachable from the spawn (first at 601,163)']);
+    const origin = GAME_CONTENT.levels.get('main-floor')?.definition.districts.find((placement) => placement.districtId === atrium.id)?.origin as { x: number; y: number };
+    const message = `level main-floor: 16 walkable tiles are unreachable from the spawn (first at ${origin.x + 62},${origin.y + 39})`;
+    const issues = issuesFromMessages(GAME_CONTENT, atrium.id, [message]);
     assert.deepEqual(issues.map((issue) => issue.tile), [{ x: 62, y: 39 }]);
-    assert.deepEqual(issuesFromMessages(GAME_CONTENT, 'meridian-circuit', ['level main-floor: 16 walkable tiles are unreachable from the spawn (first at 601,163)']), []);
+    assert.deepEqual(issuesFromMessages(GAME_CONTENT, 'meridian-circuit', [message]), []);
   });
 
   test('a zone issue keeps its district tile', () => {

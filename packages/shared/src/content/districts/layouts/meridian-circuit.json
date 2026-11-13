@@ -25,7 +25,6 @@
     { "kind": "room", "id": "east-stores", "rect": { "x": 179, "y": 112, "width": 24, "height": 24 }, "floor": "concrete", "shape": "rect" },
     { "kind": "room", "id": "duty-office", "rect": { "x": 179, "y": 160, "width": 24, "height": 18 }, "floor": "plating", "shape": "rect" },
     { "kind": "hollow", "rect": { "x": 39, "y": 88, "width": 126, "height": 104 } },
-    { "kind": "hollow", "rect": { "x": 51, "y": 14, "width": 102, "height": 74 } },
     { "kind": "link", "from": "west-boulevard", "to": "west-dormitory", "width": 7, "floor": "plating" },
     { "kind": "link", "from": "west-boulevard", "to": "canteen", "width": 7, "floor": "plating" },
     { "kind": "link", "from": "west-boulevard", "to": "west-stores", "width": 7, "floor": "plating" },

@@ -33,10 +33,10 @@ export const MAIN_FLOOR_RECIPE: LevelRecipe = (context) => {
   const circuitHollow = context.hollowOf('meridian-circuit');
   const circuit = context.districtOf('meridian-circuit');
   const placements = joinDistricts(districts, 'meridian-atrium', [
-    { districtId: 'sector-two', exit: 'south', to: 'meridian-atrium', toExit: 'north' },
     { districtId: 'meridian-circuit', from: 'meridian-atrium', offset: { x: -circuitHollow.x, y: -circuitHollow.y } },
     { districtId: 'verdance-concourse', exit: 'east', to: 'meridian-circuit', toExit: 'west' },
     { districtId: 'hydroponics', exit: 'east', to: 'verdance-concourse', toExit: 'west' },
+    { districtId: 'sector-two', exit: 'south', to: 'hydroponics', toExit: 'north' },
     { districtId: 'service-concourse', exit: 'west', to: 'meridian-circuit', toExit: 'east' },
     { districtId: 'service-yards', exit: 'west', to: 'service-concourse', toExit: 'east' },
     { districtId: 'waterworks', exit: 'south', to: 'service-yards', toExit: 'north' },
@@ -55,8 +55,8 @@ export const MAIN_FLOOR_RECIPE: LevelRecipe = (context) => {
   const lodgeNorth = trackPoint('vesper-lodge', 55, -2);
   const lodgeSouth = trackPoint('vesper-lodge', 55, context.districtOf('vesper-lodge').map.length);
   const pharmacyCorner = trackPoint('vesper-pharmacy', -5, -5);
-  const verdanceWest = trackPoint('hydroponics', -2, 68);
-  const verdanceEast = trackPoint('hydroponics', widthOf(context.districtOf('hydroponics')), 68);
+  const verdanceWest = trackPoint('hydroponics', -2, 91);
+  const verdanceEast = trackPoint('hydroponics', widthOf(context.districtOf('hydroponics')), 91);
   const concourseJog = trackPoint('verdance-concourse', 50, 0);
   const circuitWest = trackPoint('meridian-circuit', -2, 189);
   const circuitEast = trackPoint('meridian-circuit', widthOf(circuit), 189);

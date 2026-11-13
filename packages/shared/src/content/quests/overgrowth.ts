@@ -21,7 +21,7 @@ export const OVERGROWTH: QuestDefinition = {
     },
     {
       id: 'vault',
-      journal: 'The seed vault console is south of the tram platform. I should read what is still viable.',
+      journal: 'The seed vault console is at the west end of Hydroponics, past the grow hall. I should read what is still viable.',
       objectives: [{ type: 'interactWith', objectId: 'seed-vault-console', label: 'Read the seed vault console' }],
     },
     {

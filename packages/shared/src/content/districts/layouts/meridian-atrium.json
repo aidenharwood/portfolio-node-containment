@@ -35,7 +35,6 @@
     { "kind": "link", "from": "plaza", "to": "medbay", "width": 6, "floor": "door" },
     { "kind": "pillars", "room": "plaza", "everyX": 10, "everyY": 10, "inset": 6 },
     { "kind": "pillars", "room": "quarantine-gate", "everyX": 12, "everyY": 12, "inset": 4 },
-    { "kind": "exit", "id": "north", "room": "quarantine-gate", "side": "north", "width": 2, "gate": true, "floor": "door" },
     { "kind": "exit", "id": "west", "room": "west-gate", "side": "west", "width": 11, "gate": false },
     { "kind": "exit", "id": "east", "room": "east-gate", "side": "east", "width": 11, "gate": false }
   ],
@@ -315,7 +314,6 @@
     { "id": "furn-meridian-atrium-archives-chair-8", "object": "office-chair", "at": { "room": "archives", "dx": 13, "dy": 6 }, "facing": "north" }
   ],
   "assemblies": [
-    { "id": "sector2-bulkhead", "assembly": "sealed-bulkhead", "at": { "exit": "north", "index": 0 }, "facing": "south" },
     { "id": "workshop-refinery", "assembly": "refinery", "at": { "room": "workshop", "dx": 0, "dy": 0 }, "facing": "east" },
     { "id": "workshop-fabricator", "assembly": "fabricator", "at": { "room": "workshop", "dx": 0, "dy": 4 }, "facing": "east" },
     { "id": "workshop-synthesiser", "assembly": "synthesiser", "at": { "room": "workshop", "dx": 0, "dy": 16 }, "facing": "east" },

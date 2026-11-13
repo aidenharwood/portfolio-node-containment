@@ -93,12 +93,12 @@ export const OYELARAN_DIALOGUE: DialogueDefinition = {
     },
     accepted: {
       speaker: 'npc',
-      text: 'Bless you. The crawlers are in the nursery and the grow hall. The vault is south of the platform. Do not stand still near the drifters.',
+      text: 'Bless you. The crawlers are in the nursery and the grow hall. The vault is at the west end, past the grow hall. Do not stand still near the drifters.',
       next: null,
     },
     progress: {
       speaker: 'npc',
-      text: 'Crawlers, fibre, vault console. The nursery and the grow hall are crawling with the first two. The vault is through the south door.',
+      text: 'Crawlers, fibre, vault console. The nursery and the grow hall are crawling with the first two. The vault is at the west end, through the grow hall.',
       next: null,
     },
     report: {

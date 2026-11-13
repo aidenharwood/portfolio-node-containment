@@ -199,3 +199,7 @@ test('two doors on one side count as separate openings', () => {
   const issues = findTerminalIssues(terminalWorld({ painted: [{ x: 10, y: 13, tile: 'door' }, { x: 11, y: 13, tile: 'door' }, { x: 12, y: 13, tile: 'door' }] }));
   assert.deepEqual(issues, []);
 });
+
+test('the Verdance terminal follows every rule', () => {
+  assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"verdance-platform"')), []);
+});

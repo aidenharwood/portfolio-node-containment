@@ -25,7 +25,7 @@ export const THE_KNOCKING: QuestDefinition = {
     },
     {
       id: 'enter-sector-2',
-      journal: 'I have the override. The Sector 2 bulkhead is in the Quarantine Gate hall, north of the plaza.',
+      journal: 'I have the override. The Sector 2 bulkhead is in the north wall of Hydroponics, past the Verdance outpost.',
       objectives: [{ type: 'enterArea', districtId: 'sector-two', areaId: 'airlock', label: 'Enter Sector 2' }],
     },
     {
