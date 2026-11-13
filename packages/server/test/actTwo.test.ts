@@ -12,7 +12,7 @@ import {
   type WorldLocation,
 } from '@containment/shared';
 import { containSpecimen } from './support/containment.ts';
-import { anchor, createHarness, finishDialogue, type Harness, at, districtOf, inRoom, levelPoint, localInRoom } from './support/testHarness.ts';
+import { anchor, createHarness, finishDialogue, type Harness, districtOf, inRoom, levelPoint } from './support/testHarness.ts';
 
 const active = (questId: string, stepIndex = 0): QuestProgress => ({ questId, status: 'active', stepIndex, objectiveProgress: [0, 0, 0] });
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
@@ -303,7 +303,7 @@ describe('act two: the answer', () => {
   });
 
   test('Fenn hands out a side quest and pays for six samples of cryo gel', () => {
-    const harness = createHarness({ prepare: veteranAt(at('cryovault', localInRoom('cryovault', 'fenn-nook', { x: 3, y: 12 })), { 'cold-storage': active('cold-storage', 2) }) });
+    const harness = createHarness({ prepare: veteranAt(anchor('cryovault', 'fennSide'), { 'cold-storage': active('cold-storage', 2) }) });
     const { player } = harness;
 
     talk(harness, 'cv-fenn', 'Can I help', "I'll do it");
@@ -315,7 +315,7 @@ describe('act two: the answer', () => {
 
     player.update({ inventory: [{ itemId: 'cryo-gel', quantity: 6 }, ...player.record.inventory.slice(1)] });
     harness.gameplay.raiseQuestEvent(player, { type: 'loadoutChanged' });
-    travel(harness, at('cryovault', localInRoom('cryovault', 'fenn-nook', { x: 3, y: 12 })));
+    travel(harness, anchor('cryovault', 'fennSide'));
     talk(harness, 'cv-fenn', 'Hand over');
     assert.equal(stepOf(harness, 'fenns-inventory'), 'completed');
     assert.equal(countItem(player.record.inventory, 'rimeguard-gauntlets'), 1);
