@@ -30,7 +30,7 @@ const ROUTE_TO_SERVICE_YARDS: readonly TilePoint[] = [
   anchor('service-concourse', 'walkMid').position,
   anchor('service-concourse', 'walkEastReach').position,
   exitPoint('service-concourse', 'east'),
-  levelPoint('service-yards', localInRoom('service-yards', 'yard-office', { x: 4, y: 12 })),
+  levelPoint('service-yards', localInRoom('service-yards', 'yard-office')),
 ];
 
 function walkTo(harness: Harness, target: TilePoint): void {

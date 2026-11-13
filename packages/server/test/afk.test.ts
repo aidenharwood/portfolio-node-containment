@@ -19,7 +19,7 @@ import { retireContainmentSeals, retireSealOrder } from '../src/characters/retir
 import { anchor, createHarness, at, inRoom, type Harness, localInRoom } from './support/testHarness.ts';
 
 const DIAGNOSTICS: WorldLocation = inRoom('intake-wing', 'diagnostics');
-const COLD_STORE_RESIN: WorldLocation = at('service-yards', localInRoom('service-yards', 'cold-store', { x: 2, y: 1 }));
+const COLD_STORE_RESIN: WorldLocation = anchor('service-yards', 'coldStoreResin');
 const WORKSHOP: WorldLocation = anchor('intake-wing', 'workshopFloor');
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
