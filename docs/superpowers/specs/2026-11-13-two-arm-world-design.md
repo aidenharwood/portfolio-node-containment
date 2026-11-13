@@ -77,10 +77,10 @@ Chosen by Claude; the owner delegated planning.
 One sentence: **a central hub inside a ring boulevard, with a living arm running west and an industrial arm running east, and a tram trunk along the south side of both.**
 
 ```
-                              (Tallow: reserved, north)
-                                        ┆
- Pharmacy ═ Lodge ═ Wards ═ Sanatorium ═ Sector ═ Hydro- ═ Verdance ═╔═ Circuit ═╗═ Service ═ Service ═ Water- ═ Calder  ═ Brine ═ Gate- ═ Salt
-   13        12      12       Walk 12    Two 2   ponics 2  Conc. 1   ║  ATRIUM   ║  Conc. 1   Yards 1   works 3  Causeway  Gall.   house   Cathedral
+                                                Sector Two 2            (Tallow: reserved, north)
+                                                    ┃ (spur)                       ┆
+ Pharmacy ═ Lodge ═ Wards ═ Sanatorium ═════════ Hydro- ═ Verdance ═╔═ Circuit ═╗═ Service ═ Service ═ Water- ═ Calder  ═ Brine ═ Gate- ═ Salt
+   13        12      12       Walk 12            ponics 2  Conc. 1   ║  ATRIUM   ║  Conc. 1   Yards 1   works 3  Causeway  Gall.   house   Cathedral
                                                                      ╚═══════════╝                                  10      10      10      11
    ●━━━━━━━━━●━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━●━━━━━━━━━━━━━━━━━━━━●━━━━━━━━━━━━━━━━━━━━━━━●━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━●━━ ┄ (Gantry)
  (stub west)  Vesper                              Verdance             Atrium                  Yards                           Calder
@@ -90,7 +90,7 @@ One sentence: **a central hub inside a ring boulevard, with a living arm running
                                                               (Lattice: reserved, south)
 ```
 
-**West, the living arm** (soil, glass, wards): Verdance Concourse → Hydroponics (with Sector Two as a spur off its north side, not on the line as the diagram draws it) → Sanatorium Walk → Vesper Wards → Porter's Lodge → Vesper Pharmacy.
+**West, the living arm** (soil, glass, wards): Verdance Concourse → Hydroponics (with Sector Two as a spur off its north side) → Sanatorium Walk → Vesper Wards → Porter's Lodge → Vesper Pharmacy.
 
 **East, the industrial arm** (concrete, water, salt): Service Concourse → Service Yards → Waterworks → Calder Causeway → Brine Galleries → Calder Gatehouse → Salt Cathedral.
 

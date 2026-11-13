@@ -105,15 +105,16 @@ The rest is judgement, and reviewers hold it:
 
 | Place | Shapes and floors | Landmark |
 | ----- | ----------------- | -------- |
-| Atrium and the Circuit | Octagonal plaza, colonnaded boulevards, `plating` and `terrazzo` | The central shaft |
+| Atrium and the Circuit | Octagonal plaza with a room off every side inside a ring boulevard, `plating` and `terrazzo` | The central shaft |
 | Service Yards, freight filler | Long rectangular yards, `concrete` and `rust`, `hazard` edging | Gantry cranes, scrap stacks |
-| Hydroponics, Vesper approach | Rounded grow halls, `soil` with `coolant` channels | The Heart Bed |
-| Waterworks, Calder approach | Tanks and canals: large `coolant` pools with `grate` walkways | Settling tanks |
+| Hydroponics, living arm | Rounded grow halls, `soil` with `coolant` channels | The Heart Bed |
+| Waterworks, industrial arm | Tanks and canals: large `coolant` pools with `grate` walkways | Settling tanks |
 | Calder Wing | Round caverns and long naves, `rust` and `concrete` | The Salt Cathedral nave |
 | Vesper Wing | Symmetrical wards off long galleries, `terrazzo` and `plating` | The Pharmacy rotunda |
 | The Deep | A ring causeway of `grate` over void, round caverns | The chasm |
 | Dungeon floors | Winding round chambers with loops; boss room furthest from the lift | The boss room |
 | Pockets | Small, wrong and symmetrical where the original is not | Whatever it mirrors |
+| Tram terminals | A small walled room on the district's edge, the bed along its outer side, joined by doors at most 3 wide; benches, a departure board and a directory kiosk | The departure board |
 
 **Floors.** A district has one base floor and at most one accent floor from `plating`, `concrete`, `rust` and `terrazzo`. Functional floors (`grate`, `soil`, `hazard`, `door`, `track`, `coolant`) and room floors (`ceramic` for wards, theatres, labs and medbays; `boards` for archives, reading rooms, quarters and lodges) do not count. The accent marks the rooms that matter, such as civic halls, wards or a nave, so walking room to room does not jump between tile sets. Where two of those floors meet, the renderer feathers one into the other along a ragged edge, so district joins read as one surface; a brass threshold still edges `soil` and `grate`. `carpet` is retired: use `terrazzo`.
 
@@ -121,9 +122,9 @@ The rest is judgement, and reviewers hold it:
 
 Do not build on these; later wings attach here (see `docs/superpowers/specs/2026-11-10-one-world-to-level-100.md`).
 
-- **North of Sector Two:** the Tallow Wing, behind the sealed north bulkhead.
-- **South of the Intake chasm:** the Lattice Wing, behind the sealed south bulkhead.
-- **Outside every wing:** the Gantry freight loop.
+- **North of the Circuit:** the Tallow Wing, behind the sealed bulkhead in the north boulevard.
+- **South of the Intake chasm:** the Lattice Wing.
+- **Beyond both arm ends:** the Gantry, where the tram trunk's stubs past the Vesper and Calder terminals point.
 
 ## Adding a district
 
