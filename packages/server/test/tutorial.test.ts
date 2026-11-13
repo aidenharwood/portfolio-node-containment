@@ -182,7 +182,7 @@ describe('cleared for transit', () => {
     const harness = createHarness({
       prepare: (record) => ({
         ...record,
-        location: at('meridian-atrium', localInRoom('meridian-atrium', 'plaza', { x: 29, y: 32 })),
+        location: inRoom('meridian-atrium', 'plaza'),
         quests: { 'live-fire': completed('live-fire'), 'the-knocking': completed('the-knocking') },
       }),
     });
@@ -193,7 +193,7 @@ describe('cleared for transit', () => {
     const harness = createHarness({
       prepare: (record) => ({
         ...record,
-        location: at('meridian-atrium', localInRoom('meridian-atrium', 'plaza', { x: 29, y: 32 })),
+        location: inRoom('meridian-atrium', 'plaza'),
         quests: { [ORIENTATION]: { questId: ORIENTATION, status: 'active', stepIndex: 8, objectiveProgress: [0] } },
       }),
     });
@@ -208,7 +208,7 @@ describe('returning trainees', () => {
     const harness = createHarness({
       prepare: (record) => ({
         ...record,
-        location: at('meridian-atrium', localInRoom('meridian-atrium', 'plaza', { x: 29, y: 32 })),
+        location: inRoom('meridian-atrium', 'plaza'),
         quests: { [ORIENTATION]: { questId: ORIENTATION, status: 'active', stepIndex: 1, objectiveProgress: [0] } },
       }),
     });

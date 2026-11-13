@@ -8,7 +8,7 @@ import {
   type CharacterRecord,
   type WorldLocation,
 } from '@containment/shared';
-import { createHarness, finishDialogue, type Harness, at, districtOf, localInRoom } from './support/testHarness.ts';
+import { inRoom, createHarness, finishDialogue, type Harness, at, districtOf, localInRoom } from './support/testHarness.ts';
 
 const placed = (location: WorldLocation, changes: Partial<CharacterRecord> = {}) => (record: CharacterRecord): CharacterRecord => ({
   ...record,
@@ -39,7 +39,7 @@ function defeat(harness: Harness, instanceId: string): void {
 
 describe('the Atrium hub', () => {
   test('the medbay patches operatives up, by the medic or by resting on a bed', () => {
-    const harness = createHarness({ prepare: placed(at('meridian-atrium', localInRoom('meridian-atrium', 'plaza', { x: 19, y: 49 })), { vitals: { integrity: 3 } }) });
+    const harness = createHarness({ prepare: placed(inRoom('meridian-atrium', 'plaza'), { vitals: { integrity: 3 } }) });
     harness.talkTo('atrium-anand');
     finishDialogue(harness, (text) => text.startsWith('Patch me up'));
     assert.equal(harness.player.integrity, harness.player.maxIntegrity);

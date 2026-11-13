@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { GAME_CONTENT } from '../src/index.ts';
 import { parseTileLayout, type ObjectPlacement } from '../src/world/district.ts';
-import { type Facing, type TilePoint } from '../src/world/geometry.ts';
+import { rectContains, type Facing, type TilePoint } from '../src/world/geometry.ts';
 import { objectFootprintTiles } from '../src/world/footprint.ts';
 import { TILE_KINDS } from '../src/world/tiles.ts';
 
@@ -63,8 +63,34 @@ describe('room dressing', () => {
 });
 
 describe('the Meridian Atrium', () => {
-  test.todo('keeps the plaza to the core and one ring of benches facing it');
-  test.todo('lays a compass mosaic under the atrium core');
-  test.todo('mans the quarantine gate with a guard booth');
-  test.todo('puts the shelter and timetable by the tram stop');
+  const atrium = GAME_CONTENT.districts.get('meridian-atrium')!;
+  const inRoom = (room: string) => {
+    const rect = atrium.rooms![room]!;
+    return atrium.objects.filter((object) => rectContains(rect, object.position));
+  };
+  const count = (objects: readonly ObjectPlacement[], objectId: string) => objects.filter((object) => object.objectId === objectId).length;
+
+  test('keeps the plaza to the core and one ring of benches facing it', () => {
+    const plaza = inRoom('plaza');
+    assert.equal(count(plaza, 'bench-curve'), 4);
+    for (const busy of ['fountain-basin', 'monument-statue', 'banner-mast']) assert.equal(count(plaza, busy), 0, `${busy} in the plaza`);
+    assert.ok(!atrium.decals?.some((decal) => decal.kind === 'runner'), 'runners in the plaza');
+  });
+
+  test('lays a compass mosaic under the atrium core', () => {
+    const core = atrium.objects.find((object) => object.instanceId === 'atrium-core')!;
+    assert.ok(atrium.decals?.some((decal) => decal.kind === 'mosaic' && decal.pattern === 'compass' && rectContains(decal.rect, core.position)));
+  });
+
+  test('mans the quarantine gate with a guard booth', () => {
+    assert.ok(count(inRoom('quarantine-gate'), 'guard-booth') > 0);
+  });
+
+  test('seats the transit bay by the tram stop and keeps the directory there', () => {
+    const stop = atrium.objects.find((object) => object.instanceId === 'atrium-tram-stop')!.position;
+    const terminal = inRoom('tram-terminal');
+    const near = (point: TilePoint) => Math.max(Math.abs(point.x - stop.x), Math.abs(point.y - stop.y)) <= 8;
+    assert.ok(terminal.some((object) => (object.objectId === 'bench-curve' || object.objectId === 'briefing-bench') && near(object.position)), 'no bench near the stop');
+    assert.ok(terminal.some((object) => object.instanceId === 'transit-directory'), 'the directory has left the transit bay');
+  });
 });

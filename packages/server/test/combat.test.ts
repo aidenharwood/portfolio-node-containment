@@ -15,8 +15,8 @@ import { CONSUMABLE_COOLDOWN_MESSAGE } from '../src/gameplay/gearController.ts';
 import { containSpecimen } from './support/containment.ts';
 import { anchor, createHarness, finishDialogue, type Harness, at, districtOf, inRoom, levelPoint, localInRoom } from './support/testHarness.ts';
 
-const ATRIUM_NEAR_KADE: WorldLocation = at('meridian-atrium', localInRoom('meridian-atrium', 'response-office', { x: 3, y: 3 }));
-const ATRIUM_NEAR_SEL: WorldLocation = at('meridian-atrium', localInRoom('meridian-atrium', 'archives', { x: 8, y: 16 }));
+const ATRIUM_NEAR_KADE: WorldLocation = inRoom('meridian-atrium', 'response-office');
+const ATRIUM_NEAR_SEL: WorldLocation = inRoom('meridian-atrium', 'archives');
 const RANGE_GALLERY: WorldLocation = inRoom('intake-wing', 'range-gallery');
 
 const activeAt = (questId: string, stepIndex = 0, objectiveCount = 1): QuestProgress => ({
@@ -332,7 +332,7 @@ describe('storyline continuity', () => {
 describe('economy', () => {
   test('requisitions sells medgel for scrip and buys back loot', () => {
     const harness = createHarness({
-      prepare: prepared(at('meridian-atrium', localInRoom('meridian-atrium', 'requisitions', { x: 10, y: 3 })), {}),
+      prepare: prepared(anchor('meridian-atrium', 'okaforCounter'), {}),
     });
     const { player } = harness;
     harness.approach('atrium-okafor');
@@ -353,9 +353,9 @@ describe('economy', () => {
   });
 
   test('walking away closes the shop', () => {
-    const harness = createHarness({ prepare: prepared(at('meridian-atrium', localInRoom('meridian-atrium', 'requisitions', { x: 10, y: 3 })), {}) });
+    const harness = createHarness({ prepare: prepared(anchor('meridian-atrium', 'okaforCounter'), {}) });
     harness.gameplay.openShop(harness.player, 'requisitions', 'atrium-okafor');
-    harness.send({ type: 'world.walk', target: levelPoint('meridian-atrium', localInRoom('meridian-atrium', 'workshop', { x: 29, y: 24 })) });
+    harness.send({ type: 'world.walk', target: levelPoint('meridian-atrium', localInRoom('meridian-atrium', 'workshop')) });
     assert.equal(harness.player.shopSession, null);
   });
 });
@@ -400,7 +400,7 @@ describe('the far side', () => {
     assert.ok(player.hasFlag('clearance.undercroft'));
     assert.equal(stepOf(harness, 'the-far-side'), 1);
 
-    harness.gameplay.teleport(player, at('meridian-atrium', localInRoom('meridian-atrium', 'engineering', { x: 28, y: 18 })));
+    harness.gameplay.teleport(player, anchor('meridian-atrium', 'serviceLiftArrival'));
     harness.interactWithObject('atrium-service-lift/1,0');
     assert.equal(districtOf(player), 'undercroft');
     assert.equal(stepOf(harness, 'the-far-side'), 2);

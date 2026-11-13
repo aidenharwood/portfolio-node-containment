@@ -20,7 +20,7 @@ const completed = (questId: string): QuestProgress => ({ questId, status: 'compl
 const VETERAN = createStartingSkills({ closeQuarters: experienceForLevel(99), fortitude: experienceForLevel(99), containment: experienceForLevel(40) });
 const KIT: EquipmentState = { torso: 'composite-plate', legs: 'intake-trousers', feet: 'work-boots', primary: 'the-knocker' };
 
-const NEAR_SEL: WorldLocation = at('meridian-atrium', localInRoom('meridian-atrium', 'archives', { x: 8, y: 16 }));
+const NEAR_SEL: WorldLocation = inRoom('meridian-atrium', 'archives');
 const NEAR_THALE: WorldLocation = inRoom('deepwatch', 'command-post');
 const NEAR_HALVORSEN: WorldLocation = inRoom('sector-three', 'threshold');
 const CRYOVAULT_DOOR: WorldLocation = anchor('deep-concourse', 'cryovaultDoor');
@@ -95,7 +95,7 @@ describe('act two: the answer', () => {
     assert.equal(stepOf(harness, 'a-council-of-one'), 0);
     assert.ok(player.hasFlag('clearance.deepwatch'));
 
-    travel(harness, at('meridian-atrium', localInRoom('meridian-atrium', 'lift-bay', { x: 2, y: 2 })));
+    travel(harness, anchor('meridian-atrium', 'deepLineArrival'));
     use(harness, 'atrium-deep-line/1,0');
     assert.equal(districtOf(player), 'deepwatch');
     assert.equal(stepOf(harness, 'a-council-of-one'), 1);
@@ -186,7 +186,7 @@ describe('act two: the answer', () => {
 
   test('The Original Contract: drain the stacks and recover the charter', () => {
     const harness = createHarness({
-      prepare: veteranAt(at('meridian-atrium', localInRoom('meridian-atrium', 'engineering', { x: 8, y: 11 })), { 'dead-air': completed('dead-air'), 'original-contract': active('original-contract') }, ['clearance.drowned-archive']),
+      prepare: veteranAt(inRoom('meridian-atrium', 'engineering'), { 'dead-air': completed('dead-air'), 'original-contract': active('original-contract') }, ['clearance.drowned-archive']),
     });
     const { player } = harness;
 

@@ -79,7 +79,7 @@ test('an undiscovered destination is refused', () => {
 });
 
 test('boarding away from a platform is refused', () => {
-  const harness = createHarness({ prepare: onPlatform('meridian-atrium', localInRoom('meridian-atrium', 'plaza', { x: 19, y: 25 }), ['atrium-transit', 'verdance-platform']) });
+  const harness = createHarness({ prepare: onPlatform('meridian-atrium', localInRoom('meridian-atrium', 'plaza'), ['atrium-transit', 'verdance-platform']) });
   harness.send({ type: 'tram.board', destinationStationId: 'verdance-platform' });
   assert.equal(harness.player.activity, null);
   assert.match(harness.sink.last('notice')?.text ?? '', /tram platform/);

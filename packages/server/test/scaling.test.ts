@@ -26,7 +26,7 @@ function crowd(count: number, options: { capacity: number; districtId: string; p
 
 describe('scaling for crowds', () => {
   test('a full level overflows into a new layer, and players share layers until capacity', () => {
-    const { gameplay, players } = crowd(5, { capacity: 2, districtId: 'meridian-atrium', position: localInRoom('meridian-atrium', 'workshop', { x: 29, y: 24 }) });
+    const { gameplay, players } = crowd(5, { capacity: 2, districtId: 'meridian-atrium', position: localInRoom('meridian-atrium', 'workshop') });
     const layers = gameplay.world.layersOf('main-floor');
     assert.equal(layers.length, 3);
     assert.deepEqual(layers.map((layer) => layer.players.size), [2, 2, 1]);
@@ -36,7 +36,7 @@ describe('scaling for crowds', () => {
   });
 
   test('empty overflow layers are retired', () => {
-    const { gameplay, players } = crowd(3, { capacity: 2, districtId: 'meridian-atrium', position: localInRoom('meridian-atrium', 'workshop', { x: 29, y: 24 }) });
+    const { gameplay, players } = crowd(3, { capacity: 2, districtId: 'meridian-atrium', position: localInRoom('meridian-atrium', 'workshop') });
     const overflowPlayer = players[2];
     assert.ok(overflowPlayer);
     gameplay.leaveWorld(overflowPlayer);

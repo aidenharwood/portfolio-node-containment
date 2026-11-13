@@ -10,8 +10,8 @@ import { anchor, anchorPoint, at, createHarness, exitPoint, inRoom, levelPoint, 
 const MAIN_FLOOR_SPAWN = anchor('meridian-atrium', 'transit');
 const LIFT_ARRIVAL = anchorPoint('deepwatch', 'liftArrival');
 
-const WEST_GATE = at('meridian-atrium', localInRoom('meridian-atrium', 'west-gate', { x: 2, y: 2 }));
-const EAST_GATE = at('meridian-atrium', localInRoom('meridian-atrium', 'east-gate', { x: 27, y: 2 }));
+const WEST_GATE = inRoom('meridian-atrium', 'west-gate');
+const EAST_GATE = inRoom('meridian-atrium', 'east-gate');
 
 const ROUTE_TO_HYDROPONICS: readonly TilePoint[] = [
   levelPoint('meridian-circuit', localInRoom('meridian-circuit', 'west-boulevard', { x: 6, y: 90 })),

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { countItem, destroyedQuantity, storedCount, type CharacterRecord, type QuestProgress } from '@containment/shared';
-import { createHarness, at, type Harness, localInRoom } from './support/testHarness.ts';
+import { inRoom, createHarness, at, type Harness, localInRoom } from './support/testHarness.ts';
 
 const ORIENTATION = 'orientation-protocol';
 const VENTS = 'static-in-the-vents';
@@ -17,7 +17,7 @@ describe('quest items', () => {
     const harness = createHarness({
       prepare: (record) => ({
         ...record,
-        location: at('meridian-atrium', localInRoom('meridian-atrium', 'requisitions', { x: 26, y: 1 })),
+        location: inRoom('meridian-atrium', 'requisitions'),
         inventory: [{ itemId: 'clearance-card-l1', quantity: 1 }, { itemId: 'expedition-log', quantity: 1 }, { itemId: 'scrap-alloy', quantity: 4 }, ...record.inventory.slice(3)],
       }),
     });
@@ -63,7 +63,7 @@ describe('quest items', () => {
     const harness = createHarness({
       prepare: (record) => ({
         ...record,
-        location: at('meridian-atrium', localInRoom('meridian-atrium', 'quarantine-gate', { x: 60, y: 1 })),
+        location: inRoom('meridian-atrium', 'quarantine-gate'),
         quests: { [VENTS]: onStep(VENTS, 1) },
         flags: [...record.flags, 'object-used:meridian-atrium:vent-north:0'],
         inventory: carrying(record, 'vent-filter-chip', 3),

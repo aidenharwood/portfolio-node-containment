@@ -20,7 +20,7 @@ const completed = (questId: string): QuestProgress => ({ questId, status: 'compl
 const VETERAN = createStartingSkills({ closeQuarters: experienceForLevel(99), fortitude: experienceForLevel(99), containment: experienceForLevel(40) });
 const KIT: EquipmentState = { torso: 'threshold-plate', legs: 'threshold-trousers', feet: 'threshold-boots', primary: 'the-knocker' };
 
-const NEAR_SEL: WorldLocation = at('meridian-atrium', localInRoom('meridian-atrium', 'archives', { x: 8, y: 16 }));
+const NEAR_SEL: WorldLocation = inRoom('meridian-atrium', 'archives');
 const NEAR_ACHTERBERG: WorldLocation = at('signal-array', localInRoom('signal-array', 'uplink-lobby', { x: 18, y: 14 }));
 const NEAR_CHUTE: WorldLocation = at('signal-array', localInRoom('signal-array', 'operator-pit', { x: 22, y: 2 }));
 const NEAR_HALVORSEN: WorldLocation = inRoom('sector-three', 'threshold');

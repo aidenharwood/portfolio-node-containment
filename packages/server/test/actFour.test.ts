@@ -73,7 +73,7 @@ const travel = (harness: Harness, location: WorldLocation) => harness.gameplay.t
 
 describe('act four: postmarked', () => {
   test('Postmarked leads from Sel through the Waterworks wall to the Calder gatehouse', () => {
-    const harness = createHarness({ prepare: veteranAt(at('meridian-atrium', localInRoom('meridian-atrium', 'archives', { x: 8, y: 16 }))) });
+    const harness = createHarness({ prepare: veteranAt(inRoom('meridian-atrium', 'archives')) });
     const { player } = harness;
 
     talk(harness, 'atrium-sel', 'Did every Site reply by relay?', "I'll go and introduce us.");

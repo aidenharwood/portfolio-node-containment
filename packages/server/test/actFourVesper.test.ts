@@ -79,7 +79,7 @@ const LODGE = at('vesper-lodge', localInRoom('vesper-lodge', 'lodge'));
 
 describe('act four: the Vesper Wing', () => {
   test('Referral leads from the Medbay through the seed vault to the Porter\'s Lodge', () => {
-    const harness = createHarness({ prepare: veteranAt(at('meridian-atrium', localInRoom('meridian-atrium', 'lift-bay', { x: 12, y: 2 }))) });
+    const harness = createHarness({ prepare: veteranAt(anchor('meridian-atrium', 'deepLineArrival')) });
     const { player } = harness;
 
     talk(harness, 'atrium-anand', 'You look worried, Doc.', "I'll attend.");
