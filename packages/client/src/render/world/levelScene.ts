@@ -11,7 +11,8 @@ import {
 } from '@containment/shared';
 import { AdditiveBlending, Group, MeshBasicMaterial, type Vector3 } from 'three';
 import type { ActiveZone } from '../../state/worldState.ts';
-import { planWallLighting, type FillLight, type SconceSpot } from './wallLights.ts';
+import { chunkSignature, objectChanges, type ChunkSignature } from './chunkSignature.ts';
+import { planWallLighting, type FillLight, type SconceSpot, type WallLighting } from './wallLights.ts';
 import { ChunkView, chunkRegion, type ChunkContents, type IndexedPlacement, type LightSource, type ObjectView, type WallPiece } from './chunkView.ts';
 
 export type { LightSource, ObjectView, WallPiece } from './chunkView.ts';
@@ -30,6 +31,7 @@ const DEPLETED_HEIGHT = 0.35;
 const BUILD_RADIUS = 1;
 const RETAIN_RADIUS = 2;
 const BUILD_BUDGET_MS = 5;
+const SETTLE_DELAY_MS = 300;
 
 export interface StreamReach {
   readonly build: number;
@@ -54,22 +56,107 @@ const chunkDistance = (a: ChunkCoord, b: ChunkCoord): number => Math.max(Math.ab
 export class LevelScene {
   readonly root = new Group();
   readonly objects = new Map<InstanceId, ObjectView>();
-  private readonly zone: ActiveZone;
+  private zone: ActiveZone;
   private readonly chunks = new Map<ChunkKey, { readonly coord: ChunkCoord; readonly view: ChunkView }>();
-  private readonly objectsByChunk: Map<ChunkKey, IndexedPlacement[]>;
-  private readonly sconcesByChunk: Map<ChunkKey, SconceSpot[]>;
-  private readonly fillsByChunk: Map<ChunkKey, FillLight[]>;
+  private objectsByChunk: Map<ChunkKey, IndexedPlacement[]>;
+  private sconcesByChunk: Map<ChunkKey, SconceSpot[]>;
+  private fillsByChunk: Map<ChunkKey, FillLight[]>;
+  private lighting: WallLighting;
+  private readonly signatures = new Map<ChunkKey, ChunkSignature>();
+  private readonly shown = new Map<ChunkKey, ChunkSignature>();
+  private readonly retiring = new Map<ChunkKey, ChunkView>();
+  private settleAfter = 0;
+  private readonly editable: boolean;
   private deferredCentre: ChunkKey | null = null;
   private awaitingPaint = false;
   private pendingNearby = true;
   private readonly ringMaterial = new MeshBasicMaterial({ color: 0xffb347, transparent: true, opacity: 0.8, blending: AdditiveBlending, depthWrite: false, toneMapped: false });
 
-  constructor(zone: ActiveZone) {
+  constructor(zone: ActiveZone, options: { readonly editable?: boolean } = {}) {
     this.zone = zone;
+    this.editable = options.editable ?? false;
+    this.lighting = planWallLighting(zone);
     this.objectsByChunk = groupByChunk(zone.definition.objects.map((placement, index) => ({ placement, index })), ({ placement }) => placement.position);
+    this.sconcesByChunk = groupByChunk(this.lighting.sconces, (spot) => spot.floor);
+    this.fillsByChunk = groupByChunk(this.lighting.fills, (fill) => fill.position);
+  }
+
+  canPatch(zone: ActiveZone): boolean {
+    return this.editable && zone.layout.width === this.zone.layout.width && zone.layout.height === this.zone.layout.height && zone.definition.id === this.zone.definition.id;
+  }
+
+  patch(zone: ActiveZone): { readonly rebuilt: number; readonly patched: number; readonly settling: number } {
     const lighting = planWallLighting(zone);
+    type Plan = { readonly key: ChunkKey; readonly coord: ChunkCoord; readonly mode: 'rebuild' | 'objects' | 'settle'; readonly next: ChunkSignature };
+    const plans: Plan[] = [];
+    for (const key of new Set([...this.chunks.keys(), ...this.retiring.keys()])) {
+      const entry = this.chunks.get(key);
+      const displayed = this.displayed(key);
+      if (!displayed || !entry) {
+        if (entry && !displayed) {
+          entry.view.dispose();
+          this.chunks.delete(key);
+          this.signatures.delete(key);
+        }
+        continue;
+      }
+      const before = this.shown.get(key);
+      const next = chunkSignature(zone, entry.coord, lighting);
+      if (!before || before.tiles !== next.tiles) plans.push({ key, coord: entry.coord, mode: 'rebuild', next });
+      else {
+        const changes = objectChanges(before, next);
+        if (changes.added.length > 0 || changes.removed.length > 0) plans.push({ key, coord: entry.coord, mode: 'objects', next });
+        else if (before.settle !== next.settle || !entry.view.ready) plans.push({ key, coord: entry.coord, mode: 'settle', next });
+      }
+    }
+    this.zone = zone;
+    this.lighting = lighting;
+    this.objectsByChunk = groupByChunk(zone.definition.objects.map((placement, index) => ({ placement, index })), ({ placement }) => placement.position);
     this.sconcesByChunk = groupByChunk(lighting.sconces, (spot) => spot.floor);
     this.fillsByChunk = groupByChunk(lighting.fills, (fill) => fill.position);
+    for (const plan of plans) {
+      const displayed = this.displayed(plan.key);
+      const before = this.shown.get(plan.key);
+      if (plan.mode === 'objects' && displayed && before) {
+        const { removed, added } = objectChanges(before, plan.next);
+        for (const placement of removed) {
+          const view = displayed.removeObject(placement.instanceId);
+          if (view && this.objects.get(view.instanceId) === view) this.objects.delete(view.instanceId);
+        }
+        for (const { placement, index } of added) {
+          const view = displayed.placeObject(placement, index);
+          if (view) this.objects.set(view.instanceId, view);
+        }
+        this.shown.set(plan.key, { ...before, objects: plan.next.objects });
+      }
+      const building = this.chunks.get(plan.key)?.view;
+      if (building && building === displayed) this.retiring.set(plan.key, building);
+      else building?.dispose();
+      this.chunks.delete(plan.key);
+      this.signatures.delete(plan.key);
+      const fresh = this.ensureChunk(plan.coord);
+      if (!fresh) this.retire(plan.key);
+      else if (plan.mode === 'rebuild') this.buildChunk(fresh, Infinity);
+    }
+    this.settleAfter = performance.now() + SETTLE_DELAY_MS;
+    const count = (mode: Plan['mode']): number => plans.filter((plan) => plan.mode === mode).length;
+    return { rebuilt: count('rebuild'), patched: count('objects'), settling: count('objects') + count('settle') };
+  }
+
+  private displayed(key: ChunkKey): ChunkView | null {
+    const retiring = this.retiring.get(key);
+    if (retiring) return retiring;
+    const view = this.chunks.get(key)?.view;
+    return view?.ready ? view : null;
+  }
+
+  private retire(key: ChunkKey): void {
+    const old = this.retiring.get(key);
+    if (!old) return;
+    this.retiring.delete(key);
+    if (!this.chunks.has(key)) this.shown.delete(key);
+    for (const object of old.objects) if (this.objects.get(object.instanceId) === object) this.objects.delete(object.instanceId);
+    old.dispose();
   }
 
   get loading(): boolean {
@@ -81,13 +168,13 @@ export class LevelScene {
   }
 
   get lights(): LightSource[] {
-    return this.readyViews().flatMap((view) => view.lights);
+    return [...this.readyViews(), ...this.retiring.values()].flatMap((view) => view.lights);
   }
 
   stream(focus: TilePoint, budgetMs = BUILD_BUDGET_MS, reach: StreamReach = DEFAULT_REACH): void {
     const centre = chunkOf({ x: Math.round(focus.x), y: Math.round(focus.y) });
     const centreView = this.ensureChunk(centre);
-    if (centreView && !centreView.ready) {
+    if (centreView && !centreView.ready && !this.retiring.has(chunkKey(centre))) {
       const key = chunkKey(centre);
       if (this.deferredCentre !== key) {
         this.deferredCentre = key;
@@ -108,8 +195,10 @@ export class LevelScene {
       for (let dx = -reach.build; dx <= reach.build; dx++) neighbours.push({ cx: centre.cx + dx, cy: centre.cy + dy });
     }
     const deadline = performance.now() + budgetMs;
+    const settling = performance.now() >= this.settleAfter;
     for (const coord of neighbours.sort((a, b) => Math.hypot(a.cx - centre.cx, a.cy - centre.cy) - Math.hypot(b.cx - centre.cx, b.cy - centre.cy))) {
       if (performance.now() >= deadline) break;
+      if (!settling && this.retiring.has(chunkKey(coord))) continue;
       const view = this.ensureChunk(coord);
       if (view && !view.ready) this.buildChunk(view, deadline);
     }
@@ -122,6 +211,9 @@ export class LevelScene {
       for (const object of view.objects) this.objects.delete(object.instanceId);
       view.dispose();
       this.chunks.delete(key);
+      this.signatures.delete(key);
+      this.shown.delete(key);
+      this.retire(key);
     }
   }
 
@@ -131,6 +223,10 @@ export class LevelScene {
 
   private buildChunk(view: ChunkView, deadline: number): void {
     if (!view.build(deadline)) return;
+    const key = chunkKeyOf({ x: view.region.x, y: view.region.y });
+    this.retire(key);
+    const signature = this.signatures.get(key);
+    if (signature) this.shown.set(key, signature);
     this.root.add(view.root);
     for (const object of view.objects) this.objects.set(object.instanceId, object);
   }
@@ -161,6 +257,7 @@ export class LevelScene {
       }
     }
     for (const view of this.readyViews()) view.update(time);
+    for (const view of this.retiring.values()) view.update(time);
     this.ringMaterial.opacity = 0.55 + Math.sin(time * 3) * 0.3;
   }
 
@@ -185,7 +282,7 @@ export class LevelScene {
       piece.faded = shouldFade;
       piece.batch.setFaded(piece.index, shouldFade);
     };
-    for (const view of this.readyViews()) {
+    for (const view of [...this.readyViews(), ...this.retiring.values()]) {
       for (const wall of view.walls) apply(wall, blocksView(wall.tile, 0));
       for (const fixture of view.fixtures) apply(fixture, blocksView(fixture.tile, 0));
       view.applyFades();
@@ -194,6 +291,10 @@ export class LevelScene {
 
   dispose(): void {
     for (const { view } of this.chunks.values()) view.dispose();
+    for (const view of this.retiring.values()) view.dispose();
+    this.retiring.clear();
+    this.shown.clear();
+    this.signatures.clear();
     this.chunks.clear();
     this.objects.clear();
     this.ringMaterial.dispose();
@@ -210,8 +311,9 @@ export class LevelScene {
       sconces: this.sconcesByChunk.get(key) ?? [],
       fills: this.fillsByChunk.get(key) ?? [],
     };
-    const view = new ChunkView(this.zone, region, contents, this.ringMaterial);
+    const view = new ChunkView(this.zone, region, contents, this.ringMaterial, { separateObjects: this.editable });
     this.chunks.set(key, { coord, view });
+    if (this.editable) this.signatures.set(key, chunkSignature(this.zone, coord, this.lighting));
     return view;
   }
 }

@@ -11,6 +11,33 @@ const element = <K extends keyof HTMLElementTagNameMap>(tag: K, attributes: Reco
   return node;
 };
 
+const KIND_NAMES: Readonly<Record<string, string>> = {
+  objects: 'Object',
+  assemblies: 'Assembly',
+  npcs: 'Person',
+  creatures: 'Creature',
+  lights: 'Light',
+  decals: 'Decal',
+  setPieces: 'Set-piece',
+};
+
+const FIELD_NAMES: Readonly<Record<string, string>> = {
+  npc: 'person',
+  prefab: 'set-piece',
+  everyX: 'every x',
+  everyY: 'every y',
+};
+
+const describePosition = (at: unknown): string => {
+  if (!at || typeof at !== 'object') return 'No position.';
+  const place = at as Record<string, unknown>;
+  if (typeof place.room === 'string') return `In room ${place.room}, ${String(place.dx ?? 0)} across and ${String(place.dy ?? 0)} down from its corner.`;
+  if (typeof place.exit === 'string') return `In exit ${place.exit}, tile ${String(place.index)} along it.`;
+  if (Array.isArray(place.link)) return `In the link between ${place.link.join(' and ')}, tile ${String(place.index)} along it.`;
+  if (typeof place.x === 'number' && typeof place.y === 'number') return `At tile ${place.x}, ${place.y}.`;
+  return `At ${JSON.stringify(at)}.`;
+};
+
 export class PropertiesPanel {
   readonly root = element('section', { class: 'properties', 'aria-label': 'Properties' });
   private readonly content: GameContent;
@@ -34,12 +61,27 @@ export class PropertiesPanel {
     }
   }
 
+  private shownLayout: DistrictLayout | null = null;
+  private shownSelection = '';
+
   render(layout: DistrictLayout): void {
+    const selectionKey = JSON.stringify(this.controller.selection);
+    if (layout === this.shownLayout && selectionKey === this.shownSelection) return;
+    this.shownLayout = layout;
+    this.shownSelection = selectionKey;
     const keep = [...this.root.querySelectorAll('datalist')];
     this.root.replaceChildren(...keep);
     const selection = this.controller.selection;
     if (!selection) {
-      this.root.append(element('p', { class: 'hint' }, 'Click anything on the plan to edit it. Drag to move, R to rotate, Delete to remove, Ctrl+Z to undo.'));
+      this.root.append(element('h2', {}, 'Nothing selected'));
+      const steps = element('ol', { class: 'hint steps' });
+      steps.append(
+        element('li', {}, 'Click a room, object or person on the plan to select it.'),
+        element('li', {}, 'Drag it, or use the arrow keys, to move it.'),
+        element('li', {}, 'Change its details here, or add something new from the list above.'),
+        element('li', {}, 'Save when you are happy. Press ? for every shortcut.'),
+      );
+      this.root.append(steps);
       return;
     }
     if (selection.kind === 'entry') this.renderEntry(layout, selection.ref);
@@ -54,8 +96,8 @@ export class PropertiesPanel {
     }
     const entry = (layout[ref.collection] as readonly Record<string, unknown>[])[ref.index];
     if (!entry) return;
-    this.root.append(element('h2', {}, `${ref.collection.replace(/s$/, '')} · ${String(entry.id ?? entry.kind ?? entry.color ?? ref.index)}`));
-    this.root.append(element('p', { class: 'hint' }, `at ${JSON.stringify(entry.at)}`));
+    this.root.append(element('h2', {}, `${KIND_NAMES[ref.collection] ?? ref.collection} · ${String(entry.id ?? entry.kind ?? entry.color ?? ref.index)}`));
+    this.root.append(element('p', { class: 'hint' }, describePosition(entry.at)));
     const fields: Record<string, Record<string, FieldKind>> = {
       objects: { object: { suggest: this.suggestions.object ?? [] }, facing: { choices: ['', ...LAYOUT_CHOICES.facings] } },
       assemblies: { assembly: { suggest: this.suggestions.assembly ?? [] }, facing: { choices: ['', ...LAYOUT_CHOICES.facings] }, span: 'number' },
@@ -126,7 +168,7 @@ export class PropertiesPanel {
 
   private field(name: string, kind: FieldKind, value: unknown, change: (value: unknown) => EditResult): HTMLElement {
     const label = element('label', { class: 'field' });
-    label.append(element('span', {}, name));
+    label.append(element('span', {}, FIELD_NAMES[name] ?? name));
     let input: HTMLInputElement | HTMLSelectElement;
     if (typeof kind === 'object' && 'choices' in kind) {
       input = element('select');

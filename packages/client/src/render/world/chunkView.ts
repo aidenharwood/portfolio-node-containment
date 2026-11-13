@@ -171,16 +171,19 @@ export class ChunkView {
   readonly lights: LightSource[] = [];
   private coolant: LiquidSurface | null = null;
   private readonly ringMaterial: Material;
-  private readonly region: TileRect;
+  readonly region: TileRect;
   private readonly decor = new Map<number, Record<VoxelLayer, VoxelGeometryPart[]>>();
   private readonly fixturePieces: { readonly tile: TilePoint; readonly meshes: VoxelMeshes }[] = [];
   private readonly batches: FadeBatch[] = [];
   private readonly steps: ((() => void) | undefined)[] = [];
   private nextStep = 0;
+  private readonly separateObjects: boolean;
+  private readonly objectLights = new Map<InstanceId, LightSource[]>();
 
-  constructor(zone: ActiveZone, region: TileRect, contents: ChunkContents, ringMaterial: Material) {
+  constructor(zone: ActiveZone, region: TileRect, contents: ChunkContents, ringMaterial: Material, options: { readonly separateObjects?: boolean } = {}) {
     this.ringMaterial = ringMaterial;
     this.region = region;
+    this.separateObjects = options.separateObjects ?? false;
     if (hasStructure(zone, region)) this.planStructure(zone, region, new Set(contents.objects.flatMap(({ placement }) => objectFootprintTiles(GAME_CONTENT.worldObjects.get(placement.objectId), placement).map(tileKey))));
     contents.objects.forEach(({ placement, index }) => this.steps.push(() => this.addObject(placement, index)));
     bandsOf(region).forEach((band) => this.steps.push(() => this.buildDecor(band)));
@@ -297,6 +300,27 @@ export class ChunkView {
     });
   }
 
+  placeObject(placement: ObjectPlacement, index: number): ObjectView | null {
+    const before = this.objects.length;
+    this.addObject(placement, index);
+    return this.objects.length > before ? (this.objects[this.objects.length - 1] ?? null) : null;
+  }
+
+  removeObject(instanceId: InstanceId): ObjectView | null {
+    const at = this.objects.findIndex((view) => view.instanceId === instanceId);
+    const view = this.objects[at];
+    if (!view) return null;
+    this.objects.splice(at, 1);
+    view.group.removeFromParent();
+    view.objectiveRing.removeFromParent();
+    for (const light of this.objectLights.get(instanceId) ?? []) {
+      const lightAt = this.lights.indexOf(light);
+      if (lightAt >= 0) this.lights.splice(lightAt, 1);
+    }
+    this.objectLights.delete(instanceId);
+    return view;
+  }
+
   private addObject(placement: ObjectPlacement, index: number): void {
     const definition = GAME_CONTENT.worldObjects.get(placement.objectId);
     if (!definition) return;
@@ -305,8 +329,10 @@ export class ChunkView {
     const parts = objectMeshesFor(definition.model, seed % MODEL_VARIANTS);
     const scale = definition.modelScale ?? 1;
     const origin = objectModelOrigin(placement, definition);
+    const lightsBefore = this.lights.length;
     this.addObjectLight(definition, placement, origin, parts, `${definition.model}:${seed % MODEL_VARIANTS}`, scale, seed);
-    if (isStaticDecor(definition, parts)) {
+    if (this.lights.length > lightsBefore) this.objectLights.set(placement.instanceId, this.lights.slice(lightsBefore));
+    if (!this.separateObjects && isStaticDecor(definition, parts)) {
       this.addDecor(parts.base, placement, definition, origin, scale);
       return;
     }

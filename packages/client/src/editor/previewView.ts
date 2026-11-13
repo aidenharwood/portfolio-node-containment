@@ -1,8 +1,9 @@
 import { CHUNK_SIZE, GAME_CONTENT, type TilePoint } from '@containment/shared';
-import { Group, Mesh, MeshBasicMaterial, MathUtils, PerspectiveCamera, PlaneGeometry, Scene, Vector3 } from 'three';
+import { Group, Mesh, MeshBasicMaterial, MathUtils, PerspectiveCamera, Plane, PlaneGeometry, Raycaster, Scene, Vector2, Vector3 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { SceneLook } from '../render/sceneLook.ts';
 import { ActorLayer } from './actorLayer.ts';
+import { EditOverlay } from './editOverlay.ts';
 import { actorsOf } from './actorSpecs.ts';
 import { createBlendedAmbience, sampleAmbience } from '../render/world/ambienceBlend.ts';
 import { LevelScene, type StreamReach } from '../render/world/levelScene.ts';
@@ -21,6 +22,16 @@ const PREVIEW_FOG = 0.006;
 const BUILD_BUDGET_MS = 12;
 const NOTHING: ReadonlySet<string> = new Set();
 const MAX_REACH = 8;
+const CLICK_SLOP_PX = 4;
+const GROUND = new Plane(new Vector3(0, 1, 0), 0);
+
+export interface EditPointer {
+  down(tile: TilePoint, event: PointerEvent): boolean;
+  move(tile: TilePoint): void;
+  up(tile: TilePoint): void;
+  click(tile: TilePoint, event: PointerEvent): void;
+  hover(tile: TilePoint | null): void;
+}
 
 export class PreviewView {
   private readonly canvas = document.createElement('canvas');
@@ -40,12 +51,21 @@ export class PreviewView {
   private frame = 0;
   private lastFrame = performance.now();
   private readonly resizeObserver: ResizeObserver;
+  readonly overlay = new EditOverlay();
+  private readonly raycaster = new Raycaster();
+  private editPointer: EditPointer | null = null;
+  private claimed = false;
+  private press: { x: number; y: number } | null = null;
+  private frameListeners: (() => void)[] = [];
+  private queuedZone: (() => ActiveZone) | null = null;
+  private hidden: string | null = null;
 
   constructor(container: HTMLElement) {
     this.canvas.style.cssText = 'width:100%;height:100%;display:block';
     container.append(this.canvas);
     this.sceneLook = new SceneLook(this.canvas, this.scene, this.camera, PREVIEW_FOG);
-    this.scene.add(this.issueMarkers, this.actors.root);
+    this.scene.add(this.issueMarkers, this.actors.root, this.overlay.root);
+    this.listenForEdits(container);
     this.controls = new OrbitControls(this.camera, this.canvas);
     this.controls.enableDamping = true;
     this.controls.minDistance = 1.5;
@@ -73,17 +93,42 @@ export class PreviewView {
     }
     this.zone = zone;
     this.actors.show(actorsOf(GAME_CONTENT, zone.definition));
-    this.level = new LevelScene(zone);
+    this.level = new LevelScene(zone, { editable: true });
     this.scene.add(this.level.root);
     this.sceneLook.resetLights();
     const span = Math.min(MAX_REACH, Math.ceil(Math.max(zone.layout.width, zone.layout.height) / CHUNK_SIZE) + 1);
     this.reach = { build: span, retain: span };
   }
 
+  hideObject(instanceId: string | null): void {
+    if (instanceId === this.hidden) return;
+    const shown = this.hidden ? this.level?.objects.get(this.hidden) : undefined;
+    if (shown) shown.group.visible = true;
+    this.hidden = instanceId;
+    const hiding = instanceId ? this.level?.objects.get(instanceId) : undefined;
+    if (hiding) hiding.group.visible = false;
+  }
+
+  queueUpdate(zone: () => ActiveZone): void {
+    this.queuedZone = zone;
+  }
+
+  update(zone: ActiveZone): boolean {
+    const level = this.level;
+    if (!level || !level.canPatch(zone)) {
+      this.show(zone);
+      return false;
+    }
+    this.zone = zone;
+    this.actors.show(actorsOf(GAME_CONTENT, zone.definition));
+    level.patch(zone);
+    return true;
+  }
+
   look(state: CameraState): void {
     const zone = this.zone;
     const focus = state.focus ?? (zone ? { x: Math.floor(zone.layout.width / 2), y: Math.floor(zone.layout.height / 2) } : { x: 0, y: 0 });
-    const target = new Vector3(focus.x + 0.5, 0, focus.y + 0.5);
+    const target = new Vector3(focus.x, 0, focus.y);
     const distance = BASE_DISTANCE / state.zoom;
     const yaw = MathUtils.degToRad(state.yaw);
     const pitch = MathUtils.degToRad(state.pitch);
@@ -109,13 +154,40 @@ export class PreviewView {
     for (const tile of tiles) {
       const marker = new Mesh(this.issueGeometry, this.issueMaterial);
       marker.rotation.x = -Math.PI / 2;
-      marker.position.set(tile.x + 0.5, 0.06, tile.y + 0.5);
+      marker.position.set(tile.x, 0.06, tile.y);
       this.issueMarkers.add(marker);
     }
   }
 
   setSurvey(on: boolean): void {
     this.sceneLook.setSurvey(on);
+  }
+
+  setEditPointer(pointer: EditPointer | null): void {
+    this.editPointer = pointer;
+    if (!pointer) this.overlay.showGhost(null, true);
+  }
+
+  tileAt(clientX: number, clientY: number): TilePoint | null {
+    const rect = this.canvas.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return null;
+    const pointer = new Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
+    this.raycaster.setFromCamera(pointer, this.camera);
+    const hit = this.raycaster.ray.intersectPlane(GROUND, new Vector3());
+    return hit ? { x: Math.round(hit.x), y: Math.round(hit.z) } : null;
+  }
+
+  project(point: { x: number; y: number; z: number }): { x: number; y: number; visible: boolean } {
+    const projected = new Vector3(point.x, point.y, point.z).project(this.camera);
+    return {
+      x: ((projected.x + 1) / 2) * this.canvas.clientWidth,
+      y: ((1 - projected.y) / 2) * this.canvas.clientHeight,
+      visible: projected.z > -1 && projected.z < 1 && Math.abs(projected.x) <= 1.05 && Math.abs(projected.y) <= 1.05,
+    };
+  }
+
+  onFrame(listener: () => void): void {
+    this.frameListeners.push(listener);
   }
 
   onCamera(listener: (state: CameraState) => void): void {
@@ -129,8 +201,57 @@ export class PreviewView {
     this.actors.dispose();
     this.issueGeometry.dispose();
     this.issueMaterial.dispose();
+    this.overlay.dispose();
     this.level?.dispose();
     this.sceneLook.dispose();
+  }
+
+  private listenForEdits(container: HTMLElement): void {
+    container.addEventListener(
+      'pointerdown',
+      (event) => {
+        const pointer = this.editPointer;
+        if (!pointer || event.button !== 0 || event.target !== this.canvas) return;
+        const tile = this.tileAt(event.clientX, event.clientY);
+        if (!tile) return;
+        if (pointer.down(tile, event)) {
+          event.stopPropagation();
+          this.canvas.setPointerCapture(event.pointerId);
+          this.claimed = true;
+          this.controls.enabled = false;
+          return;
+        }
+        this.press = { x: event.clientX, y: event.clientY };
+      },
+      { capture: true },
+    );
+    this.canvas.addEventListener('pointermove', (event) => {
+      const pointer = this.editPointer;
+      if (!pointer) return;
+      const tile = this.tileAt(event.clientX, event.clientY);
+      if (this.claimed) {
+        if (tile) pointer.move(tile);
+        return;
+      }
+      if (this.press && Math.abs(event.clientX - this.press.x) + Math.abs(event.clientY - this.press.y) > CLICK_SLOP_PX) this.press = null;
+      pointer.hover(event.buttons === 0 ? tile : null);
+    });
+    this.canvas.addEventListener('pointerleave', () => this.editPointer?.hover(null));
+    window.addEventListener('pointerup', (event) => {
+      const pointer = this.editPointer;
+      const press = this.press;
+      this.press = null;
+      if (!pointer) return;
+      const tile = this.tileAt(event.clientX, event.clientY);
+      if (this.claimed) {
+        this.claimed = false;
+        this.controls.enabled = true;
+        if (this.canvas.hasPointerCapture(event.pointerId)) this.canvas.releasePointerCapture(event.pointerId);
+        if (tile) pointer.up(tile);
+        return;
+      }
+      if (press && tile && event.target === this.canvas) pointer.click(tile, event);
+    });
   }
 
   private cameraState(): CameraState {
@@ -141,7 +262,7 @@ export class PreviewView {
       yaw: Math.round(MathUtils.radToDeg(Math.atan2(offset.x, offset.z)) * 10) / 10,
       pitch: Math.round(MathUtils.radToDeg(Math.asin(offset.y / distance)) * 10) / 10,
       zoom: Math.round((BASE_DISTANCE / distance) * 1000) / 1000,
-      focus: { x: Math.floor(target.x), y: Math.floor(target.z) },
+      focus: { x: Math.round(target.x), y: Math.round(target.z) },
     };
   }
 
@@ -162,6 +283,9 @@ export class PreviewView {
   }
 
   private tick(now: number): void {
+    const queued = this.queuedZone;
+    this.queuedZone = null;
+    if (queued) this.update(queued());
     const delta = Math.min(0.1, (now - this.lastFrame) / 1000);
     this.lastFrame = now;
     if (!this.level || this.canvas.clientWidth === 0) return;
@@ -175,5 +299,6 @@ export class PreviewView {
     this.sceneLook.aimKeyLight(target);
     this.sceneLook.updateLights(this.level.lights, delta, time, target);
     this.sceneLook.render(this.camera, delta);
+    for (const listener of this.frameListeners) listener();
   }
 }

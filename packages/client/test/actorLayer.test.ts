@@ -38,3 +38,18 @@ test('creatures become actors with their model', () => {
     assert.equal(actor.kind === 'creature' && actor.model, GAME_CONTENT.creatures.get(placement?.creatureId ?? '')?.model);
   }
 });
+
+test('showing the same actors again reuses their models and only moves them', async () => {
+  const { ActorLayer } = await import('../src/editor/actorLayer.ts');
+  const level = previewLevel(GAME_CONTENT, 'meridian-atrium');
+  const actors = actorsOf(GAME_CONTENT, level);
+  const layer = new ActorLayer();
+  layer.show(actors);
+  const before = [...layer.root.children];
+  const moved = actors.map((actor, index) => (index === 0 ? { ...actor, position: { x: actor.position.x + 2, y: actor.position.y } } : actor));
+  layer.show(moved);
+  assert.deepEqual(layer.root.children, before);
+  assert.equal(layer.root.children[0]?.position.x, (moved[0]?.position.x ?? 0));
+  layer.show(moved.slice(1));
+  assert.equal(layer.root.children.length, before.length - 1);
+});

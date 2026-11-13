@@ -61,3 +61,14 @@ test('listeners hear which district changed', () => {
   assert.deepEqual(heard, [LODGE, LODGE]);
   assert.equal(document.district(LODGE).id, LODGE);
 });
+
+test('canUndo and canRedo follow the history', () => {
+  const document = new EditorDocument(LAYOUT_SOURCES);
+  assert.equal(document.canUndo(), false);
+  assert.equal(document.canRedo(), false);
+  document.apply(ATRIUM, (layout) => rotateEntry(layout, { collection: 'objects', index: 0 }));
+  assert.equal(document.canUndo(), true);
+  document.undo();
+  assert.equal(document.canUndo(), false);
+  assert.equal(document.canRedo(), true);
+});

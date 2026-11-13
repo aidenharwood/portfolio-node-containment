@@ -105,3 +105,48 @@ test('clicking the same floor again reaches the patch under it', () => {
   }
   assert.deepEqual(controller.selection, { kind: 'step', index: document.layout(ID).steps.length - 1 });
 });
+
+test('arrow keys nudge the selected object one tile and refuse walls', () => {
+  const { document, controller } = setup();
+  controller.pointerDown({ x: 2, y: 2 }, {});
+  controller.pointerUp({ x: 2, y: 2 });
+  assert.equal(controller.key('ArrowRight', {}), true);
+  assert.deepEqual(placeOf(document.layout(ID), 0), { x: 3, y: 2 });
+  assert.equal(controller.key('ArrowLeft', {}), true);
+  assert.equal(controller.key('ArrowLeft', {}), true);
+  assert.deepEqual(placeOf(document.layout(ID), 0), { x: 1, y: 2 });
+  const before = document.layout(ID);
+  controller.key('ArrowLeft', {});
+  assert.deepEqual(document.layout(ID), before);
+  assert.match(controller.status, /wall/);
+});
+
+test('arrow keys nudge a selected room', () => {
+  const { document, controller } = setup();
+  controller.select({ kind: 'room', room: 'side' });
+  const rectOf = () => {
+    const side = document.layout(ID).steps.find((step) => step.kind === 'room' && step.id === 'side');
+    return side && 'rect' in side ? side.rect : null;
+  };
+  const before = rectOf();
+  assert.ok(before);
+  assert.equal(controller.key('ArrowDown', {}), true);
+  const after = rectOf();
+  assert.ok(after);
+  assert.equal(after.y, before.y + 1);
+});
+
+test('arrow keys do nothing without a selection', () => {
+  const { controller } = setup();
+  assert.equal(controller.key('ArrowUp', {}), false);
+});
+
+test('V, B and E pick the select, paint and erase tools', () => {
+  const { controller } = setup();
+  assert.equal(controller.key('b', {}), true);
+  assert.equal(controller.tool, 'paint');
+  assert.equal(controller.key('e', {}), true);
+  assert.equal(controller.tool, 'erase');
+  assert.equal(controller.key('v', {}), true);
+  assert.equal(controller.tool, 'select');
+});

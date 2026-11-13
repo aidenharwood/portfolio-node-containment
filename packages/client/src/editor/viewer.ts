@@ -12,20 +12,23 @@ import {
   type TileKindId,
   type TilePoint,
 } from '@containment/shared';
+import type { Object3D } from 'three';
+import type { ActiveZone } from '../state/worldState.ts';
 import { contentWith, type EditedDistrict } from './contentWith.ts';
 import { EditorDocument } from './document.ts';
-import { EditController } from './editController.ts';
-import { boundsOf } from './hitTest.ts';
+import { EditController, type PaletteEntry } from './editController.ts';
+import { addEntry } from './edits.ts';
+import { boundsOf, hitsAt } from './hitTest.ts';
+import { footprintOf, modelOf } from './itemModels.ts';
 import { districtAtLevelTile, levelIssues, levelPlan, originOf, tileImageOf } from './levelView.ts';
 import { Palette, paletteEntries } from './palette.ts';
 import { PlanCanvas, planDrawList, type PlanShape } from './planCanvas.ts';
 import { previewZone, zoneOfLevel } from './previewLevel.ts';
-import { PreviewView } from './previewView.ts';
+import { PreviewView, type EditPointer } from './previewView.ts';
 import { PropertiesPanel } from './propertiesPanel.ts';
 import { saveDistrict } from './saveClient.ts';
 import { PLAN_LAYERS, readViewState, writeViewState, type PlanLayer, type ViewState } from './viewState.ts';
 
-const PREVIEW_DELAY_MS = 350;
 const LEVEL_PREFIX = 'level:';
 const ORIGIN: TilePoint = { x: 0, y: 0 };
 
@@ -68,7 +71,11 @@ function start(root: HTMLElement, services: ViewerServices): void {
     button.addEventListener('click', () => update({ view: mode }));
     return button;
   });
-  const editToggle = element('button', { type: 'button', class: 'edit-toggle', 'aria-pressed': 'false' }, 'Edit');
+  viewButtons[0]?.setAttribute('title', 'Show the plan and the 3D view side by side');
+  viewButtons[1]?.setAttribute('title', 'Show only the top-down plan');
+  viewButtons[2]?.setAttribute('title', 'Show only the 3D view');
+  const editToggle = element('button', { type: 'button', class: 'edit-toggle', 'aria-pressed': 'false', title: 'Turn editing on to move, add and paint things' }, 'Edit map');
+  const helpButton = element('button', { type: 'button', class: 'help-toggle', title: 'Keyboard shortcuts and how-to (?)', 'aria-label': 'Help' }, '?');
   const layerBox = element('div', { class: 'layers' });
   const layerInputs = new Map<PlanLayer, HTMLInputElement>();
   for (const layer of PLAN_LAYERS) {
@@ -80,11 +87,18 @@ function start(root: HTMLElement, services: ViewerServices): void {
     layerBox.append(label);
   }
   const readout = element('div', { class: 'readout' });
-  bar.append(title, scopeSelect, roomSelect, ...viewButtons, editToggle, layerBox, readout);
+  bar.append(title, scopeSelect, roomSelect, ...viewButtons, editToggle, helpButton, layerBox, readout);
 
   const tools = element('div', { class: 'tools', hidden: '' });
+  const TOOL_INFO = {
+    select: { label: 'Select', key: 'V', tip: 'Click to pick things on the plan, drag to move them' },
+    paint: { label: 'Paint', key: 'B', tip: 'Drag across the plan to paint floor tiles' },
+    erase: { label: 'Erase', key: 'E', tip: 'Drag across the plan to remove painted tiles' },
+  } as const;
   const toolButtons = (['select', 'paint', 'erase'] as const).map((tool) => {
-    const button = element('button', { type: 'button', 'data-tool': tool }, tool[0]!.toUpperCase() + tool.slice(1));
+    const info = TOOL_INFO[tool];
+    const button = element('button', { type: 'button', 'data-tool': tool, title: `${info.tip} (${info.key})` });
+    button.append(info.label, element('kbd', {}, info.key));
     button.addEventListener('click', () => {
       controller.setPending(null);
       controller.tool = tool;
@@ -92,19 +106,79 @@ function start(root: HTMLElement, services: ViewerServices): void {
     });
     return button;
   });
+  const brushLabel = element('label', { class: 'brush' });
   const brush = element('select', { 'aria-label': 'Paint tile' });
   brush.append(...LAYOUT_CHOICES.tiles.map((tile) => element('option', { value: tile }, tile)));
   brush.value = 'hazard';
   brush.addEventListener('change', () => {
     controller.brush = brush.value as TileKindId;
+    refreshEditing();
   });
-  const undo = element('button', { type: 'button' }, 'Undo');
-  const redo = element('button', { type: 'button' }, 'Redo');
-  const check = element('button', { type: 'button' }, 'Check');
-  const save = element('button', { type: 'button', class: 'save' }, 'Save');
-  const dirty = element('span', { class: 'dirty' });
-  const banner = element('div', { class: 'banner', role: 'status' });
-  tools.append(...toolButtons, brush, undo, redo, check, save, dirty, banner);
+  brushLabel.append('Tile', brush);
+  const separator = (): HTMLElement => element('span', { class: 'separator', 'aria-hidden': 'true' });
+  const undo = element('button', { type: 'button', title: 'Undo the last change (Ctrl+Z)' }, 'Undo');
+  const redo = element('button', { type: 'button', title: 'Redo what you undid (Ctrl+Shift+Z or Ctrl+Y)' }, 'Redo');
+  const check = element('button', { type: 'button', title: 'Re-run the world design checks on your edits' }, 'Check');
+  const save = element('button', { type: 'button', class: 'save', title: 'Write your changes to the layout files (Ctrl+S)' }, 'Save');
+  const dirty = element('span', { class: 'dirty', role: 'status' });
+  const banner = element('div', { class: 'banner', role: 'status', 'aria-live': 'polite' });
+  tools.append(...toolButtons, brushLabel, separator(), undo, redo, separator(), check, save, dirty, banner);
+
+  const help = element('dialog', { class: 'help', 'aria-label': 'Editor help' });
+  const helpClose = element('button', { type: 'button', class: 'help-close', 'aria-label': 'Close help' }, 'Close');
+  const helpBody = element('div');
+  const helpSection = (heading: string, rows: readonly (readonly [string, string])[]): HTMLElement => {
+    const section = element('section');
+    const list = element('dl');
+    for (const [keys, what] of rows) list.append(element('dt', {}, keys), element('dd', {}, what));
+    section.append(element('h3', {}, heading), list);
+    return section;
+  };
+  helpBody.append(
+    element('h2', {}, 'Using the region editor'),
+    element('p', {}, 'Pick a level or district at the top and press Edit map. Drag things from the catalogue on the right straight into the 3D view. Click something in 3D to select it, drag it to move it, and use the buttons that float above it to rotate, copy or remove it. Rooms and floor paint are edited on the 2D plan. Save writes your changes to the layout files.'),
+    helpSection('In the 3D view', [
+      ['Drag a thing', 'Move it'],
+      ['Drag empty space', 'Orbit the camera'],
+      ['Right-drag', 'Pan the camera'],
+      ['Mouse wheel', 'Zoom'],
+      ['Drag from catalogue', 'Place a new thing; red means it cannot go there'],
+    ]),
+    helpSection('Tools', [
+      ['V', 'Select and move'],
+      ['B', 'Paint floor tiles'],
+      ['E', 'Erase painted tiles'],
+      ['/', 'Search things to add'],
+    ]),
+    helpSection('Selection', [
+      ['Click again', 'Cycle through things stacked on one tile'],
+      ['Arrow keys', 'Nudge one tile'],
+      ['R', 'Rotate'],
+      ['Ctrl+D', 'Duplicate'],
+      ['Delete', 'Remove'],
+      ['Esc', 'Deselect or stop placing'],
+      ['Shift+click', 'Keep placing the same thing'],
+    ]),
+    helpSection('General', [
+      ['Ctrl+Z', 'Undo'],
+      ['Ctrl+Shift+Z', 'Redo'],
+      ['Ctrl+S', 'Save'],
+      ['Mouse wheel', 'Zoom the plan'],
+      ['Drag', 'Pan the plan (right-drag while editing)'],
+      ['F', 'Fit the whole plan in view'],
+      ['?', 'Show this help'],
+    ]),
+  );
+  help.append(helpClose, helpBody);
+  helpClose.addEventListener('click', () => help.close());
+  help.addEventListener('click', (event) => {
+    if (event.target === help) help.close();
+  });
+  const toggleHelp = (): void => {
+    if (help.open) help.close();
+    else help.showModal();
+  };
+  helpButton.addEventListener('click', toggleHelp);
 
   const views = element('main', { class: 'views' });
   const planHost = element('div');
@@ -114,17 +188,27 @@ function start(root: HTMLElement, services: ViewerServices): void {
   const side = element('aside', { class: 'side', hidden: '' });
   views.append(planHost, preview, side);
 
-  const issueList = element('ul', { class: 'issues', 'aria-label': 'Issues' });
-  root.append(bar, tools, views, issueList);
+  const issuePanel = element('section', { class: 'issues-panel', 'aria-label': 'Issues' });
+  const issueHeading = element('h2');
+  const issueList = element('ul', { class: 'issues' });
+  issuePanel.append(issueHeading, issueList);
+  root.append(bar, tools, views, issuePanel, help);
 
   const plan = new PlanCanvas(canvas);
   const preview3d = new PreviewView(preview);
   const controller = new EditController(editorDocument, state.district);
   const properties = new PropertiesPanel(base, controller);
-  const palette = new Palette(paletteEntries(base), (entry) => {
-    controller.setPending(entry);
-    refreshEditing();
-  });
+  const palette = new Palette(
+    paletteEntries(base),
+    (entry) => {
+      controller.setPending(entry);
+      refreshEditing();
+    },
+    (entry) => {
+      catalogueDrag = entry;
+      if (!entry) showPlacement(null, null);
+    },
+  );
   side.append(palette.root, properties.root);
 
   const previewControls = element('div', { class: 'preview-controls' });
@@ -147,11 +231,21 @@ function start(root: HTMLElement, services: ViewerServices): void {
     history.replaceState(null, '', writeViewState(state));
   });
 
+  let notice = '';
+  let noticeTimer = 0;
+  const announce = (text: string): void => {
+    notice = text;
+    window.clearTimeout(noticeTimer);
+    noticeTimer = window.setTimeout(() => {
+      notice = '';
+      refreshEditing();
+    }, 4000);
+  };
+
   let shapes: PlanShape[] = [];
   let issues: PlanIssue[] = [];
   let content = services.liveContent();
   let whole: GameContent | null = null;
-  let previewTimer = 0;
   let pointerOrigin: TilePoint = ORIGIN;
 
   const inLevel = (): boolean => state.level !== undefined;
@@ -194,46 +288,159 @@ function start(root: HTMLElement, services: ViewerServices): void {
     readout.textContent = [`${tile.x},${tile.y}`, room && rect ? `${room} +${tile.x - rect.x},+${tile.y - rect.y}` : '', ...here].filter(Boolean).join(' · ');
   });
   plan.onClick((tile) => update({ focus: tile }));
-  plan.onPointer('down', (tile, event) => {
+  const localOf = (tile: TilePoint): { readonly districtId: DistrictId; readonly local: TilePoint } | null => {
     const level = levelNow();
-    let local = tile;
-    if (level) {
-      const found = districtAtLevelTile(wholeNow(), level, tile);
-      if (!found) return;
-      controller.setDistrict(found.districtId);
-      pointerOrigin = originOf(level, found.districtId);
-      local = found.local;
-    } else pointerOrigin = ORIGIN;
-    controller.pointerDown(local, { shift: event?.shiftKey ?? false, ctrl: event?.ctrlKey ?? false });
+    if (!level) return { districtId: controller.district, local: tile };
+    const found = districtAtLevelTile(wholeNow(), level, tile);
+    return found ? { districtId: found.districtId, local: found.local } : null;
+  };
+  const modifiersOf = (event?: { shiftKey: boolean; ctrlKey: boolean; metaKey?: boolean }) => ({ shift: event?.shiftKey ?? false, ctrl: (event?.ctrlKey ?? false) || (event?.metaKey ?? false) });
+  const editDown = (tile: TilePoint, modifiers: { shift: boolean; ctrl: boolean }): boolean => {
+    const found = localOf(tile);
+    if (!found) return false;
+    const level = levelNow();
+    if (level) controller.setDistrict(found.districtId);
+    pointerOrigin = level ? originOf(level, found.districtId) : ORIGIN;
+    controller.pointerDown(found.local, modifiers);
+    return true;
+  };
+  const editMove = (tile: TilePoint): void => controller.pointerMove({ x: tile.x - pointerOrigin.x, y: tile.y - pointerOrigin.y });
+  const editUp = (tile: TilePoint): void => controller.pointerUp({ x: tile.x - pointerOrigin.x, y: tile.y - pointerOrigin.y });
+  plan.onPointer('down', (tile, event) => void editDown(tile, modifiersOf(event)));
+  plan.onPointer('move', editMove);
+  plan.onPointer('up', editUp);
+
+  let hoverGhost: { readonly box: { x: number; y: number; width: number; height: number }; readonly ok: boolean; readonly entry: PaletteEntry } | null = null;
+  let placeProblem = '';
+  let checkedKey = '';
+  const placementAt = (entry: PaletteEntry, tile: TilePoint): string => {
+    const found = localOf(tile);
+    if (!found) return 'That spot is outside every district.';
+    const result = addEntry(editorDocument.layout(found.districtId), entry.collection, entry.entry, found.local);
+    return result.ok ? '' : result.reason;
+  };
+  const showPlacement = (entry: PaletteEntry | null, tile: TilePoint | null): void => {
+    if (!entry || !tile) {
+      if (hoverGhost) {
+        hoverGhost = null;
+        placeProblem = '';
+        checkedKey = '';
+        refreshEditing();
+      }
+      return;
+    }
+    const key = `${entry.label}@${tile.x},${tile.y}`;
+    if (key === checkedKey) return;
+    checkedKey = key;
+    placeProblem = placementAt(entry, tile);
+    const size = footprintOf(entry);
+    hoverGhost = { box: { x: tile.x, y: tile.y, width: size.width, height: size.height }, ok: placeProblem === '', entry };
+    refreshEditing();
+  };
+  let catalogueDrag: PaletteEntry | null = null;
+
+  preview3d.setEditPointer(null);
+  const editPointer3d: EditPointer = {
+    down: (tile, event) => {
+      if (controller.tool === 'paint' || controller.tool === 'erase') return editDown(tile, modifiersOf(event));
+      if (controller.tool !== 'select') return false;
+      const found = localOf(tile);
+      if (!found) return false;
+      const top = hitsAt(editorDocument.layout(found.districtId), editorDocument.district(found.districtId), found.local)[0];
+      if (top?.kind !== 'entry') return false;
+      if (controller.selection?.kind !== 'entry' || found.districtId !== controller.district) controller.select(null);
+      editDown(tile, modifiersOf(event));
+      return controller.dragging;
+    },
+    move: editMove,
+    up: editUp,
+    click: (tile, event) => {
+      if (!editDown(tile, modifiersOf(event))) return;
+      editUp(tile);
+      if (controller.tool !== 'add') showPlacement(null, null);
+      else checkedKey = '';
+    },
+    hover: (tile) => showPlacement(controller.tool === 'add' ? controller.pending : null, tile),
+  };
+
+  preview.addEventListener('dragover', (event) => {
+    if (!editing || !catalogueDrag) return;
+    event.preventDefault();
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+    showPlacement(catalogueDrag, preview3d.tileAt(event.clientX, event.clientY));
   });
-  plan.onPointer('move', (tile) => controller.pointerMove({ x: tile.x - pointerOrigin.x, y: tile.y - pointerOrigin.y }));
-  plan.onPointer('up', (tile) => controller.pointerUp({ x: tile.x - pointerOrigin.x, y: tile.y - pointerOrigin.y }));
+  preview.addEventListener('dragleave', (event) => {
+    if (event.relatedTarget instanceof Node && preview.contains(event.relatedTarget)) return;
+    showPlacement(null, null);
+  });
+  preview.addEventListener('drop', (event) => {
+    const entry = catalogueDrag;
+    if (!editing || !entry) return;
+    event.preventDefault();
+    const tile = preview3d.tileAt(event.clientX, event.clientY);
+    showPlacement(null, null);
+    if (!tile) return;
+    controller.setPending(entry);
+    if (editDown(tile, { shift: event.shiftKey, ctrl: false })) editUp(tile);
+    if (controller.tool === 'add' && !event.shiftKey) controller.setPending(null);
+  });
+
+  const worldTools = element('div', { class: 'world-tools', hidden: '' });
+  const worldName = element('span', { class: 'world-name' });
+  const worldButton = (label: string, tip: string, run: () => void): HTMLButtonElement => {
+    const button = element('button', { type: 'button', title: tip }, label);
+    button.addEventListener('pointerdown', (event) => event.stopPropagation());
+    button.addEventListener('click', run);
+    return button;
+  };
+  worldTools.append(
+    worldName,
+    worldButton('Rotate', 'Turn it a quarter (R)', () => controller.key('r', {})),
+    worldButton('Duplicate', 'Make a copy next to it (Ctrl+D)', () => controller.key('d', { ctrl: true })),
+    worldButton('Delete', 'Remove it (Delete)', () => controller.key('Delete', {})),
+  );
+  preview.append(worldTools);
+  preview3d.onFrame(() => {
+    const anchor = editing && controller.selection?.kind === 'entry' && !controller.dragging ? preview3d.overlay.selectionAnchor() : null;
+    const spot = anchor ? preview3d.project(anchor) : null;
+    worldTools.hidden = !spot?.visible;
+    if (!spot?.visible) return;
+    const half = worldTools.offsetWidth / 2 + 6;
+    const x = Math.min(Math.max(spot.x, half), Math.max(half, preview.clientWidth - half));
+    const y = Math.max(spot.y, worldTools.offsetHeight + 6);
+    worldTools.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px) translate(-50%, -100%)`;
+  });
 
   const renderIssues = (): void => {
     issueList.replaceChildren();
+    issuePanel.dataset.empty = String(issues.length === 0);
     if (issues.length === 0) {
-      issueList.append(element('li', { class: 'clear' }, 'No issues'));
+      issueHeading.textContent = 'No issues: this map passes the world design checks.';
       return;
     }
+    issueHeading.textContent = `${issues.length} issue${issues.length === 1 ? '' : 's'} to fix${issues.some((issue) => issue.tile) ? '. Click one to jump to it.' : ''}`;
     for (const issue of issues) {
-      const item = element('li', {}, issue.tile ? `${issue.tile.x},${issue.tile.y}  ${issue.message}` : issue.message);
+      const item = element('li');
       if (issue.tile) {
         const tile = issue.tile;
-        item.addEventListener('click', () => update({ focus: tile }));
-      }
+        const jump = element('button', { type: 'button', title: 'Show this tile on the plan' });
+        jump.append(element('span', { class: 'issue-tile' }, `${tile.x},${tile.y}`), issue.message);
+        jump.addEventListener('click', () => update({ focus: tile }));
+        item.append(jump);
+      } else item.textContent = issue.message;
       issueList.append(item);
     }
   };
 
   const refreshPreview = (now: boolean): void => {
-    window.clearTimeout(previewTimer);
-    const run = (): void => {
+    const zoneNow = (): ActiveZone => {
       const level = levelNow();
-      preview3d.show(level ? zoneOfLevel(wholeNow(), level) : previewZone(content, state.district));
-      preview3d.markIssues(issues.flatMap((issue) => (issue.tile ? [issue.tile] : [])));
+      return level ? zoneOfLevel(wholeNow(), level) : previewZone(content, state.district);
     };
-    if (now) run();
-    else previewTimer = window.setTimeout(run, PREVIEW_DELAY_MS);
+    if (now) {
+      preview3d.show(zoneNow());
+      preview3d.markIssues(issues.flatMap((issue) => (issue.tile ? [issue.tile] : [])));
+    } else preview3d.queueUpdate(zoneNow);
   };
 
   const refreshTiles = (): void => {
@@ -241,27 +448,101 @@ function start(root: HTMLElement, services: ViewerServices): void {
     plan.setTiles(level ? tileImageOf(level) : null);
   };
 
+  const selectionName = (): string => {
+    const selection = controller.selection;
+    if (selection?.kind !== 'entry') return '';
+    const ref = selection.ref;
+    if (ref.collection === 'anchors') return ref.name;
+    const entry = (editorDocument.layout(controller.district)[ref.collection] as readonly Record<string, unknown>[])[ref.index];
+    if (!entry) return '';
+    const id = entry.object ?? entry.npc ?? entry.creature ?? entry.prefab ?? entry.assembly ?? entry.kind;
+    const known = typeof id === 'string' ? (base.worldObjects.get(id)?.name ?? base.npcs.get(id)?.name ?? base.creatures.get(id)?.name) : undefined;
+    return known ?? (typeof id === 'string' ? id : ref.collection === 'lights' ? 'Light' : ref.collection);
+  };
+
+  let refreshQueued = 0;
   const refreshEditing = (): void => {
+    if (refreshQueued) return;
+    refreshQueued = window.requestAnimationFrame(() => {
+      refreshQueued = 0;
+      refreshEditingNow();
+    });
+  };
+
+  const draggedModel = (): { readonly key: string; build(): Object3D | null } | undefined => {
+    const selection = controller.selection;
+    if (selection?.kind !== 'entry' || selection.ref.collection === 'anchors') return undefined;
+    const collection = selection.ref.collection;
+    const entry = (editorDocument.layout(controller.district)[collection] as readonly Record<string, unknown>[])[selection.ref.index];
+    if (!entry) return undefined;
+    const key = `drag:${collection}:${JSON.stringify(entry)}`;
+    return { key, build: () => modelOf({ collection, label: key, entry }) };
+  };
+
+  const draggedInstance = (): string | null => {
+    const selection = controller.selection;
+    if (selection?.kind !== 'entry' || selection.ref.collection !== 'objects') return null;
+    const id = editorDocument.layout(controller.district).objects[selection.ref.index]?.id;
+    return typeof id === 'string' ? id : null;
+  };
+
+  const refreshEditingNow = (): void => {
+    if (hoverGhost && !catalogueDrag && controller.tool !== 'add') {
+      hoverGhost = null;
+      placeProblem = '';
+      checkedKey = '';
+    }
     editToggle.setAttribute('aria-pressed', String(editing));
     tools.hidden = !editing;
     side.hidden = !editing;
     views.dataset.editing = String(editing);
     plan.setEditing(editing);
     for (const button of toolButtons) button.setAttribute('aria-pressed', String(controller.tool === button.dataset.tool));
+    views.dataset.tool = controller.tool;
+    brushLabel.hidden = controller.tool !== 'paint';
+    palette.setActive(controller.tool === 'add' ? controller.pending : null);
+    undo.disabled = !editorDocument.canUndo();
+    redo.disabled = !editorDocument.canRedo();
     const unsaved = editorDocument.dirtyIds();
-    dirty.textContent = unsaved.length === 0 ? 'All saved' : `Unsaved: ${unsaved.join(', ')}`;
+    const districtName = (id: DistrictId): string => base.districts.get(id)?.name ?? id;
+    dirty.textContent = unsaved.length === 0 ? 'All changes saved' : `Unsaved changes in ${unsaved.map(districtName).join(', ')}`;
+    dirty.dataset.unsaved = String(unsaved.length > 0);
+    editToggle.dataset.unsaved = String(unsaved.length > 0);
     save.disabled = unsaved.length === 0;
+    save.textContent = unsaved.length > 1 ? `Save all (${unsaved.length})` : 'Save';
     const buildError = editorDocument.buildError(controller.district);
-    banner.textContent = buildError ?? controller.status ?? '';
-    banner.dataset.kind = buildError || controller.status ? 'error' : '';
-    if (controller.tool === 'add' && controller.pending) banner.textContent = `Click the plan to place ${controller.pending.label}. Shift+click places more; Esc stops.`;
-    if (inLevel() && editing && !controller.status) banner.textContent ||= `Editing ${controller.district}. Clicks pick the district under the pointer.`;
+    const problem = buildError ?? (controller.status || '');
+    const hint = (): string => {
+      if (controller.tool === 'add' && controller.pending) return `Click the plan to place ${controller.pending.name ?? controller.pending.label}. Shift+click to place more; Esc to stop.`;
+      if (controller.tool === 'paint') return `Drag across the plan to paint ${brush.value}. Ctrl+Z undoes a whole stroke.`;
+      if (controller.tool === 'erase') return 'Drag across the plan to remove painted tiles.';
+      const where = inLevel() ? ` Editing ${districtName(controller.district)}; clicks pick the district under the pointer.` : '';
+      if (controller.selection) return `Drag or use the arrow keys to move it. R rotates, Ctrl+D duplicates, Delete removes, Esc deselects.${where}`;
+      return `Click anything on the plan to select it, or pick something to add from the panel on the right.${where}`;
+    };
+    banner.textContent = problem || notice || hint();
+    banner.dataset.kind = problem ? 'error' : notice ? 'ok' : '';
     const layout = editorDocument.layout(controller.district);
     const district = editorDocument.district(controller.district);
     const origin = editOrigin();
     const local = editing && controller.selection ? boundsOf(layout, district, controller.selection) : null;
     const shift = <T extends { x: number; y: number }>(box: T | null): T | null => (box ? { ...box, x: box.x + origin.x, y: box.y + origin.y } : null);
     plan.showSelection(shift(local), shift(controller.ghost));
+    preview3d.setEditPointer(editing ? editPointer3d : null);
+    preview3d.overlay.showSelection(shift(local), controller.selection?.kind === 'entry');
+    const dragGhost = shift(controller.ghost);
+    preview3d.hideObject(dragGhost ? draggedInstance() : null);
+    if (dragGhost) preview3d.overlay.showGhost(dragGhost, true, draggedModel());
+    else if (editing && hoverGhost) {
+      const ghostEntry = hoverGhost.entry;
+      preview3d.overlay.showGhost(hoverGhost.box, hoverGhost.ok, { key: ghostEntry.label, build: () => modelOf(ghostEntry) });
+    } else preview3d.overlay.showGhost(null, true);
+    worldName.textContent = selectionName();
+    if (editing && hoverGhost) {
+      const name = hoverGhost.entry.name ?? hoverGhost.entry.label;
+      banner.textContent = placeProblem ? `Can't place ${name} here: ${placeProblem.replace(/^Cannot place there: /, '')}` : catalogueDrag ? `Drop to place ${name}.` : `Click to place ${name}. Shift+click to place more; Esc to stop.`;
+      banner.dataset.kind = placeProblem ? 'error' : '';
+    }
     properties.render(layout);
   };
 
@@ -324,6 +605,7 @@ function start(root: HTMLElement, services: ViewerServices): void {
     refreshEditing();
   }
 
+  let planQueued = 0;
   editorDocument.onChange((id) => {
     content = services.liveContent();
     whole = null;
@@ -331,9 +613,12 @@ function start(root: HTMLElement, services: ViewerServices): void {
       refreshEditing();
       return;
     }
-    computeShapes();
-    if (inLevel()) refreshTiles();
-    plan.show(shapes);
+    planQueued ||= window.requestAnimationFrame(() => {
+      planQueued = 0;
+      computeShapes();
+      if (inLevel()) refreshTiles();
+      plan.show(shapes);
+    });
     refreshPreview(false);
     refreshEditing();
   });
@@ -358,13 +643,17 @@ function start(root: HTMLElement, services: ViewerServices): void {
     if (ids.length === 0) return;
     banner.textContent = `Saving ${ids.join(', ')}…`;
     const failures: string[] = [];
+    const saved: string[] = [];
     for (const id of ids) {
       const layout = editorDocument.layout(id);
       const outcome = await saveDistrict(id, layout);
-      if (outcome.ok) editorDocument.markSaved(id, layout);
-      else failures.push(`${id}: ${outcome.error}`);
+      if (outcome.ok) {
+        editorDocument.markSaved(id, layout);
+        saved.push(base.districts.get(id)?.name ?? id);
+      } else failures.push(`Could not save ${id}: ${outcome.error}`);
     }
     controller.status = failures.join(' · ');
+    if (saved.length > 0) announce(`Saved ${saved.join(', ')}.`);
     runChecks();
   };
 
@@ -379,7 +668,23 @@ function start(root: HTMLElement, services: ViewerServices): void {
   save.addEventListener('click', () => void saveAll());
 
   window.addEventListener('keydown', (event) => {
-    if (!editing || isTyping(event.target)) return;
+    if (isTyping(event.target) || help.open) return;
+    const plain = !event.ctrlKey && !event.metaKey && !event.altKey;
+    if (plain && (event.key === '?' || (event.code === 'Slash' && event.shiftKey))) {
+      event.preventDefault();
+      toggleHelp();
+      return;
+    }
+    if (plain && event.key.toLowerCase() === 'f' && !event.shiftKey) {
+      plan.fit();
+      return;
+    }
+    if (!editing) return;
+    if (plain && event.key === '/') {
+      event.preventDefault();
+      palette.focus();
+      return;
+    }
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
       event.preventDefault();
       void saveAll();

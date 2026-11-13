@@ -64,6 +64,14 @@ export class EditorDocument {
     return result;
   }
 
+  canUndo(): boolean {
+    return this.undoStack.length > 0;
+  }
+
+  canRedo(): boolean {
+    return this.redoStack.length > 0;
+  }
+
   undo(): DistrictId | null {
     return this.step(this.undoStack, this.redoStack);
   }

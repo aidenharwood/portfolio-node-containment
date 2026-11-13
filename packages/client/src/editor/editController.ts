@@ -8,6 +8,7 @@ export type Tool = 'select' | 'paint' | 'erase' | 'add';
 export interface PaletteEntry {
   readonly collection: Collection;
   readonly label: string;
+  readonly name?: string;
   readonly entry: Record<string, unknown>;
 }
 
@@ -30,6 +31,15 @@ interface Edges {
 }
 
 const NO_EDGES: Edges = { left: false, right: false, top: false, bottom: false };
+
+const ARROWS: Readonly<Record<string, TilePoint>> = {
+  arrowleft: { x: -1, y: 0 },
+  arrowright: { x: 1, y: 0 },
+  arrowup: { x: 0, y: -1 },
+  arrowdown: { x: 0, y: 1 },
+};
+
+const TOOL_KEYS: Readonly<Record<string, Tool>> = { v: 'select', b: 'paint', e: 'erase' };
 
 const sameHit = (a: Hit | null, b: Hit): boolean => a !== null && JSON.stringify(a) === JSON.stringify(b);
 
@@ -180,8 +190,21 @@ export class EditController {
       this.setPending(null);
       return true;
     }
+    const tool = TOOL_KEYS[lower];
+    if (tool && !modifiers.ctrl) {
+      this.pending = null;
+      this.tool = tool;
+      this.changed();
+      return true;
+    }
     const selection = this.selection;
     if (!selection) return false;
+    const arrow = ARROWS[lower];
+    if (arrow) {
+      if (!this.nudge(selection, arrow)) return false;
+      this.changed();
+      return true;
+    }
     if (selection.kind === 'entry') {
       if (lower === 'r' && !modifiers.ctrl) {
         this.apply((layout) => rotateEntry(layout, selection.ref));
@@ -209,6 +232,15 @@ export class EditController {
     const result = this.document.apply(this.districtId, edit);
     this.status = result.ok ? '' : result.reason;
     return result;
+  }
+
+  private nudge(selection: Hit, by: TilePoint): boolean {
+    const drag = this.dragFor(selection, { x: 0, y: 0 });
+    if (!drag || drag.mode === 'stroke') return false;
+    if (drag.mode === 'entry') this.apply((layout) => moveEntry(layout, drag.hit.ref, { x: drag.origin.x + by.x, y: drag.origin.y + by.y }));
+    else if (drag.mode === 'room') this.apply((layout) => moveRoom(layout, drag.room, { x: drag.rect.x + by.x, y: drag.rect.y + by.y }));
+    else this.apply((layout) => editStep(layout, drag.index, { rect: { ...drag.rect, x: drag.rect.x + by.x, y: drag.rect.y + by.y } }));
+    return true;
   }
 
   private cycle(): void {
