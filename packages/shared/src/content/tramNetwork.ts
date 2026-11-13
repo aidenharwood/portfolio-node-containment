@@ -18,7 +18,7 @@ import { SIGNAL_ARRAY_ANCHORS } from './districts/signalArray.ts';
 export const TRAM_STATIONS: readonly TramStationDefinition[] = [
   { id: 'intake-transit', name: 'Intake Transit Bay', districtId: 'intake-wing', areaId: 'transit-bay', platform: INTAKE_WING_ANCHORS.tramPlatform, alwaysKnown: true },
   { id: 'atrium-transit', name: 'Atrium Transit Bay', districtId: 'meridian-atrium', areaId: 'tram-terminal', platform: ATRIUM_ANCHORS.transit },
-  { id: 'yards-depot', name: 'Service Yards Depot', districtId: 'service-yards', areaId: 'yard-office', platform: SERVICE_YARDS_ANCHORS.tramPlatform },
+  { id: 'yards-depot', name: 'Service Yards Depot', districtId: 'service-yards', areaId: 'tram-terminal', platform: SERVICE_YARDS_ANCHORS.tramPlatform },
   { id: 'verdance-platform', name: 'Verdance Platform', districtId: 'hydroponics', areaId: 'tram-terminal', platform: HYDROPONICS_ANCHORS.tramPlatform },
   { id: 'calder-platform', name: 'Calder Gatehouse Platform', districtId: 'calder-gatehouse', areaId: 'gatehouse', platform: CALDER_GATEHOUSE_ANCHORS.tramPlatform },
   { id: 'vesper-platform', name: "Vesper Porter's Lodge Platform", districtId: 'vesper-lodge', areaId: 'lodge', platform: VESPER_LODGE_ANCHORS.tramPlatform },

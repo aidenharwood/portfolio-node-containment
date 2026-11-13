@@ -8,6 +8,7 @@ const TRACKWAY_MARGIN = { x: 8, y: 8 };
 const INTAKE_OFFSET_X = 56;
 const CIRCUIT_BED_ROW = 133;
 const INTAKE_BRANCH_X = 43;
+const YARDS_BED_ROW = 87;
 
 const DISTRICT_IDS = [
   'meridian-atrium',
@@ -42,7 +43,7 @@ export const MAIN_FLOOR_RECIPE: LevelRecipe = (context) => {
     { districtId: 'sector-two', exit: 'south', to: 'hydroponics', toExit: 'north' },
     { districtId: 'service-concourse', exit: 'west', to: 'meridian-circuit', toExit: 'east' },
     { districtId: 'service-yards', exit: 'west', to: 'service-concourse', toExit: 'east' },
-    { districtId: 'waterworks', exit: 'south', to: 'service-yards', toExit: 'north' },
+    { districtId: 'waterworks', exit: 'west', to: 'service-yards', toExit: 'east' },
     { districtId: 'intake-wing', from: 'meridian-circuit', offset: { x: INTAKE_OFFSET_X, y: circuit.map.length + CHASM_WIDTH } },
     { districtId: 'vesper-causeway', exit: 'east', to: 'hydroponics', toExit: 'west' },
     { districtId: 'vesper-wards', exit: 'south', to: 'vesper-causeway', toExit: 'north' },
@@ -60,12 +61,11 @@ export const MAIN_FLOOR_RECIPE: LevelRecipe = (context) => {
   const pharmacyCorner = trackPoint('vesper-pharmacy', -5, -5);
   const verdanceWest = trackPoint('hydroponics', -2, 91);
   const verdanceEast = trackPoint('hydroponics', widthOf(context.districtOf('hydroponics')), 91);
-  const concourseJog = trackPoint('verdance-concourse', 50, 0);
+  const concourseJog = trackPoint('verdance-concourse', 2, 0);
   const circuitWest = trackPoint('meridian-circuit', -2, CIRCUIT_BED_ROW);
   const circuitEast = trackPoint('meridian-circuit', widthOf(circuit), CIRCUIT_BED_ROW);
-  const yardsMouth = trackPoint('service-concourse', 98, context.districtOf('service-concourse').map.length);
-  const yardsEast = trackPoint('service-yards', widthOf(context.districtOf('service-yards')), 85);
-  const calderTurn = trackPoint('service-yards', widthOf(context.districtOf('service-yards')) + 36, 0);
+  const yardsWest = trackPoint('service-yards', -2, YARDS_BED_ROW);
+  const yardsEast = trackPoint('service-yards', widthOf(context.districtOf('service-yards')), YARDS_BED_ROW);
   const saltRoadWest = trackPoint('calder-causeway', -2, 52);
   const saltRoadEast = trackPoint('calder-causeway', widthOf(context.districtOf('calder-causeway')), 52);
   const gatehouseNorth = trackPoint('calder-gatehouse', 3, -2);
@@ -83,9 +83,9 @@ export const MAIN_FLOOR_RECIPE: LevelRecipe = (context) => {
       [intakeEast, trackCorner(gatehouseSouth, returnLeg), gatehouseSouth],
       [lodgeSouth, trackCorner(lodgeSouth, verdanceWest), verdanceWest],
       [verdanceEast, trackCorner(concourseJog, verdanceEast), trackCorner(concourseJog, circuitWest), circuitWest],
-      [circuitEast, trackCorner(yardsMouth, circuitEast), yardsMouth],
+      [circuitEast, trackCorner(yardsWest, circuitEast), yardsWest],
       [intakeBranch, trackCorner(intakeBranch, intakeWest), intakeWest],
-      [yardsEast, trackCorner(calderTurn, yardsEast), trackCorner(calderTurn, saltRoadWest), saltRoadWest],
+      [yardsEast, trackCorner(saltRoadWest, yardsEast), saltRoadWest],
       [saltRoadEast, trackCorner(gatehouseNorth, saltRoadEast), gatehouseNorth],
     ],
   });
