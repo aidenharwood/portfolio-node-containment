@@ -1,0 +1,66 @@
+{
+  "id": "shipyard-fringe",
+  "name": "Shipyard Fringe",
+  "subtitle": "Hollow Bay, the Low Ward",
+  "tier": 3,
+  "region": "low-ward",
+  "condition": "breached",
+  "ambience": { "darkness": 0.7, "tint": "#262a3a", "fog": "#2a2838", "sky": "#3a3358" },
+  "size": { "width": 64, "height": 64 },
+  "steps": [
+    { "kind": "room", "id": "ground", "rect": { "x": 0, "y": 0, "width": 64, "height": 63 }, "floor": "gravel", "shape": "rect", "edge": "barrier" },
+    { "kind": "exit", "id": "north", "room": "ground", "side": "north", "width": 64, "offset": 0, "gate": false },
+    { "kind": "exit", "id": "east", "room": "ground", "side": "east", "width": 62, "offset": 1, "gate": false },
+    { "kind": "exit", "id": "west", "room": "ground", "side": "west", "width": 63, "offset": 0, "gate": false },
+    { "kind": "patch", "rect": { "x": 0, "y": 52, "width": 64, "height": 11 }, "tile": "water" },
+    { "kind": "patch", "rect": { "x": 18, "y": 38, "width": 14, "height": 14 }, "tile": "asphalt" },
+    { "kind": "patch", "rect": { "x": 40, "y": 38, "width": 14, "height": 14 }, "tile": "asphalt" },
+    { "kind": "patch", "rect": { "x": 0, "y": 28, "width": 64, "height": 6 }, "tile": "asphalt" },
+    { "kind": "building", "id": "derelict-shed", "rect": { "x": 6, "y": 8, "width": 14, "height": 8 }, "floor": "concrete", "wall": "cladding", "doors": [{ "side": "south", "width": 3, "offset": 6 }] },
+    { "kind": "building", "id": "guard-hut", "rect": { "x": 44, "y": 8, "width": 6, "height": 5 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2, "offset": 2 }] }
+  ],
+  "tiles": [],
+  "areas": [
+    { "room": "derelict-shed", "name": "Slipway Shed", "safe": true },
+    { "room": "guard-hut", "name": "Fringe Watch Hut", "safe": true },
+    { "room": "ground", "name": "Shipyard Fringe", "safe": false }
+  ],
+  "anchors": {},
+  "objects": [
+    { "id": "sf-shed-shelf-0", "object": "shelving", "at": { "room": "derelict-shed", "dx": 2, "dy": 0 } },
+    { "id": "sf-shed-shelf-1", "object": "shelving", "at": { "room": "derelict-shed", "dx": 3, "dy": 0 } },
+    { "id": "sf-shed-shelf-2", "object": "shelving", "at": { "room": "derelict-shed", "dx": 4, "dy": 0 } },
+    { "id": "sf-shed-scrap", "object": "scrap-heap", "at": { "room": "derelict-shed", "dx": 10, "dy": 4 } },
+    { "id": "sf-hut-notices", "object": "notice-board", "at": { "room": "guard-hut", "dx": 0, "dy": 0 } },
+    { "id": "sf-hut-camera", "object": "security-camera", "at": { "room": "guard-hut", "dx": 5, "dy": 0 } },
+    { "id": "sf-hut-sign", "object": "directorate-sign", "at": { "room": "ground", "dx": 42, "dy": 10 }, "facing": "west" },
+    { "id": "sf-hull", "object": "beached-hull", "at": { "room": "ground", "dx": 24, "dy": 44 } },
+    { "id": "sf-slip-scrap-a", "object": "scrap-heap", "at": { "room": "ground", "dx": 44, "dy": 42 } },
+    { "id": "sf-slip-scrap-b", "object": "scrap-heap", "at": { "room": "ground", "dx": 50, "dy": 47 } },
+    { "id": "sf-moor-0", "object": "mooring-post", "at": { "room": "ground", "dx": 42, "dy": 51 } },
+    { "id": "sf-moor-1", "object": "mooring-post", "at": { "room": "ground", "dx": 46, "dy": 51 } },
+    { "id": "sf-moor-2", "object": "mooring-post", "at": { "room": "ground", "dx": 50, "dy": 51 } },
+    { "id": "sf-boom-a", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 58, "dy": 27 } },
+    { "id": "sf-boom-b", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 58, "dy": 34 } },
+    { "id": "sf-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 10, "dy": 24 } },
+    { "id": "sf-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 24 } },
+    { "id": "sf-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 56, "dy": 24 } },
+    { "id": "sf-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 36 } },
+    { "id": "sf-wreck", "object": "parked-car", "at": { "room": "ground", "dx": 30, "dy": 20 } },
+    { "id": "sf-dumpster", "object": "dumpster", "at": { "room": "ground", "dx": 8, "dy": 17 }, "facing": "south" }
+  ],
+  "assemblies": [],
+  "npcs": [
+    { "id": "sf-sato", "npc": "corporal-sato", "at": { "room": "guard-hut", "dx": 2, "dy": 2 } }
+  ],
+  "creatures": [],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "derelict-shed": { "theme": "freight", "people": 0 },
+    "guard-hut": { "theme": "office", "people": 0 },
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

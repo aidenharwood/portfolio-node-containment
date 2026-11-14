@@ -52,7 +52,15 @@ export type WorldObjectModel =
   | 'marketStall'
   | 'headframe'
   | 'mooringPost'
-  | 'liftDoor';
+  | 'liftDoor'
+  | 'allotmentBed'
+  | 'washer'
+  | 'chimney'
+  | 'scrapHeap'
+  | 'magnetCrane'
+  | 'beachedHull'
+  | 'lockGate'
+  | 'cordonGate';
 
 export interface ObjectInteraction {
   readonly verb: string;

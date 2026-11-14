@@ -1,0 +1,70 @@
+{
+  "id": "scrapyards",
+  "name": "The Scrapyards",
+  "subtitle": "Hollow Bay, the Low Ward",
+  "tier": 2,
+  "region": "low-ward",
+  "condition": "worn",
+  "ambience": { "darkness": 0.7, "tint": "#262a3a", "fog": "#2a2838", "sky": "#3a3358" },
+  "size": { "width": 64, "height": 64 },
+  "steps": [
+    { "kind": "room", "id": "ground", "rect": { "x": 0, "y": 1, "width": 63, "height": 63 }, "floor": "gravel", "shape": "rect", "edge": "fence" },
+    { "kind": "exit", "id": "south", "room": "ground", "side": "south", "width": 63, "offset": 0, "gate": false },
+    { "kind": "exit", "id": "west", "room": "ground", "side": "west", "width": 63, "offset": 0, "gate": false },
+    { "kind": "patch", "rect": { "x": 0, "y": 20, "width": 40, "height": 4 }, "tile": "asphalt" },
+    { "kind": "building", "id": "breakers-office", "rect": { "x": 4, "y": 4, "width": 10, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2, "offset": 4 }] },
+    { "kind": "building", "id": "crusher-shed", "rect": { "x": 44, "y": 6, "width": 14, "height": 10 }, "floor": "concrete", "wall": "cladding", "doors": [{ "side": "south", "width": 4, "offset": 6 }] }
+  ],
+  "tiles": [],
+  "areas": [
+    { "room": "breakers-office", "name": "Hallam's Breakers", "safe": true },
+    { "room": "crusher-shed", "name": "Crusher Shed", "safe": true },
+    { "room": "ground", "name": "The Scrapyards", "safe": false }
+  ],
+  "anchors": {},
+  "objects": [
+    { "id": "sy-office-table", "object": "table", "at": { "room": "breakers-office", "dx": 2, "dy": 3 } },
+    { "id": "sy-office-chair", "object": "chair", "at": { "room": "breakers-office", "dx": 2, "dy": 4 }, "facing": "north" },
+    { "id": "sy-office-shelf", "object": "shelving", "at": { "room": "breakers-office", "dx": 9, "dy": 1 }, "facing": "west" },
+    { "id": "sy-office-notices", "object": "notice-board", "at": { "room": "breakers-office", "dx": 1, "dy": 0 } },
+    { "id": "sy-shed-scrap-a", "object": "scrap-heap", "at": { "room": "crusher-shed", "dx": 3, "dy": 4 } },
+    { "id": "sy-shed-scrap-b", "object": "scrap-heap", "at": { "room": "crusher-shed", "dx": 10, "dy": 4 } },
+    { "id": "sy-shed-shelf", "object": "shelving", "at": { "room": "crusher-shed", "dx": 13, "dy": 7 }, "facing": "west" },
+    { "id": "sy-crane", "object": "magnet-crane", "at": { "room": "ground", "dx": 32, "dy": 39 } },
+    { "id": "sy-scrap-0", "object": "scrap-heap", "at": { "room": "ground", "dx": 10, "dy": 29 } },
+    { "id": "sy-scrap-1", "object": "scrap-heap", "at": { "room": "ground", "dx": 16, "dy": 36 } },
+    { "id": "sy-scrap-2", "object": "scrap-heap", "at": { "room": "ground", "dx": 22, "dy": 29 } },
+    { "id": "sy-scrap-3", "object": "scrap-heap", "at": { "room": "ground", "dx": 10, "dy": 44 } },
+    { "id": "sy-scrap-4", "object": "scrap-heap", "at": { "room": "ground", "dx": 22, "dy": 46 } },
+    { "id": "sy-scrap-5", "object": "scrap-heap", "at": { "room": "ground", "dx": 44, "dy": 29 } },
+    { "id": "sy-scrap-6", "object": "scrap-heap", "at": { "room": "ground", "dx": 50, "dy": 37 } },
+    { "id": "sy-scrap-7", "object": "scrap-heap", "at": { "room": "ground", "dx": 56, "dy": 46 } },
+    { "id": "sy-scrap-8", "object": "scrap-heap", "at": { "room": "ground", "dx": 44, "dy": 54 } },
+    { "id": "sy-scrap-9", "object": "scrap-heap", "at": { "room": "ground", "dx": 16, "dy": 55 } },
+    { "id": "sy-wreck-0", "object": "parked-car", "at": { "room": "ground", "dx": 30, "dy": 27 } },
+    { "id": "sy-wreck-1", "object": "parked-car", "at": { "room": "ground", "dx": 40, "dy": 47 } },
+    { "id": "sy-wreck-2", "object": "parked-car", "at": { "room": "ground", "dx": 54, "dy": 25 } },
+    { "id": "sy-dumpster", "object": "dumpster", "at": { "room": "ground", "dx": 12, "dy": 10 }, "facing": "south" },
+    { "id": "sy-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 2, "dy": 17 } },
+    { "id": "sy-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 24, "dy": 17 } },
+    { "id": "sy-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 24 } },
+    { "id": "sy-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 60, "dy": 29 } },
+    { "id": "sy-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 28, "dy": 57 } },
+    { "id": "sy-pole-a", "object": "utility-pole", "at": { "room": "ground", "dx": 20, "dy": 25 } },
+    { "id": "sy-pole-b", "object": "utility-pole", "at": { "room": "ground", "dx": 46, "dy": 43 } }
+  ],
+  "assemblies": [],
+  "npcs": [
+    { "id": "sy-hallam", "npc": "dutch-hallam", "at": { "room": "breakers-office", "dx": 6, "dy": 2 } }
+  ],
+  "creatures": [],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "breakers-office": { "theme": "office", "people": 0 },
+    "crusher-shed": { "theme": "industrial", "people": 0 },
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

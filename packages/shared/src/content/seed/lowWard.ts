@@ -76,6 +76,14 @@ export const SEED_SHOPS: readonly ShopDefinition[] = [
     buysCategories: ['material', 'consumable', 'equipment'],
     sellRate: 0.5,
   },
+  {
+    id: 'hallam-scrap',
+    name: "Hallam's Breakers",
+    greeting: 'By weight, not by sentiment.',
+    listings: [],
+    buysCategories: ['material', 'consumable', 'equipment'],
+    sellRate: 0.5,
+  },
 ];
 
 const look = (physique: CharacterAppearance['physique'], skinTone: string, hairStyle: CharacterAppearance['hairStyle'], hairColor: string, extra: Partial<CharacterAppearance> = {}): CharacterAppearance => ({
@@ -284,6 +292,63 @@ const RESIDENTS: readonly Resident[] = [
     appearance: look('female', '#5a3a28', 'swept', '#2a2a2a'),
     says: "Dredging hooks, rope, waders. The basin gives up all sorts if you drag it. Old coins, engine parts. Last week, a typewriter, still typing.",
     shopId: 'abara-chandlery',
+  },
+  {
+    id: 'mags-doherty',
+    name: 'Mags Doherty',
+    title: 'Laundress',
+    examine: 'Red hands, a steam-curled fringe and a voice that carries over the machines.',
+    appearance: look('female', '#e8c0a0', 'bun', '#a84a2a', { bodyType: 'broad' }),
+    says: "Half the Ward's shirts go through these machines. The chimney's been smoking since my gran's day. Some nights it smokes when the boilers are cold. I don't ask.",
+  },
+  {
+    id: 'agnes-pole',
+    name: 'Agnes Pole',
+    title: 'Allotment keeper',
+    examine: 'Mud to the knees and a trowel in each pocket.',
+    appearance: look('female', '#c8a080', 'long', '#d0d0d0', { bodyType: 'slight', faceMark: 'freckles' }),
+    says: "Plant a bean, get a bean. Mostly. Bed six grew something with leaves like hands last spring. Greenhalgh paid well for it. I burned the rest.",
+  },
+  {
+    id: 'ilse-varga',
+    name: 'Ilse Varga',
+    title: 'Lockkeeper',
+    examine: 'Leans on things the way only a lockkeeper can.',
+    appearance: look('female', '#d8b090', 'crop', '#5a4a3a', { faceMark: 'scarBrow' }),
+    says: "Nothing's come through the lock in years, not going out. Coming in, now. Things come up the Cut from the culverts at night. Small ones, so far.",
+  },
+  {
+    id: 'kofi-mensah',
+    name: 'Kofi Mensah',
+    title: 'Pump engineer',
+    examine: 'Knows every valve in the Cut by its sound.',
+    appearance: look('male', '#5a3a28', 'buzz', '#1a1a1a', { augment: 'jawPlate' }),
+    says: "If these pumps stop, the basin rises and the Site floods from the bottom up. The Directorate pays me well not to let that happen. They never say why the bottom matters.",
+  },
+  {
+    id: 'dutch-hallam',
+    name: 'Dutch Hallam',
+    title: 'Scrap dealer',
+    examine: 'Weighs scrap with his eyes and gets it right.',
+    appearance: look('male', '#b88a68', 'shaved', '#2a2a2a', { bodyType: 'broad', augment: 'respirator' }),
+    says: "Bring me anything off the heaps and I'll buy it. Mind the heaps themselves. Some of them have been rearranging themselves at night.",
+    shopId: 'hallam-scrap',
+  },
+  {
+    id: 'corporal-sato',
+    name: 'Corporal Sato',
+    title: 'Fringe watch',
+    examine: 'Too young for the post and knows it.',
+    appearance: look('male', '#d8b090', 'undercut', '#1a1a1a'),
+    says: "You're past the last safe street. Things leak through from the Cordon here. If the hull starts knocking, don't knock back.",
+  },
+  {
+    id: 'lieutenant-mercer',
+    name: 'Lieutenant Mercer',
+    title: 'Cordon post commander',
+    examine: 'Has watched one gate for six years and has not once seen it open.',
+    appearance: look('female', '#8a6048', 'braids', '#1a1410', { augment: 'ocularImplant' }),
+    says: "The Cordon gate stays shut. Beyond it is the Old Shipyards, and beyond that, nobody's sure. When the Directorate wants it opened, I'll hear first. You'll hear second.",
   },
 ];
 

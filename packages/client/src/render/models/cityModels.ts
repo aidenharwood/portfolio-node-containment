@@ -480,6 +480,110 @@ const liftDoor: Builder = () => {
   return parts(model, 32);
 };
 
+const allotmentBed: Builder = (seed) => {
+  const crop = pick([0x4d7340, 0x6a8a3a, 0x3a6a4a, 0x8a7a3a], seed);
+  const model = new VoxelModel().fill(-15, 0, -7, 14, 3, 6, grain(CITY.darkWood, 0.04));
+  model.fill(-14, 3, -6, 13, 3, 5, CITY.soil);
+  for (let x = -13; x <= 12; x += 3) {
+    for (let z = -5; z <= 4; z += 3) {
+      const height = 2 + Math.floor(noise3(seed, x, z, 7) * 4);
+      model.fill(x, 4, z, x + 1, 3 + height, z + 1, jitter(crop, 0.08, noise3(x, z, seed, 9)));
+    }
+  }
+  return parts(model, 10);
+};
+
+const washer: Builder = (seed) => {
+  const body = pick([0xd8d6cc, 0xb8c8c8, 0xc8b898], seed);
+  const model = new VoxelModel().fill(-6, 0, -7, 5, 14, 3, grain(body, 0.02));
+  cylinder(model, 0, 3, 3.6, 3, 10, darken(body, 0.35));
+  model.fill(-3, 4, 4, 2, 9, 4, CITY.glass, VOXEL_GLASS);
+  model.fill(-5, 12, 4, 4, 13, 4, CITY.darkSteel).set(3, 12, 4, CITY.green, VOXEL_EMISSIVE);
+  return parts(model, 15);
+};
+
+const chimney: Builder = () => {
+  const brick = 0x6e3b2e;
+  const model = new VoxelModel().fill(-7, 0, -7, 6, 4, 6, grain(CITY.concrete));
+  model.fill(-5, 5, -5, 4, 92, 4, (x, y, z) => (y % 4 === 0 ? 0x4f2a20 : jitter(brick, 0.05, noise3(x, y, z, 3))));
+  model.fill(-6, 88, -6, 5, 90, 5, CITY.concrete);
+  model.fill(-3, 92, -3, 2, 92, 2, CITY.ink);
+  for (let i = 0; i < 6; i++) model.set(-1 + (i % 3), 18 + i * 12, 5, CITY.iron);
+  return parts(model, 93);
+};
+
+const scrapHeap: Builder = (seed) => {
+  const metals = [0x6a4a3a, 0x5d666c, 0x8a5a3a, 0x3a4a52, 0x7a6a5a, 0x2f4a6a];
+  const model = new VoxelModel();
+  for (let i = 0; i < 26; i++) {
+    const x = Math.floor((noise3(seed, i, 0, 3) - 0.5) * 24);
+    const z = Math.floor((noise3(seed, i, 1, 3) - 0.5) * 24);
+    const lift = Math.max(0, 14 - Math.floor(Math.hypot(x, z) * 0.9));
+    const w = 2 + Math.floor(noise3(seed, i, 2, 3) * 5);
+    const h = 2 + Math.floor(noise3(seed, i, 3, 3) * 4);
+    model.fill(x, Math.floor(lift * noise3(seed, i, 4, 3)), z, x + w, Math.floor(lift * noise3(seed, i, 4, 3)) + h, z + 2, grain(metals[i % metals.length] as number, 0.06, i));
+  }
+  model.fill(-3, 0, 6, 2, 6, 9, CITY.rubber);
+  return parts(model, 22);
+};
+
+const magnetCrane: Builder = () => {
+  const yellow = 0xd8a03a;
+  const model = new VoxelModel().fill(-14, 0, -14, 13, 6, 13, grain(CITY.darkSteel, 0.03));
+  model.fill(-10, 7, -10, 9, 18, 9, grain(yellow, 0.03)).fill(-8, 12, 10, 7, 16, 10, CITY.glass, VOXEL_GLASS);
+  model.fill(-3, 19, -3, 2, 70, 2, (x, y) => ((y + x) % 6 < 3 ? yellow : darken(yellow, 0.3)));
+  model.fill(-2, 66, -40, 1, 70, 30, (_x, y, z) => ((z + y) % 6 < 3 ? yellow : darken(yellow, 0.3)));
+  model.fill(-4, 60, -40, 3, 66, -34, CITY.concrete);
+  model.fill(0, 40, 27, 0, 65, 27, CITY.iron);
+  cylinder(model, 0, 27, 6, 34, 39, CITY.darkSteel);
+  model.fill(-1, 72, -1, 0, 72, 0, CITY.red, VOXEL_EMISSIVE);
+  return parts(model, 73);
+};
+
+const beachedHull: Builder = (seed) => {
+  const paint = pick([0x6a2a22, 0x2a3a4a, 0x3a4a3a], seed);
+  const model = new VoxelModel();
+  for (let x = -46; x <= 45; x++) {
+    const taper = x > 20 ? (x - 20) * 0.8 : x < -40 ? (-40 - x) * 2.5 : 0;
+    const half = Math.max(2, 21 - taper);
+    for (let y = 0; y <= 32; y++) {
+      const width = half * (0.5 + 0.5 * Math.min(1, y / 16));
+      const edge = Math.round(width);
+      for (let z = -edge; z <= edge; z++) {
+        const shell = Math.abs(z) >= edge - 1 || y <= 1 || (y === 32 && Math.abs(z) < edge);
+        if (!shell) continue;
+        const hole = y > 8 && y < 24 && x > -12 && x < 6 && z > 0 && noise3(x, y, 1, 13) > 0.3;
+        if (hole) continue;
+        const rust = noise3(x, y, z, seed + 5) > 0.68;
+        model.set(x, y, z, rust ? 0x8a4a2a : y > 27 ? CITY.paper : jitter(paint, 0.05, noise3(x, y, z, 2)));
+      }
+    }
+  }
+  model.fill(-34, 33, -10, -16, 52, 9, grain(CITY.paper, 0.04)).fill(-32, 44, 10, -18, 48, 10, CITY.ink);
+  model.fill(-26, 53, -1, -25, 72, 0, CITY.iron).fill(10, 33, -1, 11, 64, 0, CITY.iron).fill(10, 60, -14, 11, 61, 13, CITY.iron);
+  return parts(model, 73);
+};
+
+const lockGate: Builder = () => {
+  const model = new VoxelModel().fill(-6, 0, -6, 5, 3, 5, grain(CITY.concrete));
+  model.fill(-1, 4, -1, 0, 12, 0, CITY.iron);
+  model.fill(-2, 12, -14, 1, 15, 13, (_x, _y, z) => (z % 5 === 0 ? CITY.darkWood : CITY.wood));
+  model.fill(-2, 16, 10, 1, 16, 12, CITY.band);
+  return parts(model, 17);
+};
+
+const cordonGate: Builder = () => {
+  const model = new VoxelModel().fill(-32, 0, -8, 31, 4, 7, grain(CITY.concrete));
+  for (const x of [-32, 24]) model.fill(x, 5, -8, x + 7, 72, 7, grain(CITY.panel, 0.015));
+  model.fill(-24, 5, -3, 23, 60, 2, (x, y) => (y % 6 === 0 ? darken(CITY.darkSteel, 0.2) : x % 8 === 0 ? lighten(CITY.darkSteel, 0.1) : CITY.darkSteel));
+  model.fill(-32, 60, -8, 31, 72, 7, grain(CITY.panel, 0.015));
+  model.fill(-32, 62, 8, 31, 66, 8, CITY.band);
+  model.fill(-6, 40, 3, 5, 50, 3, CITY.ink).fill(-4, 42, 4, 3, 48, 4, CITY.red, VOXEL_EMISSIVE);
+  for (const x of [-28, 27]) model.fill(x, 70, 8, x, 72, 8, CITY.red, VOXEL_EMISSIVE);
+  model.fill(-24, 5, 3, 23, 8, 3, (x) => (Math.floor((x + 24) / 4) % 2 === 0 ? CITY.amber : CITY.ink));
+  return parts(model, 73);
+};
+
 export const CITY_BUILDERS: Readonly<Record<CityModel, Builder>> = {
   streetLamp,
   bollard,
@@ -514,4 +618,12 @@ export const CITY_BUILDERS: Readonly<Record<CityModel, Builder>> = {
   headframe,
   mooringPost,
   liftDoor,
+  allotmentBed,
+  washer,
+  chimney,
+  scrapHeap,
+  magnetCrane,
+  beachedHull,
+  lockGate,
+  cordonGate,
 };

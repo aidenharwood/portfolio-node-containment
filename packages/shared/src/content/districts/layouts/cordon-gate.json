@@ -1,0 +1,54 @@
+{
+  "id": "cordon-gate",
+  "name": "The Cordon",
+  "subtitle": "Hollow Bay, the Low Ward",
+  "tier": 3,
+  "region": "low-ward",
+  "condition": "breached",
+  "deadEnd": true,
+  "ambience": { "darkness": 0.7, "tint": "#262a3a", "fog": "#2a2838", "sky": "#3a3358" },
+  "size": { "width": 64, "height": 64 },
+  "steps": [
+    { "kind": "room", "id": "ground", "rect": { "x": 0, "y": 1, "width": 63, "height": 62 }, "floor": "gravel", "shape": "rect", "edge": "barrier" },
+    { "kind": "exit", "id": "west", "room": "ground", "side": "west", "width": 62, "offset": 0, "gate": false },
+    { "kind": "patch", "rect": { "x": 0, "y": 28, "width": 63, "height": 6 }, "tile": "asphalt" },
+    { "kind": "building", "id": "cordon-post", "rect": { "x": 48, "y": 12, "width": 8, "height": 6 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2, "offset": 3 }] }
+  ],
+  "tiles": [],
+  "areas": [
+    { "room": "cordon-post", "name": "Cordon Post", "safe": true },
+    { "room": "ground", "name": "The Cordon", "safe": false }
+  ],
+  "anchors": {},
+  "objects": [
+    { "id": "cg-gate", "object": "cordon-gate", "at": { "room": "ground", "dx": 62, "dy": 30 }, "facing": "west" },
+    { "id": "cg-post-table", "object": "table", "at": { "room": "cordon-post", "dx": 2, "dy": 3 } },
+    { "id": "cg-post-chair", "object": "chair", "at": { "room": "cordon-post", "dx": 2, "dy": 4 }, "facing": "north" },
+    { "id": "cg-post-notices", "object": "notice-board", "at": { "room": "cordon-post", "dx": 1, "dy": 0 } },
+    { "id": "cg-post-camera", "object": "security-camera", "at": { "room": "cordon-post", "dx": 7, "dy": 0 } },
+    { "id": "cg-post-sign", "object": "directorate-sign", "at": { "room": "ground", "dx": 49, "dy": 18 }, "facing": "south" },
+    { "id": "cg-boom-a", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 44, "dy": 27 } },
+    { "id": "cg-boom-b", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 44, "dy": 32 } },
+    { "id": "cg-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 25 } },
+    { "id": "cg-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 35 } },
+    { "id": "cg-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 56, "dy": 25 } },
+    { "id": "cg-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 56, "dy": 35 } },
+    { "id": "cg-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 20, "dy": 25 } },
+    { "id": "cg-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 20, "dy": 35 } },
+    { "id": "cg-bollard-0", "object": "bollard", "at": { "room": "ground", "dx": 52, "dy": 26 } },
+    { "id": "cg-bollard-1", "object": "bollard", "at": { "room": "ground", "dx": 52, "dy": 33 } }
+  ],
+  "assemblies": [],
+  "npcs": [
+    { "id": "cg-mercer", "npc": "lieutenant-mercer", "at": { "room": "cordon-post", "dx": 5, "dy": 2 } }
+  ],
+  "creatures": [],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "cordon-post": { "theme": "office", "people": 0 },
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

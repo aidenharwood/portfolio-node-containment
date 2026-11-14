@@ -2,7 +2,7 @@
 
 Read this before adding or changing a district, a level or anything placed in one. It applies to humans and AI agents alike. Every district in the game follows these rules; there is no exemption list. The rules marked **checked** are enforced by `findWorldDesignIssues` (`packages/shared/src/content/worldDesignIntegrity.ts`), which runs inside `findContentIssues`: the server will not boot and `npm test` fails when one is broken. The rest is judgement, and reviewers hold changes to it.
 
-> **Status:** the world is being rebuilt as an open city (`docs/superpowers/specs/2026-11-14-first-region-design.md`). Built so far: Terminus Square, the Tenements, Market Row and the Canal Basin with Site Meridian, a loop of four squares in the Low Ward.
+> **Status:** the world is being rebuilt as an open city (`docs/superpowers/specs/2026-11-14-first-region-design.md`). The Low Ward's surface is built: nine squares from Terminus Square out to the Cordon gate. The levels below Site Meridian are next.
 
 ## What the world should feel like
 
@@ -114,6 +114,8 @@ The rest is judgement, and reviewers hold it:
 | Directorate compounds | A `building` with an outdoor floor and `edge: "barrier"`: a walled yard with a gate, Directorate buildings standing inside it | The Site Meridian headframe |
 | Facility levels below ground | Rooms joined by links, getting tighter and colder with depth; amber for low security, red for high | The deepest boss room |
 
+**Safe ground.** The squares near Terminus Square are safe all over. From the Cut, the Scrapyards and the Shipyard Fringe outward the open ground is hostile and only the buildings are safe, so creatures and gathering spots go on the ground and people stay indoors.
+
 **Rooms.** A tile inside a building belongs to the building, not to the ground around it: placement checks and the editor use the smallest room that contains the tile.
 
 **Floors.** `ceramic` is for medical, ward, lab, cold and canteen rooms; `boards` for homes, shops, offices, canteens and the like. Wall materials say who built a place: brick and blockwork for the old city, corrugated cladding for what went up after the anomalies, and the Directorate panel for the Directorate.
@@ -121,7 +123,7 @@ The rest is judgement, and reviewers hold it:
 ## Reserved ground
 
 - **East of the Low Ward:** the Cordon, where the next region attaches through the Cordon gate.
-- **The squares of the Low Ward not yet built:** Laundry and Gardens, the Cut, the Scrapyards, the Shipyard Fringe and the Cordon gate (see the first-region design).
+- **Below Site Meridian:** Intake, the Secure Wing and the Vault, reached by the headhouse lift (see the first-region design).
 
 ## Adding a district
 

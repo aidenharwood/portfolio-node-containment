@@ -90,6 +90,15 @@ Tier rises with distance from Terminus Square: west and north are safe, the cana
 - New kit: market stall, headframe, mooring post, lift door.
 - There are 23 named residents. Seven run shops, and their shelves are empty until phase 4.
 
+**Step 3 (built).** Five more squares complete the surface. The grid is three wide and three deep, with the Cordon gate east of the Fringe.
+- **Laundry & Gardens** (tier 1): Doherty's Steam Laundry and its chimney (the landmark), 36 allotment beds, Agnes's shed and a pond.
+- **The Cut** (tier 1): a canal with a lock (the landmark), two bridges, the lock cottage and the pump house.
+- **The Scrapyards** (tier 2): Hallam's Breakers, the crusher shed, ten scrap heaps and the magnet crane (the landmark).
+- **The Shipyard Fringe** (tier 3, breached): slipways, a beached hull (the landmark), the slipway shed and the Directorate watch hut.
+- **The Cordon** (tier 3, a dead end): the sealed Cordon gate at the end of a road, and the Cordon post.
+
+The open ground of the Cut, the Scrapyards, the Fringe and the Cordon is hostile; their buildings are safe. New kit: allotment bed, washer, chimney, scrap heap, magnet crane, beached hull, lock gate and Cordon gate. There are 30 named residents.
+
 ## Order of work
 
 1. Rewrite WORLD_DESIGN.md, then do Terminus Square and the Tenements end to end: layout, interiors, dressing and residents as named stand-ins. Walk them in the game.
