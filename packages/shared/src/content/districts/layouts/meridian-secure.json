@@ -5,14 +5,14 @@
   "tier": 10,
   "region": "low-ward",
   "condition": "breached",
-  "ambience": { "darkness": 0.75, "tint": "#3a2020", "fog": "#1a0e0e", "fixtures": "failing" },
+  "ambience": { "darkness": 0.85, "tint": "#22262a", "fog": "#140c0e", "fixtures": "failing" },
   "size": { "width": 64, "height": 48 },
   "steps": [
     { "kind": "room", "id": "secure-lift", "rect": { "x": 2, "y": 19, "width": 8, "height": 8 }, "floor": "plating", "shape": "rect" },
     { "kind": "room", "id": "red-gallery", "rect": { "x": 13, "y": 20, "width": 48, "height": 6 }, "floor": "plating", "shape": "rect" },
     { "kind": "room", "id": "cellblock", "rect": { "x": 13, "y": 4, "width": 48, "height": 12 }, "floor": "plating", "shape": "rect" },
-    { "kind": "room", "id": "breach-ward", "rect": { "x": 13, "y": 30, "width": 24, "height": 14 }, "floor": "ceramic", "shape": "rect" },
-    { "kind": "room", "id": "observation", "rect": { "x": 40, "y": 30, "width": 14, "height": 10 }, "floor": "ceramic", "shape": "rect" },
+    { "kind": "room", "id": "breach-ward", "rect": { "x": 13, "y": 30, "width": 24, "height": 14 }, "floor": "plating", "shape": "rect" },
+    { "kind": "room", "id": "observation", "rect": { "x": 40, "y": 30, "width": 14, "height": 10 }, "floor": "plating", "shape": "rect" },
     { "kind": "room", "id": "vault-stair", "rect": { "x": 56, "y": 30, "width": 6, "height": 8 }, "floor": "plating", "shape": "rect" },
     { "kind": "link", "from": "secure-lift", "to": "red-gallery", "width": 4, "floor": "plating" },
     { "kind": "link", "from": "red-gallery", "to": "cellblock", "width": 4, "floor": "plating", "offset": 8 },
@@ -83,8 +83,22 @@
     { "id": "ms-breaker-2", "creature": "cell-breaker", "at": { "room": "breach-ward", "dx": 3, "dy": 12 } },
     { "id": "ms-breaker-3", "creature": "cell-breaker", "at": { "room": "observation", "dx": 10, "dy": 7 } }
   ],
-  "lights": [],
-  "decals": [],
+  "lights": [
+    { "at": { "room": "red-gallery", "dx": 6, "dy": 3 }, "radius": 4, "color": "#ff1a1a", "intensity": 1 },
+    { "at": { "room": "red-gallery", "dx": 18, "dy": 3 }, "radius": 4, "color": "#ff1a1a", "intensity": 1 },
+    { "at": { "room": "red-gallery", "dx": 30, "dy": 3 }, "radius": 4, "color": "#ff1a1a", "intensity": 1 },
+    { "at": { "room": "red-gallery", "dx": 42, "dy": 3 }, "radius": 4, "color": "#ff1a1a", "intensity": 1 },
+    { "at": { "room": "cellblock", "dx": 8, "dy": 6 }, "radius": 5, "color": "#ff1a1a", "intensity": 1 },
+    { "at": { "room": "cellblock", "dx": 24, "dy": 6 }, "radius": 5, "color": "#ff1a1a", "intensity": 1 },
+    { "at": { "room": "cellblock", "dx": 40, "dy": 6 }, "radius": 5, "color": "#ff1a1a", "intensity": 1 },
+    { "at": { "room": "breach-ward", "dx": 12, "dy": 7 }, "radius": 6, "color": "#ff1a1a", "intensity": 1 }
+  ],
+  "decals": [
+    { "kind": "scorch", "at": { "room": "breach-ward", "dx": 6, "dy": 4 }, "width": 6, "height": 5 },
+    { "kind": "cracks", "at": { "room": "breach-ward", "dx": 14, "dy": 6 }, "width": 7, "height": 6 },
+    { "kind": "cracks", "at": { "room": "cellblock", "dx": 18, "dy": 3 }, "width": 8, "height": 5 },
+    { "kind": "scorch", "at": { "room": "cellblock", "dx": 34, "dy": 5 }, "width": 5, "height": 4 }
+  ],
   "setPieces": [],
   "dressing": {
     "secure-lift": { "theme": "transit", "people": 0 },

@@ -5,7 +5,7 @@
   "tier": 6,
   "region": "low-ward",
   "condition": "pristine",
-  "ambience": { "darkness": 0.55, "tint": "#3a3428", "fog": "#1a1814" },
+  "ambience": { "darkness": 0.55, "tint": "#2a3034", "fog": "#14181a" },
   "size": { "width": 64, "height": 48 },
   "steps": [
     { "kind": "room", "id": "lift-lobby", "rect": { "x": 27, "y": 2, "width": 10, "height": 7 }, "floor": "plating", "shape": "rect" },
@@ -100,7 +100,10 @@
     { "id": "mi-hound-b", "creature": "glass-hound", "at": { "room": "lab-a", "dx": 6, "dy": 9 } }
   ],
   "lights": [],
-  "decals": [],
+  "decals": [
+    { "kind": "lane-paint", "pattern": "border", "at": { "room": "amber-cells", "dx": 1, "dy": 1 }, "width": 38, "height": 10 },
+    { "kind": "wear", "at": { "room": "lift-lobby", "dx": 2, "dy": 2 }, "width": 6, "height": 3 }
+  ],
   "setPieces": [],
   "dressing": {
     "lift-lobby": { "theme": "transit", "people": 0 },

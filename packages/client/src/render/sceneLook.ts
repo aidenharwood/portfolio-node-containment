@@ -12,14 +12,14 @@ import { pixelRatioFor, shadowMapSizeFor, type GameSettings, type RenderScale } 
 
 const LIGHT_INTENSITY_SCALE = 14;
 const LIGHT_REACH = 1.4;
-const AMBIENT_BASE = 2.6;
-const AMBIENT_DARKNESS_WEIGHT = 1.7;
-const AMBIENT_FLOOR = 1.25;
+const AMBIENT_BASE = 2.9;
+const AMBIENT_DARKNESS_WEIGHT = 2.3;
+const AMBIENT_FLOOR = 0.8;
 const AMBIENT_SKY_LIFT = 0.74;
 const AMBIENT_GROUND_LIFT = 0.32;
 const KEY_BASE = 1;
 const KEY_DARKNESS_WEIGHT = 0.7;
-const KEY_FLOOR = 0.45;
+const KEY_FLOOR = 0.25;
 const LIGHT_REASSIGN_SECONDS = 0.25;
 const FOG_DENSITY = 0.028;
 const SURVEY_AMBIENT = 4.2;

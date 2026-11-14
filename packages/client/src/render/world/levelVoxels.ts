@@ -68,11 +68,11 @@ const COLORS = {
   grassDry: 0x6b6a3a,
   dirt: 0x5a4632,
   dirtDark: 0x463626,
-  gravel: 0x6e6a62,
-  gravelDark: 0x55524c,
-  gravelLight: 0x8a857b,
-  asphalt: 0x26282b,
-  asphaltWorn: 0x2e3033,
+  gravel: 0x5e5b55,
+  gravelDark: 0x625f58,
+  gravelLight: 0x7a766d,
+  asphalt: 0x505358,
+  asphaltWorn: 0x55575b,
   asphaltLine: 0xd8c27a,
   paving: 0x434548,
   pavingJoint: 0x2c2e31,
@@ -325,10 +325,10 @@ function floorVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: nu
       return solid(COLORS.carpet);
     }
     case 'terrazzo': {
-      if ((even(tile.tx) && lx === 0) || (even(tile.ty) && lz === 0)) return solid(COLORS.terrazzoStrip);
+      if ((tile.tx % 4 === 0 && lx === 0) || (tile.ty % 4 === 0 && lz === 0)) return solid(COLORS.terrazzoStrip);
       const chip = noise3(vx, vz, 0, 23);
-      if (chip > 0.965) return solid(COLORS.terrazzoWarm);
-      if (chip > 0.9) return solid(COLORS.terrazzoChip);
+      if (chip > 0.992) return solid(COLORS.terrazzoWarm);
+      if (chip > 0.975) return solid(COLORS.terrazzoChip);
       return solid(jitter(COLORS.terrazzo, 0.012, noise3(Math.floor(tile.tx / 2), Math.floor(tile.ty / 2), 0, 29)));
     }
     case 'ceramic': {
@@ -355,10 +355,10 @@ function floorVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: nu
       return solid(jitter(rut > 0.6 ? COLORS.dirtDark : COLORS.dirt, 0.05, noise3(vx, vz, 0, 73)));
     }
     case 'gravel': {
+      const clump = smoothNoise(vx, vz, 11, 79);
       const stone = noise3(vx, vz, 0, 79);
-      if (stone > 0.8) return solid(COLORS.gravelLight);
-      if (stone < 0.25) return solid(COLORS.gravelDark);
-      return solid(jitter(COLORS.gravel, 0.05, stone));
+      if (stone > 0.975) return solid(COLORS.gravelLight);
+      return solid(jitter(clump < 0.3 ? COLORS.gravelDark : COLORS.gravel, 0.02, stone));
     }
     case 'asphalt': {
       const wear = smoothNoise(vx, vz, 9, 83);

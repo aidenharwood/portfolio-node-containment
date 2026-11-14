@@ -310,11 +310,11 @@
 }
 
 .panel-tab-icon {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.6;
+  stroke-width: 1.8;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -337,7 +337,8 @@
 .panel-tab.active {
   color: var(--color-accent);
   border-top-color: var(--color-accent);
-  background: var(--color-accent-dim);
+  background: linear-gradient(180deg, var(--color-accent-dim), transparent);
+  box-shadow: inset 1px 0 0 var(--color-accent-dim), inset -1px 0 0 var(--color-accent-dim);
 }
 
 .panel-body {

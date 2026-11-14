@@ -6,7 +6,7 @@
   "region": "low-ward",
   "condition": "breached",
   "deadEnd": true,
-  "ambience": { "darkness": 0.7, "tint": "#262a3a", "fog": "#2a2838", "sky": "#3a3358" },
+  "ambience": { "darkness": 0.66, "tint": "#3a1c20", "fog": "#2a1418", "sky": "#4a2430" },
   "size": { "width": 64, "height": 64 },
   "steps": [
     { "kind": "room", "id": "ground", "rect": { "x": 0, "y": 1, "width": 63, "height": 62 }, "floor": "gravel", "shape": "rect", "edge": "barrier" },
@@ -38,7 +38,27 @@
     { "id": "cg-bollard-0", "object": "bollard", "at": { "room": "ground", "dx": 52, "dy": 26 } },
     { "id": "cg-bollard-1", "object": "bollard", "at": { "room": "ground", "dx": 52, "dy": 33 } },
     { "id": "cg-trace-0", "object": "red-trace", "at": { "room": "ground", "dx": 12, "dy": 29 } },
-    { "id": "cg-trace-1", "object": "red-trace", "at": { "room": "ground", "dx": 36, "dy": 49 } }
+    { "id": "cg-trace-1", "object": "red-trace", "at": { "room": "ground", "dx": 36, "dy": 49 } },
+    { "id": "cordon-lamp-x0", "object": "street-lamp", "at": { "room": "ground", "dx": 4, "dy": 25 } },
+    { "id": "cordon-lamp-x1", "object": "street-lamp", "at": { "room": "ground", "dx": 12, "dy": 25 } },
+    { "id": "cordon-lamp-x2", "object": "street-lamp", "at": { "room": "ground", "dx": 28, "dy": 25 } },
+    { "id": "cordon-lamp-x3", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 25 } },
+    { "id": "cordon-lamp-x4", "object": "street-lamp", "at": { "room": "ground", "dx": 4, "dy": 35 } },
+    { "id": "cordon-lamp-x5", "object": "street-lamp", "at": { "room": "ground", "dx": 12, "dy": 35 } },
+    { "id": "cordon-lamp-x6", "object": "street-lamp", "at": { "room": "ground", "dx": 28, "dy": 35 } },
+    { "id": "cordon-lamp-x7", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 35 } },
+    { "id": "cordon-wall-0", "object": "barricade", "at": { "room": "ground", "dx": 61, "dy": 5 } },
+    { "id": "cordon-wall-1", "object": "barricade", "at": { "room": "ground", "dx": 60, "dy": 6 } },
+    { "id": "cordon-wall-2", "object": "barricade", "at": { "room": "ground", "dx": 61, "dy": 11 } },
+    { "id": "cordon-wall-3", "object": "barricade", "at": { "room": "ground", "dx": 61, "dy": 17 } },
+    { "id": "cordon-wall-4", "object": "barricade", "at": { "room": "ground", "dx": 60, "dy": 18 } },
+    { "id": "cordon-wall-5", "object": "barricade", "at": { "room": "ground", "dx": 61, "dy": 23 } },
+    { "id": "cordon-wall-6", "object": "barricade", "at": { "room": "ground", "dx": 61, "dy": 39 } },
+    { "id": "cordon-wall-7", "object": "barricade", "at": { "room": "ground", "dx": 60, "dy": 40 } },
+    { "id": "cordon-wall-8", "object": "barricade", "at": { "room": "ground", "dx": 61, "dy": 46 } },
+    { "id": "cordon-wall-9", "object": "barricade", "at": { "room": "ground", "dx": 61, "dy": 51 } },
+    { "id": "cordon-wall-10", "object": "barricade", "at": { "room": "ground", "dx": 60, "dy": 52 } },
+    { "id": "cordon-wall-11", "object": "barricade", "at": { "room": "ground", "dx": 61, "dy": 57 } }
   ],
   "assemblies": [],
   "npcs": [
@@ -58,8 +78,23 @@
     { "id": "cg-stalker-10", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 30, "dy": 55 } },
     { "id": "cg-stalker-11", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 50, "dy": 55 } }
   ],
-  "lights": [],
-  "decals": [],
+  "lights": [
+    { "at": { "room": "ground", "dx": 60, "dy": 30 }, "radius": 6, "color": "#ff2a2a", "intensity": 1 },
+    { "at": { "room": "ground", "dx": 52, "dy": 15 }, "radius": 4, "color": "#ff2a2a", "intensity": 0.8 },
+    { "at": { "room": "ground", "dx": 56, "dy": 44 }, "radius": 4, "color": "#ff2a2a", "intensity": 0.8 }
+  ],
+  "decals": [
+    { "kind": "scorch", "at": { "room": "ground", "dx": 30, "dy": 40 }, "width": 5, "height": 4 },
+    { "kind": "cracks", "at": { "room": "ground", "dx": 8, "dy": 30 }, "width": 6, "height": 3 },
+    { "kind": "lane-paint", "at": { "room": "ground", "dx": 2, "dy": 30 }, "width": 3, "height": 1 },
+    { "kind": "lane-paint", "at": { "room": "ground", "dx": 9, "dy": 30 }, "width": 3, "height": 1 },
+    { "kind": "lane-paint", "at": { "room": "ground", "dx": 16, "dy": 30 }, "width": 3, "height": 1 },
+    { "kind": "lane-paint", "at": { "room": "ground", "dx": 23, "dy": 30 }, "width": 3, "height": 1 },
+    { "kind": "lane-paint", "at": { "room": "ground", "dx": 30, "dy": 30 }, "width": 3, "height": 1 },
+    { "kind": "lane-paint", "at": { "room": "ground", "dx": 37, "dy": 30 }, "width": 3, "height": 1 },
+    { "kind": "lane-paint", "at": { "room": "ground", "dx": 44, "dy": 30 }, "width": 3, "height": 1 },
+    { "kind": "lane-paint", "at": { "room": "ground", "dx": 51, "dy": 30 }, "width": 3, "height": 1 }
+  ],
   "setPieces": [],
   "dressing": {
     "cordon-post": { "theme": "office", "people": 0 },

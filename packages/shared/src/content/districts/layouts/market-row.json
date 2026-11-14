@@ -5,7 +5,7 @@
   "tier": 1,
   "region": "low-ward",
   "condition": "worn",
-  "ambience": { "darkness": 0.7, "tint": "#262a3a", "fog": "#2a2838", "sky": "#3a3358" },
+  "ambience": { "darkness": 0.55, "tint": "#3a2636", "fog": "#2e2232", "sky": "#45305a" },
   "size": { "width": 64, "height": 64 },
   "steps": [
     { "kind": "room", "id": "ground", "rect": { "x": 0, "y": 1, "width": 64, "height": 63 }, "floor": "paving", "shape": "rect", "edge": "barrier" },
@@ -131,7 +131,11 @@
     { "id": "mr-yard-hawker", "npc": "nell-carraway", "at": { "room": "ground", "dx": 51, "dy": 41 } }
   ],
   "creatures": [],
-  "lights": [],
+  "lights": [
+    { "at": { "room": "ground", "dx": 8, "dy": 29 }, "radius": 5, "color": "#ff4fa8", "intensity": 0.8 },
+    { "at": { "room": "ground", "dx": 30, "dy": 29 }, "radius": 5, "color": "#4fe3ff", "intensity": 0.7 },
+    { "at": { "room": "ground", "dx": 51, "dy": 42 }, "radius": 5, "color": "#ff4fa8", "intensity": 0.7 }
+  ],
   "decals": [],
   "setPieces": [],
   "dressing": {

@@ -14,7 +14,7 @@ export const DECAL_KIND_COLORS: Partial<Record<FloorDecalKind, number>> = {
   mosaic: 0x3f7f9a,
   rug: 0x7a2f3a,
   runner: 0x8a3a2f,
-  'lane-paint': 0xd8c040,
+  'lane-paint': 0xa89a52,
   'hazard-paint': 0xc99a1c,
   moss: 0x3f6a2f,
   'salt-crust': 0xe6e2d6,
@@ -56,6 +56,20 @@ export function patternMask(pattern: FloorDecalPattern, U: number, V: number, W:
   }
 }
 
+const luma = (color: number): number => (((color >> 16) & 255) * 0.3 + ((color >> 8) & 255) * 0.59 + (color & 255) * 0.11) / 255;
+
+const smoothstep = (t: number): number => t * t * (3 - 2 * t);
+
+function softNoise(x: number, z: number, scale: number, salt: number): number {
+  const gx = Math.floor(x / scale);
+  const gz = Math.floor(z / scale);
+  const fx = smoothstep((x - gx * scale) / scale);
+  const fz = smoothstep((z - gz * scale) / scale);
+  const top = noise3(gx, 0, gz, salt) * (1 - fx) + noise3(gx + 1, 0, gz, salt) * fx;
+  const bottom = noise3(gx, 0, gz + 1, salt) * (1 - fx) + noise3(gx + 1, 0, gz + 1, salt) * fx;
+  return top * (1 - fz) + bottom * fz;
+}
+
 function paintOne(decal: FloorDecal, u: number, v: number, lx: number, lz: number, base: number, grain: number): DecalPaint | null {
   const { kind } = decal;
   const U = u * R + lx;
@@ -65,20 +79,33 @@ function paintOne(decal: FloorDecal, u: number, v: number, lx: number, lz: numbe
   const solid = (color: number): DecalPaint => ({ color, emissive: false });
   const tinted = decal.tint ? hex(decal.tint) : undefined;
   const fill = (fallback: number): number => tinted ?? DECAL_KIND_COLORS[kind] ?? fallback;
+  const W = decal.rect.width * R;
+  const H = decal.rect.height * R;
+  const wx = decal.rect.x * R + U;
+  const wz = decal.rect.y * R + V;
+  const reach = Math.hypot(((U + 0.5) / W) * 2 - 1, ((V + 0.5) / H) * 2 - 1) + (softNoise(wx, wz, 6, 17) - 0.5) * 0.5;
   switch (kind) {
     case 'wear':
       return grain > 0.55 ? solid(lighten(base, 0.12)) : null;
     case 'scorch':
-      return grain > 0.35 ? solid(darken(base, 0.55)) : null;
+      if (reach > 0.9) return null;
+      if (reach > 0.75 && grain > 0.8) return { color: 0x7a2a10, emissive: true };
+      return solid(darken(base, 0.25 + 0.45 * (1 - reach) + grain * 0.05));
     case 'water-stain':
       return solid(darken(base, 0.25));
     case 'cracks':
-      return noise3(u * R + lx + decal.rect.x * R, 0, v * R + lz + decal.rect.y * R, 7) > 0.9 ? solid(darken(base, 0.6)) : null;
+      return reach < 0.95 && Math.abs(softNoise(wx, wz, 10, 7) - 0.5) < 0.03 ? solid(luma(base) < 0.2 ? lighten(base, 0.35) : darken(base, 0.6)) : null;
     case 'moss':
     case 'salt-crust':
       return grain > (kind === 'moss' ? 0.4 : 0.5) ? solid(fill(base)) : null;
-    case 'alien-vein':
-      return grain > 0.82 ? { color: fill(base), emissive: true } : null;
+    case 'alien-vein': {
+      if (reach > 1) return null;
+      const band = Math.abs(softNoise(wx, wz, 9, 81) - 0.5);
+      if (band < 0.022 || (reach < 0.15 && grain > 0.85)) return { color: fill(base), emissive: true };
+      return band < 0.05 ? solid(darken(fill(base), 0.6)) : null;
+    }
+    case 'lane-paint':
+      return grain > 0.25 ? solid(fill(base)) : null;
     case 'hazard-paint':
       if (decal.pattern === undefined || decal.pattern === 'stripe') {
         const stripe = Math.floor((U + V) / 6) % 2 === 0;

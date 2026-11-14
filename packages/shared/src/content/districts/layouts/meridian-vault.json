@@ -5,14 +5,14 @@
   "tier": 12,
   "region": "low-ward",
   "condition": "alien",
-  "ambience": { "darkness": 0.85, "tint": "#202a3a", "fog": "#0a0e14", "fixtures": "failing" },
+  "ambience": { "darkness": 0.85, "tint": "#1a2230", "fog": "#06080e", "fixtures": "failing" },
   "size": { "width": 80, "height": 64 },
   "steps": [
     { "kind": "room", "id": "landing", "rect": { "x": 4, "y": 25, "width": 12, "height": 12 }, "floor": "plating", "shape": "rect" },
     { "kind": "room", "id": "chamber-b", "rect": { "x": 24, "y": 25, "width": 14, "height": 12 }, "floor": "concrete", "shape": "round" },
     { "kind": "room", "id": "chamber-a", "rect": { "x": 24, "y": 6, "width": 14, "height": 14 }, "floor": "concrete", "shape": "round" },
     { "kind": "room", "id": "chamber-c", "rect": { "x": 24, "y": 44, "width": 14, "height": 14 }, "floor": "concrete", "shape": "round" },
-    { "kind": "room", "id": "heart", "rect": { "x": 50, "y": 14, "width": 26, "height": 36 }, "floor": "plating", "shape": "round" },
+    { "kind": "room", "id": "heart", "rect": { "x": 50, "y": 14, "width": 26, "height": 36 }, "floor": "concrete", "shape": "round" },
     { "kind": "link", "from": "landing", "to": "chamber-b", "width": 3, "floor": "plating" },
     { "kind": "link", "from": "chamber-b", "to": "chamber-a", "width": 3, "floor": "plating" },
     { "kind": "link", "from": "chamber-b", "to": "chamber-c", "width": 3, "floor": "plating" },
@@ -43,14 +43,13 @@
     { "id": "mv-heart-cell-a", "object": "secure-cell", "at": { "room": "heart", "dx": 8, "dy": 12 } },
     { "id": "mv-heart-cell-b", "object": "secure-cell", "at": { "room": "heart", "dx": 18, "dy": 24 } },
     { "id": "mv-heart-barricade", "object": "barricade", "at": { "room": "heart", "dx": 6, "dy": 20 } },
-    { "id": "mv-heart-bench", "object": "lab-bench", "at": { "room": "heart", "dx": 16, "dy": 8 } },
     { "id": "mv-residue-0", "object": "vault-residue", "at": { "room": "chamber-b", "dx": 2, "dy": 6 } },
     { "id": "mv-residue-1", "object": "vault-residue", "at": { "room": "heart", "dx": 10, "dy": 6 } },
     { "id": "mv-bloom-0", "object": "vault-bloom", "at": { "room": "chamber-a", "dx": 6, "dy": 2 } },
     { "id": "mv-bloom-1", "object": "vault-bloom", "at": { "room": "chamber-c", "dx": 12, "dy": 7 } },
     { "id": "mv-vault-trace-0", "object": "vault-trace", "at": { "room": "heart", "dx": 20, "dy": 16 } },
     { "id": "mv-vault-trace-1", "object": "vault-trace", "at": { "room": "chamber-c", "dx": 1, "dy": 8 } },
-    { "id": "sealed-hatch", "object": "sealed-hatch", "at": { "room": "heart", "dx": 13, "dy": 30 } }
+    { "id": "sealed-hatch", "object": "sealed-hatch", "at": { "room": "heart", "dx": 13, "dy": 23 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -63,8 +62,25 @@
     { "id": "mv-echo-5", "creature": "vault-echo", "at": { "room": "heart", "dx": 10, "dy": 28 } },
     { "id": "mv-warden", "creature": "the-warden", "at": { "room": "heart", "dx": 13, "dy": 18 } }
   ],
-  "lights": [],
-  "decals": [],
+  "lights": [
+    { "at": { "room": "heart", "dx": 10, "dy": 20 }, "radius": 4, "color": "#4fd8ff", "intensity": 0.9 },
+    { "at": { "room": "heart", "dx": 16, "dy": 20 }, "radius": 4, "color": "#4fd8ff", "intensity": 0.9 },
+    { "at": { "room": "heart", "dx": 10, "dy": 26 }, "radius": 4, "color": "#4fd8ff", "intensity": 0.9 },
+    { "at": { "room": "heart", "dx": 16, "dy": 26 }, "radius": 4, "color": "#4fd8ff", "intensity": 0.9 },
+    { "at": { "room": "heart", "dx": 13, "dy": 8 }, "radius": 6, "color": "#9a3fd8", "intensity": 0.8 },
+    { "at": { "room": "chamber-a", "dx": 7, "dy": 3 }, "radius": 5, "color": "#9a3fd8", "intensity": 0.7 },
+    { "at": { "room": "chamber-b", "dx": 7, "dy": 3 }, "radius": 5, "color": "#9a3fd8", "intensity": 0.7 },
+    { "at": { "room": "chamber-c", "dx": 7, "dy": 3 }, "radius": 5, "color": "#9a3fd8", "intensity": 0.7 },
+    { "at": { "room": "heart", "dx": 13, "dy": 18 }, "radius": 5, "color": "#7fd8ff", "intensity": 0.9 }
+  ],
+  "decals": [
+    { "kind": "alien-vein", "at": { "room": "heart", "dx": 10, "dy": 20 }, "width": 7, "height": 7 },
+    { "kind": "alien-vein", "at": { "room": "heart", "dx": 4, "dy": 4 }, "width": 6, "height": 8 },
+    { "kind": "cracks", "at": { "room": "heart", "dx": 17, "dy": 25 }, "width": 4, "height": 4 },
+    { "kind": "alien-vein", "at": { "room": "chamber-a", "dx": 2, "dy": 2 }, "width": 5, "height": 5 },
+    { "kind": "alien-vein", "at": { "room": "chamber-c", "dx": 6, "dy": 6 }, "width": 4, "height": 4 },
+    { "kind": "cracks", "at": { "room": "chamber-b", "dx": 2, "dy": 6 }, "width": 5, "height": 4 }
+  ],
   "setPieces": [],
   "dressing": {
     "landing": { "theme": "transit", "people": 0 },

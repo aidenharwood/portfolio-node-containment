@@ -5,7 +5,7 @@
   "tier": 3,
   "region": "low-ward",
   "condition": "worn",
-  "ambience": { "darkness": 0.7, "tint": "#262a3a", "fog": "#2a2838", "sky": "#3a3358" },
+  "ambience": { "darkness": 0.58, "tint": "#1e3234", "fog": "#1c2c2e", "sky": "#2e3a54" },
   "size": { "width": 64, "height": 64 },
   "steps": [
     { "kind": "room", "id": "ground", "rect": { "x": 0, "y": 0, "width": 63, "height": 63 }, "floor": "paving", "shape": "rect", "edge": "barrier" },

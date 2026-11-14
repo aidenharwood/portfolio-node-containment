@@ -330,7 +330,7 @@ const storageLocker: Builder = () => {
   return parts(model, 29);
 };
 
-const cellModel = (warning: number): ObjectModelParts => {
+const cellModel = (warning: number, heavy: boolean): ObjectModelParts => {
   const model = new VoxelModel().fill(-16, 0, -16, 15, 2, 15, grain(0x2a2e31, 0.02));
   model.paintExisting(-16, 2, -16, 15, 2, 15, (x, _y, z) => {
     const edge = Math.max(Math.abs(x + 0.5), Math.abs(z + 0.5));
@@ -338,22 +338,36 @@ const cellModel = (warning: number): ObjectModelParts => {
     return (x + z + 64) % 4 < 2 ? warning : CITY.ink;
   });
   model.fill(-14, 3, -14, 13, 3, 13, 0x3a4044);
+  const glassFrom = heavy ? 16 : 4;
   for (const x of [-14, 13]) for (const z of [-14, 13]) model.fill(x, 3, z, x, 30, z, grain(CITY.panel, 0.015));
   for (let along = -13; along <= 12; along++) {
     for (const edge of [-14, 13]) {
-      model.fill(along, 4, edge, along, 28, edge, CITY.glass, VOXEL_GLASS);
-      model.fill(edge, 4, along, edge, 28, along, CITY.glass, VOXEL_GLASS);
+      if (heavy) {
+        model.fill(along, 4, edge, along, glassFrom - 1, edge, grain(CITY.darkSteel, 0.03));
+        model.fill(edge, 4, along, edge, glassFrom - 1, along, grain(CITY.darkSteel, 0.03));
+      }
+      model.fill(along, glassFrom, edge, along, 28, edge, CITY.glass, VOXEL_GLASS);
+      model.fill(edge, glassFrom, along, edge, 28, along, CITY.glass, VOXEL_GLASS);
       model.set(along, 3, edge, warning, VOXEL_EMISSIVE).set(edge, 3, along, warning, VOXEL_EMISSIVE);
     }
   }
-  model.fill(-14, 29, -14, 13, 30, 13, (x, _y, z) => (Math.abs(x + 0.5) > 12 || Math.abs(z + 0.5) > 12 ? CITY.band : CITY.panel));
+  model.fill(-5, 4, 13, 4, 28, 13, grain(CITY.darkSteel, 0.02));
+  model.fill(-2, 20, 13, 1, 21, 13, CITY.ink);
+  model.fill(-4, 23, 14, 3, 26, 14, 0xe8e4d8).fill(-3, 24, 14, 2, 25, 14, CITY.ink);
+  model.set(3, 12, 14, warning, VOXEL_EMISSIVE);
+  model.fill(-14, 29, -14, 13, 30, 13, (x, _y, z) => (Math.abs(x + 0.5) > 12 || Math.abs(z + 0.5) > 12 ? warning : CITY.panel));
   model.fill(-3, 31, -3, 2, 31, 2, CITY.darkSteel);
+  if (!heavy) {
+    const shade = 0x1a1e24;
+    model.fill(-2, 4, -3, 1, 14, -1, shade).fill(-2, 15, -3, 1, 19, -1, shade).fill(-1, 20, -3, 0, 21, -2, shade);
+    model.set(-1, 18, -1, 0xffd84f, VOXEL_EMISSIVE).set(0, 18, -1, 0xffd84f, VOXEL_EMISSIVE);
+  }
   return parts(model, 32);
 };
 
-const containmentCell: Builder = () => cellModel(CITY.amber);
+const containmentCell: Builder = () => cellModel(CITY.amber, false);
 
-const secureCell: Builder = () => cellModel(CITY.red);
+const secureCell: Builder = () => cellModel(CITY.red, true);
 
 const keycardReader: Builder = () => {
   const model = new VoxelModel().fill(-2, 13, -8, 1, 19, -6, grain(CITY.panel, 0.015));

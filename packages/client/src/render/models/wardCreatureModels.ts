@@ -7,12 +7,13 @@ import { VoxelModel, type Paint } from '../voxel/voxelModel.ts';
 import { CHARACTER_VOXEL_SIZE } from '../world/worldScale.ts';
 import { swingCurve, type EntityPose, type EntityRig } from './entityRig.ts';
 
-type Gait = 'scurry' | 'hop' | 'trot' | 'hover' | 'drift';
+type Gait = 'scurry' | 'hop' | 'trot' | 'hover' | 'drift' | 'loom';
 
 interface CreatureLook {
   readonly build: () => VoxelModel;
   readonly height: number;
   readonly gait: Gait;
+  readonly scale?: number;
 }
 
 const fur = (color: number, salt: number): Paint => (x, y, z) => jitter(color, 0.07, noise3(x, y, z, salt));
@@ -226,16 +227,34 @@ const vaultEcho = (): VoxelModel => {
 };
 
 const warden = (): VoxelModel => {
-  const plate = 0x1a2a3a;
+  const plate = 0x24323f;
+  const core = 0x7fd8ff;
   const model = new VoxelModel();
   for (let y = 0; y <= 44; y++) {
     const r = y < 8 ? 9 - y * 0.5 : y < 34 ? 6 + Math.sin(y * 0.25) * 2 : 5;
-    model.fill(-Math.round(r), y, -Math.round(r * 0.6), Math.round(r) - 1, y, Math.round(r * 0.6) - 1, (x, yy, z) => jitter(plate, 0.08, noise3(x, yy, z, 59)));
+    const rx = Math.round(r);
+    const rz = Math.round(r * 0.6);
+    model.fill(-rx, y, -rz, rx - 1, y, rz - 1, (x, yy, z) => {
+      const shell = x === -rx || x === rx - 1 || z === -rz || z === rz - 1;
+      if (!shell) return yy > 12 && yy < 34 ? core : 0x0e1a26;
+      return jitter(plate, 0.08, noise3(x, yy, z, 59));
+    });
+    if (y > 12 && y < 34) for (let x = -rx + 1; x < rx - 1; x += 4) model.set(x, y, rz - 1, core, VOXEL_EMISSIVE).set(x, y, -rz, core, VOXEL_EMISSIVE);
   }
+  model.fill(-2, 16, -1, 1, 30, 0, core, VOXEL_EMISSIVE);
   model.fill(-16, 28, -2, -8, 31, 1, plate).fill(7, 28, -2, 15, 31, 1, plate);
   model.fill(-17, 14, -2, -14, 31, 1, plate).fill(13, 14, -2, 16, 31, 1, plate);
-  model.fill(-3, 38, 4, 2, 40, 4, 0x7fd8ff, VOXEL_EMISSIVE).fill(-1, 20, 4, 0, 30, 4, 0x7fd8ff, VOXEL_EMISSIVE);
-  model.fill(-6, 45, -2, 5, 47, 1, 0xd8322a);
+  model.fill(-17, 10, -2, -14, 13, 1, darken(plate, 0.3)).fill(13, 10, -2, 16, 13, 1, darken(plate, 0.3));
+  model.fill(13, 2, -2, 16, 9, 1, 0xd8322a, VOXEL_EMISSIVE).fill(12, 2, -2, 18, 5, 1, 0xd8322a, VOXEL_EMISSIVE).fill(14, 6, 2, 15, 8, 2, 0xd8322a);
+  model.fill(-3, 38, 4, 2, 40, 4, core, VOXEL_EMISSIVE).fill(-1, 45, -2, 0, 46, 1, core, VOXEL_EMISSIVE);
+  for (let x = -6; x <= 5; x++) {
+    if (x === 2 || x === 3) continue;
+    for (let z = -3; z <= 2; z++) {
+      if (Math.abs(z + 0.5) < 2 && Math.abs(x + 0.5) < 5) continue;
+      const lift = x > 3 ? 1 : 0;
+      model.fill(x, 41 + lift, z, x, 43 + lift, z, Math.floor((x + 6) / 2) % 2 === 0 ? 0xc99a1c : 0x17170f);
+    }
+  }
   return model;
 };
 
@@ -260,7 +279,7 @@ const LOOKS: Readonly<Record<string, CreatureLook>> = {
   cellBreaker: { build: cellBreaker, height: 1.2, gait: 'trot' },
   cordonStalker: { build: cordonStalker, height: 1.5, gait: 'trot' },
   vaultEcho: { build: vaultEcho, height: 1.4, gait: 'drift' },
-  warden: { build: warden, height: 3, gait: 'drift' },
+  warden: { build: warden, height: 4.4, gait: 'loom', scale: 1.8 },
 };
 
 const meshes = new Map<string, VoxelMeshes>();
@@ -270,6 +289,7 @@ class WardCreatureRig implements EntityRig {
   readonly height: number;
   private readonly body: Group;
   private readonly gait: Gait;
+  private readonly scale: number;
 
   constructor(key: string) {
     const look = LOOKS[key] as CreatureLook;
@@ -281,6 +301,8 @@ class WardCreatureRig implements EntityRig {
       meshes.set(key, mesh);
     }
     this.body = createVoxelObject(mesh);
+    this.scale = look.scale ?? 1;
+    this.body.scale.setScalar(this.scale);
     this.root.add(this.body);
   }
 
@@ -308,7 +330,12 @@ class WardCreatureRig implements EntityRig {
         return;
       case 'drift':
         this.body.position.set(shake + Math.sin(pose.time * 1.3) * 0.05, 0.08 + Math.sin(pose.time * 1.9) * 0.06, lunge * 0.25);
-        this.body.scale.setScalar(1 + Math.sin(pose.time * 4) * 0.05 + hurt * 0.15);
+        this.body.scale.setScalar(this.scale * (1 + Math.sin(pose.time * 4) * 0.05 + hurt * 0.15));
+        return;
+      case 'loom':
+        this.body.position.set(shake * 2, Math.sin(pose.time * 0.9) * 0.05, lunge * 0.5);
+        this.body.rotation.z = Math.sin(pose.time * 0.7) * 0.03 + (pose.moving ? Math.sin(pose.walkPhase * Math.PI * 2) * 0.05 : 0);
+        this.body.rotation.x = -lunge * 0.15;
         return;
     }
   }

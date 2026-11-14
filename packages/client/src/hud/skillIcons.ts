@@ -15,6 +15,19 @@ const SKILL_ICON_PATHS: Readonly<Record<SkillId, readonly string[]>> = {
   biochemistry: ['M9 3h6', 'M10 3v6l-5 10a1.5 1.5 0 0 0 1.3 2h11.4a1.5 1.5 0 0 0 1.3-2l-5-10V3', 'M7.5 15h9'],
 };
 
+const SKILL_HUES: Readonly<Record<SkillId, string>> = {
+  containment: '#e8a21c',
+  research: '#6fc8ff',
+  engineering: '#d8b06a',
+  marksmanship: '#ff6a5a',
+  closeQuarters: '#e8e4d8',
+  psionics: '#c79bff',
+  fortitude: '#5fd0a0',
+  salvage: '#c08a5a',
+  refining: '#ff9a3a',
+  biochemistry: '#7cf29a',
+};
+
 export function lineIcon(paths: readonly string[], className: string): SVGSVGElement {
   const svg = document.createElementNS(SVG_NAMESPACE, 'svg');
   svg.setAttribute('viewBox', '0 0 24 24');
@@ -29,5 +42,7 @@ export function lineIcon(paths: readonly string[], className: string): SVGSVGEle
 }
 
 export function skillIcon(id: SkillId): SVGSVGElement {
-  return lineIcon(SKILL_ICON_PATHS[id], 'skill-icon');
+  const icon = lineIcon(SKILL_ICON_PATHS[id], 'skill-icon');
+  icon.style.stroke = SKILL_HUES[id];
+  return icon;
 }

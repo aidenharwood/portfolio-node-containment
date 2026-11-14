@@ -5,7 +5,7 @@
   "tier": 8,
   "region": "low-ward",
   "condition": "breached",
-  "ambience": { "darkness": 0.7, "tint": "#262a3a", "fog": "#2a2838", "sky": "#3a3358" },
+  "ambience": { "darkness": 0.6, "tint": "#22303a", "fog": "#1e2830", "sky": "#2e3450" },
   "size": { "width": 64, "height": 64 },
   "steps": [
     { "kind": "room", "id": "ground", "rect": { "x": 0, "y": 0, "width": 64, "height": 63 }, "floor": "gravel", "shape": "rect", "edge": "barrier" },
@@ -58,7 +58,13 @@
     { "id": "sf-trace-0", "object": "hull-trace", "at": { "room": "ground", "dx": 6, "dy": 40 } },
     { "id": "sf-trace-1", "object": "hull-trace", "at": { "room": "ground", "dx": 60, "dy": 44 } },
     { "id": "sf-trace-2", "object": "hull-trace", "at": { "room": "ground", "dx": 36, "dy": 12 } },
-    { "id": "sf-dumpster", "object": "dumpster", "at": { "room": "ground", "dx": 8, "dy": 17 }, "facing": "south" }
+    { "id": "sf-dumpster", "object": "dumpster", "at": { "room": "ground", "dx": 8, "dy": 17 }, "facing": "south" },
+    { "id": "shipyard-lamp-x0", "object": "street-lamp", "at": { "room": "ground", "dx": 4, "dy": 35 } },
+    { "id": "shipyard-lamp-x1", "object": "street-lamp", "at": { "room": "ground", "dx": 20, "dy": 35 } },
+    { "id": "shipyard-lamp-x2", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 35 } },
+    { "id": "shipyard-lamp-x3", "object": "street-lamp", "at": { "room": "ground", "dx": 60, "dy": 35 } },
+    { "id": "shipyard-lamp-x4", "object": "street-lamp", "at": { "room": "ground", "dx": 24, "dy": 26 } },
+    { "id": "shipyard-lamp-x5", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 26 } }
   ],
   "assemblies": [],
   "npcs": [
@@ -78,7 +84,17 @@
     { "id": "sf-wraith-3", "creature": "tide-wraith", "at": { "room": "ground", "dx": 20, "dy": 34 } }
   ],
   "lights": [],
-  "decals": [],
+  "decals": [
+    { "kind": "lane-paint", "at": { "room": "ground", "dx": 2, "dy": 30 }, "width": 3, "height": 1 },
+    { "kind": "lane-paint", "at": { "room": "ground", "dx": 9, "dy": 30 }, "width": 3, "height": 1 },
+    { "kind": "lane-paint", "at": { "room": "ground", "dx": 16, "dy": 30 }, "width": 3, "height": 1 },
+    { "kind": "lane-paint", "at": { "room": "ground", "dx": 23, "dy": 30 }, "width": 3, "height": 1 },
+    { "kind": "lane-paint", "at": { "room": "ground", "dx": 30, "dy": 30 }, "width": 3, "height": 1 },
+    { "kind": "lane-paint", "at": { "room": "ground", "dx": 37, "dy": 30 }, "width": 3, "height": 1 },
+    { "kind": "lane-paint", "at": { "room": "ground", "dx": 44, "dy": 30 }, "width": 3, "height": 1 },
+    { "kind": "lane-paint", "at": { "room": "ground", "dx": 51, "dy": 30 }, "width": 3, "height": 1 },
+    { "kind": "lane-paint", "at": { "room": "ground", "dx": 58, "dy": 30 }, "width": 3, "height": 1 }
+  ],
   "setPieces": [],
   "dressing": {
     "derelict-shed": { "theme": "freight", "people": 0 },

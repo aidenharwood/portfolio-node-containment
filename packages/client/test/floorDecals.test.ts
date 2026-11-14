@@ -33,13 +33,17 @@ test('a later decal overrides an earlier one', () => {
     { kind: 'rug', rect },
     { kind: 'lane-paint', rect },
   ];
-  assert.equal(sample(decals, 5, 5)?.color, 0xd8c040);
+  assert.equal(sample(decals, 5, 5)?.color, 0xa89a52);
 });
 
 test('alien veins report emissive', () => {
-  const vein: FloorDecal = { kind: 'alien-vein', rect: { x: 0, y: 0, width: 1, height: 1 } };
-  assert.deepEqual(sample([vein], 5, 5, 0.9), { color: 0x9a3fd8, emissive: true });
-  assert.equal(sample([vein], 5, 5, 0.5), null);
+  const vein: FloorDecal = { kind: 'alien-vein', rect: { x: 0, y: 0, width: 4, height: 4 } };
+  const lit = [];
+  for (let vz = 0; vz < 64; vz++) for (let vx = 0; vx < 64; vx++) if (sample([vein], vx, vz, 0.5)?.emissive) lit.push(sample([vein], vx, vz, 0.5));
+  assert.ok(lit.length > 0);
+  assert.ok(lit.length < 64 * 64 * 0.2);
+  assert.deepEqual(lit[0], { color: 0x9a3fd8, emissive: true });
+  assert.equal(sample([vein], 0, 0, 0.5), null);
 });
 
 test('tint replaces the kind colour', () => {
