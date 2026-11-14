@@ -33,6 +33,10 @@ export type WorldObjectModel =
   | 'checkpointBarrier'
   | 'steamVent'
   | 'neonSign'
+  | 'neonSignCyan'
+  | 'neonSignAcid'
+  | 'floodMast'
+  | 'burnBarrel'
   | 'shopAwning'
   | 'securityCamera'
   | 'noticeBoard'
@@ -72,6 +76,7 @@ export type WorldObjectModel =
   | 'refinery'
   | 'fabricator'
   | 'synthesiser'
+  | 'cooker'
   | 'cat'
   | 'hatch'
   | 'sluiceValve';

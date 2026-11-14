@@ -60,7 +60,10 @@
     { "id": "scrapyards-lamp-x2", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 25 } },
     { "id": "scrapyards-lamp-x3", "object": "street-lamp", "at": { "room": "ground", "dx": 12, "dy": 40 } },
     { "id": "scrapyards-lamp-x4", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 44 } },
-    { "id": "scrapyards-lamp-x5", "object": "street-lamp", "at": { "room": "ground", "dx": 52, "dy": 22 } }
+    { "id": "scrapyards-lamp-x5", "object": "street-lamp", "at": { "room": "ground", "dx": 52, "dy": 22 } },
+    { "id": "sy-burn-barrel-0", "object": "burn-barrel", "at": { "room": "ground", "dx": 15, "dy": 38 } },
+    { "id": "sy-burn-barrel-1", "object": "burn-barrel", "at": { "room": "ground", "dx": 52, "dy": 36 } },
+    { "id": "sy-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 33, "dy": 40 } }
   ],
   "assemblies": [],
   "npcs": [
@@ -83,9 +86,7 @@
     { "id": "sy-rustling-3", "creature": "rustling", "at": { "room": "ground", "dx": 8, "dy": 51 } }
   ],
   "lights": [
-    { "at": { "room": "ground", "dx": 32, "dy": 39 }, "radius": 6, "color": "#ff7a2a", "intensity": 0.9 },
-    { "at": { "room": "ground", "dx": 16, "dy": 36 }, "radius": 4, "color": "#ff7a2a", "intensity": 0.6 },
-    { "at": { "room": "ground", "dx": 50, "dy": 37 }, "radius": 4, "color": "#ff7a2a", "intensity": 0.6 }
+    { "at": { "room": "ground", "dx": 32, "dy": 39 }, "radius": 6, "color": "#ff7a2a", "intensity": 0.9 }
   ],
   "decals": [],
   "setPieces": [],

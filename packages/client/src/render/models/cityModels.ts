@@ -83,6 +83,9 @@ const streetLamp: Builder = () => {
     .fill(-1, 38, 1, 0, 39, 5, CITY.iron)
     .fill(-3, 37, 3, 2, 39, 9, CITY.iron)
     .fill(-2, 36, 4, 1, 36, 8, CITY.sodium, VOXEL_EMISSIVE)
+    .fill(-3, 37, 4, -3, 37, 8, CITY.sodium, VOXEL_EMISSIVE)
+    .fill(2, 37, 4, 2, 37, 8, CITY.sodium, VOXEL_EMISSIVE)
+    .fill(-2, 37, 9, 1, 37, 9, CITY.sodium, VOXEL_EMISSIVE)
     .fill(-1, 14, 1, 0, 19, 1, CITY.band);
   return parts(model, 40);
 };
@@ -215,8 +218,7 @@ const steamVent: Builder = () => {
   return parts(model, 1, [{ model: steam, animate: rise(0.7, 0.6) }]);
 };
 
-const neonSign: Builder = (seed) => {
-  const glow = pick(NEON, seed);
+const neonSignOf = (glow: number): Builder => (seed) => {
   const model = new VoxelModel().fill(-7, 17, -8, 6, 26, -7, CITY.ink);
   model.fill(-7, 17, -6, 6, 17, -6, darken(glow, 0.5)).fill(-7, 26, -6, 6, 26, -6, darken(glow, 0.5));
   const letters = new VoxelModel();
@@ -231,6 +233,29 @@ const neonSign: Builder = (seed) => {
     }
   }
   return parts(model, 27, [{ model: letters, animate: flicker }]);
+};
+
+const neonSign = neonSignOf(0xff4fa8);
+const neonSignCyan = neonSignOf(0x4fe3ff);
+const neonSignAcid = neonSignOf(0xb6ff4f);
+
+const floodMast: Builder = () => {
+  const model = new VoxelModel().fill(-3, 0, -3, 2, 2, 2, grain(CITY.concrete));
+  model.fill(-1, 3, -1, 0, 43, 0, grain(CITY.panel, 0.015)).fill(-1, 18, -1, 0, 21, 0, CITY.band).fill(-1, 30, -1, 0, 31, 0, CITY.band);
+  model.fill(-6, 42, -1, 5, 43, 0, CITY.iron);
+  for (const x of [-6, 2]) {
+    model.fill(x, 38, -2, x + 3, 42, 2, CITY.darkSteel).fill(x, 38, 3, x + 3, 42, 3, 0xe8f4ff, VOXEL_EMISSIVE).fill(x, 37, -1, x + 3, 37, 2, 0xcfe8ff, VOXEL_EMISSIVE);
+  }
+  const beacon = new VoxelModel().fill(-1, 44, -1, 0, 45, 0, CITY.red, VOXEL_EMISSIVE);
+  return parts(model, 46, [{ model: beacon, animate: blink(2) }]);
+};
+
+const burnBarrel: Builder = () => {
+  const model = cylinder(new VoxelModel(), 0, 0, 3.2, 0, 9, grain(0x5a3a26, 0.08));
+  cylinder(model, 0, 0, 3.2, 3, 3, 0x3a2418).fill(-2, 5, 3, 1, 6, 3, 0x2a1a10);
+  const fire = cylinder(new VoxelModel(), 0, 0, 2.4, 10, 10, 0xff7a2a, VOXEL_EMISSIVE);
+  fire.set(0, 11, 0, 0xffc04f, VOXEL_EMISSIVE).set(-1, 11, -1, 0xff9a3a, VOXEL_EMISSIVE).set(1, 12, -1, 0xffd86a, VOXEL_EMISSIVE);
+  return parts(model, 13, [{ model: fire, animate: flicker }]);
 };
 
 const shopAwning: Builder = (seed) => {
@@ -708,6 +733,19 @@ const synthesiser: Builder = (seed) => {
   return parts(model, 24);
 };
 
+const cooker: Builder = () => {
+  const model = new VoxelModel().fill(-7, 0, -6, 6, 11, 5, grain(CITY.steel, 0.03));
+  model.fill(-7, 12, -6, 6, 12, 5, CITY.iron).fill(-7, 13, -7, 6, 22, -6, grain(CITY.darkSteel, 0.02)).fill(-7, 20, -7, 6, 20, -6, CITY.band);
+  for (const [x, z] of [[-4, -2], [3, -2], [-4, 3]] as const) {
+    for (let a = -2; a <= 1; a++) for (let b = -2; b <= 1; b++) if (Math.abs(a + 0.5) + Math.abs(b + 0.5) >= 2) model.set(x + a, 13, z + b, 0x4f9bff, VOXEL_EMISSIVE);
+  }
+  cylinder(model, 3, -2, 3, 13, 19, grain(0x8a9098, 0.02)).fill(1, 19, -4, 4, 19, -1, 0xd8c08a);
+  model.fill(-6, 14, 1, -2, 14, 5, CITY.iron).fill(-7, 15, 0, -1, 15, 0, CITY.iron).fill(-7, 15, 6, -1, 15, 6, CITY.iron).fill(-1, 15, 2, 1, 15, 2, CITY.darkWood);
+  model.fill(-6, 2, 6, 5, 8, 6, CITY.iron).fill(-5, 3, 6, 4, 7, 6, 0x3a1c10).fill(-4, 4, 6, 3, 4, 6, 0xff7a2a, VOXEL_EMISSIVE);
+  for (const x of [-5, -2, 1, 4]) model.set(x, 10, 6, CITY.paper);
+  return parts(model, 23);
+};
+
 const cat: Builder = () => {
   const grey = 0x6a6a72;
   const model = new VoxelModel().fill(-2, 1, -4, 1, 4, 2, grain(grey, 0.06)).fill(-2, 3, 3, 1, 6, 5, grain(grey, 0.06));
@@ -749,6 +787,10 @@ export const CITY_BUILDERS: Readonly<Record<CityModel, Builder>> = {
   checkpointBarrier,
   steamVent,
   neonSign,
+  neonSignCyan,
+  neonSignAcid,
+  floodMast,
+  burnBarrel,
   shopAwning,
   securityCamera,
   noticeBoard,
@@ -788,6 +830,7 @@ export const CITY_BUILDERS: Readonly<Record<CityModel, Builder>> = {
   refinery,
   fabricator,
   synthesiser,
+  cooker,
   cat,
   hatch,
   sluiceValve,

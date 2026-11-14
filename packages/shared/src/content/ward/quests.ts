@@ -152,7 +152,7 @@ export const WARD_DIALOGUES: readonly DialogueDefinition[] = [
           { text: 'Not yet.', next: null },
         ],
       },
-      thanks: say("Look at that eel. Angry to the last. Here, five bowls, and the recipe's yours if you've the hands for it: eel, greens, a soaked loaf, at a synthesiser. Don't tell Hetty I said so."),
+      thanks: say("Look at that eel. Angry to the last. Here, five bowls, and the recipe's yours if you've the hands for it: eel, greens, a soaked loaf, on my cooker. Don't tell Hetty I said so."),
       done: { speaker: 'npc', text: "The special's gone, but there's always broth.", options: [{ text: "What's on?", effects: [{ type: 'openShop', shopId: 'vance-noodles' }], next: null }, bye] },
       chat: { speaker: 'npc', text: "Broth's been on since before the trains started running again. Sit, eat, don't ask what's in it.", options: [{ text: "What's on?", effects: [{ type: 'openShop', shopId: 'vance-noodles' }], next: null }, bye] },
     },

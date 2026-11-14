@@ -1,10 +1,12 @@
-import { Group, Mesh, MeshBasicMaterial, MeshLambertMaterial, type Material } from 'three';
+import { Color, Group, Mesh, MeshBasicMaterial, MeshLambertMaterial, type Material } from 'three';
 import { receiveFieldLights } from './fieldLights.ts';
 import type { VoxelMeshes } from './voxelMesher.ts';
 
+const EMISSIVE_GAIN = 1.5;
+
 export const VOXEL_MATERIALS = {
   solid: receiveFieldLights(new MeshLambertMaterial({ vertexColors: true })),
-  emissive: new MeshBasicMaterial({ vertexColors: true, toneMapped: false }),
+  emissive: new MeshBasicMaterial({ vertexColors: true, toneMapped: false, color: new Color(EMISSIVE_GAIN, EMISSIVE_GAIN, EMISSIVE_GAIN) }),
   glass: receiveFieldLights(new MeshLambertMaterial({ vertexColors: true, transparent: true, opacity: 0.32, depthWrite: false })),
   fadedSolid: receiveFieldLights(new MeshLambertMaterial({ vertexColors: true, transparent: true, opacity: 0.16, depthWrite: false })),
   fadedEmissive: new MeshBasicMaterial({ vertexColors: true, toneMapped: false, transparent: true, opacity: 0.2, depthWrite: false }),

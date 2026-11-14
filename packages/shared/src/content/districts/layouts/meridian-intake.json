@@ -66,8 +66,8 @@
     { "id": "mi-ward-bed-1", "object": "bed", "at": { "room": "ward", "dx": 4, "dy": 0 } },
     { "id": "mi-ward-bed-2", "object": "bed", "at": { "room": "ward", "dx": 7, "dy": 0 } },
     { "id": "mi-ward-bed-3", "object": "bed", "at": { "room": "ward", "dx": 10, "dy": 0 } },
-    { "id": "mi-ward-table", "object": "table", "at": { "room": "ward", "dx": 8, "dy": 7 } },
-    { "id": "mi-ward-chair", "object": "chair", "at": { "room": "ward", "dx": 7, "dy": 7 }, "facing": "east" },
+    { "id": "mi-ward-table", "object": "table", "at": { "room": "ward", "dx": 11, "dy": 7 } },
+    { "id": "mi-ward-chair", "object": "chair", "at": { "room": "ward", "dx": 10, "dy": 7 }, "facing": "east" },
     { "id": "mi-ward-camera", "object": "security-camera", "at": { "room": "ward", "dx": 0, "dy": 9 }, "facing": "east" },
     { "id": "mi-cell-0", "object": "containment-cell", "at": { "room": "amber-cells", "dx": 4, "dy": 3 } },
     { "id": "mi-cell-1", "object": "containment-cell", "at": { "room": "amber-cells", "dx": 10, "dy": 3 } },
@@ -86,7 +86,11 @@
     { "id": "mi-holding-camera", "object": "security-camera", "at": { "room": "amber-cells", "dx": 38, "dy": 0 } },
     { "id": "mi-holding-barricade", "object": "barricade", "at": { "room": "amber-cells", "dx": 6, "dy": 9 } },
     { "id": "lift-down", "object": "intake-lift-down", "at": { "room": "lower-lift", "dx": 4, "dy": 6 }, "facing": "north" },
-    { "id": "mi-lower-notices", "object": "notice-board", "at": { "room": "lower-lift", "dx": 1, "dy": 0 } }
+    { "id": "mi-lower-notices", "object": "notice-board", "at": { "room": "lower-lift", "dx": 1, "dy": 0 } },
+    { "id": "mi-ward-supplies", "object": "shelving", "at": { "room": "ward", "dx": 11, "dy": 8 }, "facing": "west" },
+    { "id": "mi-ward-bed-south-a", "object": "bed", "at": { "room": "ward", "dx": 3, "dy": 9 }, "facing": "north" },
+    { "id": "mi-ward-bed-south-b", "object": "bed", "at": { "room": "ward", "dx": 8, "dy": 9 }, "facing": "north" },
+    { "id": "mi-ward-cabinet", "object": "shelving", "at": { "room": "ward", "dx": 2, "dy": 0 } }
   ],
   "assemblies": [],
   "npcs": [
@@ -101,7 +105,7 @@
   ],
   "lights": [],
   "decals": [
-    { "kind": "lane-paint", "pattern": "border", "at": { "room": "amber-cells", "dx": 1, "dy": 1 }, "width": 38, "height": 10 },
+    { "kind": "lane-paint", "pattern": "border", "tint": "#e8a21c", "at": { "room": "amber-cells", "dx": 1, "dy": 1 }, "width": 38, "height": 10 },
     { "kind": "wear", "at": { "room": "lift-lobby", "dx": 2, "dy": 2 }, "width": 6, "height": 3 }
   ],
   "setPieces": [],

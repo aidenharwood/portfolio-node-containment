@@ -116,7 +116,9 @@
     { "id": "cb-bin", "object": "litter-bin", "at": { "room": "ground", "dx": 16, "dy": 5 } },
     { "id": "cb-car", "object": "parked-car", "at": { "room": "ground", "dx": 3, "dy": 18 } },
     { "id": "cb-dumpster", "object": "dumpster", "at": { "room": "ground", "dx": 57, "dy": 3 }, "facing": "east" },
-    { "id": "cb-chandlery-sign", "object": "neon-sign", "at": { "room": "ground", "dx": 11, "dy": 56 }, "facing": "north" }
+    { "id": "cb-chandlery-sign", "object": "neon-sign", "at": { "room": "ground", "dx": 11, "dy": 56 }, "facing": "north" },
+    { "id": "cb-holding-guard-table", "object": "table", "at": { "room": "holding-block", "dx": 9, "dy": 1 } },
+    { "id": "cb-holding-guard-chair", "object": "chair", "at": { "room": "holding-block", "dx": 9, "dy": 2 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [

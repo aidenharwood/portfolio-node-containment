@@ -4,7 +4,7 @@ export const CURRENCY_ITEMS: readonly ItemDefinition[] = [
   {
     id: 'meridian-scrip',
     name: 'Scrip',
-    examine: 'Directorate-issued credit chits.',
+    examine: 'Directorate pay chits. Good anywhere the Directorate is looking.',
     category: 'currency',
     rarity: 'standard',
     icon: 'credits',
@@ -15,7 +15,7 @@ export const CURRENCY_ITEMS: readonly ItemDefinition[] = [
   {
     id: 'directorate-commendation',
     name: 'Commendation',
-    examine: 'A stamped commendation chit for contract work.',
+    examine: 'Stamped, countersigned and filed. Worth more than the work was.',
     category: 'currency',
     rarity: 'issued',
     icon: 'keycard',

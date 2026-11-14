@@ -65,12 +65,12 @@ export const SKILL_INFO: Readonly<Record<SkillId, SkillInfo>> = {
   refining: {
     name: 'Refining',
     shortName: 'Refining',
-    summary: 'Processing raw salvage and organics into clean base parts at a refinery.',
+    summary: 'Processing raw salvage into bars and raw fibre into cloth at a refinery.',
   },
   biochemistry: {
     name: 'Biochemistry',
     shortName: 'Biochem',
-    summary: 'Synthesising medical supplies from refined compounds.',
+    summary: 'Growing, trapping and culturing what lives in the Ward, then cooking it into meals or synthesising it into medicine.',
   },
 };
 

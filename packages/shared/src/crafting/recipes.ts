@@ -4,7 +4,7 @@ import type { ItemCatalog } from '../gear/items.ts';
 import type { ItemId } from '../ids.ts';
 import { failure, success, type Result } from '../result.ts';
 
-export const CRAFTING_STATIONS = ['refinery', 'fabricator', 'synthesiser'] as const;
+export const CRAFTING_STATIONS = ['refinery', 'fabricator', 'synthesiser', 'cooker'] as const;
 
 export type CraftingStation = (typeof CRAFTING_STATIONS)[number];
 
@@ -20,7 +20,7 @@ export const STATION_INFO: Readonly<Record<CraftingStation, StationInfo>> = {
     name: 'Refinery',
     verb: 'Refine',
     progressVerb: 'Refining',
-    summary: 'Turns raw salvage and organics into base parts.',
+    summary: 'Turns raw salvage into bars and raw fibre into cloth.',
   },
   fabricator: {
     name: 'Fabricator',
@@ -32,7 +32,13 @@ export const STATION_INFO: Readonly<Record<CraftingStation, StationInfo>> = {
     name: 'Bio-synthesiser',
     verb: 'Synthesise',
     progressVerb: 'Synthesising',
-    summary: 'Synthesises refined compounds into medical supplies.',
+    summary: 'Synthesises harvested organics into medicine.',
+  },
+  cooker: {
+    name: 'Cooker',
+    verb: 'Cook',
+    progressVerb: 'Cooking',
+    summary: 'Cooks catches and harvests into meals.',
   },
 };
 
@@ -84,7 +90,7 @@ export function craftOnce(inventory: InventoryState, catalog: ItemCatalog, recip
   return success({ inventory: added.inventory, overflow: added.overflow });
 }
 
-export const RECIPE_GROUPS = ['armour', 'weapons', 'kit', 'parts', 'medicine'] as const;
+export const RECIPE_GROUPS = ['armour', 'weapons', 'kit', 'parts', 'food', 'medicine'] as const;
 
 export type RecipeGroup = (typeof RECIPE_GROUPS)[number];
 
@@ -93,12 +99,13 @@ export const RECIPE_GROUP_LABELS: Readonly<Record<RecipeGroup, string>> = {
   weapons: 'Weapons',
   kit: 'Kit',
   parts: 'Parts',
+  food: 'Food',
   medicine: 'Medicine',
 };
 
 export function recipeGroupOf(recipe: RecipeDefinition, catalog: ItemCatalog): RecipeGroup {
   const item = catalog.get(recipe.output.itemId);
-  if (item?.consumable) return 'medicine';
+  if (item?.consumable) return item.consumable.kind;
   const slot = item?.equipment?.slot;
   if (!slot) return 'parts';
   if (slot === 'primary') return 'weapons';

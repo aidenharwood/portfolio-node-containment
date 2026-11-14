@@ -55,7 +55,7 @@ export const NOVICE_ITEMS: readonly ItemDefinition[] = [
 ];
 
 export const NOVICE_RECIPES: readonly RecipeDefinition[] = [
-  { id: 'fabricator:valve-part', station: 'fabricator', skill: 'engineering', level: 1, inputs: [{ itemId: 'scrap-bar', count: 1 }], output: { itemId: 'valve-part', count: 1 }, experience: 20, ticks: 4 },
+  { id: 'fabricator:valve-part', station: 'fabricator', skill: 'engineering', level: 1, inputs: [{ itemId: 'scrap-bar', count: 1 }], output: { itemId: 'valve-part', count: 1 }, experience: 10, ticks: 4 },
 ];
 
 interface Beast {

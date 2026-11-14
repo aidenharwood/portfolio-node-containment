@@ -37,7 +37,7 @@ const NO_LIGHTS: LightAssignment<LightSource> = { lights: [], edge: Infinity };
 export class SceneLook {
   readonly renderer: WebGLRenderer;
   private readonly composer: EffectComposer;
-  private readonly bloom = new UnrealBloomPass(new Vector2(256, 256), 0.5, 0.4, 0.9);
+  private readonly bloom = new UnrealBloomPass(new Vector2(256, 256), 0.6, 0.5, 0.72);
   private renderScale: RenderScale = 'sharp';
   private readonly hemisphere = new HemisphereLight(0x9fc6d6, 0x05080a, 0.6);
   private readonly keyLight = new DirectionalLight(0xcfe8ff, 0.7);
@@ -122,7 +122,7 @@ export class SceneLook {
     this.keyLight.intensity = Math.max(KEY_FLOOR, KEY_BASE - ambience.darkness * KEY_DARKNESS_WEIGHT) * (1 + ambience.daylight * SUN_BOOST * skyBrightness) * (1 - dusk * DUSK_KEY_CUT);
     this.sunColor.setHex(SUN_COLOR).lerp(ambience.sky, SKY_SUN_TINT * (1 - skyBrightness));
     this.keyLight.color.setHex(SHADE_COLOR).lerp(this.sunColor, ambience.daylight);
-    if (!this.survey) this.fog.density = this.fogDensity * (1 - ambience.daylight * DAYLIGHT_FOG_THINNING);
+    if (!this.survey) this.fog.density = this.fogDensity * (1 - ambience.daylight * skyBrightness * DAYLIGHT_FOG_THINNING);
     if (this.survey) {
       this.hemisphere.intensity = SURVEY_AMBIENT;
       this.keyLight.intensity = SURVEY_KEY;

@@ -5,7 +5,7 @@
   "tier": 8,
   "region": "low-ward",
   "condition": "breached",
-  "ambience": { "darkness": 0.6, "tint": "#22303a", "fog": "#1e2830", "sky": "#2e3450" },
+  "ambience": { "darkness": 0.6, "tint": "#22303a", "fog": "#1a262c", "sky": "#2e3450" },
   "size": { "width": 64, "height": 64 },
   "steps": [
     { "kind": "room", "id": "ground", "rect": { "x": 0, "y": 0, "width": 64, "height": 63 }, "floor": "gravel", "shape": "rect", "edge": "barrier" },
@@ -84,17 +84,7 @@
     { "id": "sf-wraith-3", "creature": "tide-wraith", "at": { "room": "ground", "dx": 20, "dy": 34 } }
   ],
   "lights": [],
-  "decals": [
-    { "kind": "lane-paint", "at": { "room": "ground", "dx": 2, "dy": 30 }, "width": 3, "height": 1 },
-    { "kind": "lane-paint", "at": { "room": "ground", "dx": 9, "dy": 30 }, "width": 3, "height": 1 },
-    { "kind": "lane-paint", "at": { "room": "ground", "dx": 16, "dy": 30 }, "width": 3, "height": 1 },
-    { "kind": "lane-paint", "at": { "room": "ground", "dx": 23, "dy": 30 }, "width": 3, "height": 1 },
-    { "kind": "lane-paint", "at": { "room": "ground", "dx": 30, "dy": 30 }, "width": 3, "height": 1 },
-    { "kind": "lane-paint", "at": { "room": "ground", "dx": 37, "dy": 30 }, "width": 3, "height": 1 },
-    { "kind": "lane-paint", "at": { "room": "ground", "dx": 44, "dy": 30 }, "width": 3, "height": 1 },
-    { "kind": "lane-paint", "at": { "room": "ground", "dx": 51, "dy": 30 }, "width": 3, "height": 1 },
-    { "kind": "lane-paint", "at": { "room": "ground", "dx": 58, "dy": 30 }, "width": 3, "height": 1 }
-  ],
+  "decals": [],
   "setPieces": [],
   "dressing": {
     "derelict-shed": { "theme": "freight", "people": 0 },

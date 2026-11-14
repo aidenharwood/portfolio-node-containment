@@ -1,3 +1,4 @@
+import type { FurnishingProfile } from '../furnishingCatalogue.ts';
 import type { CraftingStation } from '../../crafting/recipes.ts';
 import type { GatheringSource } from '../../crafting/gathering.ts';
 import type { SkillId } from '../../character/skills.ts';
@@ -16,13 +17,13 @@ const spot = (id: string, name: string, examine: string, model: WorldObjectModel
 
 const source = (skill: SkillId, level: number, itemId: string, experience: number, progressVerb: string, charges = 4, respawnTicks = 40) => ({ skill, level, itemId, experience, progressVerb, charges, respawnTicks });
 
-const station = (id: string, name: string, examine: string, model: WorldObjectModel, kind: CraftingStation, verb: string): WorldObjectDefinition => ({
+const station = (id: string, name: string, examine: string, model: WorldObjectModel, kind: CraftingStation, verb: string, homes: FurnishingProfile['homes'] = ['shop', 'works', 'industrial', 'lab', 'street', 'office']): WorldObjectDefinition => ({
   id,
   name,
   examine,
   model,
   blocksMovement: true,
-  furnishing: { mount: 'free', homes: ['shop', 'works', 'industrial', 'lab', 'street', 'office'] },
+  furnishing: { mount: 'free', homes },
   interactions: [{ verb, effects: [{ type: 'openCrafting', station: kind }] }],
 });
 
@@ -52,6 +53,7 @@ export const WARD_STATIONS: readonly WorldObjectDefinition[] = [
   station('ward-refinery', 'Refinery', 'A brick furnace. Fenwick lets anyone use it, for a nod.', 'refinery', 'refinery', 'Refine'),
   station('ward-fabricator', 'Fabricator', 'A workbench with a press arm and a lot of clamps.', 'fabricator', 'fabricator', 'Assemble'),
   station('ward-synthesiser', 'Synthesiser', 'Two glass vats, a burner and a lot of tubing.', 'synthesiser', 'synthesiser', 'Synthesise'),
+  station('ward-cooker', 'Cooker', 'A gas range with three burners, a stockpot and a wok that has never been fully clean.', 'cooker', 'cooker', 'Cook', ['canteen', 'shop', 'street', 'home']),
 ];
 
 export const ALLOTMENT_HARVEST = { verb: 'Harvest', effects: [], gather: { attemptTicks: 4, ...source('biochemistry', 1, 'allotment-greens', 10, 'Harvesting', 3, 50) } } as const;

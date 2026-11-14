@@ -1,7 +1,7 @@
 import type { SkillId } from '../../character/skills.ts';
 import type { WeaponKind } from '../../combat/weapons.ts';
 import type { CraftingStation, RecipeDefinition } from '../../crafting/recipes.ts';
-import type { GearMotif, ItemDefinition, ItemIconShape, ItemRarity } from '../../gear/items.ts';
+import type { ConsumableKind, GearMotif, ItemDefinition, ItemIconShape, ItemRarity } from '../../gear/items.ts';
 import type { EquipmentSlot } from '../../gear/slots.ts';
 import type { StatBlock } from '../../gear/stats.ts';
 import { gear } from '../gearItem.ts';
@@ -18,7 +18,7 @@ const material = (id: string, name: string, examine: string, icon: ItemIconShape
   value,
 });
 
-const food = (id: string, name: string, examine: string, icon: ItemIconShape, colors: readonly [string, string], value: number, heal: number, verb = 'Eat'): ItemDefinition => ({
+const consumable = (kind: ConsumableKind) => (id: string, name: string, examine: string, icon: ItemIconShape, colors: readonly [string, string], value: number, heal: number, verb = kind === 'food' ? 'Eat' : 'Drink'): ItemDefinition => ({
   id,
   name,
   examine,
@@ -28,23 +28,26 @@ const food = (id: string, name: string, examine: string, icon: ItemIconShape, co
   iconColors: colors,
   maxStack: 20,
   value,
-  consumable: { verb, heal },
+  consumable: { kind, verb, heal },
 });
+
+const food = consumable('food');
+const medicine = consumable('medicine');
 
 export const WARD_MATERIALS: readonly ItemDefinition[] = [
   material('scrap-metal', 'Scrap Metal', 'Bent sheet, bolts and a hinge. Worth something hammered flat.', 'scrap', ['#8a7a6a', '#4a3a30'], 2),
   material('scrap-bar', 'Scrap Bar', 'Scrap beaten and folded into a bar. Ugly, but it holds an edge.', 'ingot', ['#8a7a6a', '#5a4a3a'], 6),
   material('silt-iron', 'Silt Iron', 'Iron dredged from the basin, still black with silt.', 'scrap', ['#3a3f44', '#1a1e22'], 6),
-  material('iron-bar', 'Iron Bar', 'Basin iron, refined and cast. The Ward has built with it for a century.', 'ingot', ['#6a7078', '#3a3f44'], 16),
+  material('iron-bar', 'Iron Bar', 'Basin iron, refined and cast. The Ward has built with it for a century.', 'ingot', ['#5a5650', '#2e2a26'], 16),
   material('rag-bundle', 'Rag Bundle', 'Rags, twine and the odd sock. Every nest in the Ward is made of this.', 'fibre', ['#a89a7a', '#5a4a3a'], 2),
   material('reed-bundle', 'Reed Bundle', 'Tough canal reeds, cut green.', 'fibre', ['#8a9a4a', '#4a5a2a'], 5),
   material('waxed-canvas', 'Waxed Canvas', 'Reed fibre woven tight and waxed against the rain.', 'sheet', ['#9a8a5a', '#5a4a2a'], 14),
   material('trace-dust', 'Trace Dust', 'Faintly glowing dust scraped from where an anomaly passed.', 'shard', ['#b6ff4f', '#3a5a1a'], 3),
-  material('culvert-trace', 'Culvert Trace', 'Brighter residue from the culverts. It hums if you hold it close.', 'shard', ['#4fe3ff', '#1a4a5a'], 9),
+  material('culvert-trace', 'Culvert Trace', 'Brighter residue from the culverts. It hums if you hold it close.', 'shard', ['#3fe0b0', '#14503c'], 9),
   material('allotment-greens', 'Allotment Greens', 'Cabbage, chard and something leafy Agnes swears is spinach.', 'moss', ['#5a8a3a', '#2a4a1a'], 2),
   material('basin-eel', 'Basin Eel', 'A slick black eel from the basin. It is still annoyed.', 'gel', ['#2a3a3a', '#5a7a6a'], 4),
-  material('heavy-scrap', 'Heavy Scrap', 'Engine blocks, girders and boiler plate from the yards. The good stuff.', 'scrap', ['#5a5048', '#2a2420'], 12),
-  material('steel-bar', 'Steel Bar', 'Iron and heavy scrap, refined hot and folded. It rings when you drop it.', 'ingot', ['#8a9098', '#4a5058'], 34),
+  material('heavy-scrap', 'Heavy Scrap', 'Engine blocks, girders and boiler plate from the yards. The good stuff.', 'scrap', ['#9a5a3a', '#3a2018'], 12),
+  material('steel-bar', 'Steel Bar', 'Iron and heavy scrap, refined hot and folded. It rings when you drop it.', 'ingot', ['#8a9098', '#4a5058'], 52),
   material('lab-culture', 'Lab Culture', 'A tray of pale fibrous growth from the B1 labs. It grows back overnight.', 'moss', ['#d8d0b8', '#8a9a7a'], 10),
   material('synth-weave', 'Synth-weave', 'Cultured fibre spun into a tough grey cloth.', 'sheet', ['#9aa0a8', '#4a5058'], 28),
   material('amber-trace', 'Amber Trace', 'Residue from the amber holding cells. It is warm, and it remembers being alive.', 'shard', ['#e8a21c', '#5a3a10'], 18),
@@ -68,13 +71,15 @@ export const WARD_MATERIALS: readonly ItemDefinition[] = [
 
 export const WARD_FOOD: readonly ItemDefinition[] = [
   food('smoked-eel', 'Smoked Eel', 'Brined, smoked and chewy. A Ward staple.', 'gel', ['#6a4a2a', '#2a1a10'], 9, 5),
-  food('greens-poultice', 'Greens Poultice', 'Mashed greens bound with trace dust. It stings, then it helps.', 'vial', ['#7cf29a', '#1f5f35'], 10, 6, 'Apply'),
+  medicine('greens-poultice', 'Greens Poultice', 'Mashed greens bound with trace dust. It stings, then it helps.', 'gel', ['#7cf29a', '#1f5f35'], 10, 6, 'Apply'),
   food('noodle-bowl', 'Bowl of Noodles', "Vance's broth, noodles and whatever came in on the train.", 'vial', ['#e8c070', '#8a5a2a'], 15, 10),
-  food('culture-salve', 'Culture Salve', 'A cool grey paste that knits skin while you watch.', 'gel', ['#d8d0b8', '#e8a21c'], 70, 20, 'Apply'),
-  food('tide-broth', 'Tide Broth', 'Eel and tide weed. It tastes of the sea and of something underneath the sea.', 'vial', ['#2a4a3a', '#c79bff'], 110, 26, 'Drink'),
-  food('red-salve', 'Red Salve', 'A Directorate field salve, made from what grows by the cells. It works. Do not ask how.', 'gel', ['#d8322a', '#3a0a08'], 160, 32, 'Apply'),
-  food('bloom-elixir', 'Bloom Elixir', 'Distilled vault bloom. You feel very well, and very watched.', 'vial', ['#c8d8e8', '#7fd8ff'], 260, 40, 'Drink'),
-  food('reed-tonic', 'Reed Tonic', 'Bitter green tonic with a bright blue sediment. Do not shake.', 'vial', ['#4fe3ff', '#1a4a3a'], 40, 14, 'Drink'),
+  food('eel-pie', 'Eel Pie', "Ostrowski's crust, a basin eel inside. A head pokes through the top. Tradition, apparently.", 'plate', ['#c8904a', '#4a3020'], 24, 16),
+  medicine('culture-salve', 'Culture Salve', 'A cool grey paste that knits skin while you watch.', 'gel', ['#d8d0b8', '#e8a21c'], 70, 20, 'Apply'),
+  food('culture-cutlet', 'Culture Cutlet', 'Lab culture, breaded and fried. Officially it is not food. Unofficially it is the Thursday special.', 'plate', ['#d8b878', '#8a9a7a'], 60, 22),
+  food('tide-broth', 'Tide Broth', 'Eel and tide weed. It tastes of the sea and of something underneath the sea.', 'vial', ['#2a4a3a', '#c79bff'], 70, 26, 'Drink'),
+  medicine('red-salve', 'Red Salve', 'A Directorate field salve, made from what grows by the cells. It works. Do not ask how.', 'gel', ['#d8322a', '#3a0a08'], 160, 32, 'Apply'),
+  medicine('bloom-elixir', 'Bloom Distillate', 'Distilled vault bloom. You feel very well, and very watched.', 'vial', ['#c8d8e8', '#7fd8ff'], 260, 40),
+  medicine('reed-tonic', 'Reed Tonic', 'Bitter green tonic with a bright sediment that never settles. Do not shake.', 'vial', ['#3fe0b0', '#1a4a3a'], 40, 14),
 ];
 
 interface Material {
@@ -90,6 +95,7 @@ interface Material {
   readonly glow: string;
   readonly skirmisher: string;
   readonly warden: string;
+  readonly origin: string;
   readonly value: number;
   readonly experience: number;
 }
@@ -108,6 +114,7 @@ export const MATERIAL_LADDER: readonly Material[] = [
     glow: '#b6ff4f',
     skirmisher: 'Patchwork',
     warden: 'Sackcloth',
+    origin: 'Hammered out of whatever the heaps gave up.',
     value: 12,
     experience: 10,
   },
@@ -121,9 +128,10 @@ export const MATERIAL_LADDER: readonly Material[] = [
     trace: 'culvert-trace',
     metal: ['#5a6068', '#2a2e33'],
     cloth: ['#7a6a3a', '#3a3018'],
-    glow: '#4fe3ff',
+    glow: '#3fe0b0',
     skirmisher: 'Oilskin',
     warden: 'Felt',
+    origin: 'Basin iron. Heavy, honest and slightly damp.',
     value: 60,
     experience: 26,
   },
@@ -140,6 +148,7 @@ export const MATERIAL_LADDER: readonly Material[] = [
     glow: '#e8a21c',
     skirmisher: 'Rigger',
     warden: 'Vigil',
+    origin: 'Scrapyard steel, folded hot in the crusher shed.',
     value: 140,
     experience: 48,
   },
@@ -156,6 +165,7 @@ export const MATERIAL_LADDER: readonly Material[] = [
     glow: '#c79bff',
     skirmisher: 'Slipway',
     warden: 'Tidewarden',
+    origin: 'Cut from ships that never left the Fringe.',
     value: 260,
     experience: 78,
   },
@@ -172,6 +182,7 @@ export const MATERIAL_LADDER: readonly Material[] = [
     glow: '#d8322a',
     skirmisher: 'Cordon',
     warden: 'Redline',
+    origin: 'Directorate issue, once. The serial numbers are filed off.',
     value: 460,
     experience: 120,
   },
@@ -188,6 +199,7 @@ export const MATERIAL_LADDER: readonly Material[] = [
     glow: '#7fd8ff',
     skirmisher: 'Gloam',
     warden: 'Hollow',
+    origin: 'Not made so much as persuaded. It hums when you are alone.',
     value: 800,
     experience: 170,
   },
@@ -287,7 +299,7 @@ function ladderGear(tier: Material): { readonly items: ItemDefinition[]; readonl
       gear({
         id,
         name: `${tier.name} ${weapon.noun}`,
-        examine: `${weapon.examine} ${tier.name === 'Scrap' ? 'Made from scrap.' : `Made from ${tier.name.toLowerCase()}.`}`,
+        examine: `${weapon.examine} ${tier.origin}`,
         rarity: tier.rarity,
         icon: weapon.icon,
         slot: 'primary',
@@ -312,7 +324,7 @@ function ladderGear(tier: Material): { readonly items: ItemDefinition[]; readonl
         gear({
           id,
           name: `${lineName} ${shape.noun}`,
-          examine: `${lineName} ${shape.noun.toLowerCase()}, made in the Low Ward.`,
+          examine: `${lineName} ${shape.noun.toLowerCase()}. ${tier.origin}`,
           rarity: tier.rarity,
           icon: shape.icon,
           slot,
@@ -335,22 +347,24 @@ export const WARD_GEAR: readonly ItemDefinition[] = LADDERS.flatMap((ladder) => 
 export const WARD_RECIPES: readonly RecipeDefinition[] = [
   recipe('refinery', 'refining', 'scrap-bar', 1, { 'scrap-metal': 2 }, 8),
   recipe('refinery', 'refining', 'iron-bar', 10, { 'silt-iron': 2 }, 20),
-  recipe('synthesiser', 'biochemistry', 'waxed-canvas', 10, { 'reed-bundle': 2 }, 18),
-  recipe('synthesiser', 'biochemistry', 'smoked-eel', 1, { 'basin-eel': 1 }, 8),
+  recipe('refinery', 'refining', 'waxed-canvas', 10, { 'reed-bundle': 2 }, 18),
+  recipe('cooker', 'biochemistry', 'smoked-eel', 1, { 'basin-eel': 1 }, 8),
   recipe('synthesiser', 'biochemistry', 'greens-poultice', 1, { 'allotment-greens': 2, 'trace-dust': 1 }, 12),
-  recipe('synthesiser', 'biochemistry', 'noodle-bowl', 5, { 'basin-eel': 1, 'allotment-greens': 1, 'day-old-loaf': 1 }, 22),
+  recipe('cooker', 'biochemistry', 'noodle-bowl', 5, { 'basin-eel': 1, 'allotment-greens': 1, 'day-old-loaf': 1 }, 22),
   recipe('synthesiser', 'biochemistry', 'reed-tonic', 12, { 'reed-bundle': 2, 'culvert-trace': 1 }, 34),
+  recipe('cooker', 'biochemistry', 'eel-pie', 14, { 'basin-eel': 2, 'day-old-loaf': 1 }, 40),
   recipe('refinery', 'refining', 'steel-bar', 20, { 'iron-bar': 1, 'heavy-scrap': 2 }, 40),
-  recipe('synthesiser', 'biochemistry', 'synth-weave', 20, { 'lab-culture': 2 }, 38),
+  recipe('refinery', 'refining', 'synth-weave', 20, { 'lab-culture': 2 }, 38),
   recipe('synthesiser', 'biochemistry', 'culture-salve', 22, { 'lab-culture': 2, 'amber-trace': 1 }, 56),
+  recipe('cooker', 'biochemistry', 'culture-cutlet', 24, { 'lab-culture': 2, 'day-old-loaf': 1 }, 62),
   recipe('refinery', 'refining', 'alloy-bar', 30, { 'hull-plate': 2 }, 64),
-  recipe('synthesiser', 'biochemistry', 'tarred-canvas', 30, { 'tide-weed': 2 }, 60),
-  recipe('synthesiser', 'biochemistry', 'tide-broth', 32, { 'tide-weed': 2, 'basin-eel': 1 }, 80),
+  recipe('refinery', 'refining', 'tarred-canvas', 30, { 'tide-weed': 2 }, 60),
+  recipe('cooker', 'biochemistry', 'tide-broth', 32, { 'tide-weed': 2, 'basin-eel': 1 }, 80),
   recipe('refinery', 'refining', 'ceramite-ingot', 40, { 'directorate-salvage': 2 }, 96),
-  recipe('synthesiser', 'biochemistry', 'red-mesh', 40, { 'red-moss': 2 }, 90),
+  recipe('refinery', 'refining', 'red-mesh', 40, { 'red-moss': 2 }, 90),
   recipe('synthesiser', 'biochemistry', 'red-salve', 42, { 'red-moss': 2, 'red-trace': 1 }, 120),
   recipe('refinery', 'refining', 'vault-glass', 50, { 'vault-residue': 2 }, 140),
-  recipe('synthesiser', 'biochemistry', 'bloom-silk', 50, { 'vault-bloom': 2 }, 130),
+  recipe('refinery', 'refining', 'bloom-silk', 50, { 'vault-bloom': 2 }, 130),
   recipe('synthesiser', 'biochemistry', 'bloom-elixir', 52, { 'vault-bloom': 2, 'vault-trace': 1 }, 170),
   ...LADDERS.flatMap((ladder) => ladder.recipes),
 ];

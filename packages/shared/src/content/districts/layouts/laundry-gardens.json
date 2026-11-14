@@ -96,7 +96,13 @@
     { "id": "lg-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 61, "dy": 30 } },
     { "id": "lg-tree-0", "object": "street-tree", "at": { "room": "ground", "dx": 1, "dy": 31 } },
     { "id": "lg-tree-1", "object": "street-tree", "at": { "room": "ground", "dx": 1, "dy": 44 } },
-    { "id": "lg-tree-2", "object": "street-tree", "at": { "room": "ground", "dx": 1, "dy": 56 } }
+    { "id": "lg-tree-2", "object": "street-tree", "at": { "room": "ground", "dx": 1, "dy": 56 } },
+    { "id": "lg-washer-bay-a", "object": "washer", "at": { "room": "laundry", "dx": 0, "dy": 2 }, "facing": "east" },
+    { "id": "lg-washer-bay-b", "object": "washer", "at": { "room": "laundry", "dx": 0, "dy": 3 }, "facing": "east" },
+    { "id": "lg-folding-table", "object": "table", "at": { "room": "laundry", "dx": 4, "dy": 3 } },
+    { "id": "lg-folding-chair", "object": "chair", "at": { "room": "laundry", "dx": 4, "dy": 4 }, "facing": "north" },
+    { "id": "lg-waiting-table", "object": "table", "at": { "room": "laundry", "dx": 13, "dy": 8 } },
+    { "id": "lg-waiting-chair", "object": "chair", "at": { "room": "laundry", "dx": 12, "dy": 8 }, "facing": "east" }
   ],
   "assemblies": [],
   "npcs": [

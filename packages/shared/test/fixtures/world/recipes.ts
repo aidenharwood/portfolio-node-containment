@@ -1,7 +1,7 @@
 import type { CraftingStation, RecipeDefinition } from '../../../src/crafting/recipes.ts';
 import type { SkillId } from '../../../src/character/skills.ts';
 
-const SKILL: Readonly<Record<CraftingStation, SkillId>> = { refinery: 'refining', fabricator: 'engineering', synthesiser: 'biochemistry' };
+const SKILL: Readonly<Record<CraftingStation, SkillId>> = { refinery: 'refining', fabricator: 'engineering', synthesiser: 'biochemistry', cooker: 'biochemistry' };
 
 const recipe = (station: CraftingStation, output: string, level: number, inputs: Readonly<Record<string, number>>, experience: number): RecipeDefinition => ({
   id: `${station}:${output}`,

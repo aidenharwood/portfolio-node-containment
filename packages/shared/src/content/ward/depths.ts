@@ -34,7 +34,7 @@ export const DEPTHS_ITEMS: readonly ItemDefinition[] = [
 ];
 
 export const DEPTHS_RECIPES: readonly RecipeDefinition[] = [
-  { id: 'fabricator:pump-impeller', station: 'fabricator', skill: 'engineering', level: 25, inputs: [{ itemId: 'steel-bar', count: 2 }], output: { itemId: 'pump-impeller', count: 1 }, experience: 220, ticks: 6 },
+  { id: 'fabricator:pump-impeller', station: 'fabricator', skill: 'engineering', level: 25, inputs: [{ itemId: 'steel-bar', count: 2 }], output: { itemId: 'pump-impeller', count: 1 }, experience: 96, ticks: 6 },
 ];
 
 export const DEPTHS_CREATURES: readonly CreatureDefinition[] = [

@@ -1,7 +1,8 @@
 import { decalIndex, type DecalCell, type FloorDecal, type FloorDecalKind, type FloorDecalPattern, type ResolvedLevel } from '@containment/shared';
 import { darken, hex, lighten, noise3 } from '../voxel/palette.ts';
+import { TILE_RESOLUTION } from './worldScale.ts';
 
-const R = 16;
+const R = TILE_RESOLUTION;
 const BORDER = 3;
 
 export interface DecalPaint {
@@ -105,7 +106,7 @@ function paintOne(decal: FloorDecal, u: number, v: number, lx: number, lz: numbe
       return band < 0.05 ? solid(darken(fill(base), 0.6)) : null;
     }
     case 'lane-paint':
-      return grain > 0.25 ? solid(fill(base)) : null;
+      return softNoise(wx, wz, 5, 19) > 0.3 ? solid(fill(base)) : solid(darken(fill(base), 0.35));
     case 'hazard-paint':
       if (decal.pattern === undefined || decal.pattern === 'stripe') {
         const stripe = Math.floor((U + V) / 6) % 2 === 0;

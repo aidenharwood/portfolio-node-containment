@@ -101,7 +101,7 @@
     { "id": "tn-pub-table", "object": "table", "at": { "room": "pub", "dx": 2, "dy": 4 } },
     { "id": "tn-pub-chair-a", "object": "chair", "at": { "room": "pub", "dx": 3, "dy": 4 }, "facing": "west" },
     { "id": "tn-pub-chair-b", "object": "chair", "at": { "room": "pub", "dx": 1, "dy": 4 }, "facing": "east" },
-    { "id": "tn-pub-sign", "object": "neon-sign", "at": { "room": "ground", "dx": 23, "dy": 17 }, "facing": "south" },
+    { "id": "tn-pub-sign", "object": "neon-sign-acid", "at": { "room": "ground", "dx": 23, "dy": 17 }, "facing": "south" },
     { "id": "tn-pub-chair-c", "object": "chair", "at": { "room": "pub", "dx": 5, "dy": 3 }, "facing": "north" },
     { "id": "tn-alley-dumpster-a", "object": "dumpster", "at": { "room": "ground", "dx": 5, "dy": 0 } },
     { "id": "tn-alley-dumpster-b", "object": "dumpster", "at": { "room": "ground", "dx": 29, "dy": 0 } },
@@ -133,7 +133,12 @@
     { "id": "tn-park-tree-2", "object": "street-tree", "at": { "room": "ground", "dx": 49, "dy": 59 } },
     { "id": "tn-park-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 57, "dy": 59 } },
     { "id": "tn-park-bench", "object": "street-bench", "at": { "room": "ground", "dx": 53, "dy": 53 } },
-    { "id": "tn-park-bin", "object": "litter-bin", "at": { "room": "ground", "dx": 55, "dy": 53 } }
+    { "id": "tn-park-bin", "object": "litter-bin", "at": { "room": "ground", "dx": 55, "dy": 53 } },
+    { "id": "tn-rooming-cupboard-a", "object": "shelving", "at": { "room": "rooming-house", "dx": 2, "dy": 0 } },
+    { "id": "tn-rooming-cupboard-b", "object": "shelving", "at": { "room": "rooming-house", "dx": 12, "dy": 0 } },
+    { "id": "tn-rooming-chair-b", "object": "chair", "at": { "room": "rooming-house", "dx": 2, "dy": 5 }, "facing": "east" },
+    { "id": "tn-landlady-table", "object": "table", "at": { "room": "rooming-house", "dx": 14, "dy": 5 } },
+    { "id": "tn-landlady-chair", "object": "chair", "at": { "room": "rooming-house", "dx": 13, "dy": 5 }, "facing": "east" }
   ],
   "assemblies": [],
   "npcs": [

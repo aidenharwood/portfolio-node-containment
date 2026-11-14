@@ -75,7 +75,7 @@ export interface LiquidPalette {
 
 export const COOLANT_PALETTE: LiquidPalette = { deep: 0x041f2a, shallow: 0x13607a, glow: 0x3fa8c0, foam: 0xa8e8f0 };
 
-export const WATER_PALETTE: LiquidPalette = { deep: 0x10262a, shallow: 0x3a6a70, glow: 0x6a9aa0, foam: 0xd8e8e4 };
+export const WATER_PALETTE: LiquidPalette = { deep: 0x070d12, shallow: 0x14262e, glow: 0x2a5560, foam: 0x6a8a90 };
 
 export class LiquidSurface {
   readonly mesh: Mesh;

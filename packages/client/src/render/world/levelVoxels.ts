@@ -68,9 +68,9 @@ const COLORS = {
   grassDry: 0x6b6a3a,
   dirt: 0x5a4632,
   dirtDark: 0x463626,
-  gravel: 0x5e5b55,
-  gravelDark: 0x625f58,
-  gravelLight: 0x7a766d,
+  gravel: 0x3a3e43,
+  gravelDark: 0x31353a,
+  gravelLight: 0x52585e,
   asphalt: 0x505358,
   asphaltWorn: 0x55575b,
   asphaltLine: 0xd8c27a,
@@ -438,6 +438,8 @@ function facesOutdoors(layout: TileLayout, tx: number, ty: number, side: Side): 
   return isOutdoorFloor(layout.tileAt({ x: tx + dx, y: ty + dy }));
 }
 
+const WINDOW_GLOWS = [FACADE.litWindow, FACADE.litWindow, FACADE.litWindow, FACADE.litWindow, 0x6ab8ff, 0xff4fa8];
+
 function windowAt(material: WallMaterialId, tx: number, ty: number, side: Side, h: number, u: number): FaceVoxel | null {
   const bay = (tx + ty) % 2 === 0;
   if (!bay) return null;
@@ -450,7 +452,8 @@ function windowAt(material: WallMaterialId, tx: number, ty: number, side: Side, 
   if (h < 6 || h > 11 || u < 2 || u > 5) return null;
   if (u === 2 || u === 5 || h === 11) return { color: darken(MATERIAL[material].joint, 0.3), recessed: true };
   if (!lit) return { color: FACADE.darkWindow, recessed: true };
-  return { color: h === 8 ? darken(FACADE.litWindow, 0.35) : FACADE.litWindow, kind: VOXEL_EMISSIVE, recessed: true };
+  const glow = WINDOW_GLOWS[Math.floor(noise3(tx, ty, SIDE_SALT[side], 307) * WINDOW_GLOWS.length)] ?? FACADE.litWindow;
+  return { color: h === 8 ? darken(glow, 0.35) : glow, kind: VOXEL_EMISSIVE, recessed: true };
 }
 
 function exteriorVoxel(material: WallMaterialId, tx: number, ty: number, side: Side, h: number, u: number, vx: number, vy: number, vz: number): FaceVoxel {
