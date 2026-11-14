@@ -99,6 +99,13 @@ Tier rises with distance from Terminus Square: west and north are safe, the cana
 
 The open ground of the Cut, the Scrapyards, the Fringe and the Cordon is hostile; their buildings are safe. New kit: allotment bed, washer, chimney, scrap heap, magnet crane, beached hull, lock gate and Cordon gate. There are 30 named residents.
 
+**Step 4 (built).** Three levels hang below Site Meridian, one district each, joined by six lifts. The headhouse lift goes down to B1, and every landing has a lift up and, except the Vault, a lift down.
+- **B1 Intake** (`meridian-b1`, depth -1, tier 2, amber) has the lift lobby, the processing hall with Officer Brandt and a locker, Laboratory A, the observation ward, Amber Holding with six cells, and the lower lift.
+- **B2 the Secure Wing** (`meridian-b2`, depth -2, tier 3, red, breached, with failing lights) has the lift landing, the Red Gallery, Cellblock Red with seven secure cells, the breached ward, the observation lab and the Vault lift.
+- **B3 the Vault** (`meridian-b3`, depth -3, tier 4, cold blue, alien) has a landing and round chambers in a loop around the Antechamber, ending at the Heart of the Vault: a multi-combat boss room as far from the lift as the level allows.
+
+Landings, the lobby and processing are safe; the rest is hostile ground ready for phase 4's creatures. New kit: secure cell, lab bench and barricade.
+
 ## Order of work
 
 1. Rewrite WORLD_DESIGN.md, then do Terminus Square and the Tenements end to end: layout, interiors, dressing and residents as named stand-ins. Walk them in the game.

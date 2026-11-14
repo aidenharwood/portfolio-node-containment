@@ -1,0 +1,62 @@
+{
+  "id": "meridian-vault",
+  "name": "The Vault",
+  "subtitle": "Site Meridian, level B3",
+  "tier": 4,
+  "region": "low-ward",
+  "condition": "alien",
+  "ambience": { "darkness": 0.85, "tint": "#202a3a", "fog": "#0a0e14", "fixtures": "failing" },
+  "size": { "width": 80, "height": 64 },
+  "steps": [
+    { "kind": "room", "id": "landing", "rect": { "x": 4, "y": 25, "width": 12, "height": 12 }, "floor": "plating", "shape": "rect" },
+    { "kind": "room", "id": "chamber-b", "rect": { "x": 24, "y": 25, "width": 14, "height": 12 }, "floor": "concrete", "shape": "round" },
+    { "kind": "room", "id": "chamber-a", "rect": { "x": 24, "y": 6, "width": 14, "height": 14 }, "floor": "concrete", "shape": "round" },
+    { "kind": "room", "id": "chamber-c", "rect": { "x": 24, "y": 44, "width": 14, "height": 14 }, "floor": "concrete", "shape": "round" },
+    { "kind": "room", "id": "heart", "rect": { "x": 50, "y": 14, "width": 26, "height": 36 }, "floor": "plating", "shape": "round" },
+    { "kind": "link", "from": "landing", "to": "chamber-b", "width": 3, "floor": "plating" },
+    { "kind": "link", "from": "chamber-b", "to": "chamber-a", "width": 3, "floor": "plating" },
+    { "kind": "link", "from": "chamber-b", "to": "chamber-c", "width": 3, "floor": "plating" },
+    { "kind": "link", "from": "chamber-a", "to": "heart", "width": 3, "floor": "plating", "offset": 1 },
+    { "kind": "link", "from": "chamber-c", "to": "heart", "width": 3, "floor": "plating", "offset": 1 }
+  ],
+  "tiles": [],
+  "areas": [
+    { "room": "landing", "name": "Vault Landing", "safe": true },
+    { "room": "chamber-b", "name": "The Antechamber", "safe": false },
+    { "room": "chamber-a", "name": "North Chamber", "safe": false },
+    { "room": "chamber-c", "name": "South Chamber", "safe": false },
+    { "room": "heart", "name": "The Heart of the Vault", "safe": false, "multiCombat": true }
+  ],
+  "anchors": {
+    "arrival": { "room": "landing", "dx": 5, "dy": 2 }
+  },
+  "objects": [
+    { "id": "lift-up", "object": "vault-lift-up", "at": { "room": "landing", "dx": 5, "dy": 0 } },
+    { "id": "mv-b-barricade", "object": "barricade", "at": { "room": "chamber-b", "dx": 6, "dy": 3 } },
+    { "id": "mv-b-cell", "object": "secure-cell", "at": { "room": "chamber-b", "dx": 7, "dy": 7 } },
+    { "id": "mv-a-cell", "object": "secure-cell", "at": { "room": "chamber-a", "dx": 7, "dy": 6 } },
+    { "id": "mv-a-barricade", "object": "barricade", "at": { "room": "chamber-a", "dx": 3, "dy": 9 } },
+    { "id": "mv-a-bench", "object": "lab-bench", "at": { "room": "chamber-a", "dx": 10, "dy": 3 } },
+    { "id": "mv-c-cell", "object": "secure-cell", "at": { "room": "chamber-c", "dx": 7, "dy": 6 } },
+    { "id": "mv-c-barricade", "object": "barricade", "at": { "room": "chamber-c", "dx": 3, "dy": 3 } },
+    { "id": "mv-c-bench", "object": "lab-bench", "at": { "room": "chamber-c", "dx": 10, "dy": 10 } },
+    { "id": "mv-heart-cell-a", "object": "secure-cell", "at": { "room": "heart", "dx": 8, "dy": 12 } },
+    { "id": "mv-heart-cell-b", "object": "secure-cell", "at": { "room": "heart", "dx": 18, "dy": 24 } },
+    { "id": "mv-heart-barricade", "object": "barricade", "at": { "room": "heart", "dx": 6, "dy": 20 } },
+    { "id": "mv-heart-bench", "object": "lab-bench", "at": { "room": "heart", "dx": 16, "dy": 8 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "landing": { "theme": "transit", "people": 0 },
+    "chamber-b": { "theme": "containment", "people": 0 },
+    "chamber-a": { "theme": "containment", "people": 0 },
+    "chamber-c": { "theme": "containment", "people": 0 },
+    "heart": { "theme": "containment", "people": 0 }
+  },
+  "furnish": {}
+}

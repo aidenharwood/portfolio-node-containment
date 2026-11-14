@@ -21,6 +21,9 @@ import { LOW_WARD_DISTRICTS, TERMINUS_SQUARE, TERMINUS_SQUARE_ANCHORS } from './
 import { buildInstallations } from './installations.ts';
 import { buildLevelIndex, locate, type LevelIndex } from './levelIndex.ts';
 import { OVERWORLD } from './levels/overworld.ts';
+import { MERIDIAN_LEVELS } from './levels/siteMeridian.ts';
+import { SITE_MERIDIAN_DISTRICTS } from './districts/siteMeridian.ts';
+import { SITE_MERIDIAN_LIFTS } from './seed/siteMeridian.ts';
 import { CURRENCY_ITEMS } from './seed/items.ts';
 import { SEED_DIALOGUES, SEED_NPCS, SEED_OBJECTS, SEED_REGIONS, SEED_SHOPS } from './seed/lowWard.ts';
 import { buildTramNetwork, TRAM_LINES, TRAM_STATIONS } from './tramNetwork.ts';
@@ -64,10 +67,10 @@ function indexById<T extends { readonly id: string }>(entries: readonly T[]): Re
   return index;
 }
 
-const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([...LOW_WARD_DISTRICTS]);
-const INSTALLED = buildInstallations([...SEED_OBJECTS]);
+const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([...LOW_WARD_DISTRICTS, ...SITE_MERIDIAN_DISTRICTS]);
+const INSTALLED = buildInstallations([...SEED_OBJECTS, ...SITE_MERIDIAN_LIFTS]);
 const ASSEMBLY_INDEX: ReadonlyMap<AssemblyId, AssemblyDefinition> = indexById([...ASSEMBLIES, ...INSTALLED.assemblies]);
-const LEVEL_INDEX: LevelIndex = buildLevelIndex([OVERWORLD], DISTRICTS, ASSEMBLY_INDEX);
+const LEVEL_INDEX: LevelIndex = buildLevelIndex([OVERWORLD, ...MERIDIAN_LEVELS], DISTRICTS, ASSEMBLY_INDEX);
 
 function placed(districtId: DistrictId, position: TilePoint): WorldLocation {
   const location = locate(LEVEL_INDEX, districtId, position);

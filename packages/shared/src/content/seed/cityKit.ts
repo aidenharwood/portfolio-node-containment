@@ -1,3 +1,4 @@
+import { DRESSING_THEMES } from '../prefabs/types.ts';
 import type { WorldObjectDefinition } from '../../world/entities.ts';
 import type { FurnishingProfile } from '../furnishingCatalogue.ts';
 import type { FurnishingKit } from '../furnishingKit.ts';
@@ -7,7 +8,7 @@ type Prop = Pick<WorldObjectDefinition, 'id' | 'name' | 'examine' | 'model'> & P
 const prop = (definition: Prop): WorldObjectDefinition => ({ blocksMovement: true, interactions: [], ...definition });
 
 const OUTDOORS = ['street', 'containment'] as const;
-const INDOORS = ['shop', 'home', 'office', 'civic', 'transit', 'canteen', 'containment', 'works', 'industrial', 'freight', 'wet', 'garden'] as const;
+const INDOORS = ['shop', 'home', 'office', 'civic', 'transit', 'canteen', 'containment', 'works', 'industrial', 'freight', 'wet', 'garden', 'lab', 'medical', 'ward'] as const;
 const PUBLIC = ['street', 'civic', 'transit', 'shop', 'canteen', 'office', 'containment'] as const;
 
 export const CITY_KIT_OBJECTS: readonly WorldObjectDefinition[] = [
@@ -29,10 +30,10 @@ export const CITY_KIT_OBJECTS: readonly WorldObjectDefinition[] = [
   prop({ id: 'notice-board', name: 'Notice Board', examine: 'Lost pets, rooms to let, and a Directorate curfew notice.', model: 'noticeBoard', blocksMovement: false, furnishing: { mount: 'wall', homes: ['street', ...INDOORS] } }),
   prop({ id: 'directorate-sign', name: 'Directorate Sign', examine: 'The Directorate mark, and the rules of the site beneath it.', model: 'directorateSign', blocksMovement: false, furnishing: { mount: 'wall', homes: OUTDOORS } }),
   prop({ id: 'counter', name: 'Counter', examine: 'A long counter, wiped down often.', model: 'counter', furnishing: { mount: 'free', homes: INDOORS, surface: true, inRows: true } }),
-  prop({ id: 'shelving', name: 'Shelving', examine: 'Shelves of tins, boxes and things in jars.', model: 'shelving', furnishing: { mount: 'backed', homes: ['shop', 'home', 'office', 'canteen', 'works', 'industrial', 'freight', 'wet', 'garden'], inRows: true } }),
+  prop({ id: 'shelving', name: 'Shelving', examine: 'Shelves of tins, boxes and things in jars.', model: 'shelving', furnishing: { mount: 'backed', homes: ['shop', 'home', 'office', 'canteen', 'works', 'industrial', 'freight', 'wet', 'garden', 'lab', 'medical', 'ward'], inRows: true } }),
   prop({ id: 'table', name: 'Table', examine: 'A table with a ring on it from every cup.', model: 'table', furnishing: { mount: 'free', homes: INDOORS, surface: true, inRows: true } }),
   prop({ id: 'chair', name: 'Chair', examine: 'A chair. It wobbles.', model: 'chair', furnishing: { mount: 'seat', homes: INDOORS, seatsAt: 'surface' } }),
-  prop({ id: 'bed', name: 'Bed', examine: 'A narrow bed with a thin blanket.', model: 'bed', furnishing: { mount: 'free', homes: ['home'], inRows: true } }),
+  prop({ id: 'bed', name: 'Bed', examine: 'A narrow bed with a thin blanket.', model: 'bed', furnishing: { mount: 'free', homes: ['home', 'ward', 'medical', 'dormitory'], inRows: true } }),
   prop({ id: 'containment-cell', name: 'Containment Cell', examine: 'A low-security cell. Amber means occupied, or recently.', model: 'containmentCell', footprint: { width: 2, height: 2 }, furnishing: { mount: 'free', homes: ['containment'] } }),
   prop({ id: 'keycard-reader', name: 'Keycard Reader', examine: 'It wants a card you do not have.', model: 'keycardReader', blocksMovement: false, furnishing: { mount: 'wall', homes: ['containment'] } }),
   prop({ id: 'clock-tower', name: 'Station Clock', examine: 'The station clock. It has kept time since before the anomalies, and nobody has had to wind it since.', model: 'clockTower', footprint: { width: 2, height: 2 }, furnishing: { mount: 'free', homes: ['street', 'civic', 'transit'] } }),
@@ -51,10 +52,13 @@ export const CITY_KIT_OBJECTS: readonly WorldObjectDefinition[] = [
   prop({ id: 'beached-hull', name: 'Beached Hull', examine: 'A cargo ship hauled up the slipway and abandoned. The hole in its side was made from the inside.', model: 'beachedHull', footprint: { width: 6, height: 3 }, furnishing: { mount: 'free', homes: ['street', 'freight'] } }),
   prop({ id: 'lock-gate', name: 'Lock Gate', examine: 'A balance beam worn smooth by a hundred years of lockkeepers leaning on it.', model: 'lockGate', furnishing: { mount: 'free', homes: ['street', 'works'] } }),
   prop({ id: 'cordon-gate', name: 'Cordon Gate', examine: 'The Directorate gate in the Cordon wall. Sealed. The red lamp has not gone out since the day it shut.', model: 'cordonGate', footprint: { width: 4, height: 1 }, furnishing: { mount: 'backed', homes: ['street', 'containment'] } }),
+  prop({ id: 'secure-cell', name: 'Secure Cell', examine: 'A high-security cell. The red band means do not open, whatever it tells you.', model: 'secureCell', footprint: { width: 2, height: 2 }, furnishing: { mount: 'free', homes: ['containment'] } }),
+  prop({ id: 'lab-bench', name: 'Lab Bench', examine: 'Glassware, a sample scanner and a coffee ring.', model: 'labBench', furnishing: { mount: 'free', homes: ['lab', 'medical', 'containment'], surface: true, inRows: true } }),
+  prop({ id: 'barricade', name: 'Barricade', examine: 'Desks, doors and crates, stacked by people in a hurry.', model: 'barricade', furnishing: { mount: 'free', homes: DRESSING_THEMES } }),
 ];
 
 export const CITY_KIT: FurnishingKit = {
   objects: CITY_KIT_OBJECTS,
   prefabs: [],
-  signatures: { street: ['street-lamp'], shop: ['counter', 'shelving', 'market-stall'], home: ['bed'], containment: ['containment-cell'] },
+  signatures: { street: ['street-lamp'], shop: ['counter', 'shelving', 'market-stall'], home: ['bed'], containment: ['containment-cell', 'secure-cell'], lab: ['lab-bench'], ward: ['bed'] },
 };

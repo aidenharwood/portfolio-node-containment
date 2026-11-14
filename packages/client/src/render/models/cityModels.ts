@@ -330,12 +330,12 @@ const storageLocker: Builder = () => {
   return parts(model, 29);
 };
 
-const containmentCell: Builder = () => {
+const cellModel = (warning: number): ObjectModelParts => {
   const model = new VoxelModel().fill(-16, 0, -16, 15, 2, 15, grain(0x2a2e31, 0.02));
   model.paintExisting(-16, 2, -16, 15, 2, 15, (x, _y, z) => {
     const edge = Math.max(Math.abs(x + 0.5), Math.abs(z + 0.5));
     if (edge < 15) return null;
-    return (x + z + 64) % 4 < 2 ? CITY.amber : CITY.ink;
+    return (x + z + 64) % 4 < 2 ? warning : CITY.ink;
   });
   model.fill(-14, 3, -14, 13, 3, 13, 0x3a4044);
   for (const x of [-14, 13]) for (const z of [-14, 13]) model.fill(x, 3, z, x, 30, z, grain(CITY.panel, 0.015));
@@ -343,13 +343,17 @@ const containmentCell: Builder = () => {
     for (const edge of [-14, 13]) {
       model.fill(along, 4, edge, along, 28, edge, CITY.glass, VOXEL_GLASS);
       model.fill(edge, 4, along, edge, 28, along, CITY.glass, VOXEL_GLASS);
-      model.set(along, 3, edge, CITY.amber, VOXEL_EMISSIVE).set(edge, 3, along, CITY.amber, VOXEL_EMISSIVE);
+      model.set(along, 3, edge, warning, VOXEL_EMISSIVE).set(edge, 3, along, warning, VOXEL_EMISSIVE);
     }
   }
   model.fill(-14, 29, -14, 13, 30, 13, (x, _y, z) => (Math.abs(x + 0.5) > 12 || Math.abs(z + 0.5) > 12 ? CITY.band : CITY.panel));
   model.fill(-3, 31, -3, 2, 31, 2, CITY.darkSteel);
   return parts(model, 32);
 };
+
+const containmentCell: Builder = () => cellModel(CITY.amber);
+
+const secureCell: Builder = () => cellModel(CITY.red);
 
 const keycardReader: Builder = () => {
   const model = new VoxelModel().fill(-2, 13, -8, 1, 19, -6, grain(CITY.panel, 0.015));
@@ -584,6 +588,26 @@ const cordonGate: Builder = () => {
   return parts(model, 73);
 };
 
+const labBench: Builder = (seed) => {
+  const model = new VoxelModel().fill(-8, 0, -6, 7, 11, 5, grain(0xd8d6cc, 0.015));
+  model.fill(-8, 12, -7, 7, 13, 6, 0x2a2e31);
+  model.fill(-6, 14, -4, -4, 19, -2, CITY.glass, VOXEL_GLASS).fill(-2, 14, -3, 0, 16, -1, pick([CITY.green, CITY.amber, 0x4fe3ff], seed), VOXEL_EMISSIVE);
+  model.fill(3, 14, -5, 6, 20, -3, CITY.darkSteel).fill(4, 17, -2, 5, 18, -2, 0x4fe3ff, VOXEL_EMISSIVE);
+  return parts(model, 21);
+};
+
+const barricade: Builder = (seed) => {
+  const model = new VoxelModel();
+  for (let i = 0; i < 9; i++) {
+    const x = -8 + Math.floor(noise3(seed, i, 0, 5) * 12);
+    const y = Math.floor(i / 3) * 4;
+    const tone = pick([CITY.wood, CITY.darkWood, 0x5d666c, 0x8a5a3a], seed, i);
+    model.fill(x, y, -3 + (i % 3), x + 5, y + 3, 1 + (i % 3), grain(tone, 0.05, i));
+  }
+  model.fill(-7, 12, 0, 6, 13, 0, (x) => (Math.floor((x + 7) / 3) % 2 === 0 ? CITY.amber : CITY.ink));
+  return parts(model, 14);
+};
+
 export const CITY_BUILDERS: Readonly<Record<CityModel, Builder>> = {
   streetLamp,
   bollard,
@@ -626,4 +650,7 @@ export const CITY_BUILDERS: Readonly<Record<CityModel, Builder>> = {
   beachedHull,
   lockGate,
   cordonGate,
+  secureCell,
+  labBench,
+  barricade,
 };

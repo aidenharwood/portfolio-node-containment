@@ -36,7 +36,9 @@
     { "room": "chandlery", "name": "Abara's Chandlery", "safe": true },
     { "room": "ground", "name": "Canal Basin", "safe": true }
   ],
-  "anchors": {},
+  "anchors": {
+    "lift-arrival": { "room": "headhouse", "dx": 2, "dy": 2 }
+  },
   "objects": [
     { "id": "cb-gate-table", "object": "table", "at": { "room": "gatehouse", "dx": 3, "dy": 2 } },
     { "id": "cb-gate-chair", "object": "chair", "at": { "room": "gatehouse", "dx": 3, "dy": 3 }, "facing": "north" },
@@ -55,7 +57,7 @@
     { "id": "cb-cell-b", "object": "containment-cell", "at": { "room": "holding-block", "dx": 9, "dy": 4 } },
     { "id": "cb-holding-reader", "object": "keycard-reader", "at": { "room": "holding-block", "dx": 3, "dy": 0 } },
     { "id": "cb-holding-camera", "object": "security-camera", "at": { "room": "holding-block", "dx": 10, "dy": 0 } },
-    { "id": "cb-lift", "object": "lift-door", "at": { "room": "headhouse", "dx": 2, "dy": 4 }, "facing": "north" },
+    { "id": "cb-lift", "object": "meridian-lift", "at": { "room": "headhouse", "dx": 2, "dy": 4 }, "facing": "north" },
     { "id": "cb-headhouse-notices", "object": "notice-board", "at": { "room": "headhouse", "dx": 0, "dy": 0 } },
     { "id": "cb-headhouse-camera", "object": "security-camera", "at": { "room": "headhouse", "dx": 5, "dy": 0 } },
     { "id": "cb-headframe", "object": "headframe", "at": { "room": "site-meridian", "dx": 12, "dy": 12 } },

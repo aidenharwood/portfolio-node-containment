@@ -60,7 +60,10 @@ export type WorldObjectModel =
   | 'magnetCrane'
   | 'beachedHull'
   | 'lockGate'
-  | 'cordonGate';
+  | 'cordonGate'
+  | 'secureCell'
+  | 'labBench'
+  | 'barricade';
 
 export interface ObjectInteraction {
   readonly verb: string;

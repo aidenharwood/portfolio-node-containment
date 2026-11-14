@@ -282,7 +282,7 @@ const RESIDENTS: readonly Resident[] = [
     title: 'Containment specialist',
     examine: 'Watches the cells the way other people watch weather.',
     appearance: look('female', '#c69a70', 'crop', '#1a1a1a', { augment: 'ocularImplant' }),
-    says: "Block A is low security. Amber means routine. The things that turn the lights red are kept below, and the lift has been switched off since the last time one of them was moved.",
+    says: "Block A is low security. Amber means routine. The headhouse lift goes down to Intake, and below Intake the lights turn red. Below that is the Vault, and nobody I know has been back up from it twice.",
   },
   {
     id: 'ruth-abara',
@@ -292,6 +292,14 @@ const RESIDENTS: readonly Resident[] = [
     appearance: look('female', '#5a3a28', 'swept', '#2a2a2a'),
     says: "Dredging hooks, rope, waders. The basin gives up all sorts if you drag it. Old coins, engine parts. Last week, a typewriter, still typing.",
     shopId: 'abara-chandlery',
+  },
+  {
+    id: 'officer-brandt',
+    name: 'Officer Brandt',
+    title: 'Processing officer',
+    examine: 'Runs B1 like a railway timetable, and expects you to keep to it.',
+    appearance: look('male', '#c8a080', 'swept', '#4a3a2a', { augment: 'neuralPort' }),
+    says: 'Welcome to B1. Processing, labs, the observation ward and amber holding. Your locker is by the west wall. The lower lift goes to the Secure Wing. Do not take it until you are ready to come back changed.',
   },
   {
     id: 'mags-doherty',

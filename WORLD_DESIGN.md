@@ -2,7 +2,7 @@
 
 Read this before adding or changing a district, a level or anything placed in one. It applies to humans and AI agents alike. Every district in the game follows these rules; there is no exemption list. The rules marked **checked** are enforced by `findWorldDesignIssues` (`packages/shared/src/content/worldDesignIntegrity.ts`), which runs inside `findContentIssues`: the server will not boot and `npm test` fails when one is broken. The rest is judgement, and reviewers hold changes to it.
 
-> **Status:** the world is being rebuilt as an open city (`docs/superpowers/specs/2026-11-14-first-region-design.md`). The Low Ward's surface is built: nine squares from Terminus Square out to the Cordon gate. The levels below Site Meridian are next.
+> **Status:** the world is being rebuilt as an open city (`docs/superpowers/specs/2026-11-14-first-region-design.md`). The Low Ward is built: nine open squares from Terminus Square out to the Cordon gate, and three levels below Site Meridian (Intake, the Secure Wing and the Vault) reached by the headhouse lift. Phase 4 adds the people's quests, items and creatures.
 
 ## What the world should feel like
 
@@ -112,7 +112,8 @@ The rest is judgement, and reviewers hold it:
 | City buildings | Small walled interiors in `brick`, `blockwork` or `cladding`; `boards` for homes, shops and pubs, `terrazzo` for public halls | Shop signs and awnings outside |
 | Directorate buildings | Directorate panel walls (`wall`), `plating` floors, an orange band outside | The Directorate sign |
 | Directorate compounds | A `building` with an outdoor floor and `edge: "barrier"`: a walled yard with a gate, Directorate buildings standing inside it | The Site Meridian headframe |
-| Facility levels below ground | Rooms joined by links, getting tighter and colder with depth; amber for low security, red for high | The deepest boss room |
+| Facility levels below ground | Rooms joined by links, one district per level, getting tighter and colder with depth; amber for low security (B1), red for high (B2), cold blue for the Vault (B3) | The Heart of the Vault |
+| Lifts | A wall-mounted lift per landing whose interaction teleports to an `arrival` anchor on the next level | The headhouse headframe |
 
 **Safe ground.** The squares near Terminus Square are safe all over. From the Cut, the Scrapyards and the Shipyard Fringe outward the open ground is hostile and only the buildings are safe, so creatures and gathering spots go on the ground and people stay indoors.
 
@@ -123,7 +124,6 @@ The rest is judgement, and reviewers hold it:
 ## Reserved ground
 
 - **East of the Low Ward:** the Cordon, where the next region attaches through the Cordon gate.
-- **Below Site Meridian:** Intake, the Secure Wing and the Vault, reached by the headhouse lift (see the first-region design).
 
 ## Adding a district
 

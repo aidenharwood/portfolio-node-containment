@@ -1,8 +1,9 @@
 import type { LevelId } from '../../ids.ts';
 import type { LevelRecipe } from '../../world/level.ts';
 import { OVERWORLD_RECIPE } from './overworld.ts';
+import { MERIDIAN_LEVEL_RECIPES } from './siteMeridian.ts';
 import { SHIPPED_CONTEXT } from './shippedContext.ts';
 
-const RECIPES: readonly LevelRecipe[] = [OVERWORLD_RECIPE];
+const RECIPES: readonly LevelRecipe[] = [OVERWORLD_RECIPE, ...MERIDIAN_LEVEL_RECIPES];
 
 export const LEVEL_RECIPES: ReadonlyMap<LevelId, LevelRecipe> = new Map(RECIPES.map((recipe) => [recipe(SHIPPED_CONTEXT).id, recipe]));
