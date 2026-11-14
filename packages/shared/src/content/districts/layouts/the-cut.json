@@ -16,15 +16,20 @@
     { "kind": "patch", "rect": { "x": 48, "y": 28, "width": 4, "height": 6 }, "tile": "asphalt" },
     { "kind": "patch", "rect": { "x": 20, "y": 40, "width": 40, "height": 22 }, "tile": "gravel" },
     { "kind": "building", "id": "lock-cottage", "rect": { "x": 22, "y": 18, "width": 8, "height": 5 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2, "offset": 3 }] },
-    { "kind": "building", "id": "pump-house", "rect": { "x": 4, "y": 40, "width": 12, "height": 8 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "north", "width": 2, "offset": 5 }] }
+    { "kind": "building", "id": "pump-house", "rect": { "x": 4, "y": 40, "width": 12, "height": 8 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "north", "width": 2, "offset": 5 }] },
+    { "kind": "building", "id": "culvert", "rect": { "x": 40, "y": 46, "width": 16, "height": 12 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "north", "width": 3, "offset": 6 }] }
   ],
   "tiles": [],
   "areas": [
     { "room": "lock-cottage", "name": "Lock Cottage", "safe": true },
     { "room": "pump-house", "name": "Pump House", "safe": true },
+    { "room": "culvert", "name": "The Culvert", "safe": false },
     { "room": "ground", "name": "The Cut", "safe": false }
   ],
-  "anchors": {},
+  "anchors": {
+    "hatch-arrival": { "room": "ground", "dx": 6, "dy": 36 },
+    "vent-arrival": { "room": "ground", "dx": 30, "dy": 56 }
+  },
   "objects": [
     { "id": "cut-cottage-bed", "object": "bed", "at": { "room": "lock-cottage", "dx": 0, "dy": 0 } },
     { "id": "cut-cottage-shelf", "object": "shelving", "at": { "room": "lock-cottage", "dx": 7, "dy": 0 } },
@@ -52,31 +57,54 @@
     { "id": "cut-reed-c", "object": "reed-bed", "at": { "room": "ground", "dx": 24, "dy": 34 } },
     { "id": "cut-reed-d", "object": "reed-bed", "at": { "room": "ground", "dx": 56, "dy": 34 } },
     { "id": "cut-trace-a", "object": "culvert-trace", "at": { "room": "ground", "dx": 30, "dy": 45 } },
-    { "id": "cut-trace-b", "object": "culvert-trace", "at": { "room": "ground", "dx": 52, "dy": 40 } },
+    { "id": "cut-trace-b", "object": "culvert-trace", "at": { "room": "culvert", "dx": 13, "dy": 2 } },
     { "id": "cut-trace-c", "object": "culvert-trace", "at": { "room": "ground", "dx": 36, "dy": 58 } },
+    { "id": "cut-culvert-barricade", "object": "barricade", "at": { "room": "culvert", "dx": 2, "dy": 9 } },
     { "id": "cut-bench", "object": "street-bench", "at": { "room": "ground", "dx": 40, "dy": 24 } },
-    { "id": "cut-vent-a", "object": "steam-vent", "at": { "room": "ground", "dx": 40, "dy": 44 } },
-    { "id": "cut-vent-b", "object": "steam-vent", "at": { "room": "ground", "dx": 50, "dy": 54 } },
+    { "id": "cut-vent-a", "object": "steam-vent", "at": { "room": "ground", "dx": 30, "dy": 40 } },
     { "id": "cut-pole-a", "object": "utility-pole", "at": { "room": "ground", "dx": 36, "dy": 12 } },
     { "id": "cut-pole-b", "object": "utility-pole", "at": { "room": "ground", "dx": 56, "dy": 44 } },
     { "id": "cut-car", "object": "parked-car", "at": { "room": "ground", "dx": 50, "dy": 8 } },
     { "id": "cut-tree-a", "object": "street-tree", "at": { "room": "ground", "dx": 10, "dy": 10 } },
     { "id": "cut-tree-b", "object": "street-tree", "at": { "room": "ground", "dx": 22, "dy": 10 } },
-    { "id": "cut-scrap", "object": "scrap-heap", "at": { "room": "ground", "dx": 45, "dy": 52 } },
-    { "id": "cut-dumpster", "object": "dumpster", "at": { "room": "ground", "dx": 17, "dy": 44 }, "facing": "east" }
+    { "id": "cut-scrap", "object": "scrap-heap", "at": { "room": "culvert", "dx": 5, "dy": 6 } },
+    { "id": "cut-dumpster", "object": "dumpster", "at": { "room": "ground", "dx": 17, "dy": 44 }, "facing": "east" },
+    { "id": "sluice-0", "object": "seized-sluice", "at": { "room": "ground", "dx": 46, "dy": 27 } },
+    { "id": "sluice-1", "object": "seized-sluice", "at": { "room": "ground", "dx": 60, "dy": 27 } },
+    { "id": "sluice-2", "object": "seized-sluice", "at": { "room": "ground", "dx": 12, "dy": 34 } },
+    { "id": "cut-hatch", "object": "cut-hatch", "at": { "room": "ground", "dx": 4, "dy": 36 } },
+    { "id": "grey-cat", "object": "grey-cat", "at": { "room": "ground", "dx": 32, "dy": 58 } }
   ],
   "assemblies": [],
   "npcs": [
     { "id": "cut-varga", "npc": "ilse-varga", "at": { "room": "lock-cottage", "dx": 2, "dy": 2 } },
     { "id": "cut-mensah", "npc": "kofi-mensah", "at": { "room": "pump-house", "dx": 8, "dy": 4 } }
   ],
-  "creatures": [],
+  "creatures": [
+    { "id": "cut-mite-0", "creature": "gutter-mite", "at": { "room": "ground", "dx": 6, "dy": 6 } },
+    { "id": "cut-mite-1", "creature": "gutter-mite", "at": { "room": "ground", "dx": 30, "dy": 6 } },
+    { "id": "cut-mite-2", "creature": "gutter-mite", "at": { "room": "ground", "dx": 44, "dy": 14 } },
+    { "id": "cut-mite-3", "creature": "gutter-mite", "at": { "room": "ground", "dx": 58, "dy": 6 } },
+    { "id": "cut-mite-4", "creature": "gutter-mite", "at": { "room": "ground", "dx": 6, "dy": 20 } },
+    { "id": "cut-mite-5", "creature": "gutter-mite", "at": { "room": "ground", "dx": 42, "dy": 22 } },
+    { "id": "cut-mite-6", "creature": "gutter-mite", "at": { "room": "ground", "dx": 58, "dy": 20 } },
+    { "id": "cut-mite-7", "creature": "gutter-mite", "at": { "room": "ground", "dx": 28, "dy": 14 } },
+    { "id": "cut-mite-8", "creature": "gutter-mite", "at": { "room": "ground", "dx": 24, "dy": 52 } },
+    { "id": "cut-mite-9", "creature": "gutter-mite", "at": { "room": "ground", "dx": 34, "dy": 52 } },
+    { "id": "cut-mite-10", "creature": "gutter-mite", "at": { "room": "ground", "dx": 26, "dy": 60 } },
+    { "id": "cut-mite-11", "creature": "gutter-mite", "at": { "room": "ground", "dx": 60, "dy": 60 } },
+    { "id": "cut-eel-0", "creature": "silt-eel", "at": { "room": "ground", "dx": 10, "dy": 37 } },
+    { "id": "cut-eel-1", "creature": "silt-eel", "at": { "room": "ground", "dx": 44, "dy": 37 } },
+    { "id": "cut-eel-2", "creature": "silt-eel", "at": { "room": "ground", "dx": 60, "dy": 38 } },
+    { "id": "cut-lamplighter", "creature": "the-lamplighter", "at": { "room": "culvert", "dx": 10, "dy": 5 } }
+  ],
   "lights": [],
   "decals": [],
   "setPieces": [],
   "dressing": {
     "lock-cottage": { "theme": "home", "people": 0 },
     "pump-house": { "theme": "works", "people": 0 },
+    "culvert": { "theme": "works", "people": 0 },
     "ground": { "theme": "street", "people": 0 }
   },
   "furnish": {}

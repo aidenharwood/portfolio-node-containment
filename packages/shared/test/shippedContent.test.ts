@@ -57,3 +57,22 @@ test('every material in the ladder has a full set of weapons and armour', () => 
     assert.equal(armour.length, 15, `${material} has fifteen armour pieces`);
   }
 });
+
+test('every quest names people, creatures and objects that stand somewhere in the world', () => {
+  const districts = [...GAME_CONTENT.districts.values()];
+  const npcs = new Set(districts.flatMap((district) => district.npcs.map((npc) => npc.npcId)));
+  const creatures = new Set(districts.flatMap((district) => (district.creatures ?? []).map((creature) => creature.creatureId)));
+  const objects = new Set(districts.flatMap((district) => district.objects.map((object) => object.objectId)));
+  for (const quest of GAME_CONTENT.quests.values()) {
+    if (quest.offeredBy) assert.ok(npcs.has(quest.offeredBy), `${quest.id} is offered by someone placed`);
+    for (const step of quest.steps) {
+      for (const objective of step.objectives) {
+        const where = `${quest.id}/${step.id}`;
+        if (objective.type === 'talkTo') assert.ok(npcs.has(objective.npcId), `${where}: ${objective.npcId}`);
+        if (objective.type === 'signal' && objective.npcId) assert.ok(npcs.has(objective.npcId), `${where}: ${objective.npcId}`);
+        if (objective.type === 'defeat' || objective.type === 'contain') assert.ok(creatures.has(objective.creatureId), `${where}: ${objective.creatureId}`);
+        if (objective.type === 'interactWith') assert.ok(objects.has(objective.objectId), `${where}: ${objective.objectId}`);
+      }
+    }
+  }
+});

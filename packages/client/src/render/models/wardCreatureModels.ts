@@ -65,12 +65,92 @@ const crateWisp = (): VoxelModel => {
   return model;
 };
 
+const gutterMite = (): VoxelModel => {
+  const shell = 0x3a4a2a;
+  const model = new VoxelModel().fill(-3, 1, -3, 2, 4, 3, fur(shell, 21)).fill(-2, 5, -2, 1, 5, 2, fur(lighten(shell, 0.15), 22));
+  for (const z of [-2, 0, 2]) model.fill(-5, 0, z, -4, 2, z, darken(shell, 0.3)).fill(3, 0, z, 4, 2, z, darken(shell, 0.3));
+  model.fill(-2, 3, 4, -1, 3, 4, 0xb6ff4f, VOXEL_EMISSIVE).fill(0, 3, 4, 1, 3, 4, 0xb6ff4f, VOXEL_EMISSIVE);
+  return model;
+};
+
+const siltEel = (): VoxelModel => {
+  const skin = 0x1f2a2a;
+  const model = new VoxelModel();
+  for (let z = -10; z <= 8; z++) {
+    const x = Math.round(Math.sin(z * 0.45) * 2);
+    const r = z > 4 ? 2 : z < -6 ? 1 : 2;
+    model.fill(x - r, 1, z, x + r - 1, 1 + r * 2, z, fur(skin, 23));
+  }
+  model.fill(-2, 4, 9, 1, 6, 10, fur(lighten(skin, 0.1), 24)).set(-2, 6, 10, 0xffd23f, VOXEL_EMISSIVE).set(1, 6, 10, 0xffd23f, VOXEL_EMISSIVE);
+  model.fill(-1, 6, -6, 0, 8, 4, 0x3a5a4a);
+  return model;
+};
+
+const scrapCrawler = (): VoxelModel => {
+  const plate = 0x6a4a3a;
+  const model = new VoxelModel().fill(-5, 3, -6, 4, 8, 5, (x, y, z) => ((x + z) % 3 === 0 ? 0x5d666c : jitter(plate, 0.08, noise3(x, y, z, 25))));
+  for (const z of [-5, -1, 3]) model.fill(-8, 0, z, -6, 5, z, 0x3a3f44).fill(5, 0, z, 7, 5, z, 0x3a3f44);
+  model.fill(-3, 4, 6, 2, 7, 8, 0x3a3f44).fill(-4, 6, 9, -3, 7, 11, 0x8a5a3a).fill(2, 6, 9, 3, 7, 11, 0x8a5a3a);
+  model.set(-2, 7, 9, 0xffb35a, VOXEL_EMISSIVE).set(1, 7, 9, 0xffb35a, VOXEL_EMISSIVE);
+  return model;
+};
+
+const rustling = (): VoxelModel => {
+  const metals = [0x6a4a3a, 0x5d666c, 0x8a5a3a, 0x3a4a52];
+  const model = new VoxelModel();
+  for (let i = 0; i < 18; i++) {
+    const x = Math.floor((noise3(i, 0, 3, 27) - 0.5) * 12);
+    const z = Math.floor((noise3(i, 1, 3, 27) - 0.5) * 10);
+    const y = 3 + Math.floor(noise3(i, 2, 3, 27) * 14);
+    model.fill(x, y, z, x + 2 + (i % 3), y + 2, z + 2, jitter(metals[i % 4] as number, 0.08, i));
+  }
+  for (const x of [-4, 3]) model.fill(x, 0, -1, x + 1, 4, 0, 0x3a3f44);
+  model.fill(-1, 11, 6, 0, 12, 6, 0xe8a21c, VOXEL_EMISSIVE);
+  return model;
+};
+
+const lineMimic = (): VoxelModel => {
+  const coat = 0x3a3a4a;
+  const model = new VoxelModel().fill(-4, 4, -2, 3, 18, 2, (x, y, z) => jitter(coat, 0.06, noise3(x, y, z, 29)));
+  model.fill(-6, 14, -1, -5, 18, 1, coat).fill(4, 14, -1, 5, 18, 1, coat).fill(-1, 18, -1, 0, 20, 0, 0x8a8a8a);
+  model.fill(-3, 0, -1, -2, 3, 0, 0xc84a4a).fill(1, 0, -1, 2, 3, 0, 0x4a7ac8);
+  model.fill(-2, 15, 3, 1, 15, 3, 0xd8d0b8).set(-1, 12, 3, 0xffd23f, VOXEL_EMISSIVE).set(0, 12, 3, 0xffd23f, VOXEL_EMISSIVE);
+  return model;
+};
+
+const scrapMagpie = (): VoxelModel => {
+  const model = new VoxelModel().fill(-2, 3, -3, 1, 7, 2, fur(0x1a1a22, 31)).fill(-1, 7, 1, 0, 9, 3, fur(0x1a1a22, 32));
+  model.fill(-2, 4, -1, 1, 5, 2, 0xe8e8f0).fill(-1, 3, -7, 0, 4, -4, 0x2a3a6a).fill(-1, 8, 4, 0, 8, 5, 0x3a3a3a);
+  model.set(-1, 8, 3, 0xd8a03a, VOXEL_EMISSIVE).fill(-1, 0, 0, -1, 2, 0, 0x2a2a2a).fill(0, 0, 0, 0, 2, 0, 0x2a2a2a);
+  return model;
+};
+
+const lamplighter = (): VoxelModel => {
+  const body = 0x1f2a30;
+  const model = new VoxelModel();
+  for (let y = 0; y <= 34; y++) {
+    const r = y < 6 ? 6 - y * 0.5 : y < 26 ? 4 + Math.sin(y * 0.4) * 1.2 : 3;
+    model.fill(-Math.round(r), y, -Math.round(r * 0.7), Math.round(r) - 1, y, Math.round(r * 0.7) - 1, (x, yy, z) => jitter(body, 0.08, noise3(x, yy, z, 33)));
+  }
+  model.fill(-9, 22, -1, -5, 24, 0, body).fill(4, 22, -1, 8, 24, 0, body).fill(8, 14, -1, 9, 24, 0, body);
+  model.fill(7, 8, -2, 10, 13, 1, 0x2a2e31).fill(8, 9, -1, 9, 12, 0, 0xffb35a, VOXEL_EMISSIVE);
+  model.fill(-2, 30, 3, 1, 31, 3, 0xffb35a, VOXEL_EMISSIVE);
+  return model;
+};
+
 const LOOKS: Readonly<Record<string, CreatureLook>> = {
   canalRat: { build: canalRat, height: 0.35, gait: 'scurry' },
   pigeon: { build: pigeon, height: 0.4, gait: 'hop' },
   strayDog: { build: strayDog, height: 0.75, gait: 'trot' },
   trainingDrone: { build: trainingDrone, height: 0.8, gait: 'hover' },
   crateWisp: { build: crateWisp, height: 0.75, gait: 'drift' },
+  gutterMite: { build: gutterMite, height: 0.35, gait: 'scurry' },
+  siltEel: { build: siltEel, height: 0.45, gait: 'scurry' },
+  scrapCrawler: { build: scrapCrawler, height: 0.6, gait: 'scurry' },
+  rustling: { build: rustling, height: 1, gait: 'trot' },
+  lineMimic: { build: lineMimic, height: 1.2, gait: 'drift' },
+  scrapMagpie: { build: scrapMagpie, height: 0.5, gait: 'hop' },
+  lamplighter: { build: lamplighter, height: 2.1, gait: 'drift' },
 };
 
 const meshes = new Map<string, VoxelMeshes>();
@@ -130,4 +210,11 @@ export const WARD_CREATURE_FACTORIES = {
   strayDog: () => new WardCreatureRig('strayDog'),
   trainingDrone: () => new WardCreatureRig('trainingDrone'),
   crateWisp: () => new WardCreatureRig('crateWisp'),
+  gutterMite: () => new WardCreatureRig('gutterMite'),
+  siltEel: () => new WardCreatureRig('siltEel'),
+  scrapCrawler: () => new WardCreatureRig('scrapCrawler'),
+  rustling: () => new WardCreatureRig('rustling'),
+  lineMimic: () => new WardCreatureRig('lineMimic'),
+  scrapMagpie: () => new WardCreatureRig('scrapMagpie'),
+  lamplighter: () => new WardCreatureRig('lamplighter'),
 } as const;

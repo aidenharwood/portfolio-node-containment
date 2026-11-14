@@ -37,7 +37,8 @@
     { "room": "ground", "name": "Canal Basin", "safe": true }
   ],
   "anchors": {
-    "lift-arrival": { "room": "headhouse", "dx": 2, "dy": 2 }
+    "lift-arrival": { "room": "headhouse", "dx": 2, "dy": 2 },
+    "hatch-arrival": { "room": "ground", "dx": 3, "dy": 60 }
   },
   "objects": [
     { "id": "cb-gate-table", "object": "table", "at": { "room": "gatehouse", "dx": 3, "dy": 2 } },
@@ -108,6 +109,7 @@
     { "id": "cb-dredge-b", "object": "dredge-spot", "at": { "room": "ground", "dx": 46, "dy": 56 }, "facing": "north" },
     { "id": "cb-dredge-c", "object": "dredge-spot", "at": { "room": "ground", "dx": 56, "dy": 20 }, "facing": "east" },
     { "id": "cb-dredge-d", "object": "dredge-spot", "at": { "room": "ground", "dx": 56, "dy": 46 }, "facing": "east" },
+    { "id": "basin-hatch", "object": "basin-hatch", "at": { "room": "ground", "dx": 2, "dy": 61 } },
     { "id": "cb-bench-a", "object": "street-bench", "at": { "room": "ground", "dx": 14, "dy": 6 } },
     { "id": "cb-bench-b", "object": "street-bench", "at": { "room": "ground", "dx": 36, "dy": 6 } },
     { "id": "cb-bin", "object": "litter-bin", "at": { "room": "ground", "dx": 16, "dy": 5 } },

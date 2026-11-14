@@ -129,6 +129,15 @@ Containable anomalies are the moth-lantern, the rustling, the glass hound, the t
 - **District tiers follow the level ladder:** home squares 1; the Canal Basin and the Cut 3; the Scrapyards and B1 6; the Fringe 8; the Cordon and B2 10; the Vault 12.
 - **Critter yards:** the creatures for steps 1 and 2 live in fenced yards inside the home squares, the rail yard behind the station and the allotments, as RuneScape keeps chickens and cows in pens.
 
+**Step 2 (built).**
+- **Creatures:** the Cut has 12 gutter mites, 3 silt eels and the Lamplighter, the culvert boss (level 11). The Scrapyards have 10 scrap crawlers and 4 rustlings. Three more live in the home yards: a line mimic in the Tenements courtyard, now a fenced yard, and two scrap magpies in the allotments. Each has its own model, and four new rare drops.
+- **Novice quests:** Line Thief, Bed Six, Valve Trouble, Rent Day, Lost Cat and Bright Things.
+  - **Bright Things:** moved from Hallam to Nell Carraway, so its targets stay on home ground.
+  - **Valve Trouble:** unlocks the culvert hatches between the Cut and the basin.
+  - **Lost Cat:** opens the alley vent route to the Cut.
+- **Early boss quest:** The Drowned Lamp, worth 2 quest points. It needs Lost Cat.
+- **Quest rewards:** none of them give gear. Gear needs a recipe or must be a rare drop, so the rewards are experience, scrip and access.
+
 ## Order of work
 
 1. The scrap and iron ladders, home-square creatures and spots, the stations and shops, the tutorial and Noodle Run. Walked end to end in the game.

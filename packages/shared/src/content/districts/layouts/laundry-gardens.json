@@ -79,6 +79,7 @@
     { "id": "lg-bed-5-5", "object": "allotment-bed", "at": { "room": "allotments", "dx": 27, "dy": 23 } },
     { "id": "lg-trace", "object": "faint-trace", "at": { "room": "ground", "dx": 59, "dy": 58 } },
     { "id": "lg-allot-scrap", "object": "scrap-pile", "at": { "room": "allotments", "dx": 30, "dy": 1 } },
+    { "id": "bed-six", "object": "bed-six", "at": { "room": "allotments", "dx": 15, "dy": 27 } },
     { "id": "lg-allot-trace", "object": "faint-trace", "at": { "room": "allotments", "dx": 2, "dy": 26 } },
     { "id": "lg-shed-bed", "object": "bed", "at": { "room": "shed", "dx": 7, "dy": 0 } },
     { "id": "lg-shed-shelf", "object": "shelving", "at": { "room": "shed", "dx": 4, "dy": 0 } },
@@ -107,6 +108,8 @@
     { "id": "lg-pigeon-b", "creature": "pigeon", "at": { "room": "allotments", "dx": 26, "dy": 9 } },
     { "id": "lg-pigeon-c", "creature": "pigeon", "at": { "room": "allotments", "dx": 8, "dy": 25 } },
     { "id": "lg-dog-a", "creature": "stray-dog", "at": { "room": "allotments", "dx": 18, "dy": 17 } },
+    { "id": "lg-magpie-a", "creature": "scrap-magpie", "at": { "room": "allotments", "dx": 2, "dy": 13 } },
+    { "id": "lg-magpie-b", "creature": "scrap-magpie", "at": { "room": "allotments", "dx": 14, "dy": 5 } },
     { "id": "lg-dog-b", "creature": "stray-dog", "at": { "room": "allotments", "dx": 26, "dy": 25 } }
   ],
   "lights": [],

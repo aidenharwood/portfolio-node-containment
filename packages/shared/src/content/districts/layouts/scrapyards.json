@@ -57,7 +57,22 @@
   "npcs": [
     { "id": "sy-hallam", "npc": "dutch-hallam", "at": { "room": "breakers-office", "dx": 6, "dy": 2 } }
   ],
-  "creatures": [],
+  "creatures": [
+    { "id": "sy-crawler-0", "creature": "scrap-crawler", "at": { "room": "ground", "dx": 20, "dy": 5 } },
+    { "id": "sy-crawler-1", "creature": "scrap-crawler", "at": { "room": "ground", "dx": 32, "dy": 9 } },
+    { "id": "sy-crawler-2", "creature": "scrap-crawler", "at": { "room": "ground", "dx": 8, "dy": 15 } },
+    { "id": "sy-crawler-3", "creature": "scrap-crawler", "at": { "room": "ground", "dx": 28, "dy": 15 } },
+    { "id": "sy-crawler-4", "creature": "scrap-crawler", "at": { "room": "ground", "dx": 50, "dy": 19 } },
+    { "id": "sy-crawler-5", "creature": "scrap-crawler", "at": { "room": "ground", "dx": 60, "dy": 27 } },
+    { "id": "sy-crawler-6", "creature": "scrap-crawler", "at": { "room": "ground", "dx": 4, "dy": 25 } },
+    { "id": "sy-crawler-7", "creature": "scrap-crawler", "at": { "room": "ground", "dx": 60, "dy": 39 } },
+    { "id": "sy-crawler-8", "creature": "scrap-crawler", "at": { "room": "ground", "dx": 26, "dy": 57 } },
+    { "id": "sy-crawler-9", "creature": "scrap-crawler", "at": { "room": "ground", "dx": 52, "dy": 59 } },
+    { "id": "sy-rustling-0", "creature": "rustling", "at": { "room": "ground", "dx": 36, "dy": 29 } },
+    { "id": "sy-rustling-1", "creature": "rustling", "at": { "room": "ground", "dx": 52, "dy": 31 } },
+    { "id": "sy-rustling-2", "creature": "rustling", "at": { "room": "ground", "dx": 34, "dy": 51 } },
+    { "id": "sy-rustling-3", "creature": "rustling", "at": { "room": "ground", "dx": 8, "dy": 51 } }
+  ],
   "lights": [],
   "decals": [],
   "setPieces": [],

@@ -71,7 +71,10 @@ export type WorldObjectModel =
   | 'anomalyTrace'
   | 'refinery'
   | 'fabricator'
-  | 'synthesiser';
+  | 'synthesiser'
+  | 'cat'
+  | 'hatch'
+  | 'sluiceValve';
 
 export interface ObjectInteraction {
   readonly verb: string;

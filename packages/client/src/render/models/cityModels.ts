@@ -694,6 +694,33 @@ const synthesiser: Builder = (seed) => {
   return parts(model, 24);
 };
 
+const cat: Builder = () => {
+  const grey = 0x6a6a72;
+  const model = new VoxelModel().fill(-2, 1, -4, 1, 4, 2, grain(grey, 0.06)).fill(-2, 3, 3, 1, 6, 5, grain(grey, 0.06));
+  model.set(-2, 7, 4, grey).set(1, 7, 4, darken(grey, 0.3)).set(-1, 5, 6, 0xb6ff4f, VOXEL_EMISSIVE).set(0, 5, 6, 0xb6ff4f, VOXEL_EMISSIVE);
+  model.fill(0, 3, -8, 0, 4, -5, grey);
+  for (const x of [-2, 1]) for (const z of [-3, 1]) model.set(x, 0, z, darken(grey, 0.2));
+  return parts(model, 8);
+};
+
+const hatch: Builder = () => {
+  const model = new VoxelModel().fill(-6, 0, -6, 5, 1, 5, grain(CITY.concrete));
+  model.fill(-4, 2, -4, 3, 2, 3, (x, _y, z) => ((x + z) % 2 === 0 ? CITY.iron : CITY.darkSteel));
+  model.fill(-4, 3, -1, -3, 3, 0, CITY.steel).fill(2, 3, -1, 3, 3, 0, CITY.steel);
+  return parts(model, 4);
+};
+
+const sluiceValve: Builder = () => {
+  const model = new VoxelModel().fill(-3, 0, -3, 2, 3, 2, grain(CITY.concrete));
+  model.fill(-1, 4, -1, 0, 12, 0, CITY.iron);
+  for (let x = -5; x <= 4; x++) for (let z = -5; z <= 4; z++) {
+    const d = Math.hypot(x + 0.5, z + 0.5);
+    if (d <= 5 && d >= 3.6) model.set(x, 13, z, CITY.red);
+  }
+  model.fill(-5, 13, 0, 4, 13, 0, CITY.red).fill(0, 13, -5, 0, 13, 4, CITY.red);
+  return parts(model, 14);
+};
+
 export const CITY_BUILDERS: Readonly<Record<CityModel, Builder>> = {
   streetLamp,
   bollard,
@@ -747,4 +774,7 @@ export const CITY_BUILDERS: Readonly<Record<CityModel, Builder>> = {
   refinery,
   fabricator,
   synthesiser,
+  cat,
+  hatch,
+  sluiceValve,
 };
