@@ -12,7 +12,7 @@ import {
 } from '@containment/shared';
 import { createHarness, inRoom, type Harness } from './support/testHarness.ts';
 
-const NEAR_WARDEN = inRoom('sector-two', 'inner-chamber');
+const NEAR_WARDEN = inRoom('fx-arena', 'arena');
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 
@@ -39,12 +39,12 @@ function operative(containmentLevel: number, clearance: number) {
 function onTheWardenStep(prepare: (record: CharacterRecord) => CharacterRecord) {
   return (record: CharacterRecord): CharacterRecord => {
     const prepared = prepare(record);
-    return { ...prepared, quests: { ...prepared.quests, 'the-knocking': { questId: 'the-knocking', status: 'active', stepIndex: 6, objectiveProgress: [0] } } };
+    return { ...prepared, quests: { ...prepared.quests, 'vault-run': { questId: 'vault-run', status: 'active', stepIndex: 4, objectiveProgress: [0] } } };
   };
 }
 
 function warden(harness: Harness) {
-  const creature = harness.gameplay.world.levelOf(harness.player).creatureByInstance('s2-warden');
+  const creature = harness.gameplay.world.levelOf(harness.player).creatureByInstance('arena-warden');
   assert.ok(creature);
   return creature;
 }
@@ -57,15 +57,15 @@ describe('containment', () => {
     const creature = warden(harness);
     const containmentBefore = harness.player.record.skills.containment;
 
-    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-warden', interactionIndex: 1 });
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 1 });
     assert.ok(notices(harness).some((text) => text.includes('too strong')));
 
-    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-warden', interactionIndex: 0 });
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 0 });
     harness.ticksUntil(() => harness.player.heldFireOn === creature.entityId, 2000);
     assert.ok(creature.isAlive);
     assert.ok(creature.integrity <= 3 && creature.integrity >= 1);
 
-    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-warden', interactionIndex: 1 });
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 1 });
     harness.ticksUntil(() => !creature.isAlive, 50);
 
     assert.equal(clearanceTierOf(harness.player.record.flags), 3, 'a higher clearance covers a lower specimen and is never spent');
@@ -80,29 +80,29 @@ describe('containment', () => {
   test('containing a storyline boss advances its contain objective', () => {
     const harness = createHarness({ prepare: onTheWardenStep(operative(6, 2)) });
     const creature = warden(harness);
-    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-warden', interactionIndex: 0 });
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 0 });
     harness.ticksUntil(() => harness.player.heldFireOn === creature.entityId, 2000);
-    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-warden', interactionIndex: 1 });
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 1 });
     harness.ticksUntil(() => !creature.isAlive, 50);
     assert.ok(harness.sink.messages.some((message) => message.type === 'combat.death' && message.containedBy === harness.player.entityId));
-    assert.equal(harness.player.record.quests['the-knocking']?.stepIndex, 7);
+    assert.equal(harness.player.record.quests['vault-run']?.stepIndex, 5);
   });
 
   test('an operative ordered to contain a boss holds back even without clearance', () => {
     const harness = createHarness({ prepare: onTheWardenStep(operative(6, 0)) });
     const creature = warden(harness);
-    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-warden', interactionIndex: 0 });
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 0 });
     harness.ticksUntil(() => harness.player.heldFireOn === creature.entityId, 2000);
     assert.ok(creature.isAlive);
     assert.ok(notices(harness).some((text) => text.includes('your orders are to contain it') && text.includes('Clearance I')));
-    assert.equal(harness.player.record.quests['the-knocking']?.stepIndex, 6);
+    assert.equal(harness.player.record.quests['vault-run']?.stepIndex, 4);
   });
 
   test('containment is refused below the specimen level', () => {
     const harness = createHarness({ prepare: operative(2, 2) });
     const creature = warden(harness);
     creature.integrity = 1;
-    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-warden', interactionIndex: 1 });
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 1 });
     assert.ok(notices(harness).some((text) => text.includes('Containment level 3')));
     assert.equal(harness.player.containTargetId, null);
   });
@@ -110,9 +110,9 @@ describe('containment', () => {
   test('an operative can choose to finish a weakened specimen instead', () => {
     const harness = createHarness({ prepare: operative(6, 2) });
     const creature = warden(harness);
-    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-warden', interactionIndex: 0 });
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 0 });
     harness.ticksUntil(() => harness.player.heldFireOn === creature.entityId, 2000);
-    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-warden', interactionIndex: 0 });
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 0 });
     harness.ticksUntil(() => !creature.isAlive, 200);
     assert.ok(!harness.sink.messages.some((message) => message.type === 'combat.death' && message.containedBy !== undefined));
   });
@@ -120,7 +120,7 @@ describe('containment', () => {
   test('without clearance an operative fights a boss to the end as before', () => {
     const harness = createHarness({ prepare: operative(6, 0) });
     const creature = warden(harness);
-    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-warden', interactionIndex: 0 });
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 0 });
     harness.ticksUntil(() => !creature.isAlive, 2000);
     assert.equal(harness.player.heldFireOn, null);
   });

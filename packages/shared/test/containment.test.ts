@@ -16,15 +16,15 @@ import {
   createStartingSkills,
   experienceForLevel,
   findContentIssues,
-  GAME_CONTENT,
   isWeakenedForContainment,
   nextClearanceTier,
   tierForLevel,
   type CreatureDefinition,
 } from '../src/index.ts';
+import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
 
 const creature = (id: string): CreatureDefinition => {
-  const definition = GAME_CONTENT.creatures.get(id);
+  const definition = FIXTURE_CONTENT.creatures.get(id);
   assert.ok(definition, `missing creature ${id}`);
   return definition;
 };
@@ -76,46 +76,39 @@ describe('containment rules', () => {
     assert.match(containmentReadiness(creature('training-drone'), qualified, tier) ?? '', /cannot be contained/);
   });
 
-  test('every boss is a containable specimen covered by a clearance', () => {
-    const bosses = ['the-understudy', 'hollow-warden', 'the-foreman', 'sump-mother', 'the-curator', 'the-choir', 'last-archivist', 'the-stoker', 'the-host', 'the-postmaster'];
+  test('every containable specimen is covered by a clearance', () => {
+    const bosses = [...FIXTURE_CONTENT.creatures.values()].filter((definition) => definition.containment).map((definition) => definition.id);
+    assert.ok(bosses.length > 0);
     for (const id of bosses) {
       const boss = creature(id);
-      assert.ok(boss.containment, `${id} should be containable`);
       assert.ok(clearanceTierFor(boss) <= CLEARANCE_TIERS, `${id} needs a clearance for tier ${clearanceTierFor(boss)}`);
     }
   });
 
   test('no containment seals remain as items or recipes', () => {
-    assert.ok(![...GAME_CONTENT.items.keys()].some((id) => id.startsWith('containment-seal')));
-    assert.ok(![...GAME_CONTENT.recipes.values()].some((recipe) => recipe.output.itemId.startsWith('containment-seal')));
+    assert.ok(![...FIXTURE_CONTENT.items.keys()].some((id) => id.startsWith('containment-seal')));
+    assert.ok(![...FIXTURE_CONTENT.recipes.values()].some((recipe) => recipe.output.itemId.startsWith('containment-seal')));
   });
 
   test('story bosses can be contained at a story pace, below their combat level', () => {
-    const host = creature('the-host');
-    assert.ok(containmentLevelFor(host) < host.level);
-    assert.equal(clearanceTierFor(host), tierForLevel(containmentLevelFor(host)));
-    assert.equal(containmentLevelFor(creature('the-understudy')), creature('the-understudy').level);
+    const warden = creature('hollow-warden');
+    assert.ok(containmentLevelFor(warden) < warden.level);
+    assert.equal(clearanceTierFor(warden), tierForLevel(containmentLevelFor(warden)));
+    const plain = { ...warden, containment: warden.containment ? { ...warden.containment, requiredLevel: undefined } : undefined };
+    assert.equal(containmentLevelFor(plain), warden.level);
   });
 
   test('integrity flags a required containment level above the specimen level', () => {
     const warden = creature('hollow-warden');
-    const creatures = new Map(GAME_CONTENT.creatures);
+    const creatures = new Map(FIXTURE_CONTENT.creatures);
     creatures.set(warden.id, { ...warden, containment: warden.containment ? { ...warden.containment, requiredLevel: warden.level + 1 } : undefined });
-    const issues = findContentIssues({ ...GAME_CONTENT, creatures });
+    const issues = findContentIssues({ ...FIXTURE_CONTENT, creatures });
     assert.ok(issues.some((issue) => issue.startsWith('creature hollow-warden') && issue.includes('required containment level')));
   });
 });
 
 describe('relentless training creatures', () => {
-  const relentless = [...GAME_CONTENT.creatures.values()].filter((definition) => definition.relentless);
-
-  test('three patches exist at low, mid and high level', () => {
-    assert.deepEqual(relentless.map((definition) => definition.level).sort((a, b) => a - b), [3, 14, 32]);
-    for (const definition of relentless) {
-      const placed = [...GAME_CONTENT.districts.values()].flatMap((district) => district.creatures ?? []).filter((placement) => placement.creatureId === definition.id);
-      assert.ok(placed.length >= 4, `${definition.id} needs a patch of at least four`);
-    }
-  });
+  const relentless = [...FIXTURE_CONTENT.creatures.values()].filter((definition) => definition.relentless);
 
   test('they hit softly, drop nothing and cannot be contained', () => {
     for (const definition of relentless) {
@@ -128,9 +121,9 @@ describe('relentless training creatures', () => {
 
   test('integrity flags a relentless creature that drops loot', () => {
     const mite = creature('lint-mite');
-    const creatures = new Map(GAME_CONTENT.creatures);
+    const creatures = new Map(FIXTURE_CONTENT.creatures);
     creatures.set(mite.id, { ...mite, loot: [{ itemId: 'medgel', count: 1, chance: 0.5 }] });
-    const issues = findContentIssues({ ...GAME_CONTENT, creatures });
+    const issues = findContentIssues({ ...FIXTURE_CONTENT, creatures });
     assert.ok(issues.some((issue) => issue.startsWith('creature lint-mite') && issue.includes('no loot')));
   });
 });

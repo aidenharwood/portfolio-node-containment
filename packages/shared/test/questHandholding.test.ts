@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import {
   trackedQuest,
-  GAME_CONTENT,
   npcQuestMarker,
   objectiveAreas,
   routeGoals,
@@ -13,117 +12,89 @@ import {
   type QuestLog,
   type RouteScene,
 } from '../src/index.ts';
+import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
 
 const activeAt = (questId: string, stepIndex: number): QuestLog => ({
   [questId]: { questId, status: 'active', stepIndex, objectiveProgress: [0] },
 });
 
 const level = (id: string) => {
-  const resolved = GAME_CONTENT.levels.get(id);
+  const resolved = FIXTURE_CONTENT.levels.get(id);
   assert.ok(resolved);
   return resolved;
 };
 
 const sceneOf = (levelId: string): RouteScene => ({ level: level(levelId), npcPositions: new Map(), creatures: [], depletedInstances: new Set() });
 
+const stepOf = (questId: string, stepId: string): number => FIXTURE_CONTENT.quests.get(questId)?.steps.findIndex((step) => step.id === stepId) ?? -1;
+
 describe('quest handholding', () => {
   test('any tracked quest raises objective markers in the world', () => {
-    const log = activeAt('the-knocking', 0);
-    assert.equal(npcQuestMarker('sergeant-kade', log, GAME_CONTENT.quests, 'the-knocking'), 'objective');
-    assert.equal(npcQuestMarker('sergeant-kade', log, GAME_CONTENT.quests, null), 'objective');
+    const log = activeAt('survey', 0);
+    assert.equal(npcQuestMarker('registrar', log, FIXTURE_CONTENT.quests, 'survey'), 'objective');
+    assert.equal(npcQuestMarker('registrar', log, FIXTURE_CONTENT.quests, null), 'objective');
   });
 
   test('only the tracked quest is guided when several are active', () => {
-    const log = { ...activeAt('the-knocking', 0), ...activeAt('orientation-protocol', 4) };
-    assert.equal(activeQuests(log, GAME_CONTENT.quests).length, 2);
-    assert.equal(trackedQuest(log, GAME_CONTENT.quests, 'missing')?.quest.id, 'orientation-protocol');
-    assert.equal(trackedQuest(log, GAME_CONTENT.quests, 'the-knocking')?.quest.id, 'the-knocking');
-    assert.deepEqual(objectiveAreas(log, GAME_CONTENT.quests, 'the-knocking'), []);
-    assert.notEqual(npcQuestMarker('sergeant-kade', log, GAME_CONTENT.quests, 'orientation-protocol'), 'objective');
-    assert.deepEqual(objectiveAreas(log, GAME_CONTENT.quests, 'orientation-protocol'), [{ districtId: 'intake-wing', areaId: 'observation' }]);
+    const log = { ...activeAt('survey', 0), ...activeAt('vault-run', stepOf('vault-run', 'enter')) };
+    assert.equal(activeQuests(log, FIXTURE_CONTENT.quests).length, 2);
+    assert.equal(trackedQuest(log, FIXTURE_CONTENT.quests, 'missing')?.quest.id, 'vault-run');
+    assert.equal(trackedQuest(log, FIXTURE_CONTENT.quests, 'survey')?.quest.id, 'survey');
+    assert.deepEqual(objectiveAreas(log, FIXTURE_CONTENT.quests, 'survey'), []);
+    assert.notEqual(npcQuestMarker('registrar', log, FIXTURE_CONTENT.quests, 'vault-run'), 'objective');
+    assert.deepEqual(objectiveAreas(log, FIXTURE_CONTENT.quests, 'vault-run'), [{ districtId: 'fx-field', areaId: 'vault' }]);
   });
 
-  test('with nothing tracked the first active quest is guided', () => {
-    const log = { ...activeAt('the-knocking', 0), ...activeAt('orientation-protocol', 4) };
-    assert.equal(trackedQuest(log, GAME_CONTENT.quests, null)?.quest.id, 'orientation-protocol');
-    assert.equal(trackedQuest({}, GAME_CONTENT.quests, null), undefined);
+  test('with nothing tracked the first active main quest is guided', () => {
+    const log = { ...activeAt('survey', 0), ...activeAt('vault-run', 0) };
+    assert.equal(trackedQuest(log, FIXTURE_CONTENT.quests, null)?.quest.id, 'vault-run');
+    assert.equal(trackedQuest({}, FIXTURE_CONTENT.quests, null), undefined);
   });
 
   test('a talk step routes to the NPC, preferring their live position', () => {
-    const tracked = trackedQuest(activeAt('orientation-protocol', 0), GAME_CONTENT.quests, null);
+    const tracked = trackedQuest(activeAt('survey', 0), FIXTURE_CONTENT.quests, null);
     assert.ok(tracked);
-    const levelId = [...GAME_CONTENT.levels.values()].find((resolved) => resolved.npcs.some((npc) => npc.npcId === 'officer-reyes'))?.id;
-    assert.ok(levelId);
-    const placed = routeGoals(tracked, sceneOf(levelId), GAME_CONTENT);
+    const placed = routeGoals(tracked, sceneOf('fx-floor'), FIXTURE_CONTENT);
     assert.equal(placed.length, 1);
     assert.equal(placed[0]?.arriveAdjacent, true);
-    const live = routeGoals(tracked, { ...sceneOf(levelId), npcPositions: new Map([['officer-reyes', { x: 3, y: 4 }]]) }, GAME_CONTENT);
+    const live = routeGoals(tracked, { ...sceneOf('fx-floor'), npcPositions: new Map([['registrar', { x: 3, y: 4 }]]) }, FIXTURE_CONTENT);
     assert.deepEqual(live, [{ point: { x: 3, y: 4 }, arriveAdjacent: true }]);
   });
 
-  test('a side quest talk step routes to its NPC too', () => {
-    const tracked = trackedQuest(activeAt('the-knocking', 0), GAME_CONTENT.quests, 'the-knocking');
-    assert.ok(tracked);
-    const levelId = [...GAME_CONTENT.levels.values()].find((resolved) => resolved.npcs.some((npc) => npc.npcId === 'sergeant-kade'))?.id;
-    assert.ok(levelId);
-    assert.ok(routeGoals(tracked, sceneOf(levelId), GAME_CONTENT).length > 0);
-  });
-
   test('a fetch step routes to the object that hands out the item', () => {
-    const quest = GAME_CONTENT.quests.get('orientation-protocol');
-    const stepIndex = quest?.steps.findIndex((step) => step.id === 'retrieve-sample') ?? -1;
-    const tracked = trackedQuest(activeAt('orientation-protocol', stepIndex), GAME_CONTENT.quests, null);
+    const tracked = trackedQuest(activeAt('vault-run', stepOf('vault-run', 'log')), FIXTURE_CONTENT.quests, null);
     assert.ok(tracked);
-    const levelId = [...GAME_CONTENT.levels.values()].find((resolved) => resolved.objects.some((object) => object.objectId === 'sample-cabinet'))?.id;
-    assert.ok(levelId);
-    const cabinets = level(levelId).objects.filter((object) => object.objectId === 'sample-cabinet').map((object) => object.position);
-    const goals = routeGoals(tracked, sceneOf(levelId), GAME_CONTENT);
+    const terminals = level('fx-floor').objects.filter((object) => object.objectId === 'vault-terminal').map((object) => object.position);
+    const goals = routeGoals(tracked, sceneOf('fx-floor'), FIXTURE_CONTENT);
     assert.ok(goals.length > 0);
-    assert.ok(goals.every((goal) => cabinets.some((point) => point.x === goal.point.x && point.y === goal.point.y)));
+    assert.ok(goals.every((goal) => terminals.some((point) => point.x === goal.point.x && point.y === goal.point.y)));
   });
 
-  for (const [questId, stepId] of [
-    ['the-knocking', 'override'],
-    ['original-contract', 'key'],
-  ] as const) {
-    test(`a fetch step for ${questId} routes to the NPC whose dialogue hands it over`, () => {
-      const quest = GAME_CONTENT.quests.get(questId);
-      const stepIndex = quest?.steps.findIndex((step) => step.id === stepId) ?? -1;
-      assert.ok(stepIndex >= 0);
-      const tracked = trackedQuest(activeAt(questId, stepIndex), GAME_CONTENT.quests, questId);
-      assert.ok(tracked);
-      const levelId = [...GAME_CONTENT.levels.values()].find((resolved) => resolved.npcs.some((npc) => npc.npcId === 'engineer-lund'))?.id;
-      assert.ok(levelId);
-      const live = routeGoals(tracked, { ...sceneOf(levelId), npcPositions: new Map([['engineer-lund', { x: 7, y: 9 }]]) }, GAME_CONTENT);
-      assert.deepEqual(live, [{ point: { x: 7, y: 9 }, arriveAdjacent: true }]);
-      assert.ok(objectiveDistricts(tracked.objectives, GAME_CONTENT).size > 0);
-    });
-  }
+  test('a fetch step routes to the NPC whose dialogue hands the item over', () => {
+    const tracked = trackedQuest(activeAt('vault-run', stepOf('vault-run', 'brief')), FIXTURE_CONTENT.quests, 'vault-run');
+    assert.ok(tracked);
+    const live = routeGoals(tracked, { ...sceneOf('fx-floor'), npcPositions: new Map([['handler', { x: 7, y: 9 }]]) }, FIXTURE_CONTENT);
+    assert.deepEqual(live, [{ point: { x: 7, y: 9 }, arriveAdjacent: true }]);
+    assert.ok(objectiveDistricts(tracked.objectives, FIXTURE_CONTENT).size > 0);
+  });
 
   test('a multi-object step stops routing to the objects this character already used', () => {
-    const quest = GAME_CONTENT.quests.get('the-far-side');
-    const stepIndex = quest?.steps.findIndex((step) => step.id === 'restore-power') ?? -1;
-    const tracked = trackedQuest(activeAt('the-far-side', stepIndex), GAME_CONTENT.quests, null);
+    const tracked = trackedQuest(activeAt('survey', stepOf('survey', 'mark')), FIXTURE_CONTENT.quests, null);
     assert.ok(tracked);
-    const levelId = [...GAME_CONTENT.levels.values()].find((resolved) => resolved.objects.some((object) => object.instanceId === 'uc-junction-a'))?.id;
-    assert.ok(levelId);
-    const junction = (instanceId: string) => level(levelId).objects.find((object) => object.instanceId === instanceId)?.position;
-    const flags = [objectUseFlag('undercroft', 'uc-junction-a', 0), objectUseFlag('undercroft', 'uc-junction-c', 0), 'visited:undercroft'];
-    assert.deepEqual(usedObjectsOf(flags), ['uc-junction-a', 'uc-junction-c']);
-    const goals = routeGoals(tracked, { ...sceneOf(levelId), depletedInstances: new Set(usedObjectsOf(flags)) }, GAME_CONTENT);
-    const routed = (instanceId: string) => goals.some((goal) => goal.point === junction(instanceId));
-    assert.ok(routed('uc-junction-b'));
-    assert.ok(!routed('uc-junction-a') && !routed('uc-junction-c'));
+    const marker = (instanceId: string) => level('fx-floor').objects.find((object) => object.instanceId === instanceId)?.position;
+    const flags = [objectUseFlag('fx-field', 'survey-a', 0), objectUseFlag('fx-field', 'survey-c', 0), 'visited:fx-floor'];
+    assert.deepEqual(usedObjectsOf(flags), ['survey-a', 'survey-c']);
+    const goals = routeGoals(tracked, { ...sceneOf('fx-floor'), depletedInstances: new Set(usedObjectsOf(flags)) }, FIXTURE_CONTENT);
+    const routed = (instanceId: string) => goals.some((goal) => goal.point === marker(instanceId));
+    assert.ok(routed('survey-b'));
+    assert.ok(!routed('survey-a') && !routed('survey-c'));
   });
 
   test('an area step routes to the middle of the area', () => {
-    const log = activeAt('orientation-protocol', 4);
-    const tracked = trackedQuest(log, GAME_CONTENT.quests, null);
+    const log = activeAt('vault-run', stepOf('vault-run', 'enter'));
+    const tracked = trackedQuest(log, FIXTURE_CONTENT.quests, null);
     assert.ok(tracked);
-    const [target] = objectiveAreas(log, GAME_CONTENT.quests, null);
-    const levelId = [...GAME_CONTENT.levels.values()].find((resolved) => resolved.areas.some((area) => area.districtId === target?.districtId && area.id === target?.areaId))?.id;
-    assert.ok(levelId);
-    const goals = routeGoals(tracked, sceneOf(levelId), GAME_CONTENT);
+    const goals = routeGoals(tracked, sceneOf('fx-floor'), FIXTURE_CONTENT);
     assert.equal(goals.length, 1);
     assert.equal(goals[0]?.arriveAdjacent, false);
   });

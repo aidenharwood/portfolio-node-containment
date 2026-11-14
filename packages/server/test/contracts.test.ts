@@ -4,35 +4,32 @@ import {
   COMMENDATION_ITEM_ID,
   countItem,
   CURRENCY_ITEM_ID,
-  GAME_CONTENT,
   type CharacterRecord,
-  type QuestProgress,
 } from '@containment/shared';
-import { inRoom, at, createHarness, localInRoom } from './support/testHarness.ts';
+import { inRoom, createHarness, CONTENT } from './support/testHarness.ts';
 
-const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 
-const inductionDone = (record: CharacterRecord): CharacterRecord => ({
+const atTheBoard = (record: CharacterRecord): CharacterRecord => ({
   ...record,
-  location: inRoom('meridian-atrium', 'plaza'),
-  quests: Object.fromEntries(['orientation-protocol', 'field-fabrication', 'live-fire', 'cleared-for-transit'].map((questId) => [questId, completed(questId)])),
+  location: inRoom('fx-hub', 'plaza'),
+  quests: {},
 });
 
 describe('contract board', () => {
   test('rolls a board on login, tracks progress, pays out at the board and sells for commendations', () => {
-    const harness = createHarness({ prepare: inductionDone });
+    const harness = createHarness({ prepare: atTheBoard });
     const { player } = harness;
     const daily = player.record.contracts.daily;
     assert.equal(daily?.entries.length, 3);
     assert.equal(player.record.contracts.weekly?.entries.length, 2);
-    for (const entry of daily!.entries) assert.equal(GAME_CONTENT.contracts.get(entry.contractId)?.tier, 1);
+    for (const entry of daily!.entries) assert.equal(CONTENT.contracts.get(entry.contractId)?.tier, 1);
 
     const entry = daily!.entries[0]!;
-    const contract = GAME_CONTENT.contracts.get(entry.contractId)!;
+    const contract = CONTENT.contracts.get(entry.contractId)!;
     harness.send({ type: 'contracts.claim', cadence: 'daily', contractId: contract.id });
     assert.equal(player.record.contracts.daily?.entries[0]?.claimed, false, 'claiming needs the board open');
 
-    harness.interactWithObject('atrium-contract-board');
+    harness.interactWithObject('hub-contracts');
     assert.equal(harness.sink.last('contracts.opened')?.type, 'contracts.opened');
     harness.send({ type: 'contracts.claim', cadence: 'daily', contractId: contract.id });
     assert.equal(player.record.contracts.daily?.entries[0]?.claimed, false, 'unfinished contracts do not pay');
@@ -52,10 +49,11 @@ describe('contract board', () => {
     assert.equal(countItem(player.record.inventory, COMMENDATION_ITEM_ID), contract.commendations);
     assert.ok(harness.saved.some((record) => record.contracts.claimedTotal === 1));
 
-    harness.interactWithObject('atrium-contract-board', 1);
+    harness.interactWithObject('hub-contracts', 1);
     assert.equal(harness.sink.last('shop.opened')?.shopId, 'contracts-office');
-    harness.send({ type: 'shop.buy', itemId: 'trauma-foam', quantity: 1 });
-    assert.equal(countItem(player.record.inventory, 'trauma-foam'), 1);
+    const medgelBefore = countItem(player.record.inventory, 'medgel');
+    harness.send({ type: 'shop.buy', itemId: 'medgel', quantity: 1 });
+    assert.equal(countItem(player.record.inventory, 'medgel'), medgelBefore + 1);
     assert.equal(countItem(player.record.inventory, COMMENDATION_ITEM_ID), contract.commendations - 2);
   });
 });

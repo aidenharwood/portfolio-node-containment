@@ -91,7 +91,7 @@ export class App implements AppNavigator {
       if (this.screenName !== 'game') this.mount('game', createGameScreen(this));
     });
     this.connection.onStatus((status) => {
-      if (status === 'closed') this.mount('connecting', statusScreen('Connection to Site Meridian lost.', true));
+      if (status === 'closed') this.mount('connecting', statusScreen('Connection to Hollow Bay lost.', true));
     });
   }
 

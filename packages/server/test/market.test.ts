@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { addItem, countItem, createDefaultDraft, CURRENCY_ITEM_ID, GAME_CONTENT, type CharacterRecord } from '@containment/shared';
+import { addItem, countItem, createDefaultDraft, CURRENCY_ITEM_ID, type CharacterRecord } from '@containment/shared';
 import { createCharacterRecord } from '../src/characters/characterFactory.ts';
-import { inRoom, createHarness, at, levelPoint, RecordingSink, localInRoom } from './support/testHarness.ts';
+import { inRoom, createHarness, at, levelPoint, RecordingSink, localInRoom, CONTENT } from './support/testHarness.ts';
 
 const atExchange = (record: CharacterRecord): CharacterRecord => ({
   ...record,
-  location: inRoom('meridian-atrium', 'requisitions'),
-  inventory: addItem(addItem(record.inventory, GAME_CONTENT.items, 'scrap-alloy', 20).inventory, GAME_CONTENT.items, CURRENCY_ITEM_ID, 500).inventory,
+  location: inRoom('fx-hub', 'plaza'),
+  inventory: addItem(addItem(record.inventory, CONTENT.items, 'scrap-alloy', 20).inventory, CONTENT.items, CURRENCY_ITEM_ID, 500).inventory,
 });
 
 describe('market', () => {
@@ -17,19 +17,19 @@ describe('market', () => {
     harness.send({ type: 'market.place', side: 'sell', itemId: 'scrap-alloy', price: 5, quantity: 10 });
     assert.equal(countItem(seller.record.inventory, 'scrap-alloy'), 20, 'the market must be opened at the exchange');
 
-    harness.interactWithObject('atrium-exchange');
+    harness.interactWithObject('hub-exchange');
     assert.equal(harness.sink.last('market.opened')?.type, 'market.opened');
     harness.send({ type: 'market.place', side: 'sell', itemId: 'scrap-alloy', price: 5, quantity: 10 });
     harness.send({ type: 'market.place', side: 'sell', itemId: 'scrap-alloy', price: 3, quantity: 4 });
     assert.equal(countItem(seller.record.inventory, 'scrap-alloy'), 6);
     assert.deepEqual(harness.sink.last('market.state')?.quotes, [{ itemId: 'scrap-alloy', lowestSell: 3, sellVolume: 14, highestBuy: null, buyVolume: 0 }]);
 
-    const buyerRecord = atExchange(createCharacterRecord({ ...createDefaultDraft(), name: 'Second Operative' }, { id: 'character-2', accountId: 'account-2' }, GAME_CONTENT));
+    const buyerRecord = atExchange(createCharacterRecord({ ...createDefaultDraft(), name: 'Second Operative' }, { id: 'character-2', accountId: 'account-2' }, CONTENT));
     const placedBuyer = { ...buyerRecord, quests: {} };
     const buyerSink = new RecordingSink();
     const buyer = harness.gameplay.enterWorld(placedBuyer, buyerSink);
     const send = (message: Parameters<typeof harness.gameplay.handle>[1]) => harness.gameplay.handle(buyer, message);
-    send({ type: 'world.interact', targetKind: 'object', instanceId: 'atrium-exchange', interactionIndex: 0 });
+    send({ type: 'world.interact', targetKind: 'object', instanceId: 'hub-exchange', interactionIndex: 0 });
     harness.ticksUntil(() => buyer.pendingInteraction === null);
     const scripBefore = countItem(buyer.record.inventory, CURRENCY_ITEM_ID);
     const scrapBefore = countItem(buyer.record.inventory, 'scrap-alloy');
@@ -58,22 +58,22 @@ describe('market', () => {
     assert.equal(countItem(seller.record.inventory, 'scrap-alloy'), 14);
     assert.deepEqual(harness.sink.last('market.state')?.orders, []);
 
-    harness.send({ type: 'world.walk', target: levelPoint('meridian-atrium', localInRoom('meridian-atrium', 'workshop')) });
+    harness.send({ type: 'world.walk', target: levelPoint('fx-hub', localInRoom('fx-hub', 'hall')) });
     assert.equal(harness.sink.last('market.closed')?.type, 'market.closed');
   });
 
   test('refuses quest items and players cannot cancel orders they do not own', () => {
-    const harness = createHarness({ prepare: (record) => ({ ...atExchange(record), inventory: addItem(atExchange(record).inventory, GAME_CONTENT.items, 'clearance-card-l1', 1).inventory }) });
-    harness.interactWithObject('atrium-exchange');
-    harness.send({ type: 'market.place', side: 'sell', itemId: 'clearance-card-l1', price: 5, quantity: 1 });
-    assert.equal(countItem(harness.player.record.inventory, 'clearance-card-l1'), 1);
+    const harness = createHarness({ prepare: (record) => ({ ...atExchange(record), inventory: addItem(atExchange(record).inventory, CONTENT.items, 'vault-keycard', 1).inventory }) });
+    harness.interactWithObject('hub-exchange');
+    harness.send({ type: 'market.place', side: 'sell', itemId: 'vault-keycard', price: 5, quantity: 1 });
+    assert.equal(countItem(harness.player.record.inventory, 'vault-keycard'), 1);
     harness.send({ type: 'market.cancel', orderId: 'not-mine' });
     assert.deepEqual(harness.sink.last('market.state')?.orders, []);
   });
 
   test('an outpost mailbox collects and withdraws orders but cannot post them', () => {
     const harness = createHarness({ prepare: atExchange });
-    harness.interactWithObject('atrium-exchange');
+    harness.interactWithObject('hub-exchange');
     harness.send({ type: 'market.place', side: 'sell', itemId: 'scrap-alloy', price: 5, quantity: 10 });
     const order = harness.sink.last('market.state')!.orders[0]!;
     harness.send({ type: 'market.close' });
@@ -90,7 +90,7 @@ describe('market', () => {
   });
 
   test('an outpost mailbox only connects from a regional outpost', () => {
-    const harness = createHarness({ prepare: (record) => ({ ...atExchange(record), location: inRoom('hydroponics', 'platform') }) });
+    const harness = createHarness({ prepare: (record) => ({ ...atExchange(record), location: inRoom('fx-field', 'safehouse') }) });
     harness.gameplay.openMarket(harness.player, 'collect');
     assert.equal(harness.sink.last('market.opened'), undefined);
   });

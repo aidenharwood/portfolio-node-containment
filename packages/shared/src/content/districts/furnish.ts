@@ -6,17 +6,7 @@ import type { WorldObjectDefinition } from '../../world/entities.ts';
 import { objectFootprintTiles } from '../../world/footprint.ts';
 import { rectContains, tileKey, type TilePoint } from '../../world/geometry.ts';
 import { MAP_LEGEND, TILE_KINDS } from '../../world/tiles.ts';
-import { ambientCast } from '../ambientNpcs.ts';
-import { ASSEMBLY_OBJECTS } from '../assemblyObjects.ts';
-import { CLUTTER_OBJECTS } from '../clutterObjects.ts';
-import { CONTRACT_OBJECTS } from '../contractObjects.ts';
-import { FURNITURE_OBJECTS } from '../furnitureObjects.ts';
-import { LITTER_OBJECTS } from '../litterObjects.ts';
 import { PREFABS, type DressingTheme } from '../prefabs/index.ts';
-import { RUIN_OBJECTS } from '../ruinObjects.ts';
-import { SET_PIECE_OBJECTS } from '../setPieceObjects.ts';
-import { TRANSIT_OBJECTS } from '../transitObjects.ts';
-import { WATERWORKS_OBJECTS } from '../waterworksObjects.ts';
 import { pieceTiles, rotationOf, turnsOf, type Turn } from './prefabTurns.ts';
 import { positionsOfWith } from './populate.ts';
 import { hashSeed, seededRandom, shuffle } from './seededRandom.ts';
@@ -45,9 +35,11 @@ const CROWD_SPACING = 4;
 const GATHERING_POINTS: ReadonlySet<WorldObjectId> = new Set<WorldObjectId>(['briefing-bench', 'pew', 'stool', 'canteen-table', 'bench-curve']);
 const CARDINAL: readonly TilePoint[] = [{ x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }];
 
-const DRESSING_OBJECTS: ReadonlyMap<WorldObjectId, WorldObjectDefinition> = new Map(
-  [...CLUTTER_OBJECTS, ...FURNITURE_OBJECTS, ...TRANSIT_OBJECTS, ...ASSEMBLY_OBJECTS, ...LITTER_OBJECTS, ...WATERWORKS_OBJECTS, ...CONTRACT_OBJECTS, ...RUIN_OBJECTS, ...SET_PIECE_OBJECTS].map((definition) => [definition.id, definition]),
-);
+const DRESSING_OBJECTS = new Map<WorldObjectId, WorldObjectDefinition>();
+
+export function registerDressingObjects(objects: readonly WorldObjectDefinition[]): void {
+  for (const object of objects) DRESSING_OBJECTS.set(object.id, object);
+}
 export const dressingObjectOf = (id: WorldObjectId): WorldObjectDefinition | undefined => DRESSING_OBJECTS.get(id);
 
 export function setPieceTurn(piece: Pick<SetPiece, 'prefab' | 'facing'>): Turn | undefined {
@@ -55,27 +47,7 @@ export function setPieceTurn(piece: Pick<SetPiece, 'prefab' | 'facing'>): Turn |
   return prefab ? turnsOf(prefab, dressingObjectOf)[rotationOf(piece.facing)] : undefined;
 }
 
-const THEME_CAST: Readonly<Record<DressingTheme, readonly NpcId[]>> = {
-  civic: ambientCast('staffer', 'operative', 'clerk', 'security', 'janitor'),
-  office: ambientCast('clerk', 'staffer', 'security'),
-  canteen: ambientCast('cook', 'staffer', 'operative', 'technician'),
-  dormitory: ambientCast('operative', 'staffer', 'freight', 'janitor'),
-  industrial: ambientCast('technician', 'freight'),
-  freight: ambientCast('freight', 'technician'),
-  medical: ambientCast('orderly', 'staffer', 'janitor'),
-  lab: ambientCast('researcher', 'technician'),
-  garden: ambientCast('staffer', 'researcher', 'technician'),
-  wet: ambientCast('technician', 'janitor'),
-  mine: ambientCast('saltworker'),
-  chapel: ambientCast('saltworker'),
-  ward: ambientCast('porter', 'orderly'),
-  archive: ambientCast('clerk', 'researcher'),
-  post: ambientCast('clerk'),
-  camp: ambientCast('operative', 'technician', 'security'),
-  cold: ambientCast('deckhand', 'researcher'),
-  works: ambientCast('technician'),
-  transit: ambientCast('staffer', 'operative'),
-};
+const THEME_CAST: Readonly<Partial<Record<DressingTheme, readonly NpcId[]>>> = {};
 
 const dressingOf = (entry: DressingTheme | RoomDressing): RoomDressing => (typeof entry === 'string' ? { theme: entry } : entry);
 
@@ -143,7 +115,7 @@ export function furnish(plan: Blueprint, district: DistrictDefinition, dressing:
 
     if (!safeRooms.has(roomId)) continue;
     const random = seededRandom(`${district.id}:${roomId}:crowd`);
-    const crowd = cast ?? options.cast ?? THEME_CAST[theme];
+    const crowd = cast ?? options.cast ?? THEME_CAST[theme] ?? [];
     const headcount = people ?? Math.min(MAX_PEOPLE_PER_ROOM, Math.floor(floor.length / TILES_PER_PERSON));
     const inset = { x: rect.x + PEOPLE_INSET, y: rect.y + PEOPLE_INSET, width: rect.width - PEOPLE_INSET * 2, height: rect.height - PEOPLE_INSET * 2 };
     const gathering = new Set([...setPieceObjects, ...district.objects].filter((object) => rectContains(rect, object.position)).filter((object) => GATHERING_POINTS.has(object.objectId)).map((object) => tileKey(object.position)));

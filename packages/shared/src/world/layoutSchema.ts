@@ -4,7 +4,7 @@ import { DRESSING_THEMES } from '../content/prefabs/types.ts';
 import type { ExitSide, RoomShape } from './blueprint.ts';
 import type { FloorDecalKind, FloorDecalPattern } from './decals.ts';
 import type { Facing } from './geometry.ts';
-import { TILE_KIND_IDS } from './tiles.ts';
+import { EDGE_TILE_KINDS, TILE_KIND_IDS, WALL_MATERIALS } from './tiles.ts';
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
 
@@ -39,7 +39,16 @@ export const LAYOUT_POSITION_SCHEMA = z.union([
 const roomPosition = z.object({ room: z.string(), dx: int, dy: int }).strict();
 
 const STEP_SCHEMA = z.discriminatedUnion('kind', [
-  z.object({ kind: z.literal('room'), id: z.string(), rect, floor: tile, shape: z.enum(SHAPES) }).strict(),
+  z.object({ kind: z.literal('room'), id: z.string(), rect, floor: tile, shape: z.enum(SHAPES), edge: z.enum(EDGE_TILE_KINDS).optional(), wall: z.enum(WALL_MATERIALS).optional() }).strict(),
+  z.object({
+    kind: z.literal('building'),
+    id: z.string(),
+    rect,
+    floor: tile,
+    wall: z.enum(WALL_MATERIALS),
+    edge: z.enum(EDGE_TILE_KINDS).optional(),
+    doors: z.array(z.object({ side: z.enum(FACINGS), width: int.positive(), offset: int.optional() }).strict()),
+  }).strict(),
   z.object({ kind: z.literal('link'), from: z.string(), to: z.string(), width: int.positive(), floor: tile, offset: int.optional() }).strict(),
   z.object({ kind: z.literal('exit'), id: z.string(), room: z.string(), side: z.enum(FACINGS), width: int.positive(), offset: int.optional(), gate: z.boolean(), floor: tile.optional() }).strict(),
   z.object({ kind: z.literal('patch'), rect, tile }).strict(),
@@ -69,7 +78,7 @@ export const DISTRICT_LAYOUT_SCHEMA = z
     condition: z.enum(CONDITIONS).optional(),
     reachedOnlyByTram: z.boolean().optional(),
     deadEnd: z.boolean().optional(),
-    ambience: z.object({ darkness: z.number(), tint: z.string(), fog: z.string(), fixtures: z.enum(['working', 'failing']).optional() }).strict(),
+    ambience: z.object({ darkness: z.number(), tint: z.string(), fog: z.string(), fixtures: z.enum(['working', 'failing']).optional(), sky: z.string().optional() }).strict(),
     size: z.object({ width: int.positive(), height: int.positive() }).strict(),
     steps: z.array(STEP_SCHEMA),
     tiles: z.array(z.object({ x: int, y: int, tile }).strict()),

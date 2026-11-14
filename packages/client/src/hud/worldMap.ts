@@ -200,7 +200,7 @@ export class WorldMap {
       this.element,
       h('header', { className: 'world-map-bar' },
         h('div', { className: 'world-map-title' },
-          h('h3', {}, transit ? 'Site Meridian Transit' : 'Site Meridian'),
+          h('h3', {}, transit ? 'Hollow Bay Transit' : 'Hollow Bay'),
           h('p', { className: 'world-map-hint' }, transit && boarding ? `On the platform at ${boarding.name}` : 'Drag to pan, pinch or scroll to zoom'),
         ),
         this.levelPicker(shown, objectives),

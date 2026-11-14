@@ -1,53 +1,47 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { findOverworldIssues, findRegionIssues, GAME_CONTENT, homeRegionOf, overworldLevelOf, type GameContent } from '../src/index.ts';
+import { findOverworldIssues, findRegionIssues, homeRegionOf, overworldLevelOf, type GameContent } from '../src/index.ts';
+import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
 
 const withRegion = (id: string, hubDistrictId: string): GameContent => ({
-  ...GAME_CONTENT,
-  regions: new Map([...GAME_CONTENT.regions, [id, { id, name: id, hubDistrictId }]]),
+  ...FIXTURE_CONTENT,
+  regions: new Map([...FIXTURE_CONTENT.regions, [id, { id, name: id, hubDistrictId }]]),
 });
 
 const withDistrict = (districtId: string, change: object): GameContent => {
-  const districts = new Map(GAME_CONTENT.districts);
+  const districts = new Map(FIXTURE_CONTENT.districts);
   districts.set(districtId, { ...districts.get(districtId)!, ...change });
-  return { ...GAME_CONTENT, districts };
+  return { ...FIXTURE_CONTENT, districts };
 };
 
 describe('regions', () => {
-  test('the Meridian Core is the home region, and the Calder Wing is an outpost region on the overworld', () => {
-    assert.deepEqual(findRegionIssues(GAME_CONTENT), []);
-    assert.equal(homeRegionOf(GAME_CONTENT), 'meridian-core');
-    const calder = [...GAME_CONTENT.districts.values()].filter((district) => district.region === 'calder').map((district) => district.id);
-    assert.deepEqual(calder.sort(), ['brine-galleries', 'calder-causeway', 'calder-deeps', 'calder-gatehouse', 'salt-cathedral']);
-    const onOverworld = calder.filter((districtId) => GAME_CONTENT.levelOfDistrict.get(districtId) === 'main-floor');
-    assert.deepEqual(onOverworld.sort(), ['brine-galleries', 'calder-causeway', 'calder-gatehouse', 'salt-cathedral']);
-    assert.equal(GAME_CONTENT.levelOfDistrict.get('calder-deeps'), 'calder-deeps');
+  test('the hub region is home, and a second region is an outpost on the overworld', () => {
+    assert.deepEqual(findRegionIssues(FIXTURE_CONTENT), []);
+    assert.equal(homeRegionOf(FIXTURE_CONTENT), 'fx-home');
+    const far = [...FIXTURE_CONTENT.districts.values()].filter((district) => district.region === 'fx-far').map((district) => district.id);
+    assert.deepEqual(far, ['fx-outpost']);
+    assert.equal(FIXTURE_CONTENT.levelOfDistrict.get('fx-outpost'), 'fx-floor');
   });
 
-  test('an outpost away from the core needs a locker, shopkeeper, mailbox and contract board', () => {
-    assert.deepEqual(findRegionIssues(withRegion('calder', 'service-yards')), [
-      'Region "calder": its hub district "service-yards" belongs to region "meridian-core".',
-      'Region "calder": its outpost has no shopkeeper in a safe area.',
-      'Region "calder": its outpost has no exchange mailbox in a safe area.',
-      'Region "calder": its outpost has no contract board in a safe area.',
+  test('an outpost away from home needs a locker, shopkeeper, mailbox and contract board', () => {
+    assert.deepEqual(findRegionIssues(withRegion('elsewhere', 'fx-field')), [
+      'Region "elsewhere": its hub district "fx-field" belongs to region "fx-home".',
+      'Region "elsewhere": its outpost has no storage locker in a safe area.',
+      'Region "elsewhere": its outpost has no shopkeeper in a safe area.',
+      'Region "elsewhere": its outpost has no exchange mailbox in a safe area.',
+      'Region "elsewhere": its outpost has no contract board in a safe area.',
     ]);
   });
 
   test('a hub district must exist and every district needs a known region', () => {
-    assert.ok(findRegionIssues(withRegion('vesper', 'nowhere')).includes('Region "vesper": its hub district "nowhere" does not exist.'));
-    assert.ok(findRegionIssues(withDistrict('hydroponics', { region: 'atlantis' })).includes('District "hydroponics" belongs to unknown region "atlantis".'));
+    assert.ok(findRegionIssues(withRegion('nowhere-region', 'nowhere')).includes('Region "nowhere-region": its hub district "nowhere" does not exist.'));
+    assert.ok(findRegionIssues(withDistrict('fx-field', { region: 'atlantis' })).includes('District "fx-field" belongs to unknown region "atlantis".'));
   });
 });
 
 describe('overworld', () => {
-  test('is the main floor, and every district on it can be walked to except the tutorial wing', () => {
-    assert.equal(overworldLevelOf(GAME_CONTENT)?.id, 'main-floor');
-    assert.deepEqual(findOverworldIssues(GAME_CONTENT), []);
-  });
-
-  test('a district reached only by tram is reported unless it is marked as such', () => {
-    assert.deepEqual(findOverworldIssues(withDistrict('intake-wing', { reachedOnlyByTram: false })), [
-      'District "intake-wing" on the overworld cannot be reached on foot from the Site Meridian spawn.',
-    ]);
+  test('is the level holding the home hub, and every district on it can be walked to', () => {
+    assert.equal(overworldLevelOf(FIXTURE_CONTENT)?.id, 'fx-floor');
+    assert.deepEqual(findOverworldIssues(FIXTURE_CONTENT), []);
   });
 });

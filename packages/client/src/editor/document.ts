@@ -1,4 +1,4 @@
-import { buildDistrict, parseLayout, type DistrictDefinition, type DistrictId, type DistrictLayout } from '@containment/shared';
+import { buildDistrict, GAME_CONTENT, parseLayout, type DistrictDefinition, type DistrictId, type DistrictLayout, type GameContent } from '@containment/shared';
 import type { EditResult } from './edits.ts';
 
 const UNDO_LIMIT = 200;
@@ -18,7 +18,10 @@ export class EditorDocument {
   private redoStack: Snapshot[] = [];
   private readonly listeners: ((id: DistrictId) => void)[] = [];
 
-  constructor(sources: Readonly<Record<DistrictId, unknown>>) {
+  readonly content: GameContent;
+
+  constructor(sources: Readonly<Record<DistrictId, unknown>>, content: GameContent = GAME_CONTENT) {
+    this.content = content;
     this.sources = sources;
   }
 

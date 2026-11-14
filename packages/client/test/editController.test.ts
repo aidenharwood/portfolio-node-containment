@@ -1,3 +1,4 @@
+import { FIXTURE_CONTENT } from '@containment/shared/fixtures';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
@@ -10,7 +11,7 @@ const FIXTURE = new URL('../../shared/test/fixtures/sample-layout.json', import.
 const ID = 'sample-district';
 
 const setup = () => {
-  const document = new EditorDocument({ [ID]: JSON.parse(readFileSync(FIXTURE, 'utf8')) });
+  const document = new EditorDocument({ [ID]: JSON.parse(readFileSync(FIXTURE, 'utf8')) }, FIXTURE_CONTENT);
   const controller = new EditController(document, ID);
   return { document, controller };
 };

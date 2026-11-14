@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import './fixtures/world/index.ts';
 import { readFileSync } from 'node:fs';
 import { describe, test } from 'node:test';
 import { drawBlueprint, type BlueprintStep } from '../src/world/blueprint.ts';

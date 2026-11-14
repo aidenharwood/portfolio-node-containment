@@ -77,7 +77,7 @@ export function containmentReadiness(creature: CreatureDefinition, skills: Skill
   const required = containmentLevelFor(creature);
   if (levelForExperience(skills.containment) < required) return `You need Containment level ${required} to contain ${creature.name}.`;
   const tier = clearanceTierFor(creature);
-  if (clearance < tier) return `You need containment ${clearanceName(tier)} to contain ${creature.name}. The Registrar in the Intake Wing issues it.`;
+  if (clearance < tier) return `You need containment ${clearanceName(tier)} to contain ${creature.name}. The Registrar issues it.`;
   return null;
 }
 

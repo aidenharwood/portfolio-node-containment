@@ -2,22 +2,25 @@
 
 Read this before adding or changing a district, a level or anything placed in one. It applies to humans and AI agents alike. Every district in the game follows these rules; there is no exemption list. The rules marked **checked** are enforced by `findWorldDesignIssues` (`packages/shared/src/content/worldDesignIntegrity.ts`), which runs inside `findContentIssues`: the server will not boot and `npm test` fails when one is broken. The rest is judgement, and reviewers hold changes to it.
 
+> **Status:** the world is being rebuilt as an open city (`docs/superpowers/specs/2026-11-14-first-region-design.md`). Built so far: Terminus Square, the Tenements, Market Row and the Canal Basin with Site Meridian, a loop of four squares in the Low Ward.
+
 ## What the world should feel like
 
-Site Meridian is **one large facility you can walk across**, not a set of rooms joined by corridors. A player should be able to pick a direction and keep going, pass things that are not for any quest, and tell where they are from the shape of the place.
+Hollow Bay is **a city you can walk across in any direction**, the way you can in RuneScape. The overworld is not a set of rooms joined by corridors: it is open ground, with roads, squares, yards and parks, and buildings standing in it. You go indoors by walking through a building's door. You go down by taking a lift or stair inside a facility.
 
-- **Open before enclosed.** Prefer halls, yards and plazas with things standing in them over boxes with one door. Break a big space up with colonnades, pools, partitions and changes of floor, not with walls on every side.
-- **Filler is content.** Roughly half of a level's floor should be space no quest sends you to: boulevards, junction plazas, dormitories, canteens, storage bays, freight yards, plant rooms, canals. It carries props, litter, light, the odd gathering node and wandering creatures at the tier of the ground it joins.
-- **Coherent shape.** Every level has a plan you can describe in one sentence (the main floor is a hub with a ring boulevard and wings off it; the Deep is a ring causeway around a chasm). New districts extend that plan. They do not get bolted onto the nearest free edge.
-- **Negative space is deliberate.** Void between districts is a chasm, a shaft or solid rock, and reads as one. It is never just the part nobody drew.
-- **Landmarks.** Each junction plaza and each district has one thing visible from a distance and found nowhere else, so players can navigate without the map.
+- **Open ground first.** Each overworld district is one wide square of open ground, and neighbouring squares join along their whole shared edge, so you can't tell where one district ends and the next begins. Walls exist only around buildings and at the edge of the playable map.
+- **Buildings stand in the ground.** A building is a small walled interior with doors onto the ground around it: a shop, a home, a pub, a gatehouse. Interiors are small and full; the ground outside is wide.
+- **Underground is enclosed.** Facility levels below the street are rooms joined by links, as before, and get more enclosed and more dangerous the deeper you go.
+- **Filler is content.** Roughly half of a district's ground is space no quest sends you to: back alleys, yards, parks, quays. It carries props, light, people and the odd gathering spot.
+- **Coherent shape.** Every region has a plan you can describe in one sentence. New districts extend that plan.
+- **Landmarks.** Each district has one thing you can see from a distance and won't find anywhere else, such as the station clock or the washing-line courtyard, so players can find their way without the map.
 
 ## Rules
 
 ### Authoring
 
 1. **Maps are drawn with blueprints** (`shared/src/world/blueprint.ts`), never typed as ASCII rows. A district sets `map`, `rooms` and `exits` from `drawBlueprint`. **Checked.**
-2. **Never draw walls.** Carve rooms, links and exits; every void tile touching floor becomes wall. Use `patch` with `wall` or `glass` only for partitions inside a space.
+2. **Never draw walls.** Carve rooms, buildings, links and exits; every void tile touching floor becomes wall. On open ground, draw the district's `ground` room first, paint roads, plazas and yards over it with `patch` (`asphalt`, `paving`, `gravel`, `grass`), then stand `building` steps in it. A building names its interior `rect`, `floor`, `wall` material and `doors` (side, width, offset); the ring around it becomes wall in that material, with the doors cut through. Use `patch` with `wall` or `glass` only for partitions inside a space.
 3. **Place by room.** Every position in a layout file is room-relative, `{ "room", "dx", "dy" }`, or an exit or link tile (`{ "exit", "index" }`, `{ "link", "index" }`). An absolute `{ "x", "y" }` is only for a point in no room. Everything must stand inside a named room or on a door tile. **Checked.**
     - **Things that belong on a wall stand against one.** Doors, lifts, lockers, cabinets, placards, valves, vents and notice boards have a wall tile directly beside them and face away from it (**checked** for the wall, `findFixtureIssues`). A door never stands in an open exit; put it in a wall beside the opening or in a doorway of its own width. The Knock is the one freestanding door, by design.
     - **Track through a room is walled off** unless the room is the platform or people must cross it there.
@@ -29,7 +32,7 @@ Site Meridian is **one large facility you can walk across**, not a set of rooms 
     - **Set-pieces** are prefabs placed by hand. They never overlap what is already there, and they keep a clear ring around them that crowds stay out of. Name each district's landmark rooms in `furnish.landmarks`; each one holds a set-piece whose prefab has the `focal` role.
     - **Dressing** names each room's `theme` (`civic`, `office`, `canteen`, `freight`, `ward`, `chapel`…, see `DRESSING_THEMES` in `content/prefabs/types.ts`): what the room is for. The theme decides which props belong there (see Placement below) and who stands about: generic NPCs (`content/ambientNpcs.ts`) gather near the benches, stools and pews in safe rooms. A room that is honestly two things says so with `also`, such as `{ "theme": "garden", "also": ["dormitory"] }` for the gardeners' quarters. Set `people` or `cast` on a room to override the crowd.
     - **Decals** paint the floor: inlays, mosaics, rugs, runners, lane paint and hazard paint come with prefabs, and anything else (wear, scorch, moss, salt crust) is placed by hand in the layout's `decals`. They lie on walkable floor only and change nothing in play.
-    - **Condition** labels how far a district has decayed (`pristine`, `worn`, `breached`, `overgrown`, `flooded`, `alien`, `uncanny`): the Atrium is pristine, the Circuit and the yards worn, the wings breached or flooded, the Deep alien. It adds nothing by itself; show it with what you place, such as barricades, rubble, sandbags and toppled furniture. An `uncanny` pocket mirrors its original strictly and gets it quietly wrong, with benches facing the wall and bookcases turned around.
+    - **Condition** labels how far a district has decayed (`pristine`, `worn`, `breached`, `overgrown`, `flooded`, `alien`, `uncanny`): the Low Ward is worn, the Shipyard Fringe breached, and the deep levels under Site Meridian alien. It adds nothing by itself; show it with what you place, such as barricades, rubble, sandbags and toppled furniture. An `uncanny` pocket mirrors its original strictly and gets it quietly wrong, with benches facing the wall and bookcases turned around.
 7. **Ids are forever.** Do not rename an area, an instance id or a district: saves, quests and flags refer to them.
 
 ### Furnishing
@@ -78,11 +81,11 @@ The rest is judgement, and reviewers hold it:
 
 ### Joining districts
 
-8. **Districts meet at exits.** An exit is declared with `exit(id, room, side, width)` and placed on a level with `joinDistricts` (`world/levelPlan.ts`), which works out origins. Do not write origin arithmetic by hand except for a district that is deliberately detached (`{ districtId, from, offset }`), such as the Intake Wing across its chasm.
+8. **Districts meet at exits.** Overworld squares meet along a whole side: the `ground` room runs flush to that edge, and the exit spans it. A side with no neighbour keeps a one-tile edge (`barrier`, `fence`, `rock` or `trees`). An exit is declared with `exit(id, room, side, width)` and placed on a level with `joinDistricts` (`world/levelPlan.ts`), which works out origins. Do not write origin arithmetic by hand except for a district that is deliberately detached (`{ districtId, from, offset }`), such as the Intake Wing across its chasm.
 9. **Open exits are at least 9 tiles wide.** Only an exit that is a door, bulkhead or gate may be narrower, and it is marked `gate: true`. **Checked.**
 10. **No floor opens onto the void.** Every exit must meet the floor of a neighbouring district. When a loop of districts has to close, the sizes are yours to get right; the check tells you when they are not. **Checked.**
 11. **Two ways in.** On a level with more than one district, a district has at least two exits, so the world has loops. A boss room, vault or other deliberate cul-de-sac sets `deadEnd: true`. **Checked.**
-12. **Walk first.** Every district on the overworld is reachable on foot from the Atrium (`findOverworldIssues`). Trams and lifts are shortcuts. The Intake Wing is the only exception.
+12. **Walk first.** Every district on the overworld is reachable on foot from the spawn (`findOverworldIssues`). Trams and lifts are shortcuts.
 
 ### Difficulty and population
 
@@ -98,33 +101,27 @@ The rest is judgement, and reviewers hold it:
     - **Platforms.** The track runs straight through the platform room and out of it at both ends, so a tram comes in one end and leaves by the other (`findTramIssues`). Give the room a `hazard` strip along the platform edge and walkable floor beside the car. A platform is usually a room on the district's edge with the bed along its outer side; where the bed cuts a door or an exit off from the platform, put `bridge` assemblies over it.
     - **Inside a district** draw the bed with `track(...)` in the blueprint. Through void it becomes a tunnel, since the rock beside it is walled. Where it must cross walkable floor, cross at right angles and put `bridge` assemblies over it (`facing: 'south'` over a bed running east–west, `'east'` over one running north–south), several side by side on a boulevard. Otherwise keep the bed out of rooms; a trench along the edge of a boulevard is acceptable.
     - **Between districts** the bed runs through the rock and the chasms as a level connector made by `drawTrackway` (`world/trackway.ts`), with waypoints given relative to placed districts. It may only cross void; when it would run into a district, that stretch belongs in that district's blueprint, ending at the district's edge where the connector picks it up.
-    - **The main floor** has one trunk running east to west in the rock south of both arms. Each terminal is its own room on its district's south edge, with the bed along its outer side. The trunk carries on as a short stub past the Vesper and Calder terminals. Through the hub the bed is drawn in the Atrium's and the Circuit's blueprints, bridged where it passes under the boulevards, and the connector picks it up at the Circuit's edges. The Intake branch leaves the bed inside the Circuit, south of the Atrium terminal, and runs out over the chasm to the Intake Wing.
+    - **The Low Ward** will have one short line from Terminus Square to the Canal Basin. Walking stays the main way around.
 18. **A terminal is a room of its own.** Every tram station stands in a safe room called `tram-terminal`. No NPC stands in it, and nothing in it offers storage, a shop, the market, contracts, crafting or a teleport: benches, a departure board, a directory kiosk and the tram map only. No district exit touches it, and it is walled apart from its own doors, each at most 3 tiles wide; track beside it does not count. **Checked** (`findTerminalIssues`).
 
 ## Shape language
 
 | Place | Shapes and floors | Landmark |
 | ----- | ----------------- | -------- |
-| Atrium and the Circuit | Octagonal plaza with a room off every side inside a ring boulevard, `plating` and `terrazzo` | The central shaft |
-| Service Yards, freight filler | Long rectangular yards, `concrete` and `rust`, `hazard` edging | Gantry cranes, scrap stacks |
-| Hydroponics, living arm | Rounded grow halls, `soil` with `coolant` channels | The Heart Bed |
-| Waterworks, industrial arm | Tanks and canals: large `coolant` pools with `grate` walkways | Settling tanks |
-| Calder Wing | Round caverns and long naves, `rust` and `concrete` | The Salt Cathedral nave |
-| Vesper Wing | Symmetrical wards off long galleries, `terrazzo` and `plating` | The Pharmacy rotunda |
-| The Deep | A ring causeway of `grate` over void, round caverns | The chasm |
-| Dungeon floors | Winding round chambers with loops; boss room furthest from the lift | The boss room |
-| Pockets | Small, wrong and symmetrical where the original is not | Whatever it mirrors |
-| Tram terminals | A small walled room on the district's edge, the bed along its outer side, joined by doors at most 3 wide; benches, a departure board and a directory kiosk | The departure board |
+| Overworld squares | 64×64 open ground, `paving` base, `asphalt` roads, `gravel` yards, `grass` parks | One per square, such as the station clock |
+| City buildings | Small walled interiors in `brick`, `blockwork` or `cladding`; `boards` for homes, shops and pubs, `terrazzo` for public halls | Shop signs and awnings outside |
+| Directorate buildings | Directorate panel walls (`wall`), `plating` floors, an orange band outside | The Directorate sign |
+| Directorate compounds | A `building` with an outdoor floor and `edge: "barrier"`: a walled yard with a gate, Directorate buildings standing inside it | The Site Meridian headframe |
+| Facility levels below ground | Rooms joined by links, getting tighter and colder with depth; amber for low security, red for high | The deepest boss room |
 
-**Floors.** A district has one base floor and at most one accent floor from `plating`, `concrete`, `rust` and `terrazzo`. Functional floors (`grate`, `soil`, `hazard`, `door`, `track`, `coolant`) and room floors (`ceramic` for wards, theatres, labs and medbays; `boards` for archives, reading rooms, quarters and lodges) do not count. The accent marks the rooms that matter, such as civic halls, wards or a nave, so walking room to room does not jump between tile sets. Where two of those floors meet, the renderer feathers one into the other along a ragged edge, so district joins read as one surface; a brass threshold still edges `soil` and `grate`. `carpet` is retired: use `terrazzo`.
+**Rooms.** A tile inside a building belongs to the building, not to the ground around it: placement checks and the editor use the smallest room that contains the tile.
+
+**Floors.** `ceramic` is for medical, ward, lab, cold and canteen rooms; `boards` for homes, shops, offices, canteens and the like. Wall materials say who built a place: brick and blockwork for the old city, corrugated cladding for what went up after the anomalies, and the Directorate panel for the Directorate.
 
 ## Reserved ground
 
-Do not build on these; later wings attach here (see `docs/superpowers/specs/2026-11-10-one-world-to-level-100.md`).
-
-- **North of the Circuit:** the Tallow Wing, behind the sealed bulkhead in the north boulevard.
-- **South of the Intake chasm:** the Lattice Wing.
-- **Beyond both arm ends:** the Gantry, where the tram trunk's stubs past the Vesper and Calder terminals point.
+- **East of the Low Ward:** the Cordon, where the next region attaches through the Cordon gate.
+- **The squares of the Low Ward not yet built:** Laundry and Gardens, the Cut, the Scrapyards, the Shipyard Fringe and the Cordon gate (see the first-region design).
 
 ## Adding a district
 

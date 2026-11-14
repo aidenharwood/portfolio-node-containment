@@ -1,13 +1,15 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { GAME_CONTENT, resolveLevel, type DistrictDefinition, type GameContent, type LevelDefinition, type ObjectPlacement, type WorldObjectDefinition } from '../src/index.ts';
-import { FURNISHING_PROFILES, REPEAT_LIMIT, RHYTHM_LIMIT, ROOM_SIGNATURES } from '../src/content/furnishingCatalogue.ts';
+import { resolveLevel, type DistrictDefinition, type GameContent, type LevelDefinition, type ObjectPlacement, type WorldObjectDefinition } from '../src/index.ts';
+import { REPEAT_LIMIT, RHYTHM_LIMIT, type FurnishingProfile } from '../src/content/furnishingCatalogue.ts';
+import { FIXTURE_FURNISHING, KIT_OBJECTS } from './fixtures/world/furnishing.ts';
 import { furnish, type Dressing } from '../src/content/districts/furnish.ts';
 import { setPiece } from '../src/content/districts/setPiece.ts';
 import { findPlacementIssues } from '../src/content/placementIntegrity.ts';
 import { DRESSING_THEMES } from '../src/content/prefabs/types.ts';
 import type { Facing } from '../src/world/geometry.ts';
 import { drawBlueprint, link, room } from '../src/world/blueprint.ts';
+import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
 
 const plan = drawBlueprint({ width: 40, height: 26 }, [room('hall', 1, 1, 20, 20, 'plating'), room('annex', 24, 1, 10, 8, 'ceramic'), link('hall', 'annex', 2, 'door')]);
 
@@ -16,7 +18,7 @@ const baseDistrict = (overrides: Partial<DistrictDefinition> = {}): DistrictDefi
   name: 'Test Yard',
   subtitle: '',
   tier: 1,
-  region: 'meridian-core',
+  region: 'fx-home',
   map: plan.map,
   rooms: plan.rooms,
   exits: plan.exits,
@@ -28,7 +30,7 @@ const baseDistrict = (overrides: Partial<DistrictDefinition> = {}): DistrictDefi
   ...overrides,
 });
 
-const contentWith = (district: DistrictDefinition, worldObjects: ReadonlyMap<string, WorldObjectDefinition> = GAME_CONTENT.worldObjects): GameContent => {
+const contentWith = (district: DistrictDefinition, worldObjects: ReadonlyMap<string, WorldObjectDefinition> = FIXTURE_CONTENT.worldObjects): GameContent => {
   const level: LevelDefinition = {
     id: 'test-level',
     name: 'Test',
@@ -40,10 +42,10 @@ const contentWith = (district: DistrictDefinition, worldObjects: ReadonlyMap<str
   };
   const districts = new Map([[district.id, district]]);
   return {
-    ...GAME_CONTENT,
+    ...FIXTURE_CONTENT,
     worldObjects,
     districts,
-    levels: new Map([[level.id, resolveLevel(level, districts, GAME_CONTENT.assemblies)]]),
+    levels: new Map([[level.id, resolveLevel(level, districts, FIXTURE_CONTENT.assemblies)]]),
     levelOfDistrict: new Map([[district.id, level.id]]),
   } as GameContent;
 };
@@ -73,8 +75,8 @@ describe('placement rules', () => {
   });
 
   test('a dressing object with no furnishing profile is reported once', () => {
-    const prop: WorldObjectDefinition = { id: 'odd-prop', name: 'Odd Prop', examine: '', model: 'crate', blocksMovement: true, interactions: [] };
-    const objects = new Map([...GAME_CONTENT.worldObjects, ['odd-prop', prop]]);
+    const prop: WorldObjectDefinition = { id: 'odd-prop', name: 'Odd Prop', examine: '', model: 'placeholder', blocksMovement: true, interactions: [] };
+    const objects = new Map([...FIXTURE_CONTENT.worldObjects, ['odd-prop', prop]]);
     const district = furnish(plan, baseDistrict({ objects: [...SIGNED, place('odd-1', 'odd-prop', 'hall', 12, 12), place('odd-2', 'odd-prop', 'hall', 14, 12)] }), { hall: 'civic', annex: 'ward' });
     assert.equal(about(findPlacementIssues(contentWith(district, objects)), '"odd-prop"', 'no furnishing profile').length, 1);
   });
@@ -155,24 +157,26 @@ describe('placement rules', () => {
   });
 });
 
-describe('furnishing catalogue', () => {
+const PROFILES: Readonly<Record<string, FurnishingProfile>> = Object.fromEntries(KIT_OBJECTS.flatMap((object) => (object.furnishing ? [[object.id, object.furnishing]] : [])));
+
+describe('furnishing kit', () => {
   test('every profile and signature names a real object', () => {
-    for (const id of Object.keys(FURNISHING_PROFILES)) assert.ok(GAME_CONTENT.worldObjects.has(id), id);
-    for (const [theme, ids] of Object.entries(ROOM_SIGNATURES)) for (const id of ids) assert.ok(GAME_CONTENT.worldObjects.has(id), `${theme}: ${id}`);
+    for (const id of Object.keys(PROFILES)) assert.ok(FIXTURE_CONTENT.worldObjects.has(id), id);
+    for (const [theme, ids] of Object.entries(FIXTURE_FURNISHING.signatures)) for (const id of ids ?? []) assert.ok(FIXTURE_CONTENT.worldObjects.has(id), `${theme}: ${id}`);
   });
 
   test('every profile has a home and every signature piece can stand in its own theme', () => {
-    for (const [id, profile] of Object.entries(FURNISHING_PROFILES)) assert.ok(profile.homes.length > 0, id);
+    for (const [id, profile] of Object.entries(PROFILES)) assert.ok(profile.homes.length > 0, id);
     for (const theme of DRESSING_THEMES) {
-      for (const id of ROOM_SIGNATURES[theme]) {
-        const homes = FURNISHING_PROFILES[id]?.homes;
+      for (const id of FIXTURE_FURNISHING.signatures[theme] ?? []) {
+        const homes = PROFILES[id]?.homes;
         assert.ok(homes === undefined || homes.includes(theme), `${id} signs ${theme} rooms but cannot stand in one`);
       }
     }
   });
 
-  test('seats say what they serve and only backed pieces stop at their backs', () => {
-    for (const [id, profile] of Object.entries(FURNISHING_PROFILES)) {
+  test('seats say what they serve and only seats say so', () => {
+    for (const [id, profile] of Object.entries(PROFILES)) {
       if (profile.mount === 'seat') assert.ok(profile.seatsAt, id);
       if (profile.seatsAt) assert.equal(profile.mount, 'seat', id);
     }

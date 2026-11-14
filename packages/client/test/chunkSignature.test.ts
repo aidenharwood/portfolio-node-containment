@@ -1,13 +1,14 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { chunkOf, GAME_CONTENT } from '@containment/shared';
+import { chunkOf } from '@containment/shared';
+import { FIXTURE_CONTENT as GAME_CONTENT } from '@containment/shared/fixtures';
 import { previewZone } from '../src/editor/previewLevel.ts';
 import { chunkSignature, objectChanges } from '../src/render/world/chunkSignature.ts';
 import { LevelScene } from '../src/render/world/levelScene.ts';
 import { planWallLighting } from '../src/render/world/wallLights.ts';
 import type { ActiveZone } from '../src/state/worldState.ts';
 
-const zone = previewZone(GAME_CONTENT, 'brine-galleries');
+const zone = previewZone(GAME_CONTENT, 'fx-field');
 const lighting = planWallLighting(zone);
 const first = zone.definition.objects[0];
 
@@ -46,7 +47,7 @@ test('an editable scene swaps a moved object in place without rebuilding its chu
     return 0;
   }) as typeof requestAnimationFrame;
   try {
-    const scene = new LevelScene(zone, { editable: true });
+    const scene = new LevelScene(zone, { editable: true, content: GAME_CONTENT });
     const focus = { x: first.position.x, y: first.position.y };
     scene.stream(focus, Infinity, { build: 0, retain: 1 });
     scene.stream(focus, Infinity, { build: 0, retain: 1 });

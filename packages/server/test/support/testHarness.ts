@@ -3,7 +3,6 @@ import {
   assemblyInstanceOf,
   locate,
   createDefaultDraft,
-  GAME_CONTENT,
   chebyshevDistance,
   CARDINAL_OFFSETS,
   footprintTiles,
@@ -18,9 +17,12 @@ import {
   type TilePoint,
   type WorldLocation,
 } from '@containment/shared';
+import { FIXTURE_CONTENT } from '@containment/shared/fixtures';
 import { createCharacterRecord } from '../../src/characters/characterFactory.ts';
 import { Gameplay, type GameplayMessage } from '../../src/gameplay/gameplay.ts';
 import type { MessageSink, Player } from '../../src/world/player.ts';
+
+export const CONTENT = FIXTURE_CONTENT;
 
 export const TEST_MEDGEL = 3;
 
@@ -72,7 +74,7 @@ export function districtOf(player: Player): DistrictId | undefined {
 
 export function createHarness(options: HarnessOptions = {}): Harness {
   const saved: CharacterRecord[] = [];
-  const gameplay = new Gameplay(GAME_CONTENT, { save: (record) => saved.push(record), findByName: () => null }, {
+  const gameplay = new Gameplay(CONTENT, { save: (record) => saved.push(record), findByName: () => null }, {
     tickMs: 300,
     autosaveIntervalMs: 60_000,
     random: () => 0.99,
@@ -82,22 +84,22 @@ export function createHarness(options: HarnessOptions = {}): Harness {
   const created = createCharacterRecord(
     { ...createDefaultDraft(), name: 'Test Operative' },
     { id: 'character-1', accountId: 'account-1' },
-    GAME_CONTENT,
+    CONTENT,
   );
-  const carrying = { ...created, inventory: addItem(created.inventory, GAME_CONTENT.items, 'medgel', TEST_MEDGEL).inventory };
+  const carrying = { ...created, inventory: addItem(created.inventory, CONTENT.items, 'medgel', TEST_MEDGEL).inventory };
   const record = options.prepare ? options.prepare({ ...carrying, quests: {} }) : carrying;
   const sink = new RecordingSink();
   const player = gameplay.enterWorld(record, sink);
   harnessWorlds.set(player, gameplay);
 
   const comeWithinReach = (instanceId: string): void => {
-    const level = GAME_CONTENT.levels.get(player.levelId);
+    const level = CONTENT.levels.get(player.levelId);
     const creature = gameplay.world.levelOf(player).creatureByInstance(instanceId);
     const target = creature ?? level?.npcs.find((npc) => npc.instanceId === instanceId) ?? level?.objects.find((object) => object.instanceId === instanceId);
     if (!level || !target) return;
     const nearest = creature ? nearestFootprintTile(creature.position, creature.size, player.position) : target.position;
     if (chebyshevDistance(nearest, player.position) <= REACH_WITHOUT_TRAVEL && !(creature && isInFootprint(player.position, creature.position, creature.size))) return;
-    if ('objectId' in target && GAME_CONTENT.worldObjects.get(target.objectId)?.door) return;
+    if ('objectId' in target && CONTENT.worldObjects.get(target.objectId)?.door) return;
     const grid = gameplay.world.levelOf(player).grid;
     const seen = new Set<string>();
     const assembly = assemblyInstanceOf(instanceId);
@@ -168,13 +170,13 @@ export function finishDialogue(harness: Harness, preferredOption?: (text: string
 }
 
 export function at(districtId: DistrictId, local: TilePoint): WorldLocation {
-  const location = locate(GAME_CONTENT, districtId, local);
+  const location = locate(CONTENT, districtId, local);
   if (!location) throw new Error(`Unknown district "${districtId}".`);
   return location;
 }
 
 export function localInRoom(districtId: DistrictId, roomId: string, offset?: TilePoint): TilePoint {
-  const rect = GAME_CONTENT.districts.get(districtId)?.rooms?.[roomId];
+  const rect = CONTENT.districts.get(districtId)?.rooms?.[roomId];
   if (!rect) throw new Error(`District "${districtId}" has no room "${roomId}".`);
   return offset ? { x: rect.x + offset.x, y: rect.y + offset.y } : { x: rect.x + Math.floor(rect.width / 2), y: rect.y + Math.floor(rect.height / 2) };
 }
@@ -184,19 +186,19 @@ export function inRoom(districtId: DistrictId, roomId: string, offset?: TilePoin
 }
 
 export function anchorPoint(districtId: DistrictId, anchorId: string): TilePoint {
-  const point = GAME_CONTENT.districts.get(districtId)?.anchors?.[anchorId];
+  const point = CONTENT.districts.get(districtId)?.anchors?.[anchorId];
   if (!point) throw new Error(`District "${districtId}" has no anchor "${anchorId}".`);
   return point;
 }
 
 export function anchor(districtId: DistrictId, anchorId: string): WorldLocation {
-  const point = GAME_CONTENT.districts.get(districtId)?.anchors?.[anchorId];
+  const point = CONTENT.districts.get(districtId)?.anchors?.[anchorId];
   if (!point) throw new Error(`District "${districtId}" has no anchor "${anchorId}".`);
   return at(districtId, point);
 }
 
 export function exitPoint(districtId: DistrictId, exitId: string): TilePoint {
-  const tiles = GAME_CONTENT.districts.get(districtId)?.exits?.[exitId]?.tiles;
+  const tiles = CONTENT.districts.get(districtId)?.exits?.[exitId]?.tiles;
   const middle = tiles?.[Math.floor(tiles.length / 2)];
   if (!middle) throw new Error(`District "${districtId}" has no exit "${exitId}".`);
   return at(districtId, middle).position;

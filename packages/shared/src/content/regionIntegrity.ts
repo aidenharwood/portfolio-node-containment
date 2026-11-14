@@ -14,6 +14,11 @@ const safeObjectEffects = (content: GameContent, district: DistrictDefinition): 
     .filter((placement) => isSafeTile(district, placement.position))
     .flatMap((placement) => (content.worldObjects.get(placement.objectId)?.interactions ?? []).flatMap((interaction) => interaction.effects));
 
+export function marketDistrictOf(content: GameContent): DistrictId | undefined {
+  const home = homeRegionOf(content);
+  return home === undefined ? undefined : content.regions.get(home)?.hubDistrictId;
+}
+
 export function homeRegionOf(content: GameContent): RegionId | undefined {
   const start = content.newCharacter.startingLocation;
   const districtId: DistrictId | undefined = content.levels.get(start.levelId)?.layout.districtAt(start.position);

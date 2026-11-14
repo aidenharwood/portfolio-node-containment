@@ -3,7 +3,6 @@ import { describe, test } from 'node:test';
 import {
   createStartingSkills,
   experienceForLevel,
-  GAME_CONTENT,
   maxIntegrityFor,
   STUDY_INTERACTION,
   STUDY_TICKS,
@@ -12,7 +11,7 @@ import {
   type CharacterRecord,
   type QuestProgress,
 } from '@containment/shared';
-import { createHarness, inRoom, type Harness } from './support/testHarness.ts';
+import { createHarness, inRoom, type Harness, CONTENT } from './support/testHarness.ts';
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 
@@ -21,7 +20,7 @@ function researcher(researchLevel: number, flags: readonly string[] = []) {
     const skills = createStartingSkills({ fortitude: experienceForLevel(40), research: experienceForLevel(researchLevel) });
     return {
       ...record,
-      location: inRoom('sector-two', 'observation-gallery'),
+      location: inRoom('fx-arena', 'landing'),
       quests: { 'live-fire': completed('live-fire') },
       skills,
       vitals: { integrity: maxIntegrityFor(skills) },
@@ -31,13 +30,13 @@ function researcher(researchLevel: number, flags: readonly string[] = []) {
 }
 
 const study = (harness: Harness) =>
-  harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-warden', interactionIndex: STUDY_INTERACTION });
+  harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: STUDY_INTERACTION });
 
 function tickUntilStudied(harness: Harness): void {
   for (let tick = 0; tick < STUDY_TICKS * 6 && harness.player.activity?.kind === 'study'; tick++) harness.gameplay.tick();
 }
 
-const warden = GAME_CONTENT.creatures.get('hollow-warden');
+const warden = CONTENT.creatures.get('hollow-warden');
 
 describe('studying anomalies', () => {
   test('the first study catalogues the specimen and pays discovery experience', () => {
@@ -74,7 +73,7 @@ describe('studying anomalies', () => {
   test('a specimen that wanders out of view is followed and the study restarts', () => {
     assert.ok(warden);
     const harness = createHarness({ prepare: researcher(warden.level) });
-    const specimen = harness.gameplay.world.levelOf(harness.player).creatureByInstance('s2-warden');
+    const specimen = harness.gameplay.world.levelOf(harness.player).creatureByInstance('arena-warden');
     assert.ok(specimen);
     study(harness);
     for (let tick = 0; tick < 10 && (harness.player.activity?.kind !== 'study' || harness.player.activity.dueTick === null); tick++) harness.gameplay.tick();

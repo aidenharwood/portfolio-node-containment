@@ -9,6 +9,7 @@ import {
   trackBed,
   type DistrictDefinition,
   type DistrictLayout,
+  type GameContent,
   type TilePoint,
 } from '@containment/shared';
 import type { EntryRef } from './edits.ts';
@@ -23,9 +24,9 @@ const same = (a: TilePoint, b: TilePoint): boolean => a.x === b.x && a.y === b.y
 
 const keyOf = (hit: Hit): string => JSON.stringify(hit);
 
-export function hitsAt(layout: DistrictLayout, district: DistrictDefinition, tile: TilePoint): Hit[] {
+export function hitsAt(layout: DistrictLayout, district: DistrictDefinition, tile: TilePoint, content: GameContent = GAME_CONTENT): Hit[] {
   const plan = drawBlueprint(layout.size, layout.steps, layout.tiles);
-  const roomAt = Object.entries(plan.rooms).find(([, rect]) => rectContains(rect, tile))?.[0];
+  const roomAt = Object.entries(plan.rooms).filter(([, rect]) => rectContains(rect, tile)).sort(([, a], [, b]) => a.width * a.height - b.width * b.height)[0]?.[0];
   const dressingHit = (): Hit[] => (roomAt ? [{ kind: 'dressing', room: roomAt }] : []);
   const indexById = (list: readonly { readonly id?: string }[], id: string): number => list.findIndex((entry) => entry.id === id);
   const resolved = (at: Parameters<typeof resolvePosition>[1]): TilePoint | null => {
@@ -52,8 +53,8 @@ export function hitsAt(layout: DistrictLayout, district: DistrictDefinition, til
 
   const setPieces: Hit[] = [];
   const objects: Hit[] = [];
-  for (const object of districtObjects(district, GAME_CONTENT.assemblies)) {
-    if (!objectFootprintTiles(GAME_CONTENT.worldObjects.get(object.objectId), object).some((covered) => same(covered, tile))) continue;
+  for (const object of districtObjects(district, content.assemblies)) {
+    if (!objectFootprintTiles(content.worldObjects.get(object.objectId), object).some((covered) => same(covered, tile))) continue;
     const direct = indexById(layout.objects, object.instanceId);
     if (direct >= 0) {
       objects.push({ kind: 'entry', ref: { collection: 'objects', index: direct } });
@@ -130,7 +131,7 @@ const boxOf = (tiles: readonly TilePoint[]): Bounds | null => {
   return { x, y, width: Math.max(...xs) - x + 1, height: Math.max(...ys) - y + 1 };
 };
 
-export function boundsOf(layout: DistrictLayout, district: DistrictDefinition, hit: Hit): Bounds | null {
+export function boundsOf(layout: DistrictLayout, district: DistrictDefinition, hit: Hit, content: GameContent = GAME_CONTENT): Bounds | null {
   const plan = drawBlueprint(layout.size, layout.steps, layout.tiles);
   if (hit.kind === 'room' || hit.kind === 'dressing') return plan.rooms[hit.room] ?? null;
   if (hit.kind === 'step') {
@@ -153,8 +154,8 @@ export function boundsOf(layout: DistrictLayout, district: DistrictDefinition, h
   if (ref.collection === 'decals') return { ...at, width: entry.width ?? 1, height: entry.height ?? 1 };
   if (ref.collection === 'objects' || ref.collection === 'assemblies' || ref.collection === 'setPieces') {
     const id = entry.id ?? '';
-    const pieces = districtObjects(district, GAME_CONTENT.assemblies).filter((object) => object.instanceId === id || object.instanceId.startsWith(`${id}/`) || assemblyInstanceOf(object.instanceId) === id);
-    const tiles = pieces.flatMap((object) => objectFootprintTiles(GAME_CONTENT.worldObjects.get(object.objectId), object));
+    const pieces = districtObjects(district, content.assemblies).filter((object) => object.instanceId === id || object.instanceId.startsWith(`${id}/`) || assemblyInstanceOf(object.instanceId) === id);
+    const tiles = pieces.flatMap((object) => objectFootprintTiles(content.worldObjects.get(object.objectId), object));
     return boxOf(tiles.length > 0 ? tiles : [at]);
   }
   return boxOf([at]);

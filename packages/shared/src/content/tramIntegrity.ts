@@ -5,12 +5,11 @@ import type { ResolvedLevel } from '../world/levelLayout.ts';
 import { TILE_KINDS } from '../world/tiles.ts';
 import type { TramStation, TramStationDefinition } from '../world/tram.ts';
 import type { GameContent } from './gameContent.ts';
-import { TRAM_STATIONS } from './tramNetwork.ts';
 
 const opensTramMap = (content: GameContent, objectId: string): boolean =>
   (content.worldObjects.get(objectId)?.interactions ?? []).some((interaction) => interaction.effects.some((effect) => effect.type === 'openTramMap'));
 
-export function findTramIssues(content: GameContent, definitions: readonly TramStationDefinition[] = TRAM_STATIONS): string[] {
+export function findTramIssues(content: GameContent, definitions: readonly TramStationDefinition[] = content.tram.definitions): string[] {
   const issues: string[] = [];
   const network = content.tram;
   const seen = new Set<string>();

@@ -1,19 +1,21 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { describe, test } from 'node:test';
-import { GAME_CONTENT, type GameContent } from '../src/index.ts';
+import { type GameContent } from '../src/index.ts';
 import { auditDistrict, auditSeams, type AuditFinding } from '../src/world/audit.ts';
 import type { DistrictDefinition } from '../src/world/district.ts';
 import { buildDistrict, parseLayout } from '../src/world/layout.ts';
 import type { DistrictLayout } from '../src/world/layoutSchema.ts';
+import { FIXTURE_LAYOUTS } from './fixtures/world/districts.ts';
+import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
 
 const FIXTURE = new URL('./fixtures/sample-layout.json', import.meta.url);
 const sample = (): DistrictLayout => parseLayout(JSON.parse(readFileSync(FIXTURE, 'utf8')));
 
 const withLayouts = (layouts: readonly DistrictLayout[]): GameContent => {
-  const districts = new Map(GAME_CONTENT.districts);
+  const districts = new Map(FIXTURE_CONTENT.districts);
   for (const layout of layouts) districts.set(layout.id, buildDistrict(layout));
-  return { ...GAME_CONTENT, districts };
+  return { ...FIXTURE_CONTENT, districts };
 };
 
 const kinds = (findings: readonly AuditFinding[], room: string): string[] => [...new Set(findings.filter((finding) => finding.room === room).map((finding) => finding.kind))].sort();
@@ -48,28 +50,28 @@ describe('auditDistrict', () => {
   });
 
   test('rooms joined by shared floor are not dead ends', () => {
-    const findings = auditDistrict(GAME_CONTENT, 'deep-concourse');
+    const findings = auditDistrict(FIXTURE_CONTENT, 'fx-field', FIXTURE_LAYOUTS.get('fx-field'));
     assert.deepEqual(findings.filter((finding) => finding.kind === 'dead-end' && finding.message.includes('no way in')), []);
   });
 
-  test('the atrium plaza is not empty, dark or a dead end', () => {
-    const findings = auditDistrict(GAME_CONTENT, 'meridian-atrium');
+  test('the hub plaza is not empty, dark or a dead end', () => {
+    const findings = auditDistrict(FIXTURE_CONTENT, 'fx-hub', FIXTURE_LAYOUTS.get('fx-hub'));
     assert.deepEqual(kinds(findings, 'plaza').filter((kind) => kind === 'empty-room' || kind === 'dark-room' || kind === 'dead-end'), []);
   });
 });
 
 describe('auditSeams', () => {
-  test('the shipped main floor has matching seams', () => {
-    assert.deepEqual(auditSeams(GAME_CONTENT).filter((finding) => finding.message.includes('sector-two')), []);
+  test('the fixture floor has matching seams', () => {
+    assert.deepEqual(auditSeams(FIXTURE_CONTENT), []);
   });
 
   test('an exit narrower than the exit it meets is reported', () => {
-    const sectorTwo = GAME_CONTENT.districts.get('sector-two') as DistrictDefinition;
+    const sectorTwo = FIXTURE_CONTENT.districts.get('fx-field') as DistrictDefinition;
     const narrowed: DistrictDefinition = {
       ...sectorTwo,
-      exits: Object.fromEntries(Object.entries(sectorTwo.exits ?? {}).map(([name, exit]) => [name, name === 'south' ? { ...exit, tiles: exit.tiles.slice(1) } : exit])),
+      exits: Object.fromEntries(Object.entries(sectorTwo.exits ?? {}).map(([name, exit]) => [name, name === 'west' ? { ...exit, tiles: exit.tiles.slice(1) } : exit])),
     };
-    const content: GameContent = { ...GAME_CONTENT, districts: new Map([...GAME_CONTENT.districts, ['sector-two', narrowed]]) };
-    assert.ok(auditSeams(content).some((finding) => finding.kind === 'seam' && finding.message.includes('sector-two')));
+    const content: GameContent = { ...FIXTURE_CONTENT, districts: new Map([...FIXTURE_CONTENT.districts, ['fx-field', narrowed]]) };
+    assert.ok(auditSeams(content).some((finding) => finding.kind === 'seam' && finding.message.includes('fx-field')));
   });
 });

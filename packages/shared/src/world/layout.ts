@@ -42,7 +42,7 @@ function checkGeometry(layout: DistrictLayout): void {
     if ('rect' in step && (outside(step.rect.x, step.rect.y) || outside(step.rect.x + step.rect.width - 1, step.rect.y + step.rect.height - 1))) {
       fail(`${path}.rect`, `${step.rect.x},${step.rect.y} ${step.rect.width}x${step.rect.height} is outside the district's ${size.width}x${size.height}`);
     }
-    if (step.kind === 'room') rooms.add(step.id);
+    if (step.kind === 'room' || step.kind === 'building') rooms.add(step.id);
     if (step.kind === 'link') {
       needRoom('from', step.from);
       needRoom('to', step.to);

@@ -4,14 +4,21 @@ import { TIER_LEVEL_FLOORS } from '../crafting/tiers.ts';
 import { areConditionsMet, type ConditionContext } from '../rules/conditions.ts';
 import type { GameContent } from './gameContent.ts';
 
-const INDUCTION_QUEST_IDS = new Set(['orientation-protocol', 'field-fabrication', 'live-fire', 'cleared-for-transit']);
+function openingQuestIds(content: GameContent): ReadonlySet<string> {
+  const start = content.newCharacter.startingQuestId;
+  const opening = start === undefined ? undefined : [...content.questlines.values()].find((questline) => questline.questIds.includes(start));
+  return new Set(opening?.questIds ?? []);
+}
 
-const freshFromInduction: ConditionContext = {
-  countItem: () => 0,
-  questStanding: (questId) => (INDUCTION_QUEST_IDS.has(questId) ? { status: 'completed' } : { status: 'notStarted' }),
-  hasFlag: () => false,
-  skills: createStartingSkills(),
-};
+function freshFromOpening(content: GameContent): ConditionContext {
+  const done = openingQuestIds(content);
+  return {
+    countItem: () => 0,
+    questStanding: (questId) => (done.has(questId) ? { status: 'completed' } : { status: 'notStarted' }),
+    hasFlag: () => false,
+    skills: createStartingSkills(),
+  };
+}
 
 function placedCreatureIds(content: GameContent): Set<string> {
   return new Set([...content.districts.values()].flatMap((district) => (district.creatures ?? []).map((placement) => placement.creatureId)));
@@ -63,10 +70,11 @@ export function findContractIssues(content: GameContent): string[] {
 
   const contracts = [...content.contracts.values()];
   contracts.forEach(checkContract);
-  for (const cadence of CONTRACT_CADENCES) {
-    const starters = contracts.filter((contract) => contract.cadence === cadence && areConditionsMet(contract.requires, freshFromInduction));
+  const fresh = freshFromOpening(content);
+  for (const cadence of contracts.length === 0 ? [] : CONTRACT_CADENCES) {
+    const starters = contracts.filter((contract) => contract.cadence === cadence && areConditionsMet(contract.requires, fresh));
     if (starters.length < CONTRACTS_OFFERED[cadence]) {
-      issues.push(`contracts: only ${starters.length} ${cadence} contracts are open to an operative fresh out of Induction; the board offers ${CONTRACTS_OFFERED[cadence]}`);
+      issues.push(`contracts: only ${starters.length} ${cadence} contracts are open to an operative fresh out of the opening; the board offers ${CONTRACTS_OFFERED[cadence]}`);
     }
   }
   const boards = [...content.worldObjects.values()].filter((object) => object.interactions.some((interaction) => interaction.effects.some((effect) => effect.type === 'openContracts')));

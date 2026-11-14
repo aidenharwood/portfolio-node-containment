@@ -1,10 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import {
-  BRIDGE,
-  CATWALK,
-  GAME_CONTENT,
-  TRAM_CAR,
   assemblyFootprint,
   createObjectWalkabilityGrid,
   expandAssembly,
@@ -12,10 +8,31 @@ import {
   findContentIssues,
   parseTileLayout,
   resolveLevel,
+  type AssemblyDefinition,
   type DistrictDefinition,
   type LevelDefinition,
   type ObjectPlacement,
 } from '../src/index.ts';
+import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
+import { FIXTURE_ASSEMBLIES } from './fixtures/world/objects.ts';
+
+const TRAM_CAR = FIXTURE_ASSEMBLIES.find((assembly) => assembly.id === 'tram-car') as AssemblyDefinition;
+const CATWALK = FIXTURE_ASSEMBLIES.find((assembly) => assembly.id === 'catwalk') as AssemblyDefinition;
+
+const BRIDGE: AssemblyDefinition = {
+  id: 'bridge',
+  name: 'Bridge',
+  pieces: {
+    L: { objectId: 'bridge-end-left' },
+    R: { objectId: 'bridge-end-right' },
+    l: { objectId: 'bridge-end-left', turns: 2 },
+    r: { objectId: 'bridge-end-right', turns: 2 },
+    s: { objectId: 'bridge-span' },
+    S: { objectId: 'bridge-span', turns: 2 },
+  },
+  layout: ['LR', 'sS', 'rl'],
+  stretchRow: 1,
+};
 
 const at = (placements: readonly ObjectPlacement[], x: number, y: number) => placements.find((placement) => placement.position.x === x && placement.position.y === y);
 
@@ -55,18 +72,18 @@ describe('assemblies', () => {
       () => false,
     );
     assert.equal(issues.length, 3);
-    assert.deepEqual(findAssemblyDefinitionIssues(CATWALK, (objectId) => GAME_CONTENT.worldObjects.has(objectId)), []);
+    assert.deepEqual(findAssemblyDefinitionIssues(TRAM_CAR, (objectId) => FIXTURE_CONTENT.worldObjects.has(objectId)), []);
   });
 
   test('deck pieces make a gap walkable while blocking pieces stay solid', () => {
     const layout = parseTileLayout(['....', '    ', '    ', '....']);
     const placements = expandAssembly(CATWALK, { instanceId: 'c', assemblyId: CATWALK.id, position: { x: 1, y: 0 }, span: 2 });
-    const grid = createObjectWalkabilityGrid(layout, placements, (objectId) => GAME_CONTENT.worldObjects.get(objectId));
+    const grid = createObjectWalkabilityGrid(layout, placements, (objectId) => FIXTURE_CONTENT.worldObjects.get(objectId));
     assert.ok(grid.isWalkable({ x: 1, y: 1 }));
     assert.ok(grid.isWalkable({ x: 1, y: 2 }));
     assert.ok(!grid.isWalkable({ x: 2, y: 1 }));
     const car = expandAssembly(TRAM_CAR, { instanceId: 'car', assemblyId: TRAM_CAR.id, position: { x: 0, y: 0 } });
-    const blocked = createObjectWalkabilityGrid(parseTileLayout(['......', '......']), car, (objectId) => GAME_CONTENT.worldObjects.get(objectId));
+    const blocked = createObjectWalkabilityGrid(parseTileLayout(['......', '......']), car, (objectId) => FIXTURE_CONTENT.worldObjects.get(objectId));
     assert.ok(!blocked.isWalkable({ x: 3, y: 1 }));
   });
 
@@ -74,7 +91,7 @@ describe('assemblies', () => {
     const grid = createObjectWalkabilityGrid(
       parseTileLayout(['..']),
       [{ instanceId: 'p', objectId: 'litter-papers', position: { x: 0, y: 0 } }],
-      (objectId) => GAME_CONTENT.worldObjects.get(objectId),
+      (objectId) => FIXTURE_CONTENT.worldObjects.get(objectId),
     );
     assert.ok(grid.isWalkable({ x: 0, y: 0 }));
   });
@@ -85,7 +102,7 @@ describe('assemblies', () => {
       name: 'Yard',
       subtitle: '',
       tier: 1,
-      region: 'meridian-core',
+      region: 'fx-home',
       map: ['........', '........'],
       ambience: { darkness: 0.5, tint: '#000000', fog: '#000000' },
       areas: [],
@@ -103,12 +120,12 @@ describe('assemblies', () => {
       connectors: [],
       spawn: { districtId: 'yard', position: { x: 0, y: 0 } },
     };
-    const resolved = resolveLevel(level, new Map([['yard', district]]), GAME_CONTENT.assemblies);
+    const resolved = resolveLevel(level, new Map([['yard', district]]), FIXTURE_CONTENT.assemblies);
     assert.equal(resolved.objects.length, 12);
     assert.equal(at(resolved.objects, 6, 6)?.objectId, 'tram-car-nose-left');
   });
 
   test('shipped content has no assembly issues', () => {
-    assert.deepEqual(findContentIssues(GAME_CONTENT).filter((issue) => issue.includes('assembly')), []);
+    assert.deepEqual(findContentIssues(FIXTURE_CONTENT).filter((issue) => issue.includes('assembly')), []);
   });
 });

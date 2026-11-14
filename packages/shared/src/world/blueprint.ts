@@ -1,6 +1,6 @@
 import type { AreaDefinition } from './district.ts';
 import { rectContains, tileKey, type Facing, type TilePoint, type TileRect } from './geometry.ts';
-import { MAP_LEGEND, TILE_KINDS, type TileKindId } from './tiles.ts';
+import { isOutdoorFloor, MAP_LEGEND, TILE_KINDS, type EdgeTileKindId, type TileKindId, type WallMaterialId } from './tiles.ts';
 
 export type RoomShape = 'rect' | 'octagon' | 'round';
 
@@ -12,6 +12,8 @@ export interface RoomStep {
   readonly rect: TileRect;
   readonly floor: TileKindId;
   readonly shape: RoomShape;
+  readonly edge?: EdgeTileKindId;
+  readonly wall?: WallMaterialId;
 }
 
 export interface LinkStep {
@@ -53,12 +55,28 @@ export interface HollowStep {
   readonly rect: TileRect;
 }
 
+export interface BuildingDoor {
+  readonly side: ExitSide;
+  readonly width: number;
+  readonly offset?: number;
+}
+
+export interface BuildingStep {
+  readonly kind: 'building';
+  readonly id: string;
+  readonly rect: TileRect;
+  readonly floor: TileKindId;
+  readonly wall: WallMaterialId;
+  readonly edge?: EdgeTileKindId;
+  readonly doors: readonly BuildingDoor[];
+}
+
 export interface TrackStep {
   readonly kind: 'track';
   readonly points: readonly TilePoint[];
 }
 
-export type BlueprintStep = RoomStep | LinkStep | ExitStep | PatchStep | PillarsStep | HollowStep | TrackStep;
+export type BlueprintStep = RoomStep | BuildingStep | LinkStep | ExitStep | PatchStep | PillarsStep | HollowStep | TrackStep;
 
 export const TRACK_GAUGE = 2;
 
@@ -103,12 +121,13 @@ const WALL_SIDES: readonly { readonly facing: Facing; readonly toWall: TilePoint
   { facing: 'west', toWall: { x: 1, y: 0 } },
 ];
 
-export const room = (id: string, x: number, y: number, width: number, height: number, floor: TileKindId, shape: RoomShape = 'rect'): RoomStep => ({
+export const room = (id: string, x: number, y: number, width: number, height: number, floor: TileKindId, shape: RoomShape = 'rect', edge?: EdgeTileKindId): RoomStep => ({
   kind: 'room',
   id,
   rect: { x, y, width, height },
   floor,
   shape,
+  ...(edge === undefined ? {} : { edge }),
 });
 
 export const link = (from: string, to: string, width: number, floor: TileKindId = 'door', offset?: number): LinkStep => ({
@@ -225,6 +244,8 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
   const links: Record<string, TilePoint[]> = {};
   const hollows: TileRect[] = [];
   const floors: Record<string, TileKindId> = {};
+  const edges: Record<string, EdgeTileKindId> = {};
+  const materials: Record<string, WallMaterialId> = {};
 
   const inBounds = ({ x, y }: TilePoint): boolean => x >= 0 && y >= 0 && x < width && y < height;
   const tileAt = (point: TilePoint): TileKindId => (inBounds(point) ? (tiles[point.y * width + point.x] as TileKindId) : 'void');
@@ -250,6 +271,8 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
     rooms[step.id] = step.rect;
     shapes[step.id] = step.shape;
     floors[step.id] = step.floor;
+    if (step.edge) edges[step.id] = step.edge;
+    if (step.wall) materials[step.id] = step.wall;
     for (let y = step.rect.y; y < step.rect.y + step.rect.height; y++) {
       for (let x = step.rect.x; x < step.rect.x + step.rect.width; x++) {
         if (isInsideShape(step.shape, step.rect, { x, y })) setTile({ x, y }, step.floor);
@@ -317,6 +340,28 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
     }
   };
 
+  const drawBuilding = (step: BuildingStep): void => {
+    const { rect } = step;
+    for (let y = rect.y - 1; y <= rect.y + rect.height; y++) {
+      for (let x = rect.x - 1; x <= rect.x + rect.width; x++) setTile({ x, y }, step.edge ?? 'void');
+    }
+    drawRoom({ kind: 'room', id: step.id, rect, floor: step.floor, shape: 'rect', wall: step.wall });
+    const doorTiles: TilePoint[] = [];
+    for (const door of step.doors) {
+      const vertical = door.side === 'north' || door.side === 'south';
+      const span = vertical ? rect.width : rect.height;
+      const start = (vertical ? rect.x : rect.y) + (door.offset ?? Math.floor((span - door.width) / 2));
+      for (let along = start; along < start + door.width; along++) {
+        const point: TilePoint = vertical
+          ? { x: along, y: door.side === 'north' ? rect.y - 1 : rect.y + rect.height }
+          : { x: door.side === 'west' ? rect.x - 1 : rect.x + rect.width, y: along };
+        setTile(point, 'door');
+        doorTiles.push(point);
+      }
+    }
+    links[`${step.id}>outside`] = doorTiles;
+  };
+
   const drawPillars = (step: PillarsStep): void => {
     const rect = rectOf(step.room);
     for (let y = rect.y + step.inset; y < rect.y + rect.height - step.inset; y += step.everyY) {
@@ -328,6 +373,7 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
 
   for (const step of steps) {
     if (step.kind === 'room') drawRoom(step);
+    else if (step.kind === 'building') drawBuilding(step);
     else if (step.kind === 'link') drawLink(step);
     else if (step.kind === 'exit') drawExit(step);
     else if (step.kind === 'patch') drawPatch(step);
@@ -342,13 +388,39 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
       const neighbour = tileAt({ x: point.x + offset.x, y: point.y + offset.y });
       return neighbour !== 'void' && TILE_KINDS[neighbour].structure !== 'wall';
     });
-  const walls: TilePoint[] = [];
+  const edgeOf = (points: readonly TilePoint[]): EdgeTileKindId => {
+    for (const point of points) {
+      const owner = Object.keys(rooms).reverse().find((roomId) => rectContains(rectOf(roomId), point));
+      const edge = owner === undefined ? undefined : edges[owner];
+      if (edge) return edge;
+    }
+    return 'barrier';
+  };
+  const materialOf = (points: readonly TilePoint[]): WallMaterialId => {
+    for (const point of points) {
+      const owner = Object.keys(rooms).reverse().find((roomId) => rectContains(rectOf(roomId), point));
+      const material = owner === undefined ? undefined : materials[owner];
+      if (material) return material;
+    }
+    return 'wall';
+  };
+  const wallFor = (point: TilePoint): TileKindId => {
+    const floorsBeside = NEIGHBOURS.map((offset) => ({ x: point.x + offset.x, y: point.y + offset.y })).filter((beside) => {
+      const kind = tileAt(beside);
+      return kind !== 'void' && TILE_KINDS[kind].structure !== 'wall';
+    });
+    const indoors = floorsBeside.filter((beside) => !isOutdoorFloor(tileAt(beside)));
+    if (floorsBeside.length === 0) return 'wall';
+    if (indoors.length > 0) return materialOf(indoors);
+    return edgeOf(floorsBeside);
+  };
+  const walls: { readonly point: TilePoint; readonly tile: TileKindId }[] = [];
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      if (tileAt({ x, y }) === 'void' && needsWall({ x, y })) walls.push({ x, y });
+      if (tileAt({ x, y }) === 'void' && needsWall({ x, y })) walls.push({ point: { x, y }, tile: wallFor({ x, y }) });
     }
   }
-  for (const wall of walls) setTile(wall, 'wall');
+  for (const wall of walls) setTile(wall.point, wall.tile);
   for (const paint of painted) setTile(paint, paint.tile);
 
   const map = Array.from({ length: height }, (_, y) =>

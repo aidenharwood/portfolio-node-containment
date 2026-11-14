@@ -24,6 +24,10 @@ const PALETTES: Partial<Record<TileKindId, ScatterPalette>> = {
   concrete: { density: 0.14, pebbles: STONE, grit: [0x3a3e41, 0x4c5054], pieces: ['pebble', 'stone', 'shard'] },
   rust: { density: 0.16, pebbles: RUST, grit: [0x3a2216, 0x5a3420], pieces: ['flake', 'bolt'] },
   soil: { density: 0.22, pebbles: SOIL, grit: [0x2a2014, 0x3a2c1c], pieces: ['stone', 'leaf', 'tuft'] },
+  grass: { density: 0.34, pebbles: [0x4f7a34, 0x6a8a3c, 0x3a5a26, 0x8a8a4a], grit: [0x2e4420, 0x4a6a2c], pieces: ['tuft', 'tuft', 'leaf', 'stone'] },
+  dirt: { density: 0.2, pebbles: [...SOIL, ...STONE], grit: [0x3a2c1c, 0x4a3a28], pieces: ['pebble', 'stone', 'tuft'] },
+  gravel: { density: 0.3, pebbles: STONE, grit: [0x55524c, 0x7a766e], pieces: ['pebble', 'grit', 'stone'] },
+  asphalt: { density: 0.06, pebbles: STONE, grit: [0x1e2022, 0x3a3c3e], pieces: ['grit', 'shard'] },
 };
 
 const DECAL_PIECES: Partial<Record<FloorDecalKind, readonly ScatterPiece[]>> = {

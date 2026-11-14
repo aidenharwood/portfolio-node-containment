@@ -8,6 +8,7 @@ import {
   type ChunkKey,
   type InstanceId,
   type TilePoint,
+  type GameContent,
 } from '@containment/shared';
 import { AdditiveBlending, Group, MeshBasicMaterial, type Vector3 } from 'three';
 import type { ActiveZone } from '../../state/worldState.ts';
@@ -67,13 +68,15 @@ export class LevelScene {
   private readonly retiring = new Map<ChunkKey, ChunkView>();
   private settleAfter = 0;
   private readonly editable: boolean;
+  private readonly content: GameContent | undefined;
   private deferredCentre: ChunkKey | null = null;
   private awaitingPaint = false;
   private pendingNearby = true;
   private readonly ringMaterial = new MeshBasicMaterial({ color: 0xffb347, transparent: true, opacity: 0.8, blending: AdditiveBlending, depthWrite: false, toneMapped: false });
 
-  constructor(zone: ActiveZone, options: { readonly editable?: boolean } = {}) {
+  constructor(zone: ActiveZone, options: { readonly editable?: boolean; readonly content?: GameContent } = {}) {
     this.zone = zone;
+    this.content = options.content;
     this.editable = options.editable ?? false;
     this.lighting = planWallLighting(zone);
     this.objectsByChunk = groupByChunk(zone.definition.objects.map((placement, index) => ({ placement, index })), ({ placement }) => placement.position);
@@ -311,7 +314,7 @@ export class LevelScene {
       sconces: this.sconcesByChunk.get(key) ?? [],
       fills: this.fillsByChunk.get(key) ?? [],
     };
-    const view = new ChunkView(this.zone, region, contents, this.ringMaterial, { separateObjects: this.editable });
+    const view = new ChunkView(this.zone, region, contents, this.ringMaterial, { separateObjects: this.editable, ...(this.content ? { content: this.content } : {}) });
     this.chunks.set(key, { coord, view });
     if (this.editable) this.signatures.set(key, chunkSignature(this.zone, coord, this.lighting));
     return view;

@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { createObjectWalkabilityGrid, doorTilesOf, GAME_CONTENT, levelRegions, withOpenDoors, type GuidanceTarget, type LevelId, type TilePoint } from '@containment/shared';
+import { FIXTURE_CONTENT as GAME_CONTENT } from '@containment/shared/fixtures';
+import { createObjectWalkabilityGrid, doorTilesOf, levelRegions, withOpenDoors, type GuidanceTarget, type LevelId, type TilePoint } from '@containment/shared';
 import { GuidanceRoute } from '../src/state/guidanceRoute.ts';
 import type { WorldState } from '../src/state/worldState.ts';
 
-const level = GAME_CONTENT.levels.get('the-threshold' as LevelId);
+const level = GAME_CONTENT.levels.get('fx-floor' as LevelId);
 assert.ok(level);
 const definitionOf = (objectId: string) => GAME_CONTENT.worldObjects.get(objectId);
 const baseGrid = withOpenDoors(createObjectWalkabilityGrid(level.layout, level.objects, definitionOf), level.layout, doorTilesOf(level.objects, definitionOf), () => false);
@@ -37,7 +38,7 @@ const world = {
 
 describe('guidance route', () => {
   test('reuses an intact route instead of searching again when nothing changed', () => {
-    const guidance = new GuidanceRoute(world);
+    const guidance = new GuidanceRoute(world, GAME_CONTENT);
     lookups = 0;
     const first = [...guidance.current(0, target)];
     const firstLookups = lookups;
@@ -51,7 +52,7 @@ describe('guidance route', () => {
   });
 
   test('searches again once a door opens', () => {
-    const guidance = new GuidanceRoute(world);
+    const guidance = new GuidanceRoute(world, GAME_CONTENT);
     const first = [...guidance.current(0, target)];
     (world.openDoors as Set<string>).add('some-door');
     guidance.invalidate();

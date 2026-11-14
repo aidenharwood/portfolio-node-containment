@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { GAME_CONTENT, type WorldObjectDefinition } from '../src/index.ts';
+import { type WorldObjectDefinition } from '../src/index.ts';
 import { findPrefabIssues, PREFABS, type Prefab } from '../src/content/prefabs/index.ts';
+import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
 
-const objectOf = (id: string) => GAME_CONTENT.worldObjects.get(id);
+const objectOf = (id: string) => FIXTURE_CONTENT.worldObjects.get(id);
 
 const sample = (overrides: Partial<Prefab>): Prefab => ({ id: 'sample', roles: ['island'], pieces: [], ...overrides });
 

@@ -6,7 +6,6 @@ import type { ResolvedLevel } from '../world/levelLayout.ts';
 import type { WalkabilityGrid } from '../world/pathfinding.ts';
 import { TILE_KINDS } from '../world/tiles.ts';
 import type { GameContent } from './gameContent.ts';
-import { FURNISHING_PROFILES } from './furnishingCatalogue.ts';
 import { findPlacementIssues } from './placementIntegrity.ts';
 import { findPrefabIssues, findPrefabLibraryIssues, PREFABS } from './prefabs/index.ts';
 
@@ -37,7 +36,7 @@ function findClearanceIssues(content: GameContent, district: DistrictDefinition,
   };
   for (const object of district.objects) {
     const definition = content.worldObjects.get(object.objectId);
-    if (!definition || definition.interactions.length > 0 || definition.door || definition.countsAs || FURNISHING_PROFILES[object.objectId]?.mount === 'flat') continue;
+    if (!definition || definition.interactions.length > 0 || definition.door || definition.countsAs || definition.furnishing?.mount === 'flat') continue;
     const covered = objectFootprintTiles(definition, object).find((tile) => forbidden(tile) !== undefined);
     if (covered) report(`"${object.instanceId}" at ${covered.x},${covered.y} covers ${forbidden(covered)}`);
   }

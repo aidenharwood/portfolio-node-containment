@@ -1,36 +1,39 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { buildDistrict, findContentIssues, GAME_CONTENT, LAYOUT_SOURCES, parseLayout, type DistrictDefinition, type DistrictLayout } from '@containment/shared';
+import { buildDistrict, findContentIssues, parseLayout, type DistrictDefinition, type DistrictLayout } from '@containment/shared';
+import { FIXTURE_CONTENT, FIXTURE_CONTEXT, FIXTURE_LAYOUT_SOURCES, FIXTURE_LEVEL_RECIPES } from '@containment/shared/fixtures';
 import { contentWith } from '../src/editor/contentWith.ts';
 
+const restitch = (edited: Parameters<typeof contentWith>[1]) => contentWith(FIXTURE_CONTENT, edited, FIXTURE_LEVEL_RECIPES, FIXTURE_CONTEXT.hollowOf);
+
 const edited = (id: string, change: (layout: DistrictLayout) => DistrictLayout) => {
-  const layout = change(parseLayout(LAYOUT_SOURCES[id]));
+  const layout = change(parseLayout(FIXTURE_LAYOUT_SOURCES[id]));
   return new Map([[id, { layout, district: buildDistrict(layout) }]]);
 };
 
-test('a planter dropped into a wall of the edited atrium is reported, and the shipped content stays clean', () => {
-  const content = contentWith(GAME_CONTENT, edited('meridian-atrium', (layout) => ({ ...layout, objects: [...layout.objects, { id: 'stray-planter', object: 'planter', at: { x: 0, y: 0 } }] })));
+test('an object dropped into a wall of an edited district is reported, and the base content stays clean', () => {
+  const content = restitch(edited('fx-hub', (layout) => ({ ...layout, objects: [...layout.objects, { id: 'stray-planter', object: 'planter', at: { x: 0, y: 0 } }] })));
   assert.ok(findContentIssues(content).some((issue) => issue.includes('stray-planter')));
-  assert.equal(findContentIssues(GAME_CONTENT).some((issue) => issue.includes('stray-planter')), false);
+  assert.equal(findContentIssues(FIXTURE_CONTENT).some((issue) => issue.includes('stray-planter')), false);
 });
 
 test('levels are re-stitched from the edited districts', () => {
-  const hydroponics = GAME_CONTENT.districts.get('hydroponics') as DistrictDefinition;
+  const field = FIXTURE_CONTENT.districts.get('fx-field') as DistrictDefinition;
   const widened: DistrictDefinition = {
-    ...hydroponics,
-    map: hydroponics.map.map((row) => `${row} `),
-    exits: Object.fromEntries(Object.entries(hydroponics.exits ?? {}).map(([name, exit]) => [name, name === 'east' ? { ...exit, tiles: exit.tiles.map((tile) => ({ x: tile.x + 1, y: tile.y })) } : exit])),
+    ...field,
+    map: field.map.map((row) => `${row} `),
+    exits: Object.fromEntries(Object.entries(field.exits ?? {}).map(([name, exit]) => [name, name === 'east' ? { ...exit, tiles: exit.tiles.map((tile) => ({ x: tile.x + 1, y: tile.y })) } : exit])),
   };
-  const content = contentWith(GAME_CONTENT, new Map([['hydroponics', { district: widened, layout: parseLayout(LAYOUT_SOURCES.hydroponics) }]]));
-  const offset = (level: typeof GAME_CONTENT, id: string) => {
-    const placed = level.levels.get('main-floor')?.districts ?? [];
+  const content = restitch(new Map([['fx-field', { district: widened, layout: parseLayout(FIXTURE_LAYOUT_SOURCES['fx-field']) }]]));
+  const offset = (level: typeof FIXTURE_CONTENT, id: string) => {
+    const placed = level.levels.get('fx-floor')?.districts ?? [];
     const rect = (districtId: string) => placed.find((each) => each.districtId === districtId)?.rect ?? { x: NaN, y: NaN };
-    return rect(id).x - rect('meridian-circuit').x;
+    return rect(id).x - rect('fx-hub').x;
   };
-  assert.equal(offset(content, 'hydroponics'), offset(GAME_CONTENT, 'hydroponics') - 1);
-  assert.equal(content.districts.get('hydroponics'), widened);
+  assert.equal(offset(content, 'fx-outpost'), offset(FIXTURE_CONTENT, 'fx-outpost') + 1);
+  assert.equal(content.districts.get('fx-field'), widened);
 });
 
 test('with nothing edited the base content comes back unchanged', () => {
-  assert.equal(contentWith(GAME_CONTENT, new Map()), GAME_CONTENT);
+  assert.equal(restitch(new Map()), FIXTURE_CONTENT);
 });

@@ -1,32 +1,20 @@
 import type { WorldObjectDefinition } from '../../world/entities.ts';
 import { objectFootprintSize } from '../../world/footprint.ts';
 import type { WorldObjectId } from '../../ids.ts';
-import { ARCHIVE_PREFABS } from './archive.ts';
-import { CANTEEN_PREFABS } from './canteen.ts';
-import { CIVIC_PREFABS } from './civic.ts';
-import { COLD_PREFABS } from './cold.ts';
-import { DORMITORY_PREFABS } from './dormitory.ts';
-import { FREIGHT_PREFABS } from './freight.ts';
-import { GARDEN_PREFABS } from './garden.ts';
-import { INDUSTRIAL_PREFABS } from './industrial.ts';
-import { LAB_PREFABS } from './lab.ts';
-import { LANDMARK_PREFABS } from './landmark.ts';
-import { MEDICAL_PREFABS } from './medical.ts';
-import { MINE_PREFABS } from './mine.ts';
-import { OFFICE_PREFABS } from './office.ts';
-import { POST_PREFABS } from './post.ts';
-import { RITUAL_PREFABS } from './ritual.ts';
-import { RUIN_PREFABS } from './ruin.ts';
-import { TRANSIT_PREFABS } from './transit.ts';
-import { WET_PREFABS } from './wet.ts';
-import { WORKS_PREFABS } from './works.ts';
 import type { Prefab, PrefabRole } from './types.ts';
 
 export * from './types.ts';
 
-const LIBRARIES: readonly (readonly Prefab[])[] = [ARCHIVE_PREFABS, CANTEEN_PREFABS, CIVIC_PREFABS, COLD_PREFABS, DORMITORY_PREFABS, FREIGHT_PREFABS, GARDEN_PREFABS, INDUSTRIAL_PREFABS, LAB_PREFABS, LANDMARK_PREFABS, MEDICAL_PREFABS, MINE_PREFABS, OFFICE_PREFABS, POST_PREFABS, RITUAL_PREFABS, RUIN_PREFABS, TRANSIT_PREFABS, WET_PREFABS, WORKS_PREFABS];
+const LIBRARIES: (readonly Prefab[])[] = [];
 
-export const PREFABS: Readonly<Record<string, Prefab>> = Object.fromEntries(LIBRARIES.flat().map((prefab) => [prefab.id, prefab]));
+const REGISTERED: Record<string, Prefab> = {};
+
+export const PREFABS: Readonly<Record<string, Prefab>> = REGISTERED;
+
+export function registerPrefabs(library: readonly Prefab[]): void {
+  LIBRARIES.push(library);
+  for (const prefab of library) REGISTERED[prefab.id] = prefab;
+}
 
 export type PrefabName = string;
 

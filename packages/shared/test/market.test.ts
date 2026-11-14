@@ -8,7 +8,6 @@ import {
   createEmptyInventory,
   CURRENCY_ITEM_ID,
   defaultMarketPrice,
-  GAME_CONTENT,
   isTradable,
   MARKET_ORDER_LIMIT,
   marketQuotes,
@@ -17,8 +16,9 @@ import {
   type MarketOrder,
   type MarketOrderRequest,
 } from '../src/index.ts';
+import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
 
-const items = GAME_CONTENT.items;
+const items = FIXTURE_CONTENT.items;
 let sequence = 0;
 
 function order(ownerId: string, request: MarketOrderRequest): MarketOrder {
@@ -30,7 +30,7 @@ describe('market orders', () => {
   test('only non-quest, non-currency items trade, and every item has a default price of at least 1', () => {
     assert.equal(isTradable(items.get('scrap-alloy')!), true);
     assert.equal(isTradable(items.get(CURRENCY_ITEM_ID)!), false);
-    assert.equal(isTradable(items.get('clearance-card-l1')!), false);
+    assert.equal(isTradable(items.get('vault-keycard')!), false);
     for (const item of items.values()) assert.ok(defaultMarketPrice(item) >= 1);
   });
 

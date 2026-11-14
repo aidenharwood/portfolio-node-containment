@@ -185,3 +185,4 @@ The test fails if a change breaks this curve. Quests can declare a `recommendedR
 
 - `packages/shared/test` holds pure rule tests.
 - `packages/server/test` holds auth and persistence tests against in-memory SQLite, plus gameplay integration tests through `test/support/testHarness.ts`. The harness drives a real `Gameplay` instance with a recording sink and a deterministic RNG.
+- Engine tests run against the fixture world (`@containment/shared/fixtures`), never against the shipped content, so changing the world never breaks an engine test. Add to the fixture when a test needs something it lacks. Only `shippedContent.test.ts`, `layoutFiles.test.ts` and `levelRecipes.test.ts` read the shipped content.

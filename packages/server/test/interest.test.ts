@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { addItem, createDefaultDraft, GAME_CONTENT, type CharacterRecord, type DistrictId, type ServerMessage, type TilePoint } from '@containment/shared';
+import { addItem, createDefaultDraft, type CharacterRecord, type DistrictId, type ServerMessage, type TilePoint } from '@containment/shared';
 import { createCharacterRecord } from '../src/characters/characterFactory.ts';
 import { Gameplay } from '../src/gameplay/gameplay.ts';
 import type { Player } from '../src/world/player.ts';
-import { at, exitPoint, levelPoint, RecordingSink, localInRoom } from './support/testHarness.ts';
+import { at, levelPoint, RecordingSink, localInRoom, CONTENT } from './support/testHarness.ts';
 
 interface Placement {
   readonly districtId: DistrictId;
@@ -17,14 +17,8 @@ interface Operative {
   readonly sink: RecordingSink;
 }
 
-function supplyCounterLocal(): TilePoint {
-  const point = GAME_CONTENT.districts.get('intake-wing')?.anchors?.supplyCounter;
-  assert.ok(point);
-  return point;
-}
-
 function deep(placements: readonly Placement[], random: () => number = () => 0.99) {
-  const gameplay = new Gameplay(GAME_CONTENT, { save: () => undefined, findByName: () => null }, {
+  const gameplay = new Gameplay(CONTENT, { save: () => undefined, findByName: () => null }, {
     tickMs: 300,
     autosaveIntervalMs: 60_000,
     random,
@@ -32,8 +26,8 @@ function deep(placements: readonly Placement[], random: () => number = () => 0.9
     levelCapacity: 50,
   });
   const operatives: Operative[] = placements.map((placement, index) => {
-    const base = createCharacterRecord({ ...createDefaultDraft(), name: `Operative ${String.fromCharCode(65 + index)}` }, { id: `c-${index}`, accountId: `a-${index}` }, GAME_CONTENT);
-    const inventory = addItem(base.inventory, GAME_CONTENT.items, 'medgel', 3).inventory;
+    const base = createCharacterRecord({ ...createDefaultDraft(), name: `Operative ${String.fromCharCode(65 + index)}` }, { id: `c-${index}`, accountId: `a-${index}` }, CONTENT);
+    const inventory = addItem(base.inventory, CONTENT.items, 'medgel', 3).inventory;
     const record: CharacterRecord = { ...base, inventory, quests: {}, flags: [...base.flags, ...(placement.flags ?? [])], location: at(placement.districtId, placement.position) };
     const sink = new RecordingSink();
     return { player: gameplay.enterWorld(record, sink), sink };
@@ -61,7 +55,7 @@ const interestMessages = (sink: RecordingSink) => sink.messages.filter((message)
 
 describe('chunked interest', () => {
   test('world.entered carries only the interest set', () => {
-    const { operatives } = deep([{ districtId: 'cryovault', position: localInRoom('cryovault', 'dock', { x: 3, y: 3 }) }]);
+    const { operatives } = deep([{ districtId: 'fx-hub', position: localInRoom('fx-hub', 'plaza', { x: 3, y: 3 }) }]);
     const [a] = operatives;
     assert.ok(a);
     const entered = a.sink.last('world.entered');
@@ -71,27 +65,27 @@ describe('chunked interest', () => {
     const here = chunkOf(a.player.position);
     const inView = (point: TilePoint) => Math.abs(chunkOf(point).cx - here.cx) <= 1 && Math.abs(chunkOf(point).cy - here.cy) <= 1;
     assert.ok(entered.entities.every((entity) => inView(entity.position)));
-    const farPlacements = GAME_CONTENT.levels.get('the-deep')?.creatures.filter((creature) => !inView(creature.position)) ?? [];
+    const farPlacements = CONTENT.levels.get('fx-floor')?.creatures.filter((creature) => !inView(creature.position)) ?? [];
     assert.ok(farPlacements.length > 0);
   });
 
   test('a far player receives no movement ticks', () => {
     const { operatives, walk } = deep([
-      { districtId: 'cryovault', position: localInRoom('cryovault', 'dock', { x: 3, y: 3 }) },
-      { districtId: 'drowned-archive', position: localInRoom('drowned-archive', 'flood-stair') },
+      { districtId: 'fx-hub', position: localInRoom('fx-hub', 'plaza', { x: 3, y: 3 }) },
+      { districtId: 'fx-outpost', position: localInRoom('fx-outpost', 'post') },
     ]);
     const [a, b] = operatives;
     assert.ok(a && b);
     b.sink.messages.length = 0;
-    walk(a, levelPoint('cryovault', localInRoom('cryovault', 'dock', { x: 9, y: 3 })));
+    walk(a, levelPoint('fx-hub', localInRoom('fx-hub', 'plaza', { x: 9, y: 3 })));
     assert.ok(ofType(b.sink, 'world.tick').every((tick) => tick.movements.every((movement) => movement.entityId !== a.player.entityId)));
   });
 
   test('walking across a chunk boundary sends chunksLeft then chunksEntered', () => {
-    const { operatives, walk } = deep([{ districtId: 'deepwatch', position: localInRoom('deepwatch', 'platform-hall') }]);
+    const { operatives, walk } = deep([{ districtId: 'fx-hub', position: localInRoom('fx-hub', 'hall') }]);
     const [a] = operatives;
     assert.ok(a);
-    walk(a, exitPoint('deepwatch', 'north'));
+    walk(a, levelPoint('fx-field', localInRoom('fx-field', 'lane', { x: 5, y: 4 })));
     const [left, entered] = interestMessages(a.sink).slice(-2);
     assert.equal(left?.type, 'world.chunksLeft');
     assert.equal(left?.chunks.length, 3);
@@ -101,27 +95,27 @@ describe('chunked interest', () => {
 
   test('an entity crossing into view spawns for the observer', () => {
     const { operatives, walk } = deep([
-      { districtId: 'deep-concourse', position: localInRoom('deep-concourse', 'ring-hub') },
-      { districtId: 'deepwatch', position: localInRoom('deepwatch', 'concourse') },
+      { districtId: 'fx-field', position: localInRoom('fx-field', 'lane', { x: 56, y: 4 }) },
+      { districtId: 'fx-hub', position: localInRoom('fx-hub', 'hall') },
     ]);
     const [a, b] = operatives;
     assert.ok(a && b);
     assert.ok(!b.sink.last('world.entered')?.entities.some((entity) => entity.id === a.player.entityId));
-    walk(a, exitPoint('deepwatch', 'north'));
+    walk(a, levelPoint('fx-field', localInRoom('fx-field', 'lane', { x: 30, y: 9 })));
     assert.ok(ofType(b.sink, 'world.entitySpawned').some((message) => message.entity.id === a.player.entityId));
   });
 
   test('a same-level teleport swaps interest', () => {
     const { gameplay, operatives } = deep([
-      { districtId: 'deepwatch', position: localInRoom('deepwatch', 'concourse') },
-      { districtId: 'deepwatch', position: localInRoom('deepwatch', 'concourse') },
+      { districtId: 'fx-hub', position: localInRoom('fx-hub', 'plaza') },
+      { districtId: 'fx-hub', position: localInRoom('fx-hub', 'plaza', { x: 2, y: 2 }) },
     ]);
     const [a, b] = operatives;
     assert.ok(a && b);
     assert.ok(b.sink.last('world.entered')?.entities.some((entity) => entity.id === a.player.entityId) || ofType(b.sink, 'world.entitySpawned').some((message) => message.entity.id === a.player.entityId));
     a.sink.messages.length = 0;
-    gameplay.teleport(a.player, at('drowned-archive', localInRoom('drowned-archive', 'sealed-room')));
-    assert.equal(a.player.levelId, 'the-deep');
+    gameplay.teleport(a.player, at('fx-outpost', localInRoom('fx-outpost', 'post')));
+    assert.equal(a.player.levelId, 'fx-floor');
     assert.equal(ofType(a.sink, 'world.entered').length, 0);
     assert.ok(ofType(a.sink, 'world.chunksLeft').length > 0);
     assert.ok(ofType(a.sink, 'world.chunksEntered').length > 0);
@@ -130,8 +124,8 @@ describe('chunked interest', () => {
 
   test('chunk entry respects ground-item privacy', () => {
     const { gameplay, operatives } = deep([
-      { districtId: 'cryovault', position: localInRoom('cryovault', 'dock', { x: 3, y: 3 }) },
-      { districtId: 'deepwatch', position: localInRoom('deepwatch', 'lift-gallery') },
+      { districtId: 'fx-hub', position: localInRoom('fx-hub', 'plaza', { x: 3, y: 3 }) },
+      { districtId: 'fx-outpost', position: localInRoom('fx-outpost', 'post') },
     ]);
     const [a, b] = operatives;
     assert.ok(a && b);
@@ -140,14 +134,14 @@ describe('chunked interest', () => {
     const dropped = a.sink.last('world.groundItemAdded')?.item;
     assert.ok(dropped);
 
-    gameplay.teleport(a.player, at('deepwatch', localInRoom('deepwatch', 'platform-hall')));
-    assert.equal(a.player.levelId, 'the-deep');
+    gameplay.teleport(a.player, at('fx-outpost', localInRoom('fx-outpost', 'post')));
+    assert.equal(a.player.levelId, 'fx-floor');
     a.sink.messages.length = 0;
-    gameplay.teleport(a.player, at('cryovault', localInRoom('cryovault', 'dock', { x: 3, y: 3 })));
+    gameplay.teleport(a.player, at('fx-hub', localInRoom('fx-hub', 'plaza', { x: 3, y: 3 })));
     assert.ok(ofType(a.sink, 'world.chunksEntered').some((message) => message.groundItems.some((item) => item.id === dropped.id)));
 
     b.sink.messages.length = 0;
-    gameplay.teleport(b.player, at('cryovault', localInRoom('cryovault', 'dock', { x: 9, y: 20 })));
+    gameplay.teleport(b.player, at('fx-hub', localInRoom('fx-hub', 'plaza', { x: 9, y: 9 })));
     const bEntered = ofType(b.sink, 'world.chunksEntered');
     assert.ok(bEntered.length > 0);
     assert.ok(bEntered.every((message) => message.groundItems.every((item) => item.id !== dropped.id)));
@@ -155,9 +149,9 @@ describe('chunked interest', () => {
 
   test('local chat only reaches nearby players', () => {
     const { gameplay, operatives } = deep([
-      { districtId: 'cryovault', position: localInRoom('cryovault', 'dock', { x: 3, y: 3 }) },
-      { districtId: 'cryovault', position: localInRoom('cryovault', 'dock', { x: 9, y: 3 }) },
-      { districtId: 'drowned-archive', position: localInRoom('drowned-archive', 'flood-stair') },
+      { districtId: 'fx-hub', position: localInRoom('fx-hub', 'plaza', { x: 3, y: 3 }) },
+      { districtId: 'fx-hub', position: localInRoom('fx-hub', 'plaza', { x: 9, y: 3 }) },
+      { districtId: 'fx-outpost', position: localInRoom('fx-outpost', 'post') },
     ]);
     const [speaker, near, far] = operatives;
     assert.ok(speaker && near && far);
@@ -179,7 +173,7 @@ const samePlace = (a: TilePoint, b: TilePoint) => a.x === b.x && a.y === b.y;
 
 describe('dormancy and interest-bounded intents', () => {
   test('an unwatched creature does not wander', () => {
-    const { gameplay, operatives } = deep([{ districtId: 'cryovault', position: localInRoom('cryovault', 'dock', { x: 3, y: 3 }) }], lcg(7));
+    const { gameplay, operatives } = deep([{ districtId: 'fx-hub', position: localInRoom('fx-hub', 'plaza', { x: 3, y: 3 }) }], lcg(7));
     const [a] = operatives;
     assert.ok(a);
     const level = gameplay.world.levelOf(a.player);
@@ -193,10 +187,10 @@ describe('dormancy and interest-bounded intents', () => {
   });
 
   test('an unwatched creature still respawns', () => {
-    const { gameplay, operatives } = deep([{ districtId: 'deepwatch', position: localInRoom('deepwatch', 'platform-hall') }]);
+    const { gameplay, operatives } = deep([{ districtId: 'fx-hub', position: localInRoom('fx-hub', 'plaza') }]);
     const [a] = operatives;
     assert.ok(a);
-    const wisp = gameplay.world.levelOf(a.player).creatureByInstance('fu-wisp-a');
+    const wisp = gameplay.world.levelOf(a.player).creatureByInstance('range-drone-a');
     assert.ok(wisp);
     wisp.state = 'despawned';
     wisp.diedAtTick = 0;
@@ -206,16 +200,16 @@ describe('dormancy and interest-bounded intents', () => {
   });
 
   test('an abandoned creature resets home', () => {
-    const { gameplay, operatives } = deep([{ districtId: 'cryovault', position: localInRoom('cryovault', 'dock', { x: 3, y: 3 }) }]);
+    const { gameplay, operatives } = deep([{ districtId: 'fx-hub', position: localInRoom('fx-hub', 'plaza', { x: 3, y: 3 }) }]);
     const [a] = operatives;
     assert.ok(a);
     const level = gameplay.world.levelOf(a.player);
-    const creature = [...level.creatures.values()].find((candidate) => candidate.home.x < 28 && candidate.home.y >= 30);
+    const creature = level.creatureByInstance('field-mite-a');
     assert.ok(creature);
     creature.targetId = a.player.entityId;
     creature.integrity = 1;
     creature.position = { x: creature.home.x + 1, y: creature.home.y };
-    gameplay.teleport(a.player, at('deepwatch', localInRoom('deepwatch', 'lift-gallery')));
+    gameplay.teleport(a.player, at('fx-outpost', localInRoom('fx-outpost', 'post')));
     gameplay.tick();
     assert.equal(creature.targetId, null);
     assert.deepEqual(creature.position, creature.home);
@@ -223,17 +217,17 @@ describe('dormancy and interest-bounded intents', () => {
   });
 
   test('walking to a tile outside the interest set is refused', () => {
-    const { gameplay, operatives } = deep([{ districtId: 'hydroponics', position: localInRoom('hydroponics', 'seed-vault') }]);
+    const { gameplay, operatives } = deep([{ districtId: 'fx-outpost', position: localInRoom('fx-outpost', 'post') }]);
     const [a] = operatives;
     assert.ok(a);
-    assert.equal(gameplay.world.walk(a.player, levelPoint('meridian-atrium', localInRoom('meridian-atrium', 'response-office'))), false);
+    assert.equal(gameplay.world.walk(a.player, levelPoint('fx-hub', localInRoom('fx-hub', 'hall'))), false);
   });
 
   test('interacting with an npc outside the interest set is refused', () => {
-    const { gameplay, operatives } = deep([{ districtId: 'hydroponics', position: localInRoom('hydroponics', 'seed-vault') }]);
+    const { gameplay, operatives } = deep([{ districtId: 'fx-outpost', position: localInRoom('fx-outpost', 'post') }]);
     const [a] = operatives;
     assert.ok(a);
-    gameplay.handle(a.player, { type: 'world.interact', targetKind: 'npc', instanceId: 'atrium-sel', interactionIndex: 0 });
+    gameplay.handle(a.player, { type: 'world.interact', targetKind: 'npc', instanceId: 'hub-handler', interactionIndex: 0 });
     assert.equal(a.player.pendingInteraction, null);
   });
 });
@@ -241,26 +235,26 @@ describe('dormancy and interest-bounded intents', () => {
 describe('review fixes', () => {
   test('a same-level recovery refreshes the player for observers who see both ends', () => {
     const { gameplay, operatives } = deep([
-      { districtId: 'intake-wing', position: localInRoom('intake-wing', 'supply') },
-      { districtId: 'intake-wing', position: supplyCounterLocal() },
+      { districtId: 'fx-hub', position: localInRoom('fx-hub', 'tram-terminal', { x: 6, y: 3 }) },
+      { districtId: 'fx-hub', position: localInRoom('fx-hub', 'plaza', { x: 6, y: 11 }) },
     ]);
     const [a, b] = operatives;
     assert.ok(a && b);
     assert.ok(b.sink.last('world.entered')?.entities.some((entity) => entity.id === a.player.entityId));
     b.sink.messages.length = 0;
     gameplay.recoverIncapacitated(a.player);
-    assert.equal(gameplay.world.districtOf(a.player), 'intake-wing');
+    assert.equal(gameplay.world.districtOf(a.player), 'fx-hub');
     assert.ok(ofType(b.sink, 'world.entitySpawned').some((message) => message.entity.id === a.player.entityId));
   });
 
   test('a creature reset home while unwatched reappears for whoever watches its home', () => {
-    const { gameplay, operatives } = deep([{ districtId: 'cryovault', position: localInRoom('cryovault', 'dock', { x: 3, y: 3 }) }]);
+    const { gameplay, operatives } = deep([{ districtId: 'fx-hub', position: localInRoom('fx-hub', 'plaza', { x: 3, y: 3 }) }]);
     const [o] = operatives;
     assert.ok(o);
     const level = gameplay.world.levelOf(o.player);
     const creature = [...level.creatures.values()].find((candidate) => level.isInterestOf(o.player, candidate.home));
     assert.ok(creature && level.isInterestOf(o.player, creature.home));
-    creature.position = levelPoint('drowned-archive', localInRoom('drowned-archive', 'flood-stair'));
+    creature.position = levelPoint('fx-outpost', localInRoom('fx-outpost', 'post'));
     creature.targetId = 'player:gone';
     o.sink.messages.length = 0;
     gameplay.tick();

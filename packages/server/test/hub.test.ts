@@ -1,86 +1,77 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import {
-  countItem,
-  createStartingSkills,
-  experienceForLevel,
-  maxIntegrityFor,
-  type CharacterRecord,
-  type WorldLocation,
-} from '@containment/shared';
-import { inRoom, createHarness, finishDialogue, type Harness, at, districtOf, localInRoom } from './support/testHarness.ts';
+import { countItem, createStartingSkills, experienceForLevel, maxIntegrityFor, type CharacterRecord, type WorldLocation } from '@containment/shared';
+import { containSpecimen } from './support/containment.ts';
+import { createHarness, finishDialogue, inRoom, type Harness } from './support/testHarness.ts';
 
-const placed = (location: WorldLocation, changes: Partial<CharacterRecord> = {}) => (record: CharacterRecord): CharacterRecord => ({
-  ...record,
-  location,
-  ...changes,
-});
+const placed = (location: WorldLocation, changes: Partial<CharacterRecord> = {}) => (record: CharacterRecord): CharacterRecord => ({ ...record, location, ...changes });
 
 const veteran = () => {
-  const skills = createStartingSkills({
-    closeQuarters: experienceForLevel(30),
-    fortitude: experienceForLevel(30),
-    salvage: experienceForLevel(10),
-  });
-  return { skills, vitals: { integrity: maxIntegrityFor(skills) } };
+  const skills = createStartingSkills({ closeQuarters: experienceForLevel(30), fortitude: experienceForLevel(40) });
+  return { skills, vitals: { integrity: maxIntegrityFor(skills) }, equipment: { primary: 'stun-baton' } };
 };
 
-const areaOf = (harness: Harness): string[] =>
-  harness.gameplay.world.levelOf(harness.player).areasAt(harness.player.position).map((area) => area.id);
+const stepOf = (harness: Harness, questId: string): number | 'completed' | undefined => {
+  const progress = harness.player.record.quests[questId];
+  return progress?.status === 'completed' ? 'completed' : progress?.stepIndex;
+};
 
 function defeat(harness: Harness, instanceId: string): void {
   const creature = harness.gameplay.world.levelOf(harness.player).creatureByInstance(instanceId);
   assert.ok(creature, `missing creature ${instanceId}`);
-  harness.ticksUntil(() => creature.isAlive && harness.player.combatTargetId === null, 1200);
   harness.approach(instanceId);
   harness.send({ type: 'world.interact', targetKind: 'creature', instanceId, interactionIndex: 0 });
-  harness.ticksUntil(() => !creature.isAlive, 2000);
+  harness.fightUntil(() => !creature.isAlive, 2000);
 }
 
-describe('the Atrium hub', () => {
-  test('the medbay patches operatives up, by the medic or by resting on a bed', () => {
-    const harness = createHarness({ prepare: placed(inRoom('meridian-atrium', 'plaza'), { vitals: { integrity: 3 } }) });
-    harness.talkTo('atrium-anand');
+describe('the hub', () => {
+  test('the medic patches operatives up, and so does resting on a bed', () => {
+    const harness = createHarness({ prepare: placed(inRoom('fx-hub', 'plaza'), { vitals: { integrity: 3 } }) });
+    harness.talkTo('hub-medic');
     finishDialogue(harness, (text) => text.startsWith('Patch me up'));
     assert.equal(harness.player.integrity, harness.player.maxIntegrity);
 
     harness.player.setIntegrity(2);
-    harness.interactWithObject('medbay-bed-a');
+    harness.interactWithObject('hub-bed');
     assert.equal(harness.player.integrity, harness.player.maxIntegrity);
   });
-
 });
 
-describe('Verdance Hydroponics', () => {
-  test('Overgrowth: crawlers, fibre, the seed vault and a report to Dr. Oyelaran', () => {
-    const harness = createHarness({ prepare: placed(inRoom('hydroponics', 'platform'), veteran()) });
-    harness.talkTo('hydro-oyelaran');
-    finishDialogue(harness, (text) => text === 'Can I help?' || text === "I'll do it.");
-    assert.equal(harness.player.record.quests.overgrowth?.status, 'active');
+describe('quest engine', () => {
+  test('a quest runs through talk, travel, items, kills, containment and a hand-in signal', () => {
+    const harness = createHarness({ prepare: placed(inRoom('fx-hub', 'plaza'), veteran()) });
+    const { player } = harness;
 
-    const crawlers = ['hydro-crawler-nursery-a', 'hydro-crawler-nursery-b', 'hydro-crawler-hall-a', 'hydro-crawler-hall-b', 'hydro-crawler-hall-c'];
-    for (const crawler of crawlers) defeat(harness, crawler);
-    assert.equal(harness.player.record.quests.overgrowth?.stepIndex, 1);
+    harness.talkTo('hub-handler');
+    finishDialogue(harness, (text) => text === 'Take it.');
+    assert.equal(stepOf(harness, 'vault-run'), 0);
+    harness.gameplay.handle(player, { type: 'dialogue.close' });
 
-    const fibreBefore = countItem(harness.player.record.inventory, 'vine-fibre');
-    harness.interactWithObject('hydro-vine-nursery-a');
-    harness.ticksUntil(() => harness.player.activity === null, 400);
-    assert.ok(countItem(harness.player.record.inventory, 'vine-fibre') >= fibreBefore + 4);
-    assert.equal(harness.player.record.quests.overgrowth?.stepIndex, 2);
-
-    harness.interactWithObject('hydro-seed-vault');
-    assert.equal(harness.player.record.quests.overgrowth?.stepIndex, 3);
-
-    harness.talkTo('hydro-oyelaran');
+    harness.talkTo('hub-handler');
     finishDialogue(harness);
-    assert.equal(harness.player.record.quests.overgrowth?.status, 'completed');
-    assert.equal(countItem(harness.player.record.inventory, 'sap-poultice'), 5);
-  });
+    assert.equal(countItem(player.record.inventory, 'vault-keycard'), 1);
+    assert.equal(stepOf(harness, 'vault-run'), 1);
 
-  test('strangler fibre needs Salvage 4', () => {
-    const harness = createHarness({ prepare: placed(inRoom('hydroponics', 'platform')) });
-    harness.interactWithObject('hydro-vine-nursery-a');
-    assert.equal(harness.player.activity, null);
-    assert.match(harness.sink.last('notice')?.text ?? '', /Salvage level 4/);
+    harness.gameplay.teleport(player, inRoom('fx-field', 'lane', { x: 35, y: 9 }));
+    harness.interactWithObject('vault-door-a');
+    harness.ticksUntil(() => stepOf(harness, 'vault-run') === 2, 60);
+
+    harness.interactWithObject('vault-terminal');
+    assert.equal(countItem(player.record.inventory, 'field-log'), 1);
+    assert.equal(stepOf(harness, 'vault-run'), 3);
+
+    defeat(harness, 'den-mite-a');
+    defeat(harness, 'den-mite-b');
+    assert.equal(stepOf(harness, 'vault-run'), 4);
+
+    harness.gameplay.teleport(player, inRoom('fx-arena', 'arena', { x: 1, y: 1 }));
+    containSpecimen(harness, 'arena-warden');
+    assert.equal(stepOf(harness, 'vault-run'), 5);
+
+    harness.gameplay.teleport(player, inRoom('fx-hub', 'plaza'));
+    harness.talkTo('hub-handler');
+    finishDialogue(harness, (text) => text.startsWith('Hand over'));
+    assert.equal(stepOf(harness, 'vault-run'), 'completed');
+    assert.equal(countItem(player.record.inventory, 'field-log'), 0);
   });
 });

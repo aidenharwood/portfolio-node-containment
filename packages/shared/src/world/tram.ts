@@ -28,6 +28,7 @@ export interface TramStation extends TramStationDefinition {
 }
 
 export interface TramNetwork {
+  readonly definitions: readonly TramStationDefinition[];
   readonly stations: ReadonlyMap<TramStationId, TramStation>;
   readonly lines: ReadonlyMap<TramLineId, TramLineDefinition>;
 }

@@ -1,7 +1,7 @@
 import type { DistrictId } from '../ids.ts';
 import { parseTileLayout, type DistrictDefinition, type ObjectPlacement, type TileLayout } from '../world/district.ts';
 import type { WorldObjectDefinition } from '../world/entities.ts';
-import { objectFootprintTiles, WALL_FIXTURE_MODELS } from '../world/footprint.ts';
+import { isWallFixture, objectFootprintTiles } from '../world/footprint.ts';
 import { CARDINAL_OFFSETS, chebyshevDistance, rectContains, tileKey, type Facing, type TilePoint } from '../world/geometry.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
 import { TILE_KINDS } from '../world/tiles.ts';
@@ -209,7 +209,7 @@ function isAgainstWall(level: ResolvedLevel, definition: WorldObjectDefinition, 
 function findFixtureIssues(content: GameContent, level: ResolvedLevel, issues: string[]): void {
   for (const object of level.objects) {
     const definition = content.worldObjects.get(object.objectId);
-    if (!definition || !WALL_FIXTURE_MODELS.has(definition.model)) continue;
+    if (!definition || !isWallFixture(definition)) continue;
     const againstWall = isAgainstWall(level, definition, object);
     if (!againstWall) {
       issues.push(`level ${level.id}: "${object.instanceId}" (${definition.name}) stands free at ${object.position.x},${object.position.y}; doors, lifts and wall fixtures go against a wall`);

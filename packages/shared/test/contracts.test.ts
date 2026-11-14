@@ -9,15 +9,15 @@ import {
   DAY_MS,
   emptyContractLedger,
   findContractIssues,
-  GAME_CONTENT,
   refreshContractLedger,
   rollContracts,
   type ContractDefinition,
   type ContractLedger,
 } from '../src/index.ts';
+import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
 
 const MONDAY_NOON = Date.UTC(2026, 10, 9, 12);
-const catalog = GAME_CONTENT.contracts;
+const catalog = FIXTURE_CONTENT.contracts;
 const tierOne = (contract: ContractDefinition) => contract.tier === 1;
 
 describe('contract schedule', () => {
@@ -60,12 +60,12 @@ describe('contract ledger', () => {
   });
 
   test('counts matching events, caps at the target and pays out once', () => {
-    const contract = catalog.get('daily:yard-sweep')!;
+    const contract = catalog.get('daily:drones')!;
     const ledger: ContractLedger = { ...emptyContractLedger(), daily: { period: 1, entries: [{ contractId: contract.id, progress: 0, claimed: false }] } };
     assert.equal(claimContract(ledger, catalog, 'daily', contract.id).ok, false);
     let current = ledger;
     for (let kill = 0; kill < contract.objective.count + 2; kill++) {
-      current = advanceContracts(current, catalog, { type: 'defeated', creatureId: 'scrap-drone' }).ledger;
+      current = advanceContracts(current, catalog, { type: 'defeated', creatureId: 'training-drone' }).ledger;
     }
     assert.equal(advanceContracts(current, catalog, { type: 'defeated', creatureId: 'gloam-mite' }).progressed.length, 0);
     assert.equal(current.daily?.entries[0]?.progress, contract.objective.count);
@@ -77,6 +77,6 @@ describe('contract ledger', () => {
   });
 
   test('every contract references real, reachable content', () => {
-    assert.deepEqual(findContractIssues(GAME_CONTENT), []);
+    assert.deepEqual(findContractIssues(FIXTURE_CONTENT), []);
   });
 });

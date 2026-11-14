@@ -116,7 +116,7 @@ export class EditController {
       this.changed();
       return;
     }
-    const hits = hitsAt(this.document.layout(this.districtId), this.document.district(this.districtId), tile);
+    const hits = hitsAt(this.document.layout(this.districtId), this.document.district(this.districtId), tile, this.document.content);
     this.pressHits = hits;
     this.moved = false;
     const selection = this.selection;

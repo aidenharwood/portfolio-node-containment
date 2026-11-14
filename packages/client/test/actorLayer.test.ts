@@ -1,24 +1,25 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { GAME_CONTENT, type ResolvedLevel } from '@containment/shared';
+import type { ResolvedLevel } from '@containment/shared';
+import { FIXTURE_CONTENT as GAME_CONTENT } from '@containment/shared/fixtures';
 import { actorsOf } from '../src/editor/actorSpecs.ts';
 import { previewLevel } from '../src/editor/previewLevel.ts';
 
 test('every npc placement becomes an actor with its appearance and gear', () => {
-  const level = previewLevel(GAME_CONTENT, 'meridian-atrium');
+  const level = previewLevel(GAME_CONTENT, 'fx-hub');
   const actors = actorsOf(GAME_CONTENT, level);
   const npcs = actors.filter((actor) => actor.kind === 'npc');
   assert.equal(npcs.length, level.npcs.length);
-  const okafor = npcs.find((actor) => actor.id === 'atrium-okafor');
-  const definition = GAME_CONTENT.npcs.get('quartermaster-okafor');
-  assert.ok(okafor && okafor.kind === 'npc' && definition);
-  assert.deepEqual(okafor.appearance, definition.appearance);
-  assert.deepEqual(okafor.gear, definition.gear);
-  assert.deepEqual(okafor.position, level.npcs.find((npc) => npc.instanceId === 'atrium-okafor')?.position);
+  const trader = npcs.find((actor) => actor.id === 'hub-trader');
+  const definition = GAME_CONTENT.npcs.get('trader');
+  assert.ok(trader && trader.kind === 'npc' && definition);
+  assert.deepEqual(trader.appearance, definition.appearance);
+  assert.deepEqual(trader.gear, definition.gear);
+  assert.deepEqual(trader.position, level.npcs.find((npc) => npc.instanceId === 'hub-trader')?.position);
 });
 
 test('an npc or creature with an unknown id is skipped', () => {
-  const level = previewLevel(GAME_CONTENT, 'meridian-atrium');
+  const level = previewLevel(GAME_CONTENT, 'fx-hub');
   const broken: ResolvedLevel = {
     ...level,
     npcs: [...level.npcs, { instanceId: 'ghost', npcId: 'no-such-npc', position: { x: 1, y: 1 } }],
@@ -29,7 +30,7 @@ test('an npc or creature with an unknown id is skipped', () => {
 });
 
 test('creatures become actors with their model', () => {
-  const level = previewLevel(GAME_CONTENT, 'salt-cathedral');
+  const level = previewLevel(GAME_CONTENT, 'fx-field');
   const creatures = actorsOf(GAME_CONTENT, level).filter((actor) => actor.kind === 'creature');
   assert.ok(creatures.length > 0);
   assert.equal(creatures.length, level.creatures.length);
@@ -41,7 +42,7 @@ test('creatures become actors with their model', () => {
 
 test('showing the same actors again reuses their models and only moves them', async () => {
   const { ActorLayer } = await import('../src/editor/actorLayer.ts');
-  const level = previewLevel(GAME_CONTENT, 'meridian-atrium');
+  const level = previewLevel(GAME_CONTENT, 'fx-hub');
   const actors = actorsOf(GAME_CONTENT, level);
   const layer = new ActorLayer();
   layer.show(actors);

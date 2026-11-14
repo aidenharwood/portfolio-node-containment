@@ -5,7 +5,7 @@ import type { Condition } from '../rules/conditions.ts';
 import type { GameEffect } from '../rules/effects.ts';
 import type { QuestObjective } from '../quests/questDefinition.ts';
 import { questlineKindFor } from '../quests/questline.ts';
-import { MARKET_DISTRICT_ID } from '../economy/market.ts';
+import { marketDistrictOf } from './regionIntegrity.ts';
 import { isRegionHub } from '../world/region.ts';
 import { isShapeForSlot } from '../gear/slots.ts';
 import { TILE_KINDS } from '../world/tiles.ts';
@@ -207,7 +207,7 @@ export function findContentIssues(content: GameContent): string[] {
     const objects = districtObjectsOf(content, zone.id);
     for (const placement of objects) {
       const marketEffects = (content.worldObjects.get(placement.objectId)?.interactions ?? []).flatMap((interaction) => interaction.effects).filter((effect) => effect.type === 'openMarket');
-      if (marketEffects.some((effect) => (effect.access ?? 'trade') === 'trade') && zone.id !== MARKET_DISTRICT_ID) report(where, `"${placement.instanceId}" opens the market outside the main hub`);
+      if (marketEffects.some((effect) => (effect.access ?? 'trade') === 'trade') && zone.id !== marketDistrictOf(content)) report(where, `"${placement.instanceId}" opens the market outside the main hub`);
       if (marketEffects.some((effect) => effect.access === 'collect') && !isRegionHub(content.regions, zone.id)) report(where, `"${placement.instanceId}" opens the exchange mailbox outside a regional outpost`);
     }
     for (const placement of [...zone.npcs, ...objects]) {
@@ -243,7 +243,7 @@ export function findContentIssues(content: GameContent): string[] {
 
   const start = content.newCharacter.startingLocation;
   if (!content.levels.has(start.levelId)) report('newCharacter', `unknown starting level "${start.levelId}"`);
-  checkQuest('newCharacter', content.newCharacter.startingQuestId);
+  if (content.newCharacter.startingQuestId !== undefined) checkQuest('newCharacter', content.newCharacter.startingQuestId);
 
   issues.push(...findCraftingIssues(content));
   issues.push(...findLevelIssues(content));

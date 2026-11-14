@@ -16,7 +16,7 @@ import { anchor, createHarness, inRoom, type Harness } from './support/testHarne
 
 const veteran = (record: CharacterRecord): CharacterRecord => {
   const skills = createStartingSkills({ fortitude: experienceForLevel(60) });
-  return { ...record, location: inRoom('sector-two', 'inner-chamber', { x: 4, y: 4 }), skills, vitals: { integrity: maxIntegrityFor(skills) } };
+  return { ...record, location: inRoom('fx-arena', 'arena', { x: 4, y: 4 }), skills, vitals: { integrity: maxIntegrityFor(skills) } };
 };
 
 const slam: BossMechanic = { kind: 'telegraph', id: 'slam', shape: 'body', reach: 1, windupTicks: 5, cooldownTicks: 10, style: 'psionic', accuracy: 1000, maxHit: 6 };
@@ -24,12 +24,12 @@ const slam: BossMechanic = { kind: 'telegraph', id: 'slam', shape: 'body', reach
 function stage(encounter: EncounterDefinition): { harness: Harness; boss: Creature } {
   const harness = createHarness({ prepare: veteran });
   const level = harness.gameplay.world.levelOf(harness.player);
-  const original = level.creatureByInstance('s2-warden');
+  const original = level.creatureByInstance('arena-warden');
   assert.ok(original);
   const boss = new Creature(original.placement, { ...original.definition, integrity: 10_000, aggressive: true, encounter });
   level.creatures.set(boss.entityId, boss);
   level.rebuildBodies();
-  harness.approach('s2-warden');
+  harness.approach('arena-warden');
   boss.targetId = harness.player.entityId;
   return { harness, boss };
 }
@@ -93,7 +93,7 @@ describe('boss encounters', () => {
     harness.gameplay.tick();
     assert.equal(summonsOf(harness, boss).length, 2);
     assert.ok(summonsOf(harness, boss).every((add) => add.targetId === harness.player.entityId));
-    harness.gameplay.teleport(harness.player, anchor('meridian-atrium', 'recovery'));
+    harness.gameplay.teleport(harness.player, anchor('fx-hub', 'recovery'));
     harness.ticksUntil(() => boss.encounter?.engaged === false, 20);
     assert.equal(summonsOf(harness, boss).length, 0);
   });
@@ -103,7 +103,7 @@ describe('boss encounters', () => {
     harness.gameplay.tick();
     assert.equal(summonsOf(harness, boss).length, 2);
     boss.integrity = 1;
-    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-warden', interactionIndex: 0 });
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 0 });
     harness.ticksUntil(() => !boss.isAlive, 40);
     assert.equal(summonsOf(harness, boss).length, 0);
     assert.ok(harness.sink.messages.some((message) => message.type === 'encounter.cleared'));
@@ -121,7 +121,7 @@ describe('boss encounters', () => {
     harness.gameplay.tick();
     assert.ok(harness.player.integrity <= before - 2);
     boss.targetId = null;
-    harness.gameplay.teleport(harness.player, anchor('meridian-atrium', 'recovery'));
+    harness.gameplay.teleport(harness.player, anchor('fx-hub', 'recovery'));
     harness.ticksUntil(() => boss.encounter?.engaged === false, 20);
     assert.equal(boss.encounter!.hazards.size, 0);
   });

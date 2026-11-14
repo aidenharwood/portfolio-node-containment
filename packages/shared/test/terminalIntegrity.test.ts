@@ -4,7 +4,6 @@ import {
   drawBlueprint,
   exit,
   findTerminalIssues,
-  GAME_CONTENT,
   link,
   MAX_TERMINAL_DOOR_WIDTH,
   resolveLevel,
@@ -23,11 +22,12 @@ import {
   type WorldObjectDefinition,
 } from '../src/index.ts';
 import { findContentIssues } from '../src/content/contentIntegrity.ts';
+import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
 
 const DISTRICT_ID = 'terminal-test';
 const LEVEL_ID = 'terminal-floor';
 const ORIGIN = { x: 5, y: 3 };
-const TRAM_CAR_ID = [...GAME_CONTENT.worldObjects.keys()].find((id) => id.startsWith('tram-car-')) as string;
+const TRAM_CAR_ID = [...FIXTURE_CONTENT.worldObjects.keys()].find((id) => id.startsWith('tram-car-')) as string;
 
 interface Fixture {
   readonly doorWidth?: number;
@@ -44,7 +44,7 @@ const serviceObject = (id: string, effect: GameEffect): WorldObjectDefinition =>
   id,
   name: id,
   examine: id,
-  model: 'kiosk',
+  model: 'placeholder',
   blocksMovement: true,
   interactions: [{ verb: 'Use', effects: [effect] }],
 });
@@ -111,11 +111,11 @@ function terminalWorld(fixture: Fixture = {}): GameContent {
     lineIds: [],
   };
   return {
-    ...GAME_CONTENT,
+    ...FIXTURE_CONTENT,
     districts,
     levels: new Map([[LEVEL_ID, level]]),
-    worldObjects: new Map([...GAME_CONTENT.worldObjects, ...SERVICE_OBJECTS.map((object) => [object.id, object] as const)]),
-    tram: { stations: new Map([[station.id, station]]), lines: new Map() },
+    worldObjects: new Map([...FIXTURE_CONTENT.worldObjects, ...SERVICE_OBJECTS.map((object) => [object.id, object] as const)]),
+    tram: { definitions: [station], stations: new Map([[station.id, station]]), lines: new Map() },
   };
 }
 
@@ -202,55 +202,55 @@ test('two doors on one side count as separate openings', () => {
 });
 
 test('the Verdance terminal follows every rule', () => {
-  assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"verdance-platform"')), []);
+  assert.deepEqual(findTerminalIssues(FIXTURE_CONTENT).filter((issue) => issue.includes('"verdance-platform"')), []);
 });
 
 test('the Atrium terminal follows every rule', () => {
-  assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"atrium-transit"')), []);
+  assert.deepEqual(findTerminalIssues(FIXTURE_CONTENT).filter((issue) => issue.includes('"atrium-transit"')), []);
 });
 
 test('the Service Yards terminal follows every rule', () => {
-  assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"yards-depot"')), []);
+  assert.deepEqual(findTerminalIssues(FIXTURE_CONTENT).filter((issue) => issue.includes('"yards-depot"')), []);
 });
 
 test('the Calder Gatehouse terminal follows every rule', () => {
-  assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"calder-platform"')), []);
+  assert.deepEqual(findTerminalIssues(FIXTURE_CONTENT).filter((issue) => issue.includes('"calder-platform"')), []);
 });
 
 test("the Vesper Porter's Lodge terminal follows every rule", () => {
-  assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"vesper-platform"')), []);
+  assert.deepEqual(findTerminalIssues(FIXTURE_CONTENT).filter((issue) => issue.includes('"vesper-platform"')), []);
 });
 
 test('the Intake Transit Bay terminal follows every rule', () => {
-  assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"intake-transit"')), []);
+  assert.deepEqual(findTerminalIssues(FIXTURE_CONTENT).filter((issue) => issue.includes('"intake-transit"')), []);
 });
 
 test('the Deepwatch terminal follows every rule', () => {
-  assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"deepwatch-platform"')), []);
+  assert.deepEqual(findTerminalIssues(FIXTURE_CONTENT).filter((issue) => issue.includes('"deepwatch-platform"')), []);
 });
 
 test('the Cryovault terminal follows every rule', () => {
-  assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"cryovault-dock"')), []);
+  assert.deepEqual(findTerminalIssues(FIXTURE_CONTENT).filter((issue) => issue.includes('"cryovault-dock"')), []);
 });
 
 test('the Signal Array terminal follows every rule', () => {
-  assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"array-lobby"')), []);
+  assert.deepEqual(findTerminalIssues(FIXTURE_CONTENT).filter((issue) => issue.includes('"array-lobby"')), []);
 });
 
 test('the Drowned Archive terminal follows every rule', () => {
-  assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"archive-stair"')), []);
+  assert.deepEqual(findTerminalIssues(FIXTURE_CONTENT).filter((issue) => issue.includes('"archive-stair"')), []);
 });
 
 test('the Furnace terminal follows every rule', () => {
-  assert.deepEqual(findTerminalIssues(GAME_CONTENT).filter((issue) => issue.includes('"furnace-lock"')), []);
+  assert.deepEqual(findTerminalIssues(FIXTURE_CONTENT).filter((issue) => issue.includes('"furnace-lock"')), []);
 });
 
 test('the shipped world has no terminal issues', () => {
-  assert.deepEqual(findTerminalIssues(GAME_CONTENT), []);
+  assert.deepEqual(findTerminalIssues(FIXTURE_CONTENT), []);
 });
 
 test('the content check reports a station that leaves its terminal', () => {
-  const stations = new Map([...GAME_CONTENT.tram.stations].map(([id, station]) => [id, id === 'furnace-lock' ? { ...station, areaId: 'coolant-lock' } : station]));
-  const content: GameContent = { ...GAME_CONTENT, tram: { ...GAME_CONTENT.tram, stations } };
-  assert.ok(findContentIssues(content).some((issue) => issue.startsWith('Tram station "furnace-lock" stands in "coolant-lock"')));
+  const stations = new Map([...FIXTURE_CONTENT.tram.stations].map(([id, station]) => [id, id === 'outpost-station' ? { ...station, areaId: 'post' } : station]));
+  const content: GameContent = { ...FIXTURE_CONTENT, tram: { ...FIXTURE_CONTENT.tram, stations } };
+  assert.ok(findContentIssues(content).some((issue) => issue.startsWith('Tram station "outpost-station" stands in "post"')));
 });

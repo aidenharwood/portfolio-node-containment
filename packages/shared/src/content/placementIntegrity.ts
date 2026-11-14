@@ -6,7 +6,7 @@ import { objectFootprintTiles } from '../world/footprint.ts';
 import { CARDINAL_OFFSETS, rectContains, tileKey, type Facing, type TilePoint, type TileRect } from '../world/geometry.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
 import { TILE_KINDS, type TileKindId } from '../world/tiles.ts';
-import { BACKLESS_REACH, FURNISHING_PROFILES, NARROW_OPENING, OPENING_APRON, REPEAT_LIMIT, RHYTHM_LIMIT, WIDE_OPENING_GAP, ROOM_FLOORS, ROOM_SIGNATURES, SIGNATURE_MIN_TILES, type FurnishingProfile } from './furnishingCatalogue.ts';
+import { BACKLESS_REACH, NARROW_OPENING, OPENING_APRON, REPEAT_LIMIT, RHYTHM_LIMIT, WIDE_OPENING_GAP, ROOM_FLOORS, ROOM_SIGNATURES, SIGNATURE_MIN_TILES, type FurnishingProfile } from './furnishingCatalogue.ts';
 import type { GameContent } from './gameContent.ts';
 import { PREFABS } from './prefabs/index.ts';
 import type { DressingTheme } from './prefabs/types.ts';
@@ -54,7 +54,8 @@ const edgeTiles = (item: Placed, toward: Facing): TilePoint[] => {
   return item.tiles.map((tile) => add(tile, STEP[toward])).filter((tile) => !owned.has(tileKey(tile)));
 };
 
-const roomOf = (scene: Scene, point: TilePoint): Room | undefined => scene.rooms.find((room) => rectContains(room.rect, point));
+const roomOf = (scene: Scene, point: TilePoint): Room | undefined =>
+  scene.rooms.filter((room) => rectContains(room.rect, point)).sort((a, b) => a.rect.width * a.rect.height - b.rect.width * b.rect.height)[0];
 
 function sceneOf(content: GameContent, district: DistrictDefinition, report: Report): Scene {
   const layout = parseTileLayout(district.map);
@@ -65,7 +66,7 @@ function sceneOf(content: GameContent, district: DistrictDefinition, report: Rep
   for (const placement of district.objects) {
     const definition = content.worldObjects.get(placement.objectId);
     if (!definition) continue;
-    const item = { placement, definition, profile: FURNISHING_PROFILES[placement.objectId], tiles: objectFootprintTiles(definition, placement), facing: placement.facing ?? 'south' };
+    const item = { placement, definition, profile: definition.furnishing, tiles: objectFootprintTiles(definition, placement), facing: placement.facing ?? 'south' };
     placed.push(item);
     if (item.profile?.mount !== 'flat') for (const tile of item.tiles) occupied.set(tileKey(tile), item);
   }
@@ -89,7 +90,7 @@ function findCatalogueIssues(scene: Scene): void {
   for (const item of scene.placed) {
     if (!isDressing(item.definition) || item.profile || reported.has(item.placement.objectId)) continue;
     reported.add(item.placement.objectId);
-    scene.report(`"${item.placement.objectId}" at ${at(item.placement.position)} has no furnishing profile; add it to FURNISHING_PROFILES`);
+    scene.report(`"${item.placement.objectId}" at ${at(item.placement.position)} has no furnishing profile; give its definition one`);
   }
 }
 
@@ -130,6 +131,7 @@ function findSignatureIssues(scene: Scene): void {
   for (const room of scene.rooms) {
     if (!room.theme || walkableIn(scene, room.rect) < SIGNATURE_MIN_TILES) continue;
     const signature = ROOM_SIGNATURES[room.theme];
+    if (!signature || signature.length === 0) continue;
     const present = scene.placed.some((item) => signature.includes(item.placement.objectId) && item.tiles.some((tile) => rectContains(room.rect, tile)));
     if (!present) scene.report(`room "${room.id}" at ${at(room.rect)} is dressed as ${room.theme} but holds none of its signature pieces (${signature.join(', ')})`);
   }

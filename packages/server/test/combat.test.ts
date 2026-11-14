@@ -15,9 +15,11 @@ import { CONSUMABLE_COOLDOWN_MESSAGE } from '../src/gameplay/gearController.ts';
 import { containSpecimen } from './support/containment.ts';
 import { anchor, createHarness, finishDialogue, type Harness, at, districtOf, inRoom, levelPoint, localInRoom } from './support/testHarness.ts';
 
-const ATRIUM_NEAR_KADE: WorldLocation = inRoom('meridian-atrium', 'response-office');
-const ATRIUM_NEAR_SEL: WorldLocation = inRoom('meridian-atrium', 'archives');
-const RANGE_GALLERY: WorldLocation = inRoom('intake-wing', 'range-gallery');
+const NEAR_MITE: WorldLocation = inRoom('fx-field', 'lane', { x: 18, y: 4 });
+const FAR_FROM_MITE: WorldLocation = inRoom('fx-field', 'lane', { x: 34, y: 4 });
+const BY_TRADER: WorldLocation = inRoom('fx-hub', 'plaza', { x: 6, y: 5 });
+const leashBreak = () => levelPoint('fx-field', localInRoom('fx-field', 'lane', { x: 1, y: 5 }));
+const inSafehouse = (harness: Harness) => harness.gameplay.world.levelOf(harness.player).areasAt(harness.player.position).some((area) => area.id === 'safehouse');
 
 const activeAt = (questId: string, stepIndex = 0, objectiveCount = 1): QuestProgress => ({
   questId,
@@ -54,143 +56,12 @@ function defeat(harness: Harness, instanceId: string, limit = 2000): void {
 }
 
 describe('combat', () => {
-  test('Live Fire teaches wielding, fighting and healing, then opens the storyline', () => {
-    const harness = createHarness({
-      prepare: prepared(RANGE_GALLERY, { 'orientation-protocol': completed('orientation-protocol'), 'live-fire': activeAt('live-fire') }),
-    });
-    const { player } = harness;
-
-    harness.talkTo('intake-osei');
-    finishDialogue(harness);
-    assert.equal(countItem(player.record.inventory, 'stun-baton'), 1);
-    assert.equal(stepOf(harness, 'live-fire'), 1);
-
-    harness.equipItem('stun-baton');
-    assert.equal(player.record.equipment.primary, 'stun-baton');
-    assert.equal(stepOf(harness, 'live-fire'), 2);
-
-    const closeQuartersBefore = player.record.skills.closeQuarters;
-    for (const drone of ['range-drone-a', 'range-drone-b', 'range-drone-c']) defeat(harness, drone);
-    assert.ok(player.record.skills.closeQuarters > closeQuartersBefore);
-    const swing = harness.sink.messages.find((message) => message.type === 'combat.hit' && message.attackerId === player.entityId);
-    assert.ok(swing?.type === 'combat.hit' && swing.weapon === 'baton', 'swings tell clients which weapon to animate');
-    assert.ok(player.integrity < player.maxIntegrity, 'drones should land at least one hit');
-    assert.equal(stepOf(harness, 'live-fire'), 3);
-
-    const integrityBefore = player.integrity;
-    const medgelSlot = player.record.inventory.findIndex((slot) => slot?.itemId === 'medgel');
-    harness.send({ type: 'inventory.use', slotIndex: medgelSlot });
-    assert.ok(player.integrity > integrityBefore);
-    assert.equal(stepOf(harness, 'live-fire'), 4);
-
-    harness.talkTo('intake-osei');
-    finishDialogue(harness);
-    assert.equal(stepOf(harness, 'live-fire'), 5);
-    assert.equal(clearanceTierOf(player.record.flags), 0);
-
-    harness.talkTo('intake-osei');
-    finishDialogue(harness);
-    assert.equal(clearanceTierOf(player.record.flags), 1, 'Osei signs off Clearance I');
-    assert.equal(stepOf(harness, 'live-fire'), 6);
-
-    const understudy = harness.gameplay.world.levelOf(player).creatureByInstance('range-understudy-a');
-    assert.ok(understudy);
-    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'range-understudy-a', interactionIndex: 0 });
-    harness.ticksUntil(() => player.heldFireOn === understudy.entityId, 600);
-    assert.ok(understudy.isAlive, 'a cleared trainee pulls their blows instead of breaking the specimen');
-    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'range-understudy-a', interactionIndex: 1 });
-    harness.ticksUntil(() => !understudy.isAlive, 50);
-    assert.equal(clearanceTierOf(player.record.flags), 1, 'containing spends nothing');
-    assert.ok(harness.sink.messages.some((message) => message.type === 'combat.death' && message.containedBy === player.entityId));
-    assert.equal(stepOf(harness, 'live-fire'), 7);
-
-    harness.interactWithObject('intake-bed-a');
-    assert.equal(player.integrity, player.maxIntegrity);
-    assert.equal(stepOf(harness, 'live-fire'), 8);
-
-    assert.equal(countItem(player.record.inventory, 'training-focus'), 1);
-    harness.equipItem('training-focus');
-    assert.equal(player.record.equipment.primary, 'training-focus');
-    assert.equal(stepOf(harness, 'live-fire'), 9);
-
-    const psionicsBefore = player.record.skills.psionics;
-    harness.ticksUntil(() => harness.gameplay.world.levelOf(player).creatureByInstance('range-drone-a')?.isAlive === true, 200);
-    defeat(harness, 'range-drone-a');
-    assert.ok(player.record.skills.psionics > psionicsBefore, 'focus kills train Psionics');
-    const pulse = harness.sink.messages.findLast((message) => message.type === 'combat.hit' && message.attackerId === player.entityId);
-    assert.ok(pulse?.type === 'combat.hit' && pulse.weapon === 'focus' && pulse.style === 'psionic');
-    assert.equal(stepOf(harness, 'live-fire'), 10);
-
-    harness.talkTo('intake-osei');
-    finishDialogue(harness);
-    assert.equal(stepOf(harness, 'live-fire'), 'completed');
-    assert.equal(stepOf(harness, 'cleared-for-transit'), 0);
-  });
-
-  test('The Knocking can be completed end to end through Sector 2', () => {
-    const harness = createHarness({
-      prepare: prepared(ATRIUM_NEAR_KADE, { 'live-fire': completed('live-fire'), 'the-knocking': activeAt('the-knocking') }, {
-        ...veteranSkills(),
-        equipment: { torso: 'intake-jumpsuit', legs: 'intake-trousers', feet: 'work-boots', primary: 'stun-baton' },
-      }),
-    });
-    const { player } = harness;
-
-    harness.talkTo('atrium-kade');
-    finishDialogue(harness);
-    assert.equal(stepOf(harness, 'the-knocking'), 1);
-
-    harness.talkTo('atrium-sel');
-    finishDialogue(harness);
-    assert.equal(stepOf(harness, 'the-knocking'), 2);
-
-    harness.talkTo('atrium-lund');
-    finishDialogue(harness, (text) => text.includes('override key'));
-    assert.equal(countItem(player.record.inventory, 'quarantine-override-key'), 1);
-    assert.equal(stepOf(harness, 'the-knocking'), 3);
-
-    harness.gameplay.teleport(player, anchor('hydroponics', 'bulkheadOutside'));
-    harness.interactWithObject('sector2-bulkhead/0,0');
-    harness.ticksUntil(() => player.path.length === 0);
-    assert.equal(districtOf(player), 'sector-two');
-    assert.equal(stepOf(harness, 'the-knocking'), 4);
-
-    for (const mite of ['s2-mite-corridor-a', 's2-mite-corridor-b', 's2-mite-corridor-c', 's2-mite-corridor-d']) {
-      if (stepOf(harness, 'the-knocking') !== 4) break;
-      defeat(harness, mite);
-    }
-    assert.equal(stepOf(harness, 'the-knocking'), 5);
-    const zoneLoot = [...harness.gameplay.world.levelOf(player).groundItems.values()];
-    assert.ok(zoneLoot.some((item) => item.itemId === 'gloam-chitin' && item.ownerId === player.entityId), 'mite loot should land on the floor, reserved for the killer');
-
-    harness.interactWithObject('s2-lab-terminal');
-    harness.ticksUntil(() => countItem(player.record.inventory, 'expedition-log') === 1, 400);
-    assert.equal(stepOf(harness, 'the-knocking'), 6);
-
-    containSpecimen(harness, 's2-warden', 4000);
-    assert.equal(stepOf(harness, 'the-knocking'), 7);
-
-    harness.ticksUntil(() => player.combatTargetId === null, 600);
-    harness.gameplay.teleport(player, anchor('sector-two', 'bulkheadInside'));
-    harness.interactWithObject('sector2-bulkhead/0,0');
-    harness.ticksUntil(() => player.path.length === 0);
-    assert.equal(districtOf(player), 'hydroponics');
-
-    harness.gameplay.teleport(player, inRoom('meridian-atrium', 'archives'));
-    harness.talkTo('atrium-sel');
-    finishDialogue(harness, (text) => text.startsWith('Hand over'));
-    assert.equal(stepOf(harness, 'the-knocking'), 'completed');
-    assert.ok(player.hasFlag('storyline.sector-three-revealed'));
-    assert.equal(countItem(player.record.inventory, 'response-helmet'), 1);
-  });
-
   test('an incapacitated operative is recovered to safety at full integrity', () => {
     const harness = createHarness({
-      prepare: prepared(inRoom('sector-two', 'corridor'), {}, { vitals: { integrity: 1 } }),
+      prepare: prepared(NEAR_MITE, {}, { vitals: { integrity: 1 } }),
     });
     const { player } = harness;
-    harness.ticksUntil(() => districtOf(player) === 'meridian-atrium', 200);
-    assert.ok(harness.gameplay.world.levelOf(player).areasAt(player.position).some((area) => area.id === 'medbay'), 'recovery wakes operatives in the medbay');
+    harness.ticksUntil(() => inSafehouse(harness), 200);
     assert.equal(player.integrity, player.maxIntegrity);
     assert.equal(player.combatTargetId, null);
     assert.match(harness.sink.last('notice')?.text ?? '', /incapacitated/);
@@ -198,30 +69,30 @@ describe('combat', () => {
 
   test('an incapacitated operative lies where they fell before medical recovers them', () => {
     const harness = createHarness({
-      prepare: prepared(inRoom('sector-two', 'corridor'), {}, { vitals: { integrity: 1 } }),
+      prepare: prepared(NEAR_MITE, {}, { vitals: { integrity: 1 } }),
     });
     const { player, sink } = harness;
     const fell = () => sink.messages.some((message) => message.type === 'combat.death' && message.entityId === player.entityId);
     harness.ticksUntil(fell, 200);
     const fallenAt = player.position;
-    assert.equal(districtOf(player), 'sector-two');
+    assert.equal(districtOf(player), 'fx-field');
     assert.equal(player.integrity, 0);
 
-    harness.send({ type: 'world.walk', target: levelPoint('sector-two', localInRoom('sector-two', 'airlock')) });
+    harness.send({ type: 'world.walk', target: leashBreak() });
     let ticks = 0;
-    while (districtOf(player) === 'sector-two' && ticks < 50) {
+    while (!inSafehouse(harness) && ticks < 50) {
       assert.deepEqual(player.position, fallenAt);
       harness.gameplay.tick();
       ticks++;
     }
     assert.equal(ticks, PLAYER_RECOVERY_TICKS);
-    assert.equal(districtOf(player), 'meridian-atrium');
+    assert.ok(inSafehouse(harness));
     assert.equal(player.integrity, player.maxIntegrity);
   });
 
   test('an operative who disconnects while incapacitated is saved recovered', () => {
     const harness = createHarness({
-      prepare: prepared(inRoom('sector-two', 'corridor'), {}, { vitals: { integrity: 1 } }),
+      prepare: prepared(NEAR_MITE, {}, { vitals: { integrity: 1 } }),
     });
     const { player, sink } = harness;
     harness.ticksUntil(() => sink.messages.some((message) => message.type === 'combat.death' && message.entityId === player.entityId), 200);
@@ -229,20 +100,20 @@ describe('combat', () => {
     const saved = harness.saved.at(-1);
     assert.ok(saved);
     assert.equal(saved.vitals.integrity, player.maxIntegrity);
-    assert.deepEqual(saved.location, anchor('meridian-atrium', 'recovery'));
+    assert.deepEqual(saved.location, anchor('fx-field', 'recovery'));
   });
 
   test('creatures give up the chase beyond their leash and heal', () => {
     const harness = createHarness({
-      prepare: prepared(inRoom('sector-two', 'corridor'), {}, veteranSkills()),
+      prepare: prepared(NEAR_MITE, {}, veteranSkills()),
       combatRandom: () => 0.99,
     });
     const { player, gameplay } = harness;
-    const mite = gameplay.world.levelOf(player).creatureByInstance('s2-mite-corridor-a');
+    const mite = gameplay.world.levelOf(player).creatureByInstance('field-mite-a');
     assert.ok(mite);
-    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-mite-corridor-a', interactionIndex: 0 });
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'field-mite-a', interactionIndex: 0 });
     harness.ticksUntil(() => mite.targetId === player.entityId, 50);
-    harness.send({ type: 'world.walk', target: levelPoint('sector-two', localInRoom('sector-two', 'airlock')) });
+    harness.send({ type: 'world.walk', target: leashBreak() });
     harness.ticksUntil(() => mite.targetId === null && mite.returningHome === false, 400);
     assert.equal(mite.integrity, mite.definition.integrity);
   });
@@ -250,17 +121,17 @@ describe('combat', () => {
   test('creatures under ranged fire chase past their leash instead of fleeing home to heal', () => {
     const skills = createStartingSkills({ marksmanship: experienceForLevel(40), fortitude: experienceForLevel(40) });
     const harness = createHarness({
-      prepare: prepared(anchor('sector-two', 'corridorRange'), {}, {
+      prepare: prepared(FAR_FROM_MITE, {}, {
         skills,
         vitals: { integrity: maxIntegrityFor(skills) },
-        equipment: { primary: 'lampline-rifle' },
+        equipment: { primary: 'long-rifle' },
       }),
       combatRandom: () => 0.99,
     });
     const { player, gameplay } = harness;
-    const mite = gameplay.world.levelOf(player).creatureByInstance('s2-mite-corridor-a');
+    const mite = gameplay.world.levelOf(player).creatureByInstance('field-mite-a');
     assert.ok(mite);
-    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-mite-corridor-a', interactionIndex: 0 });
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'field-mite-a', interactionIndex: 0 });
     let fled = false;
     let farthest = 0;
     for (let tick = 0; tick < 120; tick++) {
@@ -274,13 +145,13 @@ describe('combat', () => {
   });
 
   test('aggressive creatures ignore operatives far above their level, but not fresh ones', () => {
-    const veteran = createHarness({ prepare: prepared(inRoom('sector-two', 'corridor'), {}, veteranSkills()) });
-    const ignoring = veteran.gameplay.world.levelOf(veteran.player).creatureByInstance('s2-mite-corridor-a');
+    const veteran = createHarness({ prepare: prepared(NEAR_MITE, {}, veteranSkills()) });
+    const ignoring = veteran.gameplay.world.levelOf(veteran.player).creatureByInstance('field-mite-a');
     for (let tick = 0; tick < 30; tick++) veteran.gameplay.tick();
     assert.equal(ignoring?.targetId, null);
 
-    const fresh = createHarness({ prepare: prepared(inRoom('sector-two', 'corridor'), {}) });
-    const hunting = fresh.gameplay.world.levelOf(fresh.player).creatureByInstance('s2-mite-corridor-a');
+    const fresh = createHarness({ prepare: prepared(NEAR_MITE, {}) });
+    const hunting = fresh.gameplay.world.levelOf(fresh.player).creatureByInstance('field-mite-a');
     fresh.ticksUntil(() => hunting?.targetId === fresh.player.entityId, 50);
   });
 
@@ -301,12 +172,12 @@ describe('combat', () => {
       harness.send({ type: 'inventory.use', slotIndex });
     };
 
+    const noticesBefore = harness.sink.messages.filter((message) => message.type === 'notice').length;
     useMedgel();
     assert.equal(countItem(player.record.inventory, 'medgel'), 2);
-    assert.equal(harness.sink.last('notice'), undefined);
     useMedgel();
     assert.equal(countItem(player.record.inventory, 'medgel'), 2);
-    assert.equal(harness.sink.last('notice'), undefined);
+    assert.equal(harness.sink.messages.filter((message) => message.type === 'notice').length, noticesBefore);
     assert.equal(harness.sink.last('chat.message')?.text, CONSUMABLE_COOLDOWN_MESSAGE);
 
     harness.gameplay.tick();
@@ -320,135 +191,36 @@ describe('combat', () => {
   });
 });
 
-describe('storyline continuity', () => {
-  test('operatives who finished orientation earlier are handed the follow-up quest on login', () => {
+describe('shops', () => {
+  test('a trader sells medgel for scrip and buys back loot', () => {
     const harness = createHarness({
-      prepare: prepared(ATRIUM_NEAR_KADE, { 'orientation-protocol': completed('orientation-protocol') }),
-    });
-    assert.equal(stepOf(harness, 'field-fabrication'), 0);
-  });
-});
-
-describe('economy', () => {
-  test('requisitions sells medgel for scrip and buys back loot', () => {
-    const harness = createHarness({
-      prepare: prepared(anchor('meridian-atrium', 'okaforCounter'), {}),
+      prepare: prepared(BY_TRADER, {}),
     });
     const { player } = harness;
-    harness.approach('atrium-okafor');
-    harness.gameplay.openShop(player, 'requisitions', 'atrium-okafor');
+    harness.approach('hub-trader');
+    harness.gameplay.openShop(player, 'supplies', 'hub-trader');
     const scripFor = () => countItem(player.record.inventory, 'meridian-scrip');
     harness.send({ type: 'shop.buy', itemId: 'medgel', quantity: 2 });
     assert.equal(countItem(player.record.inventory, 'medgel'), 3, 'cannot afford without scrip');
 
-    player.update({ inventory: [{ itemId: 'meridian-scrip', quantity: 20 }, { itemId: 'gloam-chitin', quantity: 4 }, ...player.record.inventory.slice(2)] });
+    player.update({ inventory: [{ itemId: 'meridian-scrip', quantity: 20 }, { itemId: 'gel-sac', quantity: 4 }, ...player.record.inventory.slice(2)] });
     harness.send({ type: 'shop.buy', itemId: 'medgel', quantity: 2 });
     assert.equal(scripFor(), 8);
     assert.ok(countItem(player.record.inventory, 'medgel') >= 2);
 
-    const chitinSlot = player.record.inventory.findIndex((slot) => slot?.itemId === 'gloam-chitin');
+    const chitinSlot = player.record.inventory.findIndex((slot) => slot?.itemId === 'gel-sac');
     harness.send({ type: 'shop.sell', slotIndex: chitinSlot, quantity: 4 });
-    assert.equal(countItem(player.record.inventory, 'gloam-chitin'), 0);
+    assert.equal(countItem(player.record.inventory, 'gel-sac'), 0);
     assert.equal(scripFor(), 8 + 4 * 3);
   });
 
   test('walking away closes the shop', () => {
-    const harness = createHarness({ prepare: prepared(anchor('meridian-atrium', 'okaforCounter'), {}) });
-    harness.gameplay.openShop(harness.player, 'requisitions', 'atrium-okafor');
-    harness.send({ type: 'world.walk', target: levelPoint('meridian-atrium', localInRoom('meridian-atrium', 'workshop')) });
+    const harness = createHarness({ prepare: prepared(BY_TRADER, {}) });
+    harness.gameplay.openShop(harness.player, 'supplies', 'hub-trader');
+    harness.send({ type: 'world.walk', target: levelPoint('fx-hub', localInRoom('fx-hub', 'hall')) });
     assert.equal(harness.player.shopSession, null);
   });
 });
 
 describe('marksmanship path', () => {
-  test('Osei issues one dart pistol, and shooting with it trains marksmanship from level 1', () => {
-    const harness = createHarness({
-      prepare: prepared(RANGE_GALLERY, { 'live-fire': completed('live-fire'), 'the-knocking': completed('the-knocking') }),
-    });
-    const { player } = harness;
-    harness.talkTo('intake-osei');
-    finishDialogue(harness, (text) => text.includes('sidearm'));
-    assert.equal(countItem(player.record.inventory, 'dart-pistol'), 1);
-    harness.talkTo('intake-osei');
-    finishDialogue(harness, (text) => text.includes('sidearm'));
-    assert.equal(countItem(player.record.inventory, 'dart-pistol'), 1, 'only issued once');
-
-    harness.equipItem('dart-pistol');
-    assert.equal(player.record.equipment.primary, 'dart-pistol');
-    const before = player.record.skills.marksmanship;
-    defeat(harness, 'range-drone-a');
-    assert.ok(player.record.skills.marksmanship > before);
-    assert.equal(player.record.skills.closeQuarters, 0);
-  });
-});
-
-describe('the far side', () => {
-  test('The Far Side runs from Varga, through the Undercroft, to Halvorsen and back to Sel', () => {
-    const skills = createStartingSkills({ closeQuarters: experienceForLevel(40), fortitude: experienceForLevel(45) });
-    const harness = createHarness({
-      prepare: prepared(inRoom('intake-wing', 'diagnostics'), { 'the-knocking': completed('the-knocking'), 'the-far-side': activeAt('the-far-side') }, {
-        skills,
-        vitals: { integrity: maxIntegrityFor(skills) },
-        equipment: { torso: 'composite-plate', legs: 'intake-trousers', feet: 'work-boots', primary: 'shock-maul' },
-      }),
-    });
-    const { player } = harness;
-
-    harness.talkTo('intake-varga');
-    finishDialogue(harness);
-    assert.equal(countItem(player.record.inventory, 'lantern-lens'), 1);
-    assert.ok(player.hasFlag('clearance.undercroft'));
-    assert.equal(stepOf(harness, 'the-far-side'), 1);
-
-    harness.gameplay.teleport(player, anchor('meridian-atrium', 'serviceLiftArrival'));
-    harness.interactWithObject('atrium-service-lift/1,0');
-    assert.equal(districtOf(player), 'undercroft');
-    assert.equal(stepOf(harness, 'the-far-side'), 2);
-
-    harness.interactWithObject('uc-junction-a');
-    harness.ticksUntil(() => player.combatTargetId === null && player.path.length === 0, 2000);
-    assert.deepEqual(harness.sink.last('player.state')?.self.usedObjects, ['uc-junction-a'], 'the client learns which junctions are already restored');
-    harness.interactWithObject('uc-junction-c');
-    harness.ticksUntil(() => player.combatTargetId === null && player.path.length === 0, 2000);
-    harness.interactWithObject('uc-junction-b');
-    harness.ticksUntil(() => stepOf(harness, 'the-far-side') === 3, 2000);
-    assert.ok(player.hasFlag('undercroft.power-restored'));
-
-    harness.interactWithObject('uc-sector-three-seal/0,0');
-    assert.equal(districtOf(player), 'undercroft', 'the seal stays shut while the Foreman stands');
-
-    containSpecimen(harness, 'uc-foreman', 6000);
-    assert.equal(stepOf(harness, 'the-far-side'), 4);
-    harness.ticksUntil(() => player.combatTargetId === null, 2000);
-
-    harness.interactWithObject('uc-sector-three-seal/0,0');
-    assert.equal(districtOf(player), 'sector-three');
-    assert.equal(stepOf(harness, 'the-far-side'), 5);
-
-    harness.talkTo('s3-halvorsen');
-    finishDialogue(harness);
-    assert.equal(stepOf(harness, 'the-far-side'), 6);
-
-    harness.gameplay.teleport(player, ATRIUM_NEAR_SEL);
-    harness.talkTo('atrium-sel');
-    finishDialogue(harness, (text) => text.startsWith('Halvorsen is alive'));
-    assert.equal(stepOf(harness, 'the-far-side'), 'completed');
-    assert.ok(player.hasFlag('storyline.halvorsen-found'));
-  });
-
-  test('Mags trades, and Leech Season pays out a respirator for five sacs', () => {
-    const harness = createHarness({ prepare: prepared(inRoom('undercroft', 'camp'), {}) });
-    const { player } = harness;
-    harness.talkTo('undercroft-mags');
-    finishDialogue(harness, (text) => text.startsWith('Need any work') || text.startsWith("I'll get"));
-    assert.equal(stepOf(harness, 'leech-season'), 0);
-
-    player.update({ inventory: [{ itemId: 'leech-sac', quantity: 5 }, ...player.record.inventory.slice(1)] });
-    harness.gameplay.raiseQuestEvent(player, { type: 'loadoutChanged' });
-    harness.talkTo('undercroft-mags');
-    finishDialogue(harness, (text) => text.startsWith('Hand over'));
-    assert.equal(stepOf(harness, 'leech-season'), 'completed');
-    assert.equal(countItem(player.record.inventory, 'filter-respirator'), 1);
-    assert.equal(countItem(player.record.inventory, 'leech-sac'), 0);
-  });
 });

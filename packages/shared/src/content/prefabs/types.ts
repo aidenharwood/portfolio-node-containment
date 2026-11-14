@@ -22,6 +22,10 @@ export const DRESSING_THEMES = [
   'cold',
   'works',
   'transit',
+  'street',
+  'shop',
+  'home',
+  'containment',
 ] as const;
 
 export type DressingTheme = (typeof DRESSING_THEMES)[number];

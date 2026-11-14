@@ -17,74 +17,7 @@ export interface InstallationKind {
   readonly parts: Readonly<Record<string, InstallationPart>>;
 }
 
-const APRON: InstallationPart = { suffix: 'apron', model: 'stationApron', floor: true };
-
-const station = (coreId: WorldObjectId, left: WorldObjectModel, right: WorldObjectModel): InstallationKind => ({
-  coreIds: [coreId],
-  layout: ['lCr', 'aaa'],
-  parts: { l: { suffix: 'intake', model: left }, r: { suffix: 'output', model: right }, a: APRON },
-});
-
-export const INSTALLATION_KINDS: readonly InstallationKind[] = [
-  station('refinery', 'refineryHopper', 'refineryPress'),
-  station('fabricator', 'fabricatorFeeder', 'fabricatorBench'),
-  station('synthesiser', 'synthReagents', 'synthColdStore'),
-  {
-    coreIds: ['atrium-service-lift', 'undercroft-service-lift', 'calder-lift-down', 'calder-lift-up', 'vesper-lift-down', 'vesper-lift-up'],
-    layout: ['pCp', 'ldr'],
-    parts: {
-      p: { suffix: 'pylon', model: 'liftPylon' },
-      l: { suffix: 'deck-left', model: 'liftDeckLeft' },
-      d: { suffix: 'deck', model: 'liftDeck' },
-      r: { suffix: 'deck-right', model: 'liftDeckRight' },
-    },
-  },
-  {
-    coreIds: ['atrium-deep-line', 'deepwatch-deep-line'],
-    layout: ['lCr', 'aaa'],
-    parts: { l: { suffix: 'frame-left', model: 'wallLiftFrameLeft' }, r: { suffix: 'frame-right', model: 'wallLiftFrameRight' }, a: APRON },
-  },
-  {
-    coreIds: ['verdance-anomaly', 'verdant-fold-exit', 'return-chute', 'office-return-chute'],
-    layout: ['lCr', 'aaa'],
-    parts: {
-      l: { suffix: 'shards-left', model: 'riftShardsLeft' },
-      r: { suffix: 'shards-right', model: 'riftShardsRight' },
-      a: { suffix: 'scar', model: 'riftApron', floor: true },
-    },
-  },
-  {
-    coreIds: [
-      'sealed-bulkhead',
-      'sector-three-return',
-      'sector-three-deepwatch-door',
-      'deepwatch-threshold-door',
-      'cryovault-door',
-      'signal-array-door',
-      'archive-door',
-      'sealed-reading-door',
-      'furnace-door',
-      'reactor-door',
-      'calder-gate',
-      'nave-door',
-      'vesper-gate',
-      'surgery-door',
-    ],
-    coreModel: 'bulkheadLeafLeft',
-    layout: ['Cr'],
-    parts: { r: { suffix: 'leaf-right', model: 'bulkheadLeafRight' } },
-  },
-  {
-    coreIds: ['sector-three-seal'],
-    layout: ['Cr'],
-    parts: { r: { suffix: 'plate', model: 'sealPlate' } },
-  },
-  {
-    coreIds: ['the-knock', 'far-side-return'],
-    layout: ['lCr'],
-    parts: { l: { suffix: 'jamb-left', model: 'knockFrameLeft' }, r: { suffix: 'jamb-right', model: 'knockFrameRight' } },
-  },
-];
+export const INSTALLATION_KINDS: readonly InstallationKind[] = [];
 
 const KIND_OF = new Map<WorldObjectId, InstallationKind>(INSTALLATION_KINDS.flatMap((kind) => kind.coreIds.map((coreId) => [coreId, kind] as const)));
 

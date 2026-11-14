@@ -1,4 +1,4 @@
-import { TILE_KINDS, type Facing, type TilePoint, type TileRect, type ZoneLight } from '@containment/shared';
+import { isBuildingWall, isOutdoorFloor, TILE_KINDS, type Facing, type TilePoint, type TileRect, type ZoneLight } from '@containment/shared';
 import type { ActiveZone } from '../../state/worldState.ts';
 import { noise3 } from '../voxel/palette.ts';
 
@@ -44,9 +44,9 @@ function mountsIn(zone: ActiveZone, rect: TileRect, occupied: ReadonlySet<string
   const mounts: Mount[] = [];
   for (let y = rect.y; y < rect.y + rect.height; y++) {
     for (let x = rect.x; x < rect.x + rect.width; x++) {
-      if (!TILE_KINDS[tile(x, y)].walkable || tile(x, y) === 'door' || occupied.has(`${x},${y}`)) continue;
+      if (!TILE_KINDS[tile(x, y)].walkable || isOutdoorFloor(tile(x, y)) || tile(x, y) === 'door' || occupied.has(`${x},${y}`)) continue;
       if (MOUNT_PREFERENCE.some((facing) => tile(x + FACING_STEP[facing].x, y + FACING_STEP[facing].y) === 'door')) continue;
-      const facing = MOUNT_PREFERENCE.find((side) => tile(x + FACING_STEP[side].x, y + FACING_STEP[side].y) === 'wall');
+      const facing = MOUNT_PREFERENCE.find((side) => isBuildingWall(tile(x + FACING_STEP[side].x, y + FACING_STEP[side].y)));
       if (!facing) continue;
       mounts.push({ floor: { x, y }, wall: { x: x + FACING_STEP[facing].x, y: y + FACING_STEP[facing].y }, facing });
     }

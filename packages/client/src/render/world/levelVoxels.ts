@@ -1,4 +1,4 @@
-import { TILE_KINDS, tileKey, type DecalCell, type TileKindId, type TileLayout, type TileRect } from '@containment/shared';
+import { isBuildingWall, isOutdoorFloor, TILE_KINDS, tileKey, type DecalCell, type TileKindId, type TileLayout, type TileRect, type WallMaterialId } from '@containment/shared';
 import { DenseVolume } from '../voxel/denseVolume.ts';
 import { darken, jitter, lighten, mix, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE, VOXEL_GLASS, VOXEL_SOLID } from '../voxel/voxelKinds.ts';
@@ -63,6 +63,35 @@ const COLORS = {
   sleeper: 0x2e241c,
   tunnel: 0x040608,
   tunnelLamp: 0xff5e3a,
+  grass: 0x3f5e2a,
+  grassLight: 0x5c7a34,
+  grassDry: 0x6b6a3a,
+  dirt: 0x5a4632,
+  dirtDark: 0x463626,
+  gravel: 0x6e6a62,
+  gravelDark: 0x55524c,
+  gravelLight: 0x8a857b,
+  asphalt: 0x26282b,
+  asphaltWorn: 0x2e3033,
+  asphaltLine: 0xd8c27a,
+  paving: 0x434548,
+  pavingJoint: 0x2c2e31,
+  waterBed: 0x16262a,
+  rock: 0x5d5a55,
+  rockDark: 0x45423e,
+  rockLight: 0x7a766e,
+  moss: 0x4d6630,
+  needles: 0x3a3022,
+  trunk: 0x4a3420,
+  pine: 0x24402a,
+  pineLight: 0x355a34,
+  pineDark: 0x172a1c,
+  fencePost: 0x6a6e70,
+  fenceWire: 0x9aa2a6,
+  barrier: 0x4c4f52,
+  barrierDark: 0x3a3d40,
+  barrierCap: 0x5e6266,
+  barrierLamp: 0xffb24a,
 } as const;
 
 type Axis = 'x' | 'y';
@@ -90,7 +119,11 @@ export function paintTileRows(volume: DenseVolume, layout: TileLayout, region: T
     for (let tx = region.x - 1; tx < region.x + region.width + 1; tx++) {
       const kind = layout.tileAt({ x: tx, y: ty });
       if (kind === 'void') continue;
-      if (kind === 'wall') paintWall(volume, layout, tx, ty);
+      if (isBuildingWall(kind)) paintWall(volume, layout, tx, ty, kind);
+      else if (kind === 'rock') paintRock(volume, layout, tx, ty);
+      else if (kind === 'trees') paintTrees(volume, tx, ty);
+      else if (kind === 'fence') paintFence(volume, layout, tx, ty);
+      else if (kind === 'barrier') paintBarrier(volume, layout, tx, ty);
       else if (kind === 'glass') paintGlass(volume, tx, ty);
       else if (kind === 'track') paintTrack(volume, trackAxis(layout, tx, ty), tx, ty);
       else paintFloor(volume, kind, tx, ty, kind === 'door' ? doorAxis(layout, tx, ty) : 'x', decals?.get(tileKey({ x: tx, y: ty })), seamsOf(layout, kind, tx, ty), blendNeighborsOf(layout, kind, tx, ty));
@@ -193,6 +226,10 @@ function paintFloor(volume: DenseVolume, kind: TileKindId, tx: number, ty: numbe
       volume.set(vx, SUBFLOOR, vz, kind === 'grate' ? COLORS.grateGlow : COLORS.subfloor, kind === 'grate' ? VOXEL_EMISSIVE : VOXEL_SOLID);
       if (kind === 'coolant') {
         volume.set(vx, SUBFLOOR, vz, jitter(COLORS.coolantBed, 0.03, smoothNoise(vx, vz, 6, 41)));
+        continue;
+      }
+      if (kind === 'water') {
+        volume.set(vx, SUBFLOOR, vz, jitter(COLORS.waterBed, 0.05, smoothNoise(vx, vz, 5, 43)));
         continue;
       }
       const blend = blendNeighbors.length > 0 ? floorBlend(kind, blendNeighbors, vx, vz) : null;
@@ -306,6 +343,32 @@ function floorVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: nu
       if ((along + plank * 5) % 24 === 0) return solid(COLORS.boardsSeam);
       return solid(jitter(COLORS.boards, 0.05, noise3(plank, Math.floor((along + plank * 5) / 24), 0, 43)));
     }
+    case 'grass': {
+      const patch = smoothNoise(vx, vz, 11, 61);
+      const blade = noise3(vx, vz, 0, 67);
+      if (patch > 0.72) return solid(jitter(COLORS.grassDry, 0.04, blade));
+      if (blade > 0.86) return solid(COLORS.grassLight);
+      return solid(jitter(mix(COLORS.grass, COLORS.grassLight, patch * 0.5), 0.05, blade));
+    }
+    case 'dirt': {
+      const rut = smoothNoise(vx, vz, 6, 71);
+      return solid(jitter(rut > 0.6 ? COLORS.dirtDark : COLORS.dirt, 0.05, noise3(vx, vz, 0, 73)));
+    }
+    case 'gravel': {
+      const stone = noise3(vx, vz, 0, 79);
+      if (stone > 0.8) return solid(COLORS.gravelLight);
+      if (stone < 0.25) return solid(COLORS.gravelDark);
+      return solid(jitter(COLORS.gravel, 0.05, stone));
+    }
+    case 'asphalt': {
+      const wear = smoothNoise(vx, vz, 9, 83);
+      return solid(jitter(wear > 0.72 ? COLORS.asphaltWorn : COLORS.asphalt, 0.015, noise3(vx, vz, 0, 89)));
+    }
+    case 'paving': {
+      if (lx % 4 === 0 || lz === 0) return solid(COLORS.pavingJoint);
+      const slab = noise3(tile.tx * 2 + Math.floor(lx / 4), tile.ty, 0, 233);
+      return solid(jitter(slab > 0.86 ? darken(COLORS.paving, 0.18) : COLORS.paving, 0.02, noise3(vx, vz, 0, 239)));
+    }
     case 'hazard':
       return solid(even(Math.floor((vx + vz) / 4)) ? COLORS.hazardYellow : COLORS.hazardBlack);
     case 'door': {
@@ -344,8 +407,96 @@ function outerSide(lx: number, lz: number, open: Set<Side>): { side: Side; u: nu
 
 const SIDE_SALT: Readonly<Record<Side, number>> = { north: 1, south: 2, east: 3, west: 4 };
 
-function paintWall(volume: DenseVolume, layout: TileLayout, tx: number, ty: number): void {
+const MATERIAL = {
+  brick: { body: 0x6e3b2e, joint: 0x4f2a20, cap: 0x7a756d, plinth: 0x3a3734, dado: 0x4a2a28 },
+  blockwork: { body: 0x5a5f63, joint: 0x45494c, cap: 0x6e7174, plinth: 0x34383b, dado: 0x34403f },
+  cladding: { body: 0x3e5560, joint: 0x4d6772, cap: 0x55656c, plinth: 0x2a3034, dado: 0x2f3c34 },
+  wall: { body: 0xd8d6cc, joint: 0xb4b2a8, cap: 0xe4e2d8, plinth: 0x2a2a2a, dado: 0x2a3a45 },
+} as const satisfies Record<WallMaterialId, { body: number; joint: number; cap: number; plinth: number; dado: number }>;
+
+const FACADE = {
+  band: 0xe86a1c,
+  litWindow: 0xffd08a,
+  darkWindow: 0x161c22,
+  slit: 0x9feaff,
+  sill: 0x8a857b,
+  plaster: 0x7d766a,
+  rail: 0x4a3c2e,
+  skirting: 0x241e1a,
+} as const;
+
+interface FaceVoxel {
+  readonly color: number;
+  readonly kind?: typeof VOXEL_SOLID | typeof VOXEL_EMISSIVE;
+  readonly recessed?: boolean;
+}
+
+const OUTWARD: Readonly<Record<Side, readonly [number, number]>> = { north: [0, -1], south: [0, 1], west: [-1, 0], east: [1, 0] };
+
+function facesOutdoors(layout: TileLayout, tx: number, ty: number, side: Side): boolean {
+  const [dx, dy] = OUTWARD[side];
+  return isOutdoorFloor(layout.tileAt({ x: tx + dx, y: ty + dy }));
+}
+
+function windowAt(material: WallMaterialId, tx: number, ty: number, side: Side, h: number, u: number): FaceVoxel | null {
+  const bay = (tx + ty) % 2 === 0;
+  if (!bay) return null;
+  const lit = noise3(tx, ty, SIDE_SALT[side], 211) > 0.4;
+  if (material === 'wall') {
+    if (h >= 9 && h <= 10 && u >= 1 && u <= 6) return { color: FACADE.slit, kind: VOXEL_EMISSIVE, recessed: true };
+    return null;
+  }
+  if (h === 5 && u >= 1 && u <= 6) return { color: FACADE.sill };
+  if (h < 6 || h > 11 || u < 2 || u > 5) return null;
+  if (u === 2 || u === 5 || h === 11) return { color: darken(MATERIAL[material].joint, 0.3), recessed: true };
+  if (!lit) return { color: FACADE.darkWindow, recessed: true };
+  return { color: h === 8 ? darken(FACADE.litWindow, 0.35) : FACADE.litWindow, kind: VOXEL_EMISSIVE, recessed: true };
+}
+
+function exteriorVoxel(material: WallMaterialId, tx: number, ty: number, side: Side, h: number, u: number, vx: number, vy: number, vz: number): FaceVoxel {
+  const palette = MATERIAL[material];
+  const grain = noise3(vx, vy, vz, 5);
+  if (h <= 1) return { color: jitter(palette.plinth, 0.03, grain) };
+  const pane = windowAt(material, tx, ty, side, h, u);
+  if (pane) return pane;
+  const stain = h <= 4 ? 0.12 - h * 0.02 : 0;
+  switch (material) {
+    case 'brick': {
+      const offset = (h % 2) * 2;
+      if ((u + offset) % 4 === 0) return { color: palette.joint };
+      const brick = Math.floor((u + offset) / 4) + h * 7 + tx * 13 + ty * 31;
+      return { color: darken(jitter(palette.body, 0.05, noise3(brick, 0, 0, 223)), stain) };
+    }
+    case 'blockwork': {
+      const offset = (Math.floor(h / 3) % 2) * 2;
+      if (h % 3 === 0 || (u + offset) % 4 === 0) return { color: palette.joint };
+      return { color: darken(jitter(palette.body, 0.02, grain), stain) };
+    }
+    case 'cladding': {
+      if (h === 8) return { color: darken(palette.body, 0.3) };
+      const rust = smoothNoise(vx + vz, vy, 3, 227) > 0.72 ? 0.4 : 0;
+      return { color: mix(u % 2 === 0 ? palette.joint : palette.body, COLORS.rustBright, rust) };
+    }
+    case 'wall': {
+      if (h === 3 || h === 4) return { color: FACADE.band };
+      if (u === 0 || h % 6 === 1) return { color: palette.joint };
+      return { color: jitter(palette.body, 0.015, grain) };
+    }
+  }
+}
+
+function interiorVoxel(material: WallMaterialId, h: number, u: number, grain: number): FaceVoxel {
+  const palette = MATERIAL[material];
+  if (h <= 1) return { color: FACADE.skirting };
+  if (h <= 6) return { color: jitter(palette.dado, 0.02, grain) };
+  if (h === 7) return { color: FACADE.rail };
+  return { color: darken(jitter(FACADE.plaster, 0.03, grain), u === 0 ? 0.12 : 0) };
+}
+
+function paintWall(volume: DenseVolume, layout: TileLayout, tx: number, ty: number, material: WallMaterialId): void {
   const open = openSides(layout, tx, ty);
+  const palette = MATERIAL[material];
+  const outdoors = new Set([...open].filter((side) => facesOutdoors(layout, tx, ty, side)));
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
       const vx = tx * R + lx;
@@ -357,19 +508,162 @@ function paintWall(volume: DenseVolume, layout: TileLayout, tx: number, ty: numb
         const vy = FLOOR_LAYERS + h;
         const grain = noise3(vx, vy, vz, 5);
         const top = h === WALL_LAYERS - 1;
+        const facility = material === 'wall' && !(outer && outdoors.has(outer.side));
         if (top) {
-          volume.set(vx, vy, vz, outer ? lighten(COLORS.wallCap, 0.12) : jitter(COLORS.wallCap, 0.02, grain));
+          const cap = facility ? COLORS.wallCap : palette.cap;
+          volume.set(vx, vy, vz, outer ? lighten(cap, 0.12) : jitter(cap, 0.02, grain));
           continue;
         }
         if (!outer) {
-          volume.set(vx, vy, vz, jitter(COLORS.wallBody, 0.02, grain));
+          volume.set(vx, vy, vz, jitter(facility ? COLORS.wallBody : darken(palette.body, 0.35), 0.02, grain));
           continue;
         }
-        paintWallFace(volume, vx, vy, vz, h, outer, noise3(tx, ty, SIDE_SALT[outer.side], 9), grain);
+        if (facility) {
+          paintWallFace(volume, vx, vy, vz, h, outer, noise3(tx, ty, SIDE_SALT[outer.side], 9), grain);
+          continue;
+        }
+        const face = outdoors.has(outer.side) ? exteriorVoxel(material, tx, ty, outer.side, h, outer.u, vx, vy, vz) : interiorVoxel(material, h, outer.u, grain);
+        if (!face.recessed) {
+          volume.set(vx, vy, vz, face.color, face.kind ?? VOXEL_SOLID);
+          continue;
+        }
+        const [ix, iz] = inwardStep(outer.side);
+        volume.clear(vx, vy, vz);
+        volume.set(vx + ix, vy, vz + iz, face.color, face.kind ?? VOXEL_SOLID);
       }
     }
   }
   for (const side of tunnelSides(layout, tx, ty)) paintTunnel(volume, side, tx, ty);
+}
+
+const isOutdoorGround = (kind: TileKindId): boolean => kind !== 'water' && isOutdoorFloor(kind);
+
+function paintGround(volume: DenseVolume, tx: number, ty: number, color: number, salt: number): void {
+  for (let lz = 0; lz < R; lz++) {
+    for (let lx = 0; lx < R; lx++) {
+      const vx = tx * R + lx;
+      const vz = ty * R + lz;
+      volume.set(vx, SUBFLOOR, vz, COLORS.subfloor);
+      volume.set(vx, FLOOR, vz, jitter(color, 0.06, noise3(vx, vz, 0, salt)));
+    }
+  }
+}
+
+function paintRock(volume: DenseVolume, layout: TileLayout, tx: number, ty: number): void {
+  paintGround(volume, tx, ty, COLORS.rockDark, 97);
+  const open = openSides(layout, tx, ty);
+  for (let lz = 0; lz < R; lz++) {
+    for (let lx = 0; lx < R; lx++) {
+      const vx = tx * R + lx;
+      const vz = ty * R + lz;
+      const outer = outerSide(lx, lz, open);
+      const crest = WALL_LAYERS - 1 - Math.floor(smoothNoise(vx, vz, 5, 101) * 7) - (outer ? 1 : 0);
+      for (let h = 0; h <= crest; h++) {
+        const vy = FLOOR_LAYERS + h;
+        const strata = smoothNoise(vx + h * 3, vz - h * 2, 4, 103);
+        const color = strata > 0.66 ? COLORS.rockLight : strata < 0.3 ? COLORS.rockDark : COLORS.rock;
+        const top = h === crest;
+        volume.set(vx, vy, vz, top && noise3(vx, vz, h, 107) > 0.55 ? COLORS.moss : jitter(color, 0.05, noise3(vx, vy, vz, 109)));
+      }
+    }
+  }
+}
+
+function paintTrees(volume: DenseVolume, tx: number, ty: number): void {
+  paintGround(volume, tx, ty, COLORS.needles, 113);
+  const trunkX = 2 + Math.floor(noise3(tx, ty, 0, 127) * 4);
+  const trunkZ = 2 + Math.floor(noise3(tx, ty, 1, 127) * 4);
+  for (let lz = 0; lz < R; lz++) {
+    for (let lx = 0; lx < R; lx++) {
+      const vx = tx * R + lx;
+      const vz = ty * R + lz;
+      const trunk = Math.abs(lx - trunkX) <= 0 && Math.abs(lz - trunkZ) <= 0;
+      const fromTrunk = Math.hypot(lx - trunkX, lz - trunkZ);
+      for (let h = 0; h < WALL_LAYERS; h++) {
+        const vy = FLOOR_LAYERS + h;
+        if (h < 4) {
+          if (trunk) volume.set(vx, vy, vz, COLORS.trunk);
+          continue;
+        }
+        const reach = (WALL_LAYERS - h) * 0.42 + 1.2 + smoothNoise(vx, vz, 3, 131) * 1.4;
+        if (fromTrunk > reach && smoothNoise(vx, vy * 2, vz, 137) < 0.62) continue;
+        if (noise3(vx, vy, vz, 139) < 0.08) continue;
+        const shade = noise3(vx, vy, vz, 149);
+        volume.set(vx, vy, vz, shade > 0.78 ? COLORS.pineLight : shade < 0.22 ? COLORS.pineDark : jitter(COLORS.pine, 0.05, shade));
+      }
+    }
+  }
+}
+
+function paintBarrier(volume: DenseVolume, layout: TileLayout, tx: number, ty: number): void {
+  paintGround(volume, tx, ty, COLORS.barrierDark, 151);
+  const open = openSides(layout, tx, ty);
+  const lamp = noise3(tx, ty, 0, 157) > 0.7;
+  for (let lz = 0; lz < R; lz++) {
+    for (let lx = 0; lx < R; lx++) {
+      const vx = tx * R + lx;
+      const vz = ty * R + lz;
+      const outer = outerSide(lx, lz, open);
+      for (let h = 0; h < WALL_LAYERS; h++) {
+        const vy = FLOOR_LAYERS + h;
+        if (h === WALL_LAYERS - 1) {
+          volume.set(vx, vy, vz, COLORS.barrierCap);
+          continue;
+        }
+        if (!outer) {
+          volume.set(vx, vy, vz, COLORS.barrierDark);
+          continue;
+        }
+        if (outer.u === 0) {
+          volume.set(vx, vy, vz, darken(COLORS.barrier, 0.25));
+          continue;
+        }
+        if (h === 3 || h === 4) {
+          volume.set(vx, vy, vz, (outer.u + h) % 4 < 2 ? COLORS.hazardYellow : COLORS.hazardBlack);
+          continue;
+        }
+        if (lamp && h === WALL_LAYERS - 3 && outer.u >= 3 && outer.u <= 4) {
+          volume.set(vx, vy, vz, COLORS.barrierLamp, VOXEL_EMISSIVE);
+          continue;
+        }
+        volume.set(vx, vy, vz, jitter(COLORS.barrier, 0.03, smoothNoise(vx + vz, vy, 3, 163)));
+      }
+    }
+  }
+}
+
+function fenceAxis(layout: TileLayout, tx: number, ty: number): Axis {
+  const isFence = (x: number, y: number): boolean => layout.tileAt({ x, y }) === 'fence';
+  return isFence(tx - 1, ty) || isFence(tx + 1, ty) ? 'x' : 'y';
+}
+
+function paintFence(volume: DenseVolume, layout: TileLayout, tx: number, ty: number): void {
+  const beside = [layout.tileAt({ x: tx, y: ty - 1 }), layout.tileAt({ x: tx, y: ty + 1 }), layout.tileAt({ x: tx - 1, y: ty }), layout.tileAt({ x: tx + 1, y: ty })];
+  const ground = beside.find(isOutdoorGround);
+  for (let lz = 0; lz < R; lz++) {
+    for (let lx = 0; lx < R; lx++) {
+      const vx = tx * R + lx;
+      const vz = ty * R + lz;
+      volume.set(vx, SUBFLOOR, vz, COLORS.subfloor);
+      const drawn = ground ? floorVoxel(ground, lx, lz, vx, vz, { tx, ty, tone: noise3(tx, ty, 0, 11), axis: 'x' }) : null;
+      volume.set(vx, FLOOR, vz, drawn?.color ?? COLORS.gravel);
+    }
+  }
+  const axis = fenceAxis(layout, tx, ty);
+  for (let along = 0; along < R; along++) {
+    const lx = axis === 'x' ? along : 3;
+    const lz = axis === 'x' ? 3 : along;
+    for (let h = 0; h < WALL_LAYERS - 4; h++) {
+      const vy = FLOOR_LAYERS + h;
+      const post = along === 0;
+      if (post) {
+        volume.set(tx * R + lx, vy, ty * R + lz, COLORS.fencePost);
+        continue;
+      }
+      const top = h === WALL_LAYERS - 5;
+      if (top || (along + h) % 3 === 0) volume.set(tx * R + lx, vy, ty * R + lz, top ? COLORS.fencePost : COLORS.fenceWire);
+    }
+  }
 }
 
 function trackAxis(layout: TileLayout, tx: number, ty: number): Axis {

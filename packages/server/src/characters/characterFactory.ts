@@ -34,7 +34,7 @@ export function createCharacterRecord(
     if (slot) equipment[slot] = itemId;
   }
 
-  const startingQuest = content.quests.get(startingQuestId);
+  const startingQuest = startingQuestId === undefined ? undefined : content.quests.get(startingQuestId);
   const probe = {
     countItem: (itemId: ItemId) => countItem(inventory, itemId),
     isEquipped: (itemId: ItemId) => isEquipped(equipment, itemId),

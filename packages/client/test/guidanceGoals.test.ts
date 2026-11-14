@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import type { QuestLog, RouteScene } from '@containment/shared';
-import { guidanceGoals, guidedQuest } from '../src/state/guidanceGoals.ts';
+import { FIXTURE_CONTENT } from '@containment/shared/fixtures';
+import { guidanceGoals as goalsIn, guidedQuest as questIn } from '../src/state/guidanceGoals.ts';
+
+const guidanceGoals = (...args: [Parameters<typeof goalsIn>[0], Parameters<typeof goalsIn>[1], Parameters<typeof goalsIn>[2]]) => goalsIn(...args, FIXTURE_CONTENT);
+const guidedQuest = (...args: [Parameters<typeof questIn>[0], Parameters<typeof questIn>[1]]) => questIn(...args, FIXTURE_CONTENT);
 
 const scene: RouteScene = {
   level: {
@@ -9,9 +13,9 @@ const scene: RouteScene = {
     npcs: [],
     creatures: [],
     objects: [
-      { instanceId: 'a', objectId: 'slag-heap', position: { x: 2, y: 2 } },
-      { instanceId: 'b', objectId: 'slag-heap', position: { x: 9, y: 4 } },
-      { instanceId: 'c', objectId: 'scrap-heap', position: { x: 5, y: 5 } },
+      { instanceId: 'a', objectId: 'deep-scrap-heap', position: { x: 2, y: 2 } },
+      { instanceId: 'b', objectId: 'deep-scrap-heap', position: { x: 9, y: 4 } },
+      { instanceId: 'c', objectId: 'survey-marker', position: { x: 5, y: 5 } },
     ],
   },
   npcPositions: new Map(),
@@ -20,7 +24,7 @@ const scene: RouteScene = {
 };
 
 const stocking: QuestLog = {
-  'scrap-run': { questId: 'scrap-run', status: 'active', stepIndex: 1, objectiveProgress: [0, 0] },
+  survey: { questId: 'survey', status: 'active', stepIndex: 1, objectiveProgress: [0] },
 };
 
 const slagPoints = [
@@ -30,11 +34,11 @@ const slagPoints = [
 
 describe('guidance goals', () => {
   test('a resource target routes to its placements', () => {
-    assert.deepEqual(guidanceGoals({ kind: 'resource', objectId: 'slag-heap' }, {}, scene).goals, slagPoints);
+    assert.deepEqual(guidanceGoals({ kind: 'resource', objectId: 'deep-scrap-heap' }, {}, scene).goals, slagPoints);
   });
 
   test('a resource target ignores the quest log', () => {
-    assert.deepEqual(guidanceGoals({ kind: 'resource', objectId: 'slag-heap' }, stocking, scene).goals, slagPoints);
+    assert.deepEqual(guidanceGoals({ kind: 'resource', objectId: 'deep-scrap-heap' }, stocking, scene).goals, slagPoints);
   });
 
   test('a null target falls back to the default quest', () => {
@@ -44,12 +48,12 @@ describe('guidance goals', () => {
   });
 
   test('no quest counts as guided while a resource is tracked, so the journal can track one again', () => {
-    assert.equal(guidedQuest({ kind: 'resource', objectId: 'slag-heap' }, stocking), null);
-    assert.equal(guidedQuest(null, stocking)?.quest.id, 'scrap-run');
-    assert.equal(guidedQuest({ kind: 'quest', questId: 'scrap-run' }, stocking)?.quest.id, 'scrap-run');
+    assert.equal(guidedQuest({ kind: 'resource', objectId: 'deep-scrap-heap' }, stocking), null);
+    assert.equal(guidedQuest(null, stocking)?.quest.id, 'survey');
+    assert.equal(guidedQuest({ kind: 'quest', questId: 'survey' }, stocking)?.quest.id, 'survey');
   });
 
   test('a quest target with no active quest gives no goals', () => {
-    assert.deepEqual(guidanceGoals({ kind: 'quest', questId: 'scrap-run' }, {}, scene), { goals: [], allDepleted: false });
+    assert.deepEqual(guidanceGoals({ kind: 'quest', questId: 'survey' }, {}, scene), { goals: [], allDepleted: false });
   });
 });

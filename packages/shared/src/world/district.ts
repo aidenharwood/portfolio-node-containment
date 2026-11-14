@@ -50,6 +50,7 @@ export interface ZoneAmbience {
   readonly tint: string;
   readonly fog: string;
   readonly fixtures?: 'working' | 'failing';
+  readonly sky?: string;
 }
 
 export interface DressedRoom {

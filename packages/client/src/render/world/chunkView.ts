@@ -2,6 +2,7 @@ import {
   assemblyInstanceOf,
   CHUNK_SIZE,
   GAME_CONTENT,
+  type GameContent,
   objectFootprintSize,
   objectFootprintTiles,
   TILE_KINDS,
@@ -25,7 +26,7 @@ import { meshVoxels, type VoxelMeshes } from '../voxel/voxelMesher.ts';
 import { createVoxelObject, type VoxelLayer, type VoxelObjectOptions } from '../voxel/voxelMaterials.ts';
 import { FadeBatch } from './fadeBatch.ts';
 import { FACING_STEP, type FillLight, type SconceSpot } from './wallLights.ts';
-import { LiquidSurface } from './liquidSurface.ts';
+import { LiquidSurface, WATER_PALETTE } from './liquidSurface.ts';
 import { decalsForLevel } from './floorDecals.ts';
 import { buildFloorScatter } from './floorScatter.ts';
 import { createTileVolume, paintTileRows } from './levelVoxels.ts';
@@ -170,8 +171,10 @@ export class ChunkView {
   readonly objects: ObjectView[] = [];
   readonly lights: LightSource[] = [];
   private coolant: LiquidSurface | null = null;
+  private water: LiquidSurface | null = null;
   private readonly ringMaterial: Material;
   readonly region: TileRect;
+  private readonly content: GameContent;
   private readonly decor = new Map<number, Record<VoxelLayer, VoxelGeometryPart[]>>();
   private readonly fixturePieces: { readonly tile: TilePoint; readonly meshes: VoxelMeshes }[] = [];
   private readonly batches: FadeBatch[] = [];
@@ -180,11 +183,12 @@ export class ChunkView {
   private readonly separateObjects: boolean;
   private readonly objectLights = new Map<InstanceId, LightSource[]>();
 
-  constructor(zone: ActiveZone, region: TileRect, contents: ChunkContents, ringMaterial: Material, options: { readonly separateObjects?: boolean } = {}) {
+  constructor(zone: ActiveZone, region: TileRect, contents: ChunkContents, ringMaterial: Material, options: { readonly separateObjects?: boolean; readonly content?: GameContent } = {}) {
+    this.content = options.content ?? GAME_CONTENT;
     this.ringMaterial = ringMaterial;
     this.region = region;
     this.separateObjects = options.separateObjects ?? false;
-    if (hasStructure(zone, region)) this.planStructure(zone, region, new Set(contents.objects.flatMap(({ placement }) => objectFootprintTiles(GAME_CONTENT.worldObjects.get(placement.objectId), placement).map(tileKey))));
+    if (hasStructure(zone, region)) this.planStructure(zone, region, new Set(contents.objects.flatMap(({ placement }) => objectFootprintTiles(this.content.worldObjects.get(placement.objectId), placement).map(tileKey))));
     contents.objects.forEach(({ placement, index }) => this.steps.push(() => this.addObject(placement, index)));
     bandsOf(region).forEach((band) => this.steps.push(() => this.buildDecor(band)));
     contents.sconces.forEach((spot) => this.steps.push(() => this.addSconce(spot)));
@@ -220,6 +224,7 @@ export class ChunkView {
 
   update(time: number): void {
     this.coolant?.update(time);
+    this.water?.update(time);
   }
 
   applyFades(): void {
@@ -241,6 +246,7 @@ export class ChunkView {
       if (child instanceof Mesh && !SHARED_GEOMETRY.has(child.geometry)) child.geometry.dispose();
     });
     this.coolant?.dispose();
+    this.water?.dispose();
   }
 
   private planStructure(zone: ActiveZone, region: TileRect, occupied: ReadonlySet<string>): void {
@@ -297,6 +303,8 @@ export class ChunkView {
     this.steps.push(() => {
       this.coolant = LiquidSurface.build(layout, 'coolant', region);
       if (this.coolant) this.root.add(this.coolant.mesh);
+      this.water = LiquidSurface.build(layout, 'water', region, WATER_PALETTE);
+      if (this.water) this.root.add(this.water.mesh);
     });
   }
 
@@ -322,7 +330,7 @@ export class ChunkView {
   }
 
   private addObject(placement: ObjectPlacement, index: number): void {
-    const definition = GAME_CONTENT.worldObjects.get(placement.objectId);
+    const definition = this.content.worldObjects.get(placement.objectId);
     if (!definition) return;
     const assembly = assemblyInstanceOf(placement.instanceId);
     const seed = assembly ? assemblySeed(assembly) : (placement.position.x * 31 + placement.position.y * 17 + index) % 97;

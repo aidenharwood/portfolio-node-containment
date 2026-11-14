@@ -66,6 +66,17 @@ const FRAGMENT_SHADER = `
   }
 `;
 
+export interface LiquidPalette {
+  readonly deep: number;
+  readonly shallow: number;
+  readonly glow: number;
+  readonly foam: number;
+}
+
+export const COOLANT_PALETTE: LiquidPalette = { deep: 0x041f2a, shallow: 0x13607a, glow: 0x3fa8c0, foam: 0xa8e8f0 };
+
+export const WATER_PALETTE: LiquidPalette = { deep: 0x10262a, shallow: 0x3a6a70, glow: 0x6a9aa0, foam: 0xd8e8e4 };
+
 export class LiquidSurface {
   readonly mesh: Mesh;
   private readonly material: ShaderMaterial;
@@ -75,7 +86,7 @@ export class LiquidSurface {
     this.material = material;
   }
 
-  static build(layout: TileLayout, kind: string, region: TileRect): LiquidSurface | null {
+  static build(layout: TileLayout, kind: string, region: TileRect, palette: LiquidPalette = COOLANT_PALETTE): LiquidSurface | null {
     const positions: number[] = [];
     const edges: number[] = [];
     const locals: number[] = [];
@@ -107,10 +118,10 @@ export class LiquidSurface {
       fragmentShader: FRAGMENT_SHADER,
       uniforms: {
         time: { value: 0 },
-        deepColor: { value: new Color(0x041f2a) },
-        shallowColor: { value: new Color(0x13607a) },
-        glowColor: { value: new Color(0x3fa8c0) },
-        foamColor: { value: new Color(0xa8e8f0) },
+        deepColor: { value: new Color(palette.deep) },
+        shallowColor: { value: new Color(palette.shallow) },
+        glowColor: { value: new Color(palette.glow) },
+        foamColor: { value: new Color(palette.foam) },
       },
       transparent: true,
       depthWrite: false,

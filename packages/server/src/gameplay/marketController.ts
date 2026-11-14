@@ -4,7 +4,7 @@ import {
   collectOrder,
   isSettled,
   isRegionHub,
-  MARKET_DISTRICT_ID,
+  marketDistrictOf,
   marketQuotes,
   matchOrder,
   placeOrder,
@@ -56,8 +56,8 @@ export class MarketController {
 
   open(player: Player, access: MarketAccess): void {
     const district = this.world.districtOf(player);
-    if (access === 'trade' && district !== MARKET_DISTRICT_ID) {
-      this.host.notify(player, 'warning', 'The exchange is only reachable from the Meridian Atrium.');
+    if (access === 'trade' && district !== marketDistrictOf(this.content)) {
+      this.host.notify(player, 'warning', 'The exchange is only reachable from the main hub.');
       return;
     }
     if (access === 'collect' && !isRegionHub(this.content.regions, district)) {
@@ -189,7 +189,7 @@ export class MarketController {
         if (!owner) continue;
         notified.add(order.ownerId);
         const item = this.content.items.get(order.itemId)?.name ?? order.itemId;
-        this.host.notify(owner, 'info', `Your ${order.side} order for ${item} has traded. Collect at the exchange in the Atrium.`);
+        this.host.notify(owner, 'info', `Your ${order.side} order for ${item} has traded. Collect at an exchange.`);
       }
     }
   }

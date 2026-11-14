@@ -8,6 +8,7 @@ import {
   transitHops,
   withOpenDoors,
   GAME_CONTENT,
+  type GameContent,
   tileKey,
   walkableTilesNear,
   type LevelId,
@@ -85,8 +86,11 @@ export class GuidanceRoute {
   private plannedDoors = '';
   private readonly regionCache = new Map<LevelId, { readonly key: string; readonly regions: WalkRegions }>();
 
-  constructor(world: WorldState) {
+  private readonly content: GameContent;
+
+  constructor(world: WorldState, content: GameContent = GAME_CONTENT) {
     this.world = world;
+    this.content = content;
   }
 
   invalidate(): void {
@@ -183,7 +187,7 @@ export class GuidanceRoute {
     const { self, zone } = this.world;
     if (!self || !zone) return [];
     const levelId = zone.definition.id;
-    const local = guidanceGoals(target, self.quests, this.scene(zone.definition));
+    const local = guidanceGoals(target, self.quests, this.scene(zone.definition), this.content);
     this.depleted = local.allDepleted;
     const goals = local.goals;
     const here = this.regionsOf(levelId)?.regionAt(origin) ?? -1;
@@ -200,13 +204,13 @@ export class GuidanceRoute {
     }
     const targets: TransitTarget[] = [
       ...goals.map((goal) => ({ levelId, goal })),
-      ...[...GAME_CONTENT.levels.values()]
+      ...[...this.content.levels.values()]
         .filter((level) => level.id !== levelId)
-        .flatMap((level) => guidanceGoals(target, self.quests, { level, npcPositions: new Map(), creatures: [], depletedInstances: this.world.usedObjects }).goals.map((goal) => ({ levelId: level.id, goal }))),
+        .flatMap((level) => guidanceGoals(target, self.quests, { level, npcPositions: new Map(), creatures: [], depletedInstances: this.world.usedObjects }, this.content).goals.map((goal) => ({ levelId: level.id, goal }))),
     ];
     const known = new Set(self.discoveredStations);
     const passages = new Set(self.openPassages);
-    const hops = transitHops(GAME_CONTENT, { knowsStation: (stationId) => known.has(stationId), canUsePassage: (objectId) => passages.has(objectId) });
+    const hops = transitHops(this.content, { knowsStation: (stationId) => known.has(stationId), canUsePassage: (objectId) => passages.has(objectId) });
     const transit = planTransit({ levelId, position: origin }, targets, hops, (id) => this.regionsOf(id));
     const first = transit?.hops[0];
     if (!transit || !first) return this.nearestPath(origin, goals, previousGoal, tried) ?? [];
@@ -236,13 +240,13 @@ export class GuidanceRoute {
   }
 
   private regionsOf(levelId: LevelId): WalkRegions | undefined {
-    const level = GAME_CONTENT.levels.get(levelId);
+    const level = this.content.levels.get(levelId);
     if (!level) return undefined;
     const openDoors = this.world.openDoors;
     const key = [...openDoors].sort().join('|');
     const cached = this.regionCache.get(levelId);
     if (cached?.key === key) return cached.regions;
-    const definitionOf = (objectId: string) => GAME_CONTENT.worldObjects.get(objectId);
+    const definitionOf = (objectId: string) => this.content.worldObjects.get(objectId);
     const grid = withOpenDoors(
       createObjectWalkabilityGrid(level.layout, level.objects, definitionOf),
       level.layout,

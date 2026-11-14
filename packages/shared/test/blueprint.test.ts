@@ -112,3 +112,44 @@ describe('joinDistricts', () => {
     assert.throws(() => joinDistricts(districts, 'west', [{ districtId: 'east', exit: 'west', to: 'west', toExit: 'missing' }]), /no exit/);
   });
 });
+
+describe('wall materials', () => {
+  test('a building takes its own wall material and the street keeps its edge', () => {
+    const plan = drawBlueprint({ width: 14, height: 12 }, [
+      { ...room('shop', 2, 1, 6, 4, 'terrazzo'), wall: 'brick' },
+      room('street', 1, 6, 12, 4, 'asphalt'),
+      link('shop', 'street', 2),
+    ]);
+    assert.equal(plan.map[5]?.[2], 'K', 'the shopfront between shop and street is brick');
+    assert.equal(plan.map[0]?.[3], 'K', 'the shop back wall is brick');
+    assert.equal(plan.map[10]?.[5], 'B', 'the street edge stays a barrier');
+  });
+
+  test('a room without a material is walled with the Directorate panel', () => {
+    const plan = drawBlueprint({ width: 8, height: 6 }, [room('office', 1, 1, 6, 4, 'plating')]);
+    assert.equal(plan.map[0]?.[3], '#');
+  });
+});
+
+describe('buildings on open ground', () => {
+  const plan = drawBlueprint({ width: 16, height: 12 }, [
+    room('ground', 0, 0, 16, 12, 'paving'),
+    { kind: 'building', id: 'shop', rect: { x: 4, y: 3, width: 6, height: 4 }, floor: 'boards', wall: 'brick', doors: [{ side: 'south', width: 2, offset: 2 }] },
+  ]);
+
+  test('the ring around the interior becomes wall in the building material', () => {
+    assert.equal(plan.map[2]?.[6], 'K', 'north wall');
+    assert.equal(plan.map[5]?.[3], 'K', 'west wall');
+    assert.equal(plan.map[7]?.[5], 'K', 'south wall beside the door');
+  });
+
+  test('the doors are cut through the ring and recorded as a link', () => {
+    assert.deepEqual(plan.links['shop>outside'], [{ x: 6, y: 7 }, { x: 7, y: 7 }]);
+    assert.equal(plan.rooms.shop?.width, 6);
+  });
+
+  test('the ground outside stays open and unwalled', () => {
+    assert.equal(plan.map[0]?.[0], plan.map[11]?.[15]);
+    assert.notEqual(plan.map[1]?.[1], 'K');
+  });
+});

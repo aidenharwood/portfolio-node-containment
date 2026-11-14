@@ -7,7 +7,6 @@ import {
   createStartingSkills,
   experienceForLevel,
   footprintTiles,
-  GAME_CONTENT,
   isInFootprint,
   maxIntegrityFor,
   samePoint,
@@ -22,15 +21,15 @@ import { createCharacterRecord } from '../src/characters/characterFactory.ts';
 import { Gameplay } from '../src/gameplay/gameplay.ts';
 import type { Creature } from '../src/world/creature.ts';
 import type { LevelInstance } from '../src/world/levelInstance.ts';
-import { createHarness, inRoom, type Harness } from './support/testHarness.ts';
+import { createHarness, inRoom, type Harness, CONTENT } from './support/testHarness.ts';
 
 const veteran = (record: CharacterRecord): CharacterRecord => {
   const skills = createStartingSkills({ closeQuarters: experienceForLevel(40), fortitude: experienceForLevel(40) });
-  return { ...record, location: inRoom('sector-two', 'inner-chamber', { x: 4, y: 4 }), skills, vitals: { integrity: maxIntegrityFor(skills) } };
+  return { ...record, location: inRoom('fx-arena', 'arena', { x: 4, y: 4 }), skills, vitals: { integrity: maxIntegrityFor(skills) } };
 };
 
 function warden(harness: Harness): Creature {
-  const creature = harness.gameplay.world.levelOf(harness.player).creatureByInstance('s2-warden');
+  const creature = harness.gameplay.world.levelOf(harness.player).creatureByInstance('arena-warden');
   assert.ok(creature);
   return creature;
 }
@@ -118,7 +117,7 @@ describe('creature footprints', () => {
     const harness = createHarness({ prepare: veteran });
     const creature = warden(harness);
     harness.gameplay.teleport(harness.player, { levelId: harness.player.levelId, position: creature.position });
-    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-warden', interactionIndex: 0 });
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 0 });
     harness.ticksUntil(() => creature.integrity < creature.definition.integrity, 60);
     assert.equal(isInFootprint(harness.player.position, creature.position, creature.size), false);
   });
@@ -126,8 +125,8 @@ describe('creature footprints', () => {
   test('a 2×2 creature drops its loot on its own body', () => {
     const harness = createHarness({ prepare: veteran });
     const creature = warden(harness);
-    harness.approach('s2-warden');
-    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 's2-warden', interactionIndex: 0 });
+    harness.approach('arena-warden');
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 0 });
     harness.ticksUntil(() => !creature.isAlive, 2000);
     const drops = harness.sink.messages.filter((message) => message.type === 'world.groundItemAdded');
     assert.ok(drops.length > 0);
@@ -143,16 +142,16 @@ const PLINTH: WorldObjectDefinition = {
   id: 'test-plinth',
   name: 'Test plinth',
   examine: 'A broad plinth.',
-  model: 'crate',
+  model: 'placeholder',
   blocksMovement: true,
   footprint: { width: 3, height: 2 },
   interactions: [{ verb: 'Examine', effects: [{ type: 'notify', text: PLINTH_NOTICE }] }],
 };
 
 function plinthScenario() {
-  const levelId = GAME_CONTENT.newCharacter.startingLocation.levelId;
-  const level = GAME_CONTENT.levels.get(levelId) as ResolvedLevel;
-  const baseGrid = createObjectWalkabilityGrid(level.layout, level.objects, (id) => GAME_CONTENT.worldObjects.get(id));
+  const levelId = CONTENT.newCharacter.startingLocation.levelId;
+  const level = CONTENT.levels.get(levelId) as ResolvedLevel;
+  const baseGrid = createObjectWalkabilityGrid(level.layout, level.objects, (id) => CONTENT.worldObjects.get(id));
   let origin: TilePoint | null = null;
   const spawn = level.spawn;
   for (let radius = 0; radius < 60 && !origin; radius++) {
@@ -170,9 +169,9 @@ function plinthScenario() {
   assert.ok(origin, 'no open floor for the plinth');
   const placement = { instanceId: 'plinth-1', objectId: PLINTH.id, position: origin };
   const content: GameContent = {
-    ...GAME_CONTENT,
-    worldObjects: new Map([...GAME_CONTENT.worldObjects, [PLINTH.id, PLINTH]]),
-    levels: new Map([...GAME_CONTENT.levels, [levelId, { ...level, objects: [...level.objects, placement] }]]),
+    ...CONTENT,
+    worldObjects: new Map([...CONTENT.worldObjects, [PLINTH.id, PLINTH]]),
+    levels: new Map([...CONTENT.levels, [levelId, { ...level, objects: [...level.objects, placement] }]]),
   };
   const gameplay = new Gameplay(content, { save: () => {}, findByName: () => null }, {
     tickMs: 300,

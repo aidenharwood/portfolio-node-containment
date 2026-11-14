@@ -119,7 +119,7 @@ export class MarketWindow {
           h('div', {},
             h('h3', {}, this.access === 'collect' ? 'Exchange Mailbox' : 'Site Exchange'),
             h('p', { className: 'shop-greeting' }, this.access === 'collect'
-              ? 'Collect what your orders have earned, or withdraw them. New orders are posted at the exchange in the Meridian Atrium.'
+              ? 'Collect what your orders have earned, or withdraw them. New orders are posted at the main exchange.'
               : 'Buy orders fill from the cheapest seller, sell orders from the highest bidder. Your price is the limit.'),
           ),
           h('button', { className: 'dialogue-close', type: 'button', ariaLabel: 'Close exchange', onclick: () => this.requestClose() }, '×'),

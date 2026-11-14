@@ -1,37 +1,15 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { createDefaultDraft, GAME_CONTENT, type CharacterRecord, type TilePoint } from '@containment/shared';
+import { createDefaultDraft, type CharacterRecord, type TilePoint } from '@containment/shared';
 import { createCharacterRecord } from '../src/characters/characterFactory.ts';
 import { CharacterRepository } from '../src/characters/characterRepository.ts';
 import { openDatabase } from '../src/persistence/database.ts';
 import { restoreLocation, storeLocation } from '../src/characters/storedLocation.ts';
-import { anchor, anchorPoint, at, createHarness, exitPoint, inRoom, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
+import { anchor, anchorPoint, at, CONTENT, createHarness, inRoom, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
 
-const MAIN_FLOOR_SPAWN = anchor('meridian-atrium', 'transit');
-const LIFT_ARRIVAL = anchorPoint('deepwatch', 'liftArrival');
-
-const WEST_GATE = inRoom('meridian-atrium', 'west-gate');
-const EAST_GATE = inRoom('meridian-atrium', 'east-gate');
-
-const ROUTE_TO_HYDROPONICS: readonly TilePoint[] = [
-  levelPoint('meridian-circuit', localInRoom('meridian-circuit', 'west-boulevard')),
-  exitPoint('meridian-circuit', 'west'),
-  anchor('verdance-concourse', 'walkEastReach').position,
-  anchor('verdance-concourse', 'walkEastOfCanal').position,
-  anchor('verdance-concourse', 'walkWestOfCanal').position,
-  anchor('verdance-concourse', 'walkWestReach').position,
-  levelPoint('hydroponics', localInRoom('hydroponics', 'platform')),
-];
-
-const ROUTE_TO_SERVICE_YARDS: readonly TilePoint[] = [
-  levelPoint('meridian-circuit', localInRoom('meridian-circuit', 'east-boulevard')),
-  exitPoint('meridian-circuit', 'east'),
-  anchor('service-concourse', 'walkWestReach').position,
-  anchor('service-concourse', 'walkMid').position,
-  anchor('service-concourse', 'walkEastReach').position,
-  exitPoint('service-concourse', 'east'),
-  levelPoint('service-yards', localInRoom('service-yards', 'yard-office')),
-];
+const FLOOR_SPAWN = anchor('fx-hub', 'start');
+const HUB_RECOVERY = anchor('fx-hub', 'recovery');
+const LANDING = anchorPoint('fx-arena', 'landing');
 
 function walkTo(harness: Harness, target: TilePoint): void {
   harness.send({ type: 'world.walk', target });
@@ -39,161 +17,119 @@ function walkTo(harness: Harness, target: TilePoint): void {
   assert.deepEqual(harness.player.position, target);
 }
 
-function walkAlong(harness: Harness, route: readonly TilePoint[]): void {
-  for (const waypoint of route) walkTo(harness, waypoint);
-}
-
-const placedAt = (location: CharacterRecord['location'], flags: readonly string[] = []) => (record: CharacterRecord): CharacterRecord => ({
+const placedAt = (location: CharacterRecord['location'], flags: readonly string[] = [], inventory?: CharacterRecord['inventory']) => (record: CharacterRecord): CharacterRecord => ({
   ...record,
   location,
   flags: [...record.flags, ...flags],
+  ...(inventory ? { inventory } : {}),
 });
 
-describe('levels', () => {
-  test('legacy locations convert to level coordinates', () => {
-    assert.deepEqual(restoreLocation({ zoneId: 'hydroponics', position: localInRoom('hydroponics', 'platform') }, GAME_CONTENT), at('hydroponics', localInRoom('hydroponics', 'platform')));
+describe('stored locations', () => {
+  test('legacy zone locations convert to level coordinates', () => {
+    assert.deepEqual(restoreLocation({ zoneId: 'fx-field', position: localInRoom('fx-field', 'safehouse') }, CONTENT), at('fx-field', localInRoom('fx-field', 'safehouse')));
   });
 
-  test('legacy locations convert to the main-floor spawn when the zone is gone', () => {
-    assert.deepEqual(restoreLocation({ zoneId: 'sector-nine', position: { x: 1, y: 1 } }, GAME_CONTENT), MAIN_FLOOR_SPAWN);
+  test('legacy locations convert to the first level spawn when the zone is gone', () => {
+    assert.deepEqual(restoreLocation({ zoneId: 'sector-nine', position: { x: 1, y: 1 } }, CONTENT), FLOOR_SPAWN);
   });
 
-  test('legacy locations on an unwalkable tile fall back to the main-floor spawn', () => {
-    assert.deepEqual(restoreLocation({ zoneId: 'meridian-atrium', position: { x: 0, y: 0 } }, GAME_CONTENT), MAIN_FLOOR_SPAWN);
+  test('a stored location on an unwalkable tile falls back to its district recovery', () => {
+    assert.deepEqual(restoreLocation({ zoneId: 'fx-hub', position: { x: 0, y: 0 } }, CONTENT), HUB_RECOVERY);
+    assert.deepEqual(restoreLocation({ districtId: 'fx-hub', position: { x: 0, y: 0 } }, CONTENT), HUB_RECOVERY);
   });
 
   test('locations are stored district-local and restored to level coordinates', () => {
-    const current = at('deepwatch', LIFT_ARRIVAL);
-    assert.deepEqual(storeLocation(current, GAME_CONTENT), { districtId: 'deepwatch', position: LIFT_ARRIVAL });
-    assert.deepEqual(restoreLocation(storeLocation(current, GAME_CONTENT), GAME_CONTENT), current);
+    const current = at('fx-arena', LANDING);
+    assert.deepEqual(storeLocation(current, CONTENT), { districtId: 'fx-arena', position: LANDING });
+    assert.deepEqual(restoreLocation(storeLocation(current, CONTENT), CONTENT), current);
   });
 
   test('the character repository saves district-local locations and loads level coordinates', () => {
     const database = openDatabase(':memory:');
     database.exec('PRAGMA foreign_keys = OFF;');
-    const repository = new CharacterRepository(database, GAME_CONTENT);
-    const created = createCharacterRecord({ ...createDefaultDraft(), name: 'Stored Operative' }, { id: 'character-9', accountId: 'account-9' }, GAME_CONTENT);
-    const record = { ...created, location: at('hydroponics', localInRoom('hydroponics', 'platform')) };
+    const repository = new CharacterRepository(database, CONTENT);
+    const created = createCharacterRecord({ ...createDefaultDraft(), name: 'Stored Operative' }, { id: 'character-9', accountId: 'account-9' }, CONTENT);
+    const record = { ...created, location: at('fx-field', localInRoom('fx-field', 'safehouse')) };
     repository.insert(record);
     const row = database.prepare('SELECT record FROM characters WHERE id = ?').get('character-9') as { record: string };
-    assert.deepEqual(JSON.parse(row.record).location, { districtId: 'hydroponics', position: localInRoom('hydroponics', 'platform') });
+    assert.deepEqual(JSON.parse(row.record).location, { districtId: 'fx-field', position: localInRoom('fx-field', 'safehouse') });
     assert.deepEqual(repository.findOwned('account-9', 'character-9')?.location, record.location);
   });
 
-  test('a stored district location on an unwalkable tile falls back to the main-floor spawn', () => {
-    assert.deepEqual(restoreLocation({ districtId: 'meridian-atrium', position: { x: 0, y: 0 } }, GAME_CONTENT), MAIN_FLOOR_SPAWN);
+  test('level-coordinate locations pass through unchanged, and fall back to the spawn when no longer floor', () => {
+    const current = at('fx-arena', LANDING);
+    assert.deepEqual(restoreLocation(current, CONTENT), current);
+    assert.deepEqual(restoreLocation({ levelId: 'fx-floor', position: { x: 0, y: 0 } }, CONTENT), FLOOR_SPAWN);
   });
+});
 
-  test('level-coordinate locations from before district-local storage pass through unchanged', () => {
-    const current = at('deepwatch', LIFT_ARRIVAL);
-    assert.deepEqual(restoreLocation(current, GAME_CONTENT), current);
-  });
-
-  test('walking from the Atrium into Hydroponics needs no teleport', () => {
-    const harness = createHarness({ prepare: placedAt(WEST_GATE) });
-    walkAlong(harness, ROUTE_TO_HYDROPONICS);
-    assert.equal(harness.gameplay.world.districtOf(harness.player), 'hydroponics');
-    assert.equal(harness.sink.messages.filter((message) => message.type === 'world.entered').length, 1);
-  });
-
-  test('a level-coordinate location that is no longer floor falls back to the main-floor spawn', () => {
-    assert.deepEqual(restoreLocation({ levelId: 'main-floor', position: { x: 0, y: 0 } }, GAME_CONTENT), MAIN_FLOOR_SPAWN);
-  });
-
-  test('walking into a district charts it on the world map', () => {
-    const harness = createHarness({ prepare: placedAt(WEST_GATE) });
+describe('levels', () => {
+  test('districts joined by exits are walked across without a teleport, and each is charted on entry', () => {
+    const harness = createHarness({ prepare: placedAt(inRoom('fx-hub', 'hall')) });
     const charted = () => harness.sink.last('player.state')?.self.visitedDistricts ?? [];
-    assert.ok(charted().includes('meridian-atrium'));
-    assert.ok(!charted().includes('hydroponics'));
-    walkAlong(harness, ROUTE_TO_HYDROPONICS);
-    assert.ok(charted().includes('meridian-circuit'));
-    assert.ok(charted().includes('verdance-concourse'));
-    assert.ok(charted().includes('hydroponics'));
-    assert.ok(!charted().includes('service-yards'));
+    assert.ok(charted().includes('fx-hub'));
+    assert.ok(!charted().includes('fx-field'));
+    walkTo(harness, levelPoint('fx-field', localInRoom('fx-field', 'lane', { x: 4, y: 1 })));
+    assert.equal(harness.gameplay.world.districtOf(harness.player), 'fx-field');
+    assert.ok(charted().includes('fx-field'));
+    assert.ok(!charted().includes('fx-outpost'));
+    assert.equal(harness.sink.messages.filter((message) => message.type === 'world.entered').length, 1);
   });
 
   test('characters saved before district tracking keep every district of the levels they had visited', () => {
-    const harness = createHarness({ prepare: placedAt(WEST_GATE, ['visited:main-floor', 'visited:the-deep']) });
+    const harness = createHarness({ prepare: placedAt(inRoom('fx-hub', 'plaza'), ['visited:fx-floor']) });
     const charted = harness.sink.last('player.state')?.self.visitedDistricts ?? [];
-    for (const districtId of ['hydroponics', 'waterworks', 'deepwatch', 'furnace']) assert.ok(charted.includes(districtId), districtId);
-    assert.ok(!charted.includes('undercroft'));
+    for (const districtId of ['fx-hub', 'fx-field', 'fx-outpost']) assert.ok(charted.includes(districtId), districtId);
+    assert.ok(!charted.includes('fx-arena'));
   });
 
-  test('walking from the Atrium out to the Service Yards needs no teleport', () => {
-    const harness = createHarness({ prepare: placedAt(EAST_GATE) });
-    walkAlong(harness, ROUTE_TO_SERVICE_YARDS);
-    assert.equal(harness.gameplay.world.districtOf(harness.player), 'service-yards');
-    assert.equal(harness.sink.messages.filter((message) => message.type === 'world.entered').length, 1);
+  test('a door stays shut without its condition', () => {
+    const harness = createHarness({ prepare: placedAt(inRoom('fx-field', 'lane', { x: 35, y: 9 })) });
+    harness.interactWithObject('vault-door-a');
+    assert.notEqual(harness.gameplay.world.districtOf(harness.player) === 'fx-field' && harness.gameplay.world.levelOf(harness.player).areasAt(harness.player.position).some((area) => area.id === 'vault'), true);
+    assert.ok(harness.sink.messages.some((message) => message.type === 'notice' && /locked/.test(message.text)));
   });
 
-  test('Deepwatch opens onto the Deep Concourse on foot, and a gated pressure door leads on', () => {
-    const harness = createHarness({ prepare: placedAt(inRoom('deepwatch', 'stores'), ['clearance.signal-array']) });
-    walkAlong(harness, [
-      exitPoint('deepwatch', 'south'),
-      inRoom('deep-concourse', 'south-span').position,
-      anchor('deep-concourse', 'southSpan').position,
-      anchor('deep-concourse', 'arrayDoor').position,
-    ]);
-    assert.equal(harness.gameplay.world.districtOf(harness.player), 'deep-concourse');
-    harness.interactWithObject('dc-array-door/0,0');
-    harness.ticksUntil(() => harness.player.path.length === 0);
-    assert.equal(harness.player.levelId, 'the-deep');
-    assert.equal(harness.gameplay.world.districtOf(harness.player), 'signal-array');
-  });
-
-  test('a pressure door stays shut without clearance', () => {
-    const harness = createHarness({ prepare: placedAt(anchor('deep-concourse', 'cryovaultDoor')) });
-    harness.interactWithObject('dc-cryovault-door/0,0');
-    assert.equal(harness.gameplay.world.districtOf(harness.player), 'deep-concourse');
-    assert.match(harness.sink.last('notice')?.text ?? '', /COLD STORAGE SEALED/);
-  });
-
-  test('a cleared player walks straight through a joined pressure door, and it stays open for them alone', () => {
-    const harness = createHarness({ prepare: placedAt(anchor('deep-concourse', 'cryovaultDoor'), ['clearance.cryovault']) });
-    walkTo(harness, anchor('cryovault', 'entrance').position);
-    assert.equal(harness.gameplay.world.districtOf(harness.player), 'cryovault');
-    assert.ok(harness.sink.last('player.state')?.self.openDoors.includes('cryovault-door'));
-
+  test('a player who meets a door condition walks through it, and it stays open for them alone', () => {
+    const keycard = [{ itemId: 'vault-keycard', quantity: 1 }];
+    const harness = createHarness({ prepare: (record) => placedAt(inRoom('fx-field', 'lane', { x: 35, y: 9 }), [], [...keycard, ...record.inventory.slice(1)])(record) });
+    walkTo(harness, levelPoint('fx-field', localInRoom('fx-field', 'vault', { x: 4, y: 4 })));
+    assert.ok(harness.sink.last('player.state')?.self.openDoors.includes('vault-door'));
     const level = harness.gameplay.world.levelOf(harness.player);
-    const door = exitPoint('deep-concourse', 'cryovault');
-    assert.equal(level.grid.isWalkable(door), false, 'the shared grid keeps the door shut for everyone else');
-    assert.equal(level.creatureGrid.isWalkable(door), false, 'creatures never pass a door');
+    const doorTile = CONTENT.levels.get('fx-floor')?.objects.find((object) => object.instanceId === 'vault-door-a')?.position;
+    assert.ok(doorTile);
+    assert.equal(level.grid.isWalkable(doorTile), false, 'the shared grid keeps the door shut for everyone else');
+    assert.equal(level.creatureGrid.isWalkable(doorTile), false, 'creatures never pass a door');
   });
 
   test('a door you have opened stays open after the key is gone', () => {
-    const harness = createHarness({ prepare: placedAt(anchor('deep-concourse', 'cryovaultDoor'), ['clearance.cryovault']) });
-    harness.interactWithObject('dc-cryovault-door/0,0');
+    const harness = createHarness({ prepare: (record) => placedAt(inRoom('fx-field', 'lane', { x: 35, y: 9 }), [], [{ itemId: 'vault-keycard', quantity: 1 }, ...record.inventory.slice(1)])(record) });
+    harness.interactWithObject('vault-door-a');
     harness.ticksUntil(() => harness.player.path.length === 0);
-    assert.equal(harness.gameplay.world.districtOf(harness.player), 'cryovault');
-    harness.player.update({ flags: harness.player.record.flags.filter((flag) => flag !== 'clearance.cryovault') });
-    walkTo(harness, anchor('deep-concourse', 'cryovaultDoor').position);
-  });
-
-  test('Deepwatch reaches the Furnace Causeway on foot', () => {
-    const harness = createHarness({ prepare: placedAt(inRoom('deepwatch', 'concourse')) });
-    walkAlong(harness, [
-      exitPoint('deepwatch', 'north'),
-      inRoom('deep-concourse', 'north-span').position,
-      anchor('deep-concourse', 'northSpan').position,
-      anchor('deep-concourse', 'causewayGate').position,
-      levelPoint('furnace-causeway', localInRoom('furnace-causeway', 'causeway')),
-    ]);
-    assert.equal(harness.gameplay.world.districtOf(harness.player), 'furnace-causeway');
+    harness.player.update({ inventory: harness.player.record.inventory.map((slot) => (slot?.itemId === 'vault-keycard' ? null : slot)) });
+    walkTo(harness, levelPoint('fx-field', localInRoom('fx-field', 'vault', { x: 4, y: 4 })));
+    walkTo(harness, levelPoint('fx-field', localInRoom('fx-field', 'lane', { x: 35, y: 9 })));
   });
 
   test('a saved position on an unwalkable tile spawns nearby in the same district', () => {
-    const inTheTank = anchor('intake-wing', 'observationTank');
-    assert.equal(GAME_CONTENT.levels.get(inTheTank.levelId)?.layout.tileAt(inTheTank.position), 'coolant');
-    const harness = createHarness({ prepare: placedAt(inTheTank) });
-    assert.equal(harness.gameplay.world.districtOf(harness.player), 'intake-wing');
-    const target = inTheTank.position;
-    assert.ok(Math.max(Math.abs(harness.player.position.x - target.x), Math.abs(harness.player.position.y - target.y)) <= 3);
+    const inTheWall = at('fx-field', { x: 0, y: 2 });
+    assert.notEqual(CONTENT.levels.get(inTheWall.levelId)?.layout.tileAt(inTheWall.position), 'asphalt');
+    const harness = createHarness({ prepare: placedAt(inTheWall) });
+    assert.ok(Math.max(Math.abs(harness.player.position.x - inTheWall.position.x), Math.abs(harness.player.position.y - inTheWall.position.y)) <= 3);
   });
 
-  test('incapacitation in the Intake Wing recovers in the Intake Wing medbay', () => {
-    const harness = createHarness({ prepare: placedAt(anchor('intake-wing', 'observationFloor')) });
+  test('incapacitation recovers in the district it happened in', () => {
+    const harness = createHarness({ prepare: placedAt(inRoom('fx-field', 'den')) });
     harness.gameplay.recoverIncapacitated(harness.player);
-    assert.equal(harness.gameplay.world.districtOf(harness.player), 'intake-wing');
-    assert.deepEqual(harness.player.position, anchor('intake-wing', 'recovery').position);
+    assert.equal(harness.gameplay.world.districtOf(harness.player), 'fx-field');
+    assert.deepEqual(harness.player.position, anchor('fx-field', 'recovery').position);
+  });
+
+  test('a lift carries a player between levels', () => {
+    const harness = createHarness({ prepare: placedAt(inRoom('fx-hub', 'plaza'), ['clearance.depths']) });
+    harness.interactWithObject('hub-lift');
+    assert.equal(harness.player.levelId, 'fx-depths');
+    harness.interactWithObject('arena-lift');
+    assert.equal(harness.player.levelId, 'fx-floor');
   });
 });

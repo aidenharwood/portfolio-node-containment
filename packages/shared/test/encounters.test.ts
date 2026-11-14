@@ -3,7 +3,6 @@ import { describe, test } from 'node:test';
 import {
   activeMechanicIds,
   findEncounterIssues,
-  GAME_CONTENT,
   telegraphHitCap,
   type GameContent,
   enragedSpeedTicks,
@@ -16,6 +15,7 @@ import {
   type EncounterDefinition,
   type TilePoint,
 } from '../src/index.ts';
+import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
 
 const open = () => true;
 const keys = (tiles: readonly TilePoint[]) => new Set(tiles.map(tileKey));
@@ -112,14 +112,14 @@ describe('hazards and limits', () => {
 
 describe('encounter integrity', () => {
   const withBoss = (encounterOf: EncounterDefinition) => {
-    const creatures = new Map(GAME_CONTENT.creatures);
-    creatures.set('hollow-warden', { ...GAME_CONTENT.creatures.get('hollow-warden')!, encounter: encounterOf });
-    return findEncounterIssues({ ...GAME_CONTENT, creatures } as GameContent).filter((issue) => issue.includes('hollow-warden') || issue.includes('s2-warden'));
+    const creatures = new Map(FIXTURE_CONTENT.creatures);
+    creatures.set('hollow-warden', { ...FIXTURE_CONTENT.creatures.get('hollow-warden')!, encounter: encounterOf });
+    return findEncounterIssues({ ...FIXTURE_CONTENT, creatures } as GameContent).filter((issue) => issue.includes('hollow-warden') || issue.includes('s2-warden'));
   };
   const slam = { kind: 'telegraph' as const, id: 'slam', shape: 'body' as const, reach: 1, windupTicks: 6, cooldownTicks: 20, style: 'melee' as const, accuracy: 10, maxHit: 5 };
 
   test('the shipped content has no encounter issues', () => {
-    assert.deepEqual(findEncounterIssues(GAME_CONTENT), []);
+    assert.deepEqual(findEncounterIssues(FIXTURE_CONTENT), []);
   });
 
   test('a rushed surround telegraph is reported', () => {
@@ -144,7 +144,7 @@ describe('encounter integrity', () => {
 
   test('summons must exist, be weaker and not be bosses', () => {
     const summon = (creatureId: string) => ({ kind: 'summon' as const, id: `s-${creatureId}`, creatureId, count: 1, maxAlive: 1 });
-    const issues = withBoss({ mechanics: [summon('nobody'), summon('the-host'), summon('the-understudy')] });
+    const issues = withBoss({ mechanics: [summon('nobody'), summon('elder-mite'), summon('small-specimen')] });
     assert.ok(issues.some((issue) => issue.includes('unknown creature "nobody"')));
     assert.ok(issues.some((issue) => issue.includes('outranks')));
     assert.ok(issues.some((issue) => issue.includes('boss itself')));
@@ -153,7 +153,7 @@ describe('encounter integrity', () => {
   test('a duplicate id and a single-combat area are reported', () => {
     const issues = withBoss({ mechanics: [slam, slam] });
     assert.ok(issues.some((issue) => issue.includes('used twice')));
-    const multi = GAME_CONTENT.districts.get('sector-two')!.areas.find((area) => area.id === 'inner-chamber')?.multiCombat === true;
+    const multi = FIXTURE_CONTENT.districts.get('fx-arena')!.areas.find((area) => area.id === 'arena')?.multiCombat === true;
     assert.equal(issues.some((issue) => issue.includes('multi-combat')), !multi);
   });
 });

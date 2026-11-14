@@ -8,7 +8,7 @@ const COUNTDOWN_REFRESH_MS = 30_000;
 export function createContractsTab(): PanelTab {
   const body = h('div', { className: 'contracts-body' });
   const element = h('div', { className: 'tab-contracts' },
-    h('header', { className: 'tab-header' }, h('span', { className: 'tab-hint' }, 'Pick up and cash in contracts at the Contract Board in the Atrium Contract Hall.')),
+    h('header', { className: 'tab-header' }, h('span', { className: 'tab-hint' }, 'Pick up and cash in contracts at a Contract Board.')),
     body,
   );
   let self: SelfState | null = null;

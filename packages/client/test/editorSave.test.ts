@@ -9,10 +9,10 @@ import { createWriteLog, saveLayout } from '../editorSave.ts';
 
 const SOURCE = fileURLToPath(new URL('../../shared/src/content/districts/layouts/', import.meta.url));
 const root = mkdtempSync(join(tmpdir(), 'layouts-'));
-copyFileSync(join(SOURCE, 'vesper-lodge.json'), join(root, 'vesper-lodge.json'));
+copyFileSync(join(SOURCE, 'terminus-square.json'), join(root, 'terminus-square.json'));
 after(() => rmSync(root, { recursive: true, force: true }));
 
-const original = (): Record<string, unknown> => JSON.parse(readFileSync(join(SOURCE, 'vesper-lodge.json'), 'utf8')) as Record<string, unknown>;
+const original = (): Record<string, unknown> => JSON.parse(readFileSync(join(SOURCE, 'terminus-square.json'), 'utf8')) as Record<string, unknown>;
 
 test('an unknown district is not found and no file is created', () => {
   const result = saveLayout(root, 'nowhere', JSON.stringify(original()));
@@ -21,12 +21,12 @@ test('an unknown district is not found and no file is created', () => {
 });
 
 test('an id that could leave the folder is refused', () => {
-  const result = saveLayout(root, '../vesper-lodge', JSON.stringify(original()));
+  const result = saveLayout(root, '../terminus-square', JSON.stringify(original()));
   assert.equal(result.ok, false);
 });
 
 test('malformed json is refused', () => {
-  const result = saveLayout(root, 'vesper-lodge', '{ not json');
+  const result = saveLayout(root, 'terminus-square', '{ not json');
   assert.deepEqual(result.ok ? null : result.status, 422);
 });
 
@@ -35,22 +35,22 @@ test('a layout that fails to build is refused with its path', () => {
   const npcs = broken.npcs as { at: { room: string } }[];
   if (npcs[0]) npcs[0].at.room = 'lodgee';
   else (broken.objects as { at: { room: string } }[])[0]!.at.room = 'lodgee';
-  const result = saveLayout(root, 'vesper-lodge', JSON.stringify(broken));
+  const result = saveLayout(root, 'terminus-square', JSON.stringify(broken));
   assert.equal(result.ok, false);
   assert.match(result.ok ? '' : result.error, /\.at/);
 });
 
 test('a body whose id does not match the url is refused', () => {
-  const result = saveLayout(root, 'vesper-lodge', JSON.stringify({ ...original(), id: 'vesper-wards' }));
+  const result = saveLayout(root, 'terminus-square', JSON.stringify({ ...original(), id: 'some-other-district' }));
   assert.deepEqual(result.ok ? null : result.status, 422);
 });
 
 test('a valid layout is written in canonical form', () => {
   const shuffled = Object.fromEntries(Object.entries(original()).reverse());
-  const result = saveLayout(root, 'vesper-lodge', JSON.stringify(shuffled, null, 5));
+  const result = saveLayout(root, 'terminus-square', JSON.stringify(shuffled, null, 5));
   assert.ok(result.ok);
   const expected = printLayout(parseLayout(original()));
-  assert.equal(readFileSync(join(root, 'vesper-lodge.json'), 'utf8'), expected);
+  assert.equal(readFileSync(join(root, 'terminus-square.json'), 'utf8'), expected);
   assert.equal(result.text, expected);
 });
 

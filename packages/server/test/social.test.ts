@@ -6,7 +6,6 @@ import {
   createStartingSkills,
   emptyContractLedger,
   experienceForLevel,
-  GAME_CONTENT,
   maxIntegrityFor,
   type CharacterRecord,
   type WorldLocation,
@@ -14,10 +13,10 @@ import {
 import { createCharacterRecord } from '../src/characters/characterFactory.ts';
 import type { GameplayMessage } from '../src/gameplay/gameplay.ts';
 import type { Player } from '../src/world/player.ts';
-import { inRoom, at, createHarness, RecordingSink, type Harness, localInRoom } from './support/testHarness.ts';
+import { inRoom, at, createHarness, RecordingSink, type Harness, localInRoom, CONTENT } from './support/testHarness.ts';
 
-const PLAZA = inRoom('meridian-atrium', 'plaza');
-const DOCKS = at('service-yards', localInRoom('service-yards', 'loading-dock'));
+const PLAZA = inRoom('fx-hub', 'plaza');
+const DOCKS = inRoom('fx-field', 'lane', { x: 20, y: 6 });
 
 const placed = (location: WorldLocation) => (record: CharacterRecord): CharacterRecord => ({ ...record, location });
 
@@ -28,7 +27,7 @@ interface Second {
 }
 
 function joinSecond(harness: Harness, location: WorldLocation, changes: Partial<CharacterRecord> = {}): Second {
-  const record = createCharacterRecord({ ...createDefaultDraft(), name: 'Second Operative' }, { id: 'character-2', accountId: 'account-2' }, GAME_CONTENT);
+  const record = createCharacterRecord({ ...createDefaultDraft(), name: 'Second Operative' }, { id: 'character-2', accountId: 'account-2' }, CONTENT);
   const sink = new RecordingSink();
   const player = harness.gameplay.enterWorld({ ...record, quests: {}, location, ...changes }, sink);
   return { player, sink, send: (message) => harness.gameplay.handle(player, message) };
@@ -64,14 +63,14 @@ describe('parties', () => {
     const skills = createStartingSkills({ closeQuarters: experienceForLevel(30), fortitude: experienceForLevel(30) });
     const fighter = { skills, vitals: { integrity: maxIntegrityFor(skills) } };
     const harness = createHarness({ prepare: (record) => ({ ...placed(DOCKS)(record), ...fighter }) });
-    const board = { ...emptyContractLedger(), daily: { period: contractPeriod('daily', Date.now()), entries: [{ contractId: 'daily:yard-sweep', progress: 0, claimed: false }] } };
+    const board = { ...emptyContractLedger(), daily: { period: contractPeriod('daily', Date.now()), entries: [{ contractId: 'daily:mites', progress: 0, claimed: false }] } };
     const second = joinSecond(harness, DOCKS, { contracts: board });
     harness.send({ type: 'party.invite', name: 'Second Operative' });
     second.send({ type: 'party.accept', inviterId: harness.player.record.id });
 
-    const creature = harness.gameplay.world.levelOf(harness.player).creatureByInstance('yd-dock-drone-a');
+    const creature = harness.gameplay.world.levelOf(harness.player).creatureByInstance('field-mite-a');
     assert.ok(creature?.isAlive);
-    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'yd-dock-drone-a', interactionIndex: 0 });
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'field-mite-a', interactionIndex: 0 });
     harness.ticksUntil(() => !creature.isAlive, 400);
     assert.equal(second.player.record.contracts.daily?.entries[0]?.progress, 1);
 
@@ -102,7 +101,7 @@ describe('whispers and contacts', () => {
     assert.deepEqual(harness.player.record.friends, [{ characterId: 'character-2', name: 'Second Operative' }]);
     const online = harness.sink.last('friends.state')?.friends[0];
     assert.equal(online?.online, true);
-    assert.equal(online?.districtName, 'Meridian Atrium');
+    assert.equal(online?.districtName, 'Test Hub');
 
     harness.gameplay.leaveWorld(second.player);
     assert.equal(harness.sink.last('friends.state')?.friends[0]?.online, false);

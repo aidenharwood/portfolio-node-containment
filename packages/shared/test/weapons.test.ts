@@ -6,7 +6,6 @@ import {
   createStartingSkills,
   equipFromInventory,
   experienceForLevel,
-  GAME_CONTENT,
   hasLineOfSight,
   INVENTORY_CAPACITY,
   isWithinAttackRange,
@@ -16,8 +15,9 @@ import {
   WEAPON_KINDS,
   type Wearer,
 } from '../src/index.ts';
+import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
 
-const items = GAME_CONTENT.items;
+const items = FIXTURE_CONTENT.items;
 const veteran: Wearer = {
   skills: createStartingSkills({ closeQuarters: experienceForLevel(40), marksmanship: experienceForLevel(40) }),
 };
@@ -34,21 +34,6 @@ const sightline = (from: { x: number; y: number }, to: { x: number; y: number })
 const weapons = [...items.values()].filter((item) => item.equipment?.weapon);
 
 describe('weapon kinds', () => {
-  test('every held weapon kind is stocked, with both one- and two-handed options for each style', () => {
-    for (const kind of WEAPON_KINDS.filter((kind) => kind !== 'unarmed')) {
-      assert.ok(weapons.some((item) => item.equipment?.weapon?.kind === kind), `no ${kind} in the catalogue`);
-    }
-    for (const style of ['melee', 'ranged'] as const) {
-      for (const grip of ['oneHanded', 'twoHanded'] as const) {
-        const matching = weapons.filter((item) => {
-          const info = WEAPON_KIND_INFO[item.equipment!.weapon!.kind];
-          return info.style === style && info.grip === grip;
-        });
-        assert.ok(matching.length >= 2, `${grip} ${style} has ${matching.length} weapons`);
-      }
-    }
-  });
-
   test('every ranged kind fires a projectile and no melee kind does', () => {
     for (const kind of WEAPON_KINDS) {
       const info = WEAPON_KIND_INFO[kind];
@@ -69,13 +54,13 @@ describe('weapon kinds', () => {
 
   test('the attack profile carries the weapon kind and its damage scale', () => {
     const skills = createStartingSkills({ closeQuarters: experienceForLevel(20) });
-    const knife = playerAttackProfile(skills, { primary: 'quill-knife' }, items);
+    const knife = playerAttackProfile(skills, { primary: 'field-knife' }, items);
     const unarmed = playerAttackProfile(skills, {}, items);
     assert.equal(knife.weapon, 'knife');
     assert.equal(knife.speedTicks, 3);
     assert.equal(unarmed.weapon, 'unarmed');
     assert.equal(knife.maxHit, 1 + Math.floor((knife.accuracy * 0.75) / 4));
-    const rifle = playerAttackProfile(createStartingSkills({ marksmanship: experienceForLevel(20) }), { primary: 'redaction-rifle' }, items);
+    const rifle = playerAttackProfile(createStartingSkills({ marksmanship: experienceForLevel(20) }), { primary: 'long-rifle' }, items);
     assert.equal(rifle.style, 'ranged');
     assert.equal(rifle.range, 9);
   });
@@ -98,10 +83,10 @@ describe('polearm reach', () => {
 
 describe('two-handed weapons', () => {
   test('wielding a two-handed weapon returns the secondary item to the inventory', () => {
-    const { inventory } = addItem(createEmptyInventory(), items, 'marksman-carbine', 1);
+    const { inventory } = addItem(createEmptyInventory(), items, 'long-rifle', 1);
     const result = equipFromInventory({ inventory, equipment: { primary: 'stun-baton', secondary: 'research-datapad' } }, 0, items, veteran);
     assert.ok(result.ok);
-    assert.equal(result.value.equipment.primary, 'marksman-carbine');
+    assert.equal(result.value.equipment.primary, 'long-rifle');
     assert.equal(result.value.equipment.secondary, undefined);
     const held = result.value.inventory.flatMap((slot) => (slot ? [slot.itemId] : []));
     assert.deepEqual(held.sort(), ['research-datapad', 'stun-baton']);
@@ -109,25 +94,25 @@ describe('two-handed weapons', () => {
 
   test('taking up a secondary item lowers a two-handed weapon', () => {
     const { inventory } = addItem(createEmptyInventory(), items, 'research-datapad', 1);
-    const result = equipFromInventory({ inventory, equipment: { primary: 'shock-maul' } }, 0, items, veteran);
+    const result = equipFromInventory({ inventory, equipment: { primary: 'heavy-maul' } }, 0, items, veteran);
     assert.ok(result.ok);
     assert.equal(result.value.equipment.secondary, 'research-datapad');
     assert.equal(result.value.equipment.primary, undefined);
-    assert.equal(result.value.inventory[0]?.itemId, 'shock-maul');
+    assert.equal(result.value.inventory[0]?.itemId, 'heavy-maul');
   });
 
   test('a one-handed weapon leaves the secondary hand alone', () => {
-    const { inventory } = addItem(createEmptyInventory(), items, 'breaching-machete', 1);
+    const { inventory } = addItem(createEmptyInventory(), items, 'field-knife', 1);
     const result = equipFromInventory({ inventory, equipment: { secondary: 'research-datapad' } }, 0, items, veteran);
     assert.ok(result.ok);
-    assert.equal(result.value.equipment.primary, 'breaching-machete');
+    assert.equal(result.value.equipment.primary, 'field-knife');
     assert.equal(result.value.equipment.secondary, 'research-datapad');
   });
 
   test('refuses the swap when both displaced items will not fit', () => {
-    const packed = addItem(createEmptyInventory(), items, 'intake-jumpsuit', INVENTORY_CAPACITY - 1).inventory;
-    const { inventory } = addItem(packed, items, 'riot-pike', 1);
-    const slotIndex = inventory.findIndex((slot) => slot?.itemId === 'riot-pike');
+    const packed = addItem(createEmptyInventory(), items, 'work-jumpsuit', INVENTORY_CAPACITY - 1).inventory;
+    const { inventory } = addItem(packed, items, 'heavy-maul', 1);
+    const slotIndex = inventory.findIndex((slot) => slot?.itemId === 'heavy-maul');
     const result = equipFromInventory({ inventory, equipment: { primary: 'stun-baton', secondary: 'research-datapad' } }, slotIndex, items, veteran);
     assert.equal(result.ok, false);
   });

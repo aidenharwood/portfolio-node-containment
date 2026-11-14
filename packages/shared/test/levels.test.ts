@@ -5,7 +5,6 @@ import {
   createObjectWalkabilityGrid,
   createWalkabilityGrid,
   findLevelIssues,
-  GAME_CONTENT,
   locate,
   tileKey,
   type DistrictDefinition,
@@ -14,9 +13,10 @@ import {
   type TilePoint,
   type WorldObjectDefinition,
 } from '../src/index.ts';
+import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
 
 const anchorPoint = (districtId: string, anchorId: string): TilePoint => {
-  const point = GAME_CONTENT.districts.get(districtId)?.anchors?.[anchorId];
+  const point = FIXTURE_CONTENT.districts.get(districtId)?.anchors?.[anchorId];
   assert.ok(point, `missing anchor ${districtId}/${anchorId}`);
   return point;
 };
@@ -42,7 +42,7 @@ const HATCH: WorldObjectDefinition = {
   id: 'fixture-hatch',
   name: 'Hatch',
   examine: 'A hatch.',
-  model: 'bulkhead',
+  model: 'placeholder',
   blocksMovement: true,
   interactions: [{ verb: 'Enter', effects: [{ type: 'teleport', districtId: 'far', position: { x: 1, y: 1 } }] }],
 };
@@ -53,11 +53,11 @@ function fixtureContent(levels: readonly LevelDefinition[], districts: readonly 
   const districtMap = new Map(districts.map((district) => [district.id, district]));
   const index = buildLevelIndex(levels, districtMap);
   return {
-    ...GAME_CONTENT,
+    ...FIXTURE_CONTENT,
     districts: districtMap,
     levels: index.levels,
     levelOfDistrict: index.levelOfDistrict,
-    worldObjects: new Map([...GAME_CONTENT.worldObjects, [HATCH.id, HATCH]]),
+    worldObjects: new Map([...FIXTURE_CONTENT.worldObjects, [HATCH.id, HATCH]]),
   };
 }
 
@@ -88,57 +88,38 @@ function reachableFrom(content: GameContent, levelId: string, start: TilePoint):
 
 describe('levels', () => {
   test('every district belongs to exactly one level', () => {
-    assert.equal(GAME_CONTENT.levelOfDistrict.size, GAME_CONTENT.districts.size);
-    const placements = [...GAME_CONTENT.levels.values()].flatMap((resolved) => resolved.definition.districts.map((placement) => placement.districtId));
+    assert.equal(FIXTURE_CONTENT.levelOfDistrict.size, FIXTURE_CONTENT.districts.size);
+    const placements = [...FIXTURE_CONTENT.levels.values()].flatMap((resolved) => resolved.definition.districts.map((placement) => placement.districtId));
     assert.equal(new Set(placements).size, placements.length);
   });
 
   test('locate translates district-local points into level points', () => {
-    const origin = GAME_CONTENT.levels.get('main-floor')?.definition.districts.find((placement) => placement.districtId === 'meridian-atrium')?.origin;
+    const origin = FIXTURE_CONTENT.levels.get('fx-floor')?.definition.districts.find((placement) => placement.districtId === 'fx-field')?.origin;
     assert.ok(origin);
-    assert.deepEqual(locate(GAME_CONTENT, 'meridian-atrium', { x: 5, y: 28 }), { levelId: 'main-floor', position: { x: origin.x + 5, y: origin.y + 28 } });
+    assert.deepEqual(locate(FIXTURE_CONTENT, 'fx-field', { x: 5, y: 4 }), { levelId: 'fx-floor', position: { x: origin.x + 5, y: origin.y + 4 } });
   });
 
   test('locate is undefined for an unknown district', () => {
-    assert.equal(locate(GAME_CONTENT, 'sector-nine', { x: 1, y: 1 }), undefined);
+    assert.equal(locate(FIXTURE_CONTENT, 'sector-nine', { x: 1, y: 1 }), undefined);
   });
 
-  test('the Verdance Concourse joins the Atrium and Hydroponics', () => {
-    const mainFloor = GAME_CONTENT.levels.get('main-floor');
-    assert.ok(mainFloor);
-    const target = locate(GAME_CONTENT, 'hydroponics', anchorPoint('hydroponics', 'tramPlatform'));
+  test('districts joined by exits are reachable on foot from the spawn', () => {
+    const floor = FIXTURE_CONTENT.levels.get('fx-floor');
+    assert.ok(floor);
+    const target = locate(FIXTURE_CONTENT, 'fx-outpost', anchorPoint('fx-outpost', 'tramPlatform'));
     assert.ok(target);
-    assert.ok(reachableFrom(GAME_CONTENT, 'main-floor', mainFloor.spawn).has(tileKey(target.position)));
+    assert.ok(reachableFrom(FIXTURE_CONTENT, 'fx-floor', floor.spawn).has(tileKey(target.position)));
   });
 
-  test('the Service Concourse joins the Atrium and the Service Yards', () => {
-    const mainFloor = GAME_CONTENT.levels.get('main-floor');
-    assert.ok(mainFloor);
-    const target = locate(GAME_CONTENT, 'service-yards', anchorPoint('service-yards', 'tramPlatform'));
-    assert.ok(target);
-    assert.ok(reachableFrom(GAME_CONTENT, 'main-floor', mainFloor.spawn).has(tileKey(target.position)));
-  });
-
-  test('the Intake Wing is reached by tram, not on foot', () => {
-    const mainFloor = GAME_CONTENT.levels.get('main-floor');
-    const intake = locate(GAME_CONTENT, 'intake-wing', anchorPoint('intake-wing', 'start'));
-    assert.ok(mainFloor && intake);
-    assert.ok(!reachableFrom(GAME_CONTENT, 'main-floor', mainFloor.spawn).has(tileKey(intake.position)));
-    assert.ok([...GAME_CONTENT.tram.stations.values()].some((station) => station.districtId === 'intake-wing'));
-  });
-
-  test('every Deep district is joined to Deepwatch by corridor or pressure door', () => {
-    const deep = GAME_CONTENT.levels.get('the-deep');
-    assert.ok(deep);
-    const reachable = reachableFrom(GAME_CONTENT, 'the-deep', deep.spawn);
-    for (const [districtId, anchorId] of [['deep-concourse', 'cryovaultDoor'], ['furnace-causeway', 'furnaceGate']] as const) {
-      const point = locate(GAME_CONTENT, districtId, anchorPoint(districtId, anchorId));
-      assert.ok(point && reachable.has(tileKey(point.position)), districtId);
-    }
+  test('a district on another level is not reachable on foot', () => {
+    const floor = FIXTURE_CONTENT.levels.get('fx-floor');
+    const arena = locate(FIXTURE_CONTENT, 'fx-arena', anchorPoint('fx-arena', 'landing'));
+    assert.ok(floor && arena);
+    assert.equal(arena.levelId, 'fx-depths');
   });
 
   test('the shipped content has no level issues', () => {
-    assert.deepEqual(findLevelIssues(GAME_CONTENT), []);
+    assert.deepEqual(findLevelIssues(FIXTURE_CONTENT), []);
   });
 
   test('findLevelIssues reports overlapping placements', () => {
@@ -158,7 +139,7 @@ describe('levels', () => {
   });
 
   test('findLevelIssues reports duplicate instance ids within a level', () => {
-    const npc = { instanceId: 'twin', npcId: [...GAME_CONTENT.npcs.keys()][0] as string, position: { x: 2, y: 1 } };
+    const npc = { instanceId: 'twin', npcId: [...FIXTURE_CONTENT.npcs.keys()][0] as string, position: { x: 2, y: 1 } };
     const content = fixtureContent(
       [level([{ districtId: 'near', origin: { x: 0, y: 0 } }, { districtId: 'far', origin: { x: 5, y: 0 } }])],
       [room('near', ['#####', '#...D'], { npcs: [npc] }), room('far', ['#####', 'D...#'], { npcs: [npc] })],

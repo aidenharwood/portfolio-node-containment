@@ -8,8 +8,6 @@ export type MarketSide = 'buy' | 'sell';
 
 export type MarketOrderId = string;
 
-export const MARKET_DISTRICT_ID: DistrictId = 'meridian-atrium';
-
 export type MarketAccess = 'trade' | 'collect';
 export const MARKET_ORDER_LIMIT = 8;
 export const MAX_MARKET_PRICE = 1_000_000_000;

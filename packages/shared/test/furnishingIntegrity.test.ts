@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { findFurnishingIssues, findWorldDesignIssues, GAME_CONTENT, resolveLevel, type DistrictDefinition, type GameContent, type LevelDefinition, type ObjectPlacement, type WorldObjectDefinition } from '../src/index.ts';
+import { findFurnishingIssues, findWorldDesignIssues, resolveLevel, type DistrictDefinition, type GameContent, type LevelDefinition, type ObjectPlacement, type WorldObjectDefinition } from '../src/index.ts';
 import { dressingObjectOf, furnish } from '../src/content/districts/furnish.ts';
 import { setPiece } from '../src/content/districts/setPiece.ts';
-import { WORLD_OBJECTS } from '../src/content/worldObjects.ts';
+import { KIT_OBJECTS } from './fixtures/world/furnishing.ts';
 import { drawBlueprint, link, room } from '../src/world/blueprint.ts';
+import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
 
 const plan = drawBlueprint({ width: 40, height: 26 }, [room('hall', 1, 1, 20, 20, 'plating'), room('annex', 24, 1, 10, 8, 'plating'), link('hall', 'annex', 2, 'door')]);
 
@@ -13,7 +14,7 @@ const baseDistrict = (overrides: Partial<DistrictDefinition> = {}): DistrictDefi
   name: 'Test Yard',
   subtitle: '',
   tier: 1,
-  region: 'meridian-core',
+  region: 'fx-home',
   map: plan.map,
   rooms: plan.rooms,
   exits: plan.exits,
@@ -25,7 +26,7 @@ const baseDistrict = (overrides: Partial<DistrictDefinition> = {}): DistrictDefi
   ...overrides,
 });
 
-const contentWith = (district: DistrictDefinition, worldObjects: ReadonlyMap<string, WorldObjectDefinition> = GAME_CONTENT.worldObjects): GameContent => {
+const contentWith = (district: DistrictDefinition, worldObjects: ReadonlyMap<string, WorldObjectDefinition> = FIXTURE_CONTENT.worldObjects): GameContent => {
   const level: LevelDefinition = {
     id: 'test-level',
     name: 'Test',
@@ -36,7 +37,7 @@ const contentWith = (district: DistrictDefinition, worldObjects: ReadonlyMap<str
     spawn: { districtId: district.id, position: plan.at('hall', 10, 10) },
   };
   const districts = new Map([[district.id, district]]);
-  return { ...GAME_CONTENT, worldObjects, districts, levels: new Map([[level.id, resolveLevel(level, districts, GAME_CONTENT.assemblies)]]) } as GameContent;
+  return { ...FIXTURE_CONTENT, worldObjects, districts, levels: new Map([[level.id, resolveLevel(level, districts, FIXTURE_CONTENT.assemblies)]]) } as GameContent;
 };
 
 const locker = (instanceId: string, dx: number, dy: number): ObjectPlacement => ({ instanceId, objectId: 'storage-locker', position: plan.at('hall', dx, dy) });
@@ -97,9 +98,9 @@ describe('furnishing integrity', () => {
 });
 
 describe('fixtures against walls', () => {
-  const wideLocker: WorldObjectDefinition = { ...GAME_CONTENT.worldObjects.get('storage-locker')!, id: 'wide-locker', footprint: { width: 3, height: 1 } };
-  const squareLocker: WorldObjectDefinition = { ...GAME_CONTENT.worldObjects.get('storage-locker')!, id: 'square-locker', footprint: { width: 2, height: 2 } };
-  const objects = new Map([...GAME_CONTENT.worldObjects, ['wide-locker', wideLocker], ['square-locker', squareLocker]]);
+  const wideLocker: WorldObjectDefinition = { ...FIXTURE_CONTENT.worldObjects.get('storage-locker')!, id: 'wide-locker', footprint: { width: 3, height: 1 } };
+  const squareLocker: WorldObjectDefinition = { ...FIXTURE_CONTENT.worldObjects.get('storage-locker')!, id: 'square-locker', footprint: { width: 2, height: 2 } };
+  const objects = new Map([...FIXTURE_CONTENT.worldObjects, ['wide-locker', wideLocker], ['square-locker', squareLocker]]);
   const squareIssues = (dy: number) =>
     findWorldDesignIssues(contentWith(baseDistrict({ objects: [{ instanceId: 'square', objectId: 'square-locker', position: plan.at('hall', 9, dy), facing: 'north' }] }), objects)).filter((issue) =>
       issue.includes('"square"'),
@@ -129,7 +130,7 @@ describe('fixtures against walls', () => {
 
 describe('dressing lookup', () => {
   test('every world object with a footprint resolves through the dressing lookup', () => {
-    for (const definition of WORLD_OBJECTS.filter((object) => object.footprint)) {
+    for (const definition of KIT_OBJECTS.filter((object) => object.footprint)) {
       assert.equal(dressingObjectOf(definition.id)?.footprint, definition.footprint, definition.id);
     }
   });

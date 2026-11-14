@@ -1,26 +1,26 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { addItem, countItem, createDefaultDraft, GAME_CONTENT, type GroundItemSnapshot, type ServerMessageOf } from '@containment/shared';
+import { addItem, countItem, createDefaultDraft, type GroundItemSnapshot, type ServerMessageOf } from '@containment/shared';
 import { createCharacterRecord } from '../src/characters/characterFactory.ts';
 import { Gameplay } from '../src/gameplay/gameplay.ts';
 import { OWNER_PRIVACY_TICKS, GROUND_LIFETIME_TICKS } from '../src/gameplay/groundItemController.ts';
-import { inRoom, RecordingSink, at, levelPoint, localInRoom } from './support/testHarness.ts';
+import { inRoom, RecordingSink, at, levelPoint, localInRoom, CONTENT } from './support/testHarness.ts';
 
 function setup() {
-  const gameplay = new Gameplay(GAME_CONTENT, { save: () => undefined, findByName: () => null }, {
+  const gameplay = new Gameplay(CONTENT, { save: () => undefined, findByName: () => null }, {
     tickMs: 300,
     autosaveIntervalMs: 60_000,
     random: () => 0.99,
     combatRandom: () => 0.01,
   });
   const join = (name: string, x: number) => {
-    const record = createCharacterRecord({ ...createDefaultDraft(), name }, { id: name, accountId: name }, GAME_CONTENT);
+    const record = createCharacterRecord({ ...createDefaultDraft(), name }, { id: name, accountId: name }, CONTENT);
     const sink = new RecordingSink();
-    const inventory = addItem(record.inventory, GAME_CONTENT.items, 'medgel', 3).inventory;
-    const player = gameplay.enterWorld({ ...record, inventory, location: at('meridian-atrium', { x, y: 16 }) }, sink);
+    const inventory = addItem(record.inventory, CONTENT.items, 'medgel', 3).inventory;
+    const player = gameplay.enterWorld({ ...record, inventory, location: at('fx-hub', { x, y: 8 }) }, sink);
     return { player, sink };
   };
-  return { gameplay, owner: join('Owner Operative', 12), bystander: join('Other Operative', 13) };
+  return { gameplay, owner: join('Owner Operative', 7), bystander: join('Other Operative', 8) };
 }
 
 const visibleIds = (sink: RecordingSink): Set<string> => {
@@ -62,7 +62,7 @@ describe('ground items', () => {
     gameplay.handle(owner.player, { type: 'inventory.drop', slotIndex: slot });
     const [dropped] = [...gameplay.world.levelOf(owner.player).groundItems.values()];
     assert.ok(dropped);
-    gameplay.handle(owner.player, { type: 'world.walk', target: levelPoint('meridian-atrium', localInRoom('meridian-atrium', 'plaza')) });
+    gameplay.handle(owner.player, { type: 'world.walk', target: levelPoint('fx-hub', localInRoom('fx-hub', 'plaza')) });
     for (let tick = 0; tick < 10; tick++) gameplay.tick();
     gameplay.handle(owner.player, { type: 'world.pickup', groundItemId: dropped.id });
     for (let tick = 0; tick < 20 && countItem(owner.player.record.inventory, 'medgel') === 0; tick++) gameplay.tick();
@@ -75,17 +75,17 @@ describe('ground items', () => {
     const slot = owner.player.record.inventory.findIndex((stack) => stack?.itemId === 'medgel');
     gameplay.handle(owner.player, { type: 'inventory.drop', slotIndex: slot });
     for (let tick = 0; tick < OWNER_PRIVACY_TICKS + 1; tick++) gameplay.tick();
-    const record = createCharacterRecord({ ...createDefaultDraft(), name: 'Late Operative' }, { id: 'late', accountId: 'late' }, GAME_CONTENT);
+    const record = createCharacterRecord({ ...createDefaultDraft(), name: 'Late Operative' }, { id: 'late', accountId: 'late' }, CONTENT);
     const sink = new RecordingSink();
-    gameplay.enterWorld({ ...record, location: inRoom('meridian-atrium', 'workshop') }, sink);
+    gameplay.enterWorld({ ...record, location: at('fx-hub', { x: 9, y: 8 }) }, sink);
     const entered = sink.last('world.entered');
     assert.ok(entered?.groundItems.some((item: GroundItemSnapshot) => item.itemId === 'medgel' && !item.owned));
   });
 
   test('quest items cannot be dropped', () => {
     const { gameplay, owner } = setup();
-    owner.player.update({ inventory: [{ itemId: 'expedition-log', quantity: 1 }, ...owner.player.record.inventory.slice(1)] });
+    owner.player.update({ inventory: [{ itemId: 'field-log', quantity: 1 }, ...owner.player.record.inventory.slice(1)] });
     gameplay.handle(owner.player, { type: 'inventory.drop', slotIndex: 0 });
-    assert.equal(countItem(owner.player.record.inventory, 'expedition-log'), 1);
+    assert.equal(countItem(owner.player.record.inventory, 'field-log'), 1);
   });
 });

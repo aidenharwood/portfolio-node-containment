@@ -4,7 +4,6 @@ import {
   combatExperience,
   createStartingSkills,
   experienceForLevel,
-  GAME_CONTENT,
   hasLineOfSight,
   hitChance,
   isWithinAttackRange,
@@ -15,6 +14,7 @@ import {
   playerAttackProfile,
   rollAttack,
 } from '../src/index.ts';
+import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
 
 const layout = parseTileLayout([
   '#######',
@@ -43,15 +43,15 @@ describe('combat math', () => {
   });
 
   test('training and weapons both improve the attack profile', () => {
-    const novice = playerAttackProfile(createStartingSkills(), {}, GAME_CONTENT.items);
-    const armed = playerAttackProfile(createStartingSkills(), { primary: 'stun-baton' }, GAME_CONTENT.items);
-    const trained = playerAttackProfile(createStartingSkills({ closeQuarters: experienceForLevel(20) }), { primary: 'stun-baton' }, GAME_CONTENT.items);
+    const novice = playerAttackProfile(createStartingSkills(), {}, FIXTURE_CONTENT.items);
+    const armed = playerAttackProfile(createStartingSkills(), { primary: 'stun-baton' }, FIXTURE_CONTENT.items);
+    const trained = playerAttackProfile(createStartingSkills({ closeQuarters: experienceForLevel(20) }), { primary: 'stun-baton' }, FIXTURE_CONTENT.items);
     assert.equal(novice.style, 'melee');
     assert.ok(armed.accuracy > novice.accuracy);
     assert.ok(trained.maxHit > armed.maxHit);
-    const sidearm = playerAttackProfile(createStartingSkills(), { primary: 'kestrel-sidearm' }, GAME_CONTENT.items);
+    const sidearm = playerAttackProfile(createStartingSkills(), { primary: 'dart-pistol' }, FIXTURE_CONTENT.items);
     assert.equal(sidearm.style, 'ranged');
-    assert.equal(sidearm.range, 6);
+    assert.equal(sidearm.range, 5);
   });
 
   test('melee requires cardinal adjacency; ranged requires distance and sightline', () => {

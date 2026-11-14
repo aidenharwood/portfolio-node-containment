@@ -4,7 +4,7 @@ const districtAt = (content: GameContent, location: WorldLocation): DistrictId |
   content.levels.get(location.levelId)?.layout.toLocalPoint(location.position)?.districtId;
 
 export function returnUnfinishedTrainee(record: CharacterRecord, content: GameContent): CharacterRecord {
-  const start = content.newCharacter.startingLocation;
+  const start = content.newCharacter.trainingLocation;
   const here = districtAt(content, record.location);
   if (here === districtAt(content, start)) return record;
   const stillTraining = Object.values(record.quests).some((progress) => {

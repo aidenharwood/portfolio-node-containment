@@ -1,26 +1,27 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { GAME_CONTENT, type DistrictDefinition, type Facing, type GameContent } from '@containment/shared';
+import type { DistrictDefinition, Facing, GameContent } from '@containment/shared';
+import { FIXTURE_CONTENT as GAME_CONTENT } from '@containment/shared/fixtures';
 import { planDrawList } from '../src/editor/planCanvas.ts';
 
-const atrium = GAME_CONTENT.districts.get('meridian-atrium') as DistrictDefinition;
+const atrium = GAME_CONTENT.districts.get('fx-hub') as DistrictDefinition;
 
 const withMosaic = (): GameContent => {
-  const district: DistrictDefinition = { ...atrium, decals: [{ kind: 'mosaic', pattern: 'compass', rect: { x: 60, y: 40, width: 9, height: 9 } }] };
+  const district: DistrictDefinition = { ...atrium, decals: [{ kind: 'mosaic', pattern: 'compass', rect: { x: 4, y: 4, width: 5, height: 5 } }] };
   return { ...GAME_CONTENT, districts: new Map([...GAME_CONTENT.districts, [district.id, district]]) };
 };
 
 const withKiosk = (facing: Facing): GameContent => {
-  const district: DistrictDefinition = { ...atrium, objects: [{ instanceId: 'kiosk', objectId: 'glass-kiosk', position: { x: 40, y: 30 }, facing }] };
+  const district: DistrictDefinition = { ...atrium, objects: [{ instanceId: 'kiosk', objectId: 'transit-shelter', position: { x: 4, y: 4 }, facing }] };
   return { ...GAME_CONTENT, districts: new Map([...GAME_CONTENT.districts, [district.id, district]]) };
 };
 
 test('a 3x2 object draws at its rotated footprint in every facing', () => {
   for (const facing of ['north', 'east', 'south', 'west'] as const) {
-    const mark = planDrawList(withKiosk(facing), atrium.id, ['objects']).find((shape) => shape.kind === 'mark' && shape.label === 'glass-kiosk');
+    const mark = planDrawList(withKiosk(facing), atrium.id, ['objects']).find((shape) => shape.kind === 'mark' && shape.label === 'transit-shelter');
     assert.ok(mark, facing);
     const sideways = facing === 'east' || facing === 'west';
-    assert.deepEqual([mark.x, mark.y, mark.width, mark.height, mark.facing], [40, 30, sideways ? 2 : 3, sideways ? 3 : 2, facing], facing);
+    assert.deepEqual([mark.x, mark.y, mark.width, mark.height, mark.facing], [4, 4, sideways ? 2 : 3, sideways ? 3 : 2, facing], facing);
   }
 });
 

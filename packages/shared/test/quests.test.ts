@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { advanceQuest, trackedQuest, GAME_CONTENT, npcQuestMarker, startQuest, type QuestDefinition, type QuestStateProbe } from '../src/index.ts';
+import { advanceQuest, trackedQuest, npcQuestMarker, startQuest, type QuestDefinition, type QuestStateProbe } from '../src/index.ts';
+import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
 
 const quest: QuestDefinition = {
   id: 'sample',
@@ -65,11 +66,13 @@ describe('quest progression', () => {
 
 test('an NPC only advertises a quest once the quests it requires are complete', () => {
   const done = (questId: string) => ({ questId, status: 'completed' as const, stepIndex: 0, objectiveProgress: [] });
-  assert.equal(npcQuestMarker('artificer-duval', {}, GAME_CONTENT.quests, null), 'available', 'Rimeguard is offered straight away');
-  const rimeguardTaken = { rimeguard: done('rimeguard') };
-  assert.equal(npcQuestMarker('artificer-duval', rimeguardTaken, GAME_CONTENT.quests, null), null, 'Servo Salvage waits for Cold Storage');
-  assert.equal(npcQuestMarker('artificer-duval', { ...rimeguardTaken, 'cold-storage': done('cold-storage') }, GAME_CONTENT.quests, null), 'available');
-  assert.equal(npcQuestMarker('archivist-sel', {}, GAME_CONTENT.quests, null), null, 'the Council does not call before Halvorsen is found');
+  assert.equal(npcQuestMarker('handler', {}, FIXTURE_CONTENT.quests, null), 'available', 'an open quest is offered straight away');
+  const vaultRun = FIXTURE_CONTENT.quests.get('vault-run');
+  assert.ok(vaultRun);
+  const gated = new Map([[vaultRun.id, { ...vaultRun, offerRequires: ['prologue'] }]]);
+  assert.equal(npcQuestMarker('handler', {}, gated, null), null, 'a gated quest waits for the quest it requires');
+  assert.equal(npcQuestMarker('handler', { prologue: done('prologue') }, gated, null), 'available');
+  assert.equal(npcQuestMarker('medic', {}, FIXTURE_CONTENT.quests, null), null, 'an NPC with nothing to offer shows no marker');
 });
 
 test('the tracked quest is the preferred active quest, falling back to the first active one', () => {

@@ -272,7 +272,7 @@ function start(root: HTMLElement, services: ViewerServices): void {
 
   const roomAt = (tile: TilePoint): string | undefined => {
     const rooms = districtNow()?.rooms ?? {};
-    return Object.entries(rooms).find(([, rect]) => tile.x >= rect.x && tile.y >= rect.y && tile.x < rect.x + rect.width && tile.y < rect.y + rect.height)?.[0];
+    return Object.entries(rooms).filter(([, rect]) => tile.x >= rect.x && tile.y >= rect.y && tile.x < rect.x + rect.width && tile.y < rect.y + rect.height).sort(([, a], [, b]) => a.width * a.height - b.width * b.height)[0]?.[0];
   };
 
   plan.onHover((tile) => {

@@ -24,6 +24,14 @@ const LIGHT_REASSIGN_SECONDS = 0.25;
 const FOG_DENSITY = 0.028;
 const SURVEY_AMBIENT = 4.2;
 const SURVEY_KEY = 1.4;
+const SUN_COLOR = 0xfff1d6;
+const SHADE_COLOR = 0xcfe8ff;
+const SUN_BOOST = 1.6;
+const SKY_BRIGHTNESS_GAIN = 1.2;
+const DUSK_AMBIENT_CUT = 0.72;
+const DUSK_KEY_CUT = 0.55;
+const SKY_SUN_TINT = 0.8;
+const DAYLIGHT_FOG_THINNING = 0.55;
 const NO_LIGHTS: LightAssignment<LightSource> = { lights: [], edge: Infinity };
 
 export class SceneLook {
@@ -35,6 +43,7 @@ export class SceneLook {
   private readonly keyLight = new DirectionalLight(0xcfe8ff, 0.7);
   private readonly fog = new FogExp2(0x000000, FOG_DENSITY);
   private readonly background = new Color();
+  private readonly sunColor = new Color();
   private assignedLights: LightAssignment<LightSource> = NO_LIGHTS;
   private readonly fieldLights: FieldLight[] = Array.from({ length: FIELD_LIGHT_LIMIT }, () => ({ position: new Vector3(), color: new Color(), reach: 0 }));
   private lightTimer = 0;
@@ -103,12 +112,17 @@ export class SceneLook {
   applyAmbience(ambience: BlendedAmbience): void {
     this.lastAmbience = ambience;
     this.fog.color.copy(ambience.fog);
-    this.background.copy(ambience.fog).multiplyScalar(0.55);
+    this.background.copy(ambience.fog).multiplyScalar(0.55).lerp(ambience.sky, ambience.daylight);
     const tint = ambience.tint.getHex();
     this.hemisphere.color.setHex(lighten(tint, AMBIENT_SKY_LIFT));
     this.hemisphere.groundColor.setHex(lighten(tint, AMBIENT_GROUND_LIFT));
-    this.hemisphere.intensity = Math.max(AMBIENT_FLOOR, AMBIENT_BASE - ambience.darkness * AMBIENT_DARKNESS_WEIGHT);
-    this.keyLight.intensity = Math.max(KEY_FLOOR, KEY_BASE - ambience.darkness * KEY_DARKNESS_WEIGHT);
+    const skyBrightness = Math.min(1, Math.max(ambience.sky.r, ambience.sky.g, ambience.sky.b) * SKY_BRIGHTNESS_GAIN);
+    const dusk = ambience.daylight * (1 - skyBrightness);
+    this.hemisphere.intensity = Math.max(AMBIENT_FLOOR, AMBIENT_BASE - ambience.darkness * AMBIENT_DARKNESS_WEIGHT) * (1 - dusk * DUSK_AMBIENT_CUT);
+    this.keyLight.intensity = Math.max(KEY_FLOOR, KEY_BASE - ambience.darkness * KEY_DARKNESS_WEIGHT) * (1 + ambience.daylight * SUN_BOOST * skyBrightness) * (1 - dusk * DUSK_KEY_CUT);
+    this.sunColor.setHex(SUN_COLOR).lerp(ambience.sky, SKY_SUN_TINT * (1 - skyBrightness));
+    this.keyLight.color.setHex(SHADE_COLOR).lerp(this.sunColor, ambience.daylight);
+    if (!this.survey) this.fog.density = this.fogDensity * (1 - ambience.daylight * DAYLIGHT_FOG_THINNING);
     if (this.survey) {
       this.hemisphere.intensity = SURVEY_AMBIENT;
       this.keyLight.intensity = SURVEY_KEY;
