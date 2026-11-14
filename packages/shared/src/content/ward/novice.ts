@@ -74,7 +74,7 @@ interface Beast {
   readonly range?: number;
 }
 
-const beast = (spec: Beast): CreatureDefinition => ({
+export const beast = (spec: Beast): CreatureDefinition => ({
   id: spec.id,
   name: spec.name,
   ...(spec.designation ? { designation: spec.designation } : {}),
@@ -175,7 +175,7 @@ export const NOVICE_CREATURES: readonly CreatureDefinition[] = [
 const active = (questId: string, stepId?: string): Condition => ({ type: 'questActive', questId, ...(stepId ? { stepId } : {}) });
 const completed = (questId: string): Condition => ({ type: 'questCompleted', questId });
 
-const questObject = (
+export const questObject = (
   id: string,
   name: string,
   examine: string,
@@ -318,10 +318,10 @@ interface Hand {
   readonly thanks: string;
 }
 
-interface QuestTalk {
+export interface QuestTalk {
   readonly npc: string;
   readonly questId: string;
-  readonly offer?: { readonly text: string; readonly accept: string; readonly requires?: readonly string[] };
+  readonly offer?: { readonly text: string; readonly accept: string; readonly requires?: readonly string[]; readonly conditions?: readonly Condition[]; readonly notReady?: string };
   readonly waiting: string;
   readonly hand?: Hand;
   readonly report?: { readonly stepId: string; readonly text: string };
@@ -330,7 +330,7 @@ interface QuestTalk {
   readonly chatOptions?: readonly DialogueOption[];
 }
 
-function questTalk(talk: QuestTalk): DialogueDefinition {
+export function questTalk(talk: QuestTalk): DialogueDefinition {
   const extra = talk.chatOptions ?? [];
   const nodes: Record<string, DialogueNode> = {
     waiting: say(talk.waiting),
@@ -362,7 +362,12 @@ function questTalk(talk: QuestTalk): DialogueDefinition {
   }
   if (talk.offer) {
     nodes.offer = { speaker: 'npc', text: talk.offer.text, options: [{ text: talk.offer.accept, effects: [{ type: 'startQuest', questId: talk.questId }], next: null }, { text: 'Not now.', next: null }] };
-    entries.push({ node: 'offer', conditions: [...(talk.offer.requires ?? [TUTORIAL_QUEST_ID]).map(completed), { type: 'questNotStarted', questId: talk.questId }] });
+    const ready: Condition[] = [...(talk.offer.requires ?? [TUTORIAL_QUEST_ID]).map(completed), { type: 'questNotStarted', questId: talk.questId }];
+    entries.push({ node: 'offer', conditions: [...ready, ...(talk.offer.conditions ?? [])] });
+    if (talk.offer.notReady && talk.offer.conditions) {
+      nodes['not-ready'] = say(talk.offer.notReady);
+      entries.push({ node: 'not-ready', conditions: ready });
+    }
     entries.push({ node: 'waiting', conditions: [active(talk.questId)] });
   }
   entries.push({ node: 'done', conditions: [completed(talk.questId)] }, { node: 'chat' });

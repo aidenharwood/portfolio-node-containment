@@ -1,6 +1,6 @@
 import { Group } from 'three';
 import { darken, jitter, lighten, noise3 } from '../voxel/palette.ts';
-import { VOXEL_EMISSIVE } from '../voxel/voxelKinds.ts';
+import { VOXEL_EMISSIVE, VOXEL_GLASS } from '../voxel/voxelKinds.ts';
 import { createVoxelObject } from '../voxel/voxelMaterials.ts';
 import type { VoxelMeshes } from '../voxel/voxelMesher.ts';
 import { VoxelModel, type Paint } from '../voxel/voxelModel.ts';
@@ -138,6 +138,48 @@ const lamplighter = (): VoxelModel => {
   return model;
 };
 
+const mothLantern = (): VoxelModel => {
+  const model = new VoxelModel().fill(-1, 10, -3, 0, 12, 2, fur(0x4a3a2a, 41));
+  model.fill(-2, 6, -2, 1, 9, 1, 0xffd08a, VOXEL_EMISSIVE).fill(-1, 5, -1, 0, 5, 0, 0xe8a21c, VOXEL_EMISSIVE);
+  for (const side of [-1, 1]) {
+    for (let x = 1; x <= 7; x++) model.fill(side < 0 ? -1 - x : x, 11, -4 + Math.floor(x / 3), side < 0 ? -1 - x : x, 11, 3 - Math.floor(x / 2), x % 3 === 0 ? 0xe8a21c : 0x8a7a5a);
+  }
+  model.fill(-1, 13, 3, -1, 15, 4, 0x2a2018).fill(0, 13, 3, 0, 15, 4, 0x2a2018);
+  return model;
+};
+
+const glassHound = (): VoxelModel => {
+  const model = new VoxelModel().fill(-3, 6, -7, 2, 11, 5, 0x9fd6e6, VOXEL_GLASS);
+  model.fill(-3, 9, 6, 2, 14, 10, 0x9fd6e6, VOXEL_GLASS).fill(-2, 9, 11, 1, 11, 13, 0xbfe6f0, VOXEL_GLASS);
+  model.fill(-1, 7, -4, 0, 9, 2, 0xe8a21c, VOXEL_EMISSIVE).set(-2, 12, 10, 0xe8a21c, VOXEL_EMISSIVE).set(1, 12, 10, 0xe8a21c, VOXEL_EMISSIVE);
+  for (const x of [-3, 2]) for (const z of [-6, 4]) model.fill(x, 0, z, x, 5, z + 1, 0x9fd6e6, VOXEL_GLASS);
+  model.fill(-1, 11, -11, 0, 12, -8, 0x9fd6e6, VOXEL_GLASS);
+  return model;
+};
+
+const hullKnocker = (): VoxelModel => {
+  const shell = 0x3a4a52;
+  const model = new VoxelModel().fill(-7, 4, -6, 6, 13, 5, (x, y, z) => ((y + z) % 4 === 0 ? 0x8a4a2a : jitter(shell, 0.08, noise3(x, y, z, 43))));
+  model.fill(-11, 6, 4, -7, 12, 9, 0x2a3038).fill(6, 6, 4, 10, 12, 9, 0x2a3038);
+  for (const z of [-5, 0]) model.fill(-9, 0, z, -7, 5, z + 1, 0x2a3038).fill(6, 0, z, 8, 5, z + 1, 0x2a3038);
+  model.set(-3, 11, 6, 0xc79bff, VOXEL_EMISSIVE).set(2, 11, 6, 0xc79bff, VOXEL_EMISSIVE);
+  return model;
+};
+
+const tideWraith = (): VoxelModel => {
+  const model = new VoxelModel();
+  for (let y = 2; y <= 26; y++) {
+    const r = y < 18 ? 3 + Math.floor(Math.sin(y * 0.5) * 1.5) : 2;
+    for (let x = -r; x <= r; x++) for (let z = -r; z <= r; z++) {
+      if (Math.hypot(x, z) > r || noise3(x, y, z, 45) > 0.75) continue;
+      model.set(x, y, z, jitter(y < 10 ? 0x2a4a3a : 0x3a5a4a, 0.1, noise3(x, y, z, 46)));
+    }
+  }
+  model.fill(-1, 22, 2, -1, 22, 2, 0xc79bff, VOXEL_EMISSIVE).fill(1, 22, 2, 1, 22, 2, 0xc79bff, VOXEL_EMISSIVE);
+  model.fill(-6, 16, 0, -3, 17, 0, 0x2a4a3a).fill(3, 16, 0, 6, 17, 0, 0x2a4a3a);
+  return model;
+};
+
 const LOOKS: Readonly<Record<string, CreatureLook>> = {
   canalRat: { build: canalRat, height: 0.35, gait: 'scurry' },
   pigeon: { build: pigeon, height: 0.4, gait: 'hop' },
@@ -151,6 +193,10 @@ const LOOKS: Readonly<Record<string, CreatureLook>> = {
   lineMimic: { build: lineMimic, height: 1.2, gait: 'drift' },
   scrapMagpie: { build: scrapMagpie, height: 0.5, gait: 'hop' },
   lamplighter: { build: lamplighter, height: 2.1, gait: 'drift' },
+  mothLantern: { build: mothLantern, height: 1, gait: 'hover' },
+  glassHound: { build: glassHound, height: 0.9, gait: 'trot' },
+  hullKnocker: { build: hullKnocker, height: 0.9, gait: 'scurry' },
+  tideWraith: { build: tideWraith, height: 1.6, gait: 'drift' },
 };
 
 const meshes = new Map<string, VoxelMeshes>();
@@ -217,4 +263,8 @@ export const WARD_CREATURE_FACTORIES = {
   lineMimic: () => new WardCreatureRig('lineMimic'),
   scrapMagpie: () => new WardCreatureRig('scrapMagpie'),
   lamplighter: () => new WardCreatureRig('lamplighter'),
+  mothLantern: () => new WardCreatureRig('mothLantern'),
+  glassHound: () => new WardCreatureRig('glassHound'),
+  hullKnocker: () => new WardCreatureRig('hullKnocker'),
+  tideWraith: () => new WardCreatureRig('tideWraith'),
 } as const;

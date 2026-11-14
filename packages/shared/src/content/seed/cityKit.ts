@@ -1,5 +1,5 @@
 import { DRESSING_THEMES } from '../prefabs/types.ts';
-import { ALLOTMENT_HARVEST } from '../ward/objects.ts';
+import { ALLOTMENT_HARVEST, SCRAP_HEAP_SALVAGE } from '../ward/objects.ts';
 import type { WorldObjectDefinition } from '../../world/entities.ts';
 import type { FurnishingProfile } from '../furnishingCatalogue.ts';
 import type { FurnishingKit } from '../furnishingKit.ts';
@@ -48,7 +48,7 @@ export const CITY_KIT_OBJECTS: readonly WorldObjectDefinition[] = [
   prop({ id: 'allotment-bed', name: 'Allotment Bed', examine: 'Cabbages, beans and something purple nobody planted.', model: 'allotmentBed', footprint: { width: 2, height: 1 }, furnishing: { mount: 'free', homes: ['street', 'garden'], inRows: true }, interactions: [ALLOTMENT_HARVEST] }),
   prop({ id: 'washer', name: 'Washing Machine', examine: 'Industrial, coin-fed and older than you.', model: 'washer', furnishing: { mount: 'backed', homes: ['wet', 'home', 'shop'], inRows: true } }),
   prop({ id: 'chimney', name: 'Laundry Chimney', examine: 'The tallest brick in the Ward. You can see it from the basin.', model: 'chimney', furnishing: { mount: 'free', homes: ['street', 'wet', 'works'] } }),
-  prop({ id: 'scrap-heap', name: 'Scrap Heap', examine: 'Car doors, boiler plate, bedframes. Something underneath it shifts now and then.', model: 'scrapHeap', footprint: { width: 2, height: 2 }, furnishing: { mount: 'free', homes: ['street', 'industrial', 'works', 'freight'] } }),
+  prop({ id: 'scrap-heap', name: 'Scrap Heap', examine: 'Car doors, boiler plate, bedframes. Something underneath it shifts now and then.', model: 'scrapHeap', footprint: { width: 2, height: 2 }, furnishing: { mount: 'free', homes: ['street', 'industrial', 'works', 'freight'] }, interactions: [SCRAP_HEAP_SALVAGE] }),
   prop({ id: 'magnet-crane', name: 'Magnet Crane', examine: 'It lifts a car like a coin. Tam Reilly used to drive one.', model: 'magnetCrane', footprint: { width: 2, height: 2 }, furnishing: { mount: 'free', homes: ['street', 'industrial'] } }),
   prop({ id: 'beached-hull', name: 'Beached Hull', examine: 'A cargo ship hauled up the slipway and abandoned. The hole in its side was made from the inside.', model: 'beachedHull', footprint: { width: 6, height: 3 }, furnishing: { mount: 'free', homes: ['street', 'freight'] } }),
   prop({ id: 'lock-gate', name: 'Lock Gate', examine: 'A balance beam worn smooth by a hundred years of lockkeepers leaning on it.', model: 'lockGate', furnishing: { mount: 'free', homes: ['street', 'works'] } }),

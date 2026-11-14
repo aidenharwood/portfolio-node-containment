@@ -33,7 +33,14 @@ export const WARD_SPOTS: readonly WorldObjectDefinition[] = [
   spot('reed-bed', 'Reed Bed', 'Tough reeds growing thick along the canal bank.', 'reedBed', 'Cut', source('biochemistry', 10, 'reed-bundle', 22, 'Cutting reeds', 5, 50)),
   spot('faint-trace', 'Faint Trace', 'A smear of glowing dust where something passed through.', 'anomalyTrace', 'Study', source('research', 1, 'trace-dust', 12, 'Studying the trace', 3, 60), false),
   spot('culvert-trace', 'Culvert Trace', 'A bright smear of residue on the culvert stones. It hums.', 'anomalyTrace', 'Study', source('research', 10, 'culvert-trace', 26, 'Studying the trace', 3, 70), false),
+  spot('culture-bench', 'Culture Bench', 'A lab bench of trays growing pale fibre. Nobody minds if you harvest it.', 'labBench', 'Harvest', source('biochemistry', 20, 'lab-culture', 44, 'Harvesting culture', 4, 60)),
+  spot('amber-trace', 'Amber Trace', 'A warm amber smear on the holding-cell floor.', 'anomalyTrace', 'Study', source('research', 20, 'amber-trace', 46, 'Studying the trace', 3, 70), false),
+  spot('wreck-plate', 'Wreck Plate', 'Ship plate peeled off a wreck on the slipway. Cut it free.', 'scrapPile', 'Salvage', source('salvage', 30, 'hull-plate', 70, 'Cutting plate', 4, 70)),
+  spot('tide-weed', 'Tide Weed', 'Dark weed swaying in the shallows, against the current.', 'reedBed', 'Cut', source('biochemistry', 30, 'tide-weed', 66, 'Cutting weed', 4, 70)),
+  spot('hull-trace', 'Hull Trace', 'A violet smear on the slipway. It knocks if you put your ear to it.', 'anomalyTrace', 'Study', source('research', 30, 'hull-trace', 68, 'Studying the trace', 3, 80), false),
 ];
+
+export const SCRAP_HEAP_SALVAGE = { verb: 'Salvage', effects: [], gather: { attemptTicks: 5, ...source('salvage', 20, 'heavy-scrap', 42, 'Salvaging', 5, 60) } } as const;
 
 export const WARD_STATIONS: readonly WorldObjectDefinition[] = [
   station('ward-refinery', 'Refinery', 'A brick furnace. Fenwick lets anyone use it, for a nod.', 'refinery', 'refinery', 'Refine'),

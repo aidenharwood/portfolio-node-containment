@@ -50,10 +50,11 @@ test('the opening quest can be finished in Terminus Square', () => {
 });
 
 test('every material in the ladder has a full set of weapons and armour', () => {
-  for (const material of ['scrap', 'iron']) {
+  const parts: Readonly<Record<string, readonly [string, string]>> = { scrap: ['scrap-bar', 'rag-bundle'], iron: ['iron-bar', 'waxed-canvas'], steel: ['steel-bar', 'synth-weave'], alloy: ['alloy-bar', 'tarred-canvas'] };
+  for (const [material, [bar, fibre]] of Object.entries(parts)) {
     const weapons = ['baton', 'blade', 'maul', 'pistol', 'carbine', 'rifle', 'focus', 'resonator'].map((kind) => `${material}-${kind}`);
     for (const id of weapons) assert.ok(GAME_CONTENT.items.get(id)?.equipment?.weapon, `${id} is a weapon`);
-    const armour = [...GAME_CONTENT.items.values()].filter((item) => item.equipment && !item.equipment.weapon && !item.unique && GAME_CONTENT.recipes.get(`fabricator:${item.id}`)?.inputs.some((input) => input.itemId === (material === 'scrap' ? 'scrap-bar' : 'iron-bar') || input.itemId === (material === 'scrap' ? 'rag-bundle' : 'waxed-canvas')));
+    const armour = [...GAME_CONTENT.items.values()].filter((item) => item.equipment && !item.equipment.weapon && !item.unique && GAME_CONTENT.recipes.get(`fabricator:${item.id}`)?.inputs.some((input) => input.itemId === bar || input.itemId === fibre));
     assert.equal(armour.length, 15, `${material} has fifteen armour pieces`);
   }
 });

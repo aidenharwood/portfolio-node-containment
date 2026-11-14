@@ -67,13 +67,14 @@
     { "id": "cut-car", "object": "parked-car", "at": { "room": "ground", "dx": 50, "dy": 8 } },
     { "id": "cut-tree-a", "object": "street-tree", "at": { "room": "ground", "dx": 10, "dy": 10 } },
     { "id": "cut-tree-b", "object": "street-tree", "at": { "room": "ground", "dx": 22, "dy": 10 } },
-    { "id": "cut-scrap", "object": "scrap-heap", "at": { "room": "culvert", "dx": 5, "dy": 6 } },
+    { "id": "cut-scrap", "object": "scrap-pile", "at": { "room": "culvert", "dx": 5, "dy": 6 } },
     { "id": "cut-dumpster", "object": "dumpster", "at": { "room": "ground", "dx": 17, "dy": 44 }, "facing": "east" },
     { "id": "sluice-0", "object": "seized-sluice", "at": { "room": "ground", "dx": 46, "dy": 27 } },
     { "id": "sluice-1", "object": "seized-sluice", "at": { "room": "ground", "dx": 60, "dy": 27 } },
     { "id": "sluice-2", "object": "seized-sluice", "at": { "room": "ground", "dx": 12, "dy": 34 } },
     { "id": "cut-hatch", "object": "cut-hatch", "at": { "room": "ground", "dx": 4, "dy": 36 } },
-    { "id": "grey-cat", "object": "grey-cat", "at": { "room": "ground", "dx": 32, "dy": 58 } }
+    { "id": "grey-cat", "object": "grey-cat", "at": { "room": "ground", "dx": 32, "dy": 58 } },
+    { "id": "reading-cut", "object": "reading-cut", "at": { "room": "ground", "dx": 50, "dy": 20 } }
   ],
   "assemblies": [],
   "npcs": [

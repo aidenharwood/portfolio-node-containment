@@ -75,6 +75,12 @@
     { "id": "mi-cell-3", "object": "containment-cell", "at": { "room": "amber-cells", "dx": 24, "dy": 3 } },
     { "id": "mi-cell-4", "object": "containment-cell", "at": { "room": "amber-cells", "dx": 30, "dy": 3 } },
     { "id": "mi-cell-5", "object": "containment-cell", "at": { "room": "amber-cells", "dx": 36, "dy": 3 } },
+    { "id": "mi-culture-a", "object": "culture-bench", "at": { "room": "lab-a", "dx": 10, "dy": 1 } },
+    { "id": "mi-culture-b", "object": "culture-bench", "at": { "room": "lab-a", "dx": 10, "dy": 8 } },
+    { "id": "mi-lab-synth", "object": "ward-synthesiser", "at": { "room": "lab-a", "dx": 1, "dy": 8 } },
+    { "id": "mi-amber-trace-0", "object": "amber-trace", "at": { "room": "amber-cells", "dx": 32, "dy": 9 } },
+    { "id": "mi-amber-trace-1", "object": "amber-trace", "at": { "room": "amber-cells", "dx": 2, "dy": 5 } },
+    { "id": "mi-amber-trace-2", "object": "amber-trace", "at": { "room": "amber-cells", "dx": 38, "dy": 7 } },
     { "id": "mi-holding-reader", "object": "keycard-reader", "at": { "room": "amber-cells", "dx": 1, "dy": 0 } },
     { "id": "mi-holding-camera", "object": "security-camera", "at": { "room": "amber-cells", "dx": 38, "dy": 0 } },
     { "id": "mi-holding-barricade", "object": "barricade", "at": { "room": "amber-cells", "dx": 6, "dy": 9 } },
@@ -85,7 +91,13 @@
   "npcs": [
     { "id": "mi-brandt", "npc": "officer-brandt", "at": { "room": "processing", "dx": 15, "dy": 2 } }
   ],
-  "creatures": [],
+  "creatures": [
+    { "id": "mi-moth-a", "creature": "moth-lantern", "at": { "room": "amber-cells", "dx": 12, "dy": 8 } },
+    { "id": "mi-moth-b", "creature": "moth-lantern", "at": { "room": "amber-cells", "dx": 28, "dy": 8 } },
+    { "id": "mi-hound-a", "creature": "glass-hound", "at": { "room": "amber-cells", "dx": 20, "dy": 9 } },
+    { "id": "mi-moth-c", "creature": "moth-lantern", "at": { "room": "ward", "dx": 5, "dy": 6 } },
+    { "id": "mi-hound-b", "creature": "glass-hound", "at": { "room": "lab-a", "dx": 6, "dy": 9 } }
+  ],
   "lights": [],
   "decals": [],
   "setPieces": [],

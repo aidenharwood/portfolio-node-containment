@@ -19,7 +19,11 @@ export type CreatureModel =
   | 'rustling'
   | 'lineMimic'
   | 'scrapMagpie'
-  | 'lamplighter';
+  | 'lamplighter'
+  | 'mothLantern'
+  | 'glassHound'
+  | 'hullKnocker'
+  | 'tideWraith';
 
 export interface LootEntry {
   readonly itemId: ItemId;

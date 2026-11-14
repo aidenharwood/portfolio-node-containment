@@ -138,6 +138,17 @@ Containable anomalies are the moth-lantern, the rustling, the glass hound, the t
 - **Early boss quest:** The Drowned Lamp, worth 2 quest points. It needs Lost Cat.
 - **Quest rewards:** none of them give gear. Gear needs a recipe or must be a rare drop, so the rewards are experience, scrip and access.
 
+**Step 3 (built).**
+- **Ladders:** steel (level 20; Steel, Rigger and Vigil lines) and alloy (level 30; Alloy, Slipway and Tidewarden lines), with their bars, cloths and traces. Two new medicines: culture salve and tide broth.
+- **Gathering spots:**
+  - **Level 20:** the Scrapyards' scrap heaps give heavy scrap, and B1 has culture benches and amber traces.
+  - **Level 30:** the Fringe has wreck plate, tide weed and hull traces.
+- **Stations:** a refinery and fabricator in the Scrapyards' crusher shed, and a synthesiser in B1's Laboratory A.
+- **Creatures:** B1 has moth-lanterns (12) and glass hounds (22). The Fringe has hull knockers (28) and tide wraiths (34). Each has a model and a rare drop.
+- **The Steel Below** (Tam Reilly, needs Rent Day): Quill's ledger, then Clerk Ferris, then Officer Brandt on B1. It grants B1 clearance.
+- **Dead Band** (Sefa Lind, needs The Steel Below and Engineering 15): build a receiver and take readings at three survey stakes. They cross under the island.
+- **Lift clearance:** the headhouse lift now needs B1 clearance, the B1 lower lift B2 clearance, and the Vault lift B3 clearance. B2 and B3 clearances arrive in step 4.
+
 ## Order of work
 
 1. The scrap and iron ladders, home-square creatures and spots, the stations and shops, the tutorial and Noodle Run. Walked end to end in the game.
