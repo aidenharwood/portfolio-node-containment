@@ -6,7 +6,7 @@ import type { CombatStyle } from './weapons.ts';
 
 export type CreatureId = string;
 
-export type CreatureModel = 'placeholder';
+export type CreatureModel = 'placeholder' | 'canalRat' | 'pigeon' | 'strayDog' | 'trainingDrone' | 'crateWisp';
 
 export interface LootEntry {
   readonly itemId: ItemId;

@@ -36,6 +36,7 @@ export interface QuestDefinition {
   readonly offeredBy?: NpcId;
   readonly offerRequires?: readonly QuestId[];
   readonly recommendedLevel?: number;
+  readonly questPoints?: number;
 }
 
 export const objectiveGoal = (objective: QuestObjective): number => {

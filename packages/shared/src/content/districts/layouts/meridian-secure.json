@@ -2,7 +2,7 @@
   "id": "meridian-secure",
   "name": "Meridian Secure Wing",
   "subtitle": "Site Meridian, level B2",
-  "tier": 3,
+  "tier": 10,
   "region": "low-ward",
   "condition": "breached",
   "ambience": { "darkness": 0.75, "tint": "#3a2020", "fog": "#1a0e0e", "fixtures": "failing" },

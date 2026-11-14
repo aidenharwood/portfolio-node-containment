@@ -25,6 +25,10 @@ import { MERIDIAN_LEVELS } from './levels/siteMeridian.ts';
 import { SITE_MERIDIAN_DISTRICTS } from './districts/siteMeridian.ts';
 import { SITE_MERIDIAN_LIFTS } from './seed/siteMeridian.ts';
 import { CURRENCY_ITEMS } from './seed/items.ts';
+import { WARD_CREATURES } from './ward/creatures.ts';
+import { WARD_FOOD, WARD_GEAR, WARD_MATERIALS, WARD_RECIPES, WARD_UNIQUES } from './ward/items.ts';
+import { WARD_SPOTS, WARD_STATIONS } from './ward/objects.ts';
+import { TUTORIAL_QUEST_ID, WARD_DIALOGUES, WARD_QUESTLINES, WARD_QUESTS } from './ward/quests.ts';
 import { SEED_DIALOGUES, SEED_NPCS, SEED_OBJECTS, SEED_REGIONS, SEED_SHOPS } from './seed/lowWard.ts';
 import { buildTramNetwork, TRAM_LINES, TRAM_STATIONS } from './tramNetwork.ts';
 
@@ -68,7 +72,7 @@ function indexById<T extends { readonly id: string }>(entries: readonly T[]): Re
 }
 
 const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([...LOW_WARD_DISTRICTS, ...SITE_MERIDIAN_DISTRICTS]);
-const INSTALLED = buildInstallations([...SEED_OBJECTS, ...SITE_MERIDIAN_LIFTS]);
+const INSTALLED = buildInstallations([...SEED_OBJECTS, ...SITE_MERIDIAN_LIFTS, ...WARD_SPOTS, ...WARD_STATIONS]);
 const ASSEMBLY_INDEX: ReadonlyMap<AssemblyId, AssemblyDefinition> = indexById([...ASSEMBLIES, ...INSTALLED.assemblies]);
 const LEVEL_INDEX: LevelIndex = buildLevelIndex([OVERWORLD, ...MERIDIAN_LEVELS], DISTRICTS, ASSEMBLY_INDEX);
 
@@ -79,25 +83,26 @@ function placed(districtId: DistrictId, position: TilePoint): WorldLocation {
 }
 
 export const GAME_CONTENT: GameContent = {
-  items: indexById([...CURRENCY_ITEMS]),
+  items: indexById([...CURRENCY_ITEMS, ...WARD_MATERIALS, ...WARD_FOOD, ...WARD_GEAR, ...WARD_UNIQUES]),
   npcs: indexById([...SEED_NPCS]),
   worldObjects: indexById(INSTALLED.objects),
   assemblies: ASSEMBLY_INDEX,
-  dialogues: indexById<DialogueDefinition>(SEED_DIALOGUES),
-  quests: indexById<QuestDefinition>([]),
-  questlines: indexById<QuestlineDefinition>([]),
+  dialogues: indexById<DialogueDefinition>([...SEED_DIALOGUES.filter((dialogue) => !WARD_DIALOGUES.some((override) => override.id === dialogue.id)), ...WARD_DIALOGUES]),
+  quests: indexById<QuestDefinition>(WARD_QUESTS),
+  questlines: indexById<QuestlineDefinition>(WARD_QUESTLINES),
   districts: DISTRICTS,
   levels: LEVEL_INDEX.levels,
   levelOfDistrict: LEVEL_INDEX.levelOfDistrict,
   regions: indexById(SEED_REGIONS),
   tram: buildTramNetwork(TRAM_STATIONS, TRAM_LINES, DISTRICTS, LEVEL_INDEX),
-  creatures: indexById<CreatureDefinition>([]),
+  creatures: indexById<CreatureDefinition>(WARD_CREATURES),
   shops: indexById(SEED_SHOPS),
-  recipes: indexById<RecipeDefinition>([]),
+  recipes: indexById<RecipeDefinition>(WARD_RECIPES),
   contracts: indexById<ContractDefinition>([]),
   newCharacter: {
     startingLocation: placed(TERMINUS_SQUARE.id, TERMINUS_SQUARE_ANCHORS.start),
     trainingLocation: placed(TERMINUS_SQUARE.id, TERMINUS_SQUARE_ANCHORS.start),
+    startingQuestId: TUTORIAL_QUEST_ID,
     kit: STANDARD_ISSUE_KIT,
   },
 };

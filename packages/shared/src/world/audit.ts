@@ -2,7 +2,7 @@ import { findContentIssues } from '../content/contentIntegrity.ts';
 import { LAYOUT_SOURCES } from '../content/districts/layouts/index.ts';
 import type { GameContent } from '../content/gameContent.ts';
 import type { DistrictId } from '../ids.ts';
-import { parseTileLayout, type DistrictDefinition } from './district.ts';
+import { isSafeIn, parseTileLayout, type DistrictDefinition } from './district.ts';
 import { rectContains, tileKey, type TilePoint, type TileRect } from './geometry.ts';
 import { parseLayout } from './layout.ts';
 import type { DistrictLayout } from './layoutSchema.ts';
@@ -112,8 +112,7 @@ export function auditDistrict(content: GameContent, districtId: DistrictId, layo
     if (room.openings <= 1 && !room.purposeful) findings.push({ districtId, room: room.room, kind: 'dead-end', message: `"${room.room}" has ${room.openings === 0 ? 'no way in' : 'one way in'} and nothing to do`, tile: at });
   }
 
-  const safe = district.areas.filter((area) => area.safe);
-  const inSafe = (point: TilePoint): boolean => safe.some((area) => rectContains(area.rect, point));
+  const inSafe = (point: TilePoint): boolean => isSafeIn(district.areas, point);
   const levelId = content.levelOfDistrict.get(districtId);
   const onFloor = levelId !== undefined && content.levels.get(levelId)?.definition.kind === 'floor';
   for (const creature of district.creatures ?? []) {

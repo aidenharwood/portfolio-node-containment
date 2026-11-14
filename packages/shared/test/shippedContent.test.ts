@@ -35,3 +35,25 @@ test('the Site Meridian lifts run from the headhouse down to the Vault and back'
     assert.equal(depthOf(destination(lift)), depth, `${lift} leads to depth ${depth}`);
   }
 });
+
+test('the opening quest can be finished in Terminus Square', () => {
+  const opening = GAME_CONTENT.quests.get(GAME_CONTENT.newCharacter.startingQuestId ?? '');
+  assert.ok(opening, 'new characters start on a quest');
+  const terminus = GAME_CONTENT.districts.get('terminus-square');
+  const placed = new Set((terminus?.creatures ?? []).map((creature) => creature.creatureId));
+  for (const step of opening.steps) {
+    for (const objective of step.objectives) {
+      if (objective.type === 'defeat' || objective.type === 'contain') assert.ok(placed.has(objective.creatureId), `${objective.creatureId} lives in Terminus Square`);
+      if (objective.type === 'talkTo') assert.ok(terminus?.npcs.some((npc) => npc.npcId === objective.npcId), `${objective.npcId} stands in Terminus Square`);
+    }
+  }
+});
+
+test('every material in the ladder has a full set of weapons and armour', () => {
+  for (const material of ['scrap', 'iron']) {
+    const weapons = ['baton', 'blade', 'maul', 'pistol', 'carbine', 'rifle', 'focus', 'resonator'].map((kind) => `${material}-${kind}`);
+    for (const id of weapons) assert.ok(GAME_CONTENT.items.get(id)?.equipment?.weapon, `${id} is a weapon`);
+    const armour = [...GAME_CONTENT.items.values()].filter((item) => item.equipment && !item.equipment.weapon && !item.unique && GAME_CONTENT.recipes.get(`fabricator:${item.id}`)?.inputs.some((input) => input.itemId === (material === 'scrap' ? 'scrap-bar' : 'iron-bar') || input.itemId === (material === 'scrap' ? 'rag-bundle' : 'waxed-canvas')));
+    assert.equal(armour.length, 15, `${material} has fifteen armour pieces`);
+  }
+});

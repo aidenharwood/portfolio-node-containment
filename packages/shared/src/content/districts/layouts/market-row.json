@@ -112,6 +112,12 @@
     { "id": "mr-tree-1", "object": "street-tree", "at": { "room": "ground", "dx": 50, "dy": 24 } },
     { "id": "mr-tree-2", "object": "street-tree", "at": { "room": "ground", "dx": 56, "dy": 24 } },
     { "id": "mr-vent", "object": "steam-vent", "at": { "room": "ground", "dx": 30, "dy": 20 } },
+    { "id": "mr-fenwick-refinery", "object": "ward-refinery", "at": { "room": "tool-shop", "dx": 1, "dy": 1 } },
+    { "id": "mr-fenwick-fabricator", "object": "ward-fabricator", "at": { "room": "tool-shop", "dx": 8, "dy": 1 } },
+    { "id": "mr-greenhalgh-synth", "object": "ward-synthesiser", "at": { "room": "apothecary", "dx": 8, "dy": 2 } },
+    { "id": "mr-yard-scrap-a", "object": "scrap-pile", "at": { "room": "ground", "dx": 50, "dy": 57 } },
+    { "id": "mr-yard-scrap-b", "object": "scrap-pile", "at": { "room": "ground", "dx": 57, "dy": 58 } },
+    { "id": "mr-trace", "object": "faint-trace", "at": { "room": "ground", "dx": 40, "dy": 5 } },
     { "id": "mr-vending", "object": "vending-machine", "at": { "room": "ground", "dx": 11, "dy": 24 }, "facing": "north" }
   ],
   "assemblies": [],

@@ -34,6 +34,7 @@ import {
   type LevelLayout,
   type ResolvedArea,
   type ResolvedLevel,
+  isSafeIn,
 } from '@containment/shared';
 import { Creature } from './creature.ts';
 import { groundItemSnapshot, isGroundItemVisibleTo, type GroundItem } from './groundItem.ts';
@@ -264,7 +265,7 @@ export class LevelInstance {
   }
 
   isSafe(point: TilePoint): boolean {
-    return this.definition.areas.some((area) => area.safe === true && rectContains(area.rect, point));
+    return isSafeIn(this.definition.areas, point);
   }
 
   gridWithDoors(openDoors: ReadonlySet<WorldObjectId>): WalkabilityGrid {

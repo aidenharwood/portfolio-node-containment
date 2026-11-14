@@ -20,7 +20,8 @@
     { "kind": "building", "id": "general-store", "rect": { "x": 48, "y": 16, "width": 12, "height": 8 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "west", "width": 2, "offset": 3 }] },
     { "kind": "building", "id": "locker-office", "rect": { "x": 48, "y": 28, "width": 12, "height": 6 }, "floor": "terrazzo", "wall": "blockwork", "doors": [{ "side": "west", "width": 2, "offset": 2 }] },
     { "kind": "building", "id": "response-post", "rect": { "x": 48, "y": 39, "width": 12, "height": 9 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "west", "width": 3, "offset": 3 }] },
-    { "kind": "building", "id": "noodle-bar", "rect": { "x": 32, "y": 42, "width": 6, "height": 7 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "north", "width": 2, "offset": 2 }] }
+    { "kind": "building", "id": "noodle-bar", "rect": { "x": 32, "y": 42, "width": 6, "height": 7 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "north", "width": 2, "offset": 2 }] },
+    { "kind": "building", "id": "rail-yard", "rect": { "x": 2, "y": 56, "width": 59, "height": 6 }, "floor": "gravel", "wall": "brick", "edge": "fence", "doors": [{ "side": "north", "width": 3, "offset": 12 }, { "side": "east", "width": 2, "offset": 2 }] }
   ],
   "tiles": [],
   "areas": [
@@ -29,6 +30,7 @@
     { "room": "locker-office", "name": "Locker Office", "safe": true },
     { "room": "response-post", "name": "Directorate Response Post", "safe": true },
     { "room": "noodle-bar", "name": "Vance's Noodles", "safe": true },
+    { "room": "rail-yard", "name": "Rail Yard", "safe": false },
     { "room": "ground", "name": "Terminus Square", "safe": true }
   ],
   "anchors": {
@@ -75,8 +77,13 @@
     { "id": "ts-post-camera", "object": "security-camera", "at": { "room": "ground", "dx": 45, "dy": 46 }, "facing": "west" },
     { "id": "ts-yard-dumpster-a", "object": "dumpster", "at": { "room": "ground", "dx": 5, "dy": 53 }, "facing": "south" },
     { "id": "ts-yard-dumpster-b", "object": "dumpster", "at": { "room": "ground", "dx": 23, "dy": 53 }, "facing": "south" },
-    { "id": "ts-yard-pole", "object": "utility-pole", "at": { "room": "ground", "dx": 35, "dy": 57 } },
-    { "id": "ts-yard-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 13, "dy": 57 } },
+    { "id": "ts-yard-pole", "object": "utility-pole", "at": { "room": "rail-yard", "dx": 34, "dy": 1 } },
+    { "id": "ts-yard-lamp", "object": "street-lamp", "at": { "room": "rail-yard", "dx": 12, "dy": 2 } },
+    { "id": "ts-yard-scrap-a", "object": "scrap-pile", "at": { "room": "rail-yard", "dx": 24, "dy": 4 } },
+    { "id": "ts-yard-scrap-b", "object": "scrap-pile", "at": { "room": "rail-yard", "dx": 42, "dy": 4 } },
+    { "id": "ts-yard-scrap-c", "object": "scrap-pile", "at": { "room": "rail-yard", "dx": 55, "dy": 1 } },
+    { "id": "ts-trace-a", "object": "faint-trace", "at": { "room": "ground", "dx": 61, "dy": 26 } },
+    { "id": "ts-trace-b", "object": "faint-trace", "at": { "room": "ground", "dx": 29, "dy": 53 } },
     { "id": "ts-station-bench-0", "object": "street-bench", "at": { "room": "station", "dx": 3, "dy": 6 }, "facing": "north" },
     { "id": "ts-station-bench-1", "object": "street-bench", "at": { "room": "station", "dx": 6, "dy": 6 }, "facing": "north" },
     { "id": "ts-station-bench-2", "object": "street-bench", "at": { "room": "station", "dx": 17, "dy": 6 }, "facing": "north" },
@@ -128,7 +135,12 @@
     { "id": "ts-vance", "npc": "li-vance", "at": { "room": "noodle-bar", "dx": 3, "dy": 1 } },
     { "id": "ts-wren", "npc": "wren-adebayo", "at": { "room": "station", "dx": 12, "dy": 8 } }
   ],
-  "creatures": [],
+  "creatures": [
+    { "id": "ts-drone", "creature": "training-drone", "at": { "room": "rail-yard", "dx": 6, "dy": 2 } },
+    { "id": "ts-wisp", "creature": "crate-wisp", "at": { "room": "rail-yard", "dx": 18, "dy": 3 } },
+    { "id": "ts-rat-a", "creature": "canal-rat", "at": { "room": "rail-yard", "dx": 32, "dy": 3 } },
+    { "id": "ts-rat-b", "creature": "canal-rat", "at": { "room": "rail-yard", "dx": 48, "dy": 2 } }
+  ],
   "lights": [],
   "decals": [],
   "setPieces": [],
@@ -138,6 +150,7 @@
     "locker-office": { "theme": "civic", "people": 0 },
     "response-post": { "theme": "office", "people": 0 },
     "noodle-bar": { "theme": "canteen", "people": 0 },
+    "rail-yard": { "theme": "street", "people": 0 },
     "ground": { "theme": "street", "people": 0 }
   },
   "furnish": {}

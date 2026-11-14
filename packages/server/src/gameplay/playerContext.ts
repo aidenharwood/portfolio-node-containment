@@ -10,6 +10,7 @@ import {
   isEquipped,
   combatLevel,
   PRONOUN_SETS,
+  questPointsEarned,
   questStanding,
   type ConditionContext,
   type GameContent,
@@ -30,6 +31,7 @@ export const conditionContextFor = (player: Player, content: GameContent): Condi
   countItem: (itemId) => countItem(player.record.inventory, itemId),
   questStanding: (questId) => questStanding(player.record.quests, content.quests.get(questId), questId),
   hasFlag: (flag) => player.hasFlag(flag),
+  questPoints: () => questPointsEarned(player.record.quests, content.quests),
   get skills() {
     return player.record.skills;
   },

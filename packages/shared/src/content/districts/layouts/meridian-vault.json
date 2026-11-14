@@ -2,7 +2,7 @@
   "id": "meridian-vault",
   "name": "The Vault",
   "subtitle": "Site Meridian, level B3",
-  "tier": 4,
+  "tier": 12,
   "region": "low-ward",
   "condition": "alien",
   "ambience": { "darkness": 0.85, "tint": "#202a3a", "fog": "#0a0e14", "fixtures": "failing" },

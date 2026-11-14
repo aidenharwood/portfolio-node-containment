@@ -608,6 +608,92 @@ const barricade: Builder = (seed) => {
   return parts(model, 14);
 };
 
+const scrapPile: Builder = (seed) => {
+  const metals = [0x6a4a3a, 0x5d666c, 0x8a5a3a, 0x3a4a52];
+  const model = new VoxelModel();
+  for (let i = 0; i < 9; i++) {
+    const x = Math.floor((noise3(seed, i, 0, 9) - 0.5) * 10);
+    const z = Math.floor((noise3(seed, i, 1, 9) - 0.5) * 10);
+    const y = Math.max(0, 4 - Math.floor(Math.hypot(x, z) * 0.6));
+    model.fill(x, y, z, x + 2 + (i % 3), y + 1 + (i % 2), z + 2, grain(metals[i % metals.length] as number, 0.06, i));
+  }
+  model.fill(-1, 6, -1, 1, 7, 0, CITY.amber);
+  return parts(model, 8);
+};
+
+const dredgeWinch: Builder = () => {
+  const model = new VoxelModel().fill(-4, 0, -6, 3, 2, -1, grain(CITY.concrete));
+  model.fill(-3, 3, -5, -3, 12, -5, CITY.iron).fill(2, 3, -5, 2, 12, -5, CITY.iron);
+  cylinder(model, 0, -5, 2, 8, 10, CITY.darkSteel);
+  model.fill(-3, 12, -5, 2, 12, 6, CITY.iron).fill(0, 2, 6, 0, 11, 6, 0xb8a070);
+  model.fill(-1, 1, 6, 1, 2, 7, CITY.darkSteel).set(-1, 13, -5, CITY.amber, VOXEL_EMISSIVE);
+  return parts(model, 14);
+};
+
+const eelTrap: Builder = () => {
+  const model = new VoxelModel().fill(-1, 0, -6, 0, 6, -5, CITY.darkWood);
+  model.fill(0, 6, -5, 0, 6, 5, 0xb8a070);
+  for (let z = 2; z <= 7; z++) {
+    const r = z < 4 ? 2 : 3;
+    model.fill(-r, 0, z, r - 1, 2 * r - 1, z, (x, y) => ((x + y + z) % 2 === 0 ? 0xa88a5a : null));
+  }
+  return parts(model, 7);
+};
+
+const reedBed: Builder = (seed) => {
+  const model = new VoxelModel();
+  for (let i = 0; i < 22; i++) {
+    const x = Math.floor((noise3(seed, i, 0, 4) - 0.5) * 12);
+    const z = Math.floor((noise3(seed, i, 1, 4) - 0.5) * 12);
+    const h = 10 + Math.floor(noise3(seed, i, 2, 4) * 10);
+    model.fill(x, 0, z, x, h, z, i % 3 === 0 ? 0x8a7a3a : 0x5a7a3a);
+    if (i % 4 === 0) model.fill(x, h + 1, z, x, h + 3, z, 0x5a3a20);
+  }
+  return parts(model, 24);
+};
+
+const anomalyTrace: Builder = (seed) => {
+  const glow = pick([0xb6ff4f, 0x4fe3ff, 0xc79bff], seed);
+  const model = new VoxelModel();
+  for (let i = 0; i < 10; i++) {
+    const x = Math.floor((noise3(seed, i, 0, 6) - 0.5) * 10);
+    const z = Math.floor((noise3(seed, i, 1, 6) - 0.5) * 10);
+    model.set(x, 0, z, darken(glow, 0.4), VOXEL_EMISSIVE);
+  }
+  const motes = new VoxelModel();
+  for (let i = 0; i < 5; i++) motes.set(Math.floor((noise3(seed, i, 3, 6) - 0.5) * 6), 3 + i * 2, Math.floor((noise3(seed, i, 4, 6) - 0.5) * 6), glow, VOXEL_EMISSIVE);
+  return parts(model, 1, [{ model: motes, animate: rise(0.3, 0.4) }]);
+};
+
+const refinery: Builder = () => {
+  const brick = 0x6e3b2e;
+  const model = new VoxelModel().fill(-7, 0, -7, 6, 16, 4, (x, y, z) => (y % 4 === 0 ? 0x4f2a20 : jitter(brick, 0.05, noise3(x, y, z, 2))));
+  model.fill(-4, 3, 5, 3, 9, 5, CITY.ink).fill(-3, 4, 5, 2, 7, 5, 0xff7a2a, VOXEL_EMISSIVE);
+  model.fill(-2, 17, -5, 1, 30, -2, grain(CITY.iron, 0.03));
+  model.fill(-7, 12, 5, 6, 13, 6, CITY.iron);
+  return parts(model, 31);
+};
+
+const fabricator: Builder = () => {
+  const model = new VoxelModel().fill(-7, 0, -6, 6, 11, 5, grain(CITY.darkSteel, 0.02));
+  model.fill(-7, 12, -6, 6, 13, 5, grain(0x8a857b, 0.02));
+  model.fill(4, 14, -5, 5, 26, -4, CITY.iron).fill(-2, 24, -5, 5, 25, -4, CITY.iron).fill(-2, 19, -5, -1, 24, -4, CITY.band);
+  model.fill(-6, 14, -2, -2, 16, 1, CITY.steel).fill(-5, 6, 6, 4, 9, 6, 0x0e1216).set(-4, 7, 6, 0x4fe3ff, VOXEL_EMISSIVE);
+  return parts(model, 27);
+};
+
+const synthesiser: Builder = (seed) => {
+  const fluid = pick([0x7cf29a, 0xc79bff, 0xffb35a], seed);
+  const model = new VoxelModel().fill(-7, 0, -7, 6, 6, 6, grain(CITY.panel, 0.015));
+  for (const x of [-4, 3]) {
+    cylinder(model, x, 0, 2.6, 7, 20, CITY.glass, VOXEL_GLASS);
+    cylinder(model, x, 0, 2, 7, 14, fluid, VOXEL_EMISSIVE);
+    cylinder(model, x, 0, 2.8, 21, 22, CITY.steel);
+  }
+  model.fill(-4, 22, 0, 3, 23, 0, CITY.steel).fill(-2, 3, 7, 1, 5, 7, CITY.ink).set(0, 4, 7, CITY.green, VOXEL_EMISSIVE);
+  return parts(model, 24);
+};
+
 export const CITY_BUILDERS: Readonly<Record<CityModel, Builder>> = {
   streetLamp,
   bollard,
@@ -653,4 +739,12 @@ export const CITY_BUILDERS: Readonly<Record<CityModel, Builder>> = {
   secureCell,
   labBench,
   barricade,
+  scrapPile,
+  dredgeWinch,
+  eelTrap,
+  reedBed,
+  anomalyTrace,
+  refinery,
+  fabricator,
+  synthesiser,
 };

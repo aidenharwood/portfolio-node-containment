@@ -1,13 +1,13 @@
 import type { DistrictId, RegionId } from '../ids.ts';
 import type { GameEffect } from '../rules/effects.ts';
-import type { DistrictDefinition } from '../world/district.ts';
+import { isSafeIn, type DistrictDefinition } from '../world/district.ts';
 import { rectContains, type TilePoint } from '../world/geometry.ts';
 import type { RegionDefinition } from '../world/region.ts';
 import { districtObjectsOf } from './assemblyIntegrity.ts';
 import type { GameContent } from './gameContent.ts';
 
 const isSafeTile = (district: DistrictDefinition, point: TilePoint): boolean =>
-  district.areas.some((area) => area.safe === true && rectContains(area.rect, point));
+  isSafeIn(district.areas, point);
 
 const safeObjectEffects = (content: GameContent, district: DistrictDefinition): GameEffect[] =>
   districtObjectsOf(content, district.id)

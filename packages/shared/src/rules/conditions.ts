@@ -10,7 +10,8 @@ export type Condition =
   | { readonly type: 'hasFlag'; readonly flag: string }
   | { readonly type: 'lacksFlag'; readonly flag: string }
   | { readonly type: 'skillLevel'; readonly skill: SkillId; readonly atLeast: number }
-  | { readonly type: 'combatLevel'; readonly atLeast: number };
+  | { readonly type: 'combatLevel'; readonly atLeast: number }
+  | { readonly type: 'questPoints'; readonly atLeast: number };
 
 export type QuestStanding =
   | { readonly status: 'notStarted' }
@@ -21,6 +22,7 @@ export interface ConditionContext {
   countItem(itemId: ItemId): number;
   questStanding(questId: QuestId): QuestStanding;
   hasFlag(flag: string): boolean;
+  questPoints(): number;
   readonly skills: SkillExperience;
 }
 
@@ -46,6 +48,8 @@ export function isConditionMet(condition: Condition, context: ConditionContext):
       return levelForExperience(context.skills[condition.skill]) >= condition.atLeast;
     case 'combatLevel':
       return combatLevel(context.skills) >= condition.atLeast;
+    case 'questPoints':
+      return context.questPoints() >= condition.atLeast;
   }
 }
 

@@ -20,6 +20,7 @@ import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
 const contextWith = (research: number): ConditionContext => ({
   countItem: () => 0,
   questStanding: () => ({ status: 'notStarted' }),
+  questPoints: () => 0,
   hasFlag: () => false,
   skills: createStartingSkills({ research: experienceForLevel(research) }),
 });

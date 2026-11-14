@@ -1,4 +1,5 @@
 import { DRESSING_THEMES } from '../prefabs/types.ts';
+import { ALLOTMENT_HARVEST } from '../ward/objects.ts';
 import type { WorldObjectDefinition } from '../../world/entities.ts';
 import type { FurnishingProfile } from '../furnishingCatalogue.ts';
 import type { FurnishingKit } from '../furnishingKit.ts';
@@ -44,7 +45,7 @@ export const CITY_KIT_OBJECTS: readonly WorldObjectDefinition[] = [
   prop({ id: 'headframe', name: 'Headframe', examine: 'The winding tower over the Site Meridian shaft. The wheel turns when something goes down, and sometimes when nothing does.', model: 'headframe', footprint: { width: 2, height: 2 }, furnishing: { mount: 'free', homes: ['street', 'containment'] } }),
   prop({ id: 'mooring-post', name: 'Mooring Post', examine: 'Cast iron, worn smooth by a century of rope.', model: 'mooringPost', furnishing: { mount: 'free', homes: ['street'], inRows: true } }),
   prop({ id: 'lift-door', name: 'Lift', examine: 'The Site Meridian lift. A red lamp says it is not taking passengers.', model: 'liftDoor', furnishing: { mount: 'wall', homes: ['containment', 'transit', 'office'] } }),
-  prop({ id: 'allotment-bed', name: 'Allotment Bed', examine: 'Cabbages, beans and something purple nobody planted.', model: 'allotmentBed', footprint: { width: 2, height: 1 }, furnishing: { mount: 'free', homes: ['street', 'garden'], inRows: true } }),
+  prop({ id: 'allotment-bed', name: 'Allotment Bed', examine: 'Cabbages, beans and something purple nobody planted.', model: 'allotmentBed', footprint: { width: 2, height: 1 }, furnishing: { mount: 'free', homes: ['street', 'garden'], inRows: true }, interactions: [ALLOTMENT_HARVEST] }),
   prop({ id: 'washer', name: 'Washing Machine', examine: 'Industrial, coin-fed and older than you.', model: 'washer', furnishing: { mount: 'backed', homes: ['wet', 'home', 'shop'], inRows: true } }),
   prop({ id: 'chimney', name: 'Laundry Chimney', examine: 'The tallest brick in the Ward. You can see it from the basin.', model: 'chimney', furnishing: { mount: 'free', homes: ['street', 'wet', 'works'] } }),
   prop({ id: 'scrap-heap', name: 'Scrap Heap', examine: 'Car doors, boiler plate, bedframes. Something underneath it shifts now and then.', model: 'scrapHeap', footprint: { width: 2, height: 2 }, furnishing: { mount: 'free', homes: ['street', 'industrial', 'works', 'freight'] } }),

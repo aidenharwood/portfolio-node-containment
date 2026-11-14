@@ -62,7 +62,7 @@ describe('authentication', () => {
 });
 
 describe('character creation', () => {
-  test('creates a character with nothing but an undersuit, untrained skills and no quest until the world gives one', async () => {
+  test('creates a character with nothing but an undersuit, untrained skills and only the opening quest', async () => {
     const { auth, characters } = createServices();
     const account = await auth.register('operative_1', 'correct horse battery');
     assert.ok(account.ok);
@@ -72,7 +72,7 @@ describe('character creation', () => {
     assert.deepEqual(created.value.equipment, {});
     assert.ok(created.value.inventory.every((slot) => slot === null));
     assert.deepEqual(created.value.storage, []);
-    assert.deepEqual(created.value.quests, {});
+    assert.deepEqual(Object.keys(created.value.quests), GAME_CONTENT.newCharacter.startingQuestId ? [GAME_CONTENT.newCharacter.startingQuestId] : []);
     assert.equal(characters.roster(account.value.accountId).length, 1);
   });
 

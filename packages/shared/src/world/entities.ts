@@ -63,7 +63,15 @@ export type WorldObjectModel =
   | 'cordonGate'
   | 'secureCell'
   | 'labBench'
-  | 'barricade';
+  | 'barricade'
+  | 'scrapPile'
+  | 'dredgeWinch'
+  | 'eelTrap'
+  | 'reedBed'
+  | 'anomalyTrace'
+  | 'refinery'
+  | 'fabricator'
+  | 'synthesiser';
 
 export interface ObjectInteraction {
   readonly verb: string;

@@ -1,4 +1,4 @@
-import { createObjectWalkabilityGrid } from '../world/district.ts';
+import { createObjectWalkabilityGrid, isSafeIn } from '../world/district.ts';
 import { footprintTiles, sizeOf } from '../world/footprint.ts';
 import { rectContains, tileKey } from '../world/geometry.ts';
 import type { GameContent } from './gameContent.ts';
@@ -10,7 +10,6 @@ export function findFootprintIssues(content: GameContent): string[] {
       const district = content.districts.get(placement.districtId);
       if (!district?.rooms) continue;
       const rooms = Object.values(district.rooms);
-      const safeAreas = district.areas.filter((area) => area.safe);
       for (const creature of district.creatures ?? []) {
         const definition = content.creatures.get(creature.creatureId);
         if (!definition) continue;
@@ -18,7 +17,7 @@ export function findFootprintIssues(content: GameContent): string[] {
         if (!rooms.some((room) => tiles.every((tile) => rectContains(room, tile)))) {
           issues.push(`district ${district.id}: "${creature.instanceId}" footprint does not fit inside one room`);
         }
-        if (tiles.some((tile) => safeAreas.some((area) => rectContains(area.rect, tile)))) {
+        if (tiles.some((tile) => isSafeIn(district.areas, tile))) {
           issues.push(`district ${district.id}: "${creature.instanceId}" footprint reaches into a safe area`);
         }
       }

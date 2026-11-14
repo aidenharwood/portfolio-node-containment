@@ -19,6 +19,10 @@ export function rawSourceTiers(content: GameContent): Map<ItemId, number> {
     for (const placement of zone.creatures ?? []) {
       for (const entry of content.creatures.get(placement.creatureId)?.loot ?? []) offer(entry.itemId, zone.tier);
     }
+    for (const placement of zone.npcs) {
+      const shopId = content.npcs.get(placement.npcId)?.shopId;
+      for (const listing of (shopId ? content.shops.get(shopId)?.listings : undefined) ?? []) offer(listing.itemId, zone.tier);
+    }
   }
   return tiers;
 }

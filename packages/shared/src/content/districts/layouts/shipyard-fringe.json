@@ -2,7 +2,7 @@
   "id": "shipyard-fringe",
   "name": "Shipyard Fringe",
   "subtitle": "Hollow Bay, the Low Ward",
-  "tier": 3,
+  "tier": 8,
   "region": "low-ward",
   "condition": "breached",
   "ambience": { "darkness": 0.7, "tint": "#262a3a", "fog": "#2a2838", "sky": "#3a3358" },

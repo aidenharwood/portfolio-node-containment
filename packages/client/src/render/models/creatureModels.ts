@@ -7,6 +7,7 @@ import type { VoxelMeshes } from '../voxel/voxelMesher.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 import { CHARACTER_VOXEL_SIZE } from '../world/worldScale.ts';
 import { swingCurve, type EntityPose, type EntityRig } from './entityRig.ts';
+import { WARD_CREATURE_FACTORIES } from './wardCreatureModels.ts';
 
 const PLACEHOLDER_HIDE = 0x6a6f74;
 const PLACEHOLDER_EYE = 0xff4fa8;
@@ -37,6 +38,6 @@ class PlaceholderRig implements EntityRig {
   }
 }
 
-const FACTORIES: Readonly<Record<CreatureModel, () => EntityRig>> = { placeholder: () => new PlaceholderRig() };
+const FACTORIES: Readonly<Record<CreatureModel, () => EntityRig>> = { placeholder: () => new PlaceholderRig(), ...WARD_CREATURE_FACTORIES };
 
 export const createCreatureRig = (model: CreatureModel): EntityRig => FACTORIES[model]();

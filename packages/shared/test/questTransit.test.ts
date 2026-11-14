@@ -131,6 +131,7 @@ describe('quest transit routing', () => {
     const context = (flags: readonly string[]): ConditionContext => ({
       countItem: () => 0,
       questStanding: () => ({ status: 'notStarted' }),
+      questPoints: () => 0,
       hasFlag: (flag) => flags.includes(flag),
       skills: {} as ConditionContext['skills'],
     });

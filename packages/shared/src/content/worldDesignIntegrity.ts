@@ -1,5 +1,5 @@
 import type { DistrictId } from '../ids.ts';
-import { parseTileLayout, type DistrictDefinition, type ObjectPlacement, type TileLayout } from '../world/district.ts';
+import { isSafeIn, parseTileLayout, type DistrictDefinition, type ObjectPlacement, type TileLayout } from '../world/district.ts';
 import type { WorldObjectDefinition } from '../world/entities.ts';
 import { isWallFixture, objectFootprintTiles } from '../world/footprint.ts';
 import { CARDINAL_OFFSETS, chebyshevDistance, rectContains, tileKey, type Facing, type TilePoint } from '../world/geometry.ts';
@@ -45,11 +45,10 @@ function findExitIssues(district: DistrictDefinition, level: ResolvedLevel, repo
 function findDensityIssues(district: DistrictDefinition, layout: TileLayout, report: Report): void {
   const creatures = district.creatures ?? [];
   if (creatures.length === 0) return;
-  const safeAreas = district.areas.filter((area) => area.safe);
   let hostileTiles = 0;
   for (let y = 0; y < layout.height; y++) {
     for (let x = 0; x < layout.width; x++) {
-      if (isWalkableTile(layout, { x, y }) && !safeAreas.some((area) => rectContains(area.rect, { x, y }))) hostileTiles++;
+      if (isWalkableTile(layout, { x, y }) && !isSafeIn(district.areas, { x, y })) hostileTiles++;
     }
   }
   const density = (creatures.length * 1000) / Math.max(1, hostileTiles);

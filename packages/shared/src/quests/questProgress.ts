@@ -141,6 +141,17 @@ export function advanceQuest(
   };
 }
 
+export const questPointsOf = (quest: QuestDefinition): number => quest.questPoints ?? (quest.category === 'tutorial' ? 0 : 1);
+
+export function questPointsEarned(log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>): number {
+  let total = 0;
+  for (const [questId, progress] of Object.entries(log)) {
+    const quest = quests.get(questId);
+    if (quest && progress.status === 'completed') total += questPointsOf(quest);
+  }
+  return total;
+}
+
 export function questStanding(log: QuestLog, definition: QuestDefinition | undefined, questId: QuestId): QuestStanding {
   const progress = log[questId];
   if (!progress) return { status: 'notStarted' };

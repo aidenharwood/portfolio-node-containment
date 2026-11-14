@@ -2,7 +2,7 @@
   "id": "meridian-intake",
   "name": "Meridian Intake",
   "subtitle": "Site Meridian, level B1",
-  "tier": 2,
+  "tier": 6,
   "region": "low-ward",
   "condition": "pristine",
   "ambience": { "darkness": 0.55, "tint": "#3a3428", "fog": "#1a1814" },

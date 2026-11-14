@@ -19,6 +19,18 @@ export interface AreaDefinition {
   readonly safe?: boolean;
 }
 
+export function innermostArea<T extends { readonly rect: TileRect }>(areas: readonly T[], point: TilePoint): T | undefined {
+  let best: T | undefined;
+  for (const area of areas) {
+    const { rect } = area;
+    if (point.x < rect.x || point.y < rect.y || point.x >= rect.x + rect.width || point.y >= rect.y + rect.height) continue;
+    if (!best || rect.width * rect.height < best.rect.width * best.rect.height) best = area;
+  }
+  return best;
+}
+
+export const isSafeIn = (areas: readonly { readonly rect: TileRect; readonly safe?: boolean }[], point: TilePoint): boolean => innermostArea(areas, point)?.safe === true;
+
 export interface NpcPlacement {
   readonly instanceId: InstanceId;
   readonly npcId: NpcId;

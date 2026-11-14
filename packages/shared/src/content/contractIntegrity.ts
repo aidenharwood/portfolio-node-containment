@@ -15,6 +15,7 @@ function freshFromOpening(content: GameContent): ConditionContext {
   return {
     countItem: () => 0,
     questStanding: (questId) => (done.has(questId) ? { status: 'completed' } : { status: 'notStarted' }),
+    questPoints: () => 0,
     hasFlag: () => false,
     skills: createStartingSkills(),
   };

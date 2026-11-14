@@ -115,7 +115,9 @@ The rest is judgement, and reviewers hold it:
 | Facility levels below ground | Rooms joined by links, one district per level, getting tighter and colder with depth; amber for low security (B1), red for high (B2), cold blue for the Vault (B3) | The Heart of the Vault |
 | Lifts | A wall-mounted lift per landing whose interaction teleports to an `arrival` anchor on the next level | The headhouse headframe |
 
-**Safe ground.** The squares near Terminus Square are safe all over. From the Cut, the Scrapyards and the Shipyard Fringe outward the open ground is hostile and only the buildings are safe, so creatures and gathering spots go on the ground and people stay indoors.
+**Tiers follow the level ladder.** A district's tier is the tier of the highest level it serves (`TIER_LEVEL_FLOORS`): home squares 1, the Canal Basin and the Cut 3, the Scrapyards and B1 6, the Fringe 8, the Cordon and B2 10, the Vault 12. A gathering spot only stands where the tier covers its level.
+
+**Safe ground.** The innermost area decides whether a tile is safe, so a fenced yard (a `building` with an outdoor floor and `"safe": false`) can hold critters inside a safe square, like the rail yard and the allotments. The squares near Terminus Square are otherwise safe all over. From the Cut, the Scrapyards and the Shipyard Fringe outward the open ground is hostile and only the buildings are safe, so creatures and gathering spots go on the ground and people stay indoors.
 
 **Rooms.** A tile inside a building belongs to the building, not to the ground around it: placement checks and the editor use the smallest room that contains the tile.
 
