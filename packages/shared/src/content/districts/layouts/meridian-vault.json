@@ -43,11 +43,26 @@
     { "id": "mv-heart-cell-a", "object": "secure-cell", "at": { "room": "heart", "dx": 8, "dy": 12 } },
     { "id": "mv-heart-cell-b", "object": "secure-cell", "at": { "room": "heart", "dx": 18, "dy": 24 } },
     { "id": "mv-heart-barricade", "object": "barricade", "at": { "room": "heart", "dx": 6, "dy": 20 } },
-    { "id": "mv-heart-bench", "object": "lab-bench", "at": { "room": "heart", "dx": 16, "dy": 8 } }
+    { "id": "mv-heart-bench", "object": "lab-bench", "at": { "room": "heart", "dx": 16, "dy": 8 } },
+    { "id": "mv-residue-0", "object": "vault-residue", "at": { "room": "chamber-b", "dx": 2, "dy": 6 } },
+    { "id": "mv-residue-1", "object": "vault-residue", "at": { "room": "heart", "dx": 10, "dy": 6 } },
+    { "id": "mv-bloom-0", "object": "vault-bloom", "at": { "room": "chamber-a", "dx": 6, "dy": 2 } },
+    { "id": "mv-bloom-1", "object": "vault-bloom", "at": { "room": "chamber-c", "dx": 12, "dy": 7 } },
+    { "id": "mv-vault-trace-0", "object": "vault-trace", "at": { "room": "heart", "dx": 20, "dy": 16 } },
+    { "id": "mv-vault-trace-1", "object": "vault-trace", "at": { "room": "chamber-c", "dx": 1, "dy": 8 } },
+    { "id": "sealed-hatch", "object": "sealed-hatch", "at": { "room": "heart", "dx": 13, "dy": 30 } }
   ],
   "assemblies": [],
   "npcs": [],
-  "creatures": [],
+  "creatures": [
+    { "id": "mv-echo-0", "creature": "vault-echo", "at": { "room": "chamber-a", "dx": 4, "dy": 9 } },
+    { "id": "mv-echo-1", "creature": "vault-echo", "at": { "room": "chamber-a", "dx": 11, "dy": 8 } },
+    { "id": "mv-echo-2", "creature": "vault-echo", "at": { "room": "chamber-b", "dx": 10, "dy": 8 } },
+    { "id": "mv-echo-3", "creature": "vault-echo", "at": { "room": "chamber-c", "dx": 5, "dy": 8 } },
+    { "id": "mv-echo-4", "creature": "vault-echo", "at": { "room": "chamber-c", "dx": 10, "dy": 4 } },
+    { "id": "mv-echo-5", "creature": "vault-echo", "at": { "room": "heart", "dx": 10, "dy": 28 } },
+    { "id": "mv-warden", "creature": "the-warden", "at": { "room": "heart", "dx": 13, "dy": 18 } }
+  ],
   "lights": [],
   "decals": [],
   "setPieces": [],

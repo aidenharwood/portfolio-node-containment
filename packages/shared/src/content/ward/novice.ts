@@ -143,7 +143,7 @@ export const NOVICE_CREATURES: readonly CreatureDefinition[] = [
     designation: 'LW-022',
     examine: "It is wearing Mr Okafor's coat. It is wearing it better than he does.",
     model: 'lineMimic',
-    level: 5,
+    level: 4,
     wander: 2,
     loot: [{ itemId: 'rag-bundle', count: 2, chance: 0.8 }, { itemId: 'okafor-coat', count: 1, chance: 1 }],
     containment: { containmentClass: 'safe', procedures: 'Distract with clean laundry. Subdue. Contain. Return the clothes.', experience: 80, loot: [{ itemId: 'okafor-coat', count: 1, chance: 1 }] },
@@ -447,3 +447,40 @@ export const NOVICE_DIALOGUES: readonly DialogueDefinition[] = [
     chat: 'The Drowned Lamp. Named for the one they pulled out of the canal, still lit.',
   }),
 ];
+
+type Entry = DialogueDefinition['entries'][number];
+
+const rank = (entry: Entry): number => {
+  const types = (entry.conditions ?? []).map((condition) => condition.type);
+  if (types.includes('questActive')) return 0;
+  if (types.includes('questNotStarted')) return 1;
+  if (types.length > 0) return 2;
+  return 3;
+};
+
+export function combineDialogues(dialogues: readonly DialogueDefinition[]): DialogueDefinition[] {
+  const byId = new Map<string, DialogueDefinition[]>();
+  for (const dialogue of dialogues) byId.set(dialogue.id, [...(byId.get(dialogue.id) ?? []), dialogue]);
+  return [...byId.entries()].map(([id, group]) => {
+    if (group.length === 1) return group[0] as DialogueDefinition;
+    const nodes: Record<string, DialogueNode> = {};
+    const ranked: { readonly entry: Entry; readonly rank: number; readonly order: number }[] = [];
+    group.forEach((dialogue, index) => {
+      const rename = (node: string | null | undefined): string | null | undefined => (node === null || node === undefined ? node : `q${index}-${node}`);
+      for (const [name, node] of Object.entries(dialogue.nodes)) {
+        nodes[`q${index}-${name}`] = {
+          ...node,
+          ...(node.next !== undefined ? { next: rename(node.next) ?? null } : {}),
+          ...(node.options ? { options: node.options.map((option) => ({ ...option, next: rename(option.next) ?? null })) } : {}),
+        };
+      }
+      for (const entry of dialogue.entries) {
+        const entryRank = rank(entry);
+        if (entryRank === 3 && index < group.length - 1) continue;
+        ranked.push({ entry: { ...entry, node: `q${index}-${entry.node}` }, rank: entryRank, order: entryRank === 2 ? -index : index });
+      }
+    });
+    ranked.sort((a, b) => a.rank - b.rank || a.order - b.order);
+    return { id, entries: ranked.map((item) => item.entry), nodes };
+  });
+}

@@ -38,6 +38,12 @@ export const WARD_SPOTS: readonly WorldObjectDefinition[] = [
   spot('wreck-plate', 'Wreck Plate', 'Ship plate peeled off a wreck on the slipway. Cut it free.', 'scrapPile', 'Salvage', source('salvage', 30, 'hull-plate', 70, 'Cutting plate', 4, 70)),
   spot('tide-weed', 'Tide Weed', 'Dark weed swaying in the shallows, against the current.', 'reedBed', 'Cut', source('biochemistry', 30, 'tide-weed', 66, 'Cutting weed', 4, 70)),
   spot('hull-trace', 'Hull Trace', 'A violet smear on the slipway. It knocks if you put your ear to it.', 'anomalyTrace', 'Study', source('research', 30, 'hull-trace', 68, 'Studying the trace', 3, 80), false),
+  spot('directorate-salvage', 'Breached Fittings', 'Cell fittings and pale panel, torn loose. Salvage what you can carry.', 'scrapPile', 'Salvage', source('salvage', 40, 'directorate-salvage', 100, 'Salvaging', 4, 80)),
+  spot('red-moss', 'Red Moss', 'Moss as red as the warning lights. It leans towards the cells.', 'reedBed', 'Harvest', source('biochemistry', 40, 'red-moss', 96, 'Harvesting moss', 4, 80)),
+  spot('red-trace', 'Red Trace', 'A cold red smear. It goes quiet when you look at it.', 'anomalyTrace', 'Study', source('research', 40, 'red-trace', 100, 'Studying the trace', 3, 90), false),
+  spot('vault-residue', 'Vault Residue', 'Black glassy crust on the Vault floor. Your reflection in it is late.', 'scrapPile', 'Salvage', source('salvage', 50, 'vault-residue', 140, 'Salvaging', 4, 90)),
+  spot('vault-bloom', 'Vault Bloom', 'Pale flowers in the dark, all turned towards you.', 'reedBed', 'Harvest', source('biochemistry', 50, 'vault-bloom', 136, 'Harvesting bloom', 4, 90)),
+  spot('vault-trace', 'Vault Trace', 'A bright blue residue. It pulses slowly, like breathing.', 'anomalyTrace', 'Study', source('research', 50, 'vault-trace', 140, 'Studying the trace', 3, 100), false),
 ];
 
 export const SCRAP_HEAP_SALVAGE = { verb: 'Salvage', effects: [], gather: { attemptTicks: 5, ...source('salvage', 20, 'heavy-scrap', 42, 'Salvaging', 5, 60) } } as const;

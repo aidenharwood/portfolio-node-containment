@@ -71,8 +71,8 @@ export const WARD_QUESTS: readonly QuestDefinition[] = [
 
 export const WARD_QUESTLINES: readonly QuestlineDefinition[] = [
   { id: 'first-steps', name: 'First Steps', kind: 'main', summary: 'Arriving in Hollow Bay.', questIds: [TUTORIAL_QUEST_ID] },
-  { id: 'site-meridian', name: 'Site Meridian', kind: 'main', summary: 'What the Site is sitting on.', questIds: ['steel-below', 'dead-band'] },
-  { id: 'ward-favours', name: 'Ward Favours', kind: 'side', summary: 'Small problems from the people of the Low Ward.', questIds: ['noodle-run', 'line-thief', 'bed-six', 'valve-trouble', 'rent-day', 'lost-cat', 'bright-things', 'drowned-lamp'] },
+  { id: 'site-meridian', name: 'Site Meridian', kind: 'main', summary: 'What the Site is sitting on.', questIds: ['steel-below', 'dead-band', 'bill-of-lading', 'the-heart'] },
+  { id: 'ward-favours', name: 'Ward Favours', kind: 'side', summary: 'Small problems from the people of the Low Ward.', questIds: ['noodle-run', 'line-thief', 'bed-six', 'valve-trouble', 'rent-day', 'lost-cat', 'bright-things', 'drowned-lamp', 'what-glows', 'bottom-up', 'knock-back'] },
 ];
 
 const at = (stepId: string): Condition[] => [{ type: 'questActive', questId: TUTORIAL_QUEST_ID, stepId }];

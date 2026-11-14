@@ -36,13 +36,28 @@
     { "id": "cg-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 20, "dy": 25 } },
     { "id": "cg-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 20, "dy": 35 } },
     { "id": "cg-bollard-0", "object": "bollard", "at": { "room": "ground", "dx": 52, "dy": 26 } },
-    { "id": "cg-bollard-1", "object": "bollard", "at": { "room": "ground", "dx": 52, "dy": 33 } }
+    { "id": "cg-bollard-1", "object": "bollard", "at": { "room": "ground", "dx": 52, "dy": 33 } },
+    { "id": "cg-trace-0", "object": "red-trace", "at": { "room": "ground", "dx": 12, "dy": 29 } },
+    { "id": "cg-trace-1", "object": "red-trace", "at": { "room": "ground", "dx": 36, "dy": 49 } }
   ],
   "assemblies": [],
   "npcs": [
     { "id": "cg-mercer", "npc": "lieutenant-mercer", "at": { "room": "cordon-post", "dx": 5, "dy": 2 } }
   ],
-  "creatures": [],
+  "creatures": [
+    { "id": "cg-stalker-0", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 6, "dy": 5 } },
+    { "id": "cg-stalker-1", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 20, "dy": 5 } },
+    { "id": "cg-stalker-2", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 34, "dy": 5 } },
+    { "id": "cg-stalker-3", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 6, "dy": 17 } },
+    { "id": "cg-stalker-4", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 30, "dy": 15 } },
+    { "id": "cg-stalker-5", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 6, "dy": 43 } },
+    { "id": "cg-stalker-6", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 20, "dy": 43 } },
+    { "id": "cg-stalker-7", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 34, "dy": 43 } },
+    { "id": "cg-stalker-8", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 48, "dy": 43 } },
+    { "id": "cg-stalker-9", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 10, "dy": 55 } },
+    { "id": "cg-stalker-10", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 30, "dy": 55 } },
+    { "id": "cg-stalker-11", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 50, "dy": 55 } }
+  ],
   "lights": [],
   "decals": [],
   "setPieces": [],

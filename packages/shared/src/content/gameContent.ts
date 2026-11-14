@@ -30,7 +30,8 @@ import { WARD_FOOD, WARD_GEAR, WARD_MATERIALS, WARD_RECIPES, WARD_UNIQUES } from
 import { WARD_SPOTS, WARD_STATIONS } from './ward/objects.ts';
 import { TUTORIAL_QUEST_ID, WARD_DIALOGUES, WARD_QUESTLINES, WARD_QUESTS } from './ward/quests.ts';
 import { SITE_CREATURES, SITE_DIALOGUES, SITE_ITEMS, SITE_OBJECTS, SITE_QUESTS, SITE_RECIPES } from './ward/site.ts';
-import { NOVICE_CREATURES, NOVICE_DIALOGUES, NOVICE_ITEMS, NOVICE_OBJECTS, NOVICE_QUESTS, NOVICE_RECIPES } from './ward/novice.ts';
+import { DEPTHS_CREATURES, DEPTHS_DIALOGUES, DEPTHS_ITEMS, DEPTHS_OBJECTS, DEPTHS_QUESTS, DEPTHS_RECIPES } from './ward/depths.ts';
+import { combineDialogues, NOVICE_CREATURES, NOVICE_DIALOGUES, NOVICE_ITEMS, NOVICE_OBJECTS, NOVICE_QUESTS, NOVICE_RECIPES } from './ward/novice.ts';
 import { SEED_DIALOGUES, SEED_NPCS, SEED_OBJECTS, SEED_REGIONS, SEED_SHOPS } from './seed/lowWard.ts';
 import { buildTramNetwork, TRAM_LINES, TRAM_STATIONS } from './tramNetwork.ts';
 
@@ -74,9 +75,11 @@ function indexById<T extends { readonly id: string }>(entries: readonly T[]): Re
 }
 
 const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([...LOW_WARD_DISTRICTS, ...SITE_MERIDIAN_DISTRICTS]);
-const INSTALLED = buildInstallations([...SEED_OBJECTS, ...SITE_MERIDIAN_LIFTS, ...WARD_SPOTS, ...WARD_STATIONS, ...NOVICE_OBJECTS, ...SITE_OBJECTS]);
+const INSTALLED = buildInstallations([...SEED_OBJECTS, ...SITE_MERIDIAN_LIFTS, ...WARD_SPOTS, ...WARD_STATIONS, ...NOVICE_OBJECTS, ...SITE_OBJECTS, ...DEPTHS_OBJECTS]);
 const ASSEMBLY_INDEX: ReadonlyMap<AssemblyId, AssemblyDefinition> = indexById([...ASSEMBLIES, ...INSTALLED.assemblies]);
 const LEVEL_INDEX: LevelIndex = buildLevelIndex([OVERWORLD, ...MERIDIAN_LEVELS], DISTRICTS, ASSEMBLY_INDEX);
+
+const QUEST_DIALOGUES = combineDialogues([...WARD_DIALOGUES, ...NOVICE_DIALOGUES, ...SITE_DIALOGUES, ...DEPTHS_DIALOGUES]);
 
 function placed(districtId: DistrictId, position: TilePoint): WorldLocation {
   const location = locate(LEVEL_INDEX, districtId, position);
@@ -85,21 +88,21 @@ function placed(districtId: DistrictId, position: TilePoint): WorldLocation {
 }
 
 export const GAME_CONTENT: GameContent = {
-  items: indexById([...CURRENCY_ITEMS, ...WARD_MATERIALS, ...WARD_FOOD, ...WARD_GEAR, ...WARD_UNIQUES, ...NOVICE_ITEMS, ...SITE_ITEMS]),
+  items: indexById([...CURRENCY_ITEMS, ...WARD_MATERIALS, ...WARD_FOOD, ...WARD_GEAR, ...WARD_UNIQUES, ...NOVICE_ITEMS, ...SITE_ITEMS, ...DEPTHS_ITEMS]),
   npcs: indexById([...SEED_NPCS]),
   worldObjects: indexById(INSTALLED.objects),
   assemblies: ASSEMBLY_INDEX,
-  dialogues: indexById<DialogueDefinition>([...SEED_DIALOGUES.filter((dialogue) => ![...WARD_DIALOGUES, ...NOVICE_DIALOGUES, ...SITE_DIALOGUES].some((override) => override.id === dialogue.id)), ...WARD_DIALOGUES, ...NOVICE_DIALOGUES, ...SITE_DIALOGUES]),
-  quests: indexById<QuestDefinition>([...WARD_QUESTS, ...NOVICE_QUESTS, ...SITE_QUESTS]),
+  dialogues: indexById<DialogueDefinition>([...SEED_DIALOGUES.filter((dialogue) => !QUEST_DIALOGUES.some((override) => override.id === dialogue.id)), ...QUEST_DIALOGUES]),
+  quests: indexById<QuestDefinition>([...WARD_QUESTS, ...NOVICE_QUESTS, ...SITE_QUESTS, ...DEPTHS_QUESTS]),
   questlines: indexById<QuestlineDefinition>(WARD_QUESTLINES),
   districts: DISTRICTS,
   levels: LEVEL_INDEX.levels,
   levelOfDistrict: LEVEL_INDEX.levelOfDistrict,
   regions: indexById(SEED_REGIONS),
   tram: buildTramNetwork(TRAM_STATIONS, TRAM_LINES, DISTRICTS, LEVEL_INDEX),
-  creatures: indexById<CreatureDefinition>([...WARD_CREATURES, ...NOVICE_CREATURES, ...SITE_CREATURES]),
+  creatures: indexById<CreatureDefinition>([...WARD_CREATURES, ...NOVICE_CREATURES, ...SITE_CREATURES, ...DEPTHS_CREATURES]),
   shops: indexById(SEED_SHOPS),
-  recipes: indexById<RecipeDefinition>([...WARD_RECIPES, ...NOVICE_RECIPES, ...SITE_RECIPES]),
+  recipes: indexById<RecipeDefinition>([...WARD_RECIPES, ...NOVICE_RECIPES, ...SITE_RECIPES, ...DEPTHS_RECIPES]),
   contracts: indexById<ContractDefinition>([]),
   newCharacter: {
     startingLocation: placed(TERMINUS_SQUARE.id, TERMINUS_SQUARE_ANCHORS.start),

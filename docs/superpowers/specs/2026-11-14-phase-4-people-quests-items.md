@@ -149,6 +149,27 @@ Containable anomalies are the moth-lantern, the rustling, the glass hound, the t
 - **Dead Band** (Sefa Lind, needs The Steel Below and Engineering 15): build a receiver and take readings at three survey stakes. They cross under the island.
 - **Lift clearance:** the headhouse lift now needs B1 clearance, the B1 lower lift B2 clearance, and the Vault lift B3 clearance. B2 and B3 clearances arrive in step 4.
 
+**Step 4 (built).**
+- **Ladders:** ceramite (level 40; Ceramite, Cordon and Redline lines) and vault glass (level 50; Vault Glass, Gloam and Hollow lines). With the earlier four, that's six full material ladders. Red salve and bloom elixir are the last two medicines.
+- **Gathering spots:** level-40 spots on B2 and the Cordon, and level-50 spots in the Vault.
+- **Creatures:**
+  - **B2:** red twins (38, keter) and cell-breakers (44).
+  - **The Cordon:** 12 Cordon stalkers (44).
+  - **The Vault:** vault echoes (52) and **the Warden** (54, keter, 420 integrity), in the Heart.
+  - Each has a model and a rare drop. The Warden's is the Warden's Key.
+- **Bill of Lading** (Brandt, needs Dead Band and Research 25): B2 clearance, then the records cabinet. The Vault survey reads "CAP IT", eleven years before the Site was built.
+- **The Heart** (Dr Hale, needs Bill of Lading, 12 quest points and combat level 40; worth 3 quest points): B3 clearance, the Warden, the sealed hatch, then Lieutenant Mercer's orders to open the Cordon gate.
+- **Higher side quests:** What Glows (Hetty Graves), Bottom Up (Kofi Mensah, Engineering 25) and Knock Back (Corporal Sato).
+- **Shared NPCs:** an NPC who gives several quests has their dialogues merged (`combineDialogues`). Steps in progress come first, then offers, then finished-quest lines (newest first), then small talk.
+- **Balance tests** (`wardBalance.test.ts`):
+  - No creature outranks its ground's tier.
+  - Every weapon and armour piece gets stronger up the ladder.
+  - Gathering and creature experience rise with level.
+  - Medicine heals more as it goes up.
+  - The Ward offers at least 12 quest points before The Heart.
+
+  These caught two problems: the line mimic was too strong for tier 1, and the stray dog paid too little experience.
+
 ## Order of work
 
 1. The scrap and iron ladders, home-square creatures and spots, the stations and shops, the tutorial and Noodle Run. Walked end to end in the game.

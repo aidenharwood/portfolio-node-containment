@@ -81,6 +81,7 @@
     { "id": "mi-amber-trace-0", "object": "amber-trace", "at": { "room": "amber-cells", "dx": 32, "dy": 9 } },
     { "id": "mi-amber-trace-1", "object": "amber-trace", "at": { "room": "amber-cells", "dx": 2, "dy": 5 } },
     { "id": "mi-amber-trace-2", "object": "amber-trace", "at": { "room": "amber-cells", "dx": 38, "dy": 7 } },
+    { "id": "specimen-tank", "object": "specimen-tank", "at": { "room": "lab-a", "dx": 4, "dy": 0 } },
     { "id": "mi-holding-reader", "object": "keycard-reader", "at": { "room": "amber-cells", "dx": 1, "dy": 0 } },
     { "id": "mi-holding-camera", "object": "security-camera", "at": { "room": "amber-cells", "dx": 38, "dy": 0 } },
     { "id": "mi-holding-barricade", "object": "barricade", "at": { "room": "amber-cells", "dx": 6, "dy": 9 } },

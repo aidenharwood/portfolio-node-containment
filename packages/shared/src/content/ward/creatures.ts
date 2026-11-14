@@ -88,7 +88,7 @@ export const WARD_CREATURES: readonly CreatureDefinition[] = [
     leashRadius: 7,
     wanderRadius: 3,
     respawnTicks: 30,
-    experience: 26,
+    experience: 36,
     loot: [
       { itemId: 'rag-bundle', count: 1, chance: 0.5 },
       { itemId: 'scrap-metal', count: 1, chance: 0.3 },

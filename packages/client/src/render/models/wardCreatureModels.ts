@@ -180,6 +180,65 @@ const tideWraith = (): VoxelModel => {
   return model;
 };
 
+const redTwin = (): VoxelModel => {
+  const skin = 0xd8d6cc;
+  const model = new VoxelModel();
+  for (const x0 of [-6, 2]) {
+    model.fill(x0, 0, -1, x0 + 3, 16, 1, (x, y, z) => jitter(skin, 0.03, noise3(x, y, z, 51)));
+    model.fill(x0, 16, -1, x0 + 3, 20, 2, skin).fill(x0 + 1, 18, 3, x0 + 2, 18, 3, 0xd8322a, VOXEL_EMISSIVE);
+  }
+  model.fill(-2, 10, -1, 1, 11, 0, 0xd8322a);
+  return model;
+};
+
+const cellBreaker = (): VoxelModel => {
+  const hide = 0x3a2a2a;
+  const model = new VoxelModel().fill(-6, 6, -5, 5, 18, 4, (x, y, z) => jitter(hide, 0.08, noise3(x, y, z, 53)));
+  model.fill(-10, 10, 0, -7, 16, 7, darken(hide, 0.2)).fill(6, 10, 0, 9, 16, 7, darken(hide, 0.2));
+  model.fill(-9, 10, 8, -7, 12, 9, 0xd8d6cc).fill(7, 10, 8, 9, 12, 9, 0xd8d6cc);
+  for (const x of [-5, 3]) model.fill(x, 0, -2, x + 2, 5, 1, darken(hide, 0.3));
+  model.fill(-2, 16, 5, 1, 16, 5, 0xd8322a, VOXEL_EMISSIVE).fill(-6, 18, -5, 5, 18, 4, 0xe86a1c);
+  return model;
+};
+
+const cordonStalker = (): VoxelModel => {
+  const body = 0x2a2a30;
+  const model = new VoxelModel();
+  for (const [x, z] of [[-5, -5], [4, -5], [-5, 4], [4, 4]] as const) model.fill(x, 0, z, x, 14, z, 0x1a1a20);
+  model.fill(-4, 14, -4, 3, 18, 3, (x, y, z) => jitter(body, 0.06, noise3(x, y, z, 55)));
+  model.fill(-2, 18, 2, 1, 24, 5, body).fill(-1, 22, 6, 0, 22, 6, 0xd8322a, VOXEL_EMISSIVE);
+  model.fill(-4, 15, -4, 3, 15, 3, 0xe86a1c);
+  return model;
+};
+
+const vaultEcho = (): VoxelModel => {
+  const glow = 0x7fd8ff;
+  const model = new VoxelModel();
+  for (let y = 0; y <= 22; y++) {
+    const r = y < 14 ? 3 : 2;
+    for (let x = -r; x <= r; x++) for (let z = -1; z <= 1; z++) {
+      if (noise3(x, y, z, 57) > 0.6) continue;
+      model.set(x, y, z, jitter(0x1a2a3a, 0.1, noise3(x, y, z, 58)), (x + y) % 5 === 0 ? VOXEL_EMISSIVE : undefined);
+    }
+  }
+  model.set(-1, 19, 2, glow, VOXEL_EMISSIVE).set(1, 19, 2, glow, VOXEL_EMISSIVE);
+  return model;
+};
+
+const warden = (): VoxelModel => {
+  const plate = 0x1a2a3a;
+  const model = new VoxelModel();
+  for (let y = 0; y <= 44; y++) {
+    const r = y < 8 ? 9 - y * 0.5 : y < 34 ? 6 + Math.sin(y * 0.25) * 2 : 5;
+    model.fill(-Math.round(r), y, -Math.round(r * 0.6), Math.round(r) - 1, y, Math.round(r * 0.6) - 1, (x, yy, z) => jitter(plate, 0.08, noise3(x, yy, z, 59)));
+  }
+  model.fill(-16, 28, -2, -8, 31, 1, plate).fill(7, 28, -2, 15, 31, 1, plate);
+  model.fill(-17, 14, -2, -14, 31, 1, plate).fill(13, 14, -2, 16, 31, 1, plate);
+  model.fill(-3, 38, 4, 2, 40, 4, 0x7fd8ff, VOXEL_EMISSIVE).fill(-1, 20, 4, 0, 30, 4, 0x7fd8ff, VOXEL_EMISSIVE);
+  model.fill(-6, 45, -2, 5, 47, 1, 0xd8322a);
+  return model;
+};
+
 const LOOKS: Readonly<Record<string, CreatureLook>> = {
   canalRat: { build: canalRat, height: 0.35, gait: 'scurry' },
   pigeon: { build: pigeon, height: 0.4, gait: 'hop' },
@@ -197,6 +256,11 @@ const LOOKS: Readonly<Record<string, CreatureLook>> = {
   glassHound: { build: glassHound, height: 0.9, gait: 'trot' },
   hullKnocker: { build: hullKnocker, height: 0.9, gait: 'scurry' },
   tideWraith: { build: tideWraith, height: 1.6, gait: 'drift' },
+  redTwin: { build: redTwin, height: 1.3, gait: 'drift' },
+  cellBreaker: { build: cellBreaker, height: 1.2, gait: 'trot' },
+  cordonStalker: { build: cordonStalker, height: 1.5, gait: 'trot' },
+  vaultEcho: { build: vaultEcho, height: 1.4, gait: 'drift' },
+  warden: { build: warden, height: 3, gait: 'drift' },
 };
 
 const meshes = new Map<string, VoxelMeshes>();
@@ -267,4 +331,9 @@ export const WARD_CREATURE_FACTORIES = {
   glassHound: () => new WardCreatureRig('glassHound'),
   hullKnocker: () => new WardCreatureRig('hullKnocker'),
   tideWraith: () => new WardCreatureRig('tideWraith'),
+  redTwin: () => new WardCreatureRig('redTwin'),
+  cellBreaker: () => new WardCreatureRig('cellBreaker'),
+  cordonStalker: () => new WardCreatureRig('cordonStalker'),
+  vaultEcho: () => new WardCreatureRig('vaultEcho'),
+  warden: () => new WardCreatureRig('warden'),
 } as const;

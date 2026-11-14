@@ -110,6 +110,7 @@
     { "id": "cb-dredge-c", "object": "dredge-spot", "at": { "room": "ground", "dx": 56, "dy": 20 }, "facing": "east" },
     { "id": "cb-dredge-d", "object": "dredge-spot", "at": { "room": "ground", "dx": 56, "dy": 46 }, "facing": "east" },
     { "id": "basin-hatch", "object": "basin-hatch", "at": { "room": "ground", "dx": 2, "dy": 61 } },
+    { "id": "glow-spot", "object": "glow-spot", "at": { "room": "ground", "dx": 56, "dy": 32 }, "facing": "east" },
     { "id": "cb-bench-a", "object": "street-bench", "at": { "room": "ground", "dx": 14, "dy": 6 } },
     { "id": "cb-bench-b", "object": "street-bench", "at": { "room": "ground", "dx": 36, "dy": 6 } },
     { "id": "cb-bin", "object": "litter-bin", "at": { "room": "ground", "dx": 16, "dy": 5 } },

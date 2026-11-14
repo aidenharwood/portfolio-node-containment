@@ -35,6 +35,7 @@
     { "id": "sf-hut-camera", "object": "security-camera", "at": { "room": "guard-hut", "dx": 5, "dy": 0 } },
     { "id": "sf-hut-sign", "object": "directorate-sign", "at": { "room": "ground", "dx": 42, "dy": 10 }, "facing": "west" },
     { "id": "sf-hull", "object": "beached-hull", "at": { "room": "ground", "dx": 24, "dy": 44 } },
+    { "id": "hull-breach", "object": "hull-breach", "at": { "room": "ground", "dx": 24, "dy": 47 } },
     { "id": "sf-slip-scrap-a", "object": "scrap-heap", "at": { "room": "ground", "dx": 44, "dy": 42 } },
     { "id": "sf-slip-scrap-b", "object": "scrap-heap", "at": { "room": "ground", "dx": 50, "dy": 47 } },
     { "id": "sf-moor-0", "object": "mooring-post", "at": { "room": "ground", "dx": 42, "dy": 51 } },

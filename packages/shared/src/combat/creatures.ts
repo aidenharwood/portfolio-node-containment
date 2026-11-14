@@ -23,7 +23,12 @@ export type CreatureModel =
   | 'mothLantern'
   | 'glassHound'
   | 'hullKnocker'
-  | 'tideWraith';
+  | 'tideWraith'
+  | 'redTwin'
+  | 'cellBreaker'
+  | 'cordonStalker'
+  | 'vaultEcho'
+  | 'warden';
 
 export interface LootEntry {
   readonly itemId: ItemId;

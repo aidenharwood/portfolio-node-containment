@@ -39,6 +39,7 @@
     { "id": "cut-pump-table", "object": "table", "at": { "room": "pump-house", "dx": 4, "dy": 5 } },
     { "id": "cut-pump-chair", "object": "chair", "at": { "room": "pump-house", "dx": 4, "dy": 6 }, "facing": "north" },
     { "id": "cut-pump-notices", "object": "notice-board", "at": { "room": "pump-house", "dx": 2, "dy": 0 } },
+    { "id": "pump-engine", "object": "pump-engine", "at": { "room": "pump-house", "dx": 1, "dy": 6 } },
     { "id": "cut-lock-0", "object": "lock-gate", "at": { "room": "ground", "dx": 28, "dy": 27 } },
     { "id": "cut-lock-1", "object": "lock-gate", "at": { "room": "ground", "dx": 33, "dy": 27 } },
     { "id": "cut-lock-2", "object": "lock-gate", "at": { "room": "ground", "dx": 28, "dy": 34 } },
