@@ -5,6 +5,7 @@ import {
   clearanceTierOf,
   countItem,
   nextClearanceTier,
+  boostViews,
   deriveCombatProfile,
   equipmentStats,
   isEquipped,
@@ -57,7 +58,7 @@ export const dialogueTemplateValuesFor = (player: Player): Record<string, string
   };
 };
 
-export const selfStateOf = (player: Player, content: GameContent): SelfState => {
+export const selfStateOf = (player: Player, content: GameContent, clock: { readonly tick: number; readonly tickMs: number }): SelfState => {
   const gearStats = equipmentStats(player.record.equipment, content.items);
   return {
     characterId: player.record.id,
@@ -69,7 +70,8 @@ export const selfStateOf = (player: Player, content: GameContent): SelfState => 
     equipment: player.record.equipment,
     quests: player.record.quests,
     stats: gearStats,
-    profile: deriveCombatProfile(player.record.skills, gearStats),
+    profile: deriveCombatProfile(player.record.skills, player.combatStats(content.items)),
+    boosts: boostViews(player.boosts, clock.tick, clock.tickMs),
     combatLevel: combatLevel(player.record.skills),
     vitals: player.vitals(),
     discoveredStations: [...content.tram.stations.keys()].filter((stationId) => isStationKnown(content.tram, stationId, (flag) => player.hasFlag(flag))),

@@ -124,6 +124,6 @@ export class ResearchController {
   }
 
   private analysisOf(player: Player): number {
-    return deriveCombatProfile(player.record.skills, equipmentStats(player.record.equipment, this.content.items)).analysis;
+    return deriveCombatProfile(player.record.skills, player.combatStats(this.content.items)).analysis;
   }
 }

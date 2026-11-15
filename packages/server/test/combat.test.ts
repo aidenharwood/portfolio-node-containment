@@ -164,6 +164,27 @@ describe('combat', () => {
     assert.equal(countItem(player.record.inventory, 'medgel'), 2);
   });
 
+  test('medicine boosts combat stats until it wears off', () => {
+    const harness = createHarness();
+    const { player } = harness;
+    harness.gameplay.tick();
+    const baseDefence = harness.sink.last('player.state')?.self.profile.meleeDefence ?? 0;
+    const slotIndex = player.record.inventory.findIndex((slot) => slot?.itemId === 'medgel');
+    harness.send({ type: 'inventory.use', slotIndex });
+    harness.gameplay.tick();
+    const boosted = harness.sink.last('player.state')?.self;
+    assert.equal(boosted?.profile.meleeDefence, baseDefence + 4);
+    assert.deepEqual(boosted?.boosts.map((boost) => boost.itemId), ['medgel']);
+    assert.ok((boosted?.boosts[0]?.remainingMs ?? 0) > 0);
+    assert.match(harness.sink.last('chat.message')?.text ?? '', /\+4 Armor/);
+
+    for (let tick = 0; tick < 10; tick++) harness.gameplay.tick();
+    const faded = harness.sink.last('player.state')?.self;
+    assert.equal(faded?.boosts.length, 0);
+    assert.equal(faded?.profile.meleeDefence, baseDefence);
+    assert.equal(harness.sink.last('chat.message')?.text, 'The Medgel Ampoule wears off.');
+  });
+
   test('healing items can only be used once every three ticks', () => {
     const harness = createHarness();
     const { player } = harness;

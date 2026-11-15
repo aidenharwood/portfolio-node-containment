@@ -60,7 +60,7 @@ export const DEPTHS_CREATURES: readonly CreatureDefinition[] = [
     level: 44,
     aggressive: true,
     wander: 2,
-    loot: [{ itemId: 'directorate-salvage', count: 2, chance: 0.6 }, { itemId: 'ceramite-ingot', count: 1, chance: 0.1 }, { itemId: 'breaker-plate', count: 1, chance: 0.01 }],
+    loot: [{ itemId: 'directorate-salvage', count: 2, chance: 0.6 }, { itemId: 'sinter-ingot', count: 1, chance: 0.1 }, { itemId: 'breaker-plate', count: 1, chance: 0.01 }],
   }),
   beast({
     id: 'cordon-stalker',

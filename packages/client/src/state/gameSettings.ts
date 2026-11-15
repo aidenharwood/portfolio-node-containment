@@ -12,6 +12,7 @@ export interface GameSettings {
   readonly renderScale: RenderScale;
   readonly shadows: ShadowQuality;
   readonly bloom: boolean;
+  readonly weather: boolean;
   readonly scanlines: boolean;
   readonly uiScale: number;
 }
@@ -20,6 +21,7 @@ export const DEFAULT_SETTINGS: GameSettings = {
   renderScale: 'sharp',
   shadows: 'high',
   bloom: true,
+  weather: true,
   scanlines: true,
   uiScale: 1,
 };
@@ -66,6 +68,7 @@ export function normalizeSettings(raw: unknown): GameSettings {
     renderScale: oneOf(RENDER_SCALES, source.renderScale, DEFAULT_SETTINGS.renderScale),
     shadows: oneOf(SHADOW_QUALITIES, source.shadows, DEFAULT_SETTINGS.shadows),
     bloom: typeof source.bloom === 'boolean' ? source.bloom : DEFAULT_SETTINGS.bloom,
+    weather: typeof source.weather === 'boolean' ? source.weather : DEFAULT_SETTINGS.weather,
     scanlines: typeof source.scanlines === 'boolean' ? source.scanlines : DEFAULT_SETTINGS.scanlines,
     uiScale: typeof source.uiScale === 'number' ? clampUiScale(source.uiScale) : DEFAULT_SETTINGS.uiScale,
   };

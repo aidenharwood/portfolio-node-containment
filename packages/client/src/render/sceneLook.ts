@@ -4,9 +4,10 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { assignLights, type LightAssignment } from './lightAssignment.ts';
-import { buildFieldLightGrid, clearFieldLights, FIELD_LIGHT_LIMIT, fieldLightFade, setFieldLights, type FieldLight } from './voxel/fieldLights.ts';
+import { buildFieldLightGrid, clearFieldLights, FIELD_LIGHT_LIMIT, fieldLightFade, setFieldAtmosphere, setFieldLights, type FieldLight } from './voxel/fieldLights.ts';
 import { lighten } from './voxel/palette.ts';
 import type { BlendedAmbience } from './world/ambienceBlend.ts';
+import { setBeamWeather } from './world/lightBeams.ts';
 import type { LightSource } from './world/levelScene.ts';
 import { pixelRatioFor, shadowMapSizeFor, type GameSettings, type RenderScale } from '../state/gameSettings.ts';
 
@@ -33,11 +34,21 @@ const DUSK_KEY_CUT = 0.55;
 const SKY_SUN_TINT = 0.8;
 const DAYLIGHT_FOG_THINNING = 0.55;
 const NO_LIGHTS: LightAssignment<LightSource> = { lights: [], edge: Infinity };
+const GROUND_FOG_PER_HAZE = 1.6;
+const GROUND_FOG_PER_MIST = 0.18;
+const GROUND_FOG_LIMIT = 0.6;
+const MIST_GAIN = 2.5;
+const MIST_WHITE = 0.04;
+const DRIZZLE_WETNESS = 0.6;
+const FLASH_AMBIENT = 2.2;
+const FLASH_KEY = 1.5;
+const FLASH_SKY = 0x8fa6c8;
+const FLASH_SKY_MIX = 0.6;
 
 export class SceneLook {
   readonly renderer: WebGLRenderer;
   private readonly composer: EffectComposer;
-  private readonly bloom = new UnrealBloomPass(new Vector2(256, 256), 0.6, 0.5, 0.72);
+  private readonly bloom = new UnrealBloomPass(new Vector2(256, 256), 0.45, 0.5, 0.85);
   private renderScale: RenderScale = 'sharp';
   private readonly hemisphere = new HemisphereLight(0x9fc6d6, 0x05080a, 0.6);
   private readonly keyLight = new DirectionalLight(0xcfe8ff, 0.7);
@@ -51,6 +62,10 @@ export class SceneLook {
   private survey = false;
   private readonly fogDensity: number;
   private lastAmbience: BlendedAmbience | null = null;
+  private readonly mistColor = new Color();
+  private readonly flashColor = new Color(FLASH_SKY);
+  private time = 0;
+  flash = 0;
 
   constructor(canvas: HTMLCanvasElement, scene: Scene, camera: Camera, fogDensity = FOG_DENSITY) {
     this.renderer = new WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
@@ -122,7 +137,16 @@ export class SceneLook {
     this.keyLight.intensity = Math.max(KEY_FLOOR, KEY_BASE - ambience.darkness * KEY_DARKNESS_WEIGHT) * (1 + ambience.daylight * SUN_BOOST * skyBrightness) * (1 - dusk * DUSK_KEY_CUT);
     this.sunColor.setHex(SUN_COLOR).lerp(ambience.sky, SKY_SUN_TINT * (1 - skyBrightness));
     this.keyLight.color.setHex(SHADE_COLOR).lerp(this.sunColor, ambience.daylight);
-    if (!this.survey) this.fog.density = this.fogDensity * (1 - ambience.daylight * skyBrightness * DAYLIGHT_FOG_THINNING);
+    if (!this.survey) this.fog.density = this.fogDensity * ambience.haze * (1 - ambience.daylight * skyBrightness * DAYLIGHT_FOG_THINNING);
+    const groundFog = this.survey ? 0 : Math.min(GROUND_FOG_LIMIT, Math.max(0, (ambience.haze - 1) * GROUND_FOG_PER_HAZE + ambience.weather.mist * GROUND_FOG_PER_MIST));
+    this.mistColor.copy(ambience.fog).multiplyScalar(MIST_GAIN).lerp(this.flashColor.setRGB(1, 1, 1), MIST_WHITE);
+    setBeamWeather(this.survey ? 0 : ambience.haze, ambience.weather.mist, ambience.weather.rain);
+    setFieldAtmosphere({ groundFog, mistColor: this.mistColor, wetness: ambience.weather.rain + DRIZZLE_WETNESS * ambience.weather.drizzle, time: this.time });
+    if (this.flash > 0 && !this.survey) {
+      this.hemisphere.intensity += this.flash * FLASH_AMBIENT;
+      this.keyLight.intensity += this.flash * FLASH_KEY;
+      this.background.lerp(this.flashColor.setHex(FLASH_SKY), this.flash * FLASH_SKY_MIX);
+    }
     if (this.survey) {
       this.hemisphere.intensity = SURVEY_AMBIENT;
       this.keyLight.intensity = SURVEY_KEY;
@@ -162,6 +186,7 @@ export class SceneLook {
   }
 
   render(camera: Camera, delta: number): void {
+    this.time += delta;
     camera.updateMatrixWorld();
     setFieldLights(this.fieldLights.slice(0, this.activeFieldLights), camera.matrixWorldInverse);
     this.composer.render(delta);

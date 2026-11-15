@@ -5,6 +5,7 @@ import type { ExitSide, RoomShape } from './blueprint.ts';
 import type { FloorDecalKind, FloorDecalPattern } from './decals.ts';
 import type { Facing } from './geometry.ts';
 import { EDGE_TILE_KINDS, TILE_KIND_IDS, WALL_MATERIALS } from './tiles.ts';
+import { WEATHER_KINDS } from './weather.ts';
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
 
@@ -78,7 +79,7 @@ export const DISTRICT_LAYOUT_SCHEMA = z
     condition: z.enum(CONDITIONS).optional(),
     reachedOnlyByTram: z.boolean().optional(),
     deadEnd: z.boolean().optional(),
-    ambience: z.object({ darkness: z.number(), tint: z.string(), fog: z.string(), fixtures: z.enum(['working', 'failing']).optional(), sky: z.string().optional() }).strict(),
+    ambience: z.object({ darkness: z.number(), tint: z.string(), fog: z.string(), fixtures: z.enum(['working', 'failing']).optional(), sky: z.string().optional(), weather: z.array(z.enum(WEATHER_KINDS)).optional(), haze: z.number().min(0.3).max(3).optional() }).strict(),
     size: z.object({ width: int.positive(), height: int.positive() }).strict(),
     steps: z.array(STEP_SCHEMA),
     tiles: z.array(z.object({ x: int, y: int, tile }).strict()),

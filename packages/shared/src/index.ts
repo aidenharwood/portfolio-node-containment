@@ -2,6 +2,7 @@ export * from './ids.ts';
 export * from './result.ts';
 
 export * from './character/appearance.ts';
+export * from './character/boosts.ts';
 export * from './character/character.ts';
 export * from './character/characterDraft.ts';
 export * from './character/derivedStats.ts';
@@ -70,6 +71,7 @@ export * from './world/planModel.ts';
 export * from './world/levelPlan.ts';
 export * from './world/trackway.ts';
 export * from './world/district.ts';
+export * from './world/weather.ts';
 export * from './world/doors.ts';
 export * from './world/level.ts';
 export * from './world/region.ts';

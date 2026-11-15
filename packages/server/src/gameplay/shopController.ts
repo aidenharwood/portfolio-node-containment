@@ -31,7 +31,7 @@ export class ShopController {
   buy(player: Player, itemId: ItemId, quantity: number): void {
     const shop = this.activeShop(player);
     if (!shop) return;
-    const result = purchase(player.record.inventory, this.content.items, shop, itemId, quantity);
+    const result = purchase(player.record.inventory, this.content.items, shop, itemId, quantity, player.record.quests);
     if (!result.ok) {
       this.host.notify(player, 'warning', result.error);
       return;

@@ -6,7 +6,7 @@
   "region": "low-ward",
   "condition": "breached",
   "deadEnd": true,
-  "ambience": { "darkness": 0.66, "tint": "#3a1c20", "fog": "#1a2028", "sky": "#2a3040" },
+  "ambience": { "darkness": 0.66, "tint": "#3a1c20", "fog": "#1a2028", "sky": "#2a3040", "weather": ["rain"], "haze": 1.1 },
   "size": { "width": 64, "height": 64 },
   "steps": [
     { "kind": "room", "id": "ground", "rect": { "x": 0, "y": 1, "width": 63, "height": 62 }, "floor": "gravel", "shape": "rect", "edge": "barrier" },

@@ -28,6 +28,7 @@ import { FadeBatch } from './fadeBatch.ts';
 import { FACING_STEP, type FillLight, type SconceSpot } from './wallLights.ts';
 import { LiquidSurface, WATER_PALETTE } from './liquidSurface.ts';
 import { decalsForLevel } from './floorDecals.ts';
+import { BEAM_GEOMETRY, createLightBeam } from './lightBeams.ts';
 import { buildFloorScatter } from './floorScatter.ts';
 import { createTileVolume, paintTileRows } from './levelVoxels.ts';
 import { MODEL_VOXEL_SIZE, TILE_RESOLUTION, ZONE_MESH_ORIGIN, ZONE_VOLUME_HEIGHT, ZONE_VOXEL_SIZE } from './worldScale.ts';
@@ -110,6 +111,7 @@ const OBJECT_MESH_CACHE = new Map<string, ObjectMeshes>();
 const SHARED_GEOMETRY = new WeakSet<BufferGeometry>();
 const OBJECTIVE_RING_GEOMETRY = new RingGeometry(0.52, 0.62, 32);
 SHARED_GEOMETRY.add(OBJECTIVE_RING_GEOMETRY);
+SHARED_GEOMETRY.add(BEAM_GEOMETRY);
 const VOXEL_LAYERS: readonly VoxelLayer[] = ['solid', 'emissive', 'glass'];
 const UP = new Vector3(0, 1, 0);
 const MODEL_VARIANTS = 8;
@@ -374,6 +376,7 @@ export class ChunkView {
     const position = local.multiplyScalar(scale).applyAxisAngle(UP, OBJECT_FACING_YAW[placement.facing ?? 'south']).add(new Vector3(origin.x, 0, origin.z));
     if (definition.light) {
       this.lights.push({ position, color: hex(definition.light.color), intensity: definition.light.intensity, radius: definition.light.radius, flicker: definition.light.flicker ?? false, seed });
+      if (definition.light.beam) this.root.add(createLightBeam(position, hex(definition.light.color), definition.light.beam));
     } else if (glow) {
       this.lights.push({ position, color: glow.color, intensity: GLOW_INTENSITY, radius: Math.min(GLOW_MAX_RADIUS, GLOW_MIN_RADIUS + glow.size * scale * 1.5), flicker: false, seed });
     }

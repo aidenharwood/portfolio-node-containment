@@ -1,6 +1,7 @@
 import { addItem, countItem, removeItem, type InventoryState } from '../gear/inventory.ts';
 import type { ItemCatalog, ItemCategory, ItemDefinition } from '../gear/items.ts';
-import type { ItemId } from '../ids.ts';
+import type { ItemId, QuestId } from '../ids.ts';
+import type { QuestLog } from '../quests/questProgress.ts';
 import { failure, success, type Result } from '../result.ts';
 
 export type ShopId = string;
@@ -10,7 +11,12 @@ export const CURRENCY_ITEM_ID: ItemId = 'meridian-scrip';
 export interface ShopListing {
   readonly itemId: ItemId;
   readonly price: number;
+  readonly afterQuest?: QuestId;
 }
+
+export const isListingOffered = (listing: ShopListing, quests: QuestLog): boolean => listing.afterQuest === undefined || quests[listing.afterQuest]?.status === 'completed';
+
+export const offeredListings = (shop: ShopDefinition, quests: QuestLog): readonly ShopListing[] => shop.listings.filter((listing) => isListingOffered(listing, quests));
 
 export interface ShopDefinition {
   readonly id: ShopId;
@@ -44,8 +50,9 @@ export function purchase(
   shop: ShopDefinition,
   itemId: ItemId,
   quantity: number,
+  quests: QuestLog = {},
 ): Result<TradeOutcome> {
-  const listing = shop.listings.find((candidate) => candidate.itemId === itemId);
+  const listing = offeredListings(shop, quests).find((candidate) => candidate.itemId === itemId);
   if (!listing) return failure('That is not for sale here.');
   if (!Number.isInteger(quantity) || quantity < 1 || quantity > MAX_TRADE_QUANTITY) return failure('Invalid quantity.');
   const cost = listing.price * quantity;

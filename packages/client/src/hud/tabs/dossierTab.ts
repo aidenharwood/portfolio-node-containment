@@ -1,4 +1,4 @@
-import { equippedItemIds, PROFILE_STAT_IDS, PROFILE_STAT_INFO, PRONOUN_SETS, STAT_INFO, type ProfileStatId, type SelfState } from '@containment/shared';
+import { equippedItemIds, PROFILE_STAT_IDS, PROFILE_STAT_INFO, PRONOUN_SETS, STAT_INFO, type ProfileStatId, type SelfState, type StatId } from '@containment/shared';
 import type { GameConnection } from '../../net/gameConnection.ts';
 import type { WorldState } from '../../state/worldState.ts';
 import { AvatarPreview } from '../../ui/avatarPreview.ts';
@@ -28,11 +28,12 @@ export function createDossierTab(connection: GameConnection, world: WorldState):
   const profileRow = (self: SelfState, id: ProfileStatId) => {
     const info = PROFILE_STAT_INFO[id];
     const gear = info.gearStat ? self.stats[info.gearStat] : null;
+    const boost = info.gearStat ? Math.max(0, ...self.boosts.map((active) => active.stats[info.gearStat as StatId] ?? 0)) : 0;
     const title = info.gearStat ? `${info.derivation}
 ${STAT_INFO[info.gearStat].name}: ${STAT_INFO[info.gearStat].summary}` : info.derivation;
     return h('tr', { title },
       h('th', { scope: 'row' }, info.name),
-      h('td', { className: `dossier-gear${gear ? ' active' : ''}` }, gear === null ? '—' : `${gear > 0 ? '+' : ''}${gear}`),
+      h('td', { className: `dossier-gear${gear ? ' active' : ''}` }, gear === null ? '—' : `${gear > 0 ? '+' : ''}${gear}`, boost > 0 && h('span', { className: 'dossier-boost' }, `+${boost}`)),
       h('td', { className: 'dossier-total' }, String(self.profile[id])),
     );
   };

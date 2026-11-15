@@ -149,6 +149,7 @@ export function findContentIssues(content: GameContent): string[] {
     for (const listing of shop.listings) {
       checkItem(`shop ${shop.id}`, listing.itemId);
       if (listing.price <= 0) report(`shop ${shop.id}`, `price for "${listing.itemId}" must be positive`);
+      if (listing.afterQuest !== undefined && !content.quests.has(listing.afterQuest)) report(`shop ${shop.id}`, `"${listing.itemId}" waits on unknown quest "${listing.afterQuest}"`);
     }
   }
   for (const npc of content.npcs.values()) {

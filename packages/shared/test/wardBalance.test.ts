@@ -50,12 +50,25 @@ test('gathering pays more experience the higher the spot', () => {
   }
 });
 
-test('higher medicine heals more', () => {
-  const healing = [...GAME_CONTENT.recipes.values()]
-    .map((recipe) => ({ level: recipe.level, heal: GAME_CONTENT.items.get(recipe.output.itemId)?.consumable?.heal }))
-    .filter((entry): entry is { level: number; heal: number } => entry.heal !== undefined)
-    .sort((a, b) => a.level - b.level);
-  for (let index = 1; index < healing.length; index++) assert.ok(healing[index]!.heal >= healing[index - 1]!.heal, `level ${healing[index]!.level} heals at least as much as level ${healing[index - 1]!.level}`);
+for (const kind of ['food', 'medicine'] as const) {
+  test(`higher ${kind} heals more`, () => {
+    const healing = [...GAME_CONTENT.recipes.values()]
+      .map((recipe) => ({ level: recipe.level, consumable: GAME_CONTENT.items.get(recipe.output.itemId)?.consumable }))
+      .filter((entry) => entry.consumable?.kind === kind)
+      .map((entry) => ({ level: entry.level, heal: entry.consumable!.heal }))
+      .sort((a, b) => a.level - b.level);
+    for (let index = 1; index < healing.length; index++) assert.ok(healing[index]!.heal >= healing[index - 1]!.heal, `level ${healing[index]!.level} heals at least as much as level ${healing[index - 1]!.level}`);
+  });
+}
+
+test('medicine heals less than half of the food at its level', () => {
+  const foods = [...GAME_CONTENT.recipes.values()].filter((recipe) => GAME_CONTENT.items.get(recipe.output.itemId)?.consumable?.kind === 'food');
+  for (const recipe of GAME_CONTENT.recipes.values()) {
+    const medicine = GAME_CONTENT.items.get(recipe.output.itemId)?.consumable;
+    if (medicine?.kind !== 'medicine') continue;
+    const best = Math.max(...foods.filter((food) => food.level <= recipe.level).map((food) => GAME_CONTENT.items.get(food.output.itemId)!.consumable!.heal));
+    assert.ok(medicine.heal * 2 <= best + 1, `${recipe.output.itemId} heals ${medicine.heal} against food ${best}`);
+  }
 });
 
 test('creatures give more experience the stronger they are', () => {

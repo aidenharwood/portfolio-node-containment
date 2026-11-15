@@ -56,6 +56,7 @@ export class SettingsWindow {
     const renderScale = choiceRow('Resolution', RENDER_SCALES, RENDER_SCALE_LABELS, (value) => store.update({ renderScale: value }));
     const shadows = choiceRow('Shadows', SHADOW_QUALITIES, SHADOW_LABELS, (value) => store.update({ shadows: value }));
     const bloom = toggleRow('Glow', (value) => store.update({ bloom: value }));
+    const weather = toggleRow('Weather', (value) => store.update({ weather: value }));
     const scanlines = toggleRow('Scanlines', (value) => store.update({ scanlines: value }));
     const scaleValue = h('output', { className: 'settings-value' });
     const scale = h('input', {
@@ -82,6 +83,7 @@ export class SettingsWindow {
           h('div', { className: 'settings-row' }, h('span', { className: 'settings-label' }, 'Resolution'), renderScale.element),
           h('div', { className: 'settings-row' }, h('span', { className: 'settings-label' }, 'Shadows'), shadows.element),
           bloom.element,
+          weather.element,
           scanlines.element,
         ),
         h('section', { className: 'settings-group' },
@@ -98,6 +100,7 @@ export class SettingsWindow {
       renderScale.sync(settings.renderScale);
       shadows.sync(settings.shadows);
       bloom.sync(settings.bloom);
+      weather.sync(settings.weather);
       scanlines.sync(settings.scanlines);
       scale.value = String(settings.uiScale);
       scaleValue.textContent = percent(settings.uiScale);

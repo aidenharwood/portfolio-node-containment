@@ -37,6 +37,7 @@ import { PartyFrame } from '../hud/partyFrame.ts';
 import { SidePanel } from '../hud/sidePanel.ts';
 import { SpeechLayer } from '../hud/speechLayer.ts';
 import { VitalsPanel } from '../hud/vitalsPanel.ts';
+import { BoostBar } from '../hud/boostBar.ts';
 import { createBestiaryTab } from '../hud/tabs/bestiaryTab.ts';
 import { createContractsTab } from '../hud/tabs/contractsTab.ts';
 import { createSocialTab } from '../hud/tabs/socialTab.ts';
@@ -98,6 +99,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   const bubble = new InteractionBubble();
   const speech = new SpeechLayer();
   const combatOverlay = new CombatOverlay(world);
+  const boosts = new BoostBar();
   const vitals = new VitalsPanel((entityId) => {
     connection.send({ type: 'world.interact', targetKind: 'creature', instanceId: entityId.replace(/^creature:/, ''), interactionIndex: CONTAIN_INTERACTION });
   });
@@ -510,18 +512,21 @@ export function createGameScreen(app: AppNavigator): Screen {
     speech.update(world, renderer, now);
     combatOverlay.update(world, renderer, now);
     vitals.update(world);
+    boosts.update(world, now);
     minimap.render(now, renderer.cameraRig.headingRadians);
     followDistrict();
     frameHandle = requestAnimationFrame(loop);
   };
 
   chat.element.prepend(vitals.element);
+  chat.element.append(boosts.element);
   const element = h(
     'div',
     { className: 'screen game-screen' },
     canvas,
     speech.element,
     combatOverlay.element,
+    h('div', { className: 'vignette' }),
     h('div', { className: 'scanlines' }),
     zoneBanner,
     cameraHint,

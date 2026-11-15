@@ -1,4 +1,5 @@
 import type { CharacterAppearance } from '../character/appearance.ts';
+import type { BoostView } from '../character/boosts.ts';
 import type { CombatProfile } from '../character/derivedStats.ts';
 import type { CreatureId } from '../combat/creatures.ts';
 import type { HazardKind, TelegraphShape } from '../combat/encounters.ts';
@@ -67,6 +68,7 @@ export interface SelfState {
   readonly quests: QuestLog;
   readonly stats: Readonly<Record<StatId, number>>;
   readonly profile: CombatProfile;
+  readonly boosts: readonly BoostView[];
   readonly vitals: EntityVitals;
   readonly combatLevel: number;
   readonly discoveredStations: readonly TramStationId[];

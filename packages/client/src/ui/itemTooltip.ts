@@ -1,4 +1,7 @@
 import {
+  describeBoost,
+  formatBoostDuration,
+  STANDARD_TICK_MS,
   EQUIPMENT_SLOT_LABELS,
   GAME_CONTENT,
   GEAR_MOTIF_INFO,
@@ -112,6 +115,7 @@ function describeItem(item: ItemDefinition): (HTMLElement | null | false | undef
     equipment?.weapon && h('p', { className: 'tooltip-meta' }, weaponSummary(equipment.weapon)),
     equipment && renderStats(item),
     item.consumable && item.consumable.heal > 0 && h('p', { className: 'tooltip-meta' }, `Restores ${item.consumable.heal} integrity`),
+    item.consumable?.boost && h('p', { className: 'tooltip-boost' }, `${describeBoost(item.consumable.boost.stats)} for ${formatBoostDuration(item.consumable.boost.durationTicks * STANDARD_TICK_MS)}`),
     requirementLines.length > 0 && h('p', { className: 'tooltip-requirements' }, `Requires ${requirementLines.join(', ')}`),
     h('p', { className: 'tooltip-examine' }, item.examine),
   ];

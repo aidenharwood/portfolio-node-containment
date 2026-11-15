@@ -1,3 +1,4 @@
+import type { ConsumableBoost } from '../character/boosts.ts';
 import type { SkillId } from '../character/skills.ts';
 import type { WeaponProfile } from '../combat/weapons.ts';
 import type { ItemId } from '../ids.ts';
@@ -63,7 +64,7 @@ export type GearMotif = (typeof GEAR_MOTIFS)[number];
 export const GEAR_MOTIF_INFO: Readonly<Record<GearMotif, { name: string; summary: string }>> = {
   bulwark: { name: 'Bulwark', summary: 'Heavy plate built to stand in the way.' },
   skirmisher: { name: 'Skirmisher', summary: 'Light harness cut for marksmen who keep moving.' },
-  warden: { name: 'Warden', summary: 'Warded vestments for operatives who face the mind-bending.' },
+  warden: { name: 'Adept', summary: 'Warded vestments for operatives who face the mind-bending.' },
 };
 
 export interface GearVisual {
@@ -91,6 +92,7 @@ export interface ConsumableProperties {
   readonly kind: ConsumableKind;
   readonly verb: string;
   readonly heal: number;
+  readonly boost?: ConsumableBoost;
 }
 
 export interface ItemDefinition {

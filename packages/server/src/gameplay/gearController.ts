@@ -1,5 +1,10 @@
 import {
+  applyBoost,
+  describeBoost,
   equipFromInventory,
+  expireBoosts,
+  formatBoostDuration,
+  isBoostRedundant,
   equippedItemIds,
   recordDestroyed,
   swapSlots,
@@ -19,11 +24,13 @@ export class GearController {
   private readonly content: GameContent;
   private readonly world: World;
   private readonly host: EffectHost;
+  private readonly tickMs: number;
 
-  constructor(content: GameContent, world: World, host: EffectHost) {
+  constructor(content: GameContent, world: World, host: EffectHost, tickMs: number) {
     this.content = content;
     this.world = world;
     this.host = host;
+    this.tickMs = tickMs;
   }
 
   equip(player: Player, slotIndex: number): void {
@@ -70,13 +77,28 @@ export class GearController {
     const before = player.integrity;
     player.setIntegrity(before + item.consumable.heal);
     const restored = player.integrity - before;
-    player.send({
-      type: 'chat.message',
-      channel: 'system',
-      text: restored > 0 ? `You ${item.consumable.verb.toLowerCase()} the ${item.name}. +${restored} integrity.` : `You ${item.consumable.verb.toLowerCase()} the ${item.name}. You already feel fine.`,
-    });
+    const { boost } = item.consumable;
+    const redundant = boost !== undefined && isBoostRedundant(player.boosts, item.id, boost.stats);
+    if (boost) player.boosts = applyBoost(player.boosts, item.id, boost, tick);
+    const verb = `You ${item.consumable.verb.toLowerCase()} the ${item.name}.`;
+    const healed = restored > 0 ? ` +${restored} integrity.` : boost ? '' : ' You already feel fine.';
+    const boosted = boost ? ` ${describeBoost(boost.stats)} for ${formatBoostDuration(boost.durationTicks * this.tickMs)}.${redundant ? ' A stronger dose is already active.' : ''}` : '';
+    player.send({ type: 'chat.message', channel: 'system', text: `${verb}${healed}${boosted}` });
     this.host.raiseQuestEvent(player, { type: 'usedItem', itemId: item.id });
     this.host.raiseQuestEvent(player, { type: 'loadoutChanged' });
+  }
+
+  expireBoosts(player: Player, tick: number): void {
+    player.boostTick = tick;
+    if (player.boosts.length === 0) return;
+    const { active, expired } = expireBoosts(player.boosts, tick);
+    if (expired.length === 0) return;
+    player.boosts = active;
+    player.markStateDirty();
+    for (const boost of expired) {
+      const name = this.content.items.get(boost.itemId)?.name ?? 'boost';
+      player.send({ type: 'chat.message', channel: 'system', text: `The ${name} wears off.` });
+    }
   }
 
   drop(player: Player, slotIndex: number): void {

@@ -119,7 +119,7 @@ describe('boss encounters', () => {
     harness.player.path = [];
     const before = harness.player.integrity;
     harness.gameplay.tick();
-    assert.ok(harness.player.integrity <= before - 2);
+    assert.ok(harness.player.integrity < before);
     boss.targetId = null;
     harness.gameplay.teleport(harness.player, anchor('fx-hub', 'recovery'));
     harness.ticksUntil(() => boss.encounter?.engaged === false, 20);

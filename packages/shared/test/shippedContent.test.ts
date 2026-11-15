@@ -77,3 +77,10 @@ test('every quest names people, creatures and objects that stand somewhere in th
     }
   }
 });
+
+test('every renamed item points from a retired id to a live one', () => {
+  for (const [from, to] of GAME_CONTENT.renamedItems ?? []) {
+    assert.equal(GAME_CONTENT.items.has(from), false, `${from} is still live`);
+    assert.equal(GAME_CONTENT.items.has(to), true, `${to} does not exist`);
+  }
+});

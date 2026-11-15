@@ -5,7 +5,7 @@
   "tier": 8,
   "region": "low-ward",
   "condition": "breached",
-  "ambience": { "darkness": 0.6, "tint": "#22303a", "fog": "#1a262c", "sky": "#2e3450" },
+  "ambience": { "darkness": 0.6, "tint": "#22303a", "fog": "#1a262c", "sky": "#2e3450", "weather": ["rain", "mist"], "haze": 1.4 },
   "size": { "width": 64, "height": 64 },
   "steps": [
     { "kind": "room", "id": "ground", "rect": { "x": 0, "y": 0, "width": 64, "height": 63 }, "floor": "gravel", "shape": "rect", "edge": "barrier" },

@@ -1,3 +1,4 @@
+import type { StoredBoost } from './boosts.ts';
 import type { ContractLedger } from '../contracts/contractLedger.ts';
 import type { AccountId, CharacterId, DistrictId } from '../ids.ts';
 import type { FriendEntry } from '../social/friends.ts';
@@ -29,6 +30,7 @@ export interface CharacterRecord {
   readonly flags: readonly string[];
   readonly friends: readonly FriendEntry[];
   readonly contracts: ContractLedger;
+  readonly boosts?: readonly StoredBoost[];
   readonly location: WorldLocation;
   readonly createdAt: number;
 }

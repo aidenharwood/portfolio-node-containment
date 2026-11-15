@@ -4,6 +4,7 @@ import type { CraftingStation, RecipeDefinition } from '../../crafting/recipes.t
 import type { ConsumableKind, GearMotif, ItemDefinition, ItemIconShape, ItemRarity } from '../../gear/items.ts';
 import type { EquipmentSlot } from '../../gear/slots.ts';
 import type { StatBlock } from '../../gear/stats.ts';
+import { boostTicksForMinutes } from '../../character/boosts.ts';
 import { gear } from '../gearItem.ts';
 
 const material = (id: string, name: string, examine: string, icon: ItemIconShape, colors: readonly [string, string], value: number): ItemDefinition => ({
@@ -34,7 +35,11 @@ const consumable = (kind: ConsumableKind) => (id: string, name: string, examine:
 const food = consumable('food');
 const medicine = consumable('medicine');
 
+const boosted = (item: ItemDefinition, stats: StatBlock, minutes: number): ItemDefinition =>
+  item.consumable ? { ...item, consumable: { ...item.consumable, boost: { stats, durationTicks: boostTicksForMinutes(minutes) } } } : item;
+
 export const WARD_MATERIALS: readonly ItemDefinition[] = [
+  material('hand-leaf-cutting', 'Hand-leaf Cutting', 'A cutting from the bed six plant, potted by Marta. It holds on to the pot.', 'moss', ['#5a8a3a', '#b6ff4f'], 4),
   material('scrap-metal', 'Scrap Metal', 'Bent sheet, bolts and a hinge. Worth something hammered flat.', 'scrap', ['#8a7a6a', '#4a3a30'], 2),
   material('scrap-bar', 'Scrap Bar', 'Scrap beaten and folded into a bar. Ugly, but it holds an edge.', 'ingot', ['#8a7a6a', '#5a4a3a'], 6),
   material('silt-iron', 'Silt Iron', 'Iron dredged from the basin, still black with silt.', 'scrap', ['#3a3f44', '#1a1e22'], 6),
@@ -57,12 +62,12 @@ export const WARD_MATERIALS: readonly ItemDefinition[] = [
   material('tarred-canvas', 'Tarred Canvas', 'Tide weed fibre, woven and tarred. It sheds water and, somehow, dread.', 'sheet', ['#3a3a2a', '#1a1a10'], 44),
   material('hull-trace', 'Hull Trace', 'Bright residue scraped from the inside of the beached hull. It knocks, faintly.', 'shard', ['#c79bff', '#3a1a5a'], 30),
   material('directorate-salvage', 'Directorate Salvage', 'Pale panel and cell fittings stripped from the Secure Wing. Nobody is going to miss them, officially.', 'plate', ['#d8d6cc', '#e86a1c'], 40),
-  material('ceramite-ingot', 'Ceramite Ingot', 'Directorate ceramite, refined from salvage. Lighter than steel and colder than it should be.', 'ingot', ['#e8e6dc', '#9a988e'], 110),
+  material('sinter-ingot', 'Sinter Ingot', 'Directorate salvage fused under pressure into a pale ceramic. Lighter than steel and colder than it should be.', 'ingot', ['#e8e6dc', '#9a988e'], 110),
   material('red-moss', 'Red Moss', 'Moss growing in the breached ward. It grows towards the cells.', 'moss', ['#8a2a22', '#3a0e0a'], 30),
   material('red-mesh', 'Red Mesh', 'Red moss fibre, synthesised into a fine, slightly warm mesh.', 'sheet', ['#8a3a32', '#3a1410'], 80),
   material('red-trace', 'Red Trace', 'High-security residue. It is cold, and it is listening.', 'shard', ['#d8322a', '#3a0a08'], 60),
   material('vault-residue', 'Vault Residue', 'Black glassy crust from the Vault floor. It reflects rooms that are not there.', 'shard', ['#1a2a3a', '#4fe3ff'], 70),
-  material('vault-glass', 'Vault Glass', 'Residue refined into dark glass. It is harder than ceramite and it hums.', 'ingot', ['#2a3a4a', '#7fd8ff'], 200),
+  material('vault-glass', 'Vault Glass', 'Residue refined into dark glass. It is harder than sinter and it hums.', 'ingot', ['#2a3a4a', '#7fd8ff'], 200),
   material('vault-bloom', 'Vault Bloom', 'A pale flower that grows in the dark of the Vault. It turns to follow you.', 'moss', ['#c8d8e8', '#4a6a8a'], 60),
   material('bloom-silk', 'Bloom Silk', 'Silk spun from vault bloom. It shimmers when nobody is looking at it.', 'sheet', ['#c8d8e8', '#7fd8ff'], 150),
   material('vault-trace', 'Vault Trace', 'Residue from the deepest chambers. It feels like being looked at from below.', 'shard', ['#7fd8ff', '#0a1a2a'], 110),
@@ -71,15 +76,19 @@ export const WARD_MATERIALS: readonly ItemDefinition[] = [
 
 export const WARD_FOOD: readonly ItemDefinition[] = [
   food('smoked-eel', 'Smoked Eel', 'Brined, smoked and chewy. A Ward staple.', 'gel', ['#6a4a2a', '#2a1a10'], 9, 5),
-  medicine('greens-poultice', 'Greens Poultice', 'Mashed greens bound with trace dust. It stings, then it helps.', 'gel', ['#7cf29a', '#1f5f35'], 10, 6, 'Apply'),
+  boosted(medicine('greens-poultice', 'Greens Poultice', 'Mashed greens bound with trace dust. It stings, then it helps.', 'gel', ['#7cf29a', '#1f5f35'], 10, 3, 'Apply'), { armor: 2, hazardShielding: 2 }, 3),
   food('noodle-bowl', 'Bowl of Noodles', "Vance's broth, noodles and whatever came in on the train.", 'vial', ['#e8c070', '#8a5a2a'], 15, 10),
   food('eel-pie', 'Eel Pie', "Ostrowski's crust, a basin eel inside. A head pokes through the top. Tradition, apparently.", 'plate', ['#c8904a', '#4a3020'], 24, 16),
-  medicine('culture-salve', 'Culture Salve', 'A cool grey paste that knits skin while you watch.', 'gel', ['#d8d0b8', '#e8a21c'], 70, 20, 'Apply'),
+  boosted(medicine('culture-salve', 'Culture Salve', 'A cool grey paste that knits skin while you watch.', 'gel', ['#d8d0b8', '#e8a21c'], 70, 8, 'Apply'), { armor: 8, deflection: 8 }, 4),
   food('culture-cutlet', 'Culture Cutlet', 'Lab culture, breaded and fried. Officially it is not food. Unofficially it is the Thursday special.', 'plate', ['#d8b878', '#8a9a7a'], 60, 22),
   food('tide-broth', 'Tide Broth', 'Eel and tide weed. It tastes of the sea and of something underneath the sea.', 'vial', ['#2a4a3a', '#c79bff'], 70, 26, 'Drink'),
-  medicine('red-salve', 'Red Salve', 'A Directorate field salve, made from what grows by the cells. It works. Do not ask how.', 'gel', ['#d8322a', '#3a0a08'], 160, 32, 'Apply'),
-  medicine('bloom-elixir', 'Bloom Distillate', 'Distilled vault bloom. You feel very well, and very watched.', 'vial', ['#c8d8e8', '#7fd8ff'], 260, 40),
-  medicine('reed-tonic', 'Reed Tonic', 'Bitter green tonic with a bright sediment that never settles. Do not shake.', 'vial', ['#3fe0b0', '#1a4a3a'], 40, 14),
+  boosted(medicine('tide-tincture', 'Tide Tincture', 'Tide weed steeped over hull trace. It sloshes the wrong way in the bottle, and so do you, harder.', 'vial', ['#6a8a4a', '#c79bff'], 100, 12), { power: 5, accuracy: 5, focus: 5 }, 4),
+  food('moss-pasty', 'Red Moss Pasty', "Red moss baked into yesterday's loaf. It is warm in the middle. It is warm in the middle for a long time.", 'plate', ['#8a2a22', '#c8a060'], 90, 32),
+  food('bloom-chowder', 'Bloom Chowder', 'Vault bloom and basin eel in a pale broth. The petals all face the spoon.', 'vial', ['#c8d8e8', '#2a3a3a'], 150, 40, 'Drink'),
+  boosted(medicine('red-salve', 'Red Salve', 'A Directorate field salve, made from what grows by the cells. It works. Do not ask how.', 'gel', ['#d8322a', '#3a0a08'], 160, 13, 'Apply'), { power: 8, accuracy: 8, focus: 8 }, 4),
+  boosted(medicine('bloom-elixir', 'Bloom Distillate', 'Distilled vault bloom. You feel very well, and very watched.', 'vial', ['#c8d8e8', '#7fd8ff'], 260, 16), { armor: 16, deflection: 16, cognitiveWard: 16, hazardShielding: 6 }, 5),
+  boosted(medicine('grip-tincture', 'Grip Tincture', "Marta's tincture of hand-leaf. Your fingers close a moment before you tell them to.", 'vial', ['#b6ff4f', '#3a5a2a'], 26, 5), { power: 2, accuracy: 2, focus: 2 }, 3),
+  boosted(medicine('reed-tonic', 'Reed Tonic', 'Bitter green tonic with a bright sediment that never settles. Do not shake.', 'vial', ['#3fe0b0', '#1a4a3a'], 40, 5), { cognitiveWard: 5, insight: 2 }, 3),
 ];
 
 interface Material {
@@ -170,11 +179,11 @@ export const MATERIAL_LADDER: readonly Material[] = [
     experience: 78,
   },
   {
-    key: 'ceramite',
-    name: 'Ceramite',
+    key: 'sinter',
+    name: 'Sinter',
     level: 40,
     rarity: 'classified',
-    bar: 'ceramite-ingot',
+    bar: 'sinter-ingot',
     fibre: 'red-mesh',
     trace: 'red-trace',
     metal: ['#e8e6dc', '#e86a1c'],
@@ -344,6 +353,11 @@ const LADDERS = MATERIAL_LADDER.map(ladderGear);
 
 export const WARD_GEAR: readonly ItemDefinition[] = LADDERS.flatMap((ladder) => ladder.items);
 
+export const RENAMED_WARD_ITEMS: ReadonlyMap<string, string> = new Map([
+  ['ceramite-ingot', 'sinter-ingot'],
+  ...[...WEAPONS.map((weapon) => weapon.noun), ...BODY_SLOTS.map((slot) => LINES.bulwark.shapes[slot].noun)].map((noun): [string, string] => [`ceramite-${slugOf(noun)}`, `sinter-${slugOf(noun)}`]),
+]);
+
 export const WARD_RECIPES: readonly RecipeDefinition[] = [
   recipe('refinery', 'refining', 'scrap-bar', 1, { 'scrap-metal': 2 }, 8),
   recipe('refinery', 'refining', 'iron-bar', 10, { 'silt-iron': 2 }, 20),
@@ -351,6 +365,7 @@ export const WARD_RECIPES: readonly RecipeDefinition[] = [
   recipe('cooker', 'biochemistry', 'smoked-eel', 1, { 'basin-eel': 1 }, 8),
   recipe('synthesiser', 'biochemistry', 'greens-poultice', 1, { 'allotment-greens': 2, 'trace-dust': 1 }, 12),
   recipe('cooker', 'biochemistry', 'noodle-bowl', 5, { 'basin-eel': 1, 'allotment-greens': 1, 'day-old-loaf': 1 }, 22),
+  recipe('synthesiser', 'biochemistry', 'grip-tincture', 8, { 'hand-leaf-cutting': 1, 'trace-dust': 1 }, 26),
   recipe('synthesiser', 'biochemistry', 'reed-tonic', 12, { 'reed-bundle': 2, 'culvert-trace': 1 }, 34),
   recipe('cooker', 'biochemistry', 'eel-pie', 14, { 'basin-eel': 2, 'day-old-loaf': 1 }, 40),
   recipe('refinery', 'refining', 'steel-bar', 20, { 'iron-bar': 1, 'heavy-scrap': 2 }, 40),
@@ -360,11 +375,14 @@ export const WARD_RECIPES: readonly RecipeDefinition[] = [
   recipe('refinery', 'refining', 'alloy-bar', 30, { 'hull-plate': 2 }, 64),
   recipe('refinery', 'refining', 'tarred-canvas', 30, { 'tide-weed': 2 }, 60),
   recipe('cooker', 'biochemistry', 'tide-broth', 32, { 'tide-weed': 2, 'basin-eel': 1 }, 80),
-  recipe('refinery', 'refining', 'ceramite-ingot', 40, { 'directorate-salvage': 2 }, 96),
+  recipe('refinery', 'refining', 'sinter-ingot', 40, { 'directorate-salvage': 2 }, 96),
   recipe('refinery', 'refining', 'red-mesh', 40, { 'red-moss': 2 }, 90),
+  recipe('synthesiser', 'biochemistry', 'tide-tincture', 32, { 'tide-weed': 2, 'hull-trace': 1 }, 86),
+  recipe('cooker', 'biochemistry', 'moss-pasty', 44, { 'red-moss': 2, 'day-old-loaf': 1 }, 128),
   recipe('synthesiser', 'biochemistry', 'red-salve', 42, { 'red-moss': 2, 'red-trace': 1 }, 120),
   recipe('refinery', 'refining', 'vault-glass', 50, { 'vault-residue': 2 }, 140),
   recipe('refinery', 'refining', 'bloom-silk', 50, { 'vault-bloom': 2 }, 130),
+  recipe('cooker', 'biochemistry', 'bloom-chowder', 54, { 'vault-bloom': 2, 'basin-eel': 1 }, 180),
   recipe('synthesiser', 'biochemistry', 'bloom-elixir', 52, { 'vault-bloom': 2, 'vault-trace': 1 }, 170),
   ...LADDERS.flatMap((ladder) => ladder.recipes),
 ];

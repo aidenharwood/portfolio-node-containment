@@ -7,6 +7,7 @@ import type { AssemblyPlacement } from './assemblies.ts';
 import type { FloorDecal } from './decals.ts';
 import type { DistrictExit } from './blueprint.ts';
 import type { WorldObjectDefinition } from './entities.ts';
+import type { WeatherKind } from './weather.ts';
 import { objectFootprintTiles } from './footprint.ts';
 import type { WalkabilityGrid } from './pathfinding.ts';
 import { MAP_LEGEND, TILE_KINDS, type TileKindId } from './tiles.ts';
@@ -63,6 +64,8 @@ export interface ZoneAmbience {
   readonly fog: string;
   readonly fixtures?: 'working' | 'failing';
   readonly sky?: string;
+  readonly weather?: readonly WeatherKind[];
+  readonly haze?: number;
 }
 
 export interface DressedRoom {

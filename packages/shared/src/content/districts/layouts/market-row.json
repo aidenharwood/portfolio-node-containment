@@ -5,7 +5,7 @@
   "tier": 1,
   "region": "low-ward",
   "condition": "worn",
-  "ambience": { "darkness": 0.55, "tint": "#3a2636", "fog": "#3a2240", "sky": "#5a2a6a" },
+  "ambience": { "darkness": 0.55, "tint": "#3a2636", "fog": "#3a2240", "sky": "#5a2a6a", "weather": ["drizzle"], "haze": 1.15 },
   "size": { "width": 64, "height": 64 },
   "steps": [
     { "kind": "room", "id": "ground", "rect": { "x": 0, "y": 1, "width": 64, "height": 63 }, "floor": "paving", "shape": "rect", "edge": "barrier" },
@@ -125,7 +125,9 @@
     { "id": "mr-greenhalgh-counter-4", "object": "counter", "at": { "room": "apothecary", "dx": 0, "dy": 3 } },
     { "id": "mr-fenwick-counter-3", "object": "counter", "at": { "room": "tool-shop", "dx": 8, "dy": 3 } },
     { "id": "mr-fenwick-counter-4", "object": "counter", "at": { "room": "tool-shop", "dx": 9, "dy": 3 } },
-    { "id": "mr-lind-counter-3", "object": "counter", "at": { "room": "signal-shop", "dx": 8, "dy": 3 } }
+    { "id": "mr-lind-counter-3", "object": "counter", "at": { "room": "signal-shop", "dx": 8, "dy": 3 } },
+    { "id": "mr-holo-a", "object": "holo-billboard", "at": { "room": "ground", "dx": 33, "dy": 20 }, "facing": "south" },
+    { "id": "mr-holo-b", "object": "holo-billboard", "at": { "room": "ground", "dx": 9, "dy": 46 }, "facing": "east" }
   ],
   "assemblies": [],
   "npcs": [

@@ -16,7 +16,7 @@ import type {
   WorldLocation,
   WorldObjectId,
 } from '@containment/shared';
-import { CONTAIN_INTERACTION, locate, STUDY_INTERACTION, VISITED_DISTRICT_FLAG_PREFIX, visitedDistrictFlag, visitedLevelFlag } from '@containment/shared';
+import { CONTAIN_INTERACTION, locate, restoreBoosts, STUDY_INTERACTION, VISITED_DISTRICT_FLAG_PREFIX, visitedDistrictFlag, visitedLevelFlag } from '@containment/shared';
 import { returnUnfinishedTrainee } from '../characters/traineePlacement.ts';
 import { Player, type MessageSink } from '../world/player.ts';
 import type { LevelInstance } from '../world/levelInstance.ts';
@@ -123,18 +123,20 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
   private readonly trams: TramController;
   private readonly research: ResearchController;
   private tickNumber = 0;
+  private readonly tickMs: number;
   private readonly autosaveEveryTicks: number;
   private ticksSinceAutosave = 0;
 
   constructor(content: GameContent, store: CharacterStore, options: GameplayOptions) {
     this.content = content;
     this.store = store;
+    this.tickMs = options.tickMs;
     this.world = new World(content, this, { tickMs: options.tickMs, random: options.random, capacityOverride: options.levelCapacity });
     this.effects = new EffectRunner(content, this);
     this.quests = new QuestTracker(content, (player, effects) => this.effects.apply(player, effects));
     this.dialogues = new DialogueController(content, this.world, this.effects, this);
     this.interactions = new InteractionController(content, this.world, this.dialogues, this.effects, this);
-    this.gear = new GearController(content, this.world, this);
+    this.gear = new GearController(content, this.world, this, options.tickMs);
     this.now = options.now ?? Date.now;
     this.social = new SocialController(content, this.world, this);
     this.contracts = new ContractController(content, this.effects, this, this.now);
@@ -165,6 +167,8 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
       existing.sink.detach('This operative was deployed from another connection.');
     }
     const player = new Player(existing?.persistableRecord() ?? returnUnfinishedTrainee(record, this.content), sink);
+    player.boostTick = this.tickNumber;
+    player.boosts = restoreBoosts(player.record.boosts, (itemId) => this.content.items.get(itemId)?.consumable?.boost, this.tickNumber);
     this.online.set(record.id, player);
     this.chartLevelsVisitedBeforeDistrictTracking(player);
     this.world.spawn(player);
@@ -352,6 +356,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     this.research.tick(this.tickNumber);
     this.crafting.tick(this.tickNumber, this.online.values());
     this.trams.tick(this.tickNumber);
+    for (const player of this.online.values()) this.gear.expireBoosts(player, this.tickNumber);
     this.social.tick(this.tickNumber);
     if (this.tickNumber % CONTRACT_REFRESH_TICKS === 0) for (const player of this.online.values()) this.contracts.refresh(player, true);
     for (const player of this.online.values()) this.flush(player);
@@ -530,6 +535,8 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     this.dialogues.close(player);
     this.world.transfer(player, recovery);
     player.setIntegrity(player.maxIntegrity);
+    player.boosts = [];
+    player.markStateDirty();
     this.notify(player, 'warning', `You were incapacitated. Medical recovered you to the ${recoveryName}.`);
   }
 
@@ -543,6 +550,6 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
   }
 
   private flush(player: Player): void {
-    if (player.consumeStateDirty()) player.send({ type: 'player.state', self: selfStateOf(player, this.content) });
+    if (player.consumeStateDirty()) player.send({ type: 'player.state', self: selfStateOf(player, this.content, { tick: this.tickNumber, tickMs: this.tickMs }) });
   }
 }

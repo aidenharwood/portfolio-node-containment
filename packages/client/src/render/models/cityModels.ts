@@ -250,6 +250,41 @@ const floodMast: Builder = () => {
   return parts(model, 46, [{ model: beacon, animate: blink(2) }]);
 };
 
+const holoFrame = (index: number, count: number, period: number) => (part: Object3D, time: number, seed: number) => {
+  const clock = time / period + seed * 0.37;
+  const showing = Math.floor(clock) % count === index;
+  const settling = clock - Math.floor(clock) < 0.06;
+  part.visible = showing && (!settling || noise3(Math.floor(time * 30), seed, index, 83) > 0.5);
+};
+
+const holoBillboard: Builder = (seed) => {
+  const model = new VoxelModel().fill(-3, 0, -3, 2, 2, 2, grain(CITY.concrete));
+  model.fill(-1, 3, -1, 0, 25, 0, grain(CITY.darkSteel, 0.02)).fill(-1, 12, -1, 0, 13, 0, CITY.band);
+  model.fill(-9, 24, -1, 8, 25, 0, CITY.iron).fill(-9, 41, -1, 8, 42, 0, CITY.iron);
+  model.fill(-9, 25, 0, 8, 25, 0, 0x4fe3ff, VOXEL_EMISSIVE).fill(-9, 41, 0, 8, 41, 0, 0x4fe3ff, VOXEL_EMISSIVE);
+  const palettes: readonly (readonly [number, number])[] = [[0xff4fa8, 0x8a1f5a], [0x4fe3ff, 0x1a5a7a], [0xb6ff4f, 0x3a6a1a]];
+  const [hot, cool] = pick(palettes, seed);
+  const mark = new VoxelModel();
+  for (let y = 27; y <= 39; y++) {
+    for (let x = -8; x <= 7; x++) {
+      const r = Math.hypot(x + 0.5, y - 33);
+      if ((r > 4.2 && r < 5.6) || (Math.abs(x + 0.5) < 1 && Math.abs(y - 33) < 3) || (y === 33 && Math.abs(x + 0.5) < 3)) mark.set(x, y, 1, hot, VOXEL_EMISSIVE);
+      else if (y % 3 === 0 && noise3(x, y, seed, 87) < 0.25) mark.set(x, y, 1, cool, VOXEL_EMISSIVE);
+    }
+  }
+  const copy = new VoxelModel();
+  for (let row = 0; row < 4; row++) {
+    const y = 37 - row * 3;
+    const length = 6 + Math.floor(noise3(seed, row, 0, 89) * 10);
+    for (let x = -8; x < -8 + length; x++) if (noise3(x, row, seed, 91) > 0.18) copy.set(x, y, 1, row === 0 ? hot : 0xe8f4ff, VOXEL_EMISSIVE);
+  }
+  copy.fill(-8, 27, 1, 7, 27, 1, (x) => (x % 2 === 0 ? cool : null), VOXEL_EMISSIVE);
+  return parts(model, 43, [
+    { model: mark, animate: holoFrame(0, 2, 4.5) },
+    { model: copy, animate: holoFrame(1, 2, 4.5) },
+  ]);
+};
+
 const burnBarrel: Builder = () => {
   const model = cylinder(new VoxelModel(), 0, 0, 3.2, 0, 9, grain(0x5a3a26, 0.08));
   cylinder(model, 0, 0, 3.2, 3, 3, 0x3a2418).fill(-2, 5, 3, 1, 6, 3, 0x2a1a10);
@@ -790,6 +825,7 @@ export const CITY_BUILDERS: Readonly<Record<CityModel, Builder>> = {
   neonSignCyan,
   neonSignAcid,
   floodMast,
+  holoBillboard,
   burnBarrel,
   shopAwning,
   securityCamera,

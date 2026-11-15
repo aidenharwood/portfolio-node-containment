@@ -16,6 +16,9 @@ import { hex } from './voxel/palette.ts';
 import { copyAmbience, createBlendedAmbience, easeAmbience, sampleAmbience } from './world/ambienceBlend.ts';
 import { SceneLook } from './sceneLook.ts';
 import { LevelScene } from './world/levelScene.ts';
+import { WeatherLayer } from './world/weatherLayer.ts';
+import { SkyMask } from './world/skyMask.ts';
+import { setFieldSkyMask } from './voxel/fieldLights.ts';
 import { objectModelOrigin } from './world/chunkView.ts';
 
 export interface RenderOverlay {
@@ -74,6 +77,9 @@ export class GameRenderer {
   private readonly raycaster = new Raycaster();
   private readonly groundPlane = new Plane(new Vector3(0, 1, 0), 0);
   private zone: LevelScene | null = null;
+  private readonly weather: WeatherLayer;
+  private readonly skyMask = new SkyMask();
+  private weatherEnabled = true;
   private readonly ambience = createBlendedAmbience();
   private readonly ambienceTarget = createBlendedAmbience();
   private ambienceTile: string | null = null;
@@ -89,7 +95,8 @@ export class GameRenderer {
     this.world = world;
     this.look = new SceneLook(canvas, this.scene, this.cameraRig.camera);
     this.stopHitListener = world.onCombatHit((event) => this.launchProjectile(event));
-    this.scene.add(this.projectiles.root, this.groundItems.root, this.hoverRing, this.selfRing, this.click.group, this.route.mesh, this.encounters.mesh);
+    this.weather = new WeatherLayer(this.skyMask);
+    this.scene.add(this.projectiles.root, this.groundItems.root, this.hoverRing, this.selfRing, this.click.group, this.route.mesh, this.encounters.mesh, this.weather.root);
 
   }
 
@@ -101,6 +108,7 @@ export class GameRenderer {
   }
 
   applyGraphics(settings: GameSettings): void {
+    this.weatherEnabled = settings.weather;
     if (this.look.applyGraphics(settings)) this.resize();
   }
 
@@ -173,6 +181,19 @@ export class GameRenderer {
     this.zone.update(time, overlay.objectiveObjectIds, this.world.depletedObjects, this.world.usedObjects, { open: this.world.openDoors, self: this.world.selfEntity?.to ?? null });
     this.zone.updateCutaway(this.cameraRig.camera.position, focus);
     this.look.updateLights(this.zone.lights, delta, time, focus);
+    if (this.skyMask.follow(this.world.zone?.definition, focus.x, focus.z)) setFieldSkyMask(this.skyMask.texture, this.skyMask.originX, this.skyMask.originZ);
+    this.weather.update({
+      delta,
+      time,
+      focus,
+      camera: this.cameraRig.camera.position,
+      ambience: this.ambience,
+      enabled: this.weatherEnabled,
+      sources: this.zone.lights,
+      pixelRatio: this.look.renderer.getPixelRatio(),
+      viewportHeight: this.look.renderer.domElement.height,
+    });
+    this.look.flash = this.weather.flash;
     this.updateHover(overlay.hover, now);
     this.updateClickMarker(overlay.clickMarker, now);
     this.updateBeacons(overlay.objectiveBeacons, time);

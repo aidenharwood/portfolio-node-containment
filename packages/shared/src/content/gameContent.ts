@@ -5,7 +5,7 @@ import type { RecipeDefinition } from '../crafting/recipes.ts';
 import type { DialogueDefinition } from '../dialogue/dialogue.ts';
 import type { ShopDefinition, ShopId } from '../economy/shop.ts';
 import type { ItemCatalog } from '../gear/items.ts';
-import type { AssemblyId, DialogueId, DistrictId, LevelId, NpcId, QuestId, RegionId, WorldObjectId } from '../ids.ts';
+import type { AssemblyId, DialogueId, DistrictId, ItemId, LevelId, NpcId, QuestId, RegionId, WorldObjectId } from '../ids.ts';
 import type { QuestDefinition } from '../quests/questDefinition.ts';
 import type { QuestlineDefinition, QuestlineId } from '../quests/questline.ts';
 import type { AssemblyDefinition } from '../world/assemblies.ts';
@@ -26,7 +26,7 @@ import { SITE_MERIDIAN_DISTRICTS } from './districts/siteMeridian.ts';
 import { SITE_MERIDIAN_LIFTS } from './seed/siteMeridian.ts';
 import { CURRENCY_ITEMS } from './seed/items.ts';
 import { WARD_CREATURES } from './ward/creatures.ts';
-import { WARD_FOOD, WARD_GEAR, WARD_MATERIALS, WARD_RECIPES, WARD_UNIQUES } from './ward/items.ts';
+import { RENAMED_WARD_ITEMS, WARD_FOOD, WARD_GEAR, WARD_MATERIALS, WARD_RECIPES, WARD_UNIQUES } from './ward/items.ts';
 import { WARD_SPOTS, WARD_STATIONS } from './ward/objects.ts';
 import { TUTORIAL_QUEST_ID, WARD_DIALOGUES, WARD_QUESTLINES, WARD_QUESTS } from './ward/quests.ts';
 import { SITE_CREATURES, SITE_DIALOGUES, SITE_ITEMS, SITE_OBJECTS, SITE_QUESTS, SITE_RECIPES } from './ward/site.ts';
@@ -37,6 +37,7 @@ import { buildTramNetwork, TRAM_LINES, TRAM_STATIONS } from './tramNetwork.ts';
 
 export interface GameContent {
   readonly items: ItemCatalog;
+  readonly renamedItems?: ReadonlyMap<ItemId, ItemId>;
   readonly npcs: ReadonlyMap<NpcId, NpcDefinition>;
   readonly worldObjects: ReadonlyMap<WorldObjectId, WorldObjectDefinition>;
   readonly assemblies: ReadonlyMap<AssemblyId, AssemblyDefinition>;
@@ -89,6 +90,7 @@ function placed(districtId: DistrictId, position: TilePoint): WorldLocation {
 
 export const GAME_CONTENT: GameContent = {
   items: indexById([...CURRENCY_ITEMS, ...WARD_MATERIALS, ...WARD_FOOD, ...WARD_GEAR, ...WARD_UNIQUES, ...NOVICE_ITEMS, ...SITE_ITEMS, ...DEPTHS_ITEMS]),
+  renamedItems: RENAMED_WARD_ITEMS,
   npcs: indexById([...SEED_NPCS]),
   worldObjects: indexById(INSTALLED.objects),
   assemblies: ASSEMBLY_INDEX,

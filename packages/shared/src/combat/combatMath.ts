@@ -2,6 +2,7 @@ import { deriveCombatProfile, type CombatProfile } from '../character/derivedSta
 import type { SkillExperience, SkillId } from '../character/skills.ts';
 import { equipmentStats, type EquipmentState } from '../gear/equipment.ts';
 import type { ItemCatalog } from '../gear/items.ts';
+import { sumStats, type StatBlock } from '../gear/stats.ts';
 import { footprintCentre, isInFootprint, nearestFootprintTile } from '../world/footprint.ts';
 import { chebyshevDistance, isCardinallyAdjacent, type TilePoint } from '../world/geometry.ts';
 import type { CreatureDefinition } from './creatures.ts';
@@ -55,10 +56,10 @@ export const ratingFor = (profile: CombatProfile, style: CombatStyle): number =>
 
 export const defenceAgainst = (profile: CombatProfile, style: CombatStyle): number => profile[DEFENCE_OF[style]];
 
-export function playerAttackProfile(skills: SkillExperience, equipment: EquipmentState, items: ItemCatalog): AttackProfile {
+export function playerAttackProfile(skills: SkillExperience, equipment: EquipmentState, items: ItemCatalog, bonus: StatBlock = {}): AttackProfile {
   const weapon = weaponOf(equipment, items);
   const kind = WEAPON_KIND_INFO[weapon.kind];
-  const profile = deriveCombatProfile(skills, equipmentStats(equipment, items));
+  const profile = deriveCombatProfile(skills, sumStats([equipmentStats(equipment, items), bonus]));
   const accuracy = ratingFor(profile, kind.style);
   return {
     style: kind.style,
@@ -180,3 +181,8 @@ export function relativeThreat(playerRating: number, creatureLevel: number): 'tr
   if (gap >= 3) return 'dangerous';
   return 'even';
 }
+
+export const HAZARD_SHIELDING_SCALE = 40;
+
+export const shieldedHazardDamage = (damage: number, resistance: number): number =>
+  damage <= 0 ? 0 : Math.max(1, Math.round((damage * HAZARD_SHIELDING_SCALE) / (HAZARD_SHIELDING_SCALE + Math.max(0, resistance))));

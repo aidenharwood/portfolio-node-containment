@@ -5,7 +5,7 @@
   "tier": 1,
   "region": "low-ward",
   "condition": "worn",
-  "ambience": { "darkness": 0.55, "tint": "#2a2c3a", "fog": "#2a2838", "sky": "#46356a" },
+  "ambience": { "darkness": 0.55, "tint": "#2a2c3a", "fog": "#2a2838", "sky": "#46356a", "weather": ["drizzle"], "haze": 1 },
   "size": { "width": 64, "height": 64 },
   "steps": [
     { "kind": "room", "id": "ground", "rect": { "x": 1, "y": 0, "width": 63, "height": 64 }, "floor": "paving", "shape": "rect" },
@@ -135,7 +135,9 @@
     { "id": "ts-store-gondola-a", "object": "shelving", "at": { "room": "general-store", "dx": 8, "dy": 5 }, "facing": "west" },
     { "id": "ts-store-gondola-b", "object": "shelving", "at": { "room": "general-store", "dx": 9, "dy": 5 }, "facing": "east" },
     { "id": "ts-locker-bank-a", "object": "storage-locker", "at": { "room": "locker-office", "dx": 11, "dy": 2 }, "facing": "west" },
-    { "id": "ts-locker-bank-b", "object": "storage-locker", "at": { "room": "locker-office", "dx": 11, "dy": 4 }, "facing": "west" }
+    { "id": "ts-locker-bank-b", "object": "storage-locker", "at": { "room": "locker-office", "dx": 11, "dy": 4 }, "facing": "west" },
+    { "id": "ts-holo-a", "object": "holo-billboard", "at": { "room": "ground", "dx": 41, "dy": 40 }, "facing": "west" },
+    { "id": "ts-holo-b", "object": "holo-billboard", "at": { "room": "ground", "dx": 22, "dy": 9 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [

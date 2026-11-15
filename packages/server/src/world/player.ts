@@ -1,5 +1,12 @@
 import {
+  boostStats,
+  equipmentStats,
   equippedItemIds,
+  storeBoosts,
+  sumStats,
+  type ActiveBoost,
+  type ItemCatalog,
+  type StatId,
   maxIntegrityFor,
   type EntityVitals,
   type AreaId,
@@ -77,6 +84,8 @@ export class Player {
   engagedUntilTick = 0;
   nextAttackTick = 0;
   nextConsumableTick = 0;
+  boosts: ActiveBoost[] = [];
+  boostTick = 0;
   lastCombatTick = -Infinity;
   lastChaseTarget: TilePoint | null = null;
   incapacitatedAtTick: number | null = null;
@@ -110,6 +119,18 @@ export class Player {
     this.pendingInteraction = null;
     this.occupiedAreas = new Set();
     this.occupiedDistrict = undefined;
+  }
+
+  markStateDirty(): void {
+    this.stateDirty = true;
+  }
+
+  gearStats(items: ItemCatalog): Readonly<Record<StatId, number>> {
+    return equipmentStats(this.record.equipment, items);
+  }
+
+  combatStats(items: ItemCatalog): Readonly<Record<StatId, number>> {
+    return sumStats([this.gearStats(items), boostStats(this.boosts)]);
   }
 
   consumeStateDirty(): boolean {
@@ -159,7 +180,7 @@ export class Player {
   }
 
   persistableRecord(): CharacterRecord {
-    return { ...this.record, location: { levelId: this.levelId, position: this.position } };
+    return { ...this.record, boosts: storeBoosts(this.boosts, this.boostTick), location: { levelId: this.levelId, position: this.position } };
   }
 
   snapshot(): EntitySnapshot {

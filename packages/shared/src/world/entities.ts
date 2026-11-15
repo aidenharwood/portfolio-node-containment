@@ -36,6 +36,7 @@ export type WorldObjectModel =
   | 'neonSignCyan'
   | 'neonSignAcid'
   | 'floodMast'
+  | 'holoBillboard'
   | 'burnBarrel'
   | 'shopAwning'
   | 'securityCamera'
@@ -96,6 +97,7 @@ export interface ObjectLight {
   readonly color: string;
   readonly intensity: number;
   readonly flicker?: boolean;
+  readonly beam?: number;
 }
 
 export interface WorldObjectDefinition {

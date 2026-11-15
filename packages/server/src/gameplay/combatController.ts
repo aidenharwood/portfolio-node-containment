@@ -19,7 +19,9 @@ import {
   defenceAgainst,
   studiedFlag,
   scaledRespawnTicks,
+  boostStats,
   deriveCombatProfile,
+  shieldedHazardDamage,
   equipmentStats,
   hasLineOfSight,
   isBodyWithinAttackRange,
@@ -166,7 +168,7 @@ export class CombatController implements EncounterHost {
       return;
     }
 
-    const attack = playerAttackProfile(player.record.skills, player.record.equipment, this.content.items);
+    const attack = playerAttackProfile(player.record.skills, player.record.equipment, this.content.items, boostStats(player.boosts));
     if (isBodyWithinAttackRange(attack, { position: player.position, size: 1 }, creature, sightline) && !level.isSafe(player.position)) {
       player.path = [];
       player.lastChaseTarget = null;
@@ -342,11 +344,12 @@ export class CombatController implements EncounterHost {
   }
 
   scorch(creature: Creature, player: Player, damage: number, level: LevelInstance, tick: number): void {
-    this.landOnPlayer(creature, player, { hit: true, damage }, creature.attackProfile().style, level, tick);
+    const resistance = deriveCombatProfile(player.record.skills, player.combatStats(this.content.items)).hazardResistance;
+    this.landOnPlayer(creature, player, { hit: true, damage: shieldedHazardDamage(damage, resistance) }, creature.attackProfile().style, level, tick);
   }
 
   private resolveCreatureAttack(creature: Creature, player: Player, attack: AttackProfile, level: LevelInstance, tick: number, engage: boolean): void {
-    const profile = deriveCombatProfile(player.record.skills, equipmentStats(player.record.equipment, this.content.items));
+    const profile = deriveCombatProfile(player.record.skills, player.combatStats(this.content.items));
     const outcome = rollAttack(attack, defenceAgainst(profile, attack.style), this.random);
     if (engage) this.engageBoth(player, creature, tick);
     this.landOnPlayer(creature, player, outcome, attack.style, level, tick);

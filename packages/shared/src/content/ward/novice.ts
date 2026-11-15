@@ -397,7 +397,7 @@ export const NOVICE_DIALOGUES: readonly DialogueDefinition[] = [
     questId: 'bed-six',
     waiting: '',
     hand: { stepId: 'deliver', text: "Agnes sent you? Then you've brought me something from bed six. Let me see it.", option: 'Give Marta the hand-leaf.', items: ['hand-leaf'], signal: 'bed.delivered', thanks: "Oh, it's holding my finger. That's wonderful. That's terrible. Here, take this, and don't tell Agnes what I'm going to make from it." },
-    done: 'The hand-leaf is doing very well in a jar. Better than I am.',
+    done: "The hand-leaf is doing very well in a jar. Better than I am. I've potted cuttings and made a tincture from it, if you've the nerve.",
     chat: "Everything here was grown or brewed in the Ward. Since the anomalies, some of the plants grow better. I'm trying not to think about why.",
     chatOptions: [shop('greenhalgh-remedies')],
   }),

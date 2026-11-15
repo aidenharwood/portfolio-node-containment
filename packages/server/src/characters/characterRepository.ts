@@ -1,9 +1,19 @@
-import { emptyContractLedger, maxIntegrityFor, normalizeAppearance, normalizeSkills, type AccountId, type FriendEntry, type CharacterId, type CharacterRecord, type GameContent, type ItemStack } from '@containment/shared';
+import { emptyContractLedger, maxIntegrityFor, normalizeAppearance, normalizeSkills, type AccountId, type FriendEntry, type CharacterId, type CharacterRecord, type EquipmentState, type GameContent, type ItemId, type ItemStack } from '@containment/shared';
 import { restoreLocation, storeLocation } from './storedLocation.ts';
 import type { Database } from '../persistence/database.ts';
 
+const currentItemId = (itemId: ItemId, content: GameContent): ItemId => content.renamedItems?.get(itemId) ?? itemId;
+
 function dropUnknownItems<T extends ItemStack | null>(stacks: readonly T[], content: GameContent): T[] {
-  return stacks.map((stack) => (stack && !content.items.has(stack.itemId) ? (null as T) : stack));
+  return stacks.map((stack) => {
+    if (!stack) return stack;
+    const itemId = currentItemId(stack.itemId, content);
+    return content.items.has(itemId) ? ({ ...stack, itemId } as T) : (null as T);
+  });
+}
+
+function renameEquipment(equipment: EquipmentState, content: GameContent): EquipmentState {
+  return Object.fromEntries(Object.entries(equipment).map(([slot, itemId]) => [slot, itemId === undefined ? itemId : currentItemId(itemId, content)]));
 }
 
 function parseRecord(json: string, content: GameContent): CharacterRecord {
@@ -11,7 +21,7 @@ function parseRecord(json: string, content: GameContent): CharacterRecord {
   const skills = normalizeSkills(stored.skills);
   const inventory = dropUnknownItems(stored.inventory, content);
   const storage = dropUnknownItems(stored.storage ?? [], content).filter((stack): stack is ItemStack => stack !== null);
-  return { ...stored, inventory, storage, location: restoreLocation(stored.location, content), appearance: normalizeAppearance(stored.appearance), friends: stored.friends ?? [], contracts: stored.contracts ?? emptyContractLedger(), skills, vitals: stored.vitals ?? { integrity: maxIntegrityFor(skills) } };
+  return { ...stored, inventory, storage, equipment: renameEquipment(stored.equipment, content), location: restoreLocation(stored.location, content), appearance: normalizeAppearance(stored.appearance), friends: stored.friends ?? [], contracts: stored.contracts ?? emptyContractLedger(), skills, vitals: stored.vitals ?? { integrity: maxIntegrityFor(skills) } };
 }
 
 export class CharacterRepository {

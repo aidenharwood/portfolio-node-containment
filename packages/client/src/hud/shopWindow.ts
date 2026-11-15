@@ -1,4 +1,4 @@
-import { countItem, GAME_CONTENT, sellPrice, shopCurrencyLabel, shopCurrencyOf, type InventoryState, type ItemDefinition, type SelfState, type ShopDefinition } from '@containment/shared';
+import { countItem, GAME_CONTENT, offeredListings, sellPrice, shopCurrencyLabel, shopCurrencyOf, type InventoryState, type ItemDefinition, type SelfState, type ShopDefinition } from '@containment/shared';
 import type { GameConnection } from '../net/gameConnection.ts';
 import { itemIconUrl } from '../render/items/itemSprites.ts';
 import type { WorldState } from '../state/worldState.ts';
@@ -112,7 +112,7 @@ export class ShopWindow implements InventoryMode {
 
   private renderStock(shop: ShopDefinition, scrip: number, self: SelfState): HTMLElement {
     return h('ul', { className: 'shop-stock' },
-      ...shop.listings.map((listing) => {
+      ...offeredListings(shop, self.quests).map((listing) => {
         const item = GAME_CONTENT.items.get(listing.itemId);
         if (!item) return null;
         const buy = (quantity: number) => this.connection.send({ type: 'shop.buy', itemId: item.id, quantity });

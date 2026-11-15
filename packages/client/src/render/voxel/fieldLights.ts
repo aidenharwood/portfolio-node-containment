@@ -1,4 +1,4 @@
-import { Color, DataTexture, MathUtils, NearestFilter, RGBAFormat, UnsignedByteType, Vector2, Vector3, Vector4, type Material, type Matrix4 } from 'three';
+import { Color, DataTexture, MathUtils, NearestFilter, RGBAFormat, UnsignedByteType, Vector2, Vector3, Vector4, type Material, type Matrix4, type Texture } from 'three';
 
 export const FIELD_LIGHT_LIMIT = 96;
 const GRID_CELL = 2;
@@ -8,6 +8,7 @@ export const FIELD_LIGHTS_PER_CELL = CELL_TEXELS * 4;
 const EMPTY_SLOT = 255;
 const LIT_KNEE = 0.5;
 const LIT_CEILING = 0.85;
+const SKY_MASK_TEXELS = 128;
 
 export interface FieldLight {
   readonly position: Vector3;
@@ -28,7 +29,32 @@ const uniforms = {
   fieldLightGrid: { value: gridTexture },
   fieldLightGridOrigin: { value: new Vector2() },
   fieldLightGridEnabled: { value: 0 },
+  fieldGroundFog: { value: 0 },
+  fieldMistColor: { value: new Color() },
+  fieldTime: { value: 0 },
+  fieldWetness: { value: 0 },
+  fieldSkyMask: { value: null as Texture | null },
+  fieldSkyOrigin: { value: new Vector2() },
 };
+
+export interface FieldAtmosphere {
+  readonly groundFog: number;
+  readonly mistColor: Color;
+  readonly wetness: number;
+  readonly time: number;
+}
+
+export function setFieldAtmosphere(atmosphere: FieldAtmosphere): void {
+  uniforms.fieldGroundFog.value = atmosphere.groundFog;
+  uniforms.fieldMistColor.value.copy(atmosphere.mistColor);
+  uniforms.fieldWetness.value = atmosphere.wetness;
+  uniforms.fieldTime.value = atmosphere.time;
+}
+
+export function setFieldSkyMask(texture: Texture, originX: number, originZ: number): void {
+  uniforms.fieldSkyMask.value = texture;
+  uniforms.fieldSkyOrigin.value.set(originX, originZ);
+}
 
 export const fieldLightFootprint = (light: FieldLight): number => light.reach;
 
@@ -98,8 +124,8 @@ export function receiveFieldLights<T extends Material>(material: T): T {
   material.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, uniforms);
     shader.vertexShader = shader.vertexShader
-      .replace('#include <common>', '#include <common>\nvarying vec2 vFieldWorld;')
-      .replace('#include <project_vertex>', '#include <project_vertex>\nvFieldWorld = ( modelMatrix * vec4( transformed, 1.0 ) ).xz;');
+      .replace('#include <common>', '#include <common>\nvarying vec3 vFieldWorld;\nvarying float vFieldUp;')
+      .replace('#include <project_vertex>', '#include <project_vertex>\nvFieldWorld = ( modelMatrix * vec4( transformed, 1.0 ) ).xyz;\nvFieldUp = normalize( mat3( modelMatrix ) * objectNormal ).y;');
     shader.fragmentShader = shader.fragmentShader
       .replace(
         '#include <lights_pars_begin>',
@@ -113,12 +139,37 @@ uniform vec3 fieldLightColors[ FIELD_LIGHT_LIMIT ];
 uniform sampler2D fieldLightGrid;
 uniform vec2 fieldLightGridOrigin;
 uniform int fieldLightGridEnabled;
-varying vec2 vFieldWorld;`,
+uniform float fieldGroundFog;
+uniform vec3 fieldMistColor;
+uniform float fieldTime;
+uniform float fieldWetness;
+uniform sampler2D fieldSkyMask;
+uniform vec2 fieldSkyOrigin;
+varying vec3 vFieldWorld;
+varying float vFieldUp;
+float fieldHash( vec2 p ) {
+	return fract( sin( dot( p, vec2( 127.1, 311.7 ) ) ) * 43758.5453 );
+}
+float fieldNoise( vec2 p ) {
+	vec2 i = floor( p );
+	vec2 f = fract( p );
+	vec2 u = f * f * ( 3.0 - 2.0 * f );
+	return mix( mix( fieldHash( i ), fieldHash( i + vec2( 1.0, 0.0 ) ), u.x ), mix( fieldHash( i + vec2( 0.0, 1.0 ) ), fieldHash( i + vec2( 1.0, 1.0 ) ), u.x ), u.y );
+}
+float fieldOpenSky( vec2 xz ) {
+	ivec2 texel = ivec2( floor( xz + 0.5 ) - fieldSkyOrigin );
+	if ( texel.x < 0 || texel.y < 0 || texel.x >= ${SKY_MASK_TEXELS} || texel.y >= ${SKY_MASK_TEXELS} ) return 0.0;
+	return texelFetch( fieldSkyMask, texel, 0 ).r;
+}`,
       )
       .replace(
         '#include <lights_fragment_begin>',
         `#include <lights_fragment_begin>
-ivec2 fieldCell = ivec2( floor( ( vFieldWorld - fieldLightGridOrigin ) / FIELD_GRID_CELL ) );
+vec3 fieldScatter = vec3( 0.0 );
+vec3 fieldSheen = vec3( 0.0 );
+vec3 fieldAlong = normalize( geometryViewDir - geometryNormal * dot( geometryViewDir, geometryNormal ) + vec3( 1e-4 ) );
+vec3 fieldWetNormal = normalize( geometryNormal + fieldAlong * ( fieldHash( floor( vFieldWorld.xz * 8.0 ) ) - 0.5 ) * 0.6 );
+ivec2 fieldCell = ivec2( floor( ( vFieldWorld.xz - fieldLightGridOrigin ) / FIELD_GRID_CELL ) );
 if ( fieldLightGridEnabled == 1 && fieldCell.x >= 0 && fieldCell.y >= 0 && fieldCell.x < FIELD_GRID_CELLS && fieldCell.y < FIELD_GRID_CELLS ) {
 	bool fieldDone = false;
 	for ( int fieldTexel = 0; fieldTexel < FIELD_CELL_TEXELS; fieldTexel ++ ) {
@@ -140,6 +191,8 @@ if ( fieldLightGridEnabled == 1 && fieldCell.x >= 0 && fieldCell.y >= 0 && field
 			float fieldFalloff = 1.0 - fieldRatio * fieldRatio;
 			fieldIncident.color = fieldLightColors[ fieldIndex ] * ( fieldFalloff * fieldFalloff );
 			fieldIncident.visible = true;
+			fieldScatter += fieldIncident.color;
+			fieldSheen += fieldIncident.color * pow( max( dot( fieldWetNormal, normalize( fieldIncident.direction + geometryViewDir ) ), 0.0 ), 90.0 );
 			RE_Direct( fieldIncident, geometryPosition, geometryNormal, geometryViewDir, geometryClearcoatNormal, material, reflectedLight );
 		}
 	}
@@ -156,10 +209,23 @@ if ( litPeak > ${LIT_KNEE.toFixed(3)} ) {
 	float litScale = litShoulder / litPeak;
 	reflectedLight.directDiffuse *= litScale;
 	reflectedLight.indirectDiffuse *= litScale;
+}
+if ( fieldWetness > 0.0 && vFieldUp > 0.9 && vFieldWorld.y < 0.08 ) {
+	float fieldPuddle = smoothstep( 0.45, 0.75, fieldNoise( vFieldWorld.xz * 0.9 ) );
+	float fieldWet = fieldWetness * fieldOpenSky( vFieldWorld.xz );
+	reflectedLight.directDiffuse *= 1.0 - 0.3 * fieldWet;
+	reflectedLight.indirectDiffuse *= 1.0 - 0.3 * fieldWet;
+	reflectedLight.directDiffuse += fieldSheen * 0.08 * fieldWet * mix( 0.08, 1.0, fieldPuddle );
 }`,
+      )
+      .replace(
+        '#include <fog_fragment>',
+        `float fieldLow = fieldGroundFog * exp( -1.4 * max( vFieldWorld.y, 0.0 ) ) * ( 0.25 + 0.75 * smoothstep( 0.3, 0.8, fieldNoise( vFieldWorld.xz * 0.22 + fieldTime * vec2( 0.05, 0.03 ) ) ) );
+gl_FragColor.rgb = mix( gl_FragColor.rgb, fieldMistColor + fieldScatter * 0.02, clamp( fieldLow, 0.0, 1.0 ) );
+#include <fog_fragment>`,
       );
   };
-  material.customProgramCacheKey = () => `field-light-point-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}-lit-${LIT_KNEE}-${LIT_CEILING}`;
+  material.customProgramCacheKey = () => `field-light-point-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}-lit-${LIT_KNEE}-${LIT_CEILING}-atmosphere-${SKY_MASK_TEXELS}`;
   return material;
 }
 

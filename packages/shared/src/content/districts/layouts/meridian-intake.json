@@ -5,7 +5,7 @@
   "tier": 6,
   "region": "low-ward",
   "condition": "pristine",
-  "ambience": { "darkness": 0.55, "tint": "#2a3034", "fog": "#14181a" },
+  "ambience": { "darkness": 0.62, "tint": "#22303a", "fog": "#0c141a", "weather": ["dust"], "haze": 1 },
   "size": { "width": 64, "height": 48 },
   "steps": [
     { "kind": "room", "id": "lift-lobby", "rect": { "x": 27, "y": 2, "width": 10, "height": 7 }, "floor": "plating", "shape": "rect" },
@@ -103,7 +103,18 @@
     { "id": "mi-moth-c", "creature": "moth-lantern", "at": { "room": "ward", "dx": 5, "dy": 6 } },
     { "id": "mi-hound-b", "creature": "glass-hound", "at": { "room": "lab-a", "dx": 6, "dy": 9 } }
   ],
-  "lights": [],
+  "lights": [
+    { "at": { "room": "lift-lobby", "dx": 5, "dy": 3 }, "radius": 4, "color": "#d8ecff", "intensity": 0.55 },
+    { "at": { "room": "processing", "dx": 5, "dy": 6 }, "radius": 5, "color": "#d8ecff", "intensity": 0.6 },
+    { "at": { "room": "processing", "dx": 14, "dy": 6 }, "radius": 5, "color": "#d8ecff", "intensity": 0.6 },
+    { "at": { "room": "processing", "dx": 23, "dy": 6 }, "radius": 5, "color": "#d8ecff", "intensity": 0.6 },
+    { "at": { "room": "lab-a", "dx": 6, "dy": 5 }, "radius": 5, "color": "#9ff0ff", "intensity": 0.6 },
+    { "at": { "room": "ward", "dx": 6, "dy": 5 }, "radius": 5, "color": "#bfefff", "intensity": 0.5 },
+    { "at": { "room": "amber-cells", "dx": 6, "dy": 6 }, "radius": 5, "color": "#ffb030", "intensity": 0.75 },
+    { "at": { "room": "amber-cells", "dx": 20, "dy": 6 }, "radius": 5, "color": "#ffb030", "intensity": 0.75 },
+    { "at": { "room": "amber-cells", "dx": 34, "dy": 6 }, "radius": 5, "color": "#ffb030", "intensity": 0.75 },
+    { "at": { "room": "lower-lift", "dx": 4, "dy": 3 }, "radius": 4, "color": "#ffb030", "intensity": 0.5 }
+  ],
   "decals": [
     { "kind": "lane-paint", "pattern": "border", "tint": "#e8a21c", "at": { "room": "amber-cells", "dx": 1, "dy": 1 }, "width": 38, "height": 10 },
     { "kind": "wear", "at": { "room": "lift-lobby", "dx": 2, "dy": 2 }, "width": 6, "height": 3 }

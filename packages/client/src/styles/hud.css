@@ -18,6 +18,13 @@
   mix-blend-mode: multiply;
 }
 
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.38) 100%);
+}
+
 .hud-hover {
   position: absolute;
   top: 12px;
@@ -3824,4 +3831,127 @@
 .salvage-guide-track.tracking {
   color: var(--color-gold);
   border-color: var(--color-gold);
+}
+
+.hud-boosts {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 6px);
+  max-width: 100%;
+  display: flex;
+  flex-wrap: wrap-reverse;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.hud-boosts[hidden] {
+  display: none;
+}
+
+.boost-chip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 3px 8px 5px 4px;
+  background: rgba(6, 14, 18, 0.78);
+  border: 1px solid rgba(124, 242, 154, 0.45);
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+  cursor: default;
+  pointer-events: auto;
+}
+
+.boost-chip[data-state='ending'] {
+  border-color: var(--color-warning);
+  animation: boost-ending 1s ease-in-out infinite;
+}
+
+.boost-chip[data-state='superseded'] {
+  opacity: 0.55;
+  border-color: var(--color-line);
+}
+
+@keyframes boost-ending {
+  50% {
+    background: rgba(255, 179, 71, 0.22);
+  }
+}
+
+.boost-icon {
+  width: 26px;
+  height: 26px;
+  image-rendering: pixelated;
+  flex: none;
+}
+
+.boost-body {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 8px;
+  align-items: baseline;
+}
+
+.boost-stats {
+  display: flex;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--color-success);
+  white-space: nowrap;
+}
+
+.boost-stat.superseded {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+.boost-timer {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.boost-chip[data-state='ending'] .boost-timer {
+  color: var(--color-warning);
+}
+
+.boost-track {
+  grid-column: 1 / -1;
+  height: 2px;
+  margin-top: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.boost-sweep {
+  display: block;
+  height: 100%;
+  background: var(--color-success);
+  transform-origin: left center;
+}
+
+.boost-chip[data-state='ending'] .boost-sweep {
+  background: var(--color-warning);
+}
+
+.tooltip-boost {
+  color: var(--color-success);
+  font-size: 12px;
+}
+
+.dossier-boost {
+  margin-left: 4px;
+  color: var(--color-success);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boost-chip[data-state='ending'] {
+    animation: none;
+  }
+}
+
+.boost-chip[data-state='superseded'] .boost-stat.superseded {
+  opacity: 1;
 }
