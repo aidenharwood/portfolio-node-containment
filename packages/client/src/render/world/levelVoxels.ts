@@ -76,6 +76,9 @@ const COLORS = {
   asphaltLine: 0xd8c27a,
   paving: 0x434548,
   pavingJoint: 0x2c2e31,
+  kerb: 0x66655f,
+  kerbTop: 0x7c7a72,
+  roofTray: 0x24272a,
   waterBed: 0x16262a,
   rock: 0x5d5a55,
   rockDark: 0x45423e,
@@ -98,7 +101,7 @@ type Axis = 'x' | 'y';
 const TUNNEL_DEPTH = R / 2;
 const TUNNEL_HEIGHT = 11;
 
-type Side = 'north' | 'south' | 'east' | 'west';
+export type Side = 'north' | 'south' | 'east' | 'west';
 
 const isWallKind = (kind: TileKindId): boolean => TILE_KINDS[kind].structure === 'wall';
 
@@ -126,7 +129,7 @@ export function paintTileRows(volume: DenseVolume, layout: TileLayout, region: T
       else if (kind === 'barrier') paintBarrier(volume, layout, tx, ty);
       else if (kind === 'glass') paintGlass(volume, tx, ty);
       else if (kind === 'track') paintTrack(volume, trackAxis(layout, tx, ty), tx, ty);
-      else paintFloor(volume, kind, tx, ty, kind === 'door' ? doorAxis(layout, tx, ty) : 'x', decals?.get(tileKey({ x: tx, y: ty })), seamsOf(layout, kind, tx, ty), blendNeighborsOf(layout, kind, tx, ty), wallsBeside(layout, tx, ty));
+      else paintFloor(volume, kind, tx, ty, kind === 'door' ? doorAxis(layout, tx, ty) : 'x', decals?.get(tileKey({ x: tx, y: ty })), seamsOf(layout, kind, tx, ty), blendNeighborsOf(layout, kind, tx, ty), wallsBeside(layout, tx, ty), kerbsOf(layout, kind, tx, ty));
       if (kind === 'door') paintLintel(volume, layout, tx, ty);
     }
   }
@@ -217,6 +220,13 @@ function onSeam(seams: Seams, lx: number, lz: number): boolean {
   return (seams.west && lx === 0) || (seams.east && lx === R - 1) || (seams.north && lz === 0) || (seams.south && lz === R - 1);
 }
 
+function kerbsOf(layout: TileLayout, kind: TileKindId, tx: number, ty: number): Seams | null {
+  if (kind !== 'paving') return null;
+  const road = (x: number, y: number): boolean => layout.tileAt({ x, y }) === 'asphalt';
+  const kerbs = { north: road(tx, ty - 1), south: road(tx, ty + 1), east: road(tx + 1, ty), west: road(tx - 1, ty) };
+  return kerbs.north || kerbs.south || kerbs.east || kerbs.west ? kerbs : null;
+}
+
 function wallsBeside(layout: TileLayout, tx: number, ty: number): Seams | null {
   const walled = (x: number, y: number): boolean => isWallKind(layout.tileAt({ x, y }));
   const walls = { north: walled(tx, ty - 1), south: walled(tx, ty + 1), east: walled(tx + 1, ty), west: walled(tx - 1, ty) };
@@ -251,7 +261,7 @@ function weathered(color: number, kind: TileKindId, vx: number, vz: number, lx: 
   return shaded;
 }
 
-function paintFloor(volume: DenseVolume, kind: TileKindId, tx: number, ty: number, axis: Axis, cells?: readonly DecalCell[], seams?: Seams | null, blendNeighbors: readonly BlendNeighbor[] = [], walls: Seams | null = null): void {
+function paintFloor(volume: DenseVolume, kind: TileKindId, tx: number, ty: number, axis: Axis, cells?: readonly DecalCell[], seams?: Seams | null, blendNeighbors: readonly BlendNeighbor[] = [], walls: Seams | null = null, kerbs: Seams | null = null): void {
   const tile: FloorTile = { tx, ty, tone: noise3(tx, ty, 0, 11), axis };
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
@@ -272,6 +282,12 @@ function paintFloor(volume: DenseVolume, kind: TileKindId, tx: number, ty: numbe
       const surface = blend && drawn.kind === VOXEL_SOLID ? { color: mix(drawn.color, blend.tint, blend.weight), kind: drawn.kind } : drawn;
       if (seams && onSeam(seams, lx, lz)) {
         volume.set(vx, FLOOR, vz, jitter(COLORS.threshold, 0.02, tile.tone));
+        continue;
+      }
+      if (kerbs && onSeam(kerbs, lx, lz)) {
+        const grain = noise3(vx, FLOOR, vz, 241);
+        volume.set(vx, FLOOR, vz, jitter(COLORS.kerb, 0.03, grain));
+        volume.set(vx, FLOOR + 1, vz, jitter(COLORS.kerbTop, 0.03, grain));
         continue;
       }
       const decal = cells && kind !== 'door' ? decalColor(cells, lx, lz, surface.color, noise3(vx, FLOOR, vz, 3)) : null;
@@ -400,9 +416,12 @@ function floorVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: nu
       return solid(jitter(wear > 0.72 ? COLORS.asphaltWorn : COLORS.asphalt, 0.015, noise3(vx, vz, 0, 89)));
     }
     case 'paving': {
-      if (lx % 4 === 0 || lz === 0) return solid(COLORS.pavingJoint);
-      const slab = noise3(tile.tx * 2 + Math.floor(lx / 4), tile.ty, 0, 233);
-      return solid(jitter(slab > 0.86 ? darken(COLORS.paving, 0.18) : COLORS.paving, 0.02, noise3(vx, vz, 0, 239)));
+      const course = Math.floor(vz / 4);
+      const shifted = vx + (even(course) ? 0 : 3);
+      if (shifted % 6 === 0 || vz % 4 === 0) return solid(COLORS.pavingJoint);
+      const slab = noise3(Math.floor(shifted / 6), course, 0, 233);
+      const tone = slab > 0.86 ? darken(COLORS.paving, 0.16) : slab < 0.2 ? lighten(COLORS.paving, 0.07) : jitter(COLORS.paving, 0.05, slab);
+      return solid(jitter(tone, 0.015, noise3(vx, vz, 0, 239)));
     }
     case 'hazard':
       return solid(even(Math.floor((vx + vz) / 4)) ? COLORS.hazardYellow : COLORS.hazardBlack);
@@ -475,10 +494,14 @@ function facesOutdoors(layout: TileLayout, tx: number, ty: number, side: Side): 
 
 const WINDOW_GLOWS = [FACADE.litWindow, FACADE.litWindow, FACADE.litWindow, FACADE.litWindow, 0x6ab8ff, 0xff4fa8];
 
+export function litWindowGlow(material: WallMaterialId, tx: number, ty: number, side: Side): number | null {
+  if (material === 'wall' || (tx + ty) % 2 !== 0 || noise3(tx, ty, SIDE_SALT[side], 211) <= 0.4) return null;
+  return WINDOW_GLOWS[Math.floor(noise3(tx, ty, SIDE_SALT[side], 307) * WINDOW_GLOWS.length)] ?? FACADE.litWindow;
+}
+
 function windowAt(material: WallMaterialId, tx: number, ty: number, side: Side, h: number, u: number): FaceVoxel | null {
   const bay = (tx + ty) % 2 === 0;
   if (!bay) return null;
-  const lit = noise3(tx, ty, SIDE_SALT[side], 211) > 0.4;
   if (material === 'wall') {
     if (h >= 9 && h <= 10 && u >= 1 && u <= 6) return { color: FACADE.slit, kind: VOXEL_EMISSIVE, recessed: true };
     return null;
@@ -486,8 +509,8 @@ function windowAt(material: WallMaterialId, tx: number, ty: number, side: Side, 
   if (h === 5 && u >= 1 && u <= 6) return { color: FACADE.sill };
   if (h < 6 || h > 11 || u < 2 || u > 5) return null;
   if (u === 2 || u === 5 || h === 11) return { color: darken(MATERIAL[material].joint, 0.3), recessed: true };
-  if (!lit) return { color: FACADE.darkWindow, recessed: true };
-  const glow = WINDOW_GLOWS[Math.floor(noise3(tx, ty, SIDE_SALT[side], 307) * WINDOW_GLOWS.length)] ?? FACADE.litWindow;
+  const glow = litWindowGlow(material, tx, ty, side);
+  if (glow === null) return { color: FACADE.darkWindow, recessed: true };
   return { color: h === 8 ? darken(glow, 0.35) : glow, kind: VOXEL_EMISSIVE, recessed: true };
 }
 
@@ -549,7 +572,8 @@ function paintWall(volume: DenseVolume, layout: TileLayout, tx: number, ty: numb
         const facility = material === 'wall' && !(outer && outdoors.has(outer.side));
         if (top) {
           const cap = facility ? COLORS.wallCap : palette.cap;
-          volume.set(vx, vy, vz, outer ? lighten(cap, 0.12) : jitter(cap, 0.02, grain));
+          if (outer) volume.set(vx, vy, vz, outer.u % 4 === 0 ? darken(cap, 0.22) : jitter(lighten(cap, 0.06), 0.02, grain));
+          else volume.set(vx, vy - 1, vz, jitter(mix(darken(cap, 0.5), COLORS.roofTray, 0.6), 0.04, grain));
           continue;
         }
         if (!outer) {

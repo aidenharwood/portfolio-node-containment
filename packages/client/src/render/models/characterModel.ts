@@ -274,6 +274,12 @@ function buildLeg(build: Build, visuals: GearVisuals, side: -1 | 1): VoxelModel 
     model.fill(footInner, 0, -1, footOuter, 4, 1, (_x, y) => (y === 0 ? soleColor : jitter(bootColor, 0.03, y / 4)));
     model.fill(footInner, 0, 2, footOuter, 1, 2, (_x, y) => (y === 0 ? soleColor : bootColor));
     model.fill(footInner, 4, -1, footOuter, 4, 1, lighten(bootColor, 0.12));
+    if (feet.motif === 'bulwark') {
+      const steel = lighten(bootColor, 0.2);
+      model.fill(footInner, 0, 3, footOuter, 1, 3, (_x, y) => (y === 0 ? soleColor : steel));
+      model.paintExisting(footInner, 1, 2, footOuter, 1, 2, steel);
+      model.fill(footInner, 2, 2, footOuter, 5, 2, (x, y, z) => (y === 5 ? darken(steel, 0.3) : jitter(steel, 0.03, noise3(x, y, z, 43))));
+    }
   } else {
     model.fill(footInner, 0, -1, footOuter, 3, 1, (_x, y) => (y === 0 ? darken(BARE_FEET, 0.3) : BARE_FEET));
     model.fill(footInner, 0, 2, footOuter, 0, 2, BARE_FEET);
@@ -285,12 +291,25 @@ function buildLeg(build: Build, visuals: GearVisuals, side: -1 | 1): VoxelModel 
     if (legs.motif === 'skirmisher') {
       model.fill(outside, 8, -1, outside, 11, 1, trim).set(outside, 10, 2, darken(trim, 0.2));
       model.fill(inner, 11, -1, outer, 11, 1, darken(trim, 0.15));
+      if (side > 0) {
+        const leather = darken(trim, 0.25);
+        model.fill(outside + 1, 7, -1, outside + 1, 10, 0, (_x, y) => (y === 10 ? lighten(leather, 0.15) : leather));
+        model.fill(outside + 1, 11, -1, outside + 1, 12, -1, 0x2a2d31);
+      }
     } else if (legs.motif === 'warden') {
-      model.fill(inner, 6, 2, outer, 7, 2, trim);
-      model.paintExisting(inner, 4, -1, outer, 4, 1, trim);
+      const split = side < 0 ? outer : inner;
+      const panel = (x: number, y: number, z: number) => (y === 5 || x === split ? trim : jitter(darken(legColor, 0.08), 0.03, noise3(x, y, z, 23)));
+      model.fill(inner, 5, 2, outer, 12, 2, panel);
+      model.fill(inner, 5, -2, outer, 12, -2, panel);
+      model.fill(outside, 5, -1, outside, 8, 1, panel);
     } else {
-      model.fill(inner, 6, 2, outer, 7, 2, trim);
-      model.fill(outside, 8, -1, outside, 10, 0, darken(legColor, 0.15));
+      const plate = lighten(legColor, 0.12);
+      const edge = darken(plate, 0.3);
+      const knee = Math.round((inner + outer) / 2);
+      model.fill(inner, 10, 2, outer, 12, 2, (x, y, z) => (y === 10 ? edge : jitter(plate, 0.03, noise3(x, y, z, 47))));
+      model.fill(outside, 9, -1, outside, 12, 2, (x, y, z) => (y === 9 ? edge : jitter(plate, 0.03, noise3(x, y, z, 47))));
+      model.fill(inner, 6, 2, outer, 8, 2, (_x, y) => (y === 6 ? darken(trim, 0.2) : trim));
+      model.set(knee, 7, 3, lighten(trim, 0.25));
     }
   }
   if (feet?.motif === 'skirmisher') model.paintExisting(footInner, 2, -1, footOuter, 2, 2, colorOf(feet.secondary, darken(bootColor, 0.3)));
@@ -497,8 +516,17 @@ function buildArm(appearance: CharacterAppearance, build: Build, visuals: GearVi
     .fill(x0, 12, -1, x1, 13, 0, (x, y, z) => jitter(handColor, 0.02, noise3(x, y, z)));
   if (gloves) model.fill(x0, 14, -1, x1, 15, 0, colorOf(gloves.secondary, darken(handColor, 0.3)));
   if (gloves?.motif === 'skirmisher') model.fill(x0, 12, -1, x1, 12, 0, (x, y, z) => jitter(hex(appearance.skinTone), 0.02, noise3(x, y, z)));
-  if (gloves?.motif === 'bulwark') model.fill(x0, 13, -1, x1, 13, 0, lighten(handColor, 0.18));
-  if (gloves?.motif === 'warden' && gloves.emissive) model.set(side > 0 ? x1 : x0, 13, 0, hex(gloves.emissive), VOXEL_EMISSIVE);
+  if (gloves?.motif === 'bulwark') {
+    const plate = lighten(handColor, 0.18);
+    const outer = side > 0 ? x1 + 1 : x0 - 1;
+    model.fill(x0, 13, -1, x1, 13, 0, plate);
+    model.fill(Math.min(x0, outer), 14, -2, Math.max(x1, outer), 16, 1, (x, y, z) => (y === 14 ? darken(plate, 0.3) : x === outer || z === -2 || z === 1 ? jitter(plate, 0.03, noise3(x, y, z, 45)) : null));
+  }
+  if (gloves?.motif === 'warden') {
+    const cuff = colorOf(gloves.secondary, darken(handColor, 0.3));
+    model.fill(x0 - 1, 14, -2, x1 + 1, 14, 1, (x, _y, z) => (x < x0 || x > x1 || z < -1 || z > 0 ? cuff : null));
+    if (gloves.emissive) model.set(side > 0 ? x1 : x0, 13, 0, hex(gloves.emissive), VOXEL_EMISSIVE);
+  }
   if (torso?.shape === 'coat') model.paintExisting(x0, 14, -1, x1, 14, 0, colorOf(torso.secondary, 0x9fb3bd));
   if (torso?.shape === 'plate') {
     const plate = colorOf(torso.primary, 0x3a3f45);
@@ -522,7 +550,7 @@ const WEAPON_SPAN: Readonly<Record<GearShape<'primary'>, readonly [grip: number,
   rifle: [-6, 17, 13],
   scattergun: [-5, 8, 13],
   focus: [1, 10, 12],
-  resonator: [-4, 16, 12],
+  resonator: [-2, 16, 12],
 };
 
 const RANGED_SHAPES: readonly GearShape<'primary'>[] = ['pistol', 'carbine', 'rifle', 'scattergun'];
@@ -552,9 +580,11 @@ function addWeaponMotif(model: VoxelModel, gear: WornGear<'primary'>, handX: num
 function buildHeld(gear: WornGear<'primary'>, handX: number): VoxelModel {
   const model = new VoxelModel();
   HELD_GEAR[gear.shape](model, gear, handX);
-  addWeaponMotif(model, gear, handX);
+  addWeaponMotif(model, gear, gear.shape === 'resonator' ? RESONATOR_AXIS : handX);
   return model;
 }
+
+const RESONATOR_AXIS = 2;
 
 type HeldRenderer = (model: VoxelModel, gear: GearVisual, handX: number) => void;
 
@@ -567,31 +597,32 @@ const HELD_GEAR: Readonly<Record<GearShape<'primary' | 'secondary'>, HeldRendere
     model.fill(handX, 12, 1, handX, 12, 3, (_x, _y, z) => (z === 2 ? darken(grip, 0.3) : grip));
     model.fill(handX - 2, 12, 4, handX + 2, 12, 4, frame).set(handX, 13, 4, lighten(frame, 0.15));
     for (const x of [handX - 2, handX + 2]) model.fill(x, 12, 5, x, 12, 8, (_x, _y, z) => (z === 8 ? lighten(frame, 0.25) : frame));
-    model.fill(handX, 12, 6, handX, 12, 9, glow, kind);
-    model.fill(handX - 1, 12, 7, handX + 1, 12, 8, glow, kind);
-    model.fill(handX, 11, 7, handX, 13, 8, glow, kind);
-    model.set(handX, 12, 10, lighten(glow, 0.35), kind);
+    model.fill(handX, 12, 5, handX, 12, 10, glow, kind);
+    const bulge = lighten(glow, 0.35);
+    model.set(handX - 1, 12, 7, bulge, kind).set(handX + 1, 12, 7, bulge, kind).set(handX, 13, 7, bulge, kind).set(handX, 13, 8, bulge, kind);
   },
   resonator: (model, gear, handX) => {
     const frame = hex(gear.primary);
     const shaft = hex(gear.secondary);
     const glow = gear.emissive ? hex(gear.emissive) : lighten(frame, 0.45);
     const kind = gear.emissive ? VOXEL_EMISSIVE : undefined;
-    model.fill(handX, 12, -4, handX, 12, 5, (_x, _y, z) => (z === -4 ? frame : z === 0 || z === 3 ? darken(shaft, 0.35) : shaft));
-    model.fill(handX - 1, 11, 6, handX + 1, 13, 6, frame);
-    model.fill(handX, 12, 7, handX, 12, 12, glow, kind);
+    const cx = RESONATOR_AXIS;
+    model.fill(4 - handX, 12, 0, handX, 12, 0, (x) => (x === handX || x === 4 - handX ? darken(shaft, 0.35) : shaft));
+    model.fill(cx, 12, -2, cx, 12, 5, (_x, _y, z) => (z === -2 ? frame : z === 3 ? darken(shaft, 0.35) : shaft));
+    model.fill(cx - 1, 11, 6, cx + 1, 13, 6, frame);
+    model.fill(cx, 12, 7, cx, 12, 12, glow, kind);
     const ring = (z: number, radius: number, color: number) =>
-      model.fill(handX - radius, 12 - radius, z, handX + radius, 12 + radius, z, (x, y) => {
-        const dx = Math.abs(x - handX);
+      model.fill(cx - radius, 12 - radius, z, cx + radius, 12 + radius, z, (x, y) => {
+        const dx = Math.abs(x - cx);
         const dy = Math.abs(y - 12);
         return Math.max(dx, dy) === radius && !(dx === radius && dy === radius && radius > 1) ? color : null;
       });
     ring(8, 2, frame);
     ring(10, 1, lighten(frame, 0.1));
-    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) model.set(handX + dx, 12 + dy, 12, lighten(frame, 0.2));
-    model.set(handX, 12, 14, glow, kind);
-    for (const [dx, dy] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]] as const) model.set(handX + dx, 12 + dy, 15, glow, kind);
-    model.set(handX, 12, 16, lighten(glow, 0.35), kind);
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) model.set(cx + dx, 12 + dy, 12, lighten(frame, 0.2));
+    model.set(cx, 12, 14, glow, kind);
+    for (const [dx, dy] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]] as const) model.set(cx + dx, 12 + dy, 15, glow, kind);
+    model.set(cx, 12, 16, lighten(glow, 0.35), kind);
   },
   baton: (model, gear, handX) => {
     model.fill(handX, 12, 1, handX, 12, 7, hex(gear.primary));
@@ -715,6 +746,7 @@ const HEAD_GEAR: Readonly<Record<GearShape<'head'>, FaceRenderer>> = {
   hood: (model, gear) => {
     hoodShell(model, gear, 4);
     model.fill(-1, 33, -4, 1, 33, -1, darken(hex(gear.primary), 0.08));
+    model.fill(-3, 31, 5, 3, 31, 6, (_x, _y, z) => (z === 6 ? hex(gear.secondary) : darken(hex(gear.primary), 0.15)));
     if (gear.emissive) model.fill(-3, 30, 5, 3, 30, 5, (x) => (x % 3 === 0 ? hex(gear.emissive ?? gear.secondary) : null), VOXEL_EMISSIVE);
   },
   cowl: (model, gear) => {
@@ -724,7 +756,8 @@ const HEAD_GEAR: Readonly<Record<GearShape<'head'>, FaceRenderer>> = {
     model.fill(-3, 24, 4, 3, 26, 4, (x, y) => (y === 26 && Math.abs(x) === 3 ? null : jitter(mask, 0.03, noise3(x, y, 4, 73))));
     model.fill(-3, 31, 5, 3, 32, 5, darken(cloth, 0.1));
     model.fill(-2, 33, -3, 2, 33, 1, darken(cloth, 0.05));
-    model.set(0, 34, -1, darken(cloth, 0.05));
+    model.fill(-1, 34, -2, 1, 34, 0, darken(cloth, 0.05));
+    model.set(0, 35, -3, darken(cloth, 0.08)).set(1, 35, -4, darken(cloth, 0.1)).set(1, 36, -5, darken(cloth, 0.12));
     if (gear.emissive) model.set(0, 31, 6, hex(gear.emissive), VOXEL_EMISSIVE).set(-1, 30, 5, hex(gear.emissive), VOXEL_EMISSIVE).set(1, 30, 5, hex(gear.emissive), VOXEL_EMISSIVE);
   },
   helmet: (model, gear) => {

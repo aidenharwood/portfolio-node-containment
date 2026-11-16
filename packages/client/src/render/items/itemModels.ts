@@ -167,6 +167,7 @@ const gloves: ItemBuilder = ({ primary, secondary, emissive, motif }) => {
     for (let finger = 0; finger < 4; finger++) model.fill(offset + finger, 7, -1, offset + finger, fingerTop - (finger === 0 ? 2 : 0), 0, primary);
     if (motif === 'bulwark') {
       model.fill(offset - 1, 0, -2, offset + 4, 2, 2, lighten(primary, 0.15));
+      model.fill(offset - 1, 0, -2, offset + 4, 0, 2, secondary);
       model.fill(offset, 6, 2, offset + 3, 6, 2, lighten(primary, 0.25));
     } else if (motif === 'skirmisher') {
       model.fill(offset, 2, -1, offset + 3, 2, 1, secondary).set(offset + 3, 2, 2, 0xb8b0a0);
@@ -285,6 +286,7 @@ const resonator: ItemBuilder = ({ primary, secondary, emissive }) => {
   const model = new VoxelModel();
   const { glow, kind } = psionicGlow(primary, emissive);
   insulatedGrip(model, 11, secondary);
+  model.fill(-3, 5, 0, 3, 5, 0, secondary);
   model.fill(-3, 12, -3, 3, 12, 3, grain(primary));
   model.fill(0, 13, 0, 0, 18, 0, glow, kind);
   hoop(model, 14, 4, primary);
@@ -420,9 +422,9 @@ const carbine: ItemBuilder = ({ primary, secondary, emissive }) => {
   const model = new VoxelModel().fill(-9, 5, -1, 10, 7, 1, grain(primary));
   model.fill(-12, 3, -1, -8, 6, 1, secondary);
   model.fill(-4, 0, -1, -2, 5, 1, secondary);
-  model.fill(-1, 8, 0, 4, 9, 0, darken(primary, 0.4));
+  model.fill(1, 1, -1, 3, 4, 1, darken(secondary, 0.15));
   model.fill(11, 6, 0, 13, 6, 0, darken(primary, 0.5));
-  if (emissive) model.fill(0, 10, 0, 3, 10, 0, emissive, VOXEL_EMISSIVE);
+  if (emissive) model.fill(-6, 7, 2, -4, 7, 2, emissive, VOXEL_EMISSIVE);
   return model;
 };
 
@@ -461,9 +463,11 @@ const rifle: ItemBuilder = ({ primary, secondary, emissive }) => {
   model.fill(-15, 3, -1, -10, 6, 1, secondary);
   model.fill(-5, 0, -1, -3, 4, 1, secondary);
   model.fill(13, 5, 0, 18, 5, 0, darken(primary, 0.5));
-  model.fill(-4, 8, -1, 4, 9, 1, darken(primary, 0.3));
+  model.fill(-5, 8, -1, 6, 9, 1, darken(primary, 0.3));
   model.fill(-2, 7, 0, 1, 7, 0, darken(primary, 0.45));
-  if (emissive) model.fill(5, 8, 0, 5, 9, 0, emissive, VOXEL_EMISSIVE);
+  model.fill(7, 8, 0, 7, 9, 0, emissive ?? lighten(primary, 0.35), emissive ? VOXEL_EMISSIVE : undefined);
+  line(model, [9, 4, 0], [8, 1, 0], darken(primary, 0.4));
+  line(model, [10, 4, 0], [11, 1, 0], darken(primary, 0.4));
   return model;
 };
 

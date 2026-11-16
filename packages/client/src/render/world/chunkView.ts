@@ -19,12 +19,13 @@ import { Box3, Color, Group, Matrix4, Mesh, Quaternion, RingGeometry, Vector3, t
 import type { ActiveZone } from '../../state/worldState.ts';
 import { buildObjectModel, type AnimatedPart } from '../models/objectModels.ts';
 import { hex } from '../voxel/palette.ts';
-import { VOXEL_EMISSIVE } from '../voxel/voxelKinds.ts';
+import { VOXEL_EMISSIVE, type VoxelBounds } from '../voxel/voxelKinds.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 import { mergeVoxelGeometries, type VoxelGeometryPart } from '../voxel/mergeVoxelGeometry.ts';
 import { meshVoxels, type VoxelMeshes } from '../voxel/voxelMesher.ts';
 import { createVoxelObject, type VoxelLayer, type VoxelObjectOptions } from '../voxel/voxelMaterials.ts';
 import { FadeBatch } from './fadeBatch.ts';
+import { createFootprintShadows, type Footprint } from './footprintShadows.ts';
 import { FACING_STEP, type FillLight, type SconceSpot } from './wallLights.ts';
 import { LiquidSurface, WATER_PALETTE } from './liquidSurface.ts';
 import { decalsForLevel } from './floorDecals.ts';
@@ -105,6 +106,7 @@ interface ObjectMeshes {
   readonly base: VoxelMeshes;
   readonly animated: readonly { readonly meshes: VoxelMeshes; readonly spec: AnimatedPart }[];
   readonly heightVoxels: number;
+  readonly footing: VoxelBounds | null;
 }
 
 const OBJECT_MESH_CACHE = new Map<string, ObjectMeshes>();
@@ -115,6 +117,8 @@ SHARED_GEOMETRY.add(BEAM_GEOMETRY);
 const VOXEL_LAYERS: readonly VoxelLayer[] = ['solid', 'emissive', 'glass'];
 const UP = new Vector3(0, 1, 0);
 const MODEL_VARIANTS = 8;
+const SHADOW_MIN_VOXELS = 3;
+const SHADOW_BASE_LAYERS = 4;
 const STRIP_ROWS = 2;
 const BAND_ROWS = 8;
 
@@ -153,9 +157,10 @@ const objectMeshesFor = (model: WorldObjectDefinition['model'], seed: number): O
   if (cached) return cached;
   const parts = buildObjectModel(model, seed);
   const built = {
-    base: shareMeshes(parts.base.mesh(MODEL_VOXEL_SIZE)),
+    base: shareMeshes(parts.base.mesh(MODEL_VOXEL_SIZE, [0, 0, 0], true)),
     animated: parts.animated.map((spec) => ({ meshes: shareMeshes(spec.model.mesh(MODEL_VOXEL_SIZE)), spec })),
     heightVoxels: parts.heightVoxels,
+    footing: parts.base.baseBounds(SHADOW_BASE_LAYERS),
   };
   OBJECT_MESH_CACHE.set(key, built);
   return built;
@@ -184,6 +189,7 @@ export class ChunkView {
   private nextStep = 0;
   private readonly separateObjects: boolean;
   private readonly objectLights = new Map<InstanceId, LightSource[]>();
+  private readonly footprints: Footprint[] = [];
 
   constructor(zone: ActiveZone, region: TileRect, contents: ChunkContents, ringMaterial: Material, options: { readonly separateObjects?: boolean; readonly content?: GameContent } = {}) {
     this.content = options.content ?? GAME_CONTENT;
@@ -196,6 +202,11 @@ export class ChunkView {
     contents.sconces.forEach((spot) => this.steps.push(() => this.addSconce(spot)));
     this.steps.push(() => {
       this.buildFixtures();
+      const shadows = createFootprintShadows(this.footprints);
+      if (shadows) {
+        SHARED_GEOMETRY.add(shadows.geometry);
+        this.root.add(shadows);
+      }
       contents.fills.forEach(({ position, light }, index) => {
         this.lights.push({
           position: new Vector3(position.x, FILL_LIGHT_HEIGHT, position.y),
@@ -342,6 +353,7 @@ export class ChunkView {
     const lightsBefore = this.lights.length;
     this.addObjectLight(definition, placement, origin, parts, `${definition.model}:${seed % MODEL_VARIANTS}`, scale, seed);
     if (this.lights.length > lightsBefore) this.objectLights.set(placement.instanceId, this.lights.slice(lightsBefore));
+    this.addFootprint(definition, parts, placement, origin, scale);
     if (!this.separateObjects && isStaticDecor(definition, parts)) {
       this.addDecor(parts.base, placement, definition, origin, scale);
       return;
@@ -367,6 +379,18 @@ export class ChunkView {
     this.root.add(group, objectiveRing);
     const height = parts.heightVoxels * MODEL_VOXEL_SIZE * scale;
     this.objects.push({ instanceId: placement.instanceId, placement, definition, group, objectiveRing, height, animated, seed });
+  }
+
+  private addFootprint(definition: WorldObjectDefinition, parts: ObjectMeshes, placement: ObjectPlacement, origin: { x: number; z: number }, scale: number): void {
+    const box = parts.footing;
+    if (!box || definition.door || parts.heightVoxels < SHADOW_MIN_VOXELS) return;
+    const yaw = OBJECT_FACING_YAW[placement.facing ?? 'south'];
+    const size = MODEL_VOXEL_SIZE * scale;
+    const centre = new Vector3((box.min[0] + box.max[0]) / 2, 0, (box.min[2] + box.max[2]) / 2).multiplyScalar(size).applyAxisAngle(UP, yaw);
+    const across = (box.max[0] - box.min[0]) * size;
+    const along = (box.max[2] - box.min[2]) * size;
+    const turned = Math.abs(Math.sin(yaw)) > 0.5;
+    this.footprints.push({ x: origin.x + centre.x, z: origin.z + centre.z, width: turned ? along : across, depth: turned ? across : along });
   }
 
   private addObjectLight(definition: WorldObjectDefinition, placement: ObjectPlacement, origin: { x: number; z: number }, parts: ObjectMeshes, cacheKey: string, scale: number, seed: number): void {

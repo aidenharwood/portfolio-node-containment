@@ -11,6 +11,7 @@ export interface MeshOptions {
   readonly voxelSize: number;
   readonly origin: readonly [number, number, number];
   readonly clipBounds?: VoxelBounds;
+  readonly groundY?: number;
 }
 
 type Vector = readonly [number, number, number];
@@ -31,6 +32,7 @@ const FACES: readonly FaceDefinition[] = [
 ];
 
 const AMBIENT_OCCLUSION = [0.5, 0.68, 0.84, 1];
+const EDGE_LIFT = 1.12;
 
 interface FaceProbe {
   readonly normal: Vector;
@@ -38,13 +40,15 @@ interface FaceProbe {
   readonly sideU: readonly Vector[];
   readonly sideV: readonly Vector[];
   readonly diagonal: readonly Vector[];
+  readonly edgeU: readonly Vector[];
+  readonly edgeV: readonly Vector[];
 }
 
 const FACE_PROBES: readonly FaceProbe[] = FACES.map((face) => {
   const uAxis = (face.axis + 1) % 3;
   const vAxis = (face.axis + 2) % 3;
-  const offset = (stepU: number, stepV: number): Vector => {
-    const probe: [number, number, number] = [face.normal[0], face.normal[1], face.normal[2]];
+  const offset = (stepU: number, stepV: number, lift = 1): Vector => {
+    const probe: [number, number, number] = [face.normal[0] * lift, face.normal[1] * lift, face.normal[2] * lift];
     probe[uAxis]! += stepU;
     probe[vAxis]! += stepV;
     return probe;
@@ -56,6 +60,8 @@ const FACE_PROBES: readonly FaceProbe[] = FACES.map((face) => {
     sideU: steps.map(([stepU]) => offset(stepU, 0)),
     sideV: steps.map(([, stepV]) => offset(0, stepV)),
     diagonal: steps.map(([stepU, stepV]) => offset(stepU, stepV)),
+    edgeU: steps.map(([stepU]) => offset(stepU, 0, 0)),
+    edgeV: steps.map(([, stepV]) => offset(0, stepV, 0)),
   };
 });
 
@@ -155,6 +161,7 @@ function shouldEmitFace(kind: number, neighbor: number): boolean {
 }
 
 const occlusion = [3, 3, 3, 3];
+const lift = [1, 1, 1, 1];
 const buffers = { solid: new GeometryBuffer(), emissive: new GeometryBuffer(), glass: new GeometryBuffer() };
 
 export function meshVoxels(source: VoxelSource, bounds: VoxelBounds, options: MeshOptions, cells?: ArrayLike<number>): VoxelMeshes {
@@ -169,7 +176,8 @@ export function meshVoxels(source: VoxelSource, bounds: VoxelBounds, options: Me
     if (clip && (x < clip.min[0] || y < clip.min[1] || z < clip.min[2] || x >= clip.max[0] || y >= clip.max[1] || z >= clip.max[2])) return VOXEL_EMPTY;
     return source.kindAt(x, y, z);
   };
-  const occludedAt = (x: number, y: number, z: number, offset: Vector): number => (occludes(source.kindAt(x + offset[0], y + offset[1], z + offset[2])) ? 1 : 0);
+  const groundY = options.groundY ?? -Infinity;
+  const occludedAt = (x: number, y: number, z: number, offset: Vector): number => (y + offset[1] < groundY || occludes(source.kindAt(x + offset[0], y + offset[1], z + offset[2])) ? 1 : 0);
 
   const emitVoxel = (x: number, y: number, z: number): void => {
         const kind = source.kindAt(x, y, z);
@@ -185,8 +193,10 @@ export function meshVoxels(source: VoxelSource, bounds: VoxelBounds, options: Me
           for (let corner = 0; corner < 4; corner++) {
             if (kind === VOXEL_EMISSIVE) {
               occlusion[corner] = 3;
+              lift[corner] = 1;
               continue;
             }
+            lift[corner] = occludedAt(x, y, z, face.edgeU[corner]!) && occludedAt(x, y, z, face.edgeV[corner]!) ? 1 : EDGE_LIFT;
             const sideU = occludedAt(x, y, z, face.sideU[corner]!);
             const sideV = occludedAt(x, y, z, face.sideV[corner]!);
             occlusion[corner] = sideU && sideV ? 0 : 3 - (sideU + sideV + occludedAt(x, y, z, face.diagonal[corner]!));
@@ -196,7 +206,7 @@ export function meshVoxels(source: VoxelSource, bounds: VoxelBounds, options: Me
             const offset = face.corners[corner]!;
             buffer.positions.push3(origin[0] + (x + offset[0]) * voxelSize, origin[1] + (y + offset[1]) * voxelSize, origin[2] + (z + offset[2]) * voxelSize);
             buffer.normals.push3(nx, ny, nz);
-            const shade = AMBIENT_OCCLUSION[occlusion[corner]!]!;
+            const shade = AMBIENT_OCCLUSION[occlusion[corner]!]! * lift[corner]!;
             buffer.colors.push3(red * shade, green * shade, blue * shade);
           }
           buffer.vertexCount += 4;

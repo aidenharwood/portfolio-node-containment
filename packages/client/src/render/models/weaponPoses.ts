@@ -33,7 +33,7 @@ const GRIPS: Readonly<Record<WeaponKind, ArmPose>> = {
   rifle: pose({ rightX: -0.75, rightZ: -0.2, leftX: -1.0, leftZ: 0.6, twist: 0.3, level: 1, aim: 0.45 }),
   scattergun: pose({ rightX: -0.75, rightZ: -0.2, leftX: -1.0, leftZ: 0.6, twist: 0.3, level: 1, aim: 0.4 }),
   focus: pose({ rightX: -0.45, rightZ: 0.05, weaponX: 0.25 }),
-  resonator: pose({ rightX: -0.7, rightZ: -0.25, leftX: -0.7, leftZ: 0.25, level: 1, aim: 0.2 }),
+  resonator: pose({ rightX: -0.7, rightZ: -0.25, leftX: -0.7, leftZ: 0.25, level: 1, aim: -0.15 }),
 };
 
 export function heldWeaponOf(gear: readonly ItemId[]): WeaponKind | null {

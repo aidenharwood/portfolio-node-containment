@@ -4,6 +4,8 @@ import {
   Box3,
   DirectionalLight,
   HemisphereLight,
+  Mesh,
+  type Object3D,
   OrthographicCamera,
   PointLight,
   Scene,
@@ -29,7 +31,7 @@ class ItemSpriteStudio {
     const key = new DirectionalLight(0xffffff, 2.4);
     key.position.set(2, 4, 3);
     const rim = new PointLight(0x4fd8ff, 3, 6, 2);
-    rim.position.set(-1.5, 1, -1.5);
+    rim.position.set(-2, 1.2, 2);
     this.scene.add(key, rim, new HemisphereLight(0xcfe8ff, 0x1a2228, 1.3));
   }
 
@@ -40,7 +42,7 @@ class ItemSpriteStudio {
     const object = createVoxelObject(buildItemModel(item).mesh(ITEM_VOXEL_SIZE), { castShadow: false, receiveShadow: false });
     this.scene.add(object);
 
-    this.frame(new Box3().setFromObject(object));
+    this.frame(object);
 
     renderer.clear();
     renderer.render(this.scene, this.camera);
@@ -55,19 +57,22 @@ class ItemSpriteStudio {
     return url;
   }
 
-  private frame(bounds: Box3): void {
+  private frame(object: Object3D): void {
+    const bounds = new Box3().setFromObject(object);
     const center = bounds.getCenter(new Vector3());
     this.camera.position.copy(center).addScaledVector(VIEW_DIRECTION, 10);
     this.camera.lookAt(center);
     this.camera.updateMatrixWorld();
     const projected = new Box3();
-    for (const x of [bounds.min.x, bounds.max.x]) {
-      for (const y of [bounds.min.y, bounds.max.y]) {
-        for (const z of [bounds.min.z, bounds.max.z]) {
-          projected.expandByPoint(new Vector3(x, y, z).applyMatrix4(this.camera.matrixWorldInverse));
-        }
+    const point = new Vector3();
+    object.updateMatrixWorld(true);
+    object.traverse((child) => {
+      if (!(child instanceof Mesh)) return;
+      const positions = child.geometry.getAttribute('position');
+      for (let index = 0; index < positions.count; index++) {
+        projected.expandByPoint(point.fromBufferAttribute(positions, index).applyMatrix4(child.matrixWorld).applyMatrix4(this.camera.matrixWorldInverse));
       }
-    }
+    });
     const halfExtent = (Math.max(projected.max.x - projected.min.x, projected.max.y - projected.min.y) / 2) * FRAME_PADDING;
     const centerX = (projected.min.x + projected.max.x) / 2;
     const centerY = (projected.min.y + projected.max.y) / 2;

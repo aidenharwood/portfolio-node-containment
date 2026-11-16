@@ -1,6 +1,7 @@
 import { isBuildingWall, isOutdoorFloor, TILE_KINDS, type Facing, type TilePoint, type TileRect, type ZoneLight } from '@containment/shared';
 import type { ActiveZone } from '../../state/worldState.ts';
 import { noise3 } from '../voxel/palette.ts';
+import { litWindowGlow, type Side } from './levelVoxels.ts';
 
 export interface SconceSpot {
   readonly floor: TilePoint;
@@ -29,6 +30,10 @@ const ZONE_LIGHT_SNAP = 3.5;
 const SCONCE_INTENSITY = 1.1;
 const SCONCE_RADIUS = 5.5;
 const FAILING_INTENSITY = 0.95;
+const WINDOW_SPILL_INTENSITY = 0.3;
+const WINDOW_SPILL_RADIUS = 2.2;
+const WINDOW_SPILL_SPACING = 4;
+const WINDOW_SIDES: readonly Side[] = ['south', 'east', 'west', 'north'];
 
 export const FACING_STEP: Readonly<Record<Facing, TilePoint>> = { north: { x: 0, y: -1 }, east: { x: 1, y: 0 }, west: { x: -1, y: 0 }, south: { x: 0, y: 1 } };
 const MOUNT_PREFERENCE: readonly Facing[] = ['north', 'east', 'west', 'south'];
@@ -103,5 +108,27 @@ export function planWallLighting(zone: ActiveZone): WallLighting {
       });
     }
   }
+  fills.push(...windowSpills(zone, fills));
   return { sconces, fills };
+}
+
+function windowSpills(zone: ActiveZone, existing: readonly FillLight[]): FillLight[] {
+  const { layout } = zone;
+  const spills: FillLight[] = [];
+  const crowded = (point: TilePoint) => [...existing, ...spills].some((fill) => Math.hypot(fill.position.x - point.x, fill.position.y - point.y) < WINDOW_SPILL_SPACING);
+  for (let ty = 0; ty < layout.height; ty++) {
+    for (let tx = 0; tx < layout.width; tx++) {
+      const material = layout.tileAt({ x: tx, y: ty });
+      if (!isBuildingWall(material)) continue;
+      for (const side of WINDOW_SIDES) {
+        const step = FACING_STEP[side];
+        const position = { x: tx + step.x, y: ty + step.y };
+        if (!isOutdoorFloor(layout.tileAt(position)) || layout.tileAt(position) === 'water') continue;
+        const glow = litWindowGlow(material, tx, ty, side);
+        if (glow === null || crowded(position)) continue;
+        spills.push({ position, light: { position, radius: WINDOW_SPILL_RADIUS, intensity: WINDOW_SPILL_INTENSITY, color: `#${glow.toString(16).padStart(6, '0')}` } });
+      }
+    }
+  }
+  return spills;
 }

@@ -1,26 +1,26 @@
-import { BufferGeometry, Color, DoubleSide, Float32BufferAttribute, Mesh, ShaderMaterial } from 'three';
+import { BufferGeometry, Color, DoubleSide, Float32BufferAttribute, Mesh, MeshStandardMaterial } from 'three';
 import type { TileLayout, TileRect } from '@containment/shared';
 
 const SURFACE_Y = -0.07;
 
-const VERTEX_SHADER = `
+const VERTEX_DECLARATIONS = `
   attribute vec4 edges;
   attribute vec2 local;
   uniform float time;
   varying vec4 vEdges;
   varying vec2 vLocal;
   varying vec2 vWorld;
-  void main() {
-    vEdges = edges;
-    vLocal = local;
-    vec3 shifted = position;
-    vWorld = position.xz;
-    shifted.y += sin(position.x * 2.3 + time * 1.4) * 0.006 + cos(position.z * 2.9 + time * 1.1) * 0.006;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(shifted, 1.0);
-  }
 `;
 
-const FRAGMENT_SHADER = `
+const VERTEX_DISPLACEMENT = `
+  #include <begin_vertex>
+  vEdges = edges;
+  vLocal = local;
+  vWorld = position.xz;
+  transformed.y += sin(position.x * 2.3 + time * 1.4) * 0.006 + cos(position.z * 2.9 + time * 1.1) * 0.006;
+`;
+
+const FRAGMENT_DECLARATIONS = `
   uniform float time;
   uniform vec3 deepColor;
   uniform vec3 shallowColor;
@@ -48,23 +48,38 @@ const FRAGMENT_SHADER = `
     return value / 1.75;
   }
 
-  void main() {
-    float waves = ripples(vWorld);
-    float caustic = smoothstep(0.64, 0.8, ripples(vWorld * 1.7 + 4.0)) * 0.55;
+  float shoreOf() {
     float edgeDistance = 1.0;
     edgeDistance = min(edgeDistance, mix(1.0, vLocal.y, vEdges.x));
     edgeDistance = min(edgeDistance, mix(1.0, 1.0 - vLocal.x, vEdges.y));
     edgeDistance = min(edgeDistance, mix(1.0, 1.0 - vLocal.y, vEdges.z));
     edgeDistance = min(edgeDistance, mix(1.0, vLocal.x, vEdges.w));
-    float shore = 1.0 - smoothstep(0.0, 0.22, edgeDistance);
-    float foam = shore * smoothstep(0.35, 0.75, noise(vWorld * 9.0 + time * 0.8) + shore * 0.4);
-    vec3 color = mix(deepColor, shallowColor, waves * 0.8 + shore * 0.35);
-    color += glowColor * caustic;
-    color = mix(color, foamColor, foam * 0.55);
-    float alpha = 0.78 + caustic * 0.15 + foam * 0.2;
-    gl_FragColor = vec4(color, clamp(alpha, 0.0, 1.0));
+    return 1.0 - smoothstep(0.0, 0.22, edgeDistance);
   }
 `;
+
+const FRAGMENT_SURFACE = `
+  #include <color_fragment>
+  float waves = ripples(vWorld);
+  float shore = shoreOf();
+  float foam = shore * smoothstep(0.35, 0.75, noise(vWorld * 9.0 + time * 0.8) + shore * 0.4);
+  float caustic = smoothstep(0.64, 0.8, ripples(vWorld * 1.7 + 4.0)) * 0.55;
+  diffuseColor.rgb = mix(mix(deepColor, shallowColor, waves * 0.8 + shore * 0.35), foamColor, foam * 0.55);
+  diffuseColor.a = clamp(0.8 + caustic * 0.12 + foam * 0.2, 0.0, 1.0);
+`;
+
+const FRAGMENT_NORMAL = `
+  #include <normal_fragment_begin>
+  vec2 slope = vec2(ripples(vWorld + vec2(0.04, 0.0)) - ripples(vWorld - vec2(0.04, 0.0)), ripples(vWorld + vec2(0.0, 0.04)) - ripples(vWorld - vec2(0.0, 0.04)));
+  normal = normalize(normal + (viewMatrix * vec4(-slope.x * RIPPLE_TILT, 0.0, -slope.y * RIPPLE_TILT, 0.0)).xyz);
+`;
+
+const FRAGMENT_GLOW = `
+  #include <emissivemap_fragment>
+  totalEmissiveRadiance += glowColor * caustic * 0.6 + foamColor * foam * 0.08;
+`;
+
+const RIPPLE_TILT = '2.5';
 
 export interface LiquidPalette {
   readonly deep: number;
@@ -75,15 +90,17 @@ export interface LiquidPalette {
 
 export const COOLANT_PALETTE: LiquidPalette = { deep: 0x041f2a, shallow: 0x13607a, glow: 0x3fa8c0, foam: 0xa8e8f0 };
 
-export const WATER_PALETTE: LiquidPalette = { deep: 0x070d12, shallow: 0x14262e, glow: 0x2a5560, foam: 0x6a8a90 };
+export const WATER_PALETTE: LiquidPalette = { deep: 0x0b151c, shallow: 0x1c3440, glow: 0x2a5560, foam: 0x6a8a90 };
 
 export class LiquidSurface {
   readonly mesh: Mesh;
-  private readonly material: ShaderMaterial;
+  private readonly material: MeshStandardMaterial;
+  private readonly time: { value: number };
 
-  private constructor(mesh: Mesh, material: ShaderMaterial) {
+  private constructor(mesh: Mesh, material: MeshStandardMaterial, time: { value: number }) {
     this.mesh = mesh;
     this.material = material;
+    this.time = time;
   }
 
   static build(layout: TileLayout, kind: string, region: TileRect, palette: LiquidPalette = COOLANT_PALETTE): LiquidSurface | null {
@@ -111,31 +128,35 @@ export class LiquidSurface {
     geometry.setAttribute('position', new Float32BufferAttribute(positions, 3));
     geometry.setAttribute('edges', new Float32BufferAttribute(edges, 4));
     geometry.setAttribute('local', new Float32BufferAttribute(locals, 2));
+    geometry.setAttribute('normal', new Float32BufferAttribute(positions.map((_value, index) => (index % 3 === 1 ? 1 : 0)), 3));
     geometry.setIndex(indices);
     geometry.computeBoundingSphere();
-    const material = new ShaderMaterial({
-      vertexShader: VERTEX_SHADER,
-      fragmentShader: FRAGMENT_SHADER,
-      uniforms: {
-        time: { value: 0 },
-        deepColor: { value: new Color(palette.deep) },
-        shallowColor: { value: new Color(palette.shallow) },
-        glowColor: { value: new Color(palette.glow) },
-        foamColor: { value: new Color(palette.foam) },
-      },
-      transparent: true,
-      depthWrite: false,
-      side: DoubleSide,
-      toneMapped: false,
-    });
+    const time = { value: 0 };
+    const material = new MeshStandardMaterial({ roughness: 0.24, metalness: 0, transparent: true, depthWrite: false, side: DoubleSide });
+    material.onBeforeCompile = (shader) => {
+      shader.uniforms.time = time;
+      shader.uniforms.deepColor = { value: new Color(palette.deep) };
+      shader.uniforms.shallowColor = { value: new Color(palette.shallow) };
+      shader.uniforms.glowColor = { value: new Color(palette.glow) };
+      shader.uniforms.foamColor = { value: new Color(palette.foam) };
+      shader.vertexShader = shader.vertexShader.replace('#include <common>', `#include <common>
+${VERTEX_DECLARATIONS}`).replace('#include <begin_vertex>', VERTEX_DISPLACEMENT);
+      shader.fragmentShader = shader.fragmentShader
+        .replace('#include <common>', `#include <common>
+${FRAGMENT_DECLARATIONS}`)
+        .replace('#include <color_fragment>', FRAGMENT_SURFACE)
+        .replace('#include <normal_fragment_begin>', FRAGMENT_NORMAL.replaceAll('RIPPLE_TILT', RIPPLE_TILT))
+        .replace('#include <emissivemap_fragment>', FRAGMENT_GLOW);
+    };
+    material.customProgramCacheKey = () => `liquid:${palette.deep}:${palette.shallow}:${palette.glow}:${palette.foam}`;
     const mesh = new Mesh(geometry, material);
     mesh.renderOrder = 1;
     mesh.name = 'liquid';
-    return new LiquidSurface(mesh, material);
+    return new LiquidSurface(mesh, material, time);
   }
 
   update(time: number): void {
-    this.material.uniforms.time!.value = time;
+    this.time.value = time;
   }
 
   dispose(): void {
