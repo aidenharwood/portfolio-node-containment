@@ -57,6 +57,7 @@ import { isCoarsePointer } from '../ui/viewport.ts';
 
 const TOUCH_DRAG_THRESHOLD_PIXELS = 10;
 const LOADING_MIN_VISIBLE_MS = 450;
+const CAMERA_HINT_MS = 12_000;
 const ORBIT_YAW_PER_PIXEL = 0.008;
 const ORBIT_PITCH_PER_PIXEL = 0.006;
 const ZOOM_STEP = 1.12;
@@ -117,6 +118,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   let loadingVisibleUntil = 0;
   const cameraHint = h('div', { className: 'camera-hint' },
     isCoarsePointer() ? 'Drag to rotate · Pinch to zoom · Hold for options' : 'Middle-drag or Q / E to rotate · Scroll to zoom · Home to reset');
+  const cameraHintTimer = window.setTimeout(() => cameraHint.classList.add('dismissed'), CAMERA_HINT_MS);
 
   let hover: PickTarget | null = null;
   let clickMarker: ClickMarker | null = null;
@@ -582,6 +584,7 @@ export function createGameScreen(app: AppNavigator): Screen {
       window.removeEventListener('resize', onResize);
       unsubscribers.forEach((unsubscribe) => unsubscribe());
       panelObserver.disconnect();
+      window.clearTimeout(cameraHintTimer);
       chat.dispose();
       combatOverlay.dispose();
       dialogue.dispose();

@@ -1,4 +1,4 @@
-import { ACESFilmicToneMapping, Color, DirectionalLight, FogExp2, HemisphereLight, PCFSoftShadowMap, SRGBColorSpace, Vector2, Vector3, WebGLRenderer, type Camera, type Scene } from 'three';
+import { ACESFilmicToneMapping, Color, DirectionalLight, FogExp2, HalfFloatType, HemisphereLight, MathUtils, PCFSoftShadowMap, SRGBColorSpace, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget, type Camera, type Scene } from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
@@ -15,12 +15,12 @@ const LIGHT_INTENSITY_SCALE = 14;
 const LIGHT_REACH = 1.4;
 const AMBIENT_BASE = 2.9;
 const AMBIENT_DARKNESS_WEIGHT = 2.3;
-const AMBIENT_FLOOR = 0.8;
+const AMBIENT_FLOOR = 1;
 const AMBIENT_SKY_LIFT = 0.74;
 const AMBIENT_GROUND_LIFT = 0.32;
 const KEY_BASE = 1;
 const KEY_DARKNESS_WEIGHT = 0.7;
-const KEY_FLOOR = 0.25;
+const KEY_FLOOR = 0.33;
 const LIGHT_REASSIGN_SECONDS = 0.25;
 const FOG_DENSITY = 0.028;
 const SURVEY_AMBIENT = 4.2;
@@ -34,6 +34,14 @@ const DUSK_KEY_CUT = 0.55;
 const SKY_SUN_TINT = 0.8;
 const DAYLIGHT_FOG_THINNING = 0.55;
 const NO_LIGHTS: LightAssignment<LightSource> = { lights: [], edge: Infinity };
+const LIGHT_OFFSET = new Vector3(5, 12, 3);
+const LIGHT_DIRECTION = LIGHT_OFFSET.clone().normalize();
+const LIGHT_RIGHT = new Vector3().crossVectors(LIGHT_DIRECTION, new Vector3(0, 1, 0)).normalize();
+const LIGHT_UP = new Vector3().crossVectors(LIGHT_RIGHT, LIGHT_DIRECTION).normalize();
+const SHADOW_REACH_PER_DISTANCE = 0.9;
+const SHADOW_REACH_MIN = 8;
+const SHADOW_REACH_MAX = 20;
+const SHADOW_REACH_STEP = 0.5;
 const GROUND_FOG_PER_HAZE = 1.6;
 const GROUND_FOG_PER_MIST = 0.18;
 const GROUND_FOG_LIMIT = 0.6;
@@ -63,12 +71,13 @@ export class SceneLook {
   private readonly fogDensity: number;
   private lastAmbience: BlendedAmbience | null = null;
   private readonly mistColor = new Color();
+  private readonly snappedFocus = new Vector3();
   private readonly flashColor = new Color(FLASH_SKY);
   private time = 0;
   flash = 0;
 
   constructor(canvas: HTMLCanvasElement, scene: Scene, camera: Camera, fogDensity = FOG_DENSITY) {
-    this.renderer = new WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+    this.renderer = new WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
     this.renderer.outputColorSpace = SRGBColorSpace;
     this.renderer.toneMapping = ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.4;
@@ -90,7 +99,7 @@ export class SceneLook {
     scene.background = this.background;
     scene.add(this.hemisphere, this.keyLight, this.keyLight.target);
 
-    this.composer = new EffectComposer(this.renderer);
+    this.composer = new EffectComposer(this.renderer, new WebGLRenderTarget(1, 1, { type: HalfFloatType, samples: 4 }));
     this.composer.addPass(new RenderPass(scene, camera));
     this.composer.addPass(this.bloom);
     this.composer.addPass(new OutputPass());
@@ -102,6 +111,15 @@ export class SceneLook {
     this.renderer.setSize(width, height, false);
     this.composer.setPixelRatio(pixelRatio);
     this.composer.setSize(width, height);
+    this.applySamples(this.renderScale === 'performance' ? 0 : pixelRatio <= 1.25 ? 4 : 2);
+  }
+
+  private applySamples(samples: number): void {
+    for (const target of [this.composer.renderTarget1, this.composer.renderTarget2]) {
+      if (target.samples === samples) continue;
+      target.samples = samples;
+      target.dispose();
+    }
   }
 
   applyGraphics(settings: GameSettings): boolean {
@@ -153,9 +171,23 @@ export class SceneLook {
     }
   }
 
-  aimKeyLight(focus: Vector3): void {
-    this.keyLight.position.set(focus.x + 5, focus.y + 12, focus.z + 3);
-    this.keyLight.target.position.copy(focus);
+  aimKeyLight(focus: Vector3, distance: number): void {
+    const half = MathUtils.clamp(distance * SHADOW_REACH_PER_DISTANCE, SHADOW_REACH_MIN, SHADOW_REACH_MAX);
+    const shadow = this.keyLight.shadow.camera;
+    if (Math.abs(shadow.right - half) > SHADOW_REACH_STEP) {
+      shadow.left = -half;
+      shadow.right = half;
+      shadow.top = half;
+      shadow.bottom = -half;
+      shadow.updateProjectionMatrix();
+    }
+    const texel = (shadow.right - shadow.left) / this.keyLight.shadow.mapSize.x;
+    const along = Math.round(focus.dot(LIGHT_RIGHT) / texel) * texel;
+    const across = Math.round(focus.dot(LIGHT_UP) / texel) * texel;
+    const depth = focus.dot(LIGHT_DIRECTION);
+    this.snappedFocus.copy(LIGHT_RIGHT).multiplyScalar(along).addScaledVector(LIGHT_UP, across).addScaledVector(LIGHT_DIRECTION, depth);
+    this.keyLight.position.copy(this.snappedFocus).addScaledVector(LIGHT_OFFSET, 1);
+    this.keyLight.target.position.copy(this.snappedFocus);
   }
 
   resetLights(): void {

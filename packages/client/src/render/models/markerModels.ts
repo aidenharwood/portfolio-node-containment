@@ -1,5 +1,5 @@
 import type { NpcQuestMarker } from '@containment/shared';
-import { AdditiveBlending, BoxGeometry, CylinderGeometry, DoubleSide, EdgesGeometry, Group, LineBasicMaterial, LineSegments, Mesh, MeshBasicMaterial, RingGeometry } from 'three';
+import { AdditiveBlending, BoxGeometry, CanvasTexture, CircleGeometry, CylinderGeometry, DoubleSide, EdgesGeometry, Group, LineBasicMaterial, LineSegments, Mesh, MeshBasicMaterial, RingGeometry, type Material } from 'three';
 import { VOXEL_EMISSIVE } from '../voxel/voxelKinds.ts';
 import { createVoxelObject } from '../voxel/voxelMaterials.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
@@ -82,4 +82,30 @@ export function createClickMarker(): { readonly group: Group; readonly material:
   }
   group.visible = false;
   return { group, material };
+}
+
+const CONTACT_SHADOW_GEOMETRY = new CircleGeometry(0.42, 24).rotateX(-Math.PI / 2);
+let contactShadowMaterial: Material | null = null;
+
+function shadowMaterial(): Material {
+  if (contactShadowMaterial) return contactShadowMaterial;
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = 64;
+  const context = canvas.getContext('2d')!;
+  const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gradient.addColorStop(0, 'rgba(255,255,255,1)');
+  gradient.addColorStop(0.55, 'rgba(255,255,255,0.6)');
+  gradient.addColorStop(1, 'rgba(255,255,255,0)');
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, 64, 64);
+  contactShadowMaterial = new MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.38, depthWrite: false, alphaMap: new CanvasTexture(canvas) });
+  return contactShadowMaterial;
+}
+
+export function createContactShadow(): Mesh {
+  const shadow = new Mesh(CONTACT_SHADOW_GEOMETRY, shadowMaterial());
+  shadow.position.y = 0.012;
+  shadow.renderOrder = 1;
+  shadow.raycast = () => undefined;
+  return shadow;
 }

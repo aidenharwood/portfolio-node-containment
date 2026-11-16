@@ -17,9 +17,10 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
   let self: SelfState | null = null;
   const modeHint = h('span', { className: 'inventory-mode', hidden: true });
   const scrip = h('span', { className: 'scrip-amount' }, '0');
+  const used = h('span', { className: 'tab-hint' }, '');
   const grid = h('div', { className: 'inventory-grid' });
   const element = h('div', { className: 'tab-inventory tab-fit' },
-    h('header', { className: 'tab-header' }, h('span', { className: 'scrip' }, 'Scrip ', scrip), modeHint),
+    h('header', { className: 'tab-header' }, h('span', { className: 'scrip' }, 'Scrip ', scrip), modeHint, used),
     h('div', { className: 'fit-area' }, grid),
   );
 
@@ -143,6 +144,7 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
         );
       });
       scrip.textContent = scripTotal.toLocaleString();
+      used.textContent = `${next.inventory.filter((stack) => stack !== null).length} / ${INVENTORY_CAPACITY}`;
       paint();
     },
   };

@@ -1,7 +1,7 @@
 import { Group } from 'three';
 import { darken, jitter, lighten, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE, VOXEL_GLASS } from '../voxel/voxelKinds.ts';
-import { createVoxelObject } from '../voxel/voxelMaterials.ts';
+import { ACTOR_OPTIONS, createVoxelObject } from '../voxel/voxelMaterials.ts';
 import type { VoxelMeshes } from '../voxel/voxelMesher.ts';
 import { VoxelModel, type Paint } from '../voxel/voxelModel.ts';
 import { CHARACTER_VOXEL_SIZE } from '../world/worldScale.ts';
@@ -300,7 +300,7 @@ class WardCreatureRig implements EntityRig {
       mesh = look.build().mesh(CHARACTER_VOXEL_SIZE, [0, 0, 0]);
       meshes.set(key, mesh);
     }
-    this.body = createVoxelObject(mesh);
+    this.body = createVoxelObject(mesh, ACTOR_OPTIONS);
     this.scale = look.scale ?? 1;
     this.body.scale.setScalar(this.scale);
     this.root.add(this.body);

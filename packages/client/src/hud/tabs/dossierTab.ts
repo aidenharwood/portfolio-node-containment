@@ -11,17 +11,15 @@ export function createDossierTab(connection: GameConnection, world: WorldState):
   const details = h('div', { className: 'dossier-details' });
   const profile = h('tbody');
   const element = h('div', { className: 'tab-dossier' },
-    h('header', { className: 'tab-header dossier-header' },
-      h('div', { className: 'dossier-actions' },
-        h('button', { className: 'button ghost small', type: 'button', onclick: () => connection.send({ type: 'character.leaveWorld' }) }, 'Personnel files'),
-        h('button', { className: 'button ghost small', type: 'button', onclick: () => connection.send({ type: 'auth.logout' }) }, 'Sign out'),
-      ),
-    ),
     h('div', { className: 'dossier-top' }, portrait, details),
     h('h4', { className: 'subheading', title: 'Derived from trained skills and equipped gear' }, 'Combat profile'),
     h('table', { className: 'dossier-stats' },
       h('thead', {}, h('tr', {}, h('th', { scope: 'col' }, 'Stat'), h('th', { scope: 'col', title: 'Contribution from equipped gear' }, 'Gear'), h('th', { scope: 'col' }, 'Total'))),
       profile,
+    ),
+    h('footer', { className: 'dossier-actions' },
+      h('button', { className: 'button ghost small', type: 'button', onclick: () => connection.send({ type: 'character.leaveWorld' }) }, 'Personnel files'),
+      h('button', { className: 'button ghost small', type: 'button', onclick: () => connection.send({ type: 'auth.logout' }) }, 'Sign out'),
     ),
   );
 
@@ -46,7 +44,7 @@ ${STAT_INFO[info.gearStat].name}: ${STAT_INFO[info.gearStat].summary}` : info.de
     update(self: SelfState) {
       const appearance = world.selfEntity?.appearance;
       if (appearance && !preview) {
-        preview = new AvatarPreview({ appearance, gear: [], facing: 'south', walking: false }, { width: 96, height: 130, pedestal: true });
+        preview = new AvatarPreview({ appearance, gear: [], facing: 'south', walking: false }, { width: 72, height: 98, pedestal: true });
         portrait.append(preview.element);
       }
       if (preview) preview.model.gear = equippedItemIds(self.equipment);

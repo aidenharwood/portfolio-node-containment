@@ -15,7 +15,7 @@ import {
 import { Euler, Group, Quaternion } from 'three';
 import { darken, hex, jitter, lighten, mix, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE } from '../voxel/voxelKinds.ts';
-import { createVoxelObject } from '../voxel/voxelMaterials.ts';
+import { ACTOR_OPTIONS, createVoxelObject } from '../voxel/voxelMaterials.ts';
 import type { VoxelMeshes } from '../voxel/voxelMesher.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 import { CHARACTER_VOXEL_SIZE } from '../world/worldScale.ts';
@@ -150,7 +150,7 @@ export class CharacterRig implements EntityRig {
     }
     const layout = partLayouts(buildOf(appearance));
     for (const name of Object.keys(layout) as PartName[]) {
-      const part = createVoxelObject(geometry.parts[name]);
+      const part = createVoxelObject(geometry.parts[name], ACTOR_OPTIONS);
       const [px, py, pz] = layout[name].pivot;
       part.position.set(px * CHARACTER_VOXEL_SIZE, py * CHARACTER_VOXEL_SIZE, pz * CHARACTER_VOXEL_SIZE);
       (name.startsWith('leg') ? this.rig : this.upper).add(part);
@@ -158,7 +158,7 @@ export class CharacterRig implements EntityRig {
     }
     const armRight = this.parts.get('armRight');
     if (geometry.weapon && armRight) {
-      const weapon = createVoxelObject(geometry.weapon);
+      const weapon = createVoxelObject(geometry.weapon, ACTOR_OPTIONS);
       const [ax, ay, az] = layout.armRight.pivot;
       const [gx, gy, gz] = geometry.grip;
       weapon.position.set((gx - ax) * CHARACTER_VOXEL_SIZE, (gy - ay) * CHARACTER_VOXEL_SIZE, (gz - az) * CHARACTER_VOXEL_SIZE);

@@ -36,6 +36,7 @@ const READABLE_SCALE = 5;
 const ZOOM_STEP = 1.4;
 const OBJECTIVE_COLOR = '#ffb347';
 const UNCHARTED_COLOR = '#0e161b';
+const UNCHARTED_HATCH = '#141f26';
 const ICON_SIZE = 18;
 const RESOURCE_ICON_SIZE = 13;
 const ICON_LABEL_SCALE = 10;
@@ -354,8 +355,10 @@ export class WorldMap {
 
   private clampView(view: MapView, level: ResolvedLevel): void {
     view.scale = Math.min(MAX_SCALE, Math.max(this.fitScale(level), view.scale));
-    view.centreX = Math.min(level.layout.width, Math.max(0, view.centreX));
-    view.centreY = Math.min(level.layout.height, Math.max(0, view.centreY));
+    const halfWidth = (this.canvas.clientWidth / 2 - MAP_PADDING) / view.scale;
+    const halfHeight = (this.canvas.clientHeight / 2 - MAP_PADDING) / view.scale;
+    view.centreX = level.layout.width <= 2 * halfWidth ? level.layout.width / 2 : Math.min(level.layout.width - halfWidth, Math.max(halfWidth, view.centreX));
+    view.centreY = level.layout.height <= 2 * halfHeight ? level.layout.height / 2 : Math.min(level.layout.height - halfHeight, Math.max(halfHeight, view.centreY));
   }
 
   private frameOf(view: MapView): MapFrame {
@@ -530,7 +533,8 @@ export class WorldMap {
         if (kind === 'void') continue;
         const district = level.layout.districtAt({ x, y });
         const target = district !== undefined && objectives.has(district);
-        context.fillStyle = district !== undefined && !charted.has(district) ? UNCHARTED_COLOR : kind === 'coolant' ? '#1f5f7a' : kind === 'track' ? '#2a2420' : kind === 'door' ? '#2f5a6a' : TILE_KINDS[kind].walkable ? (target ? '#3d3216' : '#1c2a33') : target ? '#7a5a22' : '#40525e';
+        const uncharted = district !== undefined && !charted.has(district);
+        context.fillStyle = uncharted ? ((x + y) % 3 === 0 ? UNCHARTED_HATCH : UNCHARTED_COLOR) : kind === 'coolant' ? '#1f5f7a' : kind === 'track' ? '#2a2420' : kind === 'door' ? '#2f5a6a' : TILE_KINDS[kind].walkable ? (target ? '#3d3216' : '#1c2a33') : target ? '#7a5a22' : '#40525e';
         context.fillRect(frame.offsetX + x * frame.scale, frame.offsetY + y * frame.scale, size, size);
       }
     }
@@ -577,6 +581,13 @@ export class WorldMap {
         context.setLineDash([5, 4]);
         context.strokeRect(frame.offsetX + rect.x * frame.scale, frame.offsetY + rect.y * frame.scale, rect.width * frame.scale, rect.height * frame.scale);
         context.setLineDash([]);
+      }
+      if (!isCharted) {
+        if (rect.width * frame.scale < 90) continue;
+        context.font = '600 10px "Chakra Petch", sans-serif';
+        context.fillStyle = 'rgba(147, 169, 181, 0.6)';
+        context.fillText('UNCHARTED', x, y);
+        continue;
       }
       if (rect.width * frame.scale < 36) continue;
       context.font = `700 ${detailedLabel ? 14 : 12}px "Chakra Petch", sans-serif`;

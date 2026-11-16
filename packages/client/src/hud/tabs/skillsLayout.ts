@@ -11,7 +11,7 @@ export interface SkillLayout {
 }
 
 export const SKILL_GAP = 4;
-export const SKILL_MAX_ROW = 64;
+export const SKILL_MAX_ROW = 80;
 
 const MODES: readonly { readonly mode: SkillTileMode; readonly width: number; readonly height: number }[] = [
   { mode: 'full', width: 66, height: 64 },

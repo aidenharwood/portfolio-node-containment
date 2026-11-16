@@ -6,7 +6,7 @@ import { CameraRig } from './cameraRig.ts';
 import { CharacterRig } from './models/characterModel.ts';
 import { createCreatureRig } from './models/creatureModels.ts';
 import { attackDurationMs, type EntityRig } from './models/entityRig.ts';
-import { createAreaBeacon, createClickMarker, createContainmentField, createGroundRing, createQuestMarker, setContainmentFieldOpacity, type QuestMarkerKind } from './models/markerModels.ts';
+import { createAreaBeacon, createClickMarker, createContactShadow, createContainmentField, createGroundRing, createQuestMarker, setContainmentFieldOpacity, type QuestMarkerKind } from './models/markerModels.ts';
 import { GroundItemLayer } from './items/groundItemLayer.ts';
 import { ProjectileLayer } from './projectileLayer.ts';
 import { RouteLayer } from './routeLayer.ts';
@@ -45,6 +45,7 @@ interface EntityView {
   marker: Group | null;
   markerKind: QuestMarkerKind | null;
   readonly scale: number;
+  readonly shadow: Mesh;
 }
 
 const FOOTPRINT_MODEL_SCALE: Readonly<Record<number, number>> = { 1: 1, 2: 1.75 };
@@ -177,7 +178,7 @@ export class GameRenderer {
     const focus = this.cameraRig.focusPoint;
     this.zone.stream({ x: focus.x, y: focus.z });
     this.followAmbience(focus, delta, false);
-    this.look.aimKeyLight(focus);
+    this.look.aimKeyLight(focus, this.cameraRig.camera.position.distanceTo(focus));
     this.zone.update(time, overlay.objectiveObjectIds, this.world.depletedObjects, this.world.usedObjects, { open: this.world.openDoors, self: this.world.selfEntity?.to ?? null });
     this.zone.updateCutaway(this.cameraRig.camera.position, focus);
     this.look.updateLights(this.zone.lights, delta, time, focus);
@@ -348,6 +349,7 @@ export class GameRenderer {
         hurtProgress: animationProgress(entity.hurtAt, HURT_ANIMATION_MS, now),
       });
       const dying = entity.dyingAt === null ? 0 : Math.min(1, (now - entity.dyingAt) / DEATH_ANIMATION_MS);
+      view.shadow.visible = entity.dyingAt === null;
       if (entity.contained) {
         view.rig.root.rotation.y += dying * dying * 9;
         view.rig.root.scale.setScalar(view.scale * Math.max(0.01, 1 - dying));
@@ -388,7 +390,9 @@ export class GameRenderer {
     this.scene.add(rig.root);
     const scale = FOOTPRINT_MODEL_SCALE[this.world.bodySize(entity)] ?? 1;
     rig.root.scale.setScalar(scale);
-    const view: EntityView = { rig, character, gear: entity.gear, yaw: FACING_YAW[entity.facing], marker: null, markerKind: null, scale };
+    const shadow = createContactShadow();
+    rig.root.add(shadow);
+    const view: EntityView = { rig, character, gear: entity.gear, yaw: FACING_YAW[entity.facing], marker: null, markerKind: null, scale, shadow };
     this.entities.set(entity.id, view);
     return view;
   }

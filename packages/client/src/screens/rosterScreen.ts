@@ -43,14 +43,14 @@ export function createRosterScreen(app: AppNavigator, roster: readonly Character
   const cards = roster.map((character) => {
     const preview = new AvatarPreview(
       { appearance: character.appearance, gear: equippedItemIds(character.equipment), facing: 'south', walking: false },
-      { width: 140, height: 170, pedestal: true },
+      { width: 172, height: 210, pedestal: true },
     );
     previews.push(preview);
     const zone = GAME_CONTENT.districts.get(character.districtId);
     const deploy = () => app.connection.send({ type: 'character.select', characterId: character.id });
     return h(
       'article',
-      { className: 'roster-card panel', tabIndex: 0, onclick: deploy, onkeydown: (event) => event.key === 'Enter' && deploy() },
+      { className: 'roster-card panel', tabIndex: 0, onclick: deploy, onkeydown: (event) => event.key === 'Enter' && event.target === event.currentTarget && deploy() },
       h('div', { className: 'roster-avatar' }, preview.element),
       h('h3', { className: 'roster-name' }, character.name),
       h('p', { className: 'roster-meta' }, 'Directorate operative'),
@@ -92,6 +92,9 @@ export function createRosterScreen(app: AppNavigator, roster: readonly Character
             h('span', {}, 'Open new personnel file'),
             h('span', { className: 'roster-meta' }, `${roster.length} / ${maxCharacters} files`),
           ),
+        ...Array.from({ length: Math.max(0, maxCharacters - roster.length - (canCreate ? 1 : 0)) }, () =>
+          h('div', { className: 'roster-card roster-vacant panel', ariaHidden: 'true' }, h('span', { className: 'roster-meta' }, 'Vacant')),
+        ),
       ),
     ),
   );

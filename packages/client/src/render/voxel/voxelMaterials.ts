@@ -3,9 +3,11 @@ import { receiveFieldLights } from './fieldLights.ts';
 import type { VoxelMeshes } from './voxelMesher.ts';
 
 const EMISSIVE_GAIN = 1.5;
+const ACTOR_FILL = 0.22;
 
 export const VOXEL_MATERIALS = {
   solid: receiveFieldLights(new MeshLambertMaterial({ vertexColors: true })),
+  actor: receiveFieldLights(new MeshLambertMaterial({ vertexColors: true }), ACTOR_FILL),
   emissive: new MeshBasicMaterial({ vertexColors: true, toneMapped: false, color: new Color(EMISSIVE_GAIN, EMISSIVE_GAIN, EMISSIVE_GAIN) }),
   glass: receiveFieldLights(new MeshLambertMaterial({ vertexColors: true, transparent: true, opacity: 0.32, depthWrite: false })),
   fadedSolid: receiveFieldLights(new MeshLambertMaterial({ vertexColors: true, transparent: true, opacity: 0.16, depthWrite: false })),
@@ -14,6 +16,8 @@ export const VOXEL_MATERIALS = {
 } as const;
 
 export type VoxelLayer = 'solid' | 'emissive' | 'glass';
+
+export const ACTOR_OPTIONS: VoxelObjectOptions = { materials: { solid: VOXEL_MATERIALS.actor } };
 
 export interface VoxelObjectOptions {
   readonly castShadow?: boolean;

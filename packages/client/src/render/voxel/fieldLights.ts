@@ -9,6 +9,7 @@ const EMPTY_SLOT = 255;
 const LIT_KNEE = 0.5;
 const LIT_CEILING = 0.85;
 const SKY_MASK_TEXELS = 128;
+const FACING_SHADE = 0.18;
 
 export interface FieldLight {
   readonly position: Vector3;
@@ -120,12 +121,13 @@ export function clearFieldLights(): void {
   uniforms.fieldLightGridEnabled.value = 0;
 }
 
-export function receiveFieldLights<T extends Material>(material: T): T {
+export function receiveFieldLights<T extends Material>(material: T, actorFill = 0): T {
+  const fill = actorFill > 0 ? `reflectedLight.indirectDiffuse += diffuseColor.rgb * ${actorFill.toFixed(3)} * ( 0.4 + 0.6 * max( dot( geometryNormal, geometryViewDir ), 0.0 ) );` : '';
   material.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, uniforms);
     shader.vertexShader = shader.vertexShader
-      .replace('#include <common>', '#include <common>\nvarying vec3 vFieldWorld;\nvarying float vFieldUp;')
-      .replace('#include <project_vertex>', '#include <project_vertex>\nvFieldWorld = ( modelMatrix * vec4( transformed, 1.0 ) ).xyz;\nvFieldUp = normalize( mat3( modelMatrix ) * objectNormal ).y;');
+      .replace('#include <common>', '#include <common>\nvarying vec3 vFieldWorld;\nvarying vec3 vFieldNormal;')
+      .replace('#include <project_vertex>', '#include <project_vertex>\nvFieldWorld = ( modelMatrix * vec4( transformed, 1.0 ) ).xyz;\nvFieldNormal = normalize( mat3( modelMatrix ) * objectNormal );');
     shader.fragmentShader = shader.fragmentShader
       .replace(
         '#include <lights_pars_begin>',
@@ -146,7 +148,7 @@ uniform float fieldWetness;
 uniform sampler2D fieldSkyMask;
 uniform vec2 fieldSkyOrigin;
 varying vec3 vFieldWorld;
-varying float vFieldUp;
+varying vec3 vFieldNormal;
 float fieldHash( vec2 p ) {
 	return fract( sin( dot( p, vec2( 127.1, 311.7 ) ) ) * 43758.5453 );
 }
@@ -201,6 +203,8 @@ if ( fieldLightGridEnabled == 1 && fieldCell.x >= 0 && fieldCell.y >= 0 && field
       .replace(
         '#include <lights_fragment_end>',
         `#include <lights_fragment_end>
+reflectedLight.indirectDiffuse *= 1.0 + ${FACING_SHADE.toFixed(2)} * dot( vFieldNormal, vec3( -0.38, 0.0, 0.92 ) );
+${fill}
 vec3 litRadiance = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse;
 float litPeak = max( max( litRadiance.r, litRadiance.g ), litRadiance.b );
 if ( litPeak > ${LIT_KNEE.toFixed(3)} ) {
@@ -210,7 +214,7 @@ if ( litPeak > ${LIT_KNEE.toFixed(3)} ) {
 	reflectedLight.directDiffuse *= litScale;
 	reflectedLight.indirectDiffuse *= litScale;
 }
-if ( fieldWetness > 0.0 && vFieldUp > 0.9 && vFieldWorld.y < 0.08 ) {
+if ( fieldWetness > 0.0 && vFieldNormal.y > 0.9 && vFieldWorld.y < 0.08 ) {
 	float fieldPuddle = smoothstep( 0.45, 0.75, fieldNoise( vFieldWorld.xz * 0.9 ) );
 	float fieldWet = fieldWetness * fieldOpenSky( vFieldWorld.xz );
 	reflectedLight.directDiffuse *= 1.0 - 0.3 * fieldWet;
@@ -225,7 +229,7 @@ gl_FragColor.rgb = mix( gl_FragColor.rgb, fieldMistColor + fieldScatter * 0.02, 
 #include <fog_fragment>`,
       );
   };
-  material.customProgramCacheKey = () => `field-light-point-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}-lit-${LIT_KNEE}-${LIT_CEILING}-atmosphere-${SKY_MASK_TEXELS}`;
+  material.customProgramCacheKey = () => `field-light-point-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}-lit-${LIT_KNEE}-${LIT_CEILING}-atmosphere-${SKY_MASK_TEXELS}-facing-${FACING_SHADE}-actor-${actorFill}`;
   return material;
 }
 

@@ -126,7 +126,7 @@ export function paintTileRows(volume: DenseVolume, layout: TileLayout, region: T
       else if (kind === 'barrier') paintBarrier(volume, layout, tx, ty);
       else if (kind === 'glass') paintGlass(volume, tx, ty);
       else if (kind === 'track') paintTrack(volume, trackAxis(layout, tx, ty), tx, ty);
-      else paintFloor(volume, kind, tx, ty, kind === 'door' ? doorAxis(layout, tx, ty) : 'x', decals?.get(tileKey({ x: tx, y: ty })), seamsOf(layout, kind, tx, ty), blendNeighborsOf(layout, kind, tx, ty));
+      else paintFloor(volume, kind, tx, ty, kind === 'door' ? doorAxis(layout, tx, ty) : 'x', decals?.get(tileKey({ x: tx, y: ty })), seamsOf(layout, kind, tx, ty), blendNeighborsOf(layout, kind, tx, ty), wallsBeside(layout, tx, ty));
       if (kind === 'door') paintLintel(volume, layout, tx, ty);
     }
   }
@@ -217,7 +217,41 @@ function onSeam(seams: Seams, lx: number, lz: number): boolean {
   return (seams.west && lx === 0) || (seams.east && lx === R - 1) || (seams.north && lz === 0) || (seams.south && lz === R - 1);
 }
 
-function paintFloor(volume: DenseVolume, kind: TileKindId, tx: number, ty: number, axis: Axis, cells?: readonly DecalCell[], seams?: Seams | null, blendNeighbors: readonly BlendNeighbor[] = []): void {
+function wallsBeside(layout: TileLayout, tx: number, ty: number): Seams | null {
+  const walled = (x: number, y: number): boolean => isWallKind(layout.tileAt({ x, y }));
+  const walls = { north: walled(tx, ty - 1), south: walled(tx, ty + 1), east: walled(tx + 1, ty), west: walled(tx - 1, ty) };
+  return walls.north || walls.south || walls.east || walls.west ? walls : null;
+}
+
+const GRIME_REACH = 3;
+const GRIME_DEPTH = 0.2;
+const GRIME_FADE = 0.06;
+const MACRO_SCALE = 32;
+const MACRO_SWING = 0.1;
+
+function wallDistance(walls: Seams, lx: number, lz: number): number {
+  let nearest = Infinity;
+  if (walls.west) nearest = Math.min(nearest, lx);
+  if (walls.east) nearest = Math.min(nearest, R - 1 - lx);
+  if (walls.north) nearest = Math.min(nearest, lz);
+  if (walls.south) nearest = Math.min(nearest, R - 1 - lz);
+  return nearest;
+}
+
+function weathered(color: number, kind: TileKindId, vx: number, vz: number, lx: number, lz: number, walls: Seams | null): number {
+  let shaded = color;
+  if (BLENDED.has(kind)) {
+    const swing = (smoothNoise(vx, vz, MACRO_SCALE, 97) - 0.5) * MACRO_SWING;
+    shaded = swing < 0 ? darken(shaded, -swing) : lighten(shaded, swing * 0.5);
+  }
+  if (walls) {
+    const distance = wallDistance(walls, lx, lz);
+    if (distance < GRIME_REACH) shaded = darken(shaded, GRIME_DEPTH - distance * GRIME_FADE);
+  }
+  return shaded;
+}
+
+function paintFloor(volume: DenseVolume, kind: TileKindId, tx: number, ty: number, axis: Axis, cells?: readonly DecalCell[], seams?: Seams | null, blendNeighbors: readonly BlendNeighbor[] = [], walls: Seams | null = null): void {
   const tile: FloorTile = { tx, ty, tone: noise3(tx, ty, 0, 11), axis };
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
@@ -242,7 +276,7 @@ function paintFloor(volume: DenseVolume, kind: TileKindId, tx: number, ty: numbe
       }
       const decal = cells && kind !== 'door' ? decalColor(cells, lx, lz, surface.color, noise3(vx, FLOOR, vz, 3)) : null;
       if (decal) volume.set(vx, FLOOR, vz, decal.color, decal.emissive ? VOXEL_EMISSIVE : VOXEL_SOLID);
-      else volume.set(vx, FLOOR, vz, surface.color, surface.kind);
+      else volume.set(vx, FLOOR, vz, surface.kind === VOXEL_SOLID ? weathered(surface.color, kind, vx, vz, lx, lz, walls) : surface.color, surface.kind);
     }
   }
 }
@@ -327,9 +361,10 @@ function floorVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: nu
     case 'terrazzo': {
       if ((tile.tx % 4 === 0 && lx === 0) || (tile.ty % 4 === 0 && lz === 0)) return solid(COLORS.terrazzoStrip);
       const chip = noise3(vx, vz, 0, 23);
-      if (chip > 0.992) return solid(COLORS.terrazzoWarm);
-      if (chip > 0.975) return solid(COLORS.terrazzoChip);
-      return solid(jitter(COLORS.terrazzo, 0.012, noise3(Math.floor(tile.tx / 2), Math.floor(tile.ty / 2), 0, 29)));
+      const scattered = smoothNoise(vx, vz, 12, 27) > 0.45;
+      if (scattered && chip > 0.994) return solid(COLORS.terrazzoWarm);
+      if (scattered && chip > 0.975) return solid(COLORS.terrazzoChip);
+      return solid(jitter(COLORS.terrazzo, 0.018, noise3(Math.floor(tile.tx / 2), Math.floor(tile.ty / 2), 0, 29)));
     }
     case 'ceramic': {
       if (lx % 4 === 0 || lz % 4 === 0) return solid(COLORS.ceramicGrout);

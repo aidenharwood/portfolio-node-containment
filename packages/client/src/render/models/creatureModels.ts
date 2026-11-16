@@ -2,7 +2,7 @@ import type { CreatureModel } from '@containment/shared';
 import { Group } from 'three';
 import { jitter, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE } from '../voxel/voxelKinds.ts';
-import { createVoxelObject } from '../voxel/voxelMaterials.ts';
+import { ACTOR_OPTIONS, createVoxelObject } from '../voxel/voxelMaterials.ts';
 import type { VoxelMeshes } from '../voxel/voxelMesher.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 import { CHARACTER_VOXEL_SIZE } from '../world/worldScale.ts';
@@ -26,7 +26,7 @@ class PlaceholderRig implements EntityRig {
 
   constructor() {
     placeholderMesh ??= buildPlaceholderBody().mesh(CHARACTER_VOXEL_SIZE, [0, 0, 0]);
-    this.body = createVoxelObject(placeholderMesh);
+    this.body = createVoxelObject(placeholderMesh, ACTOR_OPTIONS);
     this.root.add(this.body);
   }
 

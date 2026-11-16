@@ -140,6 +140,24 @@
   gap: 18px;
 }
 
+@media (min-width: 900px) {
+  .roster-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.roster-vacant {
+  justify-content: center;
+  min-height: 220px;
+  border-style: dashed;
+  cursor: default;
+  opacity: 0.45;
+}
+
+.roster-vacant:hover {
+  transform: none;
+}
+
 .roster-card {
   padding: 16px;
   display: flex;
@@ -155,11 +173,19 @@
 .roster-card:focus-visible {
   transform: translateY(-3px);
   border-color: var(--color-line-strong);
-  outline: none;
+}
+
+.roster-card:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 .roster-avatar {
-  height: 170px;
+  height: 210px;
+}
+
+.roster-card {
+  backdrop-filter: none;
 }
 
 .roster-name {
