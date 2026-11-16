@@ -1,10 +1,5 @@
 import {
-  clearanceLevelFor,
-  clearanceName,
-  clearancePrice,
-  clearanceTierOf,
   countItem,
-  nextClearanceTier,
   boostViews,
   deriveCombatProfile,
   equipmentStats,
@@ -45,16 +40,11 @@ export const questProbeFor = (player: Player): QuestStateProbe => ({
 
 export const dialogueTemplateValuesFor = (player: Player): Record<string, string> => {
   const pronouns = PRONOUN_SETS[player.record.pronouns];
-  const nextClearance = nextClearanceTier(player.record.flags);
   return {
     name: player.record.name,
     subject: pronouns.subject,
     object: pronouns.object,
     possessive: pronouns.possessive,
-    clearance: clearanceTierOf(player.record.flags) === 0 ? 'no clearance' : clearanceName(clearanceTierOf(player.record.flags)),
-    nextClearance: nextClearance === null ? '' : clearanceName(nextClearance),
-    nextClearancePrice: nextClearance === null ? '' : String(clearancePrice(nextClearance)),
-    nextClearanceLevel: nextClearance === null ? '' : String(clearanceLevelFor(nextClearance)),
   };
 };
 
@@ -81,7 +71,6 @@ export const selfStateOf = (player: Player, content: GameContent, clock: { reado
     openPassages: openPassagesOf(player, content),
     studiedCreatures: studiedCreaturesOf(player.record.flags),
     usedObjects: usedObjectsOf(player.record.flags),
-    containmentClearance: clearanceTierOf(player.record.flags),
     contracts: player.record.contracts,
   };
 };

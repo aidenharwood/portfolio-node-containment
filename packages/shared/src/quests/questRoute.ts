@@ -1,6 +1,7 @@
 import type { CreatureId } from '../combat/creatures.ts';
 import type { RecipeDefinition } from '../crafting/recipes.ts';
 import type { DialogueDefinition } from '../dialogue/dialogue.ts';
+import type { ShopDefinition } from '../economy/shop.ts';
 import type { DialogueId, NpcId, WorldObjectId } from '../ids.ts';
 import type { NpcDefinition, WorldObjectDefinition } from '../world/entities.ts';
 import type { TilePoint } from '../world/geometry.ts';
@@ -30,6 +31,7 @@ export interface RouteContent {
   readonly recipes: ReadonlyMap<string, RecipeDefinition>;
   readonly npcs: ReadonlyMap<NpcId, NpcDefinition>;
   readonly dialogues: ReadonlyMap<DialogueId, DialogueDefinition>;
+  readonly shops?: ReadonlyMap<string, ShopDefinition>;
 }
 
 const adjacentTo = (point: TilePoint): RouteGoal => ({ point, arriveAdjacent: true });
@@ -70,11 +72,11 @@ function goalsForObjective(objective: QuestObjective, scene: RouteScene, content
   switch (objective.type) {
     case 'talkTo':
     case 'signal':
-      return [...npcIdsForObjective(objective, content.npcs, content.dialogues)].flatMap((npcId) => npcGoals(npcId, scene));
+      return [...npcIdsForObjective(objective, content.npcs, content.dialogues, content.shops)].flatMap((npcId) => npcGoals(npcId, scene));
     case 'obtainItem':
       return [
         ...objectGoals(objective, scene, content),
-        ...[...npcIdsForObjective(objective, content.npcs, content.dialogues)].flatMap((npcId) => npcGoals(npcId, scene)),
+        ...[...npcIdsForObjective(objective, content.npcs, content.dialogues, content.shops)].flatMap((npcId) => npcGoals(npcId, scene)),
       ];
     case 'defeat':
     case 'contain':

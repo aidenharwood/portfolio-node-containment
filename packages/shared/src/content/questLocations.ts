@@ -15,11 +15,11 @@ function districtsForObjective(content: GameContent, { objective, done }: Active
       return [objective.districtId];
     case 'talkTo':
     case 'signal': {
-      const npcIds = npcIdsForObjective(objective, content.npcs, content.dialogues);
+      const npcIds = npcIdsForObjective(objective, content.npcs, content.dialogues, content.shops);
       return districtsWhere(content, (district) => district.npcs.some((npc) => npcIds.has(npc.npcId)));
     }
     case 'obtainItem': {
-      const npcIds = npcIdsForObjective(objective, content.npcs, content.dialogues);
+      const npcIds = npcIdsForObjective(objective, content.npcs, content.dialogues, content.shops);
       const objectIds = objectIdsForObjective(objective, content.worldObjects, content.recipes);
       return districtsWhere(
         content,

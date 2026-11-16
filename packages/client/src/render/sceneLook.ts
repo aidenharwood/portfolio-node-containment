@@ -2,6 +2,7 @@ import { ACESFilmicToneMapping, Color, DirectionalLight, FogExp2, HalfFloatType,
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { assignLights, type LightAssignment } from './lightAssignment.ts';
 import { buildFieldLightGrid, clearFieldLights, FIELD_LIGHT_LIMIT, fieldLightFade, setFieldAtmosphere, setFieldLights, type FieldLight } from './voxel/fieldLights.ts';
@@ -34,6 +35,35 @@ const DUSK_KEY_CUT = 0.55;
 const SKY_SUN_TINT = 0.8;
 const DAYLIGHT_FOG_THINNING = 0.55;
 const NO_LIGHTS: LightAssignment<LightSource> = { lights: [], edge: Infinity };
+const FINISH_SHADER = {
+  uniforms: { tDiffuse: { value: null }, texel: { value: new Vector2(1, 1) }, sharpen: { value: 0.15 }, time: { value: 0 } },
+  vertexShader: `varying vec2 vUv;
+void main() {
+  vUv = uv;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}`,
+  fragmentShader: `uniform sampler2D tDiffuse;
+uniform vec2 texel;
+uniform float sharpen;
+uniform float time;
+varying vec2 vUv;
+float hash( vec2 p ) { return fract( sin( dot( p, vec2( 12.9898, 78.233 ) ) ) * 43758.5453 ); }
+void main() {
+  vec3 c = texture2D( tDiffuse, vUv ).rgb;
+  vec3 n = texture2D( tDiffuse, vUv + vec2( texel.x, 0.0 ) ).rgb + texture2D( tDiffuse, vUv - vec2( texel.x, 0.0 ) ).rgb + texture2D( tDiffuse, vUv + vec2( 0.0, texel.y ) ).rgb + texture2D( tDiffuse, vUv - vec2( 0.0, texel.y ) ).rgb;
+  c = max( c + ( c * 4.0 - n ) * sharpen, 0.0 );
+  float l = dot( c, vec3( 0.2126, 0.7152, 0.0722 ) );
+  c = mix( vec3( l ), c, 1.12 );
+  c = mix( c, c * c * ( 3.0 - 2.0 * c ), 0.22 );
+  c += vec3( -0.010, 0.002, 0.014 ) * ( 1.0 - smoothstep( 0.0, 0.45, l ) );
+  c += vec3( 0.018, 0.008, -0.012 ) * smoothstep( 0.55, 1.0, l );
+  vec2 v = vUv - 0.5;
+  c *= 1.0 - 0.3 * smoothstep( 0.35, 0.95, dot( v, v ) * 2.0 );
+  float d = hash( gl_FragCoord.xy + fract( time ) * 61.0 ) + hash( gl_FragCoord.xy * 1.7 + 19.0 + fract( time ) * 37.0 ) - 1.0;
+  gl_FragColor = vec4( c + d / 255.0, 1.0 );
+}`,
+};
+
 const LIGHT_OFFSET = new Vector3(5, 12, 3);
 const LIGHT_DIRECTION = LIGHT_OFFSET.clone().normalize();
 const LIGHT_RIGHT = new Vector3().crossVectors(LIGHT_DIRECTION, new Vector3(0, 1, 0)).normalize();
@@ -45,7 +75,7 @@ const SHADOW_REACH_STEP = 0.5;
 const GROUND_FOG_PER_HAZE = 1.6;
 const GROUND_FOG_PER_MIST = 0.18;
 const GROUND_FOG_LIMIT = 0.6;
-const MIST_GAIN = 2.5;
+const MIST_GAIN = 1.7;
 const MIST_WHITE = 0.04;
 const DRIZZLE_WETNESS = 0.6;
 const FLASH_AMBIENT = 2.2;
@@ -56,7 +86,7 @@ const FLASH_SKY_MIX = 0.6;
 export class SceneLook {
   readonly renderer: WebGLRenderer;
   private readonly composer: EffectComposer;
-  private readonly bloom = new UnrealBloomPass(new Vector2(256, 256), 0.45, 0.5, 0.85);
+  private readonly bloom = new UnrealBloomPass(new Vector2(256, 256), 0.6, 0.55, 0.9);
   private renderScale: RenderScale = 'sharp';
   private readonly hemisphere = new HemisphereLight(0x9fc6d6, 0x05080a, 0.6);
   private readonly keyLight = new DirectionalLight(0xcfe8ff, 0.7);
@@ -72,6 +102,7 @@ export class SceneLook {
   private lastAmbience: BlendedAmbience | null = null;
   private readonly mistColor = new Color();
   private readonly snappedFocus = new Vector3();
+  private readonly finish = new ShaderPass(FINISH_SHADER);
   private readonly flashColor = new Color(FLASH_SKY);
   private time = 0;
   flash = 0;
@@ -103,6 +134,10 @@ export class SceneLook {
     this.composer.addPass(new RenderPass(scene, camera));
     this.composer.addPass(this.bloom);
     this.composer.addPass(new OutputPass());
+    this.composer.addPass(this.finish);
+    const highPass = this.bloom.materialHighPassFilter;
+    highPass.fragmentShader = highPass.fragmentShader.replace('float v = luminance( texel.xyz );', 'float v = max( texel.r, max( texel.g, texel.b ) );');
+    highPass.needsUpdate = true;
   }
 
   resize(width: number, height: number): void {
@@ -112,6 +147,9 @@ export class SceneLook {
     this.composer.setPixelRatio(pixelRatio);
     this.composer.setSize(width, height);
     this.applySamples(this.renderScale === 'performance' ? 0 : pixelRatio <= 1.25 ? 4 : 2);
+    this.finish.uniforms.texel!.value.set(1 / Math.max(1, width * pixelRatio), 1 / Math.max(1, height * pixelRatio));
+    this.finish.uniforms.sharpen!.value = pixelRatio < 1.5 ? 0.15 : 0;
+    this.finish.enabled = this.renderScale !== 'performance';
   }
 
   private applySamples(samples: number): void {
@@ -219,6 +257,7 @@ export class SceneLook {
 
   render(camera: Camera, delta: number): void {
     this.time += delta;
+    this.finish.uniforms.time!.value = this.time;
     camera.updateMatrixWorld();
     setFieldLights(this.fieldLights.slice(0, this.activeFieldLights), camera.matrixWorldInverse);
     this.composer.render(delta);

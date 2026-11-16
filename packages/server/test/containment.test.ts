@@ -1,8 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import {
-  clearanceFlag,
-  clearanceTierOf,
   createStartingSkills,
   experienceForLevel,
 
@@ -16,21 +14,20 @@ const NEAR_WARDEN = inRoom('fx-arena', 'arena');
 
 const completed = (questId: string): QuestProgress => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
 
-function operative(containmentLevel: number, clearance: number) {
+function operative(containmentLevel: number) {
   return (record: CharacterRecord): CharacterRecord => {
     const skills = createStartingSkills({
       closeQuarters: experienceForLevel(30),
       fortitude: experienceForLevel(40),
       containment: experienceForLevel(containmentLevel),
     });
-    const flags = Array.from({ length: clearance }, (_, index) => clearanceFlag(index + 1));
     return {
       ...record,
       location: NEAR_WARDEN,
       quests: { 'live-fire': completed('live-fire') },
       skills,
       vitals: { integrity: maxIntegrityFor(skills) },
-      flags: [...record.flags, ...flags],
+      flags: record.flags,
       equipment: { ...record.equipment, primary: 'stun-baton' },
     };
   };
@@ -53,7 +50,7 @@ const notices = (harness: Harness) => harness.sink.messages.flatMap((message) =>
 
 describe('containment', () => {
   test('a qualified operative wears a boss down, contains it and collects the bonus', () => {
-    const harness = createHarness({ prepare: operative(6, 3) });
+    const harness = createHarness({ prepare: operative(6) });
     const creature = warden(harness);
     const containmentBefore = harness.player.record.skills.containment;
 
@@ -68,7 +65,6 @@ describe('containment', () => {
     harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 1 });
     harness.ticksUntil(() => !creature.isAlive, 50);
 
-    assert.equal(clearanceTierOf(harness.player.record.flags), 3, 'a higher clearance covers a lower specimen and is never spent');
     assert.ok(harness.player.record.skills.containment >= containmentBefore + 300);
     const ground = [...harness.gameplay.world.levelOf(harness.player).groundItems.values()];
     const scrip = ground.filter((item) => item.itemId === 'meridian-scrip' && item.ownerId === harness.player.entityId).reduce((total, item) => total + item.quantity, 0);
@@ -78,7 +74,7 @@ describe('containment', () => {
   });
 
   test('containing a storyline boss advances its contain objective', () => {
-    const harness = createHarness({ prepare: onTheWardenStep(operative(6, 2)) });
+    const harness = createHarness({ prepare: onTheWardenStep(operative(6)) });
     const creature = warden(harness);
     harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 0 });
     harness.ticksUntil(() => harness.player.heldFireOn === creature.entityId, 2000);
@@ -88,18 +84,18 @@ describe('containment', () => {
     assert.equal(harness.player.record.quests['vault-run']?.stepIndex, 5);
   });
 
-  test('an operative ordered to contain a boss holds back even without clearance', () => {
-    const harness = createHarness({ prepare: onTheWardenStep(operative(6, 0)) });
+  test('an operative ordered to contain a boss holds back even below the level', () => {
+    const harness = createHarness({ prepare: onTheWardenStep(operative(2)) });
     const creature = warden(harness);
     harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 0 });
     harness.ticksUntil(() => harness.player.heldFireOn === creature.entityId, 2000);
     assert.ok(creature.isAlive);
-    assert.ok(notices(harness).some((text) => text.includes('your orders are to contain it') && text.includes('Clearance I')));
+    assert.ok(notices(harness).some((text) => text.includes('your orders are to contain it') && text.includes('Containment level 3')));
     assert.equal(harness.player.record.quests['vault-run']?.stepIndex, 4);
   });
 
   test('containment is refused below the specimen level', () => {
-    const harness = createHarness({ prepare: operative(2, 2) });
+    const harness = createHarness({ prepare: operative(2) });
     const creature = warden(harness);
     creature.integrity = 1;
     harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 1 });
@@ -108,7 +104,7 @@ describe('containment', () => {
   });
 
   test('an operative can choose to finish a weakened specimen instead', () => {
-    const harness = createHarness({ prepare: operative(6, 2) });
+    const harness = createHarness({ prepare: operative(6) });
     const creature = warden(harness);
     harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 0 });
     harness.ticksUntil(() => harness.player.heldFireOn === creature.entityId, 2000);
@@ -117,8 +113,8 @@ describe('containment', () => {
     assert.ok(!harness.sink.messages.some((message) => message.type === 'combat.death' && message.containedBy !== undefined));
   });
 
-  test('without clearance an operative fights a boss to the end as before', () => {
-    const harness = createHarness({ prepare: operative(6, 0) });
+  test('below the containment level an operative fights a boss to the end as before', () => {
+    const harness = createHarness({ prepare: operative(2) });
     const creature = warden(harness);
     harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 0 });
     harness.ticksUntil(() => !creature.isAlive, 2000);

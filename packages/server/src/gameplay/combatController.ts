@@ -12,7 +12,6 @@ import {
   containmentReadiness,
   isWeakenedForContainment,
   isWithinContainmentReach,
-  clearanceTierOf,
   ignoresOutclassedPlayer,
   defeatExperience,
   creatureDefence,
@@ -109,7 +108,7 @@ export class CombatController implements EncounterHost {
     const level = this.world.levelOf(player);
     const creature = level.creatureByInstance(instanceId);
     if (!creature?.isAlive || !level.isInterestOf(player, creature.position)) return;
-    const blocker = containmentBlocker(creature.definition, creature.integrity, player.record.skills, clearanceTierOf(player.record.flags));
+    const blocker = containmentBlocker(creature.definition, creature.integrity, player.record.skills);
     if (blocker) {
       this.host.notify(player, 'warning', blocker);
       return;
@@ -232,7 +231,7 @@ export class CombatController implements EncounterHost {
   private pullsBlows(player: Player, creature: Creature): boolean {
     if (!creature.definition.containment || player.finishingTargetId === creature.entityId) return false;
     if (this.questAwaitsContainment(player, creature)) return true;
-    return containmentReadiness(creature.definition, player.record.skills, clearanceTierOf(player.record.flags)) === null;
+    return containmentReadiness(creature.definition, player.record.skills) === null;
   }
 
   private holdFire(player: Player, creature: Creature): void {
@@ -240,7 +239,7 @@ export class CombatController implements EncounterHost {
     if (player.heldFireOn === creature.entityId) return;
     player.heldFireOn = creature.entityId;
     const name = creature.definition.name;
-    const readiness = containmentReadiness(creature.definition, player.record.skills, clearanceTierOf(player.record.flags));
+    const readiness = containmentReadiness(creature.definition, player.record.skills);
     if (readiness && this.questAwaitsContainment(player, creature)) {
       this.host.notify(player, 'warning', `${name} is weakened, and your orders are to contain it. ${readiness} Attack it again only if you mean to finish it.`);
       return;
@@ -254,7 +253,7 @@ export class CombatController implements EncounterHost {
 
   private containCreature(player: Player, creature: Creature, level: LevelInstance, tick: number): void {
     player.containTargetId = null;
-    const blocker = containmentBlocker(creature.definition, creature.integrity, player.record.skills, clearanceTierOf(player.record.flags));
+    const blocker = containmentBlocker(creature.definition, creature.integrity, player.record.skills);
     if (blocker) {
       this.host.notify(player, 'warning', blocker);
       this.disengage(player);

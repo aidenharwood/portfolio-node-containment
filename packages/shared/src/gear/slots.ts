@@ -27,7 +27,7 @@ export const EQUIPMENT_SHAPES = {
   primary: ['knife', 'baton', 'blade', 'maul', 'polearm', 'pistol', 'carbine', 'rifle', 'scattergun', 'focus', 'resonator'],
   secondary: ['datapad', 'scanner'],
   implant: ['implant'],
-  utility: ['badge'],
+  utility: ['badge', 'lantern', 'key', 'collar'],
 } as const satisfies Readonly<Record<EquipmentSlot, readonly ItemIconShape[]>>;
 
 export type GearShape<S extends EquipmentSlot = EquipmentSlot> = (typeof EQUIPMENT_SHAPES)[S][number];

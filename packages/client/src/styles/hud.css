@@ -14,16 +14,10 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.07) 0 1px, transparent 1px 4px);
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.045) 0 1px, transparent 1px 4px);
   mix-blend-mode: multiply;
 }
 
-.vignette {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.38) 100%);
-}
 
 .hud-hover {
   position: absolute;
@@ -877,6 +871,16 @@
 
 .quest-entry.state-completed {
   color: var(--color-text-faint);
+}
+
+.quest-entry.state-locked {
+  color: var(--color-text-faint);
+  opacity: 0.7;
+}
+
+.quest-entry.state-locked .quest-entry-name::before {
+  background: none;
+  box-shadow: inset 0 0 0 1px var(--color-text-faint);
 }
 
 .quest-entry.state-completed .quest-entry-name::before {

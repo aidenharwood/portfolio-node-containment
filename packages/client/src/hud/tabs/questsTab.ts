@@ -16,9 +16,9 @@ import { h, replaceChildren } from '../../ui/dom.ts';
 import type { ContextMenu, MenuAction } from '../contextMenu.ts';
 import type { PanelTab } from '../sidePanel.ts';
 
-type QuestState = 'active' | 'completed' | 'available';
+type QuestState = 'active' | 'completed' | 'available' | 'locked';
 
-const STATE_TAGS: Record<QuestState, string> = { active: 'In progress', available: 'Rumoured', completed: 'Done' };
+const STATE_TAGS: Record<QuestState, string> = { active: 'In progress', available: 'Rumoured', completed: 'Done', locked: 'Locked' };
 
 const questlinePriority = (states: readonly QuestState[]): number => {
   if (states.includes('active')) return 0;
@@ -37,7 +37,8 @@ export function createQuestsTab(menu: ContextMenu, tracking: GuidanceTracking): 
     const progress = self?.quests[quest.id];
     if (progress) return progress.status;
     const unlocked = (quest.offerRequires ?? []).every((questId) => self?.quests[questId]?.status === 'completed');
-    return quest.offeredBy && unlocked ? 'available' : null;
+    if (quest.offeredBy && unlocked) return 'available';
+    return quest.category !== 'side' && quest.offeredBy ? 'locked' : null;
   };
 
   const trackedId = (): QuestId | null =>
@@ -132,6 +133,9 @@ export function createQuestsTab(menu: ContextMenu, tracking: GuidanceTracking): 
     const giver = quest.offeredBy ? GAME_CONTENT.npcs.get(quest.offeredBy)?.name : undefined;
     const isTracked = trackedId() === quest.id;
     const questline = questlineOf(GAME_CONTENT.questlines.values(), quest.id);
+    const missing = (quest.offerRequires ?? [])
+      .filter((questId) => current.quests[questId]?.status !== 'completed')
+      .map((questId) => GAME_CONTENT.quests.get(questId)?.name ?? questId);
     replaceChildren(
       body,
       h('div', { className: 'quest-detail' },
@@ -150,7 +154,8 @@ export function createQuestsTab(menu: ContextMenu, tracking: GuidanceTracking): 
         quest.recommendedLevel !== undefined &&
           h('p', { className: `quest-recommended${current.combatLevel < quest.recommendedLevel ? ' under' : ''}` },
             `Recommended combat level ${quest.recommendedLevel} · yours ${current.combatLevel}`),
-        !progress && giver && h('p', { className: 'quest-journal' }, `Speak with ${giver} to begin.`),
+        !progress && giver && missing.length === 0 && h('p', { className: 'quest-journal' }, `Speak with ${giver} to begin.`),
+        !progress && missing.length > 0 && h('p', { className: 'quest-journal' }, `Unlocks after ${missing.join(' and ')}.`),
         step && h('p', { className: 'quest-journal' }, step.journal),
         step &&
           h('ul', { className: 'quest-objectives' },

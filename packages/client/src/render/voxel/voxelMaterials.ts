@@ -2,7 +2,7 @@ import { Color, Group, Mesh, MeshBasicMaterial, MeshLambertMaterial, type Materi
 import { receiveFieldLights } from './fieldLights.ts';
 import type { VoxelMeshes } from './voxelMesher.ts';
 
-const EMISSIVE_GAIN = 1.5;
+const EMISSIVE_GAIN = 1.15;
 const ACTOR_FILL = 0.22;
 
 export const VOXEL_MATERIALS = {

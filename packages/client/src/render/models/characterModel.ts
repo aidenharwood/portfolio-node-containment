@@ -521,8 +521,8 @@ const WEAPON_SPAN: Readonly<Record<GearShape<'primary'>, readonly [grip: number,
   carbine: [-3, 12, 13],
   rifle: [-6, 17, 13],
   scattergun: [-5, 8, 13],
-  focus: [1, 8, 12],
-  resonator: [-3, 10, 12],
+  focus: [1, 10, 12],
+  resonator: [-4, 16, 12],
 };
 
 const RANGED_SHAPES: readonly GearShape<'primary'>[] = ['pistol', 'carbine', 'rifle', 'scattergun'];
@@ -560,22 +560,38 @@ type HeldRenderer = (model: VoxelModel, gear: GearVisual, handX: number) => void
 
 const HELD_GEAR: Readonly<Record<GearShape<'primary' | 'secondary'>, HeldRenderer>> = {
   focus: (model, gear, handX) => {
-    const lens = hex(gear.primary);
-    model.fill(handX, 12, 1, handX, 12, 6, hex(gear.secondary));
-    model.fill(handX - 1, 11, 7, handX + 1, 13, 8, (x, y) => (x === handX && y === 12 ? null : lens));
-    model.set(handX, 12, 7, gear.emissive ? hex(gear.emissive) : lighten(lens, 0.3), gear.emissive ? VOXEL_EMISSIVE : undefined);
-    model.set(handX, 12, 8, lighten(lens, 0.2));
+    const frame = hex(gear.primary);
+    const grip = hex(gear.secondary);
+    const glow = gear.emissive ? hex(gear.emissive) : lighten(frame, 0.45);
+    const kind = gear.emissive ? VOXEL_EMISSIVE : undefined;
+    model.fill(handX, 12, 1, handX, 12, 3, (_x, _y, z) => (z === 2 ? darken(grip, 0.3) : grip));
+    model.fill(handX - 2, 12, 4, handX + 2, 12, 4, frame).set(handX, 13, 4, lighten(frame, 0.15));
+    for (const x of [handX - 2, handX + 2]) model.fill(x, 12, 5, x, 12, 8, (_x, _y, z) => (z === 8 ? lighten(frame, 0.25) : frame));
+    model.fill(handX, 12, 6, handX, 12, 9, glow, kind);
+    model.fill(handX - 1, 12, 7, handX + 1, 12, 8, glow, kind);
+    model.fill(handX, 11, 7, handX, 13, 8, glow, kind);
+    model.set(handX, 12, 10, lighten(glow, 0.35), kind);
   },
   resonator: (model, gear, handX) => {
     const frame = hex(gear.primary);
-    model.fill(handX, 12, -3, handX, 12, 4, hex(gear.secondary));
-    model.fill(handX - 2, 10, 5, handX + 2, 15, 10, (x, y, z) => {
-      const edge = x === handX - 2 || x === handX + 2 || y === 10 || y === 15;
-      if (edge && (z === 5 || z === 10)) return jitter(frame, 0.04, noise3(x, y, z, 47));
-      if (!gear.emissive || z % 2 === 0) return null;
-      return x === handX && y > 10 && y < 15 ? hex(gear.emissive) : null;
-    });
-    if (gear.emissive) model.fill(handX, 11, 6, handX, 14, 9, (x, y, z) => (z % 2 === 1 ? hex(gear.emissive!) : null), VOXEL_EMISSIVE);
+    const shaft = hex(gear.secondary);
+    const glow = gear.emissive ? hex(gear.emissive) : lighten(frame, 0.45);
+    const kind = gear.emissive ? VOXEL_EMISSIVE : undefined;
+    model.fill(handX, 12, -4, handX, 12, 5, (_x, _y, z) => (z === -4 ? frame : z === 0 || z === 3 ? darken(shaft, 0.35) : shaft));
+    model.fill(handX - 1, 11, 6, handX + 1, 13, 6, frame);
+    model.fill(handX, 12, 7, handX, 12, 12, glow, kind);
+    const ring = (z: number, radius: number, color: number) =>
+      model.fill(handX - radius, 12 - radius, z, handX + radius, 12 + radius, z, (x, y) => {
+        const dx = Math.abs(x - handX);
+        const dy = Math.abs(y - 12);
+        return Math.max(dx, dy) === radius && !(dx === radius && dy === radius && radius > 1) ? color : null;
+      });
+    ring(8, 2, frame);
+    ring(10, 1, lighten(frame, 0.1));
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) model.set(handX + dx, 12 + dy, 12, lighten(frame, 0.2));
+    model.set(handX, 12, 14, glow, kind);
+    for (const [dx, dy] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]] as const) model.set(handX + dx, 12 + dy, 15, glow, kind);
+    model.set(handX, 12, 16, lighten(glow, 0.35), kind);
   },
   baton: (model, gear, handX) => {
     model.fill(handX, 12, 1, handX, 12, 7, hex(gear.primary));

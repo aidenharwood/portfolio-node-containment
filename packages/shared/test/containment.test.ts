@@ -2,13 +2,6 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import {
   isWithinContainmentReach,
-  CLEARANCE_TIERS,
-  clearanceFlag,
-  clearanceLevelFor,
-  clearancePrice,
-  clearanceRefusal,
-  clearanceTierFor,
-  clearanceTierOf,
   containmentBlocker,
   containmentLevelFor,
   containmentReadiness,
@@ -17,8 +10,6 @@ import {
   experienceForLevel,
   findContentIssues,
   isWeakenedForContainment,
-  nextClearanceTier,
-  tierForLevel,
   type CreatureDefinition,
 } from '../src/index.ts';
 import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
@@ -29,8 +20,6 @@ const creature = (id: string): CreatureDefinition => {
   return definition;
 };
 
-const clearedTo = (tier: number): string[] => Array.from({ length: tier }, (_, index) => clearanceFlag(index + 1));
-
 describe('containment rules', () => {
   test('a specimen is weakened at a tenth of its integrity, never at zero', () => {
     assert.equal(containmentThreshold(102), 10);
@@ -40,49 +29,12 @@ describe('containment rules', () => {
     assert.ok(!isWeakenedForContainment(0, 102));
   });
 
-  test('clearance is held in order, one tier at a time', () => {
-    assert.equal(clearanceTierOf([]), 0);
-    assert.equal(clearanceTierOf(clearedTo(3)), 3);
-    assert.equal(clearanceTierOf([clearanceFlag(1), clearanceFlag(3)]), 1);
-    assert.equal(nextClearanceTier(clearedTo(2)), 3);
-    assert.equal(nextClearanceTier(clearedTo(CLEARANCE_TIERS)), null);
-  });
-
-  test('a clearance costs scrip and needs the containment level of its tier', () => {
-    assert.equal(clearancePrice(1), 25);
-    assert.equal(clearancePrice(9), 2025);
-    const flags = clearedTo(1);
-    const novice = createStartingSkills();
-    const qualified = createStartingSkills({ containment: experienceForLevel(clearanceLevelFor(2)) });
-    assert.match(clearanceRefusal(flags, novice, 1000) ?? '', /Containment level 5/);
-    assert.match(clearanceRefusal(flags, qualified, clearancePrice(2) - 1) ?? '', /costs 100 scrip/);
-    assert.equal(clearanceRefusal(flags, qualified, clearancePrice(2)), null);
-    assert.match(clearanceRefusal(clearedTo(CLEARANCE_TIERS), qualified, 99_999) ?? '', /highest/);
-  });
-
-  test('containment needs the level, the clearance and a weakened specimen', () => {
+  test('containment needs only the level and a weakened specimen', () => {
     const warden = creature('hollow-warden');
-    const tier = clearanceTierFor(warden);
-    assert.equal(tier, tierForLevel(containmentLevelFor(warden)));
     const novice = createStartingSkills();
     const qualified = createStartingSkills({ containment: experienceForLevel(containmentLevelFor(warden)) });
 
-    assert.match(containmentReadiness(warden, novice, tier) ?? '', /Containment level 3/);
-    assert.match(containmentReadiness(warden, qualified, tier - 1) ?? '', /Clearance I\b/);
-    assert.equal(containmentReadiness(warden, qualified, tier), null);
-    assert.equal(containmentReadiness(warden, qualified, CLEARANCE_TIERS), null);
-    assert.match(containmentBlocker(warden, warden.integrity, qualified, tier) ?? '', /too strong/);
-    assert.equal(containmentBlocker(warden, 1, qualified, tier), null);
-    assert.match(containmentReadiness(creature('training-drone'), qualified, tier) ?? '', /cannot be contained/);
-  });
-
-  test('every containable specimen is covered by a clearance', () => {
-    const bosses = [...FIXTURE_CONTENT.creatures.values()].filter((definition) => definition.containment).map((definition) => definition.id);
-    assert.ok(bosses.length > 0);
-    for (const id of bosses) {
-      const boss = creature(id);
-      assert.ok(clearanceTierFor(boss) <= CLEARANCE_TIERS, `${id} needs a clearance for tier ${clearanceTierFor(boss)}`);
-    }
+assert.match(containmentReadiness(warden, novice) ?? '', /Containment level 3/);    assert.equal(containmentReadiness(warden, qualified), null);    assert.match(containmentBlocker(warden, warden.integrity, qualified) ?? '', /too strong/);    assert.equal(containmentBlocker(warden, 1, qualified), null);    assert.match(containmentReadiness(creature('training-drone'), qualified) ?? '', /cannot be contained/);
   });
 
   test('no containment seals remain as items or recipes', () => {
@@ -93,7 +45,6 @@ describe('containment rules', () => {
   test('story bosses can be contained at a story pace, below their combat level', () => {
     const warden = creature('hollow-warden');
     assert.ok(containmentLevelFor(warden) < warden.level);
-    assert.equal(clearanceTierFor(warden), tierForLevel(containmentLevelFor(warden)));
     const plain = { ...warden, containment: warden.containment ? { ...warden.containment, requiredLevel: undefined } : undefined };
     assert.equal(containmentLevelFor(plain), warden.level);
   });

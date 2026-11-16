@@ -80,9 +80,8 @@ export const FIXTURE_DIALOGUES: readonly DialogueDefinition[] = [
     nodes: {
       greeting: {
         speaker: 'npc',
-        text: 'Clearance?',
+        text: 'Papers?',
         options: [
-          { text: 'Apply for {nextClearance}. ({nextClearancePrice} scrip, Containment {nextClearanceLevel})', conditions: [{ type: 'lacksFlag', flag: 'containment-clearance-9' }], effects: [{ type: 'purchaseClearance' }], next: 'greeting' },
           { text: 'Take the survey.', conditions: [{ type: 'questNotStarted', questId: 'survey' }], effects: [{ type: 'startQuest', questId: 'survey' }], next: null },
           { text: 'Bye.', next: null },
         ],

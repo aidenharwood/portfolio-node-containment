@@ -55,7 +55,21 @@ export type ItemIconShape =
   | 'sheet'
   | 'cell'
   | 'seal'
-  | 'credits';
+  | 'credits'
+  | 'loaf'
+  | 'pie'
+  | 'dish'
+  | 'bowl'
+  | 'eel'
+  | 'cat'
+  | 'panel'
+  | 'lantern'
+  | 'key'
+  | 'collar'
+  | 'leaf'
+  | 'flower'
+  | 'rotor'
+  | 'tin';
 
 export const GEAR_MOTIFS = ['bulwark', 'skirmisher', 'warden'] as const;
 

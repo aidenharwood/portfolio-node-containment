@@ -2,8 +2,6 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import {
   addItem,
-  clearanceFlag,
-  clearanceTierOf,
   countItem,
   createStartingSkills,
   CURRENCY_ITEM_ID,
@@ -48,29 +46,6 @@ const chooseOption = (harness: Harness, prefix: string) => {
   assert.ok(option, `no dialogue option starting "${prefix}"`);
   harness.send({ type: 'dialogue.choose', optionIndex: option.index });
 };
-
-describe('containment clearance', () => {
-  test('the Registrar sells the next clearance and refuses one the operative is not qualified for', () => {
-    const harness = createHarness({
-      prepare: (record) => {
-        const prepared = veteran(DIAGNOSTICS, { flags: [clearanceFlag(1)] })(record);
-        return { ...prepared, inventory: addItem(prepared.inventory, CONTENT.items, CURRENCY_ITEM_ID, 300).inventory };
-      },
-    });
-    const scripBefore = countItem(harness.player.record.inventory, CURRENCY_ITEM_ID);
-
-    harness.talkTo('hub-registrar');
-    assert.match(harness.sink.last('dialogue.opened')?.view.options?.[0]?.text ?? '', /Clearance II\. \(100 scrip, Containment 5\)/);
-    chooseOption(harness, 'Apply for');
-    assert.equal(clearanceTierOf(harness.player.record.flags), 2);
-    assert.equal(countItem(harness.player.record.inventory, CURRENCY_ITEM_ID), scripBefore - 100);
-
-    chooseOption(harness, 'Apply for');
-    assert.equal(clearanceTierOf(harness.player.record.flags), 2, 'Clearance III needs Containment 8');
-    assert.equal(countItem(harness.player.record.inventory, CURRENCY_ITEM_ID), scripBefore - 100);
-    assert.ok(notices(harness).some((text) => text.includes('Containment level 8')));
-  });
-});
 
 describe('relentless training creatures and gathering', () => {
   test('a lint mite attacks an operative far above its level, who fights back', () => {

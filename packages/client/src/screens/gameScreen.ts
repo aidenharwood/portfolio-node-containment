@@ -528,7 +528,6 @@ export function createGameScreen(app: AppNavigator): Screen {
     canvas,
     speech.element,
     combatOverlay.element,
-    h('div', { className: 'vignette' }),
     h('div', { className: 'scanlines' }),
     zoneBanner,
     cameraHint,

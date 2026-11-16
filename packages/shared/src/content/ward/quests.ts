@@ -35,10 +35,9 @@ export const WARD_QUESTS: readonly QuestDefinition[] = [
     ],
     rewards: [
       { type: 'giveItem', itemId: 'meridian-scrip', count: 50 },
-      { type: 'setFlag', flag: 'containment-clearance-1' },
-      { type: 'notify', text: 'The city is yours. Talk to people: most of them want something.' },
+      { type: 'notify', text: 'The city is yours. Bettina Crane in the Tenements has a tenant nobody has seen in months. Start there.' },
     ],
-    rewardSummary: ['50 Scrip', 'Containment Clearance I', 'The freedom of the Ward'],
+    rewardSummary: ['50 Scrip', 'The freedom of the Ward'],
   },
   {
     id: 'noodle-run',
@@ -71,8 +70,8 @@ export const WARD_QUESTS: readonly QuestDefinition[] = [
 
 export const WARD_QUESTLINES: readonly QuestlineDefinition[] = [
   { id: 'first-steps', name: 'First Steps', kind: 'main', summary: 'Arriving in Hollow Bay.', questIds: [TUTORIAL_QUEST_ID] },
-  { id: 'site-meridian', name: 'Site Meridian', kind: 'main', summary: 'What the Site is sitting on.', questIds: ['steel-below', 'dead-band', 'bill-of-lading', 'the-heart'] },
-  { id: 'ward-favours', name: 'Ward Favours', kind: 'side', summary: 'Small problems from the people of the Low Ward.', questIds: ['noodle-run', 'line-thief', 'bed-six', 'valve-trouble', 'rent-day', 'lost-cat', 'bright-things', 'drowned-lamp', 'what-glows', 'bottom-up', 'knock-back'] },
+  { id: 'site-meridian', name: 'Site Meridian', kind: 'main', summary: 'What the Site is sitting on.', questIds: ['rent-day', 'steel-below', 'dead-band', 'bill-of-lading', 'the-heart'] },
+  { id: 'ward-favours', name: 'Ward Favours', kind: 'side', summary: 'Small problems from the people of the Low Ward.', questIds: ['noodle-run', 'line-thief', 'bed-six', 'valve-trouble', 'lost-cat', 'bright-things', 'drowned-lamp', 'what-glows', 'bottom-up', 'knock-back'] },
 ];
 
 const at = (stepId: string): Condition[] => [{ type: 'questActive', questId: TUTORIAL_QUEST_ID, stepId }];
@@ -114,7 +113,7 @@ export const WARD_DIALOGUES: readonly DialogueDefinition[] = [
       'kit-2': say('Then out to the rail yard behind the station. There is a training drone there. Hit it until it stops. After that, there is something in a crate. Wear it down gently and contain it. Do not kill it, it is the only one we have.'),
       equip: say('Open your gear and put the baton on. It goes in your hand, not your pocket.'),
       yard: say('Rail yard, behind the station. Drone first, then the wisp. And eat something after, you look terrible.'),
-      report: say("Drone down, wisp in a crate and Vance has fed you. That is everything I teach. You have Clearance I and the Directorate's thanks, which is worth less.", 'report-2'),
+      report: say("Drone down, wisp in a crate and Vance has fed you. That is everything I teach. You have the Directorate's thanks, which is worth less than it sounds.", 'report-2'),
       'report-2': say('The rest of the Ward is yours. Talk to people. Most of them want something. The board here has paid work when you want it, and the map shows you where you have been. Good luck, operative.'),
       chat: { speaker: 'npc', text: 'The board on the wall has the work. Amber tags are routine. Red tags, read twice before you sign.', options: [bye] },
     },

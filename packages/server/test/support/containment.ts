@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { clearanceFlag, clearanceTierFor, containmentLevelFor, experienceForLevel, levelForExperience, maxIntegrityFor } from '@containment/shared';
+import { containmentLevelFor, experienceForLevel, levelForExperience, maxIntegrityFor } from '@containment/shared';
 import type { Harness } from './testHarness.ts';
 
 export function equipForContainment(harness: Harness, instanceId: string): void {
@@ -9,8 +9,7 @@ export function equipForContainment(harness: Harness, instanceId: string): void 
   const required = containmentLevelFor(creature.definition);
   const skills =
     levelForExperience(player.record.skills.containment) < required ? { ...player.record.skills, containment: experienceForLevel(required) } : player.record.skills;
-  const flags = [...player.record.flags, ...Array.from({ length: clearanceTierFor(creature.definition) }, (_, index) => clearanceFlag(index + 1))];
-  player.update({ skills, flags: [...new Set(flags)] });
+  player.update({ skills });
 }
 
 export function containSpecimen(harness: Harness, instanceId: string, limit = 8000): void {

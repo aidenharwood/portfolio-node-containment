@@ -1,4 +1,3 @@
-import { CLEARANCE_TIERS, clearanceTierFor } from '../combat/containment.ts';
 import type { GameContent } from './gameContent.ts';
 
 export function findContainmentIssues(content: GameContent): string[] {
@@ -9,7 +8,6 @@ export function findContainmentIssues(content: GameContent): string[] {
     const profile = creature.containment;
     if (!profile) continue;
     const where = `creature ${creature.id}`;
-    if (clearanceTierFor(creature) > CLEARANCE_TIERS) report(where, `no clearance covers its tier ${clearanceTierFor(creature)}`);
     if (creature.relentless) report(where, 'relentless training creatures cannot be containable');
     if (profile.requiredLevel !== undefined && (!Number.isInteger(profile.requiredLevel) || profile.requiredLevel < 1 || profile.requiredLevel > creature.level)) {
       report(where, `required containment level ${profile.requiredLevel} must be a whole number from 1 to the specimen level ${creature.level}`);

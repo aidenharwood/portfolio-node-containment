@@ -27,7 +27,8 @@ varying vec3 vBeamView;
 varying float vBeamDepth;
 void main() {
   float facing = pow( abs( dot( normalize( vBeamNormal ), normalize( vBeamView ) ) ), 1.5 );
-  float fall = 1.0 - 0.7 * clamp( vBeamDepth, 0.0, 1.0 );
+  float depth = clamp( vBeamDepth, 0.0, 1.0 );
+  float fall = ( 1.0 - 0.6 * depth ) * ( 1.0 - smoothstep( 0.6, 1.0, depth ) );
   gl_FragColor = vec4( beamColor, beamOpacity * facing * fall );
 }`;
 

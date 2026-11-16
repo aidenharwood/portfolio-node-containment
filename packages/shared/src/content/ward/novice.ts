@@ -32,11 +32,11 @@ const questItem = (id: string, name: string, examine: string, icon: ItemIconShap
 });
 
 export const NOVICE_ITEMS: readonly ItemDefinition[] = [
-  questItem('okafor-coat', "Mr Okafor's Coat", 'A good wool coat, slightly stretched by whatever was wearing it.', 'coat', ['#3a3a4a', '#8a8a8a']),
-  questItem('hand-leaf', 'Hand-leaf', 'A leaf with five fingers. It closes slowly around your thumb.', 'moss', ['#5a8a3a', '#b6ff4f']),
+  questItem('okafor-coat', "Mr Okafor's Coat", 'A good wool coat, slightly stretched by whatever was wearing it.', 'coat', ['#565670', '#8a8a8a']),
+  questItem('hand-leaf', 'Hand-leaf', 'A leaf with five fingers. It closes slowly around your thumb.', 'leaf', ['#3f7a2a', '#2a2018']),
   questItem('knocking-notes', "Fennick's Notes", 'Pages of dates and times, each one marked KNOCK, and a sketch of the Site with an arrow pointing down.', 'datapad', ['#d8d0b8', '#5a4a3a']),
-  questItem('grey-cat', 'Grey Cat', "Pell's cat. One ear, very warm, and its eyes glow faintly green now.", 'fibre', ['#6a6a72', '#b6ff4f']),
-  questItem('drowned-lamp', 'The Drowned Lamp', 'A brass ship lamp, still lit, still wet. It has been both for forty years.', 'cell', ['#d8a03a', '#ffb35a']),
+  questItem('grey-cat', 'Grey Cat', "Pell's cat. One ear, very warm, and its eyes glow faintly green now.", 'cat', ['#6a6a72', '#b6ff4f']),
+  questItem('drowned-lamp', 'The Drowned Lamp', 'A brass ship lamp, still lit, still wet. It has been both for forty years.', 'lantern', ['#d8a03a', '#ffb35a']),
   {
     id: 'valve-part',
     name: 'Valve Part',
@@ -48,10 +48,10 @@ export const NOVICE_ITEMS: readonly ItemDefinition[] = [
     maxStack: 10,
     value: 5,
   },
-  gear({ id: 'eelskin-hood', name: 'Eelskin Hood', examine: 'A hood cut from one enormous eel. It is still slightly slippery.', rarity: 'restricted', icon: 'hood', slot: 'head', stats: { deflection: 5, armor: 2, accuracy: 1 }, requires: { marksmanship: 5 }, visual: { primary: '#1f2a2a', secondary: '#3a5a4a', motif: 'skirmisher' }, value: 120, unique: true }),
+  gear({ id: 'eelskin-hood', name: 'Eelskin Hood', examine: 'A hood cut from one enormous eel. It is still slightly slippery.', rarity: 'restricted', icon: 'hood', slot: 'head', stats: { deflection: 5, armor: 2, accuracy: 1 }, requires: { marksmanship: 5 }, visual: { primary: '#3a4c4c', secondary: '#3a5a4a', motif: 'skirmisher' }, value: 120, unique: true }),
   gear({ id: 'crawler-shell', name: 'Crawler Shell', examine: 'The back plate of a scrap crawler, strapped on. It used to be a car door.', rarity: 'restricted', icon: 'vest', slot: 'torso', stats: { armor: 14, deflection: 5, hazardShielding: 2 }, requires: { fortitude: 10 }, visual: { primary: '#6a4a3a', secondary: '#3a3f44', motif: 'bulwark' }, value: 300, unique: true }),
-  gear({ id: 'rustling-core', name: 'Rustling Core', examine: 'The amber light from inside a rustling. It whispers about metal.', rarity: 'classified', icon: 'implant', slot: 'implant', stats: { focus: 6, cognitiveWard: 4 }, requires: { psionics: 12 }, visual: { primary: '#e8a21c', secondary: '#3a2a10' }, value: 400, unique: true }),
-  gear({ id: 'lamplighter-lantern', name: "Lamplighter's Lantern", examine: 'A small lantern that lights itself when something is watching.', rarity: 'classified', icon: 'badge', slot: 'utility', stats: { insight: 3, cognitiveWard: 3, focus: 2 }, requires: { psionics: 8 }, visual: { primary: '#2a2e31', secondary: '#1a1a1a', emissive: '#ffb35a' }, value: 350, unique: true }),
+  gear({ id: 'rustling-core', name: 'Rustling Core', examine: 'The amber light from inside a rustling. It whispers about metal.', rarity: 'classified', icon: 'implant', slot: 'implant', stats: { focus: 6, cognitiveWard: 4 }, requires: { psionics: 12 }, visual: { primary: '#5a4a2a', secondary: '#3a2a10', emissive: '#e8a21c' }, value: 400, unique: true }),
+  gear({ id: 'lamplighter-lantern', name: "Lamplighter's Lantern", examine: 'A small lantern that lights itself when something is watching.', rarity: 'classified', icon: 'lantern', slot: 'utility', stats: { insight: 3, cognitiveWard: 3, focus: 2 }, requires: { psionics: 8 }, visual: { primary: '#5a5e62', secondary: '#9ab0b8', emissive: '#ffb35a' }, value: 350, unique: true }),
 ];
 
 export const NOVICE_RECIPES: readonly RecipeDefinition[] = [
@@ -208,7 +208,7 @@ export const NOVICE_OBJECTS: readonly WorldObjectDefinition[] = [
 const xp = (skill: SkillId, amount: number): GameEffect => ({ type: 'grantExperience', skill, amount });
 const scrip = (count: number): GameEffect => ({ type: 'giveItem', itemId: 'meridian-scrip', count });
 
-const novice = (quest: Omit<QuestDefinition, 'category'>): QuestDefinition => ({ category: 'side', offerRequires: [TUTORIAL_QUEST_ID], ...quest });
+const novice = (quest: Omit<QuestDefinition, 'category'> & { readonly category?: QuestDefinition['category'] }): QuestDefinition => ({ category: 'side', offerRequires: [TUTORIAL_QUEST_ID], ...quest });
 
 export const NOVICE_QUESTS: readonly QuestDefinition[] = [
   novice({
@@ -249,6 +249,7 @@ export const NOVICE_QUESTS: readonly QuestDefinition[] = [
     rewardSummary: ['1 Quest Point', '300 Engineering XP', '150 Refining XP', '50 Scrip', 'The culvert hatches between the Cut and the basin'],
   }),
   novice({
+    category: 'main',
     id: 'rent-day',
     name: 'Rent Day',
     summary: "Bettina Crane's tenant at Number 20 hasn't paid in months, and nobody has seen him.",

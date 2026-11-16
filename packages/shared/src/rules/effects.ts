@@ -20,5 +20,4 @@ export type GameEffect =
   | { readonly type: 'openContracts' }
   | { readonly type: 'restoreIntegrity' }
   | { readonly type: 'openTramMap' }
-  | { readonly type: 'discoverStation'; readonly stationId: TramStationId }
-  | { readonly type: 'purchaseClearance' };
+  | { readonly type: 'discoverStation'; readonly stationId: TramStationId };
