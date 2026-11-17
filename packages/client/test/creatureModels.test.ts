@@ -57,6 +57,8 @@ test('no creature is accidentally washed out to white', () => {
   }
 });
 
+const OVERHEAD_GLOW: Readonly<Record<string, number>> = { crateWisp: 12, lamplighter: 12, mothLantern: 8, warden: 8 };
+
 test('a creature with an accent glow shows it to the overhead camera', () => {
   for (const key of CREATURE_LOOK_KEYS) {
     if (creatureLookAccent(key) === undefined) continue;
@@ -67,6 +69,7 @@ test('a creature with an accent glow shows it to the overhead camera', () => {
       for (let y = cell.y + 1; y < top; y++) if (model.has(cell.x, y, cell.z) && model.kindAt(cell.x, y, cell.z) !== VOXEL_GLASS) return false;
       return true;
     });
-    assert.ok(open.length >= 2, `${key} shows ${open.length} glowing voxels from above`);
+    const needed = OVERHEAD_GLOW[key] ?? 2;
+    assert.ok(open.length >= needed, `${key} shows ${open.length} of ${needed} glowing voxels from above`);
   }
 });

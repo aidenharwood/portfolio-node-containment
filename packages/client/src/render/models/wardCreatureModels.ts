@@ -197,7 +197,8 @@ const lineMimic = (): VoxelModel => {
   model.set(0, 8, 3, 0xc8a03a).set(0, 10, 3, 0xc8a03a);
   model.set(-1, 12, 3, 0xffd23f, VOXEL_EMISSIVE).set(0, 12, 3, 0xffd23f, VOXEL_EMISSIVE);
   model.fill(-3, 0, -1, -2, 3, 0, 0xc84a4a).fill(1, 0, -1, 2, 3, 0, 0x4a7ac8);
-  model.fill(-4, 18, 0, 3, 18, 0, 0x8a8a8a).fill(0, 19, 0, 0, 20, 0, 0x8a8a8a).fill(-2, 21, 0, 0, 21, 0, 0x8a8a8a).set(-2, 20, 0, 0x8a8a8a);
+  model.paintExisting(-6, 17, -1, -5, 17, 1, darken(coat, 0.3)).paintExisting(4, 17, -1, 5, 17, 1, darken(coat, 0.3));
+  model.fill(-4, 18, 0, 3, 18, 0, 0xb0b0b0).fill(0, 19, 0, 0, 20, 0, 0x8a8a8a).fill(-2, 21, 0, 0, 21, 0, 0x8a8a8a).set(-2, 20, 0, 0x8a8a8a);
   return model;
 };
 
@@ -307,14 +308,14 @@ const tideWraith = (): VoxelModel => {
       const surface = d > r - 1;
       if (surface && y < 21 && noise3(x, y, z, 45) > 0.7) continue;
       if (y <= 6 || (surface && noise3(x, y, z, 47) > 0.5)) model.set(x, y, z + hunch, water, VOXEL_GLASS);
-      else model.set(x, y, z + hunch, lighten(jitter(y < 10 ? 0x35604c : 0x4a7060, 0.12, noise3(x, 0, z, 46)), (y - 2) * 0.008));
+      else model.set(x, y, z + hunch, lighten(jitter(y < 10 ? 0x35604c : 0x5a8474, 0.12, noise3(x, 0, z, 46)), (y - 2) * 0.008));
     }
   }
   model.fill(-5, 8, 0, -4, 18, 0, 0x4a7060).fill(4, 8, 0, 5, 18, 0, 0x4a7060);
   model.fill(-5, 8, 0, -4, 9, 0, water, VOXEL_GLASS).fill(4, 8, 0, 5, 9, 0, water, VOXEL_GLASS);
   for (const [x, z, bottom] of [[-3, 1, 5], [2, -2, 7], [1, 3, 4], [-1, -3, 8]] as const) model.fill(x, bottom, z, x, 12, z, weed);
   for (const [x, z] of [[-2, 3], [3, 1], [-3, 1], [2, -1]] as const) model.fill(x, 18, z, x, 26, z, weed);
-  model.set(-1, 23, 4, 0xc79bff, VOXEL_EMISSIVE).set(1, 23, 4, 0xc79bff, VOXEL_EMISSIVE);
+  model.fill(-2, 23, 4, -1, 23, 4, 0xc79bff, VOXEL_EMISSIVE).fill(1, 23, 4, 2, 23, 4, 0xc79bff, VOXEL_EMISSIVE);
   return model;
 };
 
@@ -392,6 +393,8 @@ const vaultEcho = (): VoxelModel => {
   return model;
 };
 
+const WARDEN_BANDS: ReadonlySet<number> = new Set([18, 23, 28]);
+
 const warden = (): VoxelModel => {
   const plate = 0x24323f;
   const core = 0x7fd8ff;
@@ -408,8 +411,10 @@ const warden = (): VoxelModel => {
     for (let x = -rx; x <= rx - 1; x++) for (let z = -rz; z <= rz - 1; z++) {
       const shell = x === -rx || x === rx - 1 || z === -rz || z === rz - 1;
       if (!shell) model.set(x, y, z, 0x0e1a26);
-      else if (glassy && mod(x + rx - 1, 4) !== 0) model.set(x, y, z, 0x2a4458, VOXEL_GLASS);
-      else model.set(x, y, z, jitter(plate, 0.08, noise3(x, y, z, 59)));
+      else if (glassy && mod(x + rx - 1, 4) !== 0) {
+        if (WARDEN_BANDS.has(y) && (z === rz - 1 || z === -rz)) model.set(x, y, z, core, VOXEL_EMISSIVE);
+        else model.set(x, y, z, 0x2a4458, VOXEL_GLASS);
+      } else model.set(x, y, z, jitter(plate, 0.08, noise3(x, y, z, 59)));
     }
   }
   model.fill(-2, 16, -1, 1, 30, 0, core, VOXEL_EMISSIVE);
