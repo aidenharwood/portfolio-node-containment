@@ -40,7 +40,6 @@ const COLORS = {
   threshold: 0x463d2c,
   hazardYellow: 0xc99a1c,
   hazardBlack: 0x17170f,
-  chevron: 0xd6a922,
   coolantBed: 0x0a2733,
   wallBody: 0x2a3a45,
   wallCap: 0x3b4b57,
@@ -431,11 +430,8 @@ function floorVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: nu
     case 'hazard':
       return solid(even(Math.floor((vx + vz) / 4)) ? COLORS.hazardYellow : COLORS.hazardBlack);
     case 'door': {
-      const along = tile.axis === 'x' ? lx : lz;
       const across = tile.axis === 'x' ? lz : lx;
       if (across === 0 || across === R - 1) return solid(COLORS.grateFrame);
-      const tip = Math.floor(Math.abs(across - 3.5));
-      if (along - 2 === tip || along - 3 === tip) return solid(COLORS.chevron);
       return solid(COLORS.plating);
     }
     default:
