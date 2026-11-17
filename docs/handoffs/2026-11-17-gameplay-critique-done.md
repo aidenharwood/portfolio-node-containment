@@ -88,3 +88,30 @@ Written 2026-11-17. This loop ran the brief in `2026-11-17-gameplay-critique.md`
 3. **Lost Cat gauntlet.** Three mites back to back without food is about a 16% win at the gate. Only text warns about it; there is no gauntlet test.
 4. **Cosmetic.** `line-mimic` drops the Okafor coat at 100% forever, and `pike-pawn` has no listings.
 5. **Regeneration.** It is unchanged: 1 integrity every 20 ticks out of combat. If playtesting shows the waits drag, `REGENERATION_INTERVAL_TICKS` is a one-line change.
+
+## Follow-up: experience rates
+
+The owner asked for early levels to come fairly quickly. The model in `scripts/_rates.ts` (local, not committed) simulates seeded fights in level-matched gear, with walking and regeneration time added.
+
+**Curve**
+- `experienceForLevel` now discounts early levels with `earlyLevelEase` and rejoins the old curve exactly at level 25.
+- Cumulative XP for level 2 drops from 43 to 15, level 5 from 601 to 309, and level 10 from 3,736 to 2,714.
+- The cost of each level still never falls below the one before it; a test checks this.
+
+**Tutorial**
+- It now pays XP: 40 Close Quarters and 30 Fortitude for the drone, 60 Containment for the wisp, 60 Biochemistry for the noodles, and 60 Close Quarters plus 40 Fortitude at the end.
+- A new operative leaves it at about Close Quarters 3–4, Fortitude 3 and combat level 3, a short rat hunt away from Lost Cat.
+
+**Kill XP**
+- `beast()` creatures pay `killExperience(level)` = 6·level + 2·min(level, 16)².
+- The canal rat now pays 20 and the stray dog 56.
+- Before, scrap magpies (L3) were the best XP per minute all the way to level 19. Now the best target climbs: dogs, then silt eels, then scrap crawlers. A test checks that crawlers lead at level 10.
+- Late creatures pay about 25% more per kill. Watch this if Act II pacing feels short.
+
+**Ideal combat time (model)**
+
+| Level | Before | Now |
+| --- | --- | --- |
+| 5 | about 5 min | about 2 min |
+| 10 | about 19 min | about 10 min |
+| 20 | about 63 min | about 44 min |

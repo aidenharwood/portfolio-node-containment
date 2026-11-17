@@ -74,6 +74,10 @@ interface Beast {
   readonly range?: number;
 }
 
+const KILL_BONUS_LEVEL_CAP = 16;
+
+export const killExperience = (level: number): number => level * 6 + 2 * Math.min(level, KILL_BONUS_LEVEL_CAP) ** 2;
+
 export const beast = (spec: Beast): CreatureDefinition => ({
   id: spec.id,
   name: spec.name,
@@ -89,7 +93,7 @@ export const beast = (spec: Beast): CreatureDefinition => ({
   leashRadius: 7,
   wanderRadius: spec.wander ?? 3,
   respawnTicks: 30 + spec.level * 3,
-  experience: spec.level * 10,
+  experience: killExperience(spec.level),
   loot: spec.loot,
   ...(spec.containment ? { containment: spec.containment } : {}),
 });

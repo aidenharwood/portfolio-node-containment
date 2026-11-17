@@ -231,3 +231,31 @@ test('the maul hits at least as hard per tick as the blade at every rung', () =>
     assert.ok(perTick('maul') >= perTick('blade'), `${rung.key} maul ${perTick('maul').toFixed(3)} against blade ${perTick('blade').toFixed(3)}`);
   }
 });
+
+test('early levels come quickly and the eased curve rejoins the old one by level 25', () => {
+  assert.ok(experienceForLevel(2) <= 20, 'a training drone is enough for level 2');
+  assert.ok(experienceForLevel(5) <= 320, 'level 5 costs about a dozen small fights');
+  assert.ok(experienceForLevel(10) <= 2800, 'level 10 costs under 2800');
+  assert.equal(experienceForLevel(25), 37564);
+  for (let level = 3; level <= 100; level++) {
+    const step = experienceForLevel(level) - experienceForLevel(level - 1);
+    const previous = experienceForLevel(level - 1) - experienceForLevel(level - 2);
+    assert.ok(step >= previous, `level ${level} costs at least as much as level ${level - 1}`);
+  }
+});
+
+test('the strongest creature an operative can safely farm pays the most experience per minute', () => {
+  const farmable = ['canal-rat', 'pigeon', 'scrap-magpie', 'stray-dog', 'gutter-mite', 'silt-eel', 'scrap-crawler'];
+  const operative: Operative = { closeQuarters: 10, fortitude: 10, gear: IRON_SET };
+  const perMinute = (creatureId: string): number => {
+    const creature = GAME_CONTENT.creatures.get(creatureId);
+    assert.ok(creature);
+    const skills = { ...createStartingSkills(), closeQuarters: experienceForLevel(operative.closeQuarters), fortitude: experienceForLevel(operative.fortitude) };
+    const attack = playerAttackProfile(skills, operative.gear, GAME_CONTENT.items);
+    const perSwing = hitChance(attack.accuracy, creatureDefence(creature, attack.style, false)) * (1 + attack.maxHit) / 2;
+    const ticks = (creature.integrity / perSwing) * attack.speedTicks + 15;
+    return ((creature.integrity * 4 + creature.experience) / ticks) * 200;
+  };
+  const best = farmable.reduce((top, id) => (perMinute(id) > perMinute(top) ? id : top));
+  assert.equal(best, 'scrap-crawler', `${best} pays ${perMinute(best).toFixed(0)} a minute`);
+});

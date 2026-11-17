@@ -157,6 +157,8 @@ Add an entry to `CONTRACTS` in `content/contracts.ts` with `daily(...)` or `week
 
 The same file also checks that ladder weapons carry only their style's offence stat (blade beats baton, and the maul matches or beats the blade's damage per tick), that quest rewards give only craftable, non-unique gear and consumables, that the Site Meridian chapters lead straight on with `followUpQuestId`, that quests before Dead Band pay at least three quarters of the Engineering its receiver needs, and that tier-1 food costs no more than 1.5 scrip per point healed, and that the Kit Order contract counts every scrap piece a fabricator makes.
 
+Pacing: `experienceForLevel` (`shared/src/character/skills.ts`) discounts early levels and rejoins the plain curve at level 25 (`EASED_LEVEL_SPAN`), so level 2 comes from the first training drone and level 10 costs about 2,700 XP. Creatures built with `beast()` pay `killExperience(level)`: 6 per level plus twice the level squared, with the squared part capped at level 16. That way the strongest creature an operative can safely farm pays the most experience per minute; the balance file checks both rules.
+
 The material ladder runs Scrap (1), Iron (10), Steel (20), Alloy (30), Sinter (40) and Vault Glass (50). Quests can declare a `recommendedLevel`; the journal shows it next to the player's own level.
 
 ### Add a new effect or condition

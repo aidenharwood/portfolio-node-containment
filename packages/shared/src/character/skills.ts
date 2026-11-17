@@ -76,10 +76,16 @@ export const SKILL_INFO: Readonly<Record<SkillId, SkillInfo>> = {
 
 export const SKILL_LEVEL_CAP = 100;
 
+export const EASED_LEVEL_SPAN = 24;
+
+export const EARLY_LEVEL_DISCOUNT = 0.7;
+
+const earlyLevelEase = (steps: number): number => (steps >= EASED_LEVEL_SPAN ? 1 : 1 - EARLY_LEVEL_DISCOUNT * (1 - steps / EASED_LEVEL_SPAN) ** 2);
+
 export function experienceForLevel(level: number): number {
   const clamped = Math.max(1, Math.min(SKILL_LEVEL_CAP, Math.floor(level)));
   const steps = clamped - 1;
-  return Math.floor(25 * steps + 18 * steps ** 2.4);
+  return Math.floor((25 * steps + 18 * steps ** 2.4) * earlyLevelEase(steps));
 }
 
 export function levelForExperience(experience: number): number {
