@@ -147,13 +147,15 @@ Add an entry to `CONTRACTS` in `content/contracts.ts` with `daily(...)` or `week
 | --- | --- |
 | Canal rats and stray dogs, fresh operative in the issue kit (baton and plate) | ≥ 95% |
 | Gutter mites, fresh operative | ≤ 85% (Lost Cat and the alley vent wait for combat level 4) |
-| Gutter mites, combat level 4 in the issue kit | ≥ 95% |
+| Gutter mites, Close Quarters 5 and Fortitude 3 in the issue kit | ≥ 95% |
 | Silt eels, Close Quarters 6 in scrap | ≥ 85% |
+| Rustlings by the Scrapyards survey stake, Close Quarters 8 in scrap | ≤ 25% |
+| Rustlings, Close Quarters 10 with an iron blade | ≥ 80% |
 | The Lamplighter, Close Quarters 10 in scrap | ≤ 40% |
 | The Lamplighter, the same operative with an iron baton | 75–97% |
 | Scrap crawlers, level 10 in a full iron set | ≥ 90% |
 
-The same file also checks that ladder weapons carry only their style's offence stat (blade beats baton, maul beats blade), that quest rewards give only craftable, non-unique gear and consumables, that the Site Meridian chapters lead straight on with `followUpQuestId`, that quests before Dead Band pay at least three quarters of the Engineering its receiver needs, and that tier-1 food costs no more than 1.5 scrip per point healed.
+The same file also checks that ladder weapons carry only their style's offence stat (blade beats baton, and the maul matches or beats the blade's damage per tick), that quest rewards give only craftable, non-unique gear and consumables, that the Site Meridian chapters lead straight on with `followUpQuestId`, that quests before Dead Band pay at least three quarters of the Engineering its receiver needs, and that tier-1 food costs no more than 1.5 scrip per point healed, and that the Kit Order contract counts every scrap piece a fabricator makes.
 
 The material ladder runs Scrap (1), Iron (10), Steel (20), Alloy (30), Sinter (40) and Vault Glass (50). Quests can declare a `recommendedLevel`; the journal shows it next to the player's own level.
 

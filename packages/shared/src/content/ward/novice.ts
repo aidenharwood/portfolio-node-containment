@@ -272,7 +272,7 @@ export const NOVICE_QUESTS: readonly QuestDefinition[] = [
     recommendedLevel: 5,
     steps: [
       { id: 'vent', journal: 'Climb down the vent in the Tenements back alley.', objectives: [{ type: 'interactWith', objectId: 'tenements-vent', label: 'Climb down the alley vent' }] },
-      { id: 'mites', journal: 'The vent comes out on the Cut. Clear the gutter mites between you and the mewing.', objectives: [{ type: 'defeat', creatureId: 'gutter-mite', count: 3, label: 'Defeat gutter mites' }] },
+      { id: 'mites', journal: 'The vent comes out on the Cut. Clear the gutter mites between you and the mewing. Eat between fights.', objectives: [{ type: 'defeat', creatureId: 'gutter-mite', count: 3, label: 'Defeat gutter mites' }] },
       { id: 'cat', journal: 'Find the cat near the culvert.', objectives: [{ type: 'obtainItem', itemId: 'grey-cat', count: 1, label: 'Pick up the grey cat' }] },
       { id: 'return', journal: 'Take the cat back to Pell in the Tenements alley.', objectives: [{ type: 'signal', signal: 'cat.returned', npcId: 'pell', label: 'Return the cat to Pell' }] },
     ],
@@ -433,7 +433,7 @@ export const NOVICE_DIALOGUES: readonly DialogueDefinition[] = [
       conditions: [{ type: 'combatLevel', atLeast: 4 }],
       notReady: "There's mites down that vent, the biting kind. No offence, but you'd come back up in pieces. Knock some rats and dogs about first. Combat level 4, then come back.",
     },
-    waiting: "The vent by the bins. She'll be near the bottom, wherever the bottom is.",
+    waiting: "The vent by the bins. She'll be near the bottom, wherever the bottom is. Take food, and eat between the mites.",
     hand: { stepId: 'return', text: 'Is that, is that her?', option: 'Give Pell the grey cat.', items: ['grey-cat'], signal: 'cat.returned', thanks: "Her eyes are green. They weren't green. Doesn't matter. Doesn't matter at all. Thank you. The vent's yours, if you ever want the quick way down to the Cut." },
     done: 'She sleeps on the vent now. Says she likes the warm. Doesn\'t say. You know.',
     chat: 'Leaning here. Watching the vent. Habit.',

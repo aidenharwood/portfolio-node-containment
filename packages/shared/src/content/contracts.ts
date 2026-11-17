@@ -3,6 +3,7 @@ import { COMMENDATION_ITEM_ID, type ContractCadence, type ContractDefinition, ty
 import { TIER_LEVEL_FLOORS } from '../crafting/tiers.ts';
 import { CURRENCY_ITEM_ID } from '../economy/shop.ts';
 import type { Condition } from '../rules/conditions.ts';
+import { WARD_RECIPES } from './ward/items.ts';
 import { TUTORIAL_QUEST_ID } from './ward/quests.ts';
 
 interface ContractDraft {
@@ -61,7 +62,7 @@ const contain = (count: number, ...creatureIds: string[]): ContractObjective => 
 const gather = (count: number, ...itemIds: string[]): ContractObjective => ({ type: 'gather', itemIds, count });
 const craft = (count: number, ...itemIds: string[]): ContractObjective => ({ type: 'craft', itemIds, count });
 
-const SCRAP_GEAR = ['scrap-baton', 'scrap-blade', 'scrap-helm', 'scrap-plate', 'scrap-gauntlets', 'scrap-greaves', 'scrap-boots', 'patchwork-hood', 'patchwork-jacket', 'sackcloth-cowl', 'sackcloth-robe'];
+export const SCRAP_GEAR: readonly string[] = WARD_RECIPES.filter((recipe) => recipe.station === 'fabricator' && recipe.level === 1).map((recipe) => recipe.output.itemId);
 
 export const CONTRACTS: readonly ContractDefinition[] = [
   daily({ id: 'rat-catching', name: 'Rat Catching', brief: 'The station rats have started sitting on the benches. Move them on, permanently.', tier: 1, requires: [arrived], objective: defeat(8, 'canal-rat', 'pigeon') }),
@@ -72,8 +73,15 @@ export const CONTRACTS: readonly ContractDefinition[] = [
   daily({ id: 'kit-order', name: 'Kit Order', brief: 'New arrivals need kit. Assemble scrap gear at a fabricator, any pieces.', tier: 1, requires: [arrived], objective: craft(3, ...SCRAP_GEAR), skill: 'engineering' }),
   daily({ id: 'wisp-drill', name: 'Wisp Drill', brief: 'Keep your hand in. Subdue and contain the crate wisps in the rail yard.', tier: 1, requires: [arrived], objective: contain(3, 'crate-wisp') }),
   daily({ id: 'mite-control', name: 'Mite Control', brief: 'Gutter mites are chewing the Cut lock gates again. Thin them out.', tier: 3, requires: [arrived, fought(5)], objective: defeat(8, 'gutter-mite') }),
+  daily({ id: 'eel-wrangling', name: 'Eel Wrangling', brief: 'Silt eels are crawling out on the Cut towpath. Put them back in the water, one way or another.', tier: 3, requires: [arrived, fought(7)], objective: defeat(6, 'silt-eel') }),
+  daily({ id: 'dredge-quota', name: 'Dredge Quota', brief: 'Haul silt iron off the basin floor for the foundry.', tier: 3, requires: [arrived, skill('salvage', 10)], objective: gather(12, 'silt-iron') }),
+  daily({ id: 'reed-cutting', name: 'Reed Cutting', brief: 'The chandlery wants green reeds for canvas. Cut them along the Cut.', tier: 3, requires: [arrived, skill('biochemistry', 10)], objective: gather(12, 'reed-bundle'), skill: 'biochemistry' }),
+  daily({ id: 'culvert-survey', name: 'Culvert Survey', brief: 'Research wants fresh samples of the culvert residue. It hums. Bring it anyway.', tier: 3, requires: [arrived, skill('research', 10)], objective: gather(6, 'culvert-trace'), skill: 'research' }),
+  daily({ id: 'crawler-cull', name: 'Crawler Cull', brief: 'Scrap crawlers have got into the Scrapyards cranes. Hallam wants them in pieces.', tier: 4, requires: [arrived, fought(10)], objective: defeat(8, 'scrap-crawler') }),
   daily({ id: 'iron-pour', name: 'Iron Pour', brief: 'Refine basin iron for the pump house. Kofi is counting.', tier: 3, requires: [arrived, skill('refining', 10)], objective: craft(4, 'iron-bar') }),
   weekly({ id: 'pest-control', name: 'Ward Pest Control', brief: 'A week keeping the Ward clear of rats, pigeons, dogs and magpies.', tier: 1, requires: [arrived], objective: defeat(30, 'canal-rat', 'pigeon', 'stray-dog', 'scrap-magpie') }),
   weekly({ id: 'stockpile', name: 'Scrap Stockpile', brief: 'The Directorate is building a reserve. Salvage scrap from the piles round the Ward.', tier: 1, requires: [arrived], objective: gather(60, 'scrap-metal') }),
+  weekly({ id: 'cut-sweep', name: 'Cut Sweep', brief: 'A week keeping the Cut clear of mites and eels.', tier: 3, requires: [arrived, fought(5)], objective: defeat(40, 'gutter-mite', 'silt-eel') }),
+  weekly({ id: 'yard-sweep', name: 'Yard Sweep', brief: 'A week breaking up crawlers and rustlings in the Scrapyards.', tier: 4, requires: [arrived, fought(10)], objective: defeat(40, 'scrap-crawler', 'rustling') }),
   weekly({ id: 'refinery-shift', name: 'Refinery Shift', brief: 'Put in a full week on the refinery.', tier: 1, requires: [arrived], objective: craft(20, 'scrap-bar') }),
 ];

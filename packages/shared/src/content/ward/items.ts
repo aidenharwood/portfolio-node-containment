@@ -240,7 +240,7 @@ const r = Math.round;
 const WEAPONS: readonly WeaponShape[] = [
   { kind: 'baton', noun: 'Baton', icon: 'baton', skill: 'closeQuarters', range: 1, speedTicks: 4, stats: (l) => ({ power: 4 + r(l * 0.7) }), inputs: (t) => ({ [t.bar]: 1 }), examine: 'A short stun club with a side handle. Simple and quick.' },
   { kind: 'blade', noun: 'Blade', icon: 'blade', skill: 'closeQuarters', range: 1, speedTicks: 4, stats: (l) => ({ power: 6 + r(l * 0.8) }), inputs: (t) => ({ [t.bar]: 2 }), examine: 'A long knife with a wrapped grip.' },
-  { kind: 'maul', noun: 'Maul', icon: 'maul', skill: 'closeQuarters', range: 1, speedTicks: 5, stats: (l) => ({ power: 8 + r(l * 1.0) }), inputs: (t) => ({ [t.bar]: 3 }), examine: 'A heavy two-handed hammer. Slow, and very persuasive.' },
+  { kind: 'maul', noun: 'Maul', icon: 'maul', skill: 'closeQuarters', range: 1, speedTicks: 5, stats: (l) => ({ power: 10 + r(l * 1.3) }), inputs: (t) => ({ [t.bar]: 3 }), examine: 'A heavy two-handed hammer. Slow, and very persuasive.' },
   { kind: 'pistol', noun: 'Pistol', icon: 'pistol', skill: 'marksmanship', range: 5, speedTicks: 5, stats: (l) => ({ accuracy: 4 + r(l * 0.7) }), inputs: (t) => ({ [t.bar]: 2 }), examine: 'A dart pistol, hand-built and hand-tuned.' },
   { kind: 'carbine', noun: 'Carbine', icon: 'carbine', skill: 'marksmanship', range: 7, speedTicks: 5, stats: (l) => ({ accuracy: 6 + r(l * 0.9) }), inputs: (t) => ({ [t.bar]: 2, [t.fibre]: 1 }), examine: 'A two-handed bolt carbine with a strap.' },
   { kind: 'rifle', noun: 'Rifle', icon: 'rifle', skill: 'marksmanship', range: 9, speedTicks: 7, stats: (l) => ({ accuracy: 7 + r(l * 1.0) }), inputs: (t) => ({ [t.bar]: 3, [t.fibre]: 1 }), examine: 'A long rifle. It outreaches anything that wants to bite you.' },

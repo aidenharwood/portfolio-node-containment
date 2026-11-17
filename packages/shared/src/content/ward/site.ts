@@ -119,13 +119,13 @@ export const SITE_QUESTS: readonly QuestDefinition[] = [
     summary: 'Sefa Lind hears the Site breathing on the dead band. Build a receiver and find out where the breathing comes from.',
     offeredBy: 'sefa-lind',
     offerRequires: ['steel-below'],
-    recommendedLevel: 18,
+    recommendedLevel: 12,
     steps: [
       { id: 'sefa', journal: 'Sefa Lind at The Signal on Market Row hears the Site breathing on the dead band. Talk to her.', objectives: [{ type: 'talkTo', npcId: 'sefa-lind', label: 'Talk to Sefa Lind' }] },
       { id: 'receiver', journal: 'Make a dead-band receiver at a fabricator: two iron bars and two culvert traces, Engineering 8.', objectives: [{ type: 'craft', itemId: 'dead-band-receiver', count: 1, label: 'Make a dead-band receiver' }] },
       {
         id: 'readings',
-        journal: 'Take readings at the Directorate survey stakes on the Cut, in the Scrapyards and on the Shipyard Fringe.',
+        journal: 'Take readings at the Directorate survey stakes on the Cut, in the Scrapyards and on the Shipyard Fringe. The Scrapyards want iron in your hand and combat level 10. On the Fringe, come in from the north and stay off the road by the water.',
         objectives: [
           { type: 'interactWith', objectId: 'reading-cut', label: 'Take a reading on the Cut' },
           { type: 'interactWith', objectId: 'reading-yard', label: 'Take a reading in the Scrapyards' },
@@ -193,7 +193,7 @@ export const SITE_DIALOGUES: readonly DialogueDefinition[] = [
       accept: "I'll build the receiver.",
       requires: ['steel-below'],
     },
-    waiting: "Two iron bars, two culvert traces, a fabricator. Then the stakes: the Cut, the Scrapyards, the Fringe.",
+    waiting: "Two iron bars, two culvert traces, a fabricator. Then the stakes: the Cut, the Scrapyards, the Fringe. If the fabricator won't take you yet, Kofi Mensah on the Cut needs valve parts made, and the board's Kit Order counts too.",
     hand: {
       stepId: 'report',
       text: 'Well? Show me the needle.',

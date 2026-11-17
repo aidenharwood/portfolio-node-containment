@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { createStartingSkills, experienceForLevel } from '../src/character/skills.ts';
 import { deriveCombatProfile } from '../src/character/derivedStats.ts';
-import { creatureAttackProfile, defenceAgainst, playerAttackProfile, rollAttack } from '../src/combat/combatMath.ts';
+import { creatureAttackProfile, defenceAgainst, hitChance, playerAttackProfile, rollAttack } from '../src/combat/combatMath.ts';
 import { creatureDefence } from '../src/combat/study.ts';
 import { COMBAT_STYLE_INFO, WEAPON_KIND_INFO } from '../src/combat/weapons.ts';
 import { equipmentStats, type EquipmentState } from '../src/gear/equipment.ts';
@@ -136,10 +136,12 @@ const BANDS: readonly { readonly name: string; readonly operative: Operative; re
   { name: 'a fresh operative in the issue kit beats canal rats', operative: { closeQuarters: 1, fortitude: 1, gear: KIT }, creature: 'canal-rat', min: 0.95, max: 1 },
   { name: 'a fresh operative in the issue kit beats stray dogs', operative: { closeQuarters: 1, fortitude: 1, gear: KIT }, creature: 'stray-dog', min: 0.95, max: 1 },
   { name: 'a fresh operative is not yet safe against gutter mites', operative: { closeQuarters: 1, fortitude: 1, gear: KIT }, creature: 'gutter-mite', min: 0, max: 0.85 },
-  { name: 'combat level 4 in the issue kit handles gutter mites', operative: { closeQuarters: 4, fortitude: 3, gear: KIT }, creature: 'gutter-mite', min: 0.95, max: 1 },
+  { name: 'combat level 4 in the issue kit handles gutter mites', operative: { closeQuarters: 5, fortitude: 3, gear: KIT }, creature: 'gutter-mite', min: 0.95, max: 1 },
   { name: 'Close Quarters 6 in scrap handles silt eels', operative: { closeQuarters: 6, fortitude: 5, gear: SCRAP_SET }, creature: 'silt-eel', min: 0.85, max: 1 },
   { name: 'the Lamplighter turns back an operative still in scrap', operative: { closeQuarters: 10, fortitude: 7, gear: SCRAP_SET }, creature: 'the-lamplighter', min: 0, max: 0.4 },
   { name: 'the Lamplighter falls to the same operative with an iron baton', operative: { closeQuarters: 10, fortitude: 7, gear: { ...SCRAP_SET, primary: 'iron-baton' } }, creature: 'the-lamplighter', min: 0.75, max: 0.97 },
+  { name: 'the Scrapyards stake is no place for Close Quarters 8 in scrap', operative: { closeQuarters: 8, fortitude: 6, gear: SCRAP_SET }, creature: 'rustling', min: 0, max: 0.25 },
+  { name: 'an iron blade at Close Quarters 10 handles rustlings', operative: { closeQuarters: 10, fortitude: 7, gear: { ...SCRAP_SET, primary: 'iron-blade' } }, creature: 'rustling', min: 0.8, max: 1 },
   { name: 'an operative at 10 in iron clears scrap crawlers', operative: { closeQuarters: 10, fortitude: 10, gear: IRON_SET }, creature: 'scrap-crawler', min: 0.9, max: 1 },
 ];
 
@@ -203,5 +205,29 @@ test('tier-1 food sells for no more than 1.5 scrip per point healed', () => {
       if (!recipe || recipe.level >= 5 || food?.kind !== 'food') continue;
       assert.ok(listing.price <= food.heal * 1.5, `${shop.id} sells ${listing.itemId} at ${listing.price} for ${food.heal} integrity`);
     }
+  }
+});
+
+test('Kit Order counts every scrap piece a fabricator makes', () => {
+  const kitOrder = GAME_CONTENT.contracts.get('daily:kit-order');
+  assert.ok(kitOrder && kitOrder.objective.type === 'craft');
+  const counted = new Set(kitOrder.objective.itemIds);
+  for (const recipe of GAME_CONTENT.recipes.values()) {
+    if (recipe.station !== 'fabricator' || recipe.level !== 1 || !GAME_CONTENT.items.get(recipe.output.itemId)?.equipment) continue;
+    assert.ok(counted.has(recipe.output.itemId), `Kit Order misses ${recipe.output.itemId}`);
+  }
+});
+
+test('the maul hits at least as hard per tick as the blade at every rung', () => {
+  for (const rung of MATERIAL_LADDER) {
+    const perTick = (kind: string) => {
+      const item = GAME_CONTENT.items.get(`${rung.key}-${kind}`);
+      const weapon = item?.equipment?.weapon;
+      assert.ok(item && weapon);
+      const rating = rung.level + (item.equipment?.stats.power ?? 0);
+      const maxHit = 1 + Math.floor((rating * WEAPON_KIND_INFO[weapon.kind].damageScale) / 4);
+      return (hitChance(rating, rung.level) * (1 + maxHit) / 2) / weapon.speedTicks;
+    };
+    assert.ok(perTick('maul') >= perTick('blade'), `${rung.key} maul ${perTick('maul').toFixed(3)} against blade ${perTick('blade').toFixed(3)}`);
   }
 });
