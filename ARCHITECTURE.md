@@ -239,6 +239,29 @@ A weapon is `equipment.weapon`: a `kind`, a `range` and `speedTicks`. `WEAPON_KI
 
 On the client, `render/models/creatureModels.ts` builds a voxel rig per `CreatureModel`. Every rig implements `EntityRig`, so the renderer can drive attack, hurt and death animations from `combat.hit` and `combat.death` messages. `hud/combatOverlay.ts` draws hit splats and overhead bars, and `hud/vitalsPanel.ts` draws your integrity and the target panel.
 
+**Animation timing and effects (client only):**
+
+- **Contact sync**
+  - `state/attackTiming.ts` gives each motion a duration and a contact fraction, and every contact is a keyframe in `weaponPoses.ts`. Segments ease in to contact, ease out of it, and melee motions hold briefly at contact as hit-stop.
+  - `WorldState.applyHit` sets `releaseAt` (when the swing or shot connects), `impactAt` (`releaseAt` plus projectile flight) and `hurtAt = impactAt`.
+  - Health changes go through `VitalsSchedule` (`state/combatClock.ts`), so they apply at impact and in arrival order.
+  - `GameRenderer` launches each projectile at `releaseAt`, from the posed rig's `muzzle()`. A creature's projectile takes its `accent` colour.
+- **Deaths**
+  - A death starts no earlier than the killing blow's impact (`deathStartsAt`).
+  - A despawn that arrives mid-animation is held until the animation ends (`despawnAt`, `WorldState.settle`).
+  - When the animation finishes, creatures shatter into debris coloured from their own model. Spirits dissolve into a column of accent motes, and contained creatures burst into cyan and gold sparks.
+- **Rigs**
+  - The character's upper body pivots at the hips, lunges move the whole rig, and feet stay planted.
+  - Creature strikes wind up, pitch about a mid-height pivot, and are lifted so they never dip into the floor.
+  - `client/test/characterRig.test.ts` and `client/test/attackTiming.test.ts` hold these rules, as well as contact poses, level guns and the foregrip.
+- **Particles:** `render/particleLayer.ts` keeps two instanced voxel-cube pools: solid, and additive glow. Effects are typed presets (`PARTICLE_PRESETS`) fired for:
+  - melee sparks, misses and weapon-tip trails
+  - per-kind projectile impacts
+  - deaths and containment
+  - resolved telegraphs and depleted nodes
+  - entity cues
+- **Cues:** the server broadcasts `world.entityCue` for level-ups, heals and each gather or craft action (`EffectHost.cue`), so nearby players see them. A work cue plays a client-only chop that holsters ranged and psionic weapons.
+
 ### Scaling and fairness
 
 - **Layers:** `World` keeps a list of `LevelInstance` layers per level. `spawn` places a player in the busiest layer that still has room under the level's `capacity` (default 50; tests can override it with `levelCapacity`). When every layer is full it creates a new one, and empty overflow layers are retired after about 60 seconds. Use `world.levelOf(player)`, `world.districtOf(player)` and `world.instances()`; never look a level up by id.

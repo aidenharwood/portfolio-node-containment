@@ -91,7 +91,9 @@ const CONTAIN_GOLD = 0xffcf4d;
 const DEPLETION_DUST = 0x8a7a6a;
 const TELEGRAPH_SPARK_CAP = 60;
 const PALETTE_SAMPLES = 8;
-const TRAIL_STEPS = 3;
+const TRAIL_MAX_STEPS = 24;
+const TRAIL_SPACING = 0.05;
+const SPIRIT_SQUASH_FROM = 1 - 150 / 700;
 const AMBIENCE_EASE_PER_SECOND = 3;
 
 const animationProgress = (startedAt: number, duration: number, now: number): number | null => {
@@ -424,6 +426,7 @@ export class GameRenderer {
         view.rig.root.rotation.z = view.rig.airborne ? 0 : -dying * 1.4;
         view.rig.root.position.y = view.rig.airborne ? 0 : -dying * 0.15;
       }
+      if (view.rig.spirit && !entity.contained && dying > SPIRIT_SQUASH_FROM && !view.shattered) view.rig.root.scale.y = view.scale * Math.max(0.05, 1 - (dying - SPIRIT_SQUASH_FROM) / (1 - SPIRIT_SQUASH_FROM));
       if (dying >= 1 && !view.shattered && entity.kind === 'creature') this.shatter(view, entity.contained);
 
       this.updateQuestMarker(view, this.markerFor(entity, overlay), now);
@@ -439,7 +442,8 @@ export class GameRenderer {
       if (!event.projectile && attackerView?.character && now >= event.releaseAt - TRAIL_LEAD_MS && now <= event.releaseAt + TRAIL_TAIL_MS && attackerView.rig.muzzle?.(this.scratch)) {
         const color = this.weaponGlow(event.attackerId);
         const from = pending.lastTip ?? this.scratch;
-        for (let step = 1; step <= TRAIL_STEPS; step++) this.particles.emit('trail', from.clone().lerp(this.scratch, step / TRAIL_STEPS), { color });
+        const steps = Math.min(TRAIL_MAX_STEPS, Math.max(1, Math.ceil(from.distanceTo(this.scratch) / TRAIL_SPACING)));
+        for (let step = 1; step <= steps; step++) this.particles.emit('trail', from.clone().lerp(this.scratch, step / steps), { color });
         pending.lastTip = this.scratch.clone();
       }
       if (!pending.launched && now >= event.releaseAt) {

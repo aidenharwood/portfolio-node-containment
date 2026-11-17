@@ -141,3 +141,35 @@ The owner said the gear lines were only recolours and that back items were missi
 **Open polish**
 - Check the Redline nimbus (radius 7, arc segments) and the reduced Cordon top cell in a fresh shot.
 - `scripts/_formDist.ts` (local) prints the closest tier pair per piece.
+
+## Follow-up: poses, animations, projectiles and particles
+
+The owner asked for an audit of poses, animations, projectiles and particles. Fable needed credits, so the critic ran on Opus. Verdicts: rounds 1–3 "not yet", round 4 **"ship it"**. The owner asked for an early push after round 3; that went out as `ad6307d`, and the round-4 polish followed. ARCHITECTURE.md ("Animation timing and effects") has the design.
+
+**Fixed**
+- The torso came off the hips during lean and lunge, and feet floated while walking.
+- Hits, flashes and health drops landed before the swing or shot.
+- Swings were soft: they had no easing into contact and no hit-stop.
+- Feet slid; creatures vibrated and moths spun.
+- Hurt reactions were invisible.
+- Creature attacks had no wind-up, and pitching sank creatures into the floor.
+- Projectiles started from the body centre, and every creature projectile was the same lime green.
+- There were no particles at all.
+- Gun recoil peaked at release, and the left hand was off the barrel.
+- Strike and slash pointed the weapon up at contact.
+- Corpses reappeared after shattering, and deaths started before the killing blow landed.
+- Gatherers swung their guns like hammers.
+
+**New**
+- `particleLayer.ts`, `attackTiming.ts` and `combatClock.ts`.
+- The `world.entityCue` protocol message.
+- Rig, timing, particle and clock tests: 715 tests in total.
+
+**Open**
+- A live in-game fight capture with bloom, recorded every 50 ms, to confirm the order in real play: kick, then muzzle, then flash and damage number, then the health bar, then death. Staged shots and tests cover the timing, but nobody has watched it in a running game.
+- Optional:
+  - a slightly lower rifle rest pose (`rightZ` about −0.55)
+  - a graphics setting for `ParticleLayer.density`
+  - camera kick on heavy hits
+  - footstep dust
+- Knife, polearm and scattergun motions have no items in the content, so they were never shot.
