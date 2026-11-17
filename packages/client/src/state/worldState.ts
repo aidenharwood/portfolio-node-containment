@@ -118,8 +118,9 @@ const PROJECTILE_FLIGHT_SCALE: Readonly<Record<ProjectileKind, number>> = {
 export const projectileFlightMs = (kind: ProjectileKind, from: TilePoint, to: TilePoint): number =>
   (PROJECTILE_BASE_FLIGHT_MS + Math.hypot(to.x - from.x, to.y - from.y) * PROJECTILE_FLIGHT_MS_PER_TILE) * PROJECTILE_FLIGHT_SCALE[kind];
 
-const projectileOf = (style: CombatStyle, weapon: WeaponKind | null): ProjectileKind | null => {
+export const projectileOf = (style: CombatStyle, weapon: WeaponKind | null, override?: ProjectileKind): ProjectileKind | null => {
   if (style === 'melee') return null;
+  if (override) return override;
   const fallback: ProjectileKind = style === 'psionic' ? 'pulse' : 'spit';
   return weapon ? (WEAPON_KIND_INFO[weapon].projectile ?? fallback) : fallback;
 };
@@ -308,7 +309,7 @@ export class WorldState {
     const attacker = this.entities.get(message.attackerId);
     const target = this.entities.get(message.targetId);
     const weapon = message.weapon ?? null;
-    const projectile = projectileOf(message.style, weapon);
+    const projectile = projectileOf(message.style, weapon, message.projectile);
     if (attacker) {
       attacker.attackAt = now;
       attacker.attackWeapon = weapon;

@@ -2,7 +2,7 @@ import type { GearMotif } from '../gear/items.ts';
 import type { ItemId } from '../ids.ts';
 import type { FootprintSize } from '../world/footprint.ts';
 import type { EncounterDefinition } from './encounters.ts';
-import type { CombatStyle } from './weapons.ts';
+import type { CombatStyle, ProjectileKind } from './weapons.ts';
 
 export type CreatureId = string;
 
@@ -54,6 +54,7 @@ export interface CreatureAttack {
   readonly maxHit: number;
   readonly range: number;
   readonly speedTicks: number;
+  readonly projectile?: ProjectileKind;
 }
 
 export interface CreatureDefinition {

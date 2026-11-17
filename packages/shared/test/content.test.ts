@@ -7,6 +7,14 @@ test('all content references resolve and every zone is well formed', () => {
   assert.deepEqual(findContentIssues(FIXTURE_CONTENT), []);
 });
 
+test('a melee creature attack cannot declare a projectile', () => {
+  const [creature] = [...FIXTURE_CONTENT.creatures.values()].filter((candidate) => candidate.attack.style === 'melee');
+  assert.ok(creature);
+  const creatures = new Map(FIXTURE_CONTENT.creatures);
+  creatures.set(creature.id, { ...creature, attack: { ...creature.attack, projectile: 'spit' } });
+  assert.ok(findContentIssues({ ...FIXTURE_CONTENT, creatures }).some((issue) => issue.startsWith(`creature ${creature.id}`) && issue.includes('projectile')));
+});
+
 test('every piece of gear and medicine has a recipe fed from tier-appropriate sources', () => {
   const withoutMaul = new Map(FIXTURE_CONTENT.recipes);
   withoutMaul.delete('fabricator:heavy-maul');

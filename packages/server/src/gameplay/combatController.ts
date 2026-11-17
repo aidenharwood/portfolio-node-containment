@@ -42,6 +42,7 @@ import {
   type GameContent,
   type InstanceId,
   type NoticeTone,
+  type ProjectileKind,
   type QuestEvent,
   type TilePoint,
 } from '@containment/shared';
@@ -356,10 +357,10 @@ export class CombatController implements EncounterHost {
     const profile = deriveCombatProfile(player.record.skills, player.combatStats(this.content.items));
     const outcome = rollAttack(attack, defenceAgainst(profile, attack.style), this.random);
     if (engage) this.engageBoth(player, creature, tick);
-    this.landOnPlayer(creature, player, outcome, attack.style, level, tick);
+    this.landOnPlayer(creature, player, outcome, attack.style, level, tick, attack.projectile);
   }
 
-  private landOnPlayer(creature: Creature, player: Player, outcome: AttackOutcome, style: CombatStyle, level: LevelInstance, tick: number): void {
+  private landOnPlayer(creature: Creature, player: Player, outcome: AttackOutcome, style: CombatStyle, level: LevelInstance, tick: number, projectile?: ProjectileKind): void {
     player.lastCombatTick = tick;
     player.setIntegrity(player.integrity - outcome.damage);
     this.host.onAttacked(player);
@@ -371,6 +372,7 @@ export class CombatController implements EncounterHost {
       outcome: outcome.hit ? 'hit' : 'miss',
       damage: outcome.damage,
       style,
+      ...(projectile ? { projectile } : {}),
       vitals: player.vitals(),
     });
 

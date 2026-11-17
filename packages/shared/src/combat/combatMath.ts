@@ -6,7 +6,7 @@ import { sumStats, type StatBlock } from '../gear/stats.ts';
 import { footprintCentre, isInFootprint, nearestFootprintTile } from '../world/footprint.ts';
 import { chebyshevDistance, isCardinallyAdjacent, type TilePoint } from '../world/geometry.ts';
 import type { CreatureDefinition } from './creatures.ts';
-import { COMBAT_STYLE_INFO, UNARMED, WEAPON_KIND_INFO, type CombatStyle, type WeaponKind, type WeaponProfile } from './weapons.ts';
+import { COMBAT_STYLE_INFO, UNARMED, WEAPON_KIND_INFO, type CombatStyle, type ProjectileKind, type WeaponKind, type WeaponProfile } from './weapons.ts';
 
 export interface AttackProfile {
   readonly style: CombatStyle;
@@ -15,6 +15,7 @@ export interface AttackProfile {
   readonly range: number;
   readonly speedTicks: number;
   readonly weapon?: WeaponKind;
+  readonly projectile?: ProjectileKind;
 }
 
 export interface AttackOutcome {

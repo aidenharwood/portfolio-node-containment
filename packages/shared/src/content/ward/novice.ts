@@ -75,6 +75,7 @@ interface Beast {
   readonly accuracy?: number;
   readonly defence?: number;
   readonly range?: number;
+  readonly projectile?: CreatureDefinition['attack']['projectile'];
   readonly guard?: GearMotif;
 }
 
@@ -111,7 +112,7 @@ export const beast = (spec: Beast, style = spec.style ?? 'melee', threat = threa
   level: spec.level,
   integrity: spec.integrity ?? spec.level * 3 + 4 + THREAT_INTEGRITY_PER_LEVEL * threat,
   defence: spec.defence ?? Math.round(spec.level * 0.6) + THREAT_DEFENCE_PER_LEVEL * threat,
-  attack: { style, accuracy: spec.accuracy ?? Math.round(spec.level * 0.6) + 1 + Math.round(THREAT_ACCURACY_PER_LEVEL[style] * threat), maxHit: 1 + Math.floor(spec.level / 4), range: spec.range ?? 1, speedTicks: 4 },
+  attack: { style, accuracy: spec.accuracy ?? Math.round(spec.level * 0.6) + 1 + Math.round(THREAT_ACCURACY_PER_LEVEL[style] * threat), maxHit: 1 + Math.floor(spec.level / 4), range: spec.range ?? 1, speedTicks: 4, ...(spec.projectile ? { projectile: spec.projectile } : {}) },
   ...(spec.guard ? { guard: spec.guard } : {}),
   ...(spec.aggressive ? { aggressive: true } : {}),
   aggroRadius: spec.aggressive ? 3 : 0,
@@ -165,6 +166,7 @@ export const NOVICE_CREATURES: readonly CreatureDefinition[] = [
     level: 18,
     style: 'ranged',
     range: 4,
+    projectile: 'pellets',
     accuracy: 8,
     guard: 'bulwark',
     aggressive: true,

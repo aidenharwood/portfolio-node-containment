@@ -170,6 +170,7 @@ export function findContentIssues(content: GameContent): string[] {
     }
     if (creature.integrity <= 0) report(where, 'integrity must be positive');
     if (creature.attack.maxHit < 1) report(where, 'attack maxHit must be at least 1');
+    if (creature.attack.projectile && creature.attack.style === 'melee') report(where, 'a melee attack cannot have a projectile');
   }
 
   for (const quest of content.quests.values()) {

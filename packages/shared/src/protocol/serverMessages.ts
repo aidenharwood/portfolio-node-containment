@@ -3,7 +3,7 @@ import type { BoostView } from '../character/boosts.ts';
 import type { CombatProfile } from '../character/derivedStats.ts';
 import type { CreatureId } from '../combat/creatures.ts';
 import type { HazardKind, TelegraphShape } from '../combat/encounters.ts';
-import type { CombatStyle, WeaponKind } from '../combat/weapons.ts';
+import type { CombatStyle, ProjectileKind, WeaponKind } from '../combat/weapons.ts';
 import type { CraftingStation } from '../crafting/recipes.ts';
 import type { CharacterSummary } from '../character/character.ts';
 import type { PronounSetId } from '../character/pronouns.ts';
@@ -140,6 +140,7 @@ export type ServerMessage =
       readonly damage: number;
       readonly style: CombatStyle;
       readonly weapon?: WeaponKind;
+      readonly projectile?: ProjectileKind;
       readonly vitals: EntityVitals;
     }
   | { readonly type: 'combat.death'; readonly entityId: EntityId; readonly containedBy?: EntityId }
