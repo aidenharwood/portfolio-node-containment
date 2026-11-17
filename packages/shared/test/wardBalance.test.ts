@@ -7,7 +7,7 @@ import { creatureDefence, weaknessOf } from '../src/combat/study.ts';
 import { REGENERATION_INTERVAL_TICKS, regenerationPerInterval } from '../src/combat/regeneration.ts';
 import { COMBAT_STYLE_INFO, WEAPON_KIND_INFO, styleBeating } from '../src/combat/weapons.ts';
 import { equipmentStats, type EquipmentState } from '../src/gear/equipment.ts';
-import { GAME_CONTENT, objectiveDistricts, tierForLevel, type ItemDefinition } from '../src/index.ts';
+import { GAME_CONTENT, containmentLevelFor, objectiveDistricts, realignedProgress, tierForLevel, type ItemDefinition } from '../src/index.ts';
 import { gatheringSourcesOf } from '../src/content/craftingIntegrity.ts';
 import { MATERIAL_LADDER } from '../src/content/ward/items.ts';
 
@@ -280,48 +280,40 @@ test('the strongest creature an operative can safely farm pays the most experien
   assert.equal(best, 'scrap-crawler', `${best} pays ${perMinute(best).toFixed(0)} a minute`);
 });
 
-test('counting the wait to heal, the Fringe pays better than crawlers until the Cordon catches up in the forties and takes over at 50', () => {
-  const set = (key: string): EquipmentState => ({ primary: `${key}-baton`, head: `${key}-helm`, torso: `${key}-plate`, hands: `${key}-gauntlets`, legs: `${key}-greaves`, feet: `${key}-boots` });
-  const perMinute = (level: number, key: string, creatureId: string): number => {
-    const creature = GAME_CONTENT.creatures.get(creatureId);
-    assert.ok(creature);
-    const skills = { ...createStartingSkills(), closeQuarters: experienceForLevel(level), fortitude: experienceForLevel(typicalFortitude(level)) };
-    const attack = playerAttackProfile(skills, set(key), GAME_CONTENT.items);
-    const profile = deriveCombatProfile(skills, equipmentStats(set(key), GAME_CONTENT.items));
-    const fight = (creature.integrity / (hitChance(attack.accuracy, creatureDefence(creature, attack.style, false)) * (1 + attack.maxHit) / 2)) * attack.speedTicks;
-    const theirs = creatureAttackProfile(creature);
-    const taken = (fight / theirs.speedTicks) * hitChance(theirs.accuracy, defenceAgainst(profile, creature.attack.style)) * (1 + theirs.maxHit) / 2;
-    const healing = (taken / regenerationPerInterval(profile.integrity)) * REGENERATION_INTERVAL_TICKS;
-    return ((creature.integrity * 4 + creature.experience) / (fight + Math.max(15, healing))) * 200;
-  };
-  for (const [level, key] of [[20, 'steel'], [25, 'steel'], [30, 'alloy'], [35, 'alloy']] as const) {
-    const knockers = perMinute(level, key, 'hull-knocker');
-    const crawlers = perMinute(level, key, 'scrap-crawler');
-    assert.ok(knockers > crawlers * 1.1, `at ${level} knockers pay ${knockers.toFixed(0)} against crawlers' ${crawlers.toFixed(0)}`);
-    assert.ok(perMinute(level, key, 'cordon-stalker') < knockers, `at ${level} the Cordon outpays the Fringe`);
-  }
-  for (const level of [40, 45, 50]) {
-    const knockers = perMinute(level, 'sinter', 'hull-knocker');
-    const cordon = perMinute(level, 'sinter', 'cordon-stalker');
-    const floor = level >= 50 ? 1 : 0.9;
-    assert.ok(cordon >= knockers * floor, `at ${level} the Cordon pays ${cordon.toFixed(0)} against knockers' ${knockers.toFixed(0)}`);
-  }
-});
+type Style = keyof typeof COMBAT_STYLE_INFO;
 
-const RUNG_SETS: readonly (readonly [number, string])[] = MATERIAL_LADDER.map((rung) => [rung.level, rung.key]);
+const STYLES = Object.keys(COMBAT_STYLE_INFO) as Style[];
 
-const plateAt = (level: number): Operative => {
-  const key = RUNG_SETS.filter(([rungLevel]) => rungLevel <= level).at(-1)![1];
-  return { closeQuarters: level, fortitude: typicalFortitude(level), gear: { primary: `${key}-baton`, head: `${key}-helm`, torso: `${key}-plate`, hands: `${key}-gauntlets`, legs: `${key}-greaves`, feet: `${key}-boots` } };
+const LINE_KIT: Readonly<Record<Style, { readonly weapon: string; readonly pieces: Readonly<Record<'head' | 'torso' | 'hands' | 'legs' | 'feet', string>> }>> = {
+  melee: { weapon: 'baton', pieces: { head: 'helm', torso: 'plate', hands: 'gauntlets', legs: 'greaves', feet: 'boots' } },
+  ranged: { weapon: 'pistol', pieces: { head: 'hood', torso: 'jacket', hands: 'gloves', legs: 'trousers', feet: 'treads' } },
+  psionic: { weapon: 'focus', pieces: { head: 'cowl', torso: 'robe', hands: 'wraps', legs: 'breeches', feet: 'footwraps' } },
 };
 
-function plateFight(level: number, creatureId: string, fights = 1500): { win: number; lost: number } {
+const slugOf = (name: string): string => name.toLowerCase().replace(/[^a-z]+/g, '-');
+
+const rungAt = (level: number) => MATERIAL_LADDER.filter((rung) => rung.level <= level).at(-1)!;
+
+function lineGear(style: Style, level: number): EquipmentState {
+  const rung = rungAt(level);
+  const line = style === 'melee' ? rung.key : slugOf(style === 'ranged' ? rung.skirmisher : rung.warden);
+  const kit = LINE_KIT[style];
+  const pieces = Object.fromEntries(Object.entries(kit.pieces).map(([slot, noun]) => [slot, `${line}-${noun}`]));
+  const gear = { primary: `${rung.key}-${kit.weapon}`, ...pieces };
+  for (const itemId of Object.values(gear)) assert.ok(GAME_CONTENT.items.get(itemId), `${itemId} exists`);
+  return gear;
+}
+
+const lineSkills = (style: Style, level: number) => ({ ...createStartingSkills(), [COMBAT_STYLE_INFO[style].skill]: experienceForLevel(level), fortitude: experienceForLevel(typicalFortitude(level)) });
+
+function lineFight(style: Style, level: number, creatureId: string, fights = 1500): { win: number; lost: number } {
   const creature = GAME_CONTENT.creatures.get(creatureId);
   assert.ok(creature, creatureId);
-  const operative = plateAt(level);
-  const skills = { ...createStartingSkills(), closeQuarters: experienceForLevel(level), fortitude: experienceForLevel(typicalFortitude(level)) };
-  const attack = playerAttackProfile(skills, operative.gear, GAME_CONTENT.items);
-  const profile = deriveCombatProfile(skills, equipmentStats(operative.gear, GAME_CONTENT.items));
+  const gear = lineGear(style, level);
+  const skills = lineSkills(style, level);
+  const attack = playerAttackProfile(skills, gear, GAME_CONTENT.items);
+  assert.equal(attack.style, style);
+  const profile = deriveCombatProfile(skills, equipmentStats(gear, GAME_CONTENT.items));
   const guard = defenceAgainst(profile, creature.attack.style);
   const theirs = creatureAttackProfile(creature);
   const random = mulberry(creature.level * 104729 + level);
@@ -340,6 +332,64 @@ function plateFight(level: number, creatureId: string, fights = 1500): { win: nu
   return { win: wins / fights, lost: lost / fights };
 }
 
+const plateFight = (level: number, creatureId: string): { win: number; lost: number } => lineFight('melee', level, creatureId);
+
+function linePace(style: Style, level: number, creatureId: string, gearLevel = level): number {
+  const creature = GAME_CONTENT.creatures.get(creatureId);
+  assert.ok(creature, creatureId);
+  const gear = lineGear(style, gearLevel);
+  const skills = lineSkills(style, level);
+  const attack = playerAttackProfile(skills, gear, GAME_CONTENT.items);
+  const profile = deriveCombatProfile(skills, equipmentStats(gear, GAME_CONTENT.items));
+  const fight = (creature.integrity / (hitChance(attack.accuracy, creatureDefence(creature, attack.style, false)) * (1 + attack.maxHit) / 2)) * attack.speedTicks;
+  const theirs = creatureAttackProfile(creature);
+  const taken = (fight / theirs.speedTicks) * hitChance(theirs.accuracy, defenceAgainst(profile, creature.attack.style)) * (1 + theirs.maxHit) / 2;
+  const healing = (taken / regenerationPerInterval(profile.integrity)) * REGENERATION_INTERVAL_TICKS;
+  return ((creature.integrity * 4 + creature.experience) / (fight + Math.max(15, healing))) * 200;
+}
+
+test('counting the wait to heal, the Fringe pays better than crawlers until the Cordon catches up in the forties and takes over at 50', () => {
+  for (const level of [20, 25, 30, 35]) {
+    const knockers = linePace('melee', level, 'hull-knocker');
+    const crawlers = linePace('melee', level, 'scrap-crawler');
+    assert.ok(knockers > crawlers * 1.1, `at ${level} knockers pay ${knockers.toFixed(0)} against crawlers' ${crawlers.toFixed(0)}`);
+    assert.ok(linePace('melee', level, 'cordon-stalker') < knockers, `at ${level} the Cordon outpays the Fringe`);
+  }
+  for (const level of [40, 45, 50]) {
+    const knockers = linePace('melee', level, 'hull-knocker', 40);
+    const cordon = linePace('melee', level, 'cordon-stalker', 40);
+    const floor = level >= 50 ? 1 : 0.9;
+    assert.ok(cordon >= knockers * floor, `at ${level} the Cordon pays ${cordon.toFixed(0)} against knockers' ${knockers.toFixed(0)}`);
+  }
+});
+
+const farmable = (): string[] => {
+  const spots = new Map<string, number>();
+  for (const district of GAME_CONTENT.districts.values()) {
+    for (const placement of district.creatures ?? []) spots.set(placement.creatureId, (spots.get(placement.creatureId) ?? 0) + 1);
+  }
+  return [...spots].filter(([, count]) => count >= 2).map(([id]) => id);
+};
+
+test('at combat levels 20, 30, 40 and 50 every style has a safe farm in its own armour line that keeps pace with melee', () => {
+  const creatures = farmable();
+  assert.ok(!creatures.includes('the-warden') && !creatures.includes('the-lamplighter'));
+  for (const level of [20, 30, 40, 50]) {
+    const best = (style: Style) =>
+      creatures
+        .map((id) => ({ id, ...lineFight(style, level, id), pace: linePace(style, level, id) }))
+        .filter((fight) => fight.win >= 0.95 && fight.lost <= 0.6)
+        .sort((a, b) => b.pace - a.pace)[0];
+    const melee = best('melee');
+    assert.ok(melee, `melee has no safe farm at ${level}`);
+    for (const style of STYLES) {
+      const farm = best(style);
+      assert.ok(farm, `${style} has no safe farm at ${level}`);
+      assert.ok(farm.pace >= 0.7 * melee.pace, `${style} at ${level}: ${farm.id} pays ${farm.pace.toFixed(0)} a minute against melee's ${melee.pace.toFixed(0)} on ${melee.id}`);
+    }
+  }
+});
+
 test('past level 28, aggressive creatures are a fair fight at level and a real danger ten levels under, even in plate', () => {
   const veterans = [...GAME_CONTENT.creatures.values()].filter((creature) => creature.level > 28 && creature.aggressive && creature.id !== 'the-warden');
   assert.ok(veterans.length >= 5);
@@ -348,7 +398,7 @@ test('past level 28, aggressive creatures are a fair fight at level and a real d
     const under = plateFight(creature.level - 10, creature.id);
     const label = (fight: { win: number; lost: number }) => `${(fight.win * 100).toFixed(0)}% win, ${(fight.lost * 100).toFixed(0)}% lost`;
     if (creature.attack.style === 'psionic') {
-      assert.ok(even.win >= 0.65, `${creature.id} at level: ${label(even)}`);
+      assert.ok(even.win >= 0.85, `${creature.id} at level: ${label(even)}`);
       assert.ok(under.win <= 0.75, `${creature.id} ten under: ${label(under)}`);
       continue;
     }
@@ -375,19 +425,16 @@ test('ranged creatures exist, and skirmisher armour turns their shots better tha
   const ranged = [...GAME_CONTENT.creatures.values()].filter((creature) => creature.attack.style === 'ranged');
   assert.ok(ranged.length >= 2, 'at least two ranged attackers');
   assert.ok(ranged.every((creature) => creature.attack.range > 1));
-  const slug = (name: string): string => name.toLowerCase().replace(/[^a-z]+/g, '-');
-  const skirmisherSet = (name: string): EquipmentState => ({ primary: 'iron-baton', head: `${slug(name)}-hood`, torso: `${slug(name)}-jacket`, hands: `${slug(name)}-gloves`, legs: `${slug(name)}-trousers`, feet: `${slug(name)}-treads` });
   for (const creature of ranged) {
-    const rung = MATERIAL_LADDER.filter((entry) => entry.level <= creature.level).at(-1)!;
+    const rung = rungAt(creature.level);
     const skills = { ...createStartingSkills(), closeQuarters: experienceForLevel(creature.level), fortitude: experienceForLevel(typicalFortitude(creature.level)) };
     const against = (gear: EquipmentState): number => {
       const profile = deriveCombatProfile(skills, equipmentStats(gear, GAME_CONTENT.items));
       const theirs = creatureAttackProfile(creature);
       return hitChance(theirs.accuracy, defenceAgainst(profile, creature.attack.style)) * (1 + theirs.maxHit) / 2;
     };
-    const plate = against(plateAt(rung.level).gear);
-    const skirmisher = against(skirmisherSet(rung.skirmisher));
-    assert.ok(GAME_CONTENT.items.get(skirmisherSet(rung.skirmisher).torso ?? ''), `${rung.skirmisher} jacket exists`);
+    const plate = against(lineGear('melee', rung.level));
+    const skirmisher = against(lineGear('ranged', rung.level));
     assert.ok(skirmisher < plate, `${creature.id}: skirmisher armour takes ${skirmisher.toFixed(2)} a swing against plate's ${plate.toFixed(2)}`);
   }
 });
@@ -462,4 +509,51 @@ test('quest experience snowballs: quests from Dead Band on pay more levels the l
   const cordonKill = GAME_CONTENT.creatures.get('cordon-stalker')!.experience;
   const heartPay = GAME_CONTENT.quests.get('the-heart')!.rewards.flatMap((effect) => (effect.type === 'grantExperience' || effect.type === 'grantStyleExperience' ? [effect.amount] : []));
   assert.ok(Math.max(...heartPay) >= 3 * cordonKill, 'The Heart pays more than a few Cordon kills');
+});
+
+test('a story chapter never hides a Containment wall inside a contain step: a reach gate comes first', () => {
+  const chapters = GAME_CONTENT.questlines.get('site-meridian')?.questIds ?? [];
+  const contained: string[] = [];
+  let supplied = 0;
+  for (const questId of chapters) {
+    const quest = GAME_CONTENT.quests.get(questId);
+    assert.ok(quest, questId);
+    let gated = 0;
+    for (const step of quest.steps) {
+      for (const objective of step.objectives) {
+        if (objective.type === 'contain') {
+          const creature = GAME_CONTENT.creatures.get(objective.creatureId);
+          assert.ok(creature, objective.creatureId);
+          const level = containmentLevelFor(creature);
+          contained.push(`${questId}/${step.id}`);
+          if (experienceForLevel(level) > supplied) assert.ok(gated >= level, `${questId}/${step.id} contains ${creature.name} (Containment ${level}) with no earlier reach gate at that level`);
+        }
+      }
+      for (const objective of step.objectives) {
+        if (objective.type === 'reach' && objective.measure === 'containment') gated = Math.max(gated, objective.level);
+      }
+    }
+    for (const effect of quest.rewards) {
+      if (effect.type === 'grantExperience' && effect.skill === 'containment') supplied += effect.amount;
+    }
+  }
+  assert.ok(contained.includes('bill-of-lading/specimen') && contained.includes('the-heart/tide'), contained.join(', '));
+});
+
+test('The Heart contains its tide wraith before the Warden, and saves on every step stay put or wait on the wraith', () => {
+  const heart = GAME_CONTENT.quests.get('the-heart');
+  assert.ok(heart);
+  const ids = heart.steps.map((step) => step.id);
+  assert.ok(ids.indexOf('tide') > ids.indexOf('hale') && ids.indexOf('tide') < ids.indexOf('descend'), ids.join(','));
+  assert.ok(ids.indexOf('descend') < ids.indexOf('warden') && ids.indexOf('warden') < ids.indexOf('hatch'));
+  for (const stepId of ['hale', 'descend', 'warden', 'hatch', 'mercer', 'tide']) {
+    const saved = { questId: heart.id, status: 'active' as const, stepIndex: 0, stepId, objectiveProgress: [0] };
+    const moved = realignedProgress(heart, saved);
+    assert.equal(heart.steps[moved.stepIndex]?.id, stepId, `a save on ${stepId} stays on it`);
+  }
+  const legacy = (stepIndex: number) => ({ questId: heart.id, status: 'active' as const, stepIndex, objectiveProgress: [0] });
+  const placed = [0, 1, 2, 3, 4].map((index) => heart.steps[realignedProgress(heart, legacy(index)).stepIndex]?.id);
+  assert.equal(placed[0], 'hale');
+  for (const stepId of placed) assert.ok(stepId && ids.indexOf(stepId) <= ids.indexOf('mercer'));
+  assert.ok(ids.indexOf(placed[2] ?? '') <= ids.indexOf('warden'), 'a legacy save at the Warden is never moved past it');
 });

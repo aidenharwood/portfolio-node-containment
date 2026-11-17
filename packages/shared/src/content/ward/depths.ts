@@ -83,6 +83,7 @@ export const DEPTHS_CREATURES: readonly CreatureDefinition[] = [
     examine: 'Something that was a person once, and is now the memory of one, standing where they stood.',
     model: 'vaultEcho',
     level: 52,
+    accuracy: 32,
     guard: 'warden',
     aggressive: true,
     wander: 2,
@@ -141,7 +142,7 @@ export const DEPTHS_QUESTS: readonly QuestDefinition[] = [
     steps: [
       {
         id: 'ready',
-        journal: "Officer Brandt can get you into the Secure Wing, but the records take reading: Research 25. Study what you fight from a few paces off; the first study of each kind of creature pays well, and you can study anything up to your Analysis (Research plus Insight). Study the culvert traces on the Cut from Research 10, and the amber traces in Amber Holding on B1 from 20. Hetty Graves's What Glows pays Research and a Survey Loupe (Insight 4), or make the loupe at a fabricator from Engineering 12; Insight raises your Analysis straight away. The board's Culvert Survey, Amber Survey and Trace Ledger contracts pay Research too.",
+        journal: "Officer Brandt can get you into the Secure Wing, but the records take reading: Research 25. Study what you fight from a few paces off; the first study of each kind of creature pays well, and you can study anything up to your Analysis (Research plus Insight). Study the culvert traces on the Cut from Research 10, and the amber traces in Amber Holding on B1 from 20. Hetty Graves's What Glows pays Research and a Survey Loupe (Insight 4), or make the loupe at a fabricator from Engineering 12; Insight raises your Analysis straight away. The board's Culvert Survey, Amber Survey and Trace Ledger contracts pay Research too. Brandt also wants a glass hound contained for the log, and that takes Containment 15. Contain gutter mites on the Cut until about Containment 10, then rustlings in the Scrapyards, and moth lanterns in Amber Holding and the labs on B1.",
         objectives: [
           {
             type: 'reach',
@@ -150,8 +151,15 @@ export const DEPTHS_QUESTS: readonly QuestDefinition[] = [
             label: 'Reach Research 25',
             toward: { objects: ['culvert-trace', 'amber-trace'], study: ['moth-lantern', 'scrap-crawler', 'rustling', 'glass-hound', 'hull-knocker'] },
           },
+          {
+            type: 'reach',
+            measure: 'containment',
+            level: 15,
+            label: 'Reach Containment 15',
+            toward: { creatures: ['gutter-mite', 'rustling', 'moth-lantern'] },
+          },
         ],
-        onComplete: [{ type: 'notify', text: 'Research 25. Officer Brandt on B1 will see you now.' }],
+        onComplete: [{ type: 'notify', text: 'Research 25 and Containment 15. Officer Brandt on B1 will see you now.' }],
       },
       { id: 'brief', journal: 'Talk to Officer Brandt on B1 about the Secure Wing.', objectives: [{ type: 'talkTo', npcId: 'officer-brandt', label: 'Talk to Officer Brandt' }], onComplete: [{ type: 'setFlag', flag: 'clearance-b2' }] },
       { id: 'records', journal: 'Take the lower lift to B2 and search the records cabinet in the observation lab.', objectives: [{ type: 'obtainItem', itemId: 'vault-survey', count: 1, label: 'Find the Vault survey' }] },
@@ -174,18 +182,19 @@ export const DEPTHS_QUESTS: readonly QuestDefinition[] = [
     steps: [
       {
         id: 'ready',
-        journal: "Dr Hale will only send an operative into the Vault with combat level 40 and twelve quest points of the Ward behind them. Quest points come from quests: finish any Low Ward side quest you skipped, and What Glows for Hetty Graves, Bottom Up for Kofi Mensah (Engineering 25) and Knock Back for Corporal Sato. For combat, the hull knockers on the Shipyard Fringe pay best. The tide wraiths there hit the mind, so wear Cognitive Ward, like Greenhalgh's vigil robe, before you take them on. The Fringe contracts on the board pay on top, and Pike's Pawn sells alloy once Sato is happy.",
+        journal: "Dr Hale will only send an operative into the Vault with combat level 40 and twelve quest points of the Ward behind them. Quest points come from quests: finish any Low Ward side quest you skipped, and What Glows for Hetty Graves, Bottom Up for Kofi Mensah (Engineering 25) and Knock Back for Corporal Sato. For combat, the hull knockers on the Shipyard Fringe pay best. The tide wraiths there hit the mind, so wear Cognitive Ward, like Greenhalgh's vigil robe, before you take them on. The Fringe contracts on the board pay on top, and Pike's Pawn sells alloy once Sato is happy. Dr Hale also wants a tide wraith contained before you go down, and that takes Containment 25. Glass hounds in Amber Holding and Laboratory A on B1 pay 580 Containment experience each from Containment 15; keep containing them until you get there.",
         objectives: [
           { type: 'reach', measure: 'combat', level: 40, label: 'Reach combat level 40', toward: { creatures: ['hull-knocker'] } },
+          { type: 'reach', measure: 'containment', level: 25, label: 'Reach Containment 25', toward: { creatures: ['glass-hound'] } },
           { type: 'reach', measure: 'questPoints', level: 12, label: 'Earn 12 quest points' },
         ],
         onComplete: [{ type: 'notify', text: 'Dr Hale will see you now, in Holding Block A on the Canal Basin.' }],
       },
       { id: 'hale', journal: 'Talk to Dr Hale in Holding Block A, on the Canal Basin.', objectives: [{ type: 'talkTo', npcId: 'imogen-hale', label: 'Talk to Dr Hale' }], onComplete: [{ type: 'setFlag', flag: 'clearance-b3' }] },
+      { id: 'tide', journal: 'Before the Vault, Hale wants proof the Site can hold more than one thing. Draw a tide wraith away from the water, wear it down and contain it.', objectives: [{ type: 'contain', creatureId: 'tide-wraith', count: 1, label: 'Contain a tide wraith' }] },
       { id: 'descend', journal: 'Take the Vault lift down from B2. The Vault is meant for about combat level 50, and its echoes wear down anyone who comes early. Until then, the Cordon stalkers at the gate pay best from combat 40.', objectives: [{ type: 'enterArea', districtId: 'meridian-vault', areaId: 'landing', label: 'Reach the Vault' }] },
       { id: 'warden', journal: 'Find the Warden in the Heart of the Vault and bring it down.', objectives: [{ type: 'defeat', creatureId: 'the-warden', count: 1, label: 'Defeat the Warden' }] },
       { id: 'hatch', journal: 'Examine what the Warden was guarding.', objectives: [{ type: 'interactWith', objectId: 'sealed-hatch', label: 'Examine the sealed hatch' }] },
-      { id: 'tide', journal: 'Hale wants proof the Warden is not the only thing the Site can hold. Draw a tide wraith away from the water, wear it down and contain it.', objectives: [{ type: 'contain', creatureId: 'tide-wraith', count: 1, label: 'Contain a tide wraith' }] },
       { id: 'mercer', journal: 'Lieutenant Mercer at the Cordon post has orders for you.', objectives: [{ type: 'talkTo', npcId: 'lieutenant-mercer', label: 'Report to Lieutenant Mercer' }] },
     ],
     rewards: [...heart.map((pay) => pay.effect), scrip(3000), { type: 'setFlag', flag: 'cordon-orders' }],
