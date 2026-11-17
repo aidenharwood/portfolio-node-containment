@@ -2,7 +2,7 @@ import type { SkillId } from '../../character/skills.ts';
 import type { CreatureDefinition } from '../../combat/creatures.ts';
 import type { RecipeDefinition } from '../../crafting/recipes.ts';
 import type { DialogueDefinition, DialogueNode, DialogueOption } from '../../dialogue/dialogue.ts';
-import type { ItemDefinition, ItemIconShape } from '../../gear/items.ts';
+import type { GearMotif, ItemDefinition, ItemIconShape } from '../../gear/items.ts';
 import type { QuestDefinition } from '../../quests/questDefinition.ts';
 import type { Condition } from '../../rules/conditions.ts';
 import type { GameEffect } from '../../rules/effects.ts';
@@ -11,7 +11,7 @@ import type { TilePoint } from '../../world/geometry.ts';
 import { CANAL_BASIN, THE_CUT } from '../districts/lowWard.ts';
 import { gear } from '../gearItem.ts';
 import { DRESSING_THEMES } from '../prefabs/types.ts';
-import { questPay } from './questPay.ts';
+import { questPay, styleExperiencePay, styleQuestPay } from './questPay.ts';
 import { TUTORIAL_QUEST_ID } from './quests.ts';
 
 const anchor = (district: { readonly id: string; readonly anchors?: Readonly<Record<string, TilePoint>> }, name: string): TilePoint => {
@@ -75,6 +75,7 @@ interface Beast {
   readonly accuracy?: number;
   readonly defence?: number;
   readonly range?: number;
+  readonly guard?: GearMotif;
 }
 
 const KILL_BONUS_LEVEL_CAP = 16;
@@ -85,7 +86,7 @@ const VETERAN_LEVEL_CAP = 44;
 
 const THREAT_LEVEL = 28;
 
-const THREAT_ACCURACY_PER_LEVEL: Readonly<Record<CreatureDefinition['attack']['style'], number>> = { melee: 5, ranged: 5, psionic: 1.5 };
+const THREAT_ACCURACY_PER_LEVEL: Readonly<Record<CreatureDefinition['attack']['style'], number>> = { melee: 5, ranged: 2.5, psionic: 1.5 };
 
 const THREAT_DEFENCE_PER_LEVEL = 2;
 
@@ -111,6 +112,7 @@ export const beast = (spec: Beast, style = spec.style ?? 'melee', threat = threa
   integrity: spec.integrity ?? spec.level * 3 + 4 + THREAT_INTEGRITY_PER_LEVEL * threat,
   defence: spec.defence ?? Math.round(spec.level * 0.6) + THREAT_DEFENCE_PER_LEVEL * threat,
   attack: { style, accuracy: spec.accuracy ?? Math.round(spec.level * 0.6) + 1 + Math.round(THREAT_ACCURACY_PER_LEVEL[style] * threat), maxHit: 1 + Math.floor(spec.level / 4), range: spec.range ?? 1, speedTicks: 4 },
+  ...(spec.guard ? { guard: spec.guard } : {}),
   ...(spec.aggressive ? { aggressive: true } : {}),
   aggroRadius: spec.aggressive ? 3 : 0,
   leashRadius: 7,
@@ -159,6 +161,7 @@ export const NOVICE_CREATURES: readonly CreatureDefinition[] = [
     examine: 'A scrap heap that has got up. Hallam says it is the same one that was here yesterday.',
     model: 'rustling',
     level: 18,
+    guard: 'bulwark',
     aggressive: true,
     wander: 2,
     loot: [{ itemId: 'scrap-bar', count: 2, chance: 0.6 }, { itemId: 'iron-bar', count: 1, chance: 0.25 }, { itemId: 'rustling-core', count: 1, chance: 0.01 }],
@@ -181,6 +184,8 @@ export const NOVICE_CREATURES: readonly CreatureDefinition[] = [
     examine: "A magpie with a nest made entirely of other people's things.",
     model: 'scrapMagpie',
     level: 3,
+    style: 'ranged',
+    range: 4,
     wander: 3,
     loot: [{ itemId: 'trace-dust', count: 1, chance: 0.4 }, { itemId: 'scrap-metal', count: 1, chance: 0.3 }],
   }),
@@ -237,7 +242,7 @@ const scrip = (count: number): GameEffect => ({ type: 'giveItem', itemId: 'merid
 
 const novice = (quest: Omit<QuestDefinition, 'category'> & { readonly category?: QuestDefinition['category'] }): QuestDefinition => ({ category: 'side', offerRequires: [TUTORIAL_QUEST_ID], ...quest });
 
-const lamp = [questPay('closeQuarters', 10, 1), questPay('fortitude', 10, 0.6)];
+const lamp = [styleQuestPay(10, 1), questPay('fortitude', 10, 0.6)];
 
 export const NOVICE_QUESTS: readonly QuestDefinition[] = [
   novice({
@@ -305,8 +310,8 @@ export const NOVICE_QUESTS: readonly QuestDefinition[] = [
       { id: 'cat', journal: 'Find the cat near the culvert.', objectives: [{ type: 'obtainItem', itemId: 'grey-cat', count: 1, label: 'Pick up the grey cat' }] },
       { id: 'return', journal: 'Take the cat back to Pell in the Tenements alley.', objectives: [{ type: 'signal', signal: 'cat.returned', npcId: 'pell', label: 'Return the cat to Pell' }] },
     ],
-    rewards: [xp('fortitude', 200), xp('closeQuarters', 200), scrip(40), { type: 'giveItem', itemId: 'scrap-helm' }],
-    rewardSummary: ['1 Quest Point', '200 Fortitude XP', '200 Close Quarters XP', '40 Scrip', 'Scrap Helm'],
+    rewards: [xp('fortitude', 200), styleExperiencePay(200).effect, scrip(40), { type: 'giveItem', itemId: 'scrap-helm' }],
+    rewardSummary: ['1 Quest Point', '200 Fortitude XP', styleExperiencePay(200).line, '40 Scrip', 'Scrap Helm'],
   }),
   novice({
     id: 'bright-things',

@@ -14,7 +14,7 @@ const tramPiece = (id: string): WorldObjectDefinition => ({
 });
 
 export const FIXTURE_OBJECTS: readonly WorldObjectDefinition[] = [
-  { id: 'storage-locker', name: 'Storage Locker', examine: 'A test locker.', ...placeholder, furnishing: { mount: 'wall', homes: DRESSING_THEMES }, interactions: [{ verb: 'Open', effects: [{ type: 'openStorage' }] }] },
+  { id: 'storage-locker', name: 'Storage Locker', examine: 'A test locker.', ...placeholder, furnishing: { mount: 'wall', homes: DRESSING_THEMES }, interactions: [{ verb: 'Open', effects: [{ type: 'openStorage' }] }, { verb: 'Drill', effects: [{ type: 'grantStyleExperience', amount: 100 }] }] },
   { id: 'market-terminal', name: 'Exchange Terminal', examine: 'A test exchange.', ...placeholder, interactions: [{ verb: 'Trade', effects: [{ type: 'openMarket' }] }] },
   { id: 'market-mailbox', name: 'Exchange Mailbox', examine: 'A test mailbox.', ...placeholder, interactions: [{ verb: 'Collect', effects: [{ type: 'openMarket', access: 'collect' }] }] },
   {

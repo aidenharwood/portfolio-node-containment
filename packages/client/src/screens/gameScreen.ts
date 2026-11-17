@@ -28,7 +28,7 @@ import { ActivityBar } from '../hud/activityBar.ts';
 import { CraftingWindow } from '../hud/craftingWindow.ts';
 import { QuestInfoWindow } from '../hud/questInfoWindow.ts';
 import { ItemSourcesWindow } from '../hud/itemSourcesWindow.ts';
-import { SalvageGuideWindow } from '../hud/salvageGuideWindow.ts';
+import { SkillGuideWindow } from '../hud/skillGuideWindow.ts';
 import { StorageWindow } from '../hud/storageWindow.ts';
 import { TramRide } from '../hud/tramRide.ts';
 import { WorldMap } from '../hud/worldMap.ts';
@@ -109,7 +109,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   const inventoryModes = new InventoryModeSlot();
   const shop = new ShopWindow(connection, world, menu, inventoryModes);
   const storage = new StorageWindow(connection, world, menu, inventoryModes);
-  const salvageGuideWindow = new SalvageGuideWindow(world, guidanceTracking);
+  const skillGuideWindow = new SkillGuideWindow(world, guidanceTracking);
   const questInfo = new QuestInfoWindow(guidanceTracking);
   const market = new MarketWindow(connection, world);
   const contractBoard = new ContractBoardWindow(connection, world);
@@ -170,7 +170,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   const sidePanel = new SidePanel([
     createInventoryTab(connection, menu, { examine, sources: (itemId) => itemSourcesWindow.show(itemId) }, inventoryModes),
     createEquipmentTab(connection, world),
-    createSkillsTab(() => salvageGuideWindow.show()),
+    createSkillsTab((skill) => skillGuideWindow.show(skill)),
     createQuestsTab(menu, guidanceTracking, questInfo),
     createContractsTab(),
     createSocialTab(connection, social, { whisper }),
@@ -447,8 +447,8 @@ export function createGameScreen(app: AppNavigator): Screen {
       questInfo.hide();
       return;
     }
-    if (event.key === 'Escape' && salvageGuideWindow.isOpen) {
-      salvageGuideWindow.hide();
+    if (event.key === 'Escape' && skillGuideWindow.isOpen) {
+      skillGuideWindow.hide();
       return;
     }
     if (event.key === 'Escape' && storage.isOpen) {
@@ -552,7 +552,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     shop.element,
     crafting.element,
     storage.element,
-    salvageGuideWindow.element,
+    skillGuideWindow.element,
     itemSourcesWindow.element,
     questInfo.element,
     market.element,
@@ -604,7 +604,7 @@ export function createGameScreen(app: AppNavigator): Screen {
       shop.dispose();
       crafting.dispose();
       storage.dispose();
-      salvageGuideWindow.dispose();
+      skillGuideWindow.dispose();
       market.dispose();
       contractBoard.dispose();
       party.dispose();

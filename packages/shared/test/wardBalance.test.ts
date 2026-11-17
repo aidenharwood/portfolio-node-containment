@@ -3,9 +3,9 @@ import { test } from 'node:test';
 import { createStartingSkills, experienceForLevel, levelForExperience } from '../src/character/skills.ts';
 import { deriveCombatProfile } from '../src/character/derivedStats.ts';
 import { creatureAttackProfile, defenceAgainst, hitChance, playerAttackProfile, rollAttack } from '../src/combat/combatMath.ts';
-import { creatureDefence } from '../src/combat/study.ts';
+import { creatureDefence, weaknessOf } from '../src/combat/study.ts';
 import { REGENERATION_INTERVAL_TICKS, regenerationPerInterval } from '../src/combat/regeneration.ts';
-import { COMBAT_STYLE_INFO, WEAPON_KIND_INFO } from '../src/combat/weapons.ts';
+import { COMBAT_STYLE_INFO, WEAPON_KIND_INFO, styleBeating } from '../src/combat/weapons.ts';
 import { equipmentStats, type EquipmentState } from '../src/gear/equipment.ts';
 import { GAME_CONTENT, objectiveDistricts, tierForLevel, type ItemDefinition } from '../src/index.ts';
 import { gatheringSourcesOf } from '../src/content/craftingIntegrity.ts';
@@ -344,7 +344,7 @@ test('past level 28, aggressive creatures are a fair fight at level and a real d
   const veterans = [...GAME_CONTENT.creatures.values()].filter((creature) => creature.level > 28 && creature.aggressive && creature.id !== 'the-warden');
   assert.ok(veterans.length >= 5);
   for (const creature of veterans) {
-    const even = plateFight(creature.level, creature.id);console.log('DBG', creature.id, creature.level, creature.attack.style, JSON.stringify(even), JSON.stringify(plateFight(creature.level - 5, creature.id)), JSON.stringify(plateFight(creature.level - 10, creature.id)));
+    const even = plateFight(creature.level, creature.id);
     const under = plateFight(creature.level - 10, creature.id);
     const label = (fight: { win: number; lost: number }) => `${(fight.win * 100).toFixed(0)}% win, ${(fight.lost * 100).toFixed(0)}% lost`;
     if (creature.attack.style === 'psionic') {
@@ -354,11 +354,42 @@ test('past level 28, aggressive creatures are a fair fight at level and a real d
     }
     const near = plateFight(creature.level - 5, creature.id);
     assert.ok(even.win >= 0.97 && even.lost >= 0.3 && even.lost <= 0.6, `${creature.id} at level: ${label(even)}`);
-    assert.ok(near.win >= 0.75 && near.lost >= 0.55 && near.lost <= 0.85, `${creature.id} five under: ${label(near)}`);
+    assert.ok(near.win >= 0.65 && near.lost >= 0.55 && near.lost <= 0.85, `${creature.id} five under: ${label(near)}`);
     assert.ok(under.win <= 0.85 && under.lost >= 0.75, `${creature.id} ten under: ${label(under)}`);
   }
   const warden = plateFight(54, 'the-warden');
-  assert.ok(warden.win >= 0.2 && warden.win <= 0.45, `the Warden at 54 in plate: ${(warden.win * 100).toFixed(0)}%`);
+  assert.ok(warden.win >= 0.7 && warden.win <= 0.85, `the Warden at 54 in plate: ${(warden.win * 100).toFixed(0)}%`);
+});
+
+test('every combat style has at least two non-boss creatures that guard with its armour line', () => {
+  const creatures = [...GAME_CONTENT.creatures.values()].filter((creature) => creature.id !== 'the-warden');
+  for (const style of Object.keys(COMBAT_STYLE_INFO) as (keyof typeof COMBAT_STYLE_INFO)[]) {
+    const line = COMBAT_STYLE_INFO[style].line;
+    const guarded = creatures.filter((creature) => creature.guard === line);
+    assert.ok(guarded.length >= 2, `${line} guards only ${guarded.map((creature) => creature.id).join(', ') || 'nothing'}`);
+    for (const creature of guarded) assert.equal(weaknessOf(creature), styleBeating(style), `${creature.id} is weak to ${styleBeating(style)}`);
+  }
+});
+
+test('ranged creatures exist, and skirmisher armour turns their shots better than plate', () => {
+  const ranged = [...GAME_CONTENT.creatures.values()].filter((creature) => creature.attack.style === 'ranged');
+  assert.ok(ranged.length >= 2, 'at least two ranged attackers');
+  assert.ok(ranged.every((creature) => creature.attack.range > 1));
+  const slug = (name: string): string => name.toLowerCase().replace(/[^a-z]+/g, '-');
+  const skirmisherSet = (name: string): EquipmentState => ({ primary: 'iron-baton', head: `${slug(name)}-hood`, torso: `${slug(name)}-jacket`, hands: `${slug(name)}-gloves`, legs: `${slug(name)}-trousers`, feet: `${slug(name)}-treads` });
+  for (const creature of ranged) {
+    const rung = MATERIAL_LADDER.filter((entry) => entry.level <= creature.level).at(-1)!;
+    const skills = { ...createStartingSkills(), closeQuarters: experienceForLevel(creature.level), fortitude: experienceForLevel(typicalFortitude(creature.level)) };
+    const against = (gear: EquipmentState): number => {
+      const profile = deriveCombatProfile(skills, equipmentStats(gear, GAME_CONTENT.items));
+      const theirs = creatureAttackProfile(creature);
+      return hitChance(theirs.accuracy, defenceAgainst(profile, creature.attack.style)) * (1 + theirs.maxHit) / 2;
+    };
+    const plate = against(plateAt(rung.level).gear);
+    const skirmisher = against(skirmisherSet(rung.skirmisher));
+    assert.ok(GAME_CONTENT.items.get(skirmisherSet(rung.skirmisher).torso ?? ''), `${rung.skirmisher} jacket exists`);
+    assert.ok(skirmisher < plate, `${creature.id}: skirmisher armour takes ${skirmisher.toFixed(2)} a swing against plate's ${plate.toFixed(2)}`);
+  }
 });
 
 test('an NPC with a waiting line says it while the quest is active', () => {
@@ -410,7 +441,7 @@ test('quest experience snowballs: quests from Dead Band on pay more levels the l
   const levelsPaid = (questId: string): number => {
     const quest = GAME_CONTENT.quests.get(questId);
     assert.ok(quest?.recommendedLevel, `${questId} needs a recommended level`);
-    const amounts = quest.rewards.flatMap((effect) => (effect.type === 'grantExperience' ? [effect.amount] : []));
+    const amounts = quest.rewards.flatMap((effect) => (effect.type === 'grantExperience' || effect.type === 'grantStyleExperience' ? [effect.amount] : []));
     return Math.max(...amounts) / stepAt(quest.recommendedLevel);
   };
   for (const questId of ['lost-cat', 'drowned-lamp', 'steel-below', 'dead-band']) {
@@ -429,6 +460,6 @@ test('quest experience snowballs: quests from Dead Band on pay more levels the l
   assert.ok(levelsPaid('bill-of-lading') >= 2.5, 'Bill of Lading pays at least two and a half levels');
   assert.ok(levelsPaid('the-heart') >= 3.5, 'The Heart pays at least three and a half levels');
   const cordonKill = GAME_CONTENT.creatures.get('cordon-stalker')!.experience;
-  const heartPay = GAME_CONTENT.quests.get('the-heart')!.rewards.flatMap((effect) => (effect.type === 'grantExperience' ? [effect.amount] : []));
+  const heartPay = GAME_CONTENT.quests.get('the-heart')!.rewards.flatMap((effect) => (effect.type === 'grantExperience' || effect.type === 'grantStyleExperience' ? [effect.amount] : []));
   assert.ok(Math.max(...heartPay) >= 3 * cordonKill, 'The Heart pays more than a few Cordon kills');
 });

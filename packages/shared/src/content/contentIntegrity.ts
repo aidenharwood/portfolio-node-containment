@@ -57,6 +57,7 @@ export function findContentIssues(content: GameContent): string[] {
   const checkEffects = (where: string, effects: readonly GameEffect[] | undefined) => {
     for (const effect of effects ?? []) {
       if (effect.type === 'giveItem' || effect.type === 'takeItem') checkItem(where, effect.itemId);
+      if (effect.type === 'grantStyleExperience' && !(effect.amount > 0)) report(where, 'style experience must be positive');
       if (effect.type === 'startQuest') checkQuest(where, effect.questId);
       if (effect.type === 'openShop' && !content.shops.has(effect.shopId)) report(where, `unknown shop "${effect.shopId}"`);
       if (effect.type === 'discoverStation' && !content.tram.stations.has(effect.stationId)) report(where, `unknown tram station "${effect.stationId}"`);

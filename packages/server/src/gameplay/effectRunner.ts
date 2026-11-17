@@ -2,10 +2,14 @@ import {
   addItem,
   countItem,
   CURRENCY_ITEM_ID,
+  equippedStyleSkill,
   locate,
   levelForExperience,
   removeItem,
   SKILL_INFO,
+  skillGuide,
+  skillUnlocksBetween,
+  summariseUnlocks,
   type SkillId,
   type CraftingStation,
   type DistrictId,
@@ -58,6 +62,8 @@ export class EffectRunner {
         return this.takeItem(player, effect.itemId, effect.count ?? 1);
       case 'grantExperience':
         return this.grantExperience(player, effect.skill, effect.amount);
+      case 'grantStyleExperience':
+        return this.grantExperience(player, equippedStyleSkill(player.record.equipment, this.content.items), effect.amount);
       case 'startQuest':
         return this.host.startQuest(player, effect.questId);
       case 'emitSignal':
@@ -128,7 +134,9 @@ export class EffectRunner {
     if (announce) player.send({ type: 'chat.message', channel: 'system', text: `+${amount} ${SKILL_INFO[skill].name} XP` });
     const newLevel = levelForExperience(after);
     if (newLevel > levelForExperience(before)) {
-      this.host.notify(player, 'success', `${SKILL_INFO[skill].name} advanced to level ${newLevel}.`);
+      const unlocked = skillUnlocksBetween(skillGuide(this.content, skill), levelForExperience(before), newLevel);
+      const suffix = unlocked.length > 0 ? ` Unlocked: ${summariseUnlocks(unlocked)}.` : '';
+      this.host.notify(player, 'success', `${SKILL_INFO[skill].name} advanced to level ${newLevel}.${suffix}`);
       this.host.cue(player, 'levelUp');
       this.host.raiseQuestEvent(player, { type: 'standingChanged' });
     }

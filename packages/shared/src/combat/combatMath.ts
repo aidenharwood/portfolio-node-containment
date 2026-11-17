@@ -71,6 +71,10 @@ export function playerAttackProfile(skills: SkillExperience, equipment: Equipmen
   };
 }
 
+export const equippedStyle = (equipment: EquipmentState, items: ItemCatalog): CombatStyle => WEAPON_KIND_INFO[weaponOf(equipment, items).kind].style;
+
+export const equippedStyleSkill = (equipment: EquipmentState, items: ItemCatalog): SkillId => COMBAT_STYLE_INFO[equippedStyle(equipment, items)].skill;
+
 export const creatureAttackProfile = (creature: CreatureDefinition): AttackProfile => ({ ...creature.attack });
 
 export function hitChance(accuracy: number, defence: number): number {

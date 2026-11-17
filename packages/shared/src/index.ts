@@ -21,6 +21,7 @@ export * from './combat/weapons.ts';
 export * from './crafting/gathering.ts';
 export * from './crafting/itemSources.ts';
 export * from './crafting/salvageGuide.ts';
+export * from './crafting/skillGuide.ts';
 export * from './crafting/recipes.ts';
 export * from './crafting/tiers.ts';
 

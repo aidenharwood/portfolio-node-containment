@@ -1,10 +1,14 @@
 import {
   experienceForLevel,
+  GAME_CONTENT,
   levelForExperience,
   levelProgress,
+  nextSkillUnlocks,
   SKILL_IDS,
   SKILL_INFO,
   SKILL_LEVEL_CAP,
+  skillGuide,
+  summariseUnlocks,
   type SkillId,
 } from '@containment/shared';
 import { h, replaceChildren } from '../../ui/dom.ts';
@@ -18,11 +22,9 @@ interface SkillTile {
   readonly fill: HTMLSpanElement;
 }
 
-export function createSkillsTab(openSalvageGuide: () => void): PanelTab {
+export function createSkillsTab(openSkillGuide: (skill: SkillId) => void): PanelTab {
   let experienceById: Readonly<Record<SkillId, number>> | null = null;
   let shownId: SkillId | null = null;
-  let pinned = false;
-  let lastPointerType = '';
   let signalAttention: () => void = () => undefined;
   const shownLevels = new Map<SkillId, number>();
 
@@ -37,6 +39,7 @@ export function createSkillsTab(openSalvageGuide: () => void): PanelTab {
     const level = levelForExperience(experience);
     const mastered = level >= SKILL_LEVEL_CAP;
     const remaining = experienceForLevel(level + 1) - experience;
+    const upcoming = nextSkillUnlocks(skillGuide(GAME_CONTENT, id), level);
     replaceChildren(
       details,
       h('p', { className: 'tooltip-name' }, SKILL_INFO[id].name),
@@ -47,7 +50,9 @@ export function createSkillsTab(openSalvageGuide: () => void): PanelTab {
       ),
       h('div', { className: 'skill-bar' }, h('span', { style: { width: `${levelProgress(experience) * 100}%` } })),
       h('p', { className: 'tooltip-examine' }, SKILL_INFO[id].summary),
-      id === 'salvage' && h('p', { className: 'tooltip-hint' }, 'Select to open the salvage guide'),
+      h('p', { className: 'tooltip-examine' }, `Train by: ${SKILL_INFO[id].trainedBy}`),
+      upcoming[0] && h('p', { className: 'tooltip-meta' }, `Next unlock: ${summariseUnlocks(upcoming, 1)} at ${upcoming[0].level}`),
+      h('p', { className: 'tooltip-hint' }, 'Select to open the skill guide'),
     );
   };
 
@@ -73,7 +78,6 @@ export function createSkillsTab(openSalvageGuide: () => void): PanelTab {
 
   const hide = () => {
     shownId = null;
-    pinned = false;
     details.hidden = true;
   };
 
@@ -86,48 +90,33 @@ export function createSkillsTab(openSalvageGuide: () => void): PanelTab {
       h('span', { className: 'skill-bar' }, fill),
     );
     tile.addEventListener('pointerenter', (event) => {
-      if (event.pointerType !== 'mouse' || pinned) return;
+      if (event.pointerType !== 'mouse') return;
       show(id);
       placeAt(event.clientX, event.clientY);
     });
     tile.addEventListener('pointermove', (event) => {
-      if (event.pointerType === 'mouse' && !pinned && shownId === id) placeAt(event.clientX, event.clientY);
+      if (event.pointerType === 'mouse' && shownId === id) placeAt(event.clientX, event.clientY);
     });
     tile.addEventListener('pointerleave', (event) => {
-      if (event.pointerType === 'mouse' && !pinned) hide();
-    });
-    tile.addEventListener('pointerdown', (event) => {
-      lastPointerType = event.pointerType;
+      if (event.pointerType === 'mouse') hide();
     });
     tile.addEventListener('focus', () => {
-      if (pinned || !tile.matches(':focus-visible')) return;
+      if (!tile.matches(':focus-visible')) return;
       show(id);
       placeBeside(tile);
     });
     tile.addEventListener('blur', () => {
-      if (!pinned && shownId === id) hide();
+      if (shownId === id) hide();
     });
     tile.addEventListener('animationend', () => tile.classList.remove('levelled'));
-    tile.addEventListener('click', (event) => {
-      if (id === 'salvage') {
-        hide();
-        openSalvageGuide();
-        return;
-      }
-      if (event.detail > 0 && lastPointerType === 'mouse') return;
-      if (pinned && shownId === id) return hide();
-      show(id);
-      pinned = true;
-      placeBeside(tile);
+    tile.addEventListener('click', () => {
+      hide();
+      openSkillGuide(id);
     });
     return [id, { element: tile, level, fill }];
   }));
   list.append(...[...tiles.values()].map((tile) => tile.element));
 
-  const hideOnOutsidePress = (event: PointerEvent) => {
-    if (pinned && !list.contains(event.target as Node)) hide();
-  };
-  window.addEventListener('pointerdown', hideOnOutsidePress, true);
   window.addEventListener('keydown', hide);
 
   return {
@@ -169,7 +158,6 @@ export function createSkillsTab(openSalvageGuide: () => void): PanelTab {
       total.textContent = `Total ${levelSum} · Combat ${self.combatLevel}`;
     },
     dispose() {
-      window.removeEventListener('pointerdown', hideOnOutsidePress, true);
       window.removeEventListener('keydown', hide);
       details.remove();
     },

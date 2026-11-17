@@ -8,6 +8,7 @@ export type GameEffect =
   | { readonly type: 'giveItem'; readonly itemId: ItemId; readonly count?: number }
   | { readonly type: 'takeItem'; readonly itemId: ItemId; readonly count?: number }
   | { readonly type: 'grantExperience'; readonly skill: SkillId; readonly amount: number }
+  | { readonly type: 'grantStyleExperience'; readonly amount: number }
   | { readonly type: 'startQuest'; readonly questId: QuestId }
   | { readonly type: 'emitSignal'; readonly signal: string }
   | { readonly type: 'setFlag'; readonly flag: string }

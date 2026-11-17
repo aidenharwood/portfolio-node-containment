@@ -17,3 +17,10 @@ export function questPay(skill: SkillId, level: number, weight: number): QuestPa
   const amount = Math.round((levelStepAt(level) * questLevelShare(level) * weight) / 100) * 100;
   return { effect: { type: 'grantExperience', skill, amount }, line: `${amount} ${SKILL_INFO[skill].name} XP` };
 }
+
+export function styleQuestPay(level: number, weight: number): QuestPay {
+  const amount = Math.round((levelStepAt(level) * questLevelShare(level) * weight) / 100) * 100;
+  return styleExperiencePay(amount);
+}
+
+export const styleExperiencePay = (amount: number): QuestPay => ({ effect: { type: 'grantStyleExperience', amount }, line: `${amount} combat XP (your weapon's skill)` });

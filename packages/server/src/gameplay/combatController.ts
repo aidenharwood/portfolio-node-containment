@@ -32,6 +32,7 @@ import {
   bodyDistance,
   facingTiles,
   nearestFootprintTile,
+  equippedStyle,
   playerAttackProfile,
   rollAttack,
   samePoint,
@@ -434,7 +435,7 @@ export class CombatController implements EncounterHost {
     const label = creature.definition.designation ? `${creature.definition.designation} (${creature.definition.name})` : creature.definition.name;
     this.host.notify(player, 'success', `${label} contained. Class: ${CONTAINMENT_CLASS_INFO[profile.containmentClass].name}.`);
     this.effects.awardExperience(player, 'containment', profile.experience, true);
-    const style = playerAttackProfile(player.record.skills, player.record.equipment, this.content.items).style;
+    const style = equippedStyle(player.record.equipment, this.content.items);
     for (const award of defeatExperience(style, creature.definition.experience)) {
       this.effects.awardExperience(player, award.skill, award.amount, false);
     }

@@ -8,7 +8,7 @@ import type { GameEffect } from '../../rules/effects.ts';
 import type { WorldObjectDefinition } from '../../world/entities.ts';
 import { gear } from '../gearItem.ts';
 import { beast, questObject, questTalk } from './novice.ts';
-import { questPay } from './questPay.ts';
+import { questPay, styleQuestPay } from './questPay.ts';
 
 const questItem = (id: string, name: string, examine: string, icon: ItemIconShape, colors: readonly [string, string]): ItemDefinition => ({
   id,
@@ -60,6 +60,7 @@ export const DEPTHS_CREATURES: readonly CreatureDefinition[] = [
     examine: 'Built like a door with shoulders. It got out of its cell the way it gets through everything.',
     model: 'cellBreaker',
     level: 44,
+    guard: 'bulwark',
     aggressive: true,
     wander: 2,
     loot: [{ itemId: 'directorate-salvage', count: 2, chance: 0.6 }, { itemId: 'sinter-ingot', count: 1, chance: 0.1 }, { itemId: 'breaker-plate', count: 1, chance: 0.01 }],
@@ -70,6 +71,9 @@ export const DEPTHS_CREATURES: readonly CreatureDefinition[] = [
     examine: 'Tall and patient, on legs like scaffold poles. It came through the Cordon wall. Nobody knows how.',
     model: 'cordonStalker',
     level: 44,
+    guard: 'skirmisher',
+    style: 'ranged',
+    range: 5,
     aggressive: true,
     loot: [{ itemId: 'red-trace', count: 1, chance: 0.4 }, { itemId: 'directorate-salvage', count: 1, chance: 0.3 }, { itemId: 'stalker-treads', count: 1, chance: 0.01 }],
   }),
@@ -79,6 +83,7 @@ export const DEPTHS_CREATURES: readonly CreatureDefinition[] = [
     examine: 'Something that was a person once, and is now the memory of one, standing where they stood.',
     model: 'vaultEcho',
     level: 52,
+    guard: 'warden',
     aggressive: true,
     wander: 2,
     style: 'psionic',
@@ -92,8 +97,8 @@ export const DEPTHS_CREATURES: readonly CreatureDefinition[] = [
     examine: 'Huge, patient and plated in dark glass, with a key held in one fist. It has been holding the shaft shut from the inside since before the Site was built.',
     model: 'warden',
     level: 54,
-    integrity: 420,
-    accuracy: 33,
+    integrity: 340,
+    accuracy: 28,
     defence: 32,
     aggressive: true,
     wander: 2,
@@ -118,7 +123,7 @@ export const DEPTHS_OBJECTS: readonly WorldObjectDefinition[] = [
 const scrip = (count: number): GameEffect => ({ type: 'giveItem', itemId: 'meridian-scrip', count });
 const glows = [questPay('biochemistry', 20, 1), questPay('research', 20, 0.5)];
 const bottom = [questPay('engineering', 25, 1), questPay('refining', 25, 0.4)];
-const knock = [questPay('fortitude', 24, 1), questPay('closeQuarters', 24, 0.5)];
+const knock = [questPay('fortitude', 24, 1), styleQuestPay(24, 0.5)];
 const lading = [questPay('research', 35, 1), questPay('containment', 35, 0.5)];
 const heart = [questPay('containment', 50, 1), questPay('research', 50, 0.5)];
 
