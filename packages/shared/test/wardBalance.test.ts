@@ -7,7 +7,7 @@ import { creatureDefence } from '../src/combat/study.ts';
 import { REGENERATION_INTERVAL_TICKS, regenerationPerInterval } from '../src/combat/regeneration.ts';
 import { COMBAT_STYLE_INFO, WEAPON_KIND_INFO } from '../src/combat/weapons.ts';
 import { equipmentStats, type EquipmentState } from '../src/gear/equipment.ts';
-import { GAME_CONTENT, tierForLevel, type ItemDefinition } from '../src/index.ts';
+import { GAME_CONTENT, objectiveDistricts, tierForLevel, type ItemDefinition } from '../src/index.ts';
 import { gatheringSourcesOf } from '../src/content/craftingIntegrity.ts';
 import { MATERIAL_LADDER } from '../src/content/ward/items.ts';
 
@@ -107,7 +107,7 @@ interface Operative {
   readonly gear: EquipmentState;
 }
 
-function winRate(operative: Operative, creatureId: string, fights = 2000): number {
+function gauntletWinRate(operative: Operative, creatureId: string, count: number, healBetween = 0, fights = 2000): number {
   const creature = GAME_CONTENT.creatures.get(creatureId);
   assert.ok(creature, creatureId);
   const skills = { ...createStartingSkills(), closeQuarters: experienceForLevel(operative.closeQuarters), fortitude: experienceForLevel(operative.fortitude) };
@@ -115,19 +115,24 @@ function winRate(operative: Operative, creatureId: string, fights = 2000): numbe
   const profile = deriveCombatProfile(skills, equipmentStats(operative.gear, GAME_CONTENT.items));
   const guard = defenceAgainst(profile, creature.attack.style);
   const theirs = creatureAttackProfile(creature);
-  const random = mulberry(creature.level * 7919 + operative.closeQuarters);
+  const random = mulberry(creature.level * 7919 + operative.closeQuarters + count * 31);
   let wins = 0;
-  for (let fight = 0; fight < fights; fight++) {
+  for (let run = 0; run < fights; run++) {
     let mine = profile.integrity;
-    let its = creature.integrity;
-    for (let tick = 0; mine > 0 && its > 0; tick++) {
-      if (tick % attack.speedTicks === 0) its -= rollAttack(attack, creatureDefence(creature, attack.style, false), random).damage;
-      if (its > 0 && tick % theirs.speedTicks === 0) mine -= rollAttack(theirs, guard, random).damage;
+    for (let fight = 0; fight < count && mine > 0; fight++) {
+      if (fight > 0) mine = Math.min(profile.integrity, mine + healBetween);
+      let its = creature.integrity;
+      for (let tick = 0; mine > 0 && its > 0; tick++) {
+        if (tick % attack.speedTicks === 0) its -= rollAttack(attack, creatureDefence(creature, attack.style, false), random).damage;
+        if (its > 0 && tick % theirs.speedTicks === 0) mine -= rollAttack(theirs, guard, random).damage;
+      }
     }
-    if (its <= 0) wins++;
+    if (mine > 0) wins++;
   }
   return wins / fights;
 }
+
+const winRate = (operative: Operative, creatureId: string, fights = 2000): number => gauntletWinRate(operative, creatureId, 1, 0, fights);
 
 const KIT: EquipmentState = { primary: 'scrap-baton', torso: 'scrap-plate' };
 const SCRAP_SET: EquipmentState = { primary: 'scrap-baton', head: 'scrap-helm', torso: 'scrap-plate', legs: 'scrap-greaves' };
@@ -175,6 +180,18 @@ test('the Site Meridian storyline hands each chapter straight to the next', () =
   for (const [index, questId] of chapters.slice(0, -1).entries()) {
     assert.equal(GAME_CONTENT.quests.get(questId)?.followUpQuestId, chapters[index + 1], `${questId} leads on`);
   }
+});
+
+test('Lost Cat runs three gutter mites back to back: risky without food, safe eating smoked eels between fights', () => {
+  const eel = GAME_CONTENT.items.get('smoked-eel')?.consumable?.heal ?? 0;
+  assert.ok(eel > 0);
+  const mites = GAME_CONTENT.quests.get('lost-cat')?.steps.find((step) => step.id === 'mites')?.objectives[0];
+  assert.ok(mites?.type === 'defeat' && mites.creatureId === 'gutter-mite');
+  const fresh: Operative = { closeQuarters: 4, fortitude: 3, gear: KIT };
+  const recommended: Operative = { closeQuarters: 6, fortitude: 4, gear: KIT };
+  assert.ok(gauntletWinRate(fresh, 'gutter-mite', mites.count) < 0.3, 'the journal warning to eat is earned');
+  assert.ok(gauntletWinRate(fresh, 'gutter-mite', mites.count, 2 * eel) >= 0.95, 'two eels between fights carry a fresh operative through');
+  assert.ok(gauntletWinRate(recommended, 'gutter-mite', mites.count, eel) >= 0.95, 'one eel between fights is enough at the recommended level');
 });
 
 test('quest rewards hand out only craftable, non-unique gear and consumables', () => {
@@ -310,6 +327,18 @@ test('a story chapter that starts on its own has no gated offer left to hide its
     for (const step of GAME_CONTENT.quests.get(questId)?.steps ?? []) {
       for (const objective of step.objectives) {
         if (objective.type === 'reach' && objective.measure === 'questPoints') assert.ok(objective.level <= available, `${questId} asks ${objective.level} of ${available} quest points`);
+      }
+    }
+  }
+});
+
+test('each story gate on a skill or combat level points the minimap somewhere to train', () => {
+  for (const questId of GAME_CONTENT.questlines.get('site-meridian')?.questIds ?? []) {
+    for (const step of GAME_CONTENT.quests.get(questId)?.steps ?? []) {
+      for (const objective of step.objectives) {
+        if (objective.type !== 'reach' || objective.measure === 'questPoints') continue;
+        const districts = objectiveDistricts([{ objective, progress: 0, goal: objective.level, done: false }], GAME_CONTENT);
+        assert.ok(districts.size > 0, `${questId}/${step.id} ${objective.label} has no route hint`);
       }
     }
   }

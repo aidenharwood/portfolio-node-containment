@@ -8,6 +8,9 @@ interface RouteStatus {
   readonly unreachable: boolean;
 }
 
+const showsExperience = (objective: QuestObjective, progress: number, goal: number): boolean =>
+  objective.type === 'reach' && objective.measure in SKILL_INFO && progress < goal;
+
 export class ObjectiveTracker {
   readonly element = h('aside', { className: 'hud-objectives' });
   private collapsed = false;
@@ -61,7 +64,7 @@ export class ObjectiveTracker {
           h('li', { className: done ? 'done' : '' },
             h('span', { className: 'objective-check' }, done ? '✓' : '◇'),
             objective.label,
-            goal > 1 && h('span', { className: 'objective-count' }, ` ${this.countOf(self, objective, progress, goal)}`),
+            goal > 1 && h('span', { className: `objective-count${showsExperience(objective, progress, goal) ? ' objective-experience' : ''}` }, ` ${this.countOf(self, objective, progress, goal)}`),
           ),
         ),
       ),
@@ -70,7 +73,7 @@ export class ObjectiveTracker {
   }
 
   private countOf(self: SelfState, objective: QuestObjective, progress: number, goal: number): string {
-    if (objective.type !== 'reach' || !(objective.measure in SKILL_INFO) || progress >= goal) return `${progress}/${goal}`;
+    if (!showsExperience(objective, progress, goal) || objective.type !== 'reach') return `${progress}/${goal}`;
     const earned = self.skills[objective.measure as keyof typeof SKILL_INFO];
     return `${progress} · ${earned.toLocaleString('en-GB')} / ${experienceForLevel(goal).toLocaleString('en-GB')} XP`;
   }

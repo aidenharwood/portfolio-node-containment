@@ -5,6 +5,12 @@ import type { SkillId } from '../character/skills.ts';
 
 export type QuestMeasure = SkillId | 'combat' | 'questPoints';
 
+export interface ReachHint {
+  readonly objects?: readonly WorldObjectId[];
+  readonly creatures?: readonly CreatureId[];
+  readonly study?: readonly CreatureId[];
+}
+
 export type QuestObjective =
   | { readonly type: 'talkTo'; readonly npcId: NpcId; readonly label: string }
   | { readonly type: 'enterArea'; readonly districtId: DistrictId; readonly areaId: AreaId; readonly label: string }
@@ -17,7 +23,7 @@ export type QuestObjective =
   | { readonly type: 'useItem'; readonly itemId: ItemId; readonly label: string }
   | { readonly type: 'gather'; readonly itemId: ItemId; readonly count: number; readonly label: string }
   | { readonly type: 'craft'; readonly itemId: ItemId; readonly count: number; readonly label: string }
-  | { readonly type: 'reach'; readonly measure: QuestMeasure; readonly level: number; readonly label: string };
+  | { readonly type: 'reach'; readonly measure: QuestMeasure; readonly level: number; readonly label: string; readonly toward?: ReachHint };
 
 export interface QuestStepDefinition {
   readonly id: string;

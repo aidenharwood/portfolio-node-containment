@@ -7,7 +7,7 @@ import type { NpcDefinition, WorldObjectDefinition } from '../world/entities.ts'
 import type { TilePoint } from '../world/geometry.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
 import type { QuestObjective } from './questDefinition.ts';
-import { npcIdsForObjective, objectIdsForObjective, type ActiveQuest } from './questGuidance.ts';
+import { creatureIdsForObjective, npcIdsForObjective, objectIdsForObjective, type ActiveQuest } from './questGuidance.ts';
 
 export interface RouteGoal {
   readonly point: TilePoint;
@@ -24,6 +24,7 @@ export interface RouteScene {
   readonly npcPositions: ReadonlyMap<NpcId, TilePoint>;
   readonly creatures: readonly LiveCreature[];
   readonly depletedInstances: ReadonlySet<string>;
+  readonly studiedCreatures?: ReadonlySet<CreatureId>;
 }
 
 export interface RouteContent {
@@ -81,6 +82,11 @@ function goalsForObjective(objective: QuestObjective, scene: RouteScene, content
     case 'defeat':
     case 'contain':
       return creatureGoals(objective.creatureId, scene);
+    case 'reach':
+      return [
+        ...objectGoals(objective, scene, content),
+        ...creatureIdsForObjective(objective, scene.studiedCreatures).flatMap((creatureId) => creatureGoals(creatureId, scene)),
+      ];
     case 'interactWith':
     case 'gather':
     case 'craft':

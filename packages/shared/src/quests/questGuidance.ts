@@ -1,3 +1,4 @@
+import type { CreatureId } from '../combat/creatures.ts';
 import type { RecipeDefinition } from '../crafting/recipes.ts';
 import type { ShopDefinition } from '../economy/shop.ts';
 import { dialogueEffects, type DialogueDefinition } from '../dialogue/dialogue.ts';
@@ -94,12 +95,19 @@ export function npcQuestMarker(
   return offersQuest ? 'available' : null;
 }
 
-export function objectiveCreatureIds(log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>, preferred: QuestId | null): Set<string> {
-  const ids = new Set<string>();
-  for (const objective of openObjectives(log, quests, preferred)) {
-    if (objective.type === 'defeat' || objective.type === 'contain') ids.add(objective.creatureId);
-  }
-  return ids;
+export function creatureIdsForObjective(objective: QuestObjective, studied: ReadonlySet<string> = new Set()): CreatureId[] {
+  if (objective.type === 'defeat' || objective.type === 'contain') return [objective.creatureId];
+  if (objective.type !== 'reach' || !objective.toward) return [];
+  return [...(objective.toward.creatures ?? []), ...(objective.toward.study ?? []).filter((creatureId) => !studied.has(creatureId))];
+}
+
+export function objectiveCreatureIds(
+  log: QuestLog,
+  quests: ReadonlyMap<QuestId, QuestDefinition>,
+  preferred: QuestId | null,
+  studied: ReadonlySet<string> = new Set(),
+): Set<string> {
+  return new Set(openObjectives(log, quests, preferred).flatMap((objective) => creatureIdsForObjective(objective, studied)));
 }
 
 export interface ObjectiveArea {
@@ -118,6 +126,7 @@ export function objectIdsForObjective(
   objects: ReadonlyMap<WorldObjectId, WorldObjectDefinition>,
   recipes: ReadonlyMap<string, RecipeDefinition>,
 ): Set<WorldObjectId> {
+  if (objective.type === 'reach') return new Set(objective.toward?.objects ?? []);
   if (objective.type === 'interactWith') {
     return new Set([objective.objectId, ...[...objects.values()].filter((object) => object.countsAs === objective.objectId).map((object) => object.id)]);
   }

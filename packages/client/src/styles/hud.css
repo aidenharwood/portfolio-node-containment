@@ -177,7 +177,8 @@
 
 .objective-quest li {
   display: flex;
-  gap: 6px;
+  flex-wrap: wrap;
+  column-gap: 6px;
   text-shadow: 1px 1px 0 #000;
 }
 
@@ -193,6 +194,12 @@
 
 .objective-count {
   color: var(--color-warning);
+}
+
+.objective-count.objective-experience {
+  flex-basis: 100%;
+  padding-left: 18px;
+  font-size: 12px;
 }
 
 .objective-via {

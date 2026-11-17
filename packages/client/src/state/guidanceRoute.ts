@@ -206,7 +206,7 @@ export class GuidanceRoute {
       ...goals.map((goal) => ({ levelId, goal })),
       ...[...this.content.levels.values()]
         .filter((level) => level.id !== levelId)
-        .flatMap((level) => guidanceGoals(target, self.quests, { level, npcPositions: new Map(), creatures: [], depletedInstances: this.world.usedObjects }, this.content).goals.map((goal) => ({ levelId: level.id, goal }))),
+        .flatMap((level) => guidanceGoals(target, self.quests, { level, npcPositions: new Map(), creatures: [], depletedInstances: this.world.usedObjects, studiedCreatures: new Set(self.studiedCreatures) }, this.content).goals.map((goal) => ({ levelId: level.id, goal }))),
     ];
     const known = new Set(self.discoveredStations);
     const passages = new Set(self.openPassages);
@@ -279,6 +279,7 @@ export class GuidanceRoute {
       npcPositions,
       creatures,
       depletedInstances: usedObjects.size > 0 ? new Set([...depletedObjects, ...usedObjects]) : depletedObjects,
+      studiedCreatures: new Set(this.world.self?.studiedCreatures ?? []),
     };
   }
 }

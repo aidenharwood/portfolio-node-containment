@@ -1,5 +1,5 @@
 import type { DistrictId } from '../ids.ts';
-import { npcIdsForObjective, objectIdsForObjective, type ActiveObjective } from '../quests/questGuidance.ts';
+import { creatureIdsForObjective, npcIdsForObjective, objectIdsForObjective, type ActiveObjective } from '../quests/questGuidance.ts';
 import type { DistrictDefinition } from '../world/district.ts';
 import { districtObjects } from '../world/levelLayout.ts';
 import type { GameContent } from './gameContent.ts';
@@ -33,6 +33,16 @@ function districtsForObjective(content: GameContent, { objective, done }: Active
       );
     case 'defeat':
       return districtsWhere(content, (district) => (district.creatures ?? []).some((creature) => creature.creatureId === objective.creatureId));
+    case 'reach': {
+      const objectIds = objectIdsForObjective(objective, content.worldObjects, content.recipes);
+      const creatureIds = new Set(creatureIdsForObjective(objective));
+      return districtsWhere(
+        content,
+        (district) =>
+          (district.creatures ?? []).some((creature) => creatureIds.has(creature.creatureId)) ||
+          districtObjects(district, content.assemblies).some((object) => objectIds.has(object.objectId)),
+      );
+    }
     case 'gather':
       return districtsWhere(content, (district) =>
         district.objects.some((object) =>

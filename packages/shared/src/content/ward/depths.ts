@@ -139,7 +139,15 @@ export const DEPTHS_QUESTS: readonly QuestDefinition[] = [
       {
         id: 'ready',
         journal: "Officer Brandt can get you into the Secure Wing, but the records take reading: Research 25. Study what you fight from a few paces off; the first study of each kind of creature pays well, and you can study anything up to your Analysis (Research plus Insight). Study the culvert traces on the Cut from Research 10, and the amber traces in Amber Holding on B1 from 20. Hetty Graves's What Glows pays Research and a Survey Loupe (Insight 4), or make the loupe at a fabricator from Engineering 12; Insight raises your Analysis straight away. The board's Culvert Survey, Amber Survey and Trace Ledger contracts pay Research too.",
-        objectives: [{ type: 'reach', measure: 'research', level: 25, label: 'Reach Research 25' }],
+        objectives: [
+          {
+            type: 'reach',
+            measure: 'research',
+            level: 25,
+            label: 'Reach Research 25',
+            toward: { objects: ['culvert-trace', 'amber-trace'], study: ['moth-lantern', 'scrap-crawler', 'rustling', 'glass-hound', 'hull-knocker'] },
+          },
+        ],
         onComplete: [{ type: 'notify', text: 'Research 25. Officer Brandt on B1 will see you now.' }],
       },
       { id: 'brief', journal: 'Talk to Officer Brandt on B1 about the Secure Wing.', objectives: [{ type: 'talkTo', npcId: 'officer-brandt', label: 'Talk to Officer Brandt' }], onComplete: [{ type: 'setFlag', flag: 'clearance-b2' }] },
@@ -164,7 +172,7 @@ export const DEPTHS_QUESTS: readonly QuestDefinition[] = [
         id: 'ready',
         journal: "Dr Hale will only send an operative into the Vault with combat level 40 and twelve quest points of the Ward behind them. Quest points come from quests: finish any Low Ward side quest you skipped, and What Glows for Hetty Graves, Bottom Up for Kofi Mensah (Engineering 25) and Knock Back for Corporal Sato. For combat, the hull knockers on the Shipyard Fringe pay best. The tide wraiths there hit the mind, so wear Cognitive Ward, like Greenhalgh's vigil robe, before you take them on. The Fringe contracts on the board pay on top, and Pike's Pawn sells alloy once Sato is happy.",
         objectives: [
-          { type: 'reach', measure: 'combat', level: 40, label: 'Reach combat level 40' },
+          { type: 'reach', measure: 'combat', level: 40, label: 'Reach combat level 40', toward: { creatures: ['hull-knocker'] } },
           { type: 'reach', measure: 'questPoints', level: 12, label: 'Earn 12 quest points' },
         ],
         onComplete: [{ type: 'notify', text: 'Dr Hale will see you now, in Holding Block A on the Canal Basin.' }],

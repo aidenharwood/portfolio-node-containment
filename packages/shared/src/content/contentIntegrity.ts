@@ -81,6 +81,11 @@ export function findContentIssues(content: GameContent): string[] {
     if ((objective.type === 'defeat' || objective.type === 'contain') && !content.creatures.has(objective.creatureId)) {
       report(where, `unknown creature "${objective.creatureId}"`);
     }
+    if (objective.type === 'reach' && objective.toward) {
+      const { objects = [], creatures = [], study = [] } = objective.toward;
+      for (const objectId of objects) if (!content.worldObjects.has(objectId)) report(where, `unknown object "${objectId}"`);
+      for (const creatureId of [...creatures, ...study]) if (!content.creatures.has(creatureId)) report(where, `unknown creature "${creatureId}"`);
+    }
     if (objective.type === 'signal' && objective.npcId && !content.npcs.has(objective.npcId)) {
       report(where, `unknown npc "${objective.npcId}"`);
     }

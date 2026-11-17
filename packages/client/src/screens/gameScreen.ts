@@ -211,7 +211,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     setTooltipEquipment(self.equipment);
     party.update(self.characterId);
     objectiveObjects = resourceId ? new Set([resourceId]) : objectiveObjectIds(self.quests, GAME_CONTENT.quests, preferred || null, GAME_CONTENT.worldObjects, GAME_CONTENT.recipes);
-    objectiveCreatures = resourceId ? new Set() : objectiveCreatureIds(self.quests, GAME_CONTENT.quests, preferred || null);
+    objectiveCreatures = resourceId ? new Set() : objectiveCreatureIds(self.quests, GAME_CONTENT.quests, preferred || null, new Set(self.studiedCreatures));
     refreshBeacons();
     guidanceRoute.invalidate();
     objectives.update(self);

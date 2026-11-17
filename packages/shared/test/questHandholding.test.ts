@@ -9,6 +9,8 @@ import {
   activeQuests,
   objectUseFlag,
   usedObjectsOf,
+  objectiveCreatureIds,
+  type ActiveQuest,
   type QuestLog,
   type RouteScene,
 } from '../src/index.ts';
@@ -88,6 +90,35 @@ describe('quest handholding', () => {
     const routed = (instanceId: string) => goals.some((goal) => goal.point === marker(instanceId));
     assert.ok(routed('survey-b'));
     assert.ok(!routed('survey-a') && !routed('survey-c'));
+  });
+
+  test('a reach step routes toward its hinted objects and the creatures not yet studied', () => {
+    const quest = FIXTURE_CONTENT.quests.get('survey');
+    assert.ok(quest?.steps[0]);
+    const objective = {
+      type: 'reach',
+      measure: 'research',
+      level: 25,
+      label: 'Reach Research 25',
+      toward: { objects: ['survey-marker'], creatures: ['training-drone'], study: ['gloam-mite', 'lint-mite'] },
+    } as const;
+    const tracked: ActiveQuest = { quest, step: quest.steps[0], objectives: [{ objective, progress: 10, goal: 25, done: false }] };
+    const at = (x: number) => ({ x, y: 1 });
+    const creatures = [
+      { creatureId: 'training-drone', position: at(1) },
+      { creatureId: 'gloam-mite', position: at(2) },
+      { creatureId: 'lint-mite', position: at(3) },
+    ];
+    const markers = level('fx-floor').objects.filter((object) => object.objectId === 'survey-marker').length;
+    assert.ok(markers > 0);
+    const goals = routeGoals(tracked, { ...sceneOf('fx-floor'), creatures, studiedCreatures: new Set(['gloam-mite']) }, FIXTURE_CONTENT);
+    const xs = goals.slice(markers).map((goal) => goal.point.x);
+    assert.equal(goals.length, markers + 2);
+    assert.deepEqual(xs, [1, 3]);
+    assert.ok(objectiveDistricts(tracked.objectives, FIXTURE_CONTENT).size > 0);
+    const log: QuestLog = { 'probe': { questId: 'probe', status: 'active', stepIndex: 0, objectiveProgress: [10] } };
+    const quests = new Map([['probe', { ...quest, id: 'probe', steps: [{ id: 'ready', journal: 'Ready.', objectives: [objective] }] }]]);
+    assert.deepEqual([...objectiveCreatureIds(log, quests, 'probe', new Set(['lint-mite']))].sort(), ['gloam-mite', 'training-drone']);
   });
 
   test('an area step routes to the middle of the area', () => {
