@@ -42,10 +42,6 @@ export interface LevelDefinition {
 
 export const visitedLevelFlag = (levelId: LevelId): string => `visited:${levelId}`;
 
-export const VISITED_DISTRICT_FLAG_PREFIX = 'visited-district:';
-
-export const visitedDistrictFlag = (districtId: DistrictId): string => `${VISITED_DISTRICT_FLAG_PREFIX}${districtId}`;
-
 export interface WorldLocation {
   readonly levelId: LevelId;
   readonly position: TilePoint;

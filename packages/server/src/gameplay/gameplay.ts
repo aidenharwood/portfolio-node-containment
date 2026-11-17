@@ -16,7 +16,7 @@ import type {
   WorldLocation,
   WorldObjectId,
 } from '@containment/shared';
-import { CONTAIN_INTERACTION, type EntityCue, locate, restoreBoosts, STUDY_INTERACTION, VISITED_DISTRICT_FLAG_PREFIX, visitedDistrictFlag, visitedLevelFlag } from '@containment/shared';
+import { CONTAIN_INTERACTION, type EntityCue, locate, restoreBoosts, STUDY_INTERACTION, visitedLevelFlag } from '@containment/shared';
 import { returnUnfinishedTrainee } from '../characters/traineePlacement.ts';
 import { Player, type MessageSink } from '../world/player.ts';
 import type { LevelInstance } from '../world/levelInstance.ts';
@@ -170,7 +170,6 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     player.boostTick = this.tickNumber;
     player.boosts = restoreBoosts(player.record.boosts, (itemId) => this.content.items.get(itemId)?.consumable?.boost, this.tickNumber);
     this.online.set(record.id, player);
-    this.chartLevelsVisitedBeforeDistrictTracking(player);
     this.world.spawn(player);
     this.quests.handle(player, { type: 'loadoutChanged' });
     this.quests.resumeFollowUps(player);
@@ -501,19 +500,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
   onLevelEntered(player: Player, levelId: LevelId): void {
     const firstVisit = player.addFlag(visitedLevelFlag(levelId));
     const level = this.content.levels.get(levelId);
-    if (firstVisit && level?.definition.kind === 'pocket') this.notify(player, 'info', `You have slipped into ${level.name}. It is on your world map now.`);
-  }
-
-  onDistrictEntered(player: Player, districtId: DistrictId): void {
-    player.addFlag(visitedDistrictFlag(districtId));
-  }
-
-  private chartLevelsVisitedBeforeDistrictTracking(player: Player): void {
-    if (player.record.flags.some((flag) => flag.startsWith(VISITED_DISTRICT_FLAG_PREFIX))) return;
-    for (const level of this.content.levels.values()) {
-      if (!player.hasFlag(visitedLevelFlag(level.id))) continue;
-      for (const placement of level.definition.districts) player.addFlag(visitedDistrictFlag(placement.districtId));
-    }
+    if (firstVisit && level?.definition.kind === 'pocket') this.notify(player, 'info', `You have slipped into ${level.name}.`);
   }
 
   notify(player: Player, tone: NoticeTone, text: string): void {

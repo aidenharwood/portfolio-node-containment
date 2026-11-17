@@ -35,8 +35,6 @@ const MAX_SCALE = 28;
 const READABLE_SCALE = 5;
 const ZOOM_STEP = 1.4;
 const OBJECTIVE_COLOR = '#ffb347';
-const UNCHARTED_COLOR = '#0e161b';
-const UNCHARTED_HATCH = '#141f26';
 const ICON_SIZE = 18;
 const RESOURCE_ICON_SIZE = 13;
 const ICON_LABEL_SCALE = 10;
@@ -162,13 +160,8 @@ export class WorldMap {
     return station && (this.knows(station.id) || station.id === this.openedAtStationId) ? station : undefined;
   }
 
-  private visibleLevels(): { readonly level: ResolvedLevel; readonly charted: boolean }[] {
-    const visited = new Set(this.world.self?.visitedLevels ?? []);
-    const current = this.world.zone?.definition.id;
-    return [...GAME_CONTENT.levels.values()]
-      .sort(levelOrder)
-      .map((level) => ({ level, charted: visited.has(level.id) || level.id === current }))
-      .filter(({ level, charted }) => level.definition.kind === 'floor' || charted);
+  private visibleLevels(): ResolvedLevel[] {
+    return [...GAME_CONTENT.levels.values()].sort(levelOrder);
   }
 
   private objectiveDistrictIds(): Set<DistrictId> {
@@ -184,8 +177,7 @@ export class WorldMap {
   }
 
   private shownLevel(): ResolvedLevel | undefined {
-    const levels = this.visibleLevels();
-    return levels.find(({ level, charted }) => level.id === this.shownLevelId && charted)?.level ?? this.world.zone?.definition;
+    return this.visibleLevels().find((level) => level.id === this.shownLevelId) ?? this.world.zone?.definition;
   }
 
   private render(): void {
@@ -233,28 +225,18 @@ export class WorldMap {
     return points;
   }
 
-  private chartedPoints(level: ResolvedLevel): PointOfInterest[] {
-    const charted = this.chartedDistrictIds(level);
-    return this.pointsOn(level).filter((point) => {
-      const district = level.layout.districtAt(point.position);
-      return district === undefined || charted.has(district);
-    });
-  }
-
   private legendKinds(level: ResolvedLevel): PointOfInterestKind[] {
-    const present = new Set(this.chartedPoints(level).map((point) => point.kind));
+    const present = new Set(this.pointsOn(level).map((point) => point.kind));
     return POINT_OF_INTEREST_KINDS.filter((kind) => present.has(kind));
   }
 
   private levelOptions(shown: ResolvedLevel, objectives: ReadonlySet<DistrictId>): HTMLElement[] {
-    const visible = this.visibleLevels();
-    const option = ({ level, charted }: { readonly level: ResolvedLevel; readonly charted: boolean }) => {
-      const hasObjective = charted && level.districts.some(({ districtId }) => objectives.has(districtId));
-      return h('option', { value: level.id, disabled: !charted, selected: level.id === shown.id },
-        `${charted ? level.name : 'Uncharted'} · ${levelDepthLabel(level)}${hasObjective ? ' · ◆ objective' : ''}`,
+    return this.visibleLevels().map((level) => {
+      const hasObjective = level.districts.some(({ districtId }) => objectives.has(districtId));
+      return h('option', { value: level.id, selected: level.id === shown.id },
+        `${level.name} · ${levelDepthLabel(level)}${hasObjective ? ' · ◆ objective' : ''}`,
       );
-    };
-    return visible.map(option);
+    });
   }
 
   private levelPicker(shown: ResolvedLevel, objectives: ReadonlySet<DistrictId>): HTMLElement {
@@ -501,25 +483,16 @@ export class WorldMap {
 
     const frame = this.frameOf(view);
     const objectives = this.objectiveDistrictIds();
-    const charted = this.chartedDistrictIds(level);
-    this.paintTiles(context, level, objectives, charted, frame);
-    this.paintRegionLabels(context, level, charted, frame);
-    this.paintDistrictLabels(context, level, objectives, charted, frame);
+    this.paintTiles(context, level, objectives, frame);
+    this.paintRegionLabels(context, level, frame);
+    this.paintDistrictLabels(context, level, objectives, frame);
     const transit = this.mode === 'transit';
     this.paintPointsOfInterest(context, level, frame, transit);
     this.stationHits = transit ? this.paintNetwork(context, level, this.boardingStation(), frame) : [];
     this.paintSelf(context, level, frame);
   }
 
-  private chartedDistrictIds(level: ResolvedLevel): Set<DistrictId> {
-    const charted = new Set(this.world.self?.visitedDistricts ?? []);
-    const self = this.world.selfEntity;
-    const here = self && this.world.zone?.definition.id === level.id ? level.layout.districtAt(self.to) : undefined;
-    if (here !== undefined) charted.add(here);
-    return charted;
-  }
-
-  private paintTiles(context: CanvasRenderingContext2D, level: ResolvedLevel, objectives: ReadonlySet<DistrictId>, charted: ReadonlySet<DistrictId>, frame: MapFrame): void {
+  private paintTiles(context: CanvasRenderingContext2D, level: ResolvedLevel, objectives: ReadonlySet<DistrictId>, frame: MapFrame): void {
     const size = Math.max(1, frame.scale) + 0.5;
     const width = this.canvas.clientWidth;
     const height = this.canvas.clientHeight;
@@ -533,19 +506,18 @@ export class WorldMap {
         if (kind === 'void') continue;
         const district = level.layout.districtAt({ x, y });
         const target = district !== undefined && objectives.has(district);
-        const uncharted = district !== undefined && !charted.has(district);
-        context.fillStyle = uncharted ? ((x + y) % 3 === 0 ? UNCHARTED_HATCH : UNCHARTED_COLOR) : kind === 'coolant' ? '#1f5f7a' : kind === 'track' ? '#2a2420' : kind === 'door' ? '#2f5a6a' : TILE_KINDS[kind].walkable ? (target ? '#3d3216' : '#1c2a33') : target ? '#7a5a22' : '#40525e';
+        context.fillStyle = kind === 'coolant' ? '#1f5f7a' : kind === 'track' ? '#2a2420' : kind === 'door' ? '#2f5a6a' : TILE_KINDS[kind].walkable ? (target ? '#3d3216' : '#1c2a33') : target ? '#7a5a22' : '#40525e';
         context.fillRect(frame.offsetX + x * frame.scale, frame.offsetY + y * frame.scale, size, size);
       }
     }
   }
 
-  private paintRegionLabels(context: CanvasRenderingContext2D, level: ResolvedLevel, charted: ReadonlySet<DistrictId>, frame: MapFrame): void {
+  private paintRegionLabels(context: CanvasRenderingContext2D, level: ResolvedLevel, frame: MapFrame): void {
     if (frame.scale >= 3) return;
     const bounds = new Map<string, { minX: number; minY: number; maxX: number }>();
     for (const { districtId, rect } of level.districts) {
       const region = GAME_CONTENT.districts.get(districtId)?.region;
-      if (region === undefined || !charted.has(districtId)) continue;
+      if (region === undefined) continue;
       const known = bounds.get(region);
       bounds.set(region, {
         minX: Math.min(known?.minX ?? rect.x, rect.x),
@@ -563,16 +535,14 @@ export class WorldMap {
     }
   }
 
-  private paintDistrictLabels(context: CanvasRenderingContext2D, level: ResolvedLevel, objectives: ReadonlySet<DistrictId>, charted: ReadonlySet<DistrictId>, frame: MapFrame): void {
+  private paintDistrictLabels(context: CanvasRenderingContext2D, level: ResolvedLevel, objectives: ReadonlySet<DistrictId>, frame: MapFrame): void {
     context.textAlign = 'center';
     context.textBaseline = 'middle';
     const detailed = frame.scale >= 3;
     for (const { districtId, rect } of level.districts) {
       const district = GAME_CONTENT.districts.get(districtId);
       if (!district) continue;
-      const isCharted = charted.has(districtId);
-      const detailedLabel = detailed && isCharted;
-      const x = frame.offsetX + (rect.x + rect.width / 2) * frame.scale;
+            const x = frame.offsetX + (rect.x + rect.width / 2) * frame.scale;
       const y = frame.offsetY + (rect.y + rect.height / 2) * frame.scale;
       const target = objectives.has(districtId);
       if (target) {
@@ -582,23 +552,16 @@ export class WorldMap {
         context.strokeRect(frame.offsetX + rect.x * frame.scale, frame.offsetY + rect.y * frame.scale, rect.width * frame.scale, rect.height * frame.scale);
         context.setLineDash([]);
       }
-      if (!isCharted) {
-        if (rect.width * frame.scale < 90) continue;
-        context.font = '600 10px "Chakra Petch", sans-serif';
-        context.fillStyle = 'rgba(147, 169, 181, 0.6)';
-        context.fillText('UNCHARTED', x, y);
-        continue;
-      }
       if (rect.width * frame.scale < 36) continue;
-      context.font = `700 ${detailedLabel ? 14 : 12}px "Chakra Petch", sans-serif`;
-      const name = isCharted ? district.name.toUpperCase() : 'UNCHARTED';
+      context.font = `700 ${detailed ? 14 : 12}px "Chakra Petch", sans-serif`;
+      const name = district.name.toUpperCase();
       const labelWidth = context.measureText(name).width + 14;
-      const labelHeight = detailedLabel ? (target ? 46 : 34) : 20;
+      const labelHeight = detailed ? (target ? 46 : 34) : 20;
       context.fillStyle = 'rgba(3, 8, 11, 0.8)';
       context.fillRect(x - labelWidth / 2, y - labelHeight / 2, labelWidth, labelHeight);
       context.fillStyle = target ? OBJECTIVE_COLOR : '#e8f4f8';
-      context.fillText(name, x, detailedLabel ? y - labelHeight / 2 + 10 : y);
-      if (!detailedLabel) continue;
+      context.fillText(name, x, detailed ? y - labelHeight / 2 + 10 : y);
+      if (!detailed) continue;
       context.font = '500 11px "IBM Plex Mono", monospace';
       context.fillStyle = '#9fb3be';
       context.fillText(`Tier ${district.tier}`, x, y - labelHeight / 2 + 24);
@@ -617,7 +580,7 @@ export class WorldMap {
     context.font = '600 11px "Chakra Petch", sans-serif';
     context.textAlign = 'left';
     context.textBaseline = 'middle';
-    for (const point of this.chartedPoints(level)) {
+    for (const point of this.pointsOn(level)) {
       if (transit && point.kind === 'tram') continue;
       if (point.kind === 'gathering' && !showResources) continue;
       const x = frame.offsetX + (point.position.x + 0.5) * frame.scale;

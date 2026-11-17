@@ -64,23 +64,11 @@ describe('stored locations', () => {
 });
 
 describe('levels', () => {
-  test('districts joined by exits are walked across without a teleport, and each is charted on entry', () => {
+  test('districts joined by exits are walked across without a teleport', () => {
     const harness = createHarness({ prepare: placedAt(inRoom('fx-hub', 'hall')) });
-    const charted = () => harness.sink.last('player.state')?.self.visitedDistricts ?? [];
-    assert.ok(charted().includes('fx-hub'));
-    assert.ok(!charted().includes('fx-field'));
     walkTo(harness, levelPoint('fx-field', localInRoom('fx-field', 'lane', { x: 4, y: 1 })));
     assert.equal(harness.gameplay.world.districtOf(harness.player), 'fx-field');
-    assert.ok(charted().includes('fx-field'));
-    assert.ok(!charted().includes('fx-outpost'));
     assert.equal(harness.sink.messages.filter((message) => message.type === 'world.entered').length, 1);
-  });
-
-  test('characters saved before district tracking keep every district of the levels they had visited', () => {
-    const harness = createHarness({ prepare: placedAt(inRoom('fx-hub', 'plaza'), ['visited:fx-floor']) });
-    const charted = harness.sink.last('player.state')?.self.visitedDistricts ?? [];
-    for (const districtId of ['fx-hub', 'fx-field', 'fx-outpost']) assert.ok(charted.includes(districtId), districtId);
-    assert.ok(!charted.includes('fx-arena'));
   });
 
   test('a door stays shut without its condition', () => {

@@ -64,7 +64,7 @@ The main floor is the **overworld**: one continuous level that grows outward fro
 - `findRegionIssues` (`content/regionIntegrity.ts`) requires every district to be in a known region and every outpost to have a storage locker and a shopkeeper in a safe area. Outposts away from home also need an exchange mailbox and a contract board.
 - `findOverworldIssues` (`content/overworldIntegrity.ts`) requires every district on the overworld to be reachable on foot from its spawn, counting doors and same-level passages but not trams. Only districts marked `reachedOnlyByTram` (the Intake Wing) are exempt, so trams stay shortcuts.
 - The player marketplace posts orders only at the Atrium exchange (`openMarket`, access `trade`). An exchange mailbox (`market-mailbox`, access `collect`) may stand only in a regional outpost; it collects and withdraws orders but cannot post them. The server checks both.
-- Entering a district sets `visited-district:<districtId>`. The world map draws districts the player has never entered dark and "Uncharted", and labels regions over their districts when zoomed out.
+- The world map is fully charted from the start: every district and level is drawn and named, with regions labelled over their districts when zoomed out. Tram stations are the one thing a player still has to find.
 - `npm run bench:tick [players…]` measures the tick with that many players wandering on one layer of the main floor. Run it before raising a level's `capacity`.
 
 ### World structure
@@ -113,7 +113,7 @@ The world markers below also follow only the tracked quest, apart from the gold 
 A pocket is an ordinary shared, layered level with `kind: 'pocket'`: the Threshold, Meridian Below, the Verdant Fold and the Dead Letter Office. Pockets are entered through gated objects whose interaction runs a `teleport`. The Verdant Fold opens through an `anomaly` object in the Hydroponics Heart Bed once Overgrowth is complete. The Dead Letter Office opens through the return chute in the Signal Array's Operator Pit once Achterberg traces the ninth letter (Act III).
 
 - Every level a player enters sets `visited:<levelId>` (`World` calls `WorldHooks.onLevelEntered` on each spawn). The first visit to a pocket sends a notice.
-- The world map lists a pocket as a tab only once it has been visited. Floor levels always have a tab, shown as "Uncharted" until visited.
+- The world map lists every level, pockets included. Entering a pocket for the first time (the `visited:<levelId>` flag) still gives a notice.
 - Pockets are shared by everyone in the layer. Party instancing waits for a party system.
 
 ### Tick model
@@ -306,7 +306,7 @@ The tram network is content (`content/tramNetwork.ts`): **stations** (a district
   - **Boarding** lasts `TRAM_BOARDING_TICKS`. Walking, interacting, teleporting or taking damage cancels it.
   - **Riding** lasts `tramRideTicks(stops)`: at least 3 seconds, plus 2 ticks per stop beyond that. The rider stays put, every intent except chat is ignored, and creatures drop and ignore them. The client shows the in-car view between `tram.departed` and `tram.arrived`.
   - **Arrival** teleports the rider to the destination platform. A rider who disconnects mid-ride is saved at the destination.
-- **World map** (`hud/worldMap.ts`, the M key or the minimap's Map button): a full-screen map that pans (drag), zooms (wheel, pinch or the buttons) and recentres on you, with a level dropdown listing every floor level, disabled as "Uncharted" until visited (the `visited:<levelId>` flag, listed in `SelfState.visitedLevels`). It draws each level from its assembled layout with district names and tiers, tram lines and stations, and the player. Districts holding the tracked quest's objectives (`objectiveDistricts`) are outlined. A tram stop opens the same map in transit mode, with a destinations sidebar (a bottom sheet on narrow screens) listing only the lines the platform's car serves, with a Ride button per reachable stop. Known stations are also tappable on the map.
+- **World map** (`hud/worldMap.ts`, the M key or the minimap's Map button): a full-screen map that pans (drag), zooms (wheel, pinch or the buttons) and recentres on you, with a level dropdown listing every level. It draws each level from its assembled layout with district names and tiers, tram lines and stations, and the player. Districts holding the tracked quest's objectives (`objectiveDistricts`) are outlined. A tram stop opens the same map in transit mode, with a destinations sidebar (a bottom sheet on narrow screens) listing only the lines the platform's car serves, with a Ride button per reachable stop. Known stations are also tappable on the map.
 - **Integrity:** `findTramIssues` checks that each station resolves to a placed district and area, has a walkable platform inside that area, exactly one tram car on track that runs out of the platform at both ends with a platform beside it, and is on a line. It also checks that lines only list known stations and that every tram stop sits inside a station area.
 
 ### Multi-tile assemblies

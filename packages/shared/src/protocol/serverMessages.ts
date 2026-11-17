@@ -72,8 +72,6 @@ export interface SelfState {
   readonly vitals: EntityVitals;
   readonly combatLevel: number;
   readonly discoveredStations: readonly TramStationId[];
-  readonly visitedLevels: readonly LevelId[];
-  readonly visitedDistricts: readonly DistrictId[];
   readonly openDoors: readonly WorldObjectId[];
   readonly openPassages: readonly WorldObjectId[];
   readonly studiedCreatures: readonly CreatureId[];
