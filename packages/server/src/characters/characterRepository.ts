@@ -1,4 +1,5 @@
 import { emptyContractLedger, maxIntegrityFor, normalizeAppearance, normalizeSkills, type AccountId, type FriendEntry, type CharacterId, type CharacterRecord, type EquipmentState, type GameContent, type ItemId, type ItemStack } from '@containment/shared';
+import { withStartingQuest } from './characterFactory.ts';
 import { restoreLocation, storeLocation } from './storedLocation.ts';
 import type { Database } from '../persistence/database.ts';
 
@@ -21,7 +22,8 @@ function parseRecord(json: string, content: GameContent): CharacterRecord {
   const skills = normalizeSkills(stored.skills);
   const inventory = dropUnknownItems(stored.inventory, content);
   const storage = dropUnknownItems(stored.storage ?? [], content).filter((stack): stack is ItemStack => stack !== null);
-  return { ...stored, inventory, storage, equipment: renameEquipment(stored.equipment, content), location: restoreLocation(stored.location, content), appearance: normalizeAppearance(stored.appearance), friends: stored.friends ?? [], contracts: stored.contracts ?? emptyContractLedger(), skills, vitals: stored.vitals ?? { integrity: maxIntegrityFor(skills) } };
+  const equipment = renameEquipment(stored.equipment, content);
+  return { ...stored, inventory, storage, equipment, quests: withStartingQuest(stored.quests ?? {}, inventory, equipment, content), location: restoreLocation(stored.location, content), appearance: normalizeAppearance(stored.appearance), friends: stored.friends ?? [], contracts: stored.contracts ?? emptyContractLedger(), skills, vitals: stored.vitals ?? { integrity: maxIntegrityFor(skills) } };
 }
 
 export class CharacterRepository {

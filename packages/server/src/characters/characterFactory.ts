@@ -14,15 +14,29 @@ import {
   type CharacterRecord,
   type EquipmentSlot,
   type GameContent,
+  type InventoryState,
   type ItemId,
+  type QuestLog,
 } from '@containment/shared';
+
+export function withStartingQuest(quests: QuestLog, inventory: InventoryState, equipment: Partial<Record<EquipmentSlot, ItemId>>, content: GameContent): QuestLog {
+  const startingQuestId = content.newCharacter.startingQuestId;
+  const startingQuest = startingQuestId === undefined ? undefined : content.quests.get(startingQuestId);
+  if (!startingQuest || quests[startingQuest.id]) return quests;
+  const probe = {
+    countItem: (itemId: ItemId) => countItem(inventory, itemId),
+    isEquipped: (itemId: ItemId) => isEquipped(equipment, itemId),
+    levelOf: () => 1,
+  };
+  return { ...quests, [startingQuest.id]: startQuest(startingQuest, probe).progress };
+}
 
 export function createCharacterRecord(
   draft: CharacterDraft,
   ownership: { readonly id: CharacterId; readonly accountId: AccountId },
   content: GameContent,
 ): CharacterRecord {
-  const { kit, startingLocation, startingQuestId } = content.newCharacter;
+  const { kit, startingLocation } = content.newCharacter;
   const skills = createStartingSkills();
 
   let inventory = createEmptyInventory();
@@ -33,13 +47,6 @@ export function createCharacterRecord(
     const slot = content.items.get(itemId)?.equipment?.slot;
     if (slot) equipment[slot] = itemId;
   }
-
-  const startingQuest = startingQuestId === undefined ? undefined : content.quests.get(startingQuestId);
-  const probe = {
-    countItem: (itemId: ItemId) => countItem(inventory, itemId),
-    isEquipped: (itemId: ItemId) => isEquipped(equipment, itemId),
-    levelOf: () => 1,
-  };
 
   return {
     id: ownership.id,
@@ -52,7 +59,7 @@ export function createCharacterRecord(
     inventory,
     storage: [],
     equipment,
-    quests: startingQuest ? { [startingQuest.id]: startQuest(startingQuest, probe).progress } : {},
+    quests: withStartingQuest({}, inventory, equipment, content),
     flags: [],
     friends: [],
     contracts: emptyContractLedger(),
