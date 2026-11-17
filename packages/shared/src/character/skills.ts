@@ -19,6 +19,7 @@ export interface SkillInfo {
   readonly name: string;
   readonly shortName: string;
   readonly summary: string;
+  readonly trainedBy: string;
 }
 
 export const SKILL_INFO: Readonly<Record<SkillId, SkillInfo>> = {
@@ -26,55 +27,65 @@ export const SKILL_INFO: Readonly<Record<SkillId, SkillInfo>> = {
     name: 'Containment',
     shortName: 'Contain',
     summary: 'Securing, restraining and re-housing anomalous entities and objects.',
+    trainedBy: 'Wearing creatures down and containing them before they recover.',
   },
   research: {
     name: 'Research',
     shortName: 'Research',
     summary: 'Studying anomalies, decoding artefacts and filing the paperwork nobody reads.',
+    trainedBy: 'Studying creatures (first studies pay most) and sampling anomalous traces.',
   },
   engineering: {
     name: 'Engineering',
     shortName: 'Engineer',
     summary: 'Building, repairing and overclocking the hardware that keeps the walls standing.',
+    trainedBy: 'Assembling gear at a fabricator.',
   },
   marksmanship: {
     name: 'Marksmanship',
     shortName: 'Marksman',
     summary: 'Accuracy with ranged armaments, from sidearms to suppression rigs.',
+    trainedBy: 'Dealing damage and defeating creatures with ranged weapons.',
   },
   closeQuarters: {
     name: 'Close Quarters',
     shortName: 'Close Qtrs',
     summary: 'Batons, blades and the art of not being grabbed.',
+    trainedBy: 'Dealing damage and defeating creatures in melee or unarmed.',
   },
   psionics: {
     name: 'Psionics',
     shortName: 'Psionics',
     summary: 'Projecting will through focus conduits, and enduring what projects back.',
+    trainedBy: 'Dealing damage and defeating creatures with focus conduits.',
   },
   fortitude: {
     name: 'Fortitude',
     shortName: 'Fortitude',
     summary: 'Endurance against injury, exposure and long shifts in cold corridors.',
+    trainedBy: 'Dealing damage and defeating creatures in any combat style.',
   },
   salvage: {
     name: 'Salvage',
     shortName: 'Salvage',
     summary: 'Recovering useful material from wreckage, breach sites and forgotten storerooms.',
+    trainedBy: 'Salvaging scrap heaps, wrecks and residue, and dredging the basin.',
   },
   refining: {
     name: 'Refining',
     shortName: 'Refining',
     summary: 'Processing raw salvage into bars and raw fibre into cloth at a refinery.',
+    trainedBy: 'Refining salvage into bars and fibre into cloth at a refinery.',
   },
   biochemistry: {
     name: 'Biochemistry',
     shortName: 'Biochem',
     summary: 'Growing, trapping and culturing what lives in the Ward, then cooking it into meals or synthesising it into medicine.',
+    trainedBy: 'Harvesting, trapping and cutting organics, then cooking and synthesising them.',
   },
 };
 
-export const SKILL_LEVEL_CAP = 100;
+export const SKILL_LEVEL_CAP = 60;
 
 export const EASED_LEVEL_SPAN = 24;
 

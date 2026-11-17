@@ -16,7 +16,7 @@ export const SITE_ITEMS: readonly ItemDefinition[] = [
   { id: 'dead-band-receiver', name: 'Dead-band Receiver', examine: "Sefa's design, your hands. It hisses until you point it at the Site, then it breathes.", category: 'quest', rarity: 'issued', icon: 'scanner', iconColors: ['#3a3f44', '#4fe3ff'], maxStack: 1, value: 0 },
   gear({ id: 'moth-wing-cloak', name: 'Moth-wing Cloak', examine: 'A short cloak of moth-lantern wing. It glows when you are frightened.', rarity: 'classified', icon: 'cape', slot: 'back', stats: { cognitiveWard: 8, focus: 3, insight: 2 }, requires: { psionics: 10 }, visual: { primary: '#8a7a5a', secondary: '#4a3a2a', emissive: '#ffd08a', motif: 'warden' }, value: 500, unique: true }),
   gear({ id: 'glass-eye', name: 'Glass Eye', examine: "A glass hound's eye on a strap. You see a little further through it, and a little wrong.", rarity: 'classified', icon: 'visor', slot: 'eyes', stats: { accuracy: 6, insight: 3 }, requires: { marksmanship: 20 }, visual: { primary: '#9fd6e6', secondary: '#3a4a52', emissive: '#e8a21c' }, value: 700, unique: true }),
-  gear({ id: 'knocker-fist', name: "Knocker's Fist", examine: 'One claw of a hull knocker, hollowed and worn as a gauntlet. It wants to knock.', rarity: 'classified', icon: 'gloves', slot: 'hands', stats: { armor: 10, power: 6 }, requires: { fortitude: 25 }, visual: { primary: '#3a4a52', secondary: '#8a4a2a', motif: 'bulwark' }, value: 900, unique: true }),
+  gear({ id: 'knocker-fist', name: "Knocker's Fist", examine: 'One claw of a hull knocker, hollowed and worn as a gauntlet. It wants to knock.', rarity: 'classified', icon: 'gloves', slot: 'hands', stats: { armor: 10, power: 6 }, requires: { closeQuarters: 25 }, visual: { primary: '#3a4a52', secondary: '#8a4a2a', motif: 'bulwark' }, value: 900, unique: true }),
   gear({ id: 'wraith-shroud', name: 'Wraith Shroud', examine: 'Wet weed that never dries, cut from a tide wraith. Things look past you in it.', rarity: 'anomalous', icon: 'cape', slot: 'back', stats: { deflection: 12, cognitiveWard: 8, accuracy: 4 }, requires: { marksmanship: 30 }, visual: { primary: '#3f6a54', secondary: '#14241c', emissive: '#c79bff', motif: 'skirmisher' }, value: 1200, unique: true }),
 ];
 
@@ -36,7 +36,7 @@ export const SITE_CREATURES: readonly CreatureDefinition[] = [
     style: 'psionic',
     range: 3,
     loot: [{ itemId: 'amber-trace', count: 1, chance: 0.4 }, { itemId: 'lab-culture', count: 1, chance: 0.3 }, { itemId: 'moth-wing-cloak', count: 1, chance: 0.01 }],
-    containment: { containmentClass: 'safe', procedures: 'Dim the lights. Subdue. Contain in an opaque cell. It sulks.', experience: 140, loot: [{ itemId: 'amber-trace', count: 2, chance: 1 }] },
+    containment: { containmentClass: 'safe', procedures: 'Dim the lights. Subdue. Contain in an opaque cell. It sulks.', experience: 180, loot: [{ itemId: 'amber-trace', count: 2, chance: 1 }] },
   }),
   beast({
     id: 'glass-hound',
@@ -48,7 +48,7 @@ export const SITE_CREATURES: readonly CreatureDefinition[] = [
     aggressive: true,
     wander: 2,
     loot: [{ itemId: 'amber-trace', count: 1, chance: 0.5 }, { itemId: 'steel-bar', count: 1, chance: 0.15 }, { itemId: 'glass-eye', count: 1, chance: 0.01 }],
-    containment: { containmentClass: 'euclid', procedures: 'Wear it down without breaking it. A cracked hound cannot be contained. Contain in a padded cell.', experience: 320, loot: [{ itemId: 'amber-trace', count: 3, chance: 1 }], requiredLevel: 15 },
+    containment: { containmentClass: 'euclid', procedures: 'Wear it down without breaking it. A cracked hound cannot be contained. Contain in a padded cell.', experience: 580, loot: [{ itemId: 'amber-trace', count: 3, chance: 1 }], requiredLevel: 15 },
   }),
   beast({
     id: 'hull-knocker',
@@ -71,7 +71,7 @@ export const SITE_CREATURES: readonly CreatureDefinition[] = [
     style: 'psionic',
     range: 4,
     loot: [{ itemId: 'tide-weed', count: 2, chance: 0.6 }, { itemId: 'hull-trace', count: 1, chance: 0.4 }, { itemId: 'wraith-shroud', count: 1, chance: 0.01 }],
-    containment: { containmentClass: 'euclid', procedures: 'Draw it away from water. Subdue while it is dry. Contain in a sealed, drained cell.', experience: 480, loot: [{ itemId: 'hull-trace', count: 3, chance: 1 }], requiredLevel: 25 },
+    containment: { containmentClass: 'euclid', procedures: 'Draw it away from water. Subdue while it is dry. Contain in a sealed, drained cell.', experience: 2400, loot: [{ itemId: 'hull-trace', count: 3, chance: 1 }], requiredLevel: 25 },
   }),
 ];
 

@@ -273,7 +273,7 @@ const HEAVY: Readonly<Record<ArmourSlot, (l: number) => number>> = {
 };
 
 const LINES: Readonly<Record<GearMotif, { readonly skill: SkillId; readonly shapes: Readonly<Record<ArmourSlot, { readonly noun: string; readonly icon: ItemIconShape }>> }>> = {
-  bulwark: { skill: 'fortitude', shapes: { head: { noun: 'Helm', icon: 'helmet' }, torso: { noun: 'Plate', icon: 'plate' }, hands: { noun: 'Gauntlets', icon: 'gloves' }, legs: { noun: 'Greaves', icon: 'trousers' }, feet: { noun: 'Boots', icon: 'boots' }, back: { noun: 'Pavise', icon: 'shield' } } },
+  bulwark: { skill: 'closeQuarters', shapes: { head: { noun: 'Helm', icon: 'helmet' }, torso: { noun: 'Plate', icon: 'plate' }, hands: { noun: 'Gauntlets', icon: 'gloves' }, legs: { noun: 'Greaves', icon: 'trousers' }, feet: { noun: 'Boots', icon: 'boots' }, back: { noun: 'Pavise', icon: 'shield' } } },
   skirmisher: { skill: 'marksmanship', shapes: { head: { noun: 'Hood', icon: 'hood' }, torso: { noun: 'Jacket', icon: 'vest' }, hands: { noun: 'Gloves', icon: 'gloves' }, legs: { noun: 'Trousers', icon: 'trousers' }, feet: { noun: 'Treads', icon: 'boots' }, back: { noun: 'Pack', icon: 'pack' } } },
   warden: { skill: 'psionics', shapes: { head: { noun: 'Cowl', icon: 'cowl' }, torso: { noun: 'Robe', icon: 'coat' }, hands: { noun: 'Wraps', icon: 'gloves' }, legs: { noun: 'Breeches', icon: 'trousers' }, feet: { noun: 'Footwraps', icon: 'boots' }, back: { noun: 'Mantle', icon: 'cape' } } },
 };

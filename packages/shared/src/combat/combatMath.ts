@@ -33,7 +33,7 @@ const RATING_FLOOR = 8;
 const DEFENCE_WEIGHT = 0.9;
 const RATING_PER_MAX_HIT = 4;
 const STYLE_EXPERIENCE_PER_DAMAGE = 4;
-const FORTITUDE_EXPERIENCE_PER_DAMAGE = 4 / 3;
+const FORTITUDE_EXPERIENCE_PER_DAMAGE = 2;
 
 export function weaponOf(equipment: EquipmentState, items: ItemCatalog): WeaponProfile {
   const primary = equipment.primary ? items.get(equipment.primary) : undefined;
@@ -158,7 +158,7 @@ export function defeatExperience(style: CombatStyle, experience: number): Experi
   if (experience <= 0) return [];
   return [
     { skill: COMBAT_STYLE_INFO[style].skill, amount: experience },
-    { skill: 'fortitude', amount: Math.round(experience / 3) },
+    { skill: 'fortitude', amount: Math.round(experience / 2) },
   ];
 }
 

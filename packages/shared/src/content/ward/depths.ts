@@ -28,7 +28,7 @@ export const DEPTHS_ITEMS: readonly ItemDefinition[] = [
   questItem('pump-impeller', 'Pump Impeller', "A steel impeller to Kofi's drawing. Heavier than it looks.", 'rotor', ['#8a9098', '#4a5058']),
   gear({ id: 'survey-loupe', name: 'Survey Loupe', examine: 'A Directorate field loupe with a culvert-trace lens. Things you look at through it hold still a moment longer.', rarity: 'standard', icon: 'visor', slot: 'eyes', stats: { insight: 4 }, requires: { research: 12 }, visual: { primary: '#8a9098', secondary: '#2a3038', emissive: '#4fe3ff' }, value: 400 }),
   gear({ id: 'twin-mask', name: 'Twin Mask', examine: "Half of a red twin's face, worn as a visor. The other half is still looking for it.", rarity: 'anomalous', icon: 'visor', slot: 'eyes', stats: { cognitiveWard: 10, focus: 6, insight: 4 }, requires: { psionics: 35 }, visual: { primary: '#d8d6cc', secondary: '#3a0a08', emissive: '#d8322a' }, value: 2000, unique: true }),
-  gear({ id: 'breaker-plate', name: 'Breaker Plate', examine: 'The shoulder plate of a cell-breaker, cut to fit a person. It has broken out of three cells.', rarity: 'anomalous', icon: 'plate', slot: 'torso', stats: { armor: 40, deflection: 16, hazardShielding: 4, power: 3 }, requires: { fortitude: 40 }, visual: { primary: '#3a2a2a', secondary: '#e86a1c', motif: 'bulwark' }, value: 2600, unique: true }),
+  gear({ id: 'breaker-plate', name: 'Breaker Plate', examine: 'The shoulder plate of a cell-breaker, cut to fit a person. It has broken out of three cells.', rarity: 'anomalous', icon: 'plate', slot: 'torso', stats: { armor: 40, deflection: 16, hazardShielding: 4, power: 3 }, requires: { closeQuarters: 40 }, visual: { primary: '#3a2a2a', secondary: '#e86a1c', motif: 'bulwark' }, value: 2600, unique: true }),
   gear({ id: 'stalker-treads', name: 'Stalker Treads', examine: "Boots resoled with Cordon stalker hide. You don't make a sound in them, and neither does anything behind you.", rarity: 'anomalous', icon: 'boots', slot: 'feet', stats: { deflection: 14, armor: 6, accuracy: 5 }, requires: { marksmanship: 40 }, visual: { primary: '#2a2a30', secondary: '#d8322a', motif: 'skirmisher' }, value: 2400, unique: true }),
   gear({ id: 'echo-band', name: 'Echo Band', examine: 'A band of vault glass that repeats whatever you think, slightly later.', rarity: 'anomalous', icon: 'implant', slot: 'implant', stats: { focus: 12, cognitiveWard: 8, insight: 4 }, requires: { psionics: 45 }, visual: { primary: '#46627e', secondary: '#7fd8ff', emissive: '#7fd8ff' }, value: 3200, unique: true }),
   gear({ id: 'wardens-key', name: "Warden's Key", examine: 'The key the Warden held the shaft shut with. It is warm, and it is turning on its own, very slowly.', rarity: 'anomalous', icon: 'key', slot: 'utility', stats: { cognitiveWard: 12, insight: 8, armor: 6 }, requires: { containment: 50 }, visual: { primary: '#46627e', secondary: '#d8322a', emissive: '#7fd8ff' }, value: 6000, unique: true }),
@@ -52,7 +52,7 @@ export const DEPTHS_CREATURES: readonly CreatureDefinition[] = [
     style: 'psionic',
     range: 4,
     loot: [{ itemId: 'red-trace', count: 1, chance: 0.5 }, { itemId: 'directorate-salvage', count: 1, chance: 0.3 }, { itemId: 'twin-mask', count: 1, chance: 0.01 }],
-    containment: { containmentClass: 'keter', procedures: 'Separate them. Subdue the quiet one first. Contain both in adjoining cells and never open either alone.', experience: 900, loot: [{ itemId: 'red-trace', count: 3, chance: 1 }], requiredLevel: 35 },
+    containment: { containmentClass: 'keter', procedures: 'Separate them. Subdue the quiet one first. Contain both in adjoining cells and never open either alone.', experience: 3600, loot: [{ itemId: 'red-trace', count: 3, chance: 1 }], requiredLevel: 35 },
   }),
   beast({
     id: 'cell-breaker',
@@ -100,7 +100,7 @@ export const DEPTHS_CREATURES: readonly CreatureDefinition[] = [
     style: 'psionic',
     range: 5,
     loot: [{ itemId: 'vault-residue', count: 4, chance: 1 }, { itemId: 'vault-trace', count: 3, chance: 1 }, { itemId: 'wardens-key', count: 1, chance: 0.05 }],
-    containment: { containmentClass: 'keter', procedures: 'Do not. If you must: wear it down to the last plate, then contain it in the Heart itself. Nothing else will hold it.', experience: 4000, loot: [{ itemId: 'vault-trace', count: 6, chance: 1 }], requiredLevel: 50 },
+    containment: { containmentClass: 'keter', procedures: 'Do not. If you must: wear it down to the last plate, then contain it in the Heart itself. Nothing else will hold it.', experience: 7700, loot: [{ itemId: 'vault-trace', count: 6, chance: 1 }], requiredLevel: 50 },
   }),
 ];
 
@@ -150,6 +150,7 @@ export const DEPTHS_QUESTS: readonly QuestDefinition[] = [
       },
       { id: 'brief', journal: 'Talk to Officer Brandt on B1 about the Secure Wing.', objectives: [{ type: 'talkTo', npcId: 'officer-brandt', label: 'Talk to Officer Brandt' }], onComplete: [{ type: 'setFlag', flag: 'clearance-b2' }] },
       { id: 'records', journal: 'Take the lower lift to B2 and search the records cabinet in the observation lab.', objectives: [{ type: 'obtainItem', itemId: 'vault-survey', count: 1, label: 'Find the Vault survey' }] },
+      { id: 'specimen', journal: 'The survey names the hounds as the first containment failures. Brandt wants one alive for the log: wear a glass hound down without cracking it and contain it.', objectives: [{ type: 'contain', creatureId: 'glass-hound', count: 1, label: 'Contain a glass hound' }] },
       { id: 'return', journal: 'Take the survey back to Officer Brandt.', objectives: [{ type: 'signal', signal: 'lading.returned', npcId: 'officer-brandt', label: 'Give Brandt the survey' }] },
     ],
     rewards: [...lading.map((pay) => pay.effect), scrip(800)],
@@ -179,6 +180,7 @@ export const DEPTHS_QUESTS: readonly QuestDefinition[] = [
       { id: 'descend', journal: 'Take the Vault lift down from B2. The Vault is meant for about combat level 50, and its echoes wear down anyone who comes early. Until then, the Cordon stalkers at the gate pay best from combat 40.', objectives: [{ type: 'enterArea', districtId: 'meridian-vault', areaId: 'landing', label: 'Reach the Vault' }] },
       { id: 'warden', journal: 'Find the Warden in the Heart of the Vault and bring it down.', objectives: [{ type: 'defeat', creatureId: 'the-warden', count: 1, label: 'Defeat the Warden' }] },
       { id: 'hatch', journal: 'Examine what the Warden was guarding.', objectives: [{ type: 'interactWith', objectId: 'sealed-hatch', label: 'Examine the sealed hatch' }] },
+      { id: 'tide', journal: 'Hale wants proof the Warden is not the only thing the Site can hold. Draw a tide wraith away from the water, wear it down and contain it.', objectives: [{ type: 'contain', creatureId: 'tide-wraith', count: 1, label: 'Contain a tide wraith' }] },
       { id: 'mercer', journal: 'Lieutenant Mercer at the Cordon post has orders for you.', objectives: [{ type: 'talkTo', npcId: 'lieutenant-mercer', label: 'Report to Lieutenant Mercer' }] },
     ],
     rewards: [...heart.map((pay) => pay.effect), scrip(3000), { type: 'setFlag', flag: 'cordon-orders' }],

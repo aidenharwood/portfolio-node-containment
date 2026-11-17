@@ -73,6 +73,20 @@ describe('containment', () => {
     assert.ok(harness.sink.messages.some((message) => message.type === 'combat.death' && message.containedBy === harness.player.entityId));
   });
 
+  test('containment pays combat experience as well as Containment experience', () => {
+    const harness = createHarness({ prepare: operative(6) });
+    const creature = warden(harness);
+    const before = { ...harness.player.record.skills };
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 0 });
+    harness.ticksUntil(() => harness.player.heldFireOn === creature.entityId, 2000);
+    harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 1 });
+    harness.ticksUntil(() => !creature.isAlive, 50);
+    const after = harness.player.record.skills;
+    assert.ok(after.containment >= before.containment + (creature.definition.containment?.experience ?? Infinity));
+    const combatGain = after.closeQuarters - before.closeQuarters + after.fortitude - before.fortitude;
+    assert.ok(combatGain > 0, 'combat experience is paid on containment');
+  });
+
   test('containing a storyline boss advances its contain objective', () => {
     const harness = createHarness({ prepare: onTheWardenStep(operative(6)) });
     const creature = warden(harness);

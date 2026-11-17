@@ -50,7 +50,7 @@ export const NOVICE_ITEMS: readonly ItemDefinition[] = [
     value: 5,
   },
   gear({ id: 'eelskin-hood', name: 'Eelskin Hood', examine: 'A hood cut from one enormous eel. It is still slightly slippery.', rarity: 'restricted', icon: 'hood', slot: 'head', stats: { deflection: 5, armor: 2, accuracy: 1 }, requires: { marksmanship: 5 }, visual: { primary: '#3a4c4c', secondary: '#3a5a4a', motif: 'skirmisher' }, value: 120, unique: true }),
-  gear({ id: 'crawler-shell', name: 'Crawler Shell', examine: 'The back plate of a scrap crawler, strapped on. It used to be a car door.', rarity: 'restricted', icon: 'vest', slot: 'torso', stats: { armor: 14, deflection: 5, hazardShielding: 2 }, requires: { fortitude: 10 }, visual: { primary: '#6a4a3a', secondary: '#3a3f44', motif: 'bulwark' }, value: 300, unique: true }),
+  gear({ id: 'crawler-shell', name: 'Crawler Shell', examine: 'The back plate of a scrap crawler, strapped on. It used to be a car door.', rarity: 'restricted', icon: 'vest', slot: 'torso', stats: { armor: 14, deflection: 5, hazardShielding: 2 }, requires: { closeQuarters: 10 }, visual: { primary: '#6a4a3a', secondary: '#3a3f44', motif: 'bulwark' }, value: 300, unique: true }),
   gear({ id: 'rustling-core', name: 'Rustling Core', examine: 'The amber light from inside a rustling. It whispers about metal.', rarity: 'classified', icon: 'implant', slot: 'implant', stats: { focus: 6, cognitiveWard: 4 }, requires: { psionics: 12 }, visual: { primary: '#5a4a2a', secondary: '#3a2a10', emissive: '#e8a21c' }, value: 400, unique: true }),
   gear({ id: 'lamplighter-lantern', name: "Lamplighter's Lantern", examine: 'A small lantern that lights itself when something is watching.', rarity: 'classified', icon: 'lantern', slot: 'utility', stats: { insight: 3, cognitiveWard: 3, focus: 2 }, requires: { psionics: 8 }, visual: { primary: '#5a5e62', secondary: '#9ab0b8', emissive: '#ffb35a' }, value: 350, unique: true }),
 ];
@@ -131,7 +131,7 @@ export const NOVICE_CREATURES: readonly CreatureDefinition[] = [
     level: 6,
     aggressive: true,
     loot: [{ itemId: 'culvert-trace', count: 1, chance: 0.3 }, { itemId: 'basin-eel', count: 1, chance: 0.25 }, { itemId: 'rag-bundle', count: 1, chance: 0.2 }],
-    containment: { containmentClass: 'safe', procedures: 'Subdue. Jar it. Do not let it near anything it can chew.', experience: 60, loot: [{ itemId: 'culvert-trace', count: 2, chance: 1 }] },
+    containment: { containmentClass: 'safe', procedures: 'Subdue. Jar it. Do not let it near anything it can chew.', experience: 55, loot: [{ itemId: 'culvert-trace', count: 2, chance: 1 }] },
   }),
   beast({
     id: 'silt-eel',
@@ -162,7 +162,7 @@ export const NOVICE_CREATURES: readonly CreatureDefinition[] = [
     aggressive: true,
     wander: 2,
     loot: [{ itemId: 'scrap-bar', count: 2, chance: 0.6 }, { itemId: 'iron-bar', count: 1, chance: 0.25 }, { itemId: 'rustling-core', count: 1, chance: 0.01 }],
-    containment: { containmentClass: 'euclid', procedures: 'Wear it down until the amber light dims. Contain before it reassembles. Use non-ferrous restraints.', experience: 220, loot: [{ itemId: 'iron-bar', count: 2, chance: 1 }], requiredLevel: 10 },
+    containment: { containmentClass: 'euclid', procedures: 'Wear it down until the amber light dims. Contain before it reassembles. Use non-ferrous restraints.', experience: 370, loot: [{ itemId: 'iron-bar', count: 2, chance: 1 }], requiredLevel: 10 },
   }),
   beast({
     id: 'line-mimic',
@@ -173,7 +173,7 @@ export const NOVICE_CREATURES: readonly CreatureDefinition[] = [
     level: 4,
     wander: 2,
     loot: [{ itemId: 'rag-bundle', count: 2, chance: 0.8 }, { itemId: 'okafor-coat', count: 1, chance: 1 }],
-    containment: { containmentClass: 'safe', procedures: 'Distract with clean laundry. Subdue. Contain. Return the clothes.', experience: 80, loot: [{ itemId: 'okafor-coat', count: 1, chance: 1 }] },
+    containment: { containmentClass: 'safe', procedures: 'Distract with clean laundry. Subdue. Contain. Return the clothes.', experience: 30, loot: [{ itemId: 'okafor-coat', count: 1, chance: 1 }] },
   }),
   beast({
     id: 'scrap-magpie',

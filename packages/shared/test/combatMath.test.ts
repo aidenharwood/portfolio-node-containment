@@ -66,7 +66,7 @@ describe('combat math', () => {
   test('damage awards style and fortitude experience', () => {
     assert.deepEqual(combatExperience('ranged', 3), [
       { skill: 'marksmanship', amount: 12 },
-      { skill: 'fortitude', amount: 4 },
+      { skill: 'fortitude', amount: 6 },
     ]);
     assert.deepEqual(combatExperience('melee', 0), []);
   });

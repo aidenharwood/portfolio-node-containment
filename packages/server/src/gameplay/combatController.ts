@@ -434,6 +434,10 @@ export class CombatController implements EncounterHost {
     const label = creature.definition.designation ? `${creature.definition.designation} (${creature.definition.name})` : creature.definition.name;
     this.host.notify(player, 'success', `${label} contained. Class: ${CONTAINMENT_CLASS_INFO[profile.containmentClass].name}.`);
     this.effects.awardExperience(player, 'containment', profile.experience, true);
+    const style = playerAttackProfile(player.record.skills, player.record.equipment, this.content.items).style;
+    for (const award of defeatExperience(style, creature.definition.experience)) {
+      this.effects.awardExperience(player, award.skill, award.amount, false);
+    }
     const loot = this.lootFor(player, profile.loot);
     if (loot.length > 0) {
       for (const entry of loot) this.host.dropToGround(player, entry.itemId, entry.count, position);
