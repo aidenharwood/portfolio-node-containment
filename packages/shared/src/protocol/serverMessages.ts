@@ -99,6 +99,10 @@ export type ChatChannel = 'local' | 'party' | 'site' | 'whisper' | 'system' | 'q
 
 export type NoticeTone = 'info' | 'success' | 'warning';
 
+export const ENTITY_CUES = ['levelUp', 'heal', 'work'] as const;
+
+export type EntityCue = (typeof ENTITY_CUES)[number];
+
 export type ServerMessage =
   | { readonly type: 'auth.accepted'; readonly token: string; readonly username: string }
   | { readonly type: 'auth.rejected'; readonly reason: string }
@@ -169,6 +173,7 @@ export type ServerMessage =
   | { readonly type: 'market.closed' }
   | { readonly type: 'player.activity'; readonly activity: PlayerActivityView | null }
   | { readonly type: 'world.objectDepleted'; readonly instanceId: string; readonly depleted: boolean }
+  | { readonly type: 'world.entityCue'; readonly entityId: EntityId; readonly cue: EntityCue; readonly instanceId?: string }
   | { readonly type: 'tram.mapOpened'; readonly stationId: TramStationId }
   | { readonly type: 'tram.departed'; readonly originStationId: TramStationId; readonly destinationStationId: TramStationId; readonly rideTicks: number }
   | { readonly type: 'tram.arrived'; readonly stationId: TramStationId }

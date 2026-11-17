@@ -1,4 +1,4 @@
-import { Group } from 'three';
+import { Group, Vector3 } from 'three';
 import { darken, jitter, lighten, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE, VOXEL_GLASS } from '../voxel/voxelKinds.ts';
 import { ACTOR_OPTIONS, createVoxelObject } from '../voxel/voxelMaterials.ts';
@@ -14,6 +14,31 @@ interface CreatureLook {
   readonly height: number;
   readonly gait: Gait;
   readonly scale?: number;
+  readonly muzzle?: readonly [number, number, number];
+  readonly accent?: number;
+  readonly spin?: boolean;
+}
+
+const GAIT_CADENCE: Readonly<Record<Gait, number>> = { scurry: 2.2, trot: 1.4, hop: 1, loom: 0.5, hover: 1, drift: 1 };
+
+const AIRBORNE: ReadonlySet<Gait> = new Set(['hover', 'drift']);
+
+const SPIRITS: ReadonlySet<string> = new Set(['lamplighter', 'tideWraith', 'vaultEcho', 'crateWisp']);
+
+type StrikeKey = readonly [number, number, 'in' | 'out' | 'hold'];
+
+const STRIKE: readonly StrikeKey[] = [[0, 0, 'out'], [0.35, -0.25, 'out'], [0.45, 1, 'in'], [0.6, 1, 'hold'], [1, 0, 'out']];
+
+export function creatureStrike(progress: number | null): number {
+  if (progress === null) return 0;
+  const t = Math.min(1, Math.max(0, progress));
+  let index = 0;
+  while (index < STRIKE.length - 2 && t > STRIKE[index + 1]![0]) index++;
+  const [startAt, from] = STRIKE[index]!;
+  const [endAt, to, ease] = STRIKE[index + 1]!;
+  const raw = endAt > startAt ? (t - startAt) / (endAt - startAt) : 1;
+  const shaped = ease === 'in' ? raw ** 3 : ease === 'out' ? 1 - (1 - raw) ** 3 : raw;
+  return from + (to - from) * shaped;
 }
 
 const fur = (color: number, salt: number): Paint => (x, y, z) => jitter(color, 0.07, noise3(x, y, z, salt));
@@ -262,39 +287,73 @@ const LOOKS: Readonly<Record<string, CreatureLook>> = {
   canalRat: { build: canalRat, height: 0.35, gait: 'scurry' },
   pigeon: { build: pigeon, height: 0.4, gait: 'hop' },
   strayDog: { build: strayDog, height: 0.75, gait: 'trot' },
-  trainingDrone: { build: trainingDrone, height: 0.8, gait: 'hover' },
-  crateWisp: { build: crateWisp, height: 0.75, gait: 'drift' },
+  trainingDrone: { build: trainingDrone, height: 0.8, gait: 'hover', spin: true },
+  crateWisp: { build: crateWisp, height: 0.75, gait: 'drift', muzzle: [0, 9.5, 3], accent: 0xb6ff4f },
   gutterMite: { build: gutterMite, height: 0.35, gait: 'scurry' },
   siltEel: { build: siltEel, height: 0.45, gait: 'scurry' },
   scrapCrawler: { build: scrapCrawler, height: 0.6, gait: 'scurry' },
   rustling: { build: rustling, height: 1, gait: 'trot' },
   lineMimic: { build: lineMimic, height: 1.2, gait: 'drift' },
   scrapMagpie: { build: scrapMagpie, height: 0.5, gait: 'hop' },
-  lamplighter: { build: lamplighter, height: 2.1, gait: 'drift' },
-  mothLantern: { build: mothLantern, height: 1, gait: 'hover' },
+  lamplighter: { build: lamplighter, height: 2.1, gait: 'drift', muzzle: [8.5, 10.5, 0], accent: 0xffb35a },
+  mothLantern: { build: mothLantern, height: 1, gait: 'hover', muzzle: [-0.5, 6, 0], accent: 0xffd08a },
   glassHound: { build: glassHound, height: 0.9, gait: 'trot' },
   hullKnocker: { build: hullKnocker, height: 0.9, gait: 'scurry' },
-  tideWraith: { build: tideWraith, height: 1.6, gait: 'drift' },
-  redTwin: { build: redTwin, height: 1.3, gait: 'drift' },
+  tideWraith: { build: tideWraith, height: 1.6, gait: 'drift', muzzle: [0, 22, 2], accent: 0xc79bff },
+  redTwin: { build: redTwin, height: 1.3, gait: 'drift', muzzle: [0, 18, 3], accent: 0xd8322a },
   cellBreaker: { build: cellBreaker, height: 1.2, gait: 'trot' },
   cordonStalker: { build: cordonStalker, height: 1.5, gait: 'trot' },
-  vaultEcho: { build: vaultEcho, height: 1.4, gait: 'drift' },
-  warden: { build: warden, height: 4.4, gait: 'loom', scale: 1.8 },
+  vaultEcho: { build: vaultEcho, height: 1.4, gait: 'drift', muzzle: [0, 19, 2], accent: 0x7fd8ff },
+  warden: { build: warden, height: 4.4, gait: 'loom', scale: 1.8, muzzle: [-0.5, 39, 4], accent: 0x7fd8ff },
 };
 
 const meshes = new Map<string, VoxelMeshes>();
+const palettes = new Map<string, readonly number[]>();
+
+const PALETTE_SAMPLES = 24;
+const profiles = new Map<string, readonly (readonly [number, number])[]>();
+
+function profileOf(key: string, look: CreatureLook): readonly (readonly [number, number])[] {
+  let profile = profiles.get(key);
+  if (!profile) {
+    const lowest = new Map<number, number>();
+    for (const cell of look.build().cells()) lowest.set(cell.z, Math.min(lowest.get(cell.z) ?? Infinity, cell.y));
+    const unit = CHARACTER_VOXEL_SIZE * (look.scale ?? 1);
+    profile = [...lowest.entries()].flatMap(([z, y]) => [[z * unit, y * unit], [(z + 1) * unit, y * unit]] as const);
+    profiles.set(key, profile);
+  }
+  return profile;
+}
+
+function paletteOf(key: string, look: CreatureLook): readonly number[] {
+  let palette = palettes.get(key);
+  if (!palette) {
+    const cells = look.build().cells();
+    const stride = Math.max(1, Math.floor(cells.length / PALETTE_SAMPLES));
+    palette = cells.filter((_cell, index) => index % stride === 0).slice(0, PALETTE_SAMPLES).map((cell) => cell.color);
+    palettes.set(key, palette);
+  }
+  return palette;
+}
 
 class WardCreatureRig implements EntityRig {
   readonly root = new Group();
   readonly height: number;
+  readonly airborne: boolean;
+  readonly accent?: number;
+  private readonly pivot = new Group();
   private readonly body: Group;
-  private readonly gait: Gait;
+  private readonly look: CreatureLook;
+  private readonly key: string;
   private readonly scale: number;
 
   constructor(key: string) {
     const look = LOOKS[key] as CreatureLook;
+    this.look = look;
+    this.key = key;
     this.height = look.height;
-    this.gait = look.gait;
+    this.airborne = AIRBORNE.has(look.gait);
+    if (look.accent !== undefined) this.accent = look.accent;
     let mesh = meshes.get(key);
     if (!mesh) {
       mesh = look.build().mesh(CHARACTER_VOXEL_SIZE, [0, 0, 0]);
@@ -303,41 +362,82 @@ class WardCreatureRig implements EntityRig {
     this.body = createVoxelObject(mesh, ACTOR_OPTIONS);
     this.scale = look.scale ?? 1;
     this.body.scale.setScalar(this.scale);
-    this.root.add(this.body);
+    this.pivot.position.y = this.height * 0.4;
+    this.pivot.add(this.body);
+    this.root.add(this.pivot);
+  }
+
+  palette(): readonly number[] {
+    return paletteOf(this.key, this.look);
+  }
+
+  get spirit(): boolean {
+    return SPIRITS.has(this.key);
+  }
+
+  muzzle(out: Vector3): boolean {
+    const point = this.look.muzzle;
+    if (!point) return false;
+    this.root.updateMatrixWorld(true);
+    this.body.localToWorld(out.set(point[0] * CHARACTER_VOXEL_SIZE, point[1] * CHARACTER_VOXEL_SIZE, point[2] * CHARACTER_VOXEL_SIZE));
+    return true;
   }
 
   animate(pose: EntityPose): void {
-    const lunge = swingCurve(pose.attackProgress);
+    const strike = creatureStrike(pose.attackProgress);
+    const reach = Math.max(0, strike);
     const hurt = swingCurve(pose.hurtProgress);
-    const step = Math.abs(Math.sin(pose.walkPhase * Math.PI));
-    const shake = Math.sin(pose.time * 40) * hurt * 0.04;
-    switch (this.gait) {
+    const gait = this.look.gait;
+    const step = pose.moving ? Math.abs(Math.sin(pose.walkPhase * GAIT_CADENCE[gait])) : 0;
+    const fall = this.airborne ? (1 - (pose.dying ?? 0)) ** 2 : 1;
+    const base = -this.height * 0.4;
+    let lift = 0;
+    let pitch = 0;
+    let yaw = 0;
+    let roll = 0;
+    let pulse = 1;
+    let forward = strike * 0.3 - hurt * 0.1;
+    switch (gait) {
       case 'scurry':
-        this.body.position.set(shake, pose.moving ? step * 0.02 : 0, lunge * 0.25);
-        this.body.rotation.y = pose.moving ? Math.sin(pose.walkPhase * Math.PI * 2) * 0.12 : 0;
-        return;
-      case 'hop':
-        this.body.position.set(shake, pose.moving ? step * 0.08 : 0, lunge * 0.2);
-        this.body.rotation.x = pose.moving ? 0 : Math.max(0, Math.sin(pose.time * 3)) * 0.3;
-        return;
+        lift = step * 0.02 + reach * 0.06;
+        pitch = reach * 0.18 - hurt * 0.18;
+        yaw = pose.moving ? Math.sin(pose.walkPhase * GAIT_CADENCE.scurry * 2) * 0.12 : 0;
+        forward = strike * 0.25 - hurt * 0.1;
+        break;
       case 'trot':
-        this.body.position.set(shake, pose.moving ? step * 0.05 : 0, lunge * 0.35);
-        this.body.rotation.x = -lunge * 0.2;
-        return;
+        lift = step * 0.05 + reach * 0.06;
+        pitch = reach * 0.18 - hurt * 0.18;
+        forward = strike * 0.35 - hurt * 0.1;
+        break;
+      case 'hop':
+        lift = step * 0.08 + reach * 0.04;
+        pitch = reach * 0.4 - hurt * 0.18 + (pose.moving || pose.attackProgress !== null ? 0 : Math.max(0, Math.sin(pose.time * 3)) * 0.3);
+        forward = strike * 0.2 - hurt * 0.1;
+        break;
       case 'hover':
-        this.body.position.set(shake, 0.05 + Math.sin(pose.time * 2.2) * 0.04, lunge * 0.3);
-        this.body.rotation.y = pose.time * 0.6;
-        return;
+        lift = (0.05 + Math.sin(pose.time * 2.2) * 0.04) * fall;
+        yaw = this.look.spin ? pose.time * 0.6 : Math.sin(pose.time * 0.6) * 0.35;
+        pulse = 1 + reach * 0.12;
+        break;
       case 'drift':
-        this.body.position.set(shake + Math.sin(pose.time * 1.3) * 0.05, 0.08 + Math.sin(pose.time * 1.9) * 0.06, lunge * 0.25);
-        this.body.scale.setScalar(this.scale * (1 + Math.sin(pose.time * 4) * 0.05 + hurt * 0.15));
-        return;
+        lift = (0.08 + Math.sin(pose.time * 1.9) * 0.06) * fall;
+        pulse = 1 + Math.sin(pose.time * 4) * 0.05 + hurt * 0.15 + reach * 0.12;
+        break;
       case 'loom':
-        this.body.position.set(shake * 2, Math.sin(pose.time * 0.9) * 0.05, lunge * 0.5);
-        this.body.rotation.z = Math.sin(pose.time * 0.7) * 0.03 + (pose.moving ? Math.sin(pose.walkPhase * Math.PI * 2) * 0.05 : 0);
-        this.body.rotation.x = -lunge * 0.15;
-        return;
+        lift = Math.sin(pose.time * 0.9) * 0.05;
+        pitch = strike < 0 ? strike * 0.4 : strike * 0.08;
+        roll = Math.sin(pose.time * 0.7) * 0.03 + (pose.moving ? Math.sin(pose.walkPhase * GAIT_CADENCE.loom * 2) * 0.05 : 0);
+        forward = strike * 0.5 - hurt * 0.1;
+        break;
     }
+    const pivotHeight = this.height * 0.4;
+    const cos = Math.cos(pitch);
+    const sin = Math.sin(pitch);
+    let dip = 0;
+    if (pitch !== 0) for (const [z, y] of profileOf(this.key, this.look)) dip = Math.max(dip, -(pivotHeight + (y - pivotHeight) * cos - (z + forward) * sin));
+    this.body.position.set(gait === 'drift' ? Math.sin(pose.time * 1.3) * 0.05 : 0, base + lift + (this.airborne ? 0 : dip), forward);
+    this.pivot.rotation.set(pitch, yaw, roll);
+    this.body.scale.setScalar(this.scale * pulse);
   }
 }
 

@@ -1,38 +1,25 @@
-import type { AttackMotion } from '@containment/shared';
-import type { Group } from 'three';
+import type { PoseMotion } from './weaponPoses.ts';
+import type { Group, Vector3 } from 'three';
 
 export interface EntityPose {
   readonly moving: boolean;
   readonly walkPhase: number;
   readonly time: number;
   readonly attackProgress: number | null;
-  readonly attackMotion?: AttackMotion | null;
+  readonly attackMotion?: PoseMotion | null;
   readonly hurtProgress: number | null;
+  readonly dying?: number;
 }
 
 export interface EntityRig {
   readonly root: Group;
   readonly height: number;
+  readonly airborne?: boolean;
+  readonly accent?: number;
   animate(pose: EntityPose): void;
+  muzzle?(out: Vector3): boolean;
+  palette?(): readonly number[];
+  readonly spirit?: boolean;
 }
 
 export const swingCurve = (progress: number | null): number => (progress === null ? 0 : Math.sin(Math.PI * Math.min(1, Math.max(0, progress))));
-
-const DEFAULT_ATTACK_MS = 380;
-
-const ATTACK_DURATION_MS: Readonly<Record<AttackMotion, number>> = {
-  jab: 300,
-  stab: 260,
-  strike: 380,
-  slash: 420,
-  slam: 600,
-  lunge: 440,
-  snapShot: 340,
-  shoulderShot: 400,
-  heavyShot: 560,
-  blast: 480,
-  channel: 460,
-  invoke: 620,
-};
-
-export const attackDurationMs = (motion: AttackMotion | null | undefined): number => (motion ? ATTACK_DURATION_MS[motion] : DEFAULT_ATTACK_MS);

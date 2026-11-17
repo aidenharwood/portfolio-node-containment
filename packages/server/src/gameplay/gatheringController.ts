@@ -73,6 +73,7 @@ export class GatheringController {
     }
 
     player.activity = { kind: 'gather', instanceId, interactionIndex, nextTick: tick + source.attemptTicks };
+    this.host.cue(player, 'work', instanceId);
     if (this.random() >= gatherChance(source, levelForExperience(player.record.skills[source.skill]))) return;
 
     const outcome = addItem(player.record.inventory, this.content.items, source.itemId, 1);

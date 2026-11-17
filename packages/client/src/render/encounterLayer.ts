@@ -6,7 +6,7 @@ const MAX_TILES = 1200;
 const TILE_HEIGHT = 0.03;
 const TILE_SIZE = 0.94;
 
-const STYLE_COLOR: Readonly<Record<CombatStyle, number>> = {
+export const STYLE_COLOR: Readonly<Record<CombatStyle, number>> = {
   melee: 0xff5a3c,
   ranged: 0xffb03c,
   psionic: 0xb47cff,

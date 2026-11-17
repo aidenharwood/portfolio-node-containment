@@ -1,18 +1,25 @@
 import type { GameSettings } from '../state/gameSettings.ts';
 import { GAME_CONTENT, WEAPON_KIND_INFO, type EntityId, type Facing, type ItemId, type NpcQuestMarker, type TilePoint } from '@containment/shared';
-import { Group, MathUtils, Plane, Raycaster, Scene, Vector2, Vector3, MeshBasicMaterial, Mesh, OctahedronGeometry, type Object3D } from 'three';
-import type { ClientEntity, CombatHitEvent, WorldState } from '../state/worldState.ts';
+import { Color, Group, MathUtils, Plane, Raycaster, Scene, Vector2, Vector3, MeshBasicMaterial, Mesh, OctahedronGeometry, type Object3D } from 'three';
+import type { ClientEntity, CombatHitEvent, WorldEffectEvent, WorldState } from '../state/worldState.ts';
 import { CameraRig } from './cameraRig.ts';
 import { CharacterRig } from './models/characterModel.ts';
 import { createCreatureRig } from './models/creatureModels.ts';
-import { attackDurationMs, type EntityRig } from './models/entityRig.ts';
+import type { EntityRig } from './models/entityRig.ts';
+import { attackDurationMs } from '../state/attackTiming.ts';
+import { WORK_CONTACT, WORK_MS } from './models/weaponPoses.ts';
+import { DEATH_ANIMATION_MS } from '../state/combatClock.ts';
+import { ParticleLayer } from './particleLayer.ts';
+import { setVoxelObjectFlash } from './voxel/voxelMaterials.ts';
+import { STYLE_COLOR } from './encounterLayer.ts';
+import type { ProjectileKind } from '@containment/shared';
 import { createAreaBeacon, createClickMarker, createContactShadow, createContainmentField, createGroundRing, createQuestMarker, setContainmentFieldOpacity, type QuestMarkerKind } from './models/markerModels.ts';
 import { GroundItemLayer } from './items/groundItemLayer.ts';
 import { ProjectileLayer } from './projectileLayer.ts';
 import { RouteLayer } from './routeLayer.ts';
 import { EncounterLayer } from './encounterLayer.ts';
 import { objectCoversTile, samePickTarget, type ClickMarker, type PickTarget } from './pickTarget.ts';
-import { hex } from './voxel/palette.ts';
+import { hex, lighten } from './voxel/palette.ts';
 import { copyAmbience, createBlendedAmbience, easeAmbience, sampleAmbience } from './world/ambienceBlend.ts';
 import { SceneLook } from './sceneLook.ts';
 import { LevelScene } from './world/levelScene.ts';
@@ -46,6 +53,23 @@ interface EntityView {
   markerKind: QuestMarkerKind | null;
   readonly scale: number;
   readonly shadow: Mesh;
+  last: { x: number; y: number } | null;
+  flashing: boolean;
+  shattered: boolean;
+  workAt: number;
+}
+
+interface PendingHit {
+  readonly event: CombatHitEvent;
+  launched: boolean;
+  impacted: boolean;
+  lastTip: Vector3 | null;
+}
+
+interface PendingChips {
+  readonly at: number;
+  readonly position: Vector3;
+  readonly colors: readonly number[];
 }
 
 const FOOTPRINT_MODEL_SCALE: Readonly<Record<number, number>> = { 1: 1, 2: 1.75 };
@@ -54,7 +78,20 @@ const CONTAINMENT_FIELD = 'containment-field';
 const ENRAGE_MARK = 'enrage-mark';
 const HURT_ANIMATION_MS = 300;
 const MUZZLE_REACH = 0.5;
-const DEATH_ANIMATION_MS = 700;
+const FLASH_MS = 90;
+const STEP_PHASE_PER_TILE = 4.3;
+const TRAIL_LEAD_MS = 60;
+const TRAIL_TAIL_MS = 25;
+const HIT_SPARK = 0xfff1c8;
+const MISS_PUFF = 0x9aa0a6;
+const LEVEL_GOLD = 0xffd23f;
+const HEAL_GREEN = 0x7dff9a;
+const CONTAIN_CYAN = 0x4fd8ff;
+const CONTAIN_GOLD = 0xffcf4d;
+const DEPLETION_DUST = 0x8a7a6a;
+const TELEGRAPH_SPARK_CAP = 60;
+const PALETTE_SAMPLES = 8;
+const TRAIL_STEPS = 3;
 const AMBIENCE_EASE_PER_SECOND = 3;
 
 const animationProgress = (startedAt: number, duration: number, now: number): number | null => {
@@ -85,7 +122,13 @@ export class GameRenderer {
   private readonly ambienceTarget = createBlendedAmbience();
   private ambienceTile: string | null = null;
   private readonly groundItems = new GroundItemLayer();
-  private readonly projectiles = new ProjectileLayer();
+  private readonly projectiles = new ProjectileLayer((kind, at, travel, color) => this.projectileImpact(kind, at, travel, color));
+  private readonly particles = new ParticleLayer();
+  private readonly pendingHits: PendingHit[] = [];
+  private readonly pendingChips: PendingChips[] = [];
+  private readonly stopEffectListener: () => void;
+  private readonly scratch = new Vector3();
+  private readonly sampleColor = new Color();
   private readonly route = new RouteLayer();
   private readonly encounters = new EncounterLayer();
   private readonly stopHitListener: () => void;
@@ -95,9 +138,10 @@ export class GameRenderer {
     this.canvas = canvas;
     this.world = world;
     this.look = new SceneLook(canvas, this.scene, this.cameraRig.camera);
-    this.stopHitListener = world.onCombatHit((event) => this.launchProjectile(event));
+    this.stopHitListener = world.onCombatHit((event) => this.pendingHits.push({ event, launched: false, impacted: false, lastTip: null }));
+    this.stopEffectListener = world.onEffect((event) => this.worldEffect(event));
     this.weather = new WeatherLayer(this.skyMask);
-    this.scene.add(this.projectiles.root, this.groundItems.root, this.hoverRing, this.selfRing, this.click.group, this.route.mesh, this.encounters.mesh, this.weather.root);
+    this.scene.add(this.projectiles.root, this.particles.root, this.groundItems.root, this.hoverRing, this.selfRing, this.click.group, this.route.mesh, this.encounters.mesh, this.weather.root);
 
   }
 
@@ -161,9 +205,14 @@ export class GameRenderer {
       return;
     }
 
+    this.world.settle(now);
     this.syncEntities(now, delta, overlay);
     this.groundItems.sync(this.world.groundItems, now / 1000);
+    this.resolveHits(now);
+    this.resolveChips(now);
     this.projectiles.update(now);
+    this.particles.setFocus(this.cameraRig.focusPoint);
+    this.particles.update(delta);
     const self = this.world.selfEntity;
     if (self) {
       const position = this.world.renderPosition(self, now);
@@ -255,7 +304,9 @@ export class GameRenderer {
 
   dispose(): void {
     this.stopHitListener();
+    this.stopEffectListener();
     this.projectiles.dispose();
+    this.particles.dispose();
     this.zone?.dispose();
     this.look.dispose();
   }
@@ -283,12 +334,15 @@ export class GameRenderer {
     const targetHeight = targetView ? targetView.rig.height * targetView.scale : 1.2;
     const from = new Vector3(muzzle.x, attackerHeight * 0.55, muzzle.y);
     const to = new Vector3(impact.x, targetHeight * 0.55, impact.y);
-    if (attacker.kind !== 'creature') from.lerp(to, Math.min(0.45, MUZZLE_REACH / Math.max(0.001, from.distanceTo(to))));
-    this.projectiles.launch(event.projectile, from, to, this.projectileColor(attacker), now, Math.max(1, event.impactAt - event.at));
+    if (!attackerView?.rig.muzzle?.(from)) {
+      from.set(muzzle.x, attackerHeight * 0.55, muzzle.y);
+      if (attacker.kind !== 'creature') from.lerp(to, Math.min(0.45, MUZZLE_REACH / Math.max(0.001, from.distanceTo(to))));
+    }
+    this.projectiles.launch(event.projectile, from, to, this.projectileColor(attacker), now, Math.max(1, event.impactAt - now));
   }
 
   private projectileColor(attacker: ClientEntity): number {
-    if (attacker.kind === 'creature') return 0xc8ff7a;
+    if (attacker.kind === 'creature') return this.entities.get(attacker.id)?.rig.accent ?? 0xc8ff7a;
     for (const itemId of attacker.gear) {
       const equipment = GAME_CONTENT.items.get(itemId)?.equipment;
       if (equipment?.slot === 'primary' && equipment.visual.emissive) return hex(equipment.visual.emissive);
@@ -331,7 +385,13 @@ export class GameRenderer {
       }
       const position = this.world.bodyPosition(entity, now);
       const moving = this.world.isMoving(entity, now);
-      if (moving) entity.walkPhase += delta * 10;
+      if (view.last) entity.walkPhase += Math.hypot(position.x - view.last.x, position.y - view.last.y) * STEP_PHASE_PER_TILE;
+      view.last = { x: position.x, y: position.y };
+      const flashing = now >= entity.hurtAt && now < entity.hurtAt + FLASH_MS;
+      if (flashing !== view.flashing) {
+        view.flashing = flashing;
+        setVoxelObjectFlash(view.rig.root, flashing);
+      }
       view.rig.root.position.set(position.x, 0, position.y);
 
       const dx = entity.motion.to.x - entity.motion.from.x;
@@ -339,31 +399,201 @@ export class GameRenderer {
       const desiredYaw = moving && (dx !== 0 || dz !== 0) ? Math.atan2(dx, dz) : FACING_YAW[entity.facing];
       view.yaw += shortestAngle(view.yaw, desiredYaw) * Math.min(1, delta * 12);
       view.rig.root.rotation.y = view.yaw;
-      const attackMotion = entity.attackWeapon ? WEAPON_KIND_INFO[entity.attackWeapon].motion : null;
+      const working = now - view.workAt < WORK_MS;
+      const attackMotion = working ? 'work' : entity.attackWeapon ? WEAPON_KIND_INFO[entity.attackWeapon].motion : null;
+      const dying = entity.dyingAt === null ? 0 : Math.min(1, Math.max(0, (now - entity.dyingAt) / DEATH_ANIMATION_MS));
+      if (entity.dyingAt === null && view.shattered) view.shattered = false;
       view.rig.animate({
         moving,
         walkPhase: entity.walkPhase,
         time: now / 1000 + entity.id.length,
-        attackProgress: animationProgress(entity.attackAt, attackDurationMs(attackMotion), now),
+        attackProgress: working ? (now - view.workAt) / WORK_MS : animationProgress(entity.attackAt, attackDurationMs(attackMotion === 'work' ? null : attackMotion), now),
         attackMotion,
         hurtProgress: animationProgress(entity.hurtAt, HURT_ANIMATION_MS, now),
+        dying,
       });
-      const dying = entity.dyingAt === null ? 0 : Math.min(1, (now - entity.dyingAt) / DEATH_ANIMATION_MS);
       view.shadow.visible = entity.dyingAt === null;
       if (entity.contained) {
         view.rig.root.rotation.y += dying * dying * 9;
         view.rig.root.scale.setScalar(view.scale * Math.max(0.01, 1 - dying));
         view.rig.root.position.y = dying * 0.6;
         this.updateContainmentField(view, dying);
+        if (dying < 1) this.containmentMotes(view);
       } else {
-        view.rig.root.scale.setScalar(view.scale);
-        view.rig.root.rotation.z = -dying * 1.4;
-        view.rig.root.position.y = -dying * 0.15;
+        view.rig.root.scale.setScalar(view.shattered ? 0 : view.scale);
+        view.rig.root.rotation.z = view.rig.airborne ? 0 : -dying * 1.4;
+        view.rig.root.position.y = view.rig.airborne ? 0 : -dying * 0.15;
       }
+      if (dying >= 1 && !view.shattered && entity.kind === 'creature') this.shatter(view, entity.contained);
 
       this.updateQuestMarker(view, this.markerFor(entity, overlay), now);
       this.updateEnrageMark(view, entity.enraged, now);
     }
+  }
+
+  private resolveHits(now: number): void {
+    for (let index = this.pendingHits.length - 1; index >= 0; index--) {
+      const pending = this.pendingHits[index]!;
+      const { event } = pending;
+      const attackerView = this.entities.get(event.attackerId);
+      if (!event.projectile && attackerView?.character && now >= event.releaseAt - TRAIL_LEAD_MS && now <= event.releaseAt + TRAIL_TAIL_MS && attackerView.rig.muzzle?.(this.scratch)) {
+        const color = this.weaponGlow(event.attackerId);
+        const from = pending.lastTip ?? this.scratch;
+        for (let step = 1; step <= TRAIL_STEPS; step++) this.particles.emit('trail', from.clone().lerp(this.scratch, step / TRAIL_STEPS), { color });
+        pending.lastTip = this.scratch.clone();
+      }
+      if (!pending.launched && now >= event.releaseAt) {
+        pending.launched = true;
+        this.launchProjectile(event);
+      }
+      if (!pending.impacted && now >= event.impactAt) {
+        pending.impacted = true;
+        if (!event.projectile) this.meleeImpact(event);
+      }
+      if ((pending.launched && pending.impacted) || now > event.impactAt + 1000) this.pendingHits.splice(index, 1);
+    }
+  }
+
+  private meleeImpact(event: CombatHitEvent): void {
+    const target = this.world.entities.get(event.targetId);
+    const attacker = this.world.entities.get(event.attackerId);
+    const targetView = this.entities.get(event.targetId);
+    if (!target || !attacker || !targetView) return;
+    const now = performance.now();
+    const from = this.world.bodyPosition(attacker, now);
+    const to = this.world.bodyPosition(target, now);
+    const toward = new Vector3(from.x - to.x, 0, from.y - to.y);
+    if (toward.lengthSq() > 1e-6) toward.normalize();
+    const at = new Vector3(to.x, targetView.rig.height * targetView.scale * 0.55, to.y).addScaledVector(toward, 0.25);
+    if (event.outcome === 'miss') this.particles.emit('puff', at, { color: MISS_PUFF });
+    else this.particles.emit('sparks', at, { color: attacker.kind === 'creature' ? HIT_SPARK : this.weaponGlow(attacker.id), direction: toward });
+  }
+
+  private projectileImpact(kind: ProjectileKind, at: Vector3, travel: Vector3, color: number): void {
+    const back = travel.clone().negate();
+    switch (kind) {
+      case 'dart':
+        this.particles.emit('sparks', at, { color, direction: back, count: 6 });
+        return;
+      case 'bolt':
+        this.particles.emit('sparks', at, { color, direction: back, count: 8 });
+        return;
+      case 'tracer':
+        this.particles.emit('sparks', at, { color, direction: back, count: 10 });
+        return;
+      case 'pellets':
+        this.particles.emit('sparks', at, { color, direction: back, count: 1 });
+        return;
+      case 'pulse':
+        this.particles.emit('ring', at, { color });
+        return;
+      case 'wave':
+        this.particles.emit('ring', at, { color, ringAxis: travel });
+        return;
+      case 'spit':
+        this.particles.emit('droplets', at, { color });
+        return;
+    }
+  }
+
+  private weaponGlow(entityId: EntityId): number {
+    const entity = this.world.entities.get(entityId);
+    for (const itemId of entity?.gear ?? []) {
+      const equipment = GAME_CONTENT.items.get(itemId)?.equipment;
+      if (equipment?.slot === 'primary' && equipment.visual.emissive) return hex(equipment.visual.emissive);
+    }
+    return HIT_SPARK;
+  }
+
+  private shatter(view: EntityView, contained: boolean): void {
+    view.shattered = true;
+    const at = view.rig.root.getWorldPosition(new Vector3());
+    at.y += view.rig.height * view.scale * 0.45;
+    if (contained) this.particles.emit('sparks', at, { colors: [CONTAIN_CYAN, CONTAIN_GOLD], count: 14 });
+    else if (view.rig.spirit) {
+      const accent = view.rig.accent ?? HIT_SPARK;
+      this.particles.emit('motes', at, { colors: [accent, lighten(accent, 0.4)], count: 28, spawnBox: new Vector3(0.3, view.rig.height * view.scale * 0.9, 0.3) });
+    }
+    else this.particles.emit('debris', at, { colors: view.rig.palette?.() ?? [MISS_PUFF] });
+    view.rig.root.scale.setScalar(0);
+  }
+
+  private containmentMotes(view: EntityView): void {
+    const centre = view.rig.root.getWorldPosition(new Vector3());
+    centre.y += view.rig.height * 0.5;
+    for (let n = 0; n < 2; n++) {
+      const offset = new Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1).normalize().multiplyScalar(0.8);
+      this.particles.emit('motes', centre.clone().add(offset), { color: n === 0 ? CONTAIN_CYAN : CONTAIN_GOLD, direction: offset.clone().negate(), count: 1 });
+    }
+  }
+
+  private worldEffect(event: WorldEffectEvent): void {
+    switch (event.kind) {
+      case 'telegraphResolved': {
+        const color = STYLE_COLOR[event.telegraph.style];
+        event.telegraph.tiles.slice(0, TELEGRAPH_SPARK_CAP / 2).forEach((tile) => this.particles.emit('sparks', new Vector3(tile.x, 0.05, tile.y), { color, direction: new Vector3(0, 1, 0), count: 2 }));
+        return;
+      }
+      case 'depleted': {
+        const position = this.objectPosition(event.instanceId);
+        if (position) this.particles.emit('debris', position, { colors: this.objectPalette(event.instanceId) ?? [DEPLETION_DUST], count: 12 });
+        return;
+      }
+      case 'cue':
+        this.entityCue(event.entityId, event.cue, event.instanceId);
+        return;
+    }
+  }
+
+  private entityCue(entityId: EntityId, cue: 'levelUp' | 'heal' | 'work', instanceId?: string): void {
+    const entity = this.world.entities.get(entityId);
+    const view = this.entities.get(entityId);
+    if (!entity || !view) return;
+    const now = performance.now();
+    const feet = view.rig.root.getWorldPosition(new Vector3());
+    if (cue === 'levelUp') {
+      for (let n = 0; n < 4; n++) this.particles.emit('motes', feet.clone().add(new Vector3(0, 0.2 + n * 0.3, 0)), { color: LEVEL_GOLD, count: 10 });
+      this.particles.emit('ring', feet.clone().setY(0.05), { color: LEVEL_GOLD, count: 16 });
+      return;
+    }
+    if (cue === 'heal') {
+      this.particles.emit('motes', feet.clone().setY(0.4), { color: HEAL_GREEN, count: 10 });
+      return;
+    }
+    if (this.world.isMoving(entity, now)) return;
+    view.workAt = now;
+    const position = instanceId ? this.objectPosition(instanceId) : null;
+    const colors = (instanceId ? this.objectPalette(instanceId) : null) ?? [DEPLETION_DUST];
+    this.pendingChips.push({ at: now + WORK_CONTACT * WORK_MS, position: position ?? feet.clone().setY(0.5), colors });
+  }
+
+  private resolveChips(now: number): void {
+    for (let index = this.pendingChips.length - 1; index >= 0; index--) {
+      const chips = this.pendingChips[index]!;
+      if (now < chips.at) continue;
+      this.particles.emit('chips', chips.position, { colors: chips.colors });
+      this.particles.emit('sparks', chips.position, { colors: chips.colors, count: 2 });
+      this.pendingChips.splice(index, 1);
+    }
+  }
+
+  private objectPalette(instanceId: string): number[] | null {
+    const view = this.zone?.objects.get(instanceId);
+    let palette: number[] | null = null;
+    view?.group.traverse((child) => {
+      if (palette || !(child instanceof Mesh)) return;
+      const colors = child.geometry.getAttribute('color');
+      if (!colors) return;
+      const stride = Math.max(1, Math.floor(colors.count / PALETTE_SAMPLES));
+      palette = [];
+      for (let index = 0; index < colors.count && palette.length < PALETTE_SAMPLES; index += stride) palette.push(this.sampleColor.setRGB(colors.getX(index), colors.getY(index), colors.getZ(index)).getHex());
+    });
+    return palette;
+  }
+
+  private objectPosition(instanceId: string): Vector3 | null {
+    const view = this.zone?.objects.get(instanceId);
+    return view ? view.group.getWorldPosition(new Vector3()).setY(0.4) : null;
   }
 
   private updateContainmentField(view: EntityView, progress: number): void {
@@ -392,7 +622,7 @@ export class GameRenderer {
     rig.root.scale.setScalar(scale);
     const shadow = createContactShadow();
     rig.root.add(shadow);
-    const view: EntityView = { rig, character, gear: entity.gear, yaw: FACING_YAW[entity.facing], marker: null, markerKind: null, scale, shadow };
+    const view: EntityView = { rig, character, gear: entity.gear, yaw: FACING_YAW[entity.facing], marker: null, markerKind: null, scale, shadow, last: null, flashing: false, shattered: false, workAt: -Infinity };
     this.entities.set(entity.id, view);
     return view;
   }

@@ -77,6 +77,7 @@ export class GearController {
     const before = player.integrity;
     player.setIntegrity(before + item.consumable.heal);
     const restored = player.integrity - before;
+    if (restored > 0) this.host.cue(player, 'heal');
     const { boost } = item.consumable;
     const redundant = boost !== undefined && isBoostRedundant(player.boosts, item.id, boost.stats);
     if (boost) player.boosts = applyBoost(player.boosts, item.id, boost, tick);

@@ -67,6 +67,7 @@ export class CraftingController {
         this.stop(player);
         continue;
       }
+      this.host.cue(player, 'work');
       const remaining = activity.remaining - 1;
       if (remaining <= 0) {
         this.stop(player);

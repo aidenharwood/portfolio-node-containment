@@ -9,6 +9,7 @@ import {
   type SkillId,
   type CraftingStation,
   type DistrictId,
+  type EntityCue,
   type GameContent,
   type GameEffect,
   type MarketAccess,
@@ -33,6 +34,7 @@ export interface EffectHost {
   openContracts(player: Player): void;
   openTramMap(player: Player): void;
   discoverStation(player: Player, stationId: string): void;
+  cue(player: Player, cue: EntityCue, instanceId?: string): void;
 }
 
 export class EffectRunner {
@@ -127,6 +129,7 @@ export class EffectRunner {
     const newLevel = levelForExperience(after);
     if (newLevel > levelForExperience(before)) {
       this.host.notify(player, 'success', `${SKILL_INFO[skill].name} advanced to level ${newLevel}.`);
+      this.host.cue(player, 'levelUp');
     }
   }
 }

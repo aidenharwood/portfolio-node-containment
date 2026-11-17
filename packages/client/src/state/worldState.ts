@@ -9,6 +9,7 @@ import {
   type WalkabilityGrid,
   type ChunkKey,
   WEAPON_KIND_INFO,
+  type EntityCue,
   type EntityId,
   type EntityVitals,
   type GroundItemSnapshot,
@@ -29,6 +30,8 @@ import {
 } from '@containment/shared';
 import type { GameConnection } from '../net/gameConnection.ts';
 import { Motion, TickClock } from './motionPlayback.ts';
+import { attackContactMs } from './attackTiming.ts';
+import { deathStartsAt, despawnAt, VitalsSchedule } from './combatClock.ts';
 
 export interface ClientEntity {
   readonly id: EntityId;
@@ -46,6 +49,8 @@ export interface ClientEntity {
   hurtAt: number;
   dyingAt: number | null;
   contained: boolean;
+  lastImpactAt: number;
+  despawnAfter: number | null;
   gear: readonly ItemId[];
   facing: Facing;
   to: TilePoint;
@@ -63,6 +68,11 @@ export interface ClientTelegraph {
   readonly startedAt: number;
   readonly resolvesAt: number;
 }
+
+export type WorldEffectEvent =
+  | { readonly kind: 'telegraphResolved'; readonly telegraph: ClientTelegraph }
+  | { readonly kind: 'depleted'; readonly instanceId: string }
+  | { readonly kind: 'cue'; readonly entityId: EntityId; readonly cue: EntityCue; readonly instanceId?: string };
 
 export interface ClientHazard {
   readonly entityId: EntityId;
@@ -87,6 +97,7 @@ export interface CombatHitEvent {
   readonly weapon: WeaponKind | null;
   readonly projectile: ProjectileKind | null;
   readonly at: number;
+  readonly releaseAt: number;
   readonly impactAt: number;
 }
 
@@ -124,6 +135,8 @@ export class WorldState {
   selfVitals: EntityVitals | null = null;
   combatTargetId: EntityId | null = null;
   private readonly hitListeners = new Set<(event: CombatHitEvent) => void>();
+  private readonly vitalsSchedule = new VitalsSchedule<EntityId>();
+  private readonly effectListeners = new Set<(event: WorldEffectEvent) => void>();
   readonly entities = new Map<EntityId, ClientEntity>();
   readonly groundItems = new Map<string, GroundItemSnapshot>();
   readonly depletedObjects = new Set<string>();
@@ -137,14 +150,23 @@ export class WorldState {
       connection.on('world.entered', (message) => this.enterZone(message)),
       connection.on('world.entitySpawned', ({ entity }) => this.entities.set(entity.id, toClientEntity(entity))),
       connection.on('world.entityDespawned', ({ entityId }) => {
-        this.entities.delete(entityId);
-        this.clearEncounter(entityId);
+        const entity = this.entities.get(entityId);
+        const now = performance.now();
+        const at = despawnAt(now, entity?.dyingAt ?? null);
+        if (entity && at > now) entity.despawnAfter = at;
+        else this.removeEntity(entityId);
       }),
       connection.on('encounter.telegraph', ({ entityId, mechanicId, style, tiles, windupTicks }) => {
         const startedAt = performance.now();
         this.telegraphs.set(`${entityId}/${mechanicId}`, { entityId, style, tiles, startedAt, resolvesAt: startedAt + windupTicks * this.tickMs });
       }),
-      connection.on('encounter.resolved', ({ entityId, mechanicId }) => this.telegraphs.delete(`${entityId}/${mechanicId}`)),
+      connection.on('encounter.resolved', ({ entityId, mechanicId }) => {
+        const key = `${entityId}/${mechanicId}`;
+        const telegraph = this.telegraphs.get(key);
+        this.telegraphs.delete(key);
+        if (telegraph) this.emitEffect({ kind: 'telegraphResolved', telegraph });
+      }),
+      connection.on('world.entityCue', ({ entityId, cue, instanceId }) => this.emitEffect({ kind: 'cue', entityId, cue, ...(instanceId ? { instanceId } : {}) })),
       connection.on('encounter.hazard', ({ entityId, mechanicId, hazard, tiles }) => this.hazards.set(`${entityId}/${mechanicId}`, { entityId, hazard, tiles })),
       connection.on('encounter.phase', ({ entityId, phase }) => {
         const entity = this.entities.get(entityId);
@@ -176,26 +198,33 @@ export class WorldState {
       connection.on('player.state', ({ self }) => {
         this.self = self;
         this.usedObjects = new Set(self.usedObjects);
-        this.selfVitals = self.vitals;
         this.emit('selfChanged');
-        this.emit('vitalsChanged');
+        if (this.selfEntityId) this.applyVitalsAt(this.selfEntityId, self.vitals, 0);
+        else {
+          this.selfVitals = self.vitals;
+          this.emit('vitalsChanged');
+        }
       }),
       connection.on('player.vitals', ({ vitals, targetId }) => {
-        this.selfVitals = vitals;
         this.combatTargetId = targetId;
-        this.emit('vitalsChanged');
+        if (this.selfEntityId) this.applyVitalsAt(this.selfEntityId, vitals, 0);
+        else {
+          this.selfVitals = vitals;
+          this.emit('vitalsChanged');
+        }
       }),
       connection.on('combat.hit', (message) => this.applyHit(message)),
       connection.on('world.groundItemAdded', ({ item }) => this.groundItems.set(item.id, item)),
       connection.on('world.groundItemRemoved', ({ id }) => this.groundItems.delete(id)),
       connection.on('world.objectDepleted', ({ instanceId, depleted }) => {
+        if (depleted && !this.depletedObjects.has(instanceId)) this.emitEffect({ kind: 'depleted', instanceId });
         if (depleted) this.depletedObjects.add(instanceId);
         else this.depletedObjects.delete(instanceId);
       }),
       connection.on('combat.death', ({ entityId, containedBy }) => {
         const entity = this.entities.get(entityId);
         if (entity) {
-          entity.dyingAt = performance.now();
+          entity.dyingAt = deathStartsAt(performance.now(), entity.lastImpactAt);
           entity.contained = containedBy !== undefined;
         }
         if (entityId === this.combatTargetId) this.combatTargetId = null;
@@ -222,6 +251,15 @@ export class WorldState {
     bucket.add(listener);
     this.listeners.set(event, bucket);
     return () => bucket.delete(listener);
+  }
+
+  onEffect(listener: (event: WorldEffectEvent) => void): () => void {
+    this.effectListeners.add(listener);
+    return () => this.effectListeners.delete(listener);
+  }
+
+  private emitEffect(event: WorldEffectEvent): void {
+    for (const listener of this.effectListeners) listener(event);
   }
 
   onCombatHit(listener: (event: CombatHitEvent) => void): () => void {
@@ -276,15 +314,41 @@ export class WorldState {
       attacker.attackWeapon = weapon;
       attacker.lastCombatAt = now;
     }
-    const impactAt = projectile && attacker && target ? now + projectileFlightMs(projectile, attacker.to, target.to) : now;
+    const releaseAt = now + (attacker?.kind === 'creature' ? attackContactMs(null) : attackContactMs(WEAPON_KIND_INFO[weapon ?? 'unarmed'].motion));
+    const impactAt = projectile && attacker && target ? releaseAt + projectileFlightMs(projectile, attacker.to, target.to) : releaseAt;
     if (target) {
-      target.vitals = message.vitals;
       target.lastCombatAt = now;
+      target.lastImpactAt = Math.max(target.lastImpactAt, impactAt);
       if (message.outcome === 'hit') target.hurtAt = impactAt;
     }
-    if (message.targetId === this.selfEntityId) this.selfVitals = message.vitals;
-    const event: CombatHitEvent = { ...message, weapon, projectile, at: now, impactAt };
+    this.applyVitalsAt(message.targetId, message.vitals, impactAt - now);
+    const event: CombatHitEvent = { ...message, weapon, projectile, at: now, releaseAt, impactAt };
     for (const listener of this.hitListeners) listener(event);
+  }
+
+  settle(now: number): void {
+    for (const [id, entity] of this.entities) if (entity.despawnAfter !== null && now >= entity.despawnAfter) this.removeEntity(id);
+  }
+
+  private removeEntity(entityId: EntityId): void {
+    this.entities.delete(entityId);
+    this.vitalsSchedule.forget(entityId);
+    this.clearEncounter(entityId);
+  }
+
+  private applyVitalsAt(entityId: EntityId, vitals: EntityVitals, delayMs: number): void {
+    const now = performance.now();
+    const slot = this.vitalsSchedule.slot(entityId, now + delayMs);
+    const apply = () => {
+      const entity = this.entities.get(entityId);
+      if (entity) entity.vitals = vitals;
+      if (entityId === this.selfEntityId) {
+        this.selfVitals = vitals;
+        this.emit('vitalsChanged');
+      }
+    };
+    if (slot <= now) apply();
+    else setTimeout(apply, slot - now);
   }
 
   walkTargetFor(tile: TilePoint): TilePoint | null {
@@ -380,6 +444,8 @@ function toClientEntity(snapshot: EntitySnapshot): ClientEntity {
     hurtAt: -Infinity,
     dyingAt: null,
     contained: false,
+    lastImpactAt: -Infinity,
+    despawnAfter: null,
     gear: snapshot.gear,
     facing: snapshot.facing,
     to: snapshot.position,

@@ -8,6 +8,8 @@ const ACTOR_FILL = 0.22;
 export const VOXEL_MATERIALS = {
   solid: receiveFieldLights(new MeshLambertMaterial({ vertexColors: true })),
   actor: receiveFieldLights(new MeshLambertMaterial({ vertexColors: true }), ACTOR_FILL),
+  actorFlash: receiveFieldLights(new MeshLambertMaterial({ vertexColors: true, emissive: 0xffe8e0, emissiveIntensity: 0.3 }), ACTOR_FILL),
+  glassFlash: receiveFieldLights(new MeshLambertMaterial({ vertexColors: true, transparent: true, opacity: 0.65, depthWrite: false, emissive: 0xffffff, emissiveIntensity: 0.5 })),
   emissive: new MeshBasicMaterial({ vertexColors: true, toneMapped: false, color: new Color(EMISSIVE_GAIN, EMISSIVE_GAIN, EMISSIVE_GAIN) }),
   glass: receiveFieldLights(new MeshLambertMaterial({ vertexColors: true, transparent: true, opacity: 0.32, depthWrite: false })),
   fadedSolid: receiveFieldLights(new MeshLambertMaterial({ vertexColors: true, transparent: true, opacity: 0.16, depthWrite: false })),
@@ -37,6 +39,14 @@ export function createVoxelObject(meshes: VoxelMeshes, options: VoxelObjectOptio
     group.add(mesh);
   }
   return group;
+}
+
+export function setVoxelObjectFlash(group: Group, flash: boolean): void {
+  group.traverse((child) => {
+    if (!(child instanceof Mesh)) return;
+    if (child.name === 'solid') child.material = flash ? VOXEL_MATERIALS.actorFlash : VOXEL_MATERIALS.actor;
+    if (child.name === 'glass') child.material = flash ? VOXEL_MATERIALS.glassFlash : VOXEL_MATERIALS.glass;
+  });
 }
 
 export function setVoxelObjectFaded(group: Group, faded: boolean): void {

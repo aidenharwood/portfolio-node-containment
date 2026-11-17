@@ -1,6 +1,5 @@
 import {
   GAME_CONTENT,
-  type AttackMotion,
   type BodyType,
   type CharacterAppearance,
   type EquipmentSlot,
@@ -8,11 +7,12 @@ import {
   type GearShape,
   type GearVisual,
   type ItemId,
+  WEAPON_KIND_INFO,
   type Physique,
   type WeaponKind,
   wornVisualOf,
 } from '@containment/shared';
-import { Euler, Group, Quaternion } from 'three';
+import { Euler, Group, Quaternion, type Vector3 } from 'three';
 import { darken, hex, jitter, lighten, mix, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE } from '../voxel/voxelKinds.ts';
 import { ACTOR_OPTIONS, createVoxelObject } from '../voxel/voxelMaterials.ts';
@@ -20,7 +20,7 @@ import type { VoxelMeshes } from '../voxel/voxelMesher.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 import { CHARACTER_VOXEL_SIZE } from '../world/worldScale.ts';
 import { swingCurve, type EntityRig } from './entityRig.ts';
-import { attackPose, combinePoses, gripFor, heldWeaponOf, motionFor } from './weaponPoses.ts';
+import { attackPose, combinePoses, gripFor, heldWeaponOf, LOWERED_GRIP, motionFor, workPose, type PoseMotion } from './weaponPoses.ts';
 import { HELD_AXES, reshapeForForm } from '../voxel/formReshape.ts';
 import { backForm, bootForm, formPaintOf, gloveForm, headForm, heldForm, legForm, shoulderForm, torsoForm } from './gearFormWorn.ts';
 
@@ -54,6 +54,10 @@ const BUILDS: Readonly<Record<Physique, Readonly<Record<BodyType, Build>>>> = {
 const buildOf = (appearance: CharacterAppearance): Build => BUILDS[appearance.physique][appearance.bodyType];
 
 const HIP_Y = 13;
+const WALK_SWING = 0.6;
+const FOOT_REACH = 2.5;
+
+const footLift = (swing: number): number => HIP_Y * (1 - Math.cos(swing)) - FOOT_REACH * Math.abs(Math.sin(swing));
 const WAIST_Y = 16;
 const CHEST_Y = 18;
 const SHOULDER_Y = 22;
@@ -73,11 +77,12 @@ const torsoFront = (build: Build, y: number, x: number): number => {
   return y === CHEST_Y && x === 0 ? 2 : 3;
 };
 
-type PartName = 'legLeft' | 'legRight' | 'torso' | 'head' | 'armLeft' | 'armRight';
+export type PartName = 'legLeft' | 'legRight' | 'torso' | 'head' | 'armLeft' | 'armRight';
 
 interface RigGeometry {
   readonly parts: Readonly<Record<PartName, VoxelMeshes>>;
   readonly weapon: VoxelMeshes | null;
+  readonly weaponTip: number;
   readonly grip: readonly [number, number, number];
 }
 
@@ -108,7 +113,7 @@ export interface CharacterPose {
   readonly walkPhase: number;
   readonly time: number;
   readonly attackProgress?: number | null;
-  readonly attackMotion?: AttackMotion | null;
+  readonly attackMotion?: PoseMotion | null;
   readonly hurtProgress?: number | null;
 }
 
@@ -121,6 +126,7 @@ export class CharacterRig implements EntityRig {
   private gearKey = '';
   private heldWeapon: WeaponKind | null = null;
   private weapon: Group | null = null;
+  private weaponTip = 0;
   private readonly euler = new Euler();
   private readonly inHand = new Quaternion();
   private readonly levelled = new Quaternion();
@@ -154,8 +160,9 @@ export class CharacterRig implements EntityRig {
     for (const name of Object.keys(layout) as PartName[]) {
       const part = createVoxelObject(geometry.parts[name], ACTOR_OPTIONS);
       const [px, py, pz] = layout[name].pivot;
-      part.position.set(px * CHARACTER_VOXEL_SIZE, py * CHARACTER_VOXEL_SIZE, pz * CHARACTER_VOXEL_SIZE);
-      (name.startsWith('leg') ? this.rig : this.upper).add(part);
+      const leg = name.startsWith('leg');
+      part.position.set(px * CHARACTER_VOXEL_SIZE, (leg ? py : py - HIP_Y) * CHARACTER_VOXEL_SIZE, pz * CHARACTER_VOXEL_SIZE);
+      (leg ? this.rig : this.upper).add(part);
       this.parts.set(name, part);
     }
     const armRight = this.parts.get('armRight');
@@ -166,6 +173,7 @@ export class CharacterRig implements EntityRig {
       weapon.position.set((gx - ax) * CHARACTER_VOXEL_SIZE, (gy - ay) * CHARACTER_VOXEL_SIZE, (gz - az) * CHARACTER_VOXEL_SIZE);
       armRight.add(weapon);
       this.weapon = weapon;
+      this.weaponTip = geometry.weaponTip;
     }
     this.rig.scale.set(1, appearance.height, 1);
   }
@@ -173,17 +181,22 @@ export class CharacterRig implements EntityRig {
   animate(pose: CharacterPose): void {
     const stride = pose.moving ? Math.sin(pose.walkPhase) : 0;
     const breathe = Math.sin(pose.time * 1.3) * 0.02;
-    const grip = gripFor(this.heldWeapon);
+    const working = pose.attackMotion === 'work' && pose.attackProgress != null;
+    if (this.weapon) this.weapon.visible = !working || (this.heldWeapon !== null && WEAPON_KIND_INFO[this.heldWeapon].style === 'melee');
+    const grip = working ? LOWERED_GRIP : gripFor(this.heldWeapon);
     const twoHanded = grip.leftX < -0.5;
-    const action = pose.attackProgress == null ? grip : combinePoses(grip, attackPose(pose.attackMotion ?? motionFor(this.heldWeapon), pose.attackProgress));
+    const motion = pose.attackMotion ?? motionFor(this.heldWeapon);
+    const action = pose.attackProgress == null ? grip : combinePoses(grip, motion === 'work' ? workPose(pose.attackProgress) : attackPose(motion, pose.attackProgress));
     const recoil = swingCurve(pose.hurtProgress ?? null);
     const legLeft = this.parts.get('legLeft');
     const legRight = this.parts.get('legRight');
     const armLeft = this.parts.get('armLeft');
     const armRight = this.parts.get('armRight');
     const head = this.parts.get('head');
-    if (legLeft) legLeft.rotation.x = stride * 0.6;
-    if (legRight) legRight.rotation.x = -stride * 0.6;
+    const leftSwing = stride * WALK_SWING - action.lunge * 2.5;
+    const rightSwing = -stride * WALK_SWING + action.lunge * 1.5;
+    if (legLeft) legLeft.rotation.x = leftSwing;
+    if (legRight) legRight.rotation.x = rightSwing;
     if (armLeft) {
       armLeft.rotation.x = -stride * (twoHanded ? 0.08 : 0.45) + action.leftX;
       armLeft.rotation.z = -0.05 - breathe + action.leftZ;
@@ -192,11 +205,16 @@ export class CharacterRig implements EntityRig {
       armRight.rotation.x = stride * (twoHanded ? 0.08 : this.heldWeapon ? 0.25 : 0.5) + action.rightX;
       armRight.rotation.z = 0.05 + breathe + action.rightZ;
     }
-    if (head) head.rotation.y = pose.moving ? 0 : Math.sin(pose.time * 0.35) * 0.18;
+    if (head) {
+      head.rotation.y = pose.moving ? 0 : Math.sin(pose.time * 0.35) * 0.18;
+      head.rotation.x = -recoil * 0.3;
+    }
     this.upper.rotation.x = action.lean - recoil * 0.22;
     this.upper.rotation.y = action.twist;
-    this.upper.position.z = action.lunge;
-    this.upper.position.y = pose.moving ? Math.abs(stride) * 0.035 : Math.sin(pose.time * 1.8) * 0.006;
+    this.upper.position.z = 0;
+    this.upper.position.y = HIP_Y * CHARACTER_VOXEL_SIZE + (pose.moving ? 0 : Math.sin(pose.time * 1.8) * 0.006);
+    const planted = Math.min(footLift(leftSwing), footLift(rightSwing));
+    this.rig.position.set(-CHARACTER_VOXEL_SIZE / 2, -CHARACTER_VOXEL_SIZE * this.appearance.height * planted, -CHARACTER_VOXEL_SIZE / 2 + action.lunge - recoil * 0.06);
     if (this.weapon && armRight) this.orientWeapon(this.weapon, armRight, action.weaponX, action.aim, action.level);
   }
 
@@ -208,6 +226,41 @@ export class CharacterRig implements EntityRig {
       this.inHand.slerp(this.levelled, level);
     }
     weapon.quaternion.copy(this.inHand);
+  }
+
+  muzzle(out: Vector3): boolean {
+    this.root.updateMatrixWorld(true);
+    if (this.weapon) {
+      this.weapon.localToWorld(out.set(0, 0, this.weaponTip * CHARACTER_VOXEL_SIZE));
+      return true;
+    }
+    const arm = this.parts.get('armRight');
+    if (!arm) return false;
+    arm.localToWorld(out.set(0, -10 * CHARACTER_VOXEL_SIZE, 0));
+    return true;
+  }
+
+  get weaponShown(): boolean {
+    return this.weapon?.visible ?? false;
+  }
+
+  grip(out: Vector3): boolean {
+    if (!this.weapon) return false;
+    this.root.updateMatrixWorld(true);
+    this.weapon.getWorldPosition(out);
+    return true;
+  }
+
+  hand(side: 'left' | 'right', out: Vector3): boolean {
+    const arm = this.parts.get(side === 'left' ? 'armLeft' : 'armRight');
+    if (!arm) return false;
+    this.root.updateMatrixWorld(true);
+    arm.localToWorld(out.set(0, -10 * CHARACTER_VOXEL_SIZE, 0));
+    return true;
+  }
+
+  part(name: PartName): Group | undefined {
+    return this.parts.get(name);
   }
 
   get height(): number {
@@ -261,8 +314,10 @@ function buildRigGeometry(appearance: CharacterAppearance, visuals: GearVisuals)
   const grip = [handX, 12.5, -0.5] as const;
   const models = buildWornModels(appearance, visuals);
   const meshPart = (name: PartName) => models.parts[name].mesh(CHARACTER_VOXEL_SIZE, layout[name].pivot);
+  const tip = models.weapon ? Math.max(...models.weapon.cells().map((cell) => cell.z)) + 1 - grip[2] : 0;
   return {
     grip,
+    weaponTip: tip,
     weapon: models.weapon ? models.weapon.mesh(CHARACTER_VOXEL_SIZE, grip) : null,
     parts: {
       legLeft: meshPart('legLeft'),

@@ -16,8 +16,8 @@ interface ProjectileLook {
 }
 
 const LOOKS: Readonly<Record<ProjectileKind, ProjectileLook>> = {
-  dart: { core: [0.05, 0.05, 0.26], halo: [0.12, 0.12, 0.18], trailSegments: 3, trailSpacing: 0.07, arcHeight: 0.1, count: 1, spread: 0, impactScale: 0.7, muzzleScale: 0.5 },
-  bolt: { core: [0.09, 0.09, 0.46], halo: [0.2, 0.2, 0.3], trailSegments: 6, trailSpacing: 0.085, arcHeight: 0.18, count: 1, spread: 0, impactScale: 1, muzzleScale: 0.7 },
+  dart: { core: [0.05, 0.05, 0.26], halo: [0.12, 0.12, 0.18], trailSegments: 3, trailSpacing: 0.07, arcHeight: 0, count: 1, spread: 0, impactScale: 0.7, muzzleScale: 0.5 },
+  bolt: { core: [0.09, 0.09, 0.46], halo: [0.2, 0.2, 0.3], trailSegments: 6, trailSpacing: 0.085, arcHeight: 0.03, count: 1, spread: 0, impactScale: 1, muzzleScale: 0.7 },
   tracer: { core: [0.045, 0.045, 1.2], halo: [0.12, 0.12, 0.95], trailSegments: 0, trailSpacing: 0, arcHeight: 0, count: 1, spread: 0, impactScale: 1.35, muzzleScale: 1 },
   pellets: { core: [0.07, 0.07, 0.12], halo: null, trailSegments: 2, trailSpacing: 0.06, arcHeight: 0.04, count: 6, spread: 0.34, impactScale: 0.55, muzzleScale: 1.15 },
   spit: { core: [0.12, 0.12, 0.16], halo: [0.22, 0.22, 0.22], trailSegments: 5, trailSpacing: 0.08, arcHeight: 0.35, count: 1, spread: 0, impactScale: 0.9, muzzleScale: 0 },
@@ -25,7 +25,10 @@ const LOOKS: Readonly<Record<ProjectileKind, ProjectileLook>> = {
   wave: { core: [0.42, 0.06, 0.06], halo: [0.62, 0.14, 0.12], trailSegments: 2, trailSpacing: 0.16, arcHeight: 0.05, count: 3, spread: 0.16, impactScale: 1.5, muzzleScale: 0 },
 };
 
+export type ImpactListener = (kind: ProjectileKind, at: Vector3, travel: Vector3, color: number) => void;
+
 interface Flight {
+  readonly kind: ProjectileKind;
   readonly group: Group;
   readonly core: Mesh;
   readonly trail: readonly Mesh[];
@@ -45,7 +48,10 @@ interface Burst {
   readonly duration: number;
 }
 
-const BURST_MS = 220;
+const BURST_MS = 90;
+const IMPACT_BURST_SCALE = 0.5;
+const PELLET_SPEED_SPREAD = 0.12;
+const PELLET_SLOWEST = 1;
 const MUZZLE_MS = 110;
 const BURST_START_SCALE = 0.12;
 const BURST_END_SCALE = 0.42;
@@ -65,6 +71,12 @@ export class ProjectileLayer {
   private readonly point = new Vector3();
   private readonly ahead = new Vector3();
   private readonly across = new Vector3();
+  private readonly travel = new Vector3();
+  private readonly onImpact: ImpactListener | null;
+
+  constructor(onImpact: ImpactListener | null = null) {
+    this.onImpact = onImpact;
+  }
 
   launch(kind: ProjectileKind, from: Vector3, to: Vector3, color: number, now: number, duration: number): void {
     const look = LOOKS[kind];
@@ -75,7 +87,8 @@ export class ProjectileLayer {
       const fan = look.count > 1 ? index / (look.count - 1) - 0.5 : 0;
       const target = to.clone().addScaledVector(this.across, fan * 2 * look.spread);
       target.y += look.count > 1 ? ((index % 3) - 1) * PELLET_LIFT : 0;
-      this.launchOne(look, from, target, color, now, duration);
+      const pace = look.count > 1 ? PELLET_SLOWEST - Math.random() * PELLET_SPEED_SPREAD : 1;
+      this.launchOne(kind, look, from, target, color, now, duration * pace);
     }
   }
 
@@ -86,7 +99,8 @@ export class ProjectileLayer {
       if (progress >= 1) {
         flight.group.removeFromParent();
         this.flights.splice(index, 1);
-        this.burst(flight.to, flight.color, now, flight.look.impactScale, BURST_MS);
+        this.burst(flight.to, flight.color, now, flight.look.impactScale * IMPACT_BURST_SCALE, BURST_MS);
+        this.onImpact?.(flight.kind, flight.to, this.travel.subVectors(flight.to, flight.from).normalize(), flight.color);
         continue;
       }
       this.place(flight, Math.max(0, progress));
@@ -114,7 +128,7 @@ export class ProjectileLayer {
     for (const burst of this.bursts) burst.material.dispose();
   }
 
-  private launchOne(look: ProjectileLook, from: Vector3, to: Vector3, color: number, now: number, duration: number): void {
+  private launchOne(kind: ProjectileKind, look: ProjectileLook, from: Vector3, to: Vector3, color: number, now: number, duration: number): void {
     const group = new Group();
     const core = new Mesh(this.geometryFor(look.core), this.materialFor(0xffffff, 0.95));
     if (look.halo) core.add(new Mesh(this.geometryFor(look.halo), this.materialFor(color, 0.45)));
@@ -127,7 +141,7 @@ export class ProjectileLayer {
       trail.push(segment);
     }
     this.root.add(group);
-    const flight: Flight = { group, core, trail, from: from.clone(), to: to.clone(), look, color, startedAt: now, duration };
+    const flight: Flight = { kind, group, core, trail, from: from.clone(), to: to.clone(), look, color, startedAt: now, duration };
     this.flights.push(flight);
     this.place(flight, 0);
   }
@@ -138,6 +152,12 @@ export class ProjectileLayer {
     flight.core.position.copy(this.point);
     if (this.ahead.distanceToSquared(this.point) > 1e-8) flight.core.lookAt(this.ahead);
     const length = Math.max(0.001, flight.from.distanceTo(flight.to));
+    const coreLength = flight.look.core[2];
+    const emerged = Math.min(1, (progress * length) / Math.max(0.001, coreLength));
+    flight.core.translateZ(-(coreLength * emerged) / 2);
+    flight.core.scale.set(1, 1, Math.max(0.05, emerged));
+    if (flight.kind === 'pulse') flight.core.rotateZ(progress * 12);
+    if (flight.kind === 'wave') flight.core.scale.x = 0.5 + progress;
     flight.trail.forEach((segment, index) => {
       this.pointAt(flight, Math.max(0, progress - ((index + 1) * flight.look.trailSpacing) / length), segment.position);
     });

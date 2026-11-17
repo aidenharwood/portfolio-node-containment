@@ -16,7 +16,7 @@ import type {
   WorldLocation,
   WorldObjectId,
 } from '@containment/shared';
-import { CONTAIN_INTERACTION, locate, restoreBoosts, STUDY_INTERACTION, VISITED_DISTRICT_FLAG_PREFIX, visitedDistrictFlag, visitedLevelFlag } from '@containment/shared';
+import { CONTAIN_INTERACTION, type EntityCue, locate, restoreBoosts, STUDY_INTERACTION, VISITED_DISTRICT_FLAG_PREFIX, visitedDistrictFlag, visitedLevelFlag } from '@containment/shared';
 import { returnUnfinishedTrainee } from '../characters/traineePlacement.ts';
 import { Player, type MessageSink } from '../world/player.ts';
 import type { LevelInstance } from '../world/levelInstance.ts';
@@ -518,6 +518,10 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
 
   notify(player: Player, tone: NoticeTone, text: string): void {
     player.send({ type: 'notice', tone, text });
+  }
+
+  cue(player: Player, cue: EntityCue, instanceId?: string): void {
+    this.world.levelOf(player).broadcastNear(player.position, { type: 'world.entityCue', entityId: player.entityId, cue, ...(instanceId ? { instanceId } : {}) });
   }
 
   onIncapacitated(player: Player): void {
