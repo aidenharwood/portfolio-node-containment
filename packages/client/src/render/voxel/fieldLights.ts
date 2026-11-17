@@ -170,7 +170,8 @@ float fieldOpenSky( vec2 xz ) {
 vec3 fieldScatter = vec3( 0.0 );
 vec3 fieldSheen = vec3( 0.0 );
 vec3 fieldAlong = normalize( geometryViewDir - geometryNormal * dot( geometryViewDir, geometryNormal ) + vec3( 1e-4 ) );
-vec3 fieldWetNormal = normalize( geometryNormal + fieldAlong * ( fieldHash( floor( vFieldWorld.xz * 8.0 ) ) - 0.5 ) * 0.35 );
+float fieldPuddle = step( vFieldWorld.y, 0.08 ) * smoothstep( 0.45, 0.75, fieldNoise( vFieldWorld.xz * 0.9 ) );
+vec3 fieldWetNormal = normalize( geometryNormal + fieldAlong * ( fieldHash( floor( vFieldWorld.xz * 8.0 ) ) - 0.5 ) * mix( 0.35, 0.05, fieldPuddle ) );
 ivec2 fieldCell = ivec2( floor( ( vFieldWorld.xz - fieldLightGridOrigin ) / FIELD_GRID_CELL ) );
 if ( fieldLightGridEnabled == 1 && fieldCell.x >= 0 && fieldCell.y >= 0 && fieldCell.x < FIELD_GRID_CELLS && fieldCell.y < FIELD_GRID_CELLS ) {
 	bool fieldDone = false;
@@ -215,10 +216,9 @@ if ( litPeak > ${LIT_KNEE.toFixed(3)} ) {
 	reflectedLight.indirectDiffuse *= litScale;
 }
 if ( fieldWetness > 0.0 && vFieldNormal.y > 0.9 ) {
-	float fieldPuddle = step( vFieldWorld.y, 0.08 ) * smoothstep( 0.45, 0.75, fieldNoise( vFieldWorld.xz * 0.9 ) );
 	float fieldWet = fieldWetness * fieldOpenSky( vFieldWorld.xz );
-	reflectedLight.directDiffuse *= 1.0 - 0.3 * fieldWet;
-	reflectedLight.indirectDiffuse *= 1.0 - 0.3 * fieldWet;
+	reflectedLight.directDiffuse *= 1.0 - ( 0.3 + 0.25 * fieldPuddle ) * fieldWet;
+	reflectedLight.indirectDiffuse *= 1.0 - ( 0.3 + 0.25 * fieldPuddle ) * fieldWet;
 	reflectedLight.directDiffuse += min( fieldSheen, vec3( 6.0 ) ) * 0.035 * fieldWet * mix( 0.22, 1.0, fieldPuddle );
 }`,
       )
@@ -230,7 +230,7 @@ gl_FragColor.rgb = gl_FragColor.rgb * ( 1.0 - 0.55 * fieldLow ) + ( fieldMistCol
 #include <fog_fragment>`,
       );
   };
-  material.customProgramCacheKey = () => `field-light-point-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}-lit-${LIT_KNEE}-${LIT_CEILING}-atmosphere-${SKY_MASK_TEXELS}-facing-${FACING_SHADE}-actor-${actorFill}-wisp2`;
+  material.customProgramCacheKey = () => `field-light-point-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}-lit-${LIT_KNEE}-${LIT_CEILING}-atmosphere-${SKY_MASK_TEXELS}-facing-${FACING_SHADE}-actor-${actorFill}-wisp2-puddle2`;
   return material;
 }
 

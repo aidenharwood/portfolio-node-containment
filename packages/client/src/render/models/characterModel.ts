@@ -292,9 +292,9 @@ function buildLeg(build: Build, visuals: GearVisuals, side: -1 | 1): VoxelModel 
       model.fill(outside, 8, -1, outside, 11, 1, trim).set(outside, 10, 2, darken(trim, 0.2));
       model.fill(inner, 11, -1, outer, 11, 1, darken(trim, 0.15));
       if (side > 0) {
-        const leather = darken(trim, 0.25);
+        const leather = lighten(trim, 0.1);
         model.fill(outside + 1, 7, -1, outside + 1, 10, 0, (_x, y) => (y === 10 ? lighten(leather, 0.15) : leather));
-        model.fill(outside + 1, 11, -1, outside + 1, 12, -1, 0x2a2d31);
+        model.fill(outside + 1, 11, -1, outside + 1, 12, -1, 0x4a5058);
       }
     } else if (legs.motif === 'warden') {
       const split = side < 0 ? outer : inner;
@@ -308,8 +308,8 @@ function buildLeg(build: Build, visuals: GearVisuals, side: -1 | 1): VoxelModel 
       const knee = Math.round((inner + outer) / 2);
       model.fill(inner, 10, 2, outer, 12, 2, (x, y, z) => (y === 10 ? edge : jitter(plate, 0.03, noise3(x, y, z, 47))));
       model.fill(outside, 9, -1, outside, 12, 2, (x, y, z) => (y === 9 ? edge : jitter(plate, 0.03, noise3(x, y, z, 47))));
-      model.fill(inner, 6, 2, outer, 8, 2, (_x, y) => (y === 6 ? darken(trim, 0.2) : trim));
-      model.set(knee, 7, 3, lighten(trim, 0.25));
+      model.fill(inner, 6, 2, outer, 8, 2, (_x, y) => (y === 6 ? trim : lighten(plate, 0.1)));
+      model.set(knee, 7, 3, lighten(plate, 0.3));
     }
   }
   if (feet?.motif === 'skirmisher') model.paintExisting(footInner, 2, -1, footOuter, 2, 2, colorOf(feet.secondary, darken(bootColor, 0.3)));
@@ -413,8 +413,8 @@ const TORSO_MOTIF: Readonly<Record<GearMotif, TorsoRenderer>> = {
     model.fill(-sh, SHOULDER_Y, -2, sh, SHOULDER_Y, -2, darken(plate, 0.2));
   },
   skirmisher: (model, build, gear) => {
-    const strap = darken(colorOf(gear.secondary, 0x2a2420), 0.1);
     const pouch = colorOf(gear.primary, 0x4a5a3a);
+    const strap = darken(pouch, 0.4);
     const sh = build.shoulderHalf;
     for (let y = HIP_Y + 2; y <= SHOULDER_Y; y++) {
       const half = torsoHalf(build, y) - 1;
@@ -422,6 +422,7 @@ const TORSO_MOTIF: Readonly<Record<GearMotif, TorsoRenderer>> = {
       model.set(x, y, torsoFront(build, y, x) + 2, strap).set(x, y, -3, strap);
     }
     for (const [x, y] of [[-2, 16], [0, 18], [2, 20]] as const) model.fill(x, y, torsoFront(build, y, x) + 2, x + 1, y, torsoFront(build, y, x) + 2, darken(pouch, 0.15));
+    model.set(0, 17, torsoFront(build, 17, 0) + 2, lighten(strap, 0.4));
     if (gear.emissive) model.set(-sh + 1, 21, torsoFront(build, 21, -sh + 1) + 2, hex(gear.emissive), VOXEL_EMISSIVE);
   },
   warden: (model, build, gear) => {
@@ -757,7 +758,7 @@ const HEAD_GEAR: Readonly<Record<GearShape<'head'>, FaceRenderer>> = {
     model.fill(-3, 31, 5, 3, 32, 5, darken(cloth, 0.1));
     model.fill(-2, 33, -3, 2, 33, 1, darken(cloth, 0.05));
     model.fill(-1, 34, -2, 1, 34, 0, darken(cloth, 0.05));
-    model.set(0, 35, -3, darken(cloth, 0.08)).set(1, 35, -4, darken(cloth, 0.1)).set(1, 36, -5, darken(cloth, 0.12));
+    model.fill(-1, 35, -3, 1, 35, -2, darken(cloth, 0.08)).fill(0, 36, -4, 1, 36, -3, darken(cloth, 0.1)).set(1, 37, -5, darken(cloth, 0.12));
     if (gear.emissive) model.set(0, 31, 6, hex(gear.emissive), VOXEL_EMISSIVE).set(-1, 30, 5, hex(gear.emissive), VOXEL_EMISSIVE).set(1, 30, 5, hex(gear.emissive), VOXEL_EMISSIVE);
   },
   helmet: (model, gear) => {

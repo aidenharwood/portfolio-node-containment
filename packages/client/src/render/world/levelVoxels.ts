@@ -75,10 +75,10 @@ const COLORS = {
   asphaltWorn: 0x55575b,
   asphaltLine: 0xd8c27a,
   paving: 0x434548,
-  pavingJoint: 0x2c2e31,
+  pavingJoint: 0x37393c,
   kerb: 0x66655f,
   kerbTop: 0x7c7a72,
-  roofTray: 0x24272a,
+  roofTray: 0x3c4044,
   waterBed: 0x16262a,
   rock: 0x5d5a55,
   rockDark: 0x45423e,
@@ -220,9 +220,14 @@ function onSeam(seams: Seams, lx: number, lz: number): boolean {
   return (seams.west && lx === 0) || (seams.east && lx === R - 1) || (seams.north && lz === 0) || (seams.south && lz === R - 1);
 }
 
+const KERBED: ReadonlySet<TileKindId> = new Set<TileKindId>(['paving', 'asphalt', 'concrete']);
+
 function kerbsOf(layout: TileLayout, kind: TileKindId, tx: number, ty: number): Seams | null {
-  if (kind !== 'paving') return null;
-  const road = (x: number, y: number): boolean => layout.tileAt({ x, y }) === 'asphalt';
+  if (!KERBED.has(kind)) return null;
+  const road = (x: number, y: number): boolean => {
+    const other = layout.tileAt({ x, y });
+    return other === 'water' || (kind === 'paving' && other === 'asphalt');
+  };
   const kerbs = { north: road(tx, ty - 1), south: road(tx, ty + 1), east: road(tx + 1, ty), west: road(tx - 1, ty) };
   return kerbs.north || kerbs.south || kerbs.east || kerbs.west ? kerbs : null;
 }
@@ -378,9 +383,9 @@ function floorVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: nu
       if ((tile.tx % 4 === 0 && lx === 0) || (tile.ty % 4 === 0 && lz === 0)) return solid(COLORS.terrazzoStrip);
       const chip = noise3(vx, vz, 0, 23);
       const scattered = smoothNoise(vx, vz, 12, 27) > 0.45;
-      if (scattered && chip > 0.994) return solid(COLORS.terrazzoWarm);
-      if (scattered && chip > 0.975) return solid(COLORS.terrazzoChip);
-      return solid(jitter(COLORS.terrazzo, 0.018, noise3(Math.floor(tile.tx / 2), Math.floor(tile.ty / 2), 0, 29)));
+      if (scattered && chip > 0.994) return solid(mix(COLORS.terrazzoWarm, COLORS.terrazzo, 0.5));
+      if (scattered && chip > 0.975) return solid(mix(COLORS.terrazzoChip, COLORS.terrazzo, 0.5));
+      return solid(jitter(COLORS.terrazzo, 0.018, noise3(Math.floor(tile.tx / 4), Math.floor(tile.ty / 4), 0, 29)));
     }
     case 'ceramic': {
       if (lx % 4 === 0 || lz % 4 === 0) return solid(COLORS.ceramicGrout);
@@ -462,7 +467,7 @@ function outerSide(lx: number, lz: number, open: Set<Side>): { side: Side; u: nu
 const SIDE_SALT: Readonly<Record<Side, number>> = { north: 1, south: 2, east: 3, west: 4 };
 
 const MATERIAL = {
-  brick: { body: 0x6e3b2e, joint: 0x4f2a20, cap: 0x7a756d, plinth: 0x3a3734, dado: 0x4a2a28 },
+  brick: { body: 0x6e3b2e, joint: 0x5e3327, cap: 0x7a756d, plinth: 0x3a3734, dado: 0x4a2a28 },
   blockwork: { body: 0x5a5f63, joint: 0x45494c, cap: 0x6e7174, plinth: 0x34383b, dado: 0x34403f },
   cladding: { body: 0x3e5560, joint: 0x4d6772, cap: 0x55656c, plinth: 0x2a3034, dado: 0x2f3c34 },
   wall: { body: 0xd8d6cc, joint: 0xb4b2a8, cap: 0xe4e2d8, plinth: 0x2a2a2a, dado: 0x2a3a45 },
@@ -572,8 +577,11 @@ function paintWall(volume: DenseVolume, layout: TileLayout, tx: number, ty: numb
         const facility = material === 'wall' && !(outer && outdoors.has(outer.side));
         if (top) {
           const cap = facility ? COLORS.wallCap : palette.cap;
-          if (outer) volume.set(vx, vy, vz, outer.u % 4 === 0 ? darken(cap, 0.22) : jitter(lighten(cap, 0.06), 0.02, grain));
-          else volume.set(vx, vy - 1, vz, jitter(mix(darken(cap, 0.5), COLORS.roofTray, 0.6), 0.04, grain));
+          if (outer) volume.set(vx, vy, vz, outer.u === 0 ? darken(cap, 0.14) : jitter(lighten(cap, 0.06), 0.02, grain));
+          else {
+            const tray = jitter(mix(darken(cap, 0.25), COLORS.roofTray, 0.35), 0.03, grain);
+            volume.set(vx, vy - 1, vz, vx % 8 === 0 ? darken(tray, 0.12) : tray);
+          }
           continue;
         }
         if (!outer) {

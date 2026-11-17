@@ -70,11 +70,11 @@ export class VoxelModel implements VoxelSource {
   }
 
   baseBounds(layers: number): VoxelBounds | null {
-    const cells = [...this.cells.values()].filter((cell) => cell.y < this.min[1] + layers);
+    const cells = [...this.cells.values()].filter((cell) => cell.y < layers);
     if (cells.length === 0) return null;
     const xs = cells.map((cell) => cell.x);
     const zs = cells.map((cell) => cell.z);
-    return { min: [Math.min(...xs), this.min[1], Math.min(...zs)], max: [Math.max(...xs) + 1, this.min[1] + layers, Math.max(...zs) + 1] };
+    return { min: [Math.min(...xs), 0, Math.min(...zs)], max: [Math.max(...xs) + 1, layers, Math.max(...zs) + 1] };
   }
 
   get isEmpty(): boolean {
@@ -91,7 +91,7 @@ export class VoxelModel implements VoxelSource {
     return meshVoxels(
       this,
       { min: [this.min[0], this.min[1], this.min[2]], max: [this.max[0] + 1, this.max[1] + 1, this.max[2] + 1] },
-      { voxelSize, origin: [-pivot[0] * voxelSize, -pivot[1] * voxelSize, -pivot[2] * voxelSize], groundY: grounded ? this.min[1] : undefined },
+      { voxelSize, origin: [-pivot[0] * voxelSize, -pivot[1] * voxelSize, -pivot[2] * voxelSize], groundY: grounded ? 0 : undefined },
       this.occupiedCells(),
     );
   }
