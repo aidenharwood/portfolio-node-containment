@@ -10,6 +10,16 @@ const LIT_KNEE = 0.5;
 const LIT_CEILING = 0.85;
 const SKY_MASK_TEXELS = 128;
 const FACING_SHADE = 0.18;
+const FOG_STEPS = 8;
+const FOG_CEILING = 3;
+const FOG_REACH = 12;
+const FOG_THICKNESS = 1.5;
+const FOG_OPACITY = 0.78;
+const FOG_FALLOFF = 0.85;
+const FOG_SCALE_XZ = 0.32;
+const FOG_SCALE_Y = 0.7;
+const FOG_WIND_X = 0.16;
+const FOG_WIND_Z = 0.09;
 
 export interface FieldLight {
   readonly position: Vector3;
@@ -42,14 +52,16 @@ export interface FieldAtmosphere {
   readonly groundFog: number;
   readonly mistColor: Color;
   readonly wetness: number;
-  readonly time: number;
 }
 
 export function setFieldAtmosphere(atmosphere: FieldAtmosphere): void {
   uniforms.fieldGroundFog.value = atmosphere.groundFog;
   uniforms.fieldMistColor.value.copy(atmosphere.mistColor);
   uniforms.fieldWetness.value = atmosphere.wetness;
-  uniforms.fieldTime.value = atmosphere.time;
+}
+
+export function setFieldTime(time: number): void {
+  uniforms.fieldTime.value = time;
 }
 
 export function setFieldSkyMask(texture: Texture, originX: number, originZ: number): void {
@@ -137,6 +149,11 @@ export function receiveFieldLights<T extends Material>(material: T, actorFill = 
 #define FIELD_GRID_CELL ${GRID_CELL.toFixed(1)}
 #define FIELD_GRID_CELLS ${GRID_CELLS}
 #define FIELD_CELL_TEXELS ${CELL_TEXELS}
+#define FIELD_FOG_STEPS ${FOG_STEPS}
+#define FIELD_FOG_CEILING ${FOG_CEILING.toFixed(2)}
+#define FIELD_FOG_REACH ${FOG_REACH.toFixed(2)}
+#define FIELD_FOG_THICKNESS ${FOG_THICKNESS.toFixed(3)}
+#define FIELD_FOG_OPACITY ${FOG_OPACITY.toFixed(3)}
 uniform vec4 fieldLightPositions[ FIELD_LIGHT_LIMIT ];
 uniform vec3 fieldLightColors[ FIELD_LIGHT_LIMIT ];
 uniform sampler2D fieldLightGrid;
@@ -158,6 +175,29 @@ float fieldNoise( vec2 p ) {
 	vec2 f = fract( p );
 	vec2 u = f * f * ( 3.0 - 2.0 * f );
 	return mix( mix( fieldHash( i ), fieldHash( i + vec2( 1.0, 0.0 ) ), u.x ), mix( fieldHash( i + vec2( 0.0, 1.0 ) ), fieldHash( i + vec2( 1.0, 1.0 ) ), u.x ), u.y );
+}
+float fieldHash3( vec3 p ) {
+	p = fract( p * 0.1031 );
+	p += dot( p, p.zyx + 31.32 );
+	return fract( ( p.x + p.y ) * p.z );
+}
+float fieldNoise3( vec3 p ) {
+	vec3 i = floor( p );
+	vec3 f = fract( p );
+	vec3 u = f * f * ( 3.0 - 2.0 * f );
+	float a = mix( mix( fieldHash3( i ), fieldHash3( i + vec3( 1.0, 0.0, 0.0 ) ), u.x ), mix( fieldHash3( i + vec3( 0.0, 1.0, 0.0 ) ), fieldHash3( i + vec3( 1.0, 1.0, 0.0 ) ), u.x ), u.y );
+	float b = mix( mix( fieldHash3( i + vec3( 0.0, 0.0, 1.0 ) ), fieldHash3( i + vec3( 1.0, 0.0, 1.0 ) ), u.x ), mix( fieldHash3( i + vec3( 0.0, 1.0, 1.0 ) ), fieldHash3( i + vec3( 1.0, 1.0, 1.0 ) ), u.x ), u.y );
+	return mix( a, b, u.z );
+}
+float fieldFogDensity( vec3 p ) {
+	float t = fieldTime;
+	vec3 q = p * vec3( ${FOG_SCALE_XZ.toFixed(3)}, ${FOG_SCALE_Y.toFixed(3)}, ${FOG_SCALE_XZ.toFixed(3)} );
+	q.xz += vec2( sin( q.z * 1.3 + t * 0.21 ), cos( q.x * 1.1 + t * 0.17 ) ) * 0.45;
+	q += vec3( ${FOG_WIND_X.toFixed(3)}, -0.05, ${FOG_WIND_Z.toFixed(3)} ) * t;
+	float body = fieldNoise3( q );
+	float curl = fieldNoise3( q * 2.7 + vec3( -0.31, 0.12, 0.23 ) * t );
+	float billow = smoothstep( 0.4, 0.78, body * 0.68 + curl * 0.32 );
+	return exp( - ${FOG_FALLOFF.toFixed(3)} * max( p.y, 0.0 ) ) * ( 0.04 + 1.6 * billow * billow );
 }
 float fieldOpenSky( vec2 xz ) {
 	ivec2 texel = ivec2( floor( xz + 0.5 ) - fieldSkyOrigin );
@@ -225,13 +265,24 @@ if ( ${wetGate} ) {
       )
       .replace(
         '#include <fog_fragment>',
-        `float fieldWisp = smoothstep( 0.42, 0.85, fieldNoise( vFieldWorld.xz * 0.22 + fieldTime * vec2( 0.05, 0.03 ) ) + 0.35 * fieldNoise( vFieldWorld.xz * 0.9 - fieldTime * vec2( 0.03, 0.06 ) ) - 0.17 );
-float fieldLow = clamp( fieldGroundFog * exp( -1.4 * max( vFieldWorld.y, 0.0 ) ) * ( 0.06 + 0.94 * fieldWisp ), 0.0, 1.0 );
-gl_FragColor.rgb = gl_FragColor.rgb * ( 1.0 - 0.55 * fieldLow ) + ( fieldMistColor + fieldScatter * 0.012 ) * fieldLow;
+        `if ( fieldGroundFog > 0.0 && vFieldWorld.y < FIELD_FOG_CEILING ) {
+	vec3 fogToEye = cameraPosition - vFieldWorld;
+	float fogEyeDistance = length( fogToEye );
+	vec3 fogEye = fogToEye / max( fogEyeDistance, 1e-4 );
+	float fogSpan = min( min( fogEyeDistance, FIELD_FOG_REACH ), fogEye.y > 1e-3 ? ( FIELD_FOG_CEILING - vFieldWorld.y ) / fogEye.y : FIELD_FOG_REACH );
+	float fogStep = fogSpan / float( FIELD_FOG_STEPS );
+	float fogJitter = fract( 52.9829189 * fract( dot( gl_FragCoord.xy, vec2( 0.06711056, 0.00583715 ) ) ) );
+	float fogDepth = 0.0;
+	for ( int fogIndex = 0; fogIndex < FIELD_FOG_STEPS; fogIndex ++ ) {
+		fogDepth += fieldFogDensity( vFieldWorld + fogEye * fogStep * ( float( fogIndex ) + fogJitter ) );
+	}
+	float fieldLow = ( 1.0 - exp( - fogDepth * fogStep * fieldGroundFog * FIELD_FOG_THICKNESS ) ) * FIELD_FOG_OPACITY;
+	gl_FragColor.rgb = mix( gl_FragColor.rgb, fieldMistColor + fieldScatter * 0.012, fieldLow );
+}
 #include <fog_fragment>`,
       );
   };
-  material.customProgramCacheKey = () => `field-light-point-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}-lit-${LIT_KNEE}-${LIT_CEILING}-atmosphere-${SKY_MASK_TEXELS}-facing-${FACING_SHADE}-actor-${actorFill}-wisp2-puddle3-wet-${wetSurface}`;
+  material.customProgramCacheKey = () => `field-light-point-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}-lit-${LIT_KNEE}-${LIT_CEILING}-atmosphere-${SKY_MASK_TEXELS}-facing-${FACING_SHADE}-actor-${actorFill}-volfog${FOG_STEPS}-${FOG_CEILING}-${FOG_THICKNESS}-${FOG_FALLOFF}-puddle3-wet-${wetSurface}`;
   return material;
 }
 

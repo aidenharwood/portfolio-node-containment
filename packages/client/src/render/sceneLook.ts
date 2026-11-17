@@ -5,7 +5,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { assignLights, type LightAssignment } from './lightAssignment.ts';
-import { buildFieldLightGrid, clearFieldLights, FIELD_LIGHT_LIMIT, fieldLightFade, setFieldAtmosphere, setFieldLights, type FieldLight } from './voxel/fieldLights.ts';
+import { buildFieldLightGrid, clearFieldLights, FIELD_LIGHT_LIMIT, fieldLightFade, setFieldAtmosphere, setFieldLights, setFieldTime, type FieldLight } from './voxel/fieldLights.ts';
 import { lighten } from './voxel/palette.ts';
 import type { BlendedAmbience } from './world/ambienceBlend.ts';
 import { setBeamWeather } from './world/lightBeams.ts';
@@ -197,7 +197,7 @@ export class SceneLook {
     const groundFog = this.survey ? 0 : Math.min(GROUND_FOG_LIMIT, Math.max(0, (ambience.haze - 1) * GROUND_FOG_PER_HAZE + ambience.weather.mist * GROUND_FOG_PER_MIST));
     this.mistColor.copy(ambience.fog).multiplyScalar(MIST_GAIN).lerp(this.flashColor.setRGB(1, 1, 1), MIST_WHITE);
     setBeamWeather(this.survey ? 0 : ambience.haze, ambience.weather.mist, ambience.weather.rain);
-    setFieldAtmosphere({ groundFog, mistColor: this.mistColor, wetness: ambience.weather.rain + DRIZZLE_WETNESS * ambience.weather.drizzle, time: this.time });
+    setFieldAtmosphere({ groundFog, mistColor: this.mistColor, wetness: ambience.weather.rain + DRIZZLE_WETNESS * ambience.weather.drizzle });
     if (this.flash > 0 && !this.survey) {
       this.hemisphere.intensity += this.flash * FLASH_AMBIENT;
       this.keyLight.intensity += this.flash * FLASH_KEY;
@@ -258,6 +258,7 @@ export class SceneLook {
   render(camera: Camera, delta: number): void {
     this.time += delta;
     this.finish.uniforms.time!.value = this.time;
+    setFieldTime(this.time);
     camera.updateMatrixWorld();
     setFieldLights(this.fieldLights.slice(0, this.activeFieldLights), camera.matrixWorldInverse);
     this.composer.render(delta);
