@@ -401,3 +401,31 @@ test('each story gate on a skill or combat level points the minimap somewhere to
     }
   }
 });
+
+test('quest experience snowballs: quests from Dead Band on pay more levels the later they are recommended', () => {
+  const stepAt = (level: number): number => experienceForLevel(level + 1) - experienceForLevel(level);
+  const levelsPaid = (questId: string): number => {
+    const quest = GAME_CONTENT.quests.get(questId);
+    assert.ok(quest?.recommendedLevel, `${questId} needs a recommended level`);
+    const amounts = quest.rewards.flatMap((effect) => (effect.type === 'grantExperience' ? [effect.amount] : []));
+    return Math.max(...amounts) / stepAt(quest.recommendedLevel);
+  };
+  for (const questId of ['lost-cat', 'drowned-lamp', 'steel-below', 'dead-band']) {
+    const levels = levelsPaid(questId);
+    assert.ok(levels >= 0.8 && levels <= 1.5, `${questId} pays ${levels.toFixed(2)} levels; the early game pays about one`);
+  }
+  const late = [...GAME_CONTENT.quests.values()]
+    .filter((quest) => (quest.recommendedLevel ?? 0) >= 12)
+    .sort((a, b) => (a.recommendedLevel ?? 0) - (b.recommendedLevel ?? 0));
+  for (let index = 1; index < late.length; index++) {
+    const before = late[index - 1]!;
+    const after = late[index]!;
+    if (after.recommendedLevel === before.recommendedLevel) continue;
+    assert.ok(levelsPaid(after.id) >= levelsPaid(before.id) - 0.05, `${after.id} pays fewer levels than ${before.id}`);
+  }
+  assert.ok(levelsPaid('bill-of-lading') >= 2.5, 'Bill of Lading pays at least two and a half levels');
+  assert.ok(levelsPaid('the-heart') >= 3.5, 'The Heart pays at least three and a half levels');
+  const cordonKill = GAME_CONTENT.creatures.get('cordon-stalker')!.experience;
+  const heartPay = GAME_CONTENT.quests.get('the-heart')!.rewards.flatMap((effect) => (effect.type === 'grantExperience' ? [effect.amount] : []));
+  assert.ok(Math.max(...heartPay) >= 3 * cordonKill, 'The Heart pays more than a few Cordon kills');
+});

@@ -1,4 +1,3 @@
-import { experienceForLevel, SKILL_INFO, type SkillId } from '../../character/skills.ts';
 import type { CreatureDefinition } from '../../combat/creatures.ts';
 import type { RecipeDefinition } from '../../crafting/recipes.ts';
 import type { DialogueDefinition } from '../../dialogue/dialogue.ts';
@@ -9,6 +8,7 @@ import type { GameEffect } from '../../rules/effects.ts';
 import type { WorldObjectDefinition } from '../../world/entities.ts';
 import { gear } from '../gearItem.ts';
 import { beast, questObject, questTalk } from './novice.ts';
+import { questPay } from './questPay.ts';
 
 const questItem = (id: string, name: string, examine: string, icon: ItemIconShape, colors: readonly [string, string]): ItemDefinition => ({
   id,
@@ -115,16 +115,12 @@ export const DEPTHS_OBJECTS: readonly WorldObjectDefinition[] = [
   questObject('hull-breach', 'Hull Breach', 'A hole in the beached hull, made from the inside. It is dark in there, and something is knocking.', 'hatch', 'Knock', [active('knock-back', 'knock')], 'You have no reason to knock. Probably best.', [{ type: 'notify', text: 'You knock. Everything in the Fringe knocks back.' }], false),
 ];
 
-const xp = (skill: SkillId, amount: number): GameEffect => ({ type: 'grantExperience', skill, amount });
 const scrip = (count: number): GameEffect => ({ type: 'giveItem', itemId: 'meridian-scrip', count });
-const levelsAt = (recommended: number, share: number): number => Math.round(((experienceForLevel(recommended + 1) - experienceForLevel(recommended)) * share) / 100) * 100;
-const paid = (skill: SkillId, recommended: number, share: number): { readonly effect: GameEffect; readonly line: string } => {
-  const amount = levelsAt(recommended, share);
-  return { effect: xp(skill, amount), line: `${amount} ${SKILL_INFO[skill].name} XP` };
-};
-const glows = [paid('biochemistry', 20, 1), paid('research', 20, 0.5)];
-const bottom = [paid('engineering', 25, 1), paid('refining', 25, 0.4)];
-const knock = [paid('fortitude', 32, 1), paid('closeQuarters', 32, 0.5)];
+const glows = [questPay('biochemistry', 20, 1), questPay('research', 20, 0.5)];
+const bottom = [questPay('engineering', 25, 1), questPay('refining', 25, 0.4)];
+const knock = [questPay('fortitude', 24, 1), questPay('closeQuarters', 24, 0.5)];
+const lading = [questPay('research', 35, 1), questPay('containment', 35, 0.5)];
+const heart = [questPay('containment', 50, 1), questPay('research', 50, 0.5)];
 
 export const DEPTHS_QUESTS: readonly QuestDefinition[] = [
   {
@@ -156,8 +152,8 @@ export const DEPTHS_QUESTS: readonly QuestDefinition[] = [
       { id: 'records', journal: 'Take the lower lift to B2 and search the records cabinet in the observation lab.', objectives: [{ type: 'obtainItem', itemId: 'vault-survey', count: 1, label: 'Find the Vault survey' }] },
       { id: 'return', journal: 'Take the survey back to Officer Brandt.', objectives: [{ type: 'signal', signal: 'lading.returned', npcId: 'officer-brandt', label: 'Give Brandt the survey' }] },
     ],
-    rewards: [xp('research', 3000), xp('containment', 1500), scrip(800)],
-    rewardSummary: ['1 Quest Point', '3000 Research XP', '1500 Containment XP', '800 Scrip', 'B2 clearance'],
+    rewards: [...lading.map((pay) => pay.effect), scrip(800)],
+    rewardSummary: ['1 Quest Point', ...lading.map((pay) => pay.line), '800 Scrip', 'B2 clearance'],
   },
   {
     id: 'the-heart',
@@ -185,8 +181,8 @@ export const DEPTHS_QUESTS: readonly QuestDefinition[] = [
       { id: 'hatch', journal: 'Examine what the Warden was guarding.', objectives: [{ type: 'interactWith', objectId: 'sealed-hatch', label: 'Examine the sealed hatch' }] },
       { id: 'mercer', journal: 'Lieutenant Mercer at the Cordon post has orders for you.', objectives: [{ type: 'talkTo', npcId: 'lieutenant-mercer', label: 'Report to Lieutenant Mercer' }] },
     ],
-    rewards: [xp('containment', 6000), xp('research', 4000), scrip(3000), { type: 'setFlag', flag: 'cordon-orders' }],
-    rewardSummary: ['3 Quest Points', '6000 Containment XP', '4000 Research XP', '3000 Scrip', 'Orders to open the Cordon gate'],
+    rewards: [...heart.map((pay) => pay.effect), scrip(3000), { type: 'setFlag', flag: 'cordon-orders' }],
+    rewardSummary: ['3 Quest Points', ...heart.map((pay) => pay.line), '3000 Scrip', 'Orders to open the Cordon gate'],
   },
   {
     id: 'what-glows',

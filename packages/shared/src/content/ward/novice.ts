@@ -11,6 +11,7 @@ import type { TilePoint } from '../../world/geometry.ts';
 import { CANAL_BASIN, THE_CUT } from '../districts/lowWard.ts';
 import { gear } from '../gearItem.ts';
 import { DRESSING_THEMES } from '../prefabs/types.ts';
+import { questPay } from './questPay.ts';
 import { TUTORIAL_QUEST_ID } from './quests.ts';
 
 const anchor = (district: { readonly id: string; readonly anchors?: Readonly<Record<string, TilePoint>> }, name: string): TilePoint => {
@@ -236,6 +237,8 @@ const scrip = (count: number): GameEffect => ({ type: 'giveItem', itemId: 'merid
 
 const novice = (quest: Omit<QuestDefinition, 'category'> & { readonly category?: QuestDefinition['category'] }): QuestDefinition => ({ category: 'side', offerRequires: [TUTORIAL_QUEST_ID], ...quest });
 
+const lamp = [questPay('closeQuarters', 10, 1), questPay('fortitude', 10, 0.6)];
+
 export const NOVICE_QUESTS: readonly QuestDefinition[] = [
   novice({
     id: 'line-thief',
@@ -330,8 +333,8 @@ export const NOVICE_QUESTS: readonly QuestDefinition[] = [
       { id: 'lamp', journal: 'Defeat the Lamplighter and take back the Drowned Lamp.', objectives: [{ type: 'defeat', creatureId: 'the-lamplighter', count: 1, label: 'Defeat the Lamplighter' }, { type: 'obtainItem', itemId: 'drowned-lamp', count: 1, label: 'Take the Drowned Lamp' }] },
       { id: 'return', journal: 'Bring the lamp back to Sol Marsh at the Drowned Lamp.', objectives: [{ type: 'signal', signal: 'lamp.returned', npcId: 'sol-marsh', label: 'Return the lamp to Sol' }] },
     ],
-    rewards: [xp('closeQuarters', 500), xp('fortitude', 300), scrip(150), { type: 'giveItem', itemId: 'iron-bar', count: 3 }, { type: 'giveItem', itemId: 'culvert-trace', count: 2 }],
-    rewardSummary: ['2 Quest Points', '500 Close Quarters XP', '300 Fortitude XP', '150 Scrip', '3 Iron Bars', '2 Culvert Traces'],
+    rewards: [...lamp.map((pay) => pay.effect), scrip(150), { type: 'giveItem', itemId: 'iron-bar', count: 3 }, { type: 'giveItem', itemId: 'culvert-trace', count: 2 }],
+    rewardSummary: ['2 Quest Points', ...lamp.map((pay) => pay.line), '150 Scrip', '3 Iron Bars', '2 Culvert Traces'],
   }),
 ];
 

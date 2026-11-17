@@ -9,6 +9,7 @@ import type { GameEffect } from '../../rules/effects.ts';
 import type { WorldObjectDefinition } from '../../world/entities.ts';
 import { gear } from '../gearItem.ts';
 import { beast, questObject, questTalk } from './novice.ts';
+import { questPay } from './questPay.ts';
 
 export const SITE_ITEMS: readonly ItemDefinition[] = [
   { id: 'steel-ledger', name: "Quill's Ledger", examine: 'Delivery ledgers from the year the Site was built. Ten times more steel came in than the Site has above ground.', category: 'quest', rarity: 'issued', icon: 'datapad', iconColors: ['#8a6a42', '#d8d0b8'], maxStack: 1, value: 0 },
@@ -93,6 +94,8 @@ export const SITE_OBJECTS: readonly WorldObjectDefinition[] = [reading('reading-
 const xp = (skill: SkillId, amount: number): GameEffect => ({ type: 'grantExperience', skill, amount });
 const scrip = (count: number): GameEffect => ({ type: 'giveItem', itemId: 'meridian-scrip', count });
 
+const band = [questPay('research', 12, 1.25), questPay('engineering', 12, 0.5)];
+
 export const SITE_QUESTS: readonly QuestDefinition[] = [
   {
     id: 'steel-below',
@@ -135,8 +138,8 @@ export const SITE_QUESTS: readonly QuestDefinition[] = [
       },
       { id: 'report', journal: 'Take the readings back to Sefa Lind at The Signal.', objectives: [{ type: 'signal', signal: 'band.reported', npcId: 'sefa-lind', label: 'Report to Sefa' }] },
     ],
-    rewards: [xp('research', 1200), xp('engineering', 600), scrip(300), { type: 'giveItem', itemId: 'reed-tonic', count: 5 }],
-    rewardSummary: ['1 Quest Point', '1200 Research XP', '600 Engineering XP', '300 Scrip', '5 Reed Tonics'],
+    rewards: [...band.map((pay) => pay.effect), scrip(300), { type: 'giveItem', itemId: 'reed-tonic', count: 5 }],
+    rewardSummary: ['1 Quest Point', ...band.map((pay) => pay.line), '300 Scrip', '5 Reed Tonics'],
   },
 ];
 
