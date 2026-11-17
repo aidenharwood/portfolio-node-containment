@@ -73,8 +73,13 @@ const FRAGMENT_SURFACE = `
 
 const FRAGMENT_NORMAL = `
   #include <normal_fragment_begin>
-  vec2 slope = vec2(ripples(vWorld + vec2(0.04, 0.0)) - ripples(vWorld - vec2(0.04, 0.0)), ripples(vWorld + vec2(0.0, 0.04)) - ripples(vWorld - vec2(0.0, 0.04)));
+  vec2 slope = vec2(ripples(cell + vec2(0.125, 0.0)) - ripples(cell - vec2(0.125, 0.0)), ripples(cell + vec2(0.0, 0.125)) - ripples(cell - vec2(0.0, 0.125))) * 0.35;
   normal = normalize(normal + (viewMatrix * vec4(-slope.x * RIPPLE_TILT, 0.0, -slope.y * RIPPLE_TILT, 0.0)).xyz);
+`;
+
+const FRAGMENT_SPECULAR_CLAMP = `
+  #include <lights_fragment_end>
+  reflectedLight.directSpecular = min(reflectedLight.directSpecular, vec3(1.2));
 `;
 
 const FRAGMENT_GLOW = `
@@ -138,7 +143,7 @@ export class LiquidSurface {
     geometry.setIndex(indices);
     geometry.computeBoundingSphere();
     const time = { value: 0 };
-    const material = receiveFieldLights(new MeshStandardMaterial({ roughness: 0.3, metalness: 0, transparent: true, depthWrite: false, side: DoubleSide }));
+    const material = receiveFieldLights(new MeshStandardMaterial({ roughness: 0.3, metalness: 0, transparent: true, depthWrite: false, side: DoubleSide }), 0, false);
     const fieldCompile = material.onBeforeCompile.bind(material);
     const fieldKey = material.customProgramCacheKey.bind(material);
     material.onBeforeCompile = (shader, renderer) => {
@@ -157,7 +162,8 @@ ${VERTEX_DECLARATIONS}`).replace('#include <begin_vertex>', VERTEX_DISPLACEMENT)
 ${FRAGMENT_DECLARATIONS}`)
         .replace('#include <color_fragment>', FRAGMENT_SURFACE)
         .replace('#include <normal_fragment_begin>', FRAGMENT_NORMAL.replaceAll('RIPPLE_TILT', RIPPLE_TILT))
-        .replace('#include <emissivemap_fragment>', FRAGMENT_GLOW);
+        .replace('#include <emissivemap_fragment>', FRAGMENT_GLOW)
+        .replace('#include <lights_fragment_end>', FRAGMENT_SPECULAR_CLAMP);
     };
     material.customProgramCacheKey = () => `${fieldKey()}:liquid:${palette.deep}:${palette.shallow}:${palette.glow}:${palette.foam}`;
     const mesh = new Mesh(geometry, material);

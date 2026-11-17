@@ -121,7 +121,8 @@ export function clearFieldLights(): void {
   uniforms.fieldLightGridEnabled.value = 0;
 }
 
-export function receiveFieldLights<T extends Material>(material: T, actorFill = 0): T {
+export function receiveFieldLights<T extends Material>(material: T, actorFill = 0, wetSurface = true): T {
+  const wetGate = wetSurface ? 'fieldWetness > 0.0 && vFieldNormal.y > 0.9' : 'false';
   const fill = actorFill > 0 ? `reflectedLight.indirectDiffuse += diffuseColor.rgb * ${actorFill.toFixed(3)} * ( 0.4 + 0.6 * max( dot( geometryNormal, geometryViewDir ), 0.0 ) );` : '';
   material.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, uniforms);
@@ -171,7 +172,7 @@ vec3 fieldScatter = vec3( 0.0 );
 vec3 fieldSheen = vec3( 0.0 );
 vec3 fieldAlong = normalize( geometryViewDir - geometryNormal * dot( geometryViewDir, geometryNormal ) + vec3( 1e-4 ) );
 float fieldPuddle = step( vFieldWorld.y, 0.08 ) * smoothstep( 0.45, 0.75, fieldNoise( vFieldWorld.xz * 0.9 ) );
-vec3 fieldWetNormal = normalize( geometryNormal + fieldAlong * ( fieldHash( floor( vFieldWorld.xz * 8.0 ) ) - 0.5 ) * mix( 0.35, 0.05, fieldPuddle ) );
+vec3 fieldWetNormal = normalize( geometryNormal + fieldAlong * ( fieldHash( floor( vFieldWorld.xz * 8.0 ) ) - 0.5 ) * mix( 0.2, 0.05, fieldPuddle ) );
 ivec2 fieldCell = ivec2( floor( ( vFieldWorld.xz - fieldLightGridOrigin ) / FIELD_GRID_CELL ) );
 if ( fieldLightGridEnabled == 1 && fieldCell.x >= 0 && fieldCell.y >= 0 && fieldCell.x < FIELD_GRID_CELLS && fieldCell.y < FIELD_GRID_CELLS ) {
 	bool fieldDone = false;
@@ -195,7 +196,7 @@ if ( fieldLightGridEnabled == 1 && fieldCell.x >= 0 && fieldCell.y >= 0 && field
 			fieldIncident.color = fieldLightColors[ fieldIndex ] * ( fieldFalloff * fieldFalloff );
 			fieldIncident.visible = true;
 			fieldScatter += fieldIncident.color;
-			if ( fieldWetness > 0.0 && vFieldNormal.y > 0.9 ) fieldSheen += fieldIncident.color * pow( max( dot( fieldWetNormal, normalize( fieldIncident.direction + geometryViewDir ) ), 0.0 ), 36.0 );
+			if ( ${wetGate} ) fieldSheen += fieldIncident.color * pow( max( dot( fieldWetNormal, normalize( fieldIncident.direction + geometryViewDir ) ), 0.0 ), 36.0 );
 			RE_Direct( fieldIncident, geometryPosition, geometryNormal, geometryViewDir, geometryClearcoatNormal, material, reflectedLight );
 		}
 	}
@@ -215,7 +216,7 @@ if ( litPeak > ${LIT_KNEE.toFixed(3)} ) {
 	reflectedLight.directDiffuse *= litScale;
 	reflectedLight.indirectDiffuse *= litScale;
 }
-if ( fieldWetness > 0.0 && vFieldNormal.y > 0.9 ) {
+if ( ${wetGate} ) {
 	float fieldWet = fieldWetness * fieldOpenSky( vFieldWorld.xz );
 	reflectedLight.directDiffuse *= 1.0 - ( 0.3 + 0.25 * fieldPuddle ) * fieldWet;
 	reflectedLight.indirectDiffuse *= 1.0 - ( 0.3 + 0.25 * fieldPuddle ) * fieldWet;
@@ -230,7 +231,7 @@ gl_FragColor.rgb = gl_FragColor.rgb * ( 1.0 - 0.55 * fieldLow ) + ( fieldMistCol
 #include <fog_fragment>`,
       );
   };
-  material.customProgramCacheKey = () => `field-light-point-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}-lit-${LIT_KNEE}-${LIT_CEILING}-atmosphere-${SKY_MASK_TEXELS}-facing-${FACING_SHADE}-actor-${actorFill}-wisp2-puddle2`;
+  material.customProgramCacheKey = () => `field-light-point-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}-lit-${LIT_KNEE}-${LIT_CEILING}-atmosphere-${SKY_MASK_TEXELS}-facing-${FACING_SHADE}-actor-${actorFill}-wisp2-puddle3-wet-${wetSurface}`;
   return material;
 }
 

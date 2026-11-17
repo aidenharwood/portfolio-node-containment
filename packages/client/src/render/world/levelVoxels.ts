@@ -579,8 +579,8 @@ function paintWall(volume: DenseVolume, layout: TileLayout, tx: number, ty: numb
           const cap = facility ? COLORS.wallCap : palette.cap;
           if (outer) volume.set(vx, vy, vz, outer.u === 0 ? darken(cap, 0.14) : jitter(lighten(cap, 0.06), 0.02, grain));
           else {
-            const tray = jitter(mix(darken(cap, 0.25), COLORS.roofTray, 0.35), 0.03, grain);
-            volume.set(vx, vy - 1, vz, vx % 8 === 0 ? darken(tray, 0.12) : tray);
+            const tray = jitter(mix(darken(cap, 0.15), COLORS.roofTray, 0.25), 0.03, grain);
+            volume.set(vx, vy - 1, vz, vx % 8 === 0 ? darken(tray, 0.2) : tray);
           }
           continue;
         }
