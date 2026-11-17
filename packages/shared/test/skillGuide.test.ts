@@ -8,6 +8,11 @@ import {
   skillGuide,
   skillGuideLabel,
   skillGuides,
+  skillMilestones,
+  deriveCombatProfile,
+  maxIntegrityFor,
+  createStartingSkills,
+  experienceForLevel,
   skillUnlocksBetween,
   summariseUnlocks,
   type ContractDefinition,
@@ -99,6 +104,65 @@ describe('skill guide', () => {
       if (skill === 'fortitude') continue;
       assert.ok(skillGuide(GAME_CONTENT, skill).length > 0, skill);
     }
+  });
+
+  test('lists skill reach objectives as story entries', () => {
+    let checked = 0;
+    for (const quest of GAME_CONTENT.quests.values()) {
+      for (const step of quest.steps) {
+        for (const objective of step.objectives) {
+          if (objective.type !== 'reach' || objective.measure === 'combat' || objective.measure === 'questPoints') continue;
+          const found = skillGuide(GAME_CONTENT, objective.measure).find((candidate) => candidate.kind === 'story' && candidate.questId === quest.id && candidate.level === objective.level);
+          assert.ok(found, `${quest.id} ${objective.measure}`);
+          assert.equal(skillGuideLabel(found), `Story: ${quest.name}`);
+          checked++;
+        }
+      }
+    }
+    assert.ok(checked > 0);
+  });
+
+  test('never maps combat level reach objectives onto a single skill', () => {
+    for (const skill of SKILL_IDS) {
+      for (const candidate of skillGuide(GAME_CONTENT, skill)) {
+        if (candidate.kind !== 'story') continue;
+        const quest = GAME_CONTENT.quests.get(candidate.questId);
+        const matches = quest?.steps.some((step) => step.objectives.some((objective) => objective.type === 'reach' && objective.measure === skill && objective.level === candidate.level));
+        assert.ok(matches, `${skill} ${candidate.name}`);
+      }
+    }
+  });
+
+  test('lists every creature as a fight entry for the three combat styles only', () => {
+    for (const skill of SKILL_IDS) {
+      const fights = skillGuide(FIXTURE_CONTENT, skill).filter((candidate) => candidate.kind === 'fight');
+      const expected = ['closeQuarters', 'marksmanship', 'psionics'].includes(skill) ? FIXTURE_CONTENT.creatures.size : 0;
+      assert.equal(fights.length, expected, skill);
+    }
+    const fight = skillGuide(FIXTURE_CONTENT, 'closeQuarters').find((candidate) => candidate.kind === 'fight');
+    assert.ok(fight);
+    assert.equal(skillGuideLabel(fight), `Fight ${fight.name}`);
+  });
+
+  test('fight entries are not unlocks', () => {
+    const fight: SkillGuideEntry = { kind: 'fight', name: 'Thing', level: 5, creatureId: 'thing', locations: [] };
+    const entries = [entry('A', 1), fight, entry('B', 9)];
+    assert.deepEqual(skillUnlocksBetween(entries, 1, 9).map((candidate) => candidate.name), ['B']);
+    assert.deepEqual(nextSkillUnlocks(entries, 1).map((candidate) => candidate.name), ['B']);
+    assert.deepEqual(nextSkillUnlocks([fight], 1), []);
+  });
+
+  test('derives Fortitude milestones from the combat profile', () => {
+    const at = (level: number) => createStartingSkills({ fortitude: experienceForLevel(level) });
+    const perLevel = maxIntegrityFor(at(2)) - maxIntegrityFor(at(1));
+    const lines = skillMilestones('fortitude');
+    assert.equal(lines.length, 3);
+    assert.ok(lines[0]?.startsWith(`+${perLevel} integrity`));
+    assert.ok(lines[1]?.includes('every 2 levels'));
+    assert.ok(lines[2]?.includes('+1 combat level every 2 levels'));
+    const noGear = { armor: 0, deflection: 0, hazardShielding: 0, cognitiveWard: 0, power: 0, accuracy: 0, focus: 0, insight: 0 };
+    assert.equal(deriveCombatProfile(at(4), noGear).meleeDefence - deriveCombatProfile(at(2), noGear).meleeDefence, 1);
+    assert.deepEqual(skillMilestones('salvage'), []);
   });
 
   test('finds unlocks between levels and the next unlock', () => {

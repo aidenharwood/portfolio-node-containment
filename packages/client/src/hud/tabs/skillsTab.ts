@@ -8,6 +8,7 @@ import {
   SKILL_INFO,
   SKILL_LEVEL_CAP,
   skillGuide,
+  skillMilestones,
   summariseUnlocks,
   type SkillId,
 } from '@containment/shared';
@@ -39,6 +40,7 @@ export function createSkillsTab(openSkillGuide: (skill: SkillId) => void): Panel
     const level = levelForExperience(experience);
     const mastered = level >= SKILL_LEVEL_CAP;
     const remaining = experienceForLevel(level + 1) - experience;
+    const milestones = skillMilestones(id);
     const upcoming = nextSkillUnlocks(skillGuide(GAME_CONTENT, id), level);
     replaceChildren(
       details,
@@ -51,6 +53,7 @@ export function createSkillsTab(openSkillGuide: (skill: SkillId) => void): Panel
       h('div', { className: 'skill-bar' }, h('span', { style: { width: `${levelProgress(experience) * 100}%` } })),
       h('p', { className: 'tooltip-examine' }, SKILL_INFO[id].summary),
       h('p', { className: 'tooltip-examine' }, `Train by: ${SKILL_INFO[id].trainedBy}`),
+      ...milestones.map((line) => h('p', { className: 'tooltip-meta' }, line)),
       upcoming[0] && h('p', { className: 'tooltip-meta' }, `Next unlock: ${summariseUnlocks(upcoming, 1)} at ${upcoming[0].level}`),
       h('p', { className: 'tooltip-hint' }, 'Select to open the skill guide'),
     );

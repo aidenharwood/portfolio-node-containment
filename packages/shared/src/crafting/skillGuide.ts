@@ -1,10 +1,12 @@
-import { SKILL_IDS, type SkillId } from '../character/skills.ts';
+import { deriveCombatProfile } from '../character/derivedStats.ts';
+import { combatLevel, createStartingSkills, experienceForLevel, SKILL_IDS, SKILL_LEVEL_CAP, type SkillId } from '../character/skills.ts';
 import { containmentLevelFor } from '../combat/containment.ts';
 import type { CreatureId } from '../combat/creatures.ts';
 import { studyExperience } from '../combat/study.ts';
 import type { ContractId } from '../contracts/contract.ts';
 import type { GameContent } from '../content/gameContent.ts';
 import type { EquipmentSlot } from '../gear/slots.ts';
+import { STAT_IDS, type StatId } from '../gear/stats.ts';
 import type { ItemId, QuestId, WorldObjectId } from '../ids.ts';
 import { questOfferConditions } from '../quests/questRequirements.ts';
 import type { Condition } from '../rules/conditions.ts';
@@ -19,11 +21,19 @@ export type SkillGuideEntry =
   | { readonly kind: 'contain'; readonly name: string; readonly level: number; readonly creatureId: CreatureId; readonly experience: number; readonly locations: readonly SourceLocation[] }
   | { readonly kind: 'study'; readonly name: string; readonly level: number; readonly creatureId: CreatureId; readonly experience: number; readonly locations: readonly SourceLocation[] }
   | { readonly kind: 'quest'; readonly name: string; readonly level: number; readonly questId: QuestId }
-  | { readonly kind: 'contract'; readonly name: string; readonly level: number; readonly contractId: ContractId };
+  | { readonly kind: 'contract'; readonly name: string; readonly level: number; readonly contractId: ContractId }
+  | { readonly kind: 'story'; readonly name: string; readonly level: number; readonly questId: QuestId }
+  | { readonly kind: 'fight'; readonly name: string; readonly level: number; readonly creatureId: CreatureId; readonly locations: readonly SourceLocation[] };
 
 export type SkillGuideKind = SkillGuideEntry['kind'];
 
-export const SKILL_GUIDE_KINDS: readonly SkillGuideKind[] = ['gather', 'recipe', 'equip', 'contain', 'study', 'quest', 'contract'];
+export const SKILL_GUIDE_KINDS: readonly SkillGuideKind[] = ['gather', 'recipe', 'equip', 'contain', 'study', 'quest', 'story', 'contract', 'fight'];
+
+export const FIGHT_GUIDE_SKILLS: readonly SkillId[] = ['closeQuarters', 'marksmanship', 'psionics'];
+
+export const isUnlockEntry = (entry: SkillGuideEntry): boolean => entry.kind !== 'fight';
+
+export const skillUnlockEntries = (entries: readonly SkillGuideEntry[]): SkillGuideEntry[] => entries.filter(isUnlockEntry);
 
 const skillGates = (conditions: readonly Condition[] | undefined): { skill: SkillId; level: number }[] =>
   (conditions ?? []).flatMap((condition) => (condition.type === 'skillLevel' ? [{ skill: condition.skill, level: condition.atLeast }] : []));
@@ -77,11 +87,25 @@ function buildSkillGuides(content: GameContent): ReadonlyMap<SkillId, readonly S
     if (creature.containment) {
       add('containment', { kind: 'contain', name: creature.name, level: containmentLevelFor(creature), creatureId: creature.id, experience: creature.containment.experience, locations });
     }
+    for (const skill of FIGHT_GUIDE_SKILLS) add(skill, { kind: 'fight', name: creature.name, level: creature.level, creatureId: creature.id, locations });
     add('research', { kind: 'study', name: creature.name, level: creature.level, creatureId: creature.id, experience: studyExperience(creature, true), locations });
   }
 
   for (const quest of content.quests.values()) {
     for (const gate of skillGates(questOfferConditions(quest, content))) add(gate.skill, { kind: 'quest', name: quest.name, level: gate.level, questId: quest.id });
+  }
+
+  for (const quest of content.quests.values()) {
+    const seen = new Set<string>();
+    for (const step of quest.steps) {
+      for (const objective of step.objectives) {
+        if (objective.type !== 'reach' || objective.measure === 'combat' || objective.measure === 'questPoints') continue;
+        const key = `${objective.measure}:${objective.level}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        add(objective.measure, { kind: 'story', name: quest.name, level: objective.level, questId: quest.id });
+      }
+    }
   }
 
   for (const contract of content.contracts.values()) {
@@ -120,17 +144,42 @@ export function skillGuideLabel(entry: SkillGuideEntry): string {
       return `Study ${entry.name}`;
     case 'quest':
       return `Quest: ${entry.name}`;
+    case 'story':
+      return `Story: ${entry.name}`;
     case 'contract':
       return `Contract: ${entry.name}`;
+    case 'fight':
+      return `Fight ${entry.name}`;
   }
 }
 
 export const skillUnlocksBetween = (entries: readonly SkillGuideEntry[], fromLevel: number, toLevel: number): SkillGuideEntry[] =>
-  entries.filter((entry) => entry.level > fromLevel && entry.level <= toLevel);
+  entries.filter((entry) => isUnlockEntry(entry) && entry.level > fromLevel && entry.level <= toLevel);
 
 export function nextSkillUnlocks(entries: readonly SkillGuideEntry[], level: number): SkillGuideEntry[] {
-  const next = entries.find((entry) => entry.level > level);
-  return next ? entries.filter((entry) => entry.level === next.level) : [];
+  const unlocks = skillUnlockEntries(entries);
+  const next = unlocks.find((entry) => entry.level > level);
+  return next ? unlocks.filter((entry) => entry.level === next.level) : [];
+}
+
+const everyLevels = (count: number): string => (count === 1 ? 'every level' : `every ${count} levels`);
+
+export function skillMilestones(skill: SkillId): string[] {
+  if (skill !== 'fortitude') return [];
+  const atLevel = (level: number) => createStartingSkills({ fortitude: experienceForLevel(level) });
+  const noGear = Object.fromEntries(STAT_IDS.map((stat) => [stat, 0])) as Record<StatId, number>;
+  const profileAt = (level: number) => deriveCombatProfile(atLevel(level), noGear);
+  const integrityPerLevel = profileAt(2).integrity - profileAt(1).integrity;
+  const guardAt = (level: number) => profileAt(level).meleeDefence;
+  const guardLevels = Array.from({ length: SKILL_LEVEL_CAP - 1 }, (_, index) => index + 2).filter((level) => guardAt(level) > guardAt(level - 1));
+  const guardEvery = (guardLevels[1] ?? 0) - (guardLevels[0] ?? 0);
+  const combatGain = combatLevel(atLevel(SKILL_LEVEL_CAP)) - combatLevel(atLevel(2));
+  const combatEvery = Math.max(1, Math.round((SKILL_LEVEL_CAP - 2) / Math.max(1, combatGain)));
+  return [
+    `+${integrityPerLevel} integrity ${everyLevels(1)}.`,
+    `+1 guard (melee, ranged, psionic and hazard defence) ${everyLevels(guardEvery)}.`,
+    `+1 combat level ${everyLevels(combatEvery)}.`,
+  ];
 }
 
 export function summariseUnlocks(entries: readonly SkillGuideEntry[], limit = 3): string {

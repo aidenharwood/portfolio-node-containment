@@ -5,6 +5,8 @@ import {
   SKILL_INFO,
   skillGuide,
   skillGuideLabel,
+  skillMilestones,
+  skillUnlockEntries,
   STATION_INFO,
   type SkillGuideEntry,
   type SkillId,
@@ -36,13 +38,17 @@ function detailOf(entry: SkillGuideEntry): string {
       return `First study · +${entry.experience} xp · needs Analysis ${entry.level}`;
     case 'quest':
       return 'Quest requirement';
+    case 'story':
+      return 'Story requirement';
     case 'contract':
       return 'Contract requirement';
+    case 'fight':
+      return `Creature level ${entry.level}`;
   }
 }
 
 const locationsOf = (entry: SkillGuideEntry): readonly SourceLocation[] | null =>
-  entry.kind === 'gather' || entry.kind === 'contain' || entry.kind === 'study' ? entry.locations : null;
+  entry.kind === 'gather' || entry.kind === 'contain' || entry.kind === 'study' || entry.kind === 'fight' ? entry.locations : null;
 
 const itemOf = (entry: SkillGuideEntry): string | null =>
   entry.kind === 'gather' || entry.kind === 'recipe' || entry.kind === 'equip' ? entry.itemId : null;
@@ -98,7 +104,10 @@ export class SkillGuideWindow {
     const self = this.world.self;
     if (!this.open || !self) return;
     const info = SKILL_INFO[this.skill];
-    const entries = skillGuide(GAME_CONTENT, this.skill);
+    const all = skillGuide(GAME_CONTENT, this.skill);
+    const entries = skillUnlockEntries(all);
+    const fights = all.filter((entry) => entry.kind === 'fight');
+    const milestones = skillMilestones(this.skill);
     const level = levelForExperience(self.skills[this.skill]);
     const next = entries.find((entry) => entry.level > level);
     const current = entries.filter((entry) => entry.level <= level).at(-1);
@@ -114,7 +123,13 @@ export class SkillGuideWindow {
       this.list,
       ...(entries.length > 0
         ? entries.map((entry) => this.row(entry, level, entry === next, entry === current))
-        : [h('p', { className: 'skill-guide-where' }, `Nothing is gated by ${info.name}. Every level still makes you stronger.`)]),
+        : milestones.length === 0 ? [h('p', { className: 'skill-guide-where' }, `Nothing is gated by ${info.name}. Every level still makes you stronger.`)] : []),
+      ...(milestones.length > 0
+        ? [h('p', { className: 'skill-guide-name' }, 'What each level gives'), ...milestones.map((line) => h('p', { className: 'skill-guide-where' }, line))]
+        : []),
+      ...(fights.length > 0
+        ? [h('p', { className: 'skill-guide-name' }, 'Fight at your level'), ...fights.map((entry) => this.row(entry, level, false, false))]
+        : []),
     );
     this.list.scrollTop = scroll;
   }
