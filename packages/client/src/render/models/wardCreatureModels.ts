@@ -71,8 +71,7 @@ const crateWisp = (): VoxelModel => {
     if (Math.hypot(x, (y - 9.5) * 0.9, z) <= 3.4 - noise3(x, y, z, 5) * 0.8) model.set(x, y, z, jitter(glow, 0.12, noise3(x, y, z, 6)), VOXEL_EMISSIVE);
   }
   model.fill(-2, 8, -1, 1, 12, 2, (x, y, z) => jitter(glow, 0.12, noise3(x, y, z, 6)), VOXEL_EMISSIVE);
-  model.fill(-1, 12, -1, 0, 13, 0, glow, VOXEL_EMISSIVE);
-  model.fill(-3, 14, -1, 2, 14, 1, 0x8a6a3a).set(-3, 14, 0, 0x5a5a5a).set(2, 14, 0, 0x5a5a5a);
+  model.fill(-3, 13, -1, 0, 13, 1, 0x8a6a3a).fill(-1, 14, -1, 2, 14, 1, 0x8a6a3a).set(-3, 13, 0, 0x5a5a5a).set(2, 14, 0, 0x5a5a5a);
   model.fill(-1, 10, 3, -1, 11, 3, 0x1a2a10).fill(1, 10, 3, 1, 11, 3, 0x1a2a10).fill(0, 10, 3, 0, 11, 3, glow, VOXEL_EMISSIVE);
   return model;
 };
@@ -93,9 +92,12 @@ const pigeon = (): VoxelModel => {
   const grey = 0x7a7f8a;
   const model = new VoxelModel().fill(-2, 2, -3, 1, 6, 2, fur(grey, 7)).fill(-1, 6, 1, 0, 9, 3, fur(lighten(grey, 0.1), 8));
   model.paintExisting(-1, 6, 1, 0, 7, 3, (_x, y, z) => ((y + z) % 2 === 0 ? 0x4a8a6a : 0x7a4a8a));
+  model.paintExisting(-1, 8, 1, 0, 9, 3, darken(grey, 0.25));
+  model.paintExisting(-2, 6, -2, 1, 6, -2, 0x2a2a30).paintExisting(-2, 6, 0, 1, 6, 0, 0x2a2a30);
   model.set(-2, 8, 2, 0xff8a3a).set(1, 8, 2, 0xff8a3a);
   model.fill(-1, 7, 4, 0, 7, 4, 0x6a5a5a).fill(-1, 8, 4, 0, 8, 4, 0xe8e0d8);
   model.fill(-3, 3, -3, -3, 5, 1, darken(grey, 0.2)).fill(2, 3, -3, 2, 5, 1, darken(grey, 0.2));
+  model.paintExisting(-3, 5, -3, -3, 5, 1, lighten(grey, 0.15)).paintExisting(2, 5, -3, 2, 5, 1, lighten(grey, 0.15));
   model.fill(-2, 4, -5, 1, 4, -4, darken(grey, 0.15)).fill(-2, 4, -6, 1, 4, -6, darken(grey, 0.5));
   model.fill(-2, 0, 0, -2, 1, 0, 0xd85a5a).fill(1, 0, 0, 1, 1, 0, 0xd85a5a).set(-2, 0, 1, 0xd85a5a).set(1, 0, 1, 0xd85a5a);
   return model;
@@ -157,6 +159,7 @@ const scrapCrawler = (): VoxelModel => {
   for (const [x, door, handle] of [[-5, 0x8a3a2a, -6], [4, 0x3a5a7a, 5]] as const) {
     model.paintExisting(x, 4, -4, x, 7, 3, door).paintExisting(x, 6, -3, x, 7, 0, 0x6a8a9a).set(handle, 6, 1, 0xb0b0b0);
   }
+  model.paintExisting(-4, 8, -4, 3, 8, 2, 0x8a3a2a).paintExisting(-3, 8, 3, 2, 8, 4, 0x6a8a9a);
   model.fill(-3, 4, 6, 2, 7, 8, 0x3a3f44).fill(-4, 6, 9, -3, 7, 11, 0x8a5a3a).fill(2, 6, 9, 3, 7, 11, 0x8a5a3a);
   model.set(-2, 7, 9, 0xffb35a, VOXEL_EMISSIVE).set(1, 7, 9, 0xffb35a, VOXEL_EMISSIVE);
   for (const z of [-5, -1, 3]) {
@@ -176,8 +179,8 @@ const rustling = (): VoxelModel => {
     const y = 3 + Math.floor(noise3(i, 2, 3, 27) * 12);
     model.fill(x, y, z, x + 2 + (i % 3), y + 2, z + 2, jitter(metals[i % 5] as number, 0.08, noise3(i, 4, 3, 28)));
   }
-  model.fill(-4, 5, -3, -4, 10, 2, 0x1a1a1a);
-  for (let y = 7; y <= 8; y++) for (let z = -1; z <= 0; z++) model.remove(-4, y, z);
+  model.fill(-5, 5, -3, -4, 10, 2, 0x1a1a1a).paintExisting(-5, 7, -1, -4, 8, 0, 0x9a9a9a);
+  model.fill(3, 12, 0, 5, 13, 1, 0x5d666c).fill(5, 4, 0, 6, 11, 1, 0x5d666c).fill(6, 3, 1, 7, 4, 1, 0x8a8a8a);
   model.fill(-3, 0, -1, -2, 3, 0, 0x3a3f44).fill(1, 0, -1, 2, 3, 0, 0x3a3f44);
   model.fill(-1, 11, 3, 0, 12, 3, 0xe8a21c, VOXEL_EMISSIVE);
   return model;
@@ -186,8 +189,10 @@ const rustling = (): VoxelModel => {
 const lineMimic = (): VoxelModel => {
   const coat = 0x4e4a5e;
   const paint = (x: number, y: number, z: number): number => jitter(coat, 0.06, noise3(x, y, z, 29));
-  const model = new VoxelModel().fill(-4, 4, -2, 3, 17, 2, paint).fill(-5, 4, -3, 4, 6, 3, paint);
+  const model = new VoxelModel().fill(-4, 4, -2, 3, 17, 2, paint).fill(-4, 4, -3, 3, 5, 3, paint);
+  for (let y = 4; y <= 7; y++) for (let z = -3; z <= -2; z++) model.remove(-1, y, z).remove(0, y, z);
   model.fill(-6, 7, -1, -5, 17, 1, paint).fill(4, 7, -1, 5, 17, 1, paint).fill(-6, 5, 0, -6, 6, 0, 0x1a1a22).fill(5, 5, 0, 5, 6, 0, 0x1a1a22);
+  model.paintExisting(-4, 17, -2, 3, 17, 2, darken(coat, 0.2));
   model.paintExisting(-1, 13, 2, 0, 17, 2, 0xd8d0b8).paintExisting(-2, 13, 2, -2, 17, 2, darken(coat, 0.35)).paintExisting(1, 13, 2, 1, 17, 2, darken(coat, 0.35));
   model.set(0, 8, 3, 0xc8a03a).set(0, 10, 3, 0xc8a03a);
   model.set(-1, 12, 3, 0xffd23f, VOXEL_EMISSIVE).set(0, 12, 3, 0xffd23f, VOXEL_EMISSIVE);
@@ -210,6 +215,7 @@ const scrapMagpie = (): VoxelModel => {
 
 const lamplighter = (): VoxelModel => {
   const body = 0x2c3c44;
+  const claw = darken(body, 0.3);
   const lamp = 0xffb35a;
   const iron = 0x2a2e31;
   const model = new VoxelModel();
@@ -219,71 +225,96 @@ const lamplighter = (): VoxelModel => {
     const rz = Math.round(r * 0.7);
     model.fill(-rx, y, -rz, rx - 1, y, rz - 1, (x, yy, z) => jitter(body, 0.08, noise3(x, yy, z, 33)));
   }
+  for (const x of [-3, -1, 2]) model.paintExisting(x, 6 + Math.floor(noise3(x, 0, 1, 34) * 14), 1, x, 26, 1, 0x3a5a60);
   model.fill(-2, 37, 2, 1, 37, 2, lamp, VOXEL_EMISSIVE);
-  model.fill(-7, 28, -1, 6, 30, 0, body).fill(-7, 13, -1, -6, 27, 0, body).fill(5, 18, -1, 6, 27, 0, body);
-  model.fill(-7, 10, -1, -7, 12, -1, darken(body, 0.3)).fill(-6, 10, 0, -6, 12, 0, darken(body, 0.3));
-  model.fill(4, 10, -2, 7, 14, 1, lamp, VOXEL_EMISSIVE);
-  for (const x of [4, 7]) for (const z of [-2, 1]) model.fill(x, 10, z, x, 14, z, iron);
-  model.fill(4, 9, -2, 7, 9, 1, iron).fill(4, 15, -2, 7, 15, 1, iron).fill(5, 16, -1, 6, 17, 0, iron);
-  for (const x of [-3, -1, 2]) model.paintExisting(x, 6, 1, x, 26, 1, 0x3a5a60);
-  model.fill(5, 7, -1, 5, 8, -1, 0x5a8a90);
+  model.fill(-7, 28, -1, 6, 30, 0, body);
+  model.fill(-7, 20, -1, -6, 27, 0, body).fill(-7, 19, -1, -6, 20, 4, body);
+  model.fill(-7, 16, 4, -7, 18, 4, claw).fill(-6, 16, 4, -6, 18, 4, claw).set(-6, 16, 5, claw);
+  model.fill(5, 20, -1, 6, 27, 0, body).fill(5, 19, -1, 6, 20, 5, body);
+  model.fill(3, 9, 3, 8, 15, 8, lamp, VOXEL_EMISSIVE);
+  for (const x of [3, 8]) for (const z of [3, 8]) model.fill(x, 9, z, x, 15, z, iron);
+  model.fill(3, 8, 3, 8, 8, 8, iron).fill(4, 16, 4, 7, 16, 7, iron).fill(5, 17, 5, 6, 18, 6, iron);
+  model.fill(5, 6, 5, 5, 7, 5, 0x5a8a90);
   return model;
 };
 
 const mothLantern = (): VoxelModel => {
   const model = new VoxelModel().fill(-1, 10, -3, 0, 12, 2, fur(0x4a3a2a, 41));
   model.fill(-2, 6, -2, 1, 9, 1, 0xffd08a, VOXEL_EMISSIVE).fill(-1, 5, -1, 0, 5, 0, 0xe8a21c, VOXEL_EMISSIVE);
+  model.fill(-1, 10, -8, 0, 11, -4, 0xffd08a, VOXEL_EMISSIVE).fill(-1, 10, -9, 0, 10, -9, 0xe8a21c, VOXEL_EMISSIVE);
   for (const side of [-1, 1]) {
-    for (let x = 1; x <= 7; x++) model.fill(side < 0 ? -1 - x : x, 11, -4 + Math.floor(x / 3), side < 0 ? -1 - x : x, 11, 3 - Math.floor(x / 2), x % 3 === 0 ? 0xe8a21c : 0x8a7a5a);
+    for (let x = 1; x <= 7; x++) {
+      const wx = side < 0 ? -1 - x : x;
+      model.fill(wx, 11 + Math.floor((x - 1) / 3), -4 + Math.floor(x / 3), wx, 11 + Math.floor(x / 3), 3 - Math.floor(x / 2), x % 3 === 0 ? 0xe8a21c : 0x8a7a5a);
+    }
   }
-  model.paintExisting(-6, 11, -1, -5, 11, 0, 0x2a2018).paintExisting(5, 11, -1, 6, 11, 0, 0x2a2018);
-  model.paintExisting(-6, 11, 0, -6, 11, 0, 0xffd08a, VOXEL_EMISSIVE).paintExisting(6, 11, 0, 6, 11, 0, 0xffd08a, VOXEL_EMISSIVE);
+  model.paintExisting(-6, 11, -1, -5, 13, 0, 0x2a2018).paintExisting(5, 11, -1, 6, 13, 0, 0x2a2018);
+  model.paintExisting(-6, 11, 0, -6, 13, 0, 0xffd08a, VOXEL_EMISSIVE).paintExisting(6, 11, 0, 6, 13, 0, 0xffd08a, VOXEL_EMISSIVE);
   model.fill(-1, 10, 3, 0, 11, 3, 0x2a2018);
   for (const [x, z] of [[-1, 3], [-2, 3], [-2, 4], [-3, 4], [-3, 5], [0, 3], [1, 3], [1, 4], [2, 4], [2, 5]] as const) model.set(x, 12, z, 0x6a5a3a);
   return model;
 };
 
 const glassHound = (): VoxelModel => {
-  const glass = 0x9fd6e6;
-  const model = canine(new VoxelModel(), glass, 0xbfe6f0, 0x7fb6c6, VOXEL_GLASS, 0xe8a21c, VOXEL_EMISSIVE);
-  model.fill(-1, 10, -6, 0, 10, 4, 0x5a7a8a).fill(-1, 8, 2, 0, 9, 3, 0xe8a21c, VOXEL_EMISSIVE);
+  const bone = 0x5a7a8a;
+  const model = canine(new VoxelModel(), 0xc4eef8, 0xe0f6fb, 0x9fcad6, VOXEL_GLASS, 0xe8a21c, VOXEL_EMISSIVE);
+  for (const z of [-4, -2, 0]) model.fill(-2, 7, z, 1, 9, z, bone);
+  for (const x of [-2, 1]) for (const z of [-6, 4]) model.fill(x, 1, z, x, 4, z, bone);
+  model.fill(-1, 10, -6, 0, 10, 4, 0xc88a3a, VOXEL_EMISSIVE).fill(-1, 8, 2, 0, 9, 3, 0xe8a21c, VOXEL_EMISSIVE);
   return model;
 };
+
+const HULL_HALF_WIDTH: Readonly<Record<number, number>> = { [-6]: 5, [-5]: 6, [-4]: 7, [-3]: 8, 4: 8, 5: 7, 6: 6 };
 
 const hullKnocker = (): VoxelModel => {
   const shell = 0x4e626c;
   const dark = 0x2a3038;
   const paint = (x: number, y: number, z: number): number => jitter(shell, 0.08, noise3(x, y, z, 43));
-  const model = new VoxelModel().fill(-9, 6, -6, 8, 9, 6, paint).fill(-8, 10, -5, 7, 10, 5, paint).fill(-6, 11, -4, 5, 11, 3, paint);
+  const width = (z: number): number => HULL_HALF_WIDTH[z] ?? 9;
+  const model = new VoxelModel();
+  for (let z = -6; z <= 6; z++) {
+    const w = width(z);
+    model.fill(-w, 6, z, w - 1, 9, z, paint);
+    if (z >= -5 && z <= 5) model.fill(-w + 1, 10, z, w - 2, 10, z, paint);
+    if (z >= -4 && z <= 3) model.fill(-w + 3, 11, z, w - 4, 11, z, paint);
+  }
+  for (let x = -5; x <= 4; x += 2) model.set(x, 9, 7, shell);
   model.fill(-7, 5, -4, 6, 5, 4, darken(shell, 0.3));
   model.paintExisting(-8, 10, -5, 7, 10, 5, (x) => (mod(x, 3) === 0 ? 0x8a4a2a : null));
-  model.paintExisting(-6, 11, -4, 5, 11, 3, (x, y, z) => (noise3(x, y, z, 44) > 0.85 ? 0xc8c0a8 : null));
-  for (const x of [-3, 2]) model.fill(x, 10, 6, x, 13, 6, dark).set(x, 14, 6, 0xc79bff, VOXEL_EMISSIVE);
+  model.paintExisting(-6, 11, -4, 5, 11, 3, (x, y, z) => (noise3(x, y, z, 44) > 0.94 ? 0xc8c0a8 : null));
+  model.paintExisting(-1, 11, -4, 0, 11, 3, darken(shell, 0.25));
+  for (const x of [-4, 2]) model.fill(x, 10, 5, x + 1, 12, 6, dark).fill(x, 13, 5, x + 1, 14, 6, 0xc79bff, VOXEL_EMISSIVE);
   for (const side of [-1, 1]) {
     const at = (x: number): number => (side < 0 ? x : -1 - x);
-    model.fill(at(-12), 6, 4, at(-10), 8, 7, dark).fill(at(-14), 5, 8, at(-10), 10, 10, paint);
+    model.fill(at(-12), 6, 4, at(-9), 8, 7, dark).fill(at(-14), 5, 8, at(-10), 10, 10, paint);
     model.fill(at(-14), 8, 11, at(-11), 10, 13, paint).fill(at(-14), 5, 11, at(-11), 6, 13, paint);
-    for (const z of [-6, -3, 0, 3]) model.fill(at(-12), 7, z, at(-10), 7, z, dark).fill(at(-13), 0, z, at(-13), 7, z, dark);
+    model.paintExisting(at(-14), 5, 13, at(-11), 10, 13, 0xc8c0a8);
+    for (const z of [-6, -3, 0, 3]) model.fill(at(-12), 7, z, at(-width(z) - 1), 7, z, dark).fill(at(-13), 0, z, at(-13), 7, z, dark);
   }
   return model;
 };
 
 const tideWraith = (): VoxelModel => {
+  const water = 0x6ab8b0;
+  const weed = 0x4a6a2a;
   const model = new VoxelModel();
   for (let y = 0; y <= 26; y++) {
     const r = y < 6 ? 1.5 : y < 12 ? 2.5 : y < 20 ? 3.5 : y === 20 ? 1.5 : 2.5;
+    const hunch = y >= 21 ? 1 : 0;
     for (let x = -4; x <= 4; x++) for (let z = -4; z <= 4; z++) {
       const d = Math.hypot(x, z);
       if (d > r) continue;
       const surface = d > r - 1;
       if (surface && y < 21 && noise3(x, y, z, 45) > 0.7) continue;
-      if (surface && noise3(x, y, z, 47) > 0.65) model.set(x, y, z, 0x6ab8b0, VOXEL_GLASS);
-      else model.set(x, y, z, jitter(y < 10 ? 0x35604c : 0x4a7060, 0.1, noise3(x, y, z, 46)));
+      if (y <= 6 || (surface && noise3(x, y, z, 47) > 0.5)) model.set(x, y, z + hunch, water, VOXEL_GLASS);
+      else model.set(x, y, z + hunch, lighten(jitter(y < 10 ? 0x35604c : 0x4a7060, 0.12, noise3(x, 0, z, 46)), (y - 2) * 0.008));
     }
   }
   model.fill(-5, 8, 0, -4, 18, 0, 0x4a7060).fill(4, 8, 0, 5, 18, 0, 0x4a7060);
-  for (const [x, z, bottom] of [[-3, 1, 5], [2, -2, 7], [1, 3, 4], [-1, -3, 8]] as const) model.fill(x, bottom, z, x, 12, z, 0x4a6a2a);
-  model.set(-1, 23, 3, 0xc79bff, VOXEL_EMISSIVE).set(1, 23, 3, 0xc79bff, VOXEL_EMISSIVE).set(0, 23, 2, 0x35604c);
+  model.fill(-5, 8, 0, -4, 9, 0, water, VOXEL_GLASS).fill(4, 8, 0, 5, 9, 0, water, VOXEL_GLASS);
+  for (const [x, z, bottom] of [[-3, 1, 5], [2, -2, 7], [1, 3, 4], [-1, -3, 8]] as const) model.fill(x, bottom, z, x, 12, z, weed);
+  for (const [x, z] of [[-2, 3], [3, 1], [-3, 1], [2, -1]] as const) model.fill(x, 18, z, x, 26, z, weed);
+  model.set(-1, 23, 4, 0xc79bff, VOXEL_EMISSIVE).set(1, 23, 4, 0xc79bff, VOXEL_EMISSIVE);
   return model;
 };
 
@@ -291,15 +322,15 @@ const redTwin = (): VoxelModel => {
   const skin = 0xd8d6cc;
   const paint = (x: number, y: number, z: number): number => jitter(skin, 0.03, noise3(x, y, z, 51));
   const model = new VoxelModel();
-  for (const cx of [-5, 4]) {
+  for (const [cx, lean] of [[-5, 1], [4, -1]] as const) {
     model.fill(cx - 2, 0, -1, cx - 2, 11, 0, paint).fill(cx + 1, 0, -1, cx + 1, 11, 0, paint);
     model.fill(cx - 2, 12, -1, cx + 1, 21, 1, paint).fill(cx - 3, 20, -1, cx + 2, 21, 1, paint);
-    model.fill(cx - 1, 22, 0, cx, 22, 0, paint).fill(cx - 2, 23, -1, cx + 1, 27, 2, paint);
+    model.fill(cx - 1, 22, 0, cx, 22, 0, paint).fill(cx - 2 + lean, 23, -1, cx + 1 + lean, 27, 2, paint);
   }
   model.fill(-8, 9, -1, -8, 19, 0, paint).fill(6, 9, -1, 6, 19, 0, paint);
   model.fill(-3, 13, -1, -3, 19, 0, paint).fill(1, 13, -1, 1, 19, 0, paint);
   model.fill(-2, 13, -1, 0, 14, 0, 0xd8322a);
-  model.set(-5, 25, 3, 0xd8322a, VOXEL_EMISSIVE).set(3, 25, 3, 0xd8322a, VOXEL_EMISSIVE);
+  model.set(-4, 25, 3, 0xd8322a, VOXEL_EMISSIVE).set(2, 25, 3, 0xd8322a, VOXEL_EMISSIVE);
   return model;
 };
 
@@ -308,9 +339,10 @@ const cellBreaker = (): VoxelModel => {
   const paint = (x: number, y: number, z: number): number => jitter(hide, 0.08, noise3(x, y, z, 53));
   const model = new VoxelModel().fill(-5, 0, -2, -2, 7, 1, darken(hide, 0.3)).fill(1, 0, -2, 4, 7, 1, darken(hide, 0.3));
   model.fill(-6, 8, -3, 5, 23, 2, paint).fill(-9, 20, -3, 8, 25, 2, paint);
-  model.fill(-10, 8, -2, -7, 19, 1, darken(hide, 0.2)).fill(6, 8, -2, 9, 19, 1, darken(hide, 0.2));
-  model.fill(-11, 4, -3, -7, 7, 2, 0xd8d6cc).fill(6, 4, -3, 10, 7, 2, 0xd8d6cc);
+  model.fill(-10, 10, -2, -7, 19, 1, darken(hide, 0.2)).fill(6, 10, -2, 9, 19, 1, darken(hide, 0.2));
+  model.fill(-11, 6, -3, -7, 9, 3, 0xd8d6cc).fill(6, 6, -3, 10, 9, 3, 0xd8d6cc);
   model.paintExisting(-5, 10, 2, 4, 21, 2, (x, y) => (x === -5 || x === 4 || y === 10 || y === 21 ? darken(hide, 0.35) : null));
+  model.paintExisting(-6, 11, 2, -6, 12, 2, 0x9a9a9a).paintExisting(-6, 18, 2, -6, 19, 2, 0x9a9a9a);
   model.fill(-1, 14, 3, 0, 16, 3, 0xd8d6cc).fill(-3, 23, 3, 2, 23, 3, 0xd8322a, VOXEL_EMISSIVE);
   model.paintExisting(-9, 25, -3, 8, 25, 2, 0xe86a1c);
   return model;
@@ -327,30 +359,35 @@ const cordonStalker = (): VoxelModel => {
     }
   }
   model.fill(-5, 30, -5, 4, 35, 4, (x, y, z) => jitter(body, 0.06, noise3(x, y, z, 55))).paintExisting(-5, 31, -5, 4, 31, 4, 0xe86a1c);
-  model.fill(-1, 35, 3, 0, 44, 4, body).fill(-2, 42, 5, 1, 46, 9, body);
-  model.fill(-1, 45, 10, 0, 45, 10, 0xd8322a, VOXEL_EMISSIVE).fill(-1, 47, 8, 0, 47, 8, 0xd8322a, VOXEL_EMISSIVE);
+  model.paintExisting(-5, 35, -5, 4, 35, 4, (x, _y, z) => (mod(x + z, 4) < 2 ? 0xe86a1c : 0x2a2a2a));
+  model.fill(-1, 35, 3, 0, 44, 4, body).fill(-2, 41, 5, 1, 46, 11, body);
+  model.fill(-1, 44, 12, 0, 45, 12, 0xd8322a, VOXEL_EMISSIVE).fill(-1, 47, 9, 0, 47, 10, 0xd8322a, VOXEL_EMISSIVE);
   return model;
 };
 
 const vaultEcho = (): VoxelModel => {
   const model = new VoxelModel();
-  const part = (x0: number, y0: number, z0: number, x1: number, y1: number, z1: number): void => {
+  const part = (x0: number, y0: number, z0: number, x1: number, y1: number, z1: number, sparse = false): void => {
     for (let y = y0; y <= y1; y++) {
       const shift = (y >= 8 && y <= 10) || (y >= 22 && y <= 23) ? 1 : 0;
       for (let x = x0; x <= x1; x++) for (let z = z0; z <= z1; z++) {
-        if (y % 3 === 0) model.set(x + shift, y, z, 0x7fd8ff, VOXEL_EMISSIVE);
-        else if (noise3(x, y, z, 57) <= 0.8) model.set(x + shift, y, z, 0x3a7a9a, VOXEL_GLASS);
+        if (y % 4 === 0) model.set(x + shift, y, z, 0xcfe6ff, VOXEL_EMISSIVE);
+        else if (!sparse || noise3(x, y, z, 57) <= 0.7) model.set(x + shift, y, z, 0x4a7a96);
       }
     }
   };
   part(-3, 0, -1, -2, 15, 1);
   part(1, 0, -1, 2, 15, 1);
   part(-3, 14, -1, 2, 15, 1);
-  part(-4, 16, -2, 3, 27, 1);
+  part(-4, 16, -2, 3, 27, 1, true);
   part(-6, 15, -1, -5, 27, 0);
   part(4, 15, -1, 5, 27, 0);
   part(-1, 28, -1, 0, 28, 0);
-  part(-3, 29, -3, 2, 35, 2);
+  part(-3, 29, -3, 2, 35, 2, true);
+  for (const cell of model.cells()) {
+    const { x, y, z } = cell;
+    if (!model.has(x + 1, y, z) && !model.has(x - 1, y, z) && !model.has(x, y + 1, z) && !model.has(x, y - 1, z) && !model.has(x, y, z + 1) && !model.has(x, y, z - 1)) model.remove(x, y, z);
+  }
   model.set(-2, 32, 3, 0xe8fbff, VOXEL_EMISSIVE).set(1, 32, 3, 0xe8fbff, VOXEL_EMISSIVE);
   return model;
 };
@@ -358,24 +395,37 @@ const vaultEcho = (): VoxelModel => {
 const warden = (): VoxelModel => {
   const plate = 0x24323f;
   const core = 0x7fd8ff;
+  const key = 0xd8322a;
+  const gauntlet = darken(plate, 0.3);
   const model = new VoxelModel();
-  for (let y = 0; y <= 44; y++) {
+  const radii = (y: number): [number, number] => {
     const r = y < 8 ? 9 - y * 0.5 : y < 34 ? 6 + Math.sin(y * 0.25) * 2 : 5;
-    const rx = Math.round(r);
-    const rz = Math.round(r * 0.6);
+    return [Math.round(r), Math.round(r * 0.6)];
+  };
+  for (let y = 0; y <= 44; y++) {
+    const [rx, rz] = radii(y);
     const glassy = y > 12 && y < 34;
     for (let x = -rx; x <= rx - 1; x++) for (let z = -rz; z <= rz - 1; z++) {
       const shell = x === -rx || x === rx - 1 || z === -rz || z === rz - 1;
-      if (!shell) model.set(x, y, z, glassy ? core : 0x0e1a26, glassy ? VOXEL_EMISSIVE : VOXEL_SOLID);
+      if (!shell) model.set(x, y, z, 0x0e1a26);
       else if (glassy && mod(x + rx - 1, 4) !== 0) model.set(x, y, z, 0x2a4458, VOXEL_GLASS);
       else model.set(x, y, z, jitter(plate, 0.08, noise3(x, y, z, 59)));
     }
   }
+  model.fill(-2, 16, -1, 1, 30, 0, core, VOXEL_EMISSIVE);
+  for (const y of [18, 23, 28]) {
+    const [rx, rz] = radii(y);
+    model.fill(-rx + 1, y, -rz + 1, rx - 2, y, rz - 2, core, VOXEL_EMISSIVE);
+  }
   model.fill(-16, 28, -2, -8, 31, 1, plate).fill(7, 28, -2, 15, 31, 1, plate);
   model.fill(-17, 14, -2, -14, 31, 1, plate).fill(13, 14, -2, 16, 31, 1, plate);
-  model.fill(-17, 10, -2, -14, 13, 1, darken(plate, 0.3)).fill(13, 10, -2, 16, 13, 1, darken(plate, 0.3));
-  model.fill(-18, 6, -3, -13, 9, 2, darken(plate, 0.3)).fill(12, 6, -3, 17, 10, 2, darken(plate, 0.3));
-  model.fill(14, 0, -1, 15, 5, 0, 0xd8322a, VOXEL_EMISSIVE).fill(16, 0, -1, 17, 2, 0, 0xd8322a, VOXEL_EMISSIVE).fill(16, 4, -1, 16, 4, 0, 0xd8322a, VOXEL_EMISSIVE);
+  model.fill(-18, 20, -3, -13, 21, 2, plate).fill(12, 20, -3, 17, 21, 2, plate);
+  model.fill(-18, 10, -3, -13, 16, 2, gauntlet).fill(12, 10, -3, 17, 16, 2, gauntlet);
+  model.paintExisting(-18, 16, -3, -13, 16, 2, core, VOXEL_EMISSIVE).paintExisting(12, 16, -3, 17, 16, 2, core, VOXEL_EMISSIVE);
+  model.fill(-18, 6, -3, -13, 9, 2, gauntlet).fill(12, 6, -3, 17, 10, 2, gauntlet);
+  model.fill(14, 8, 3, 15, 9, 12, key, VOXEL_EMISSIVE).fill(14, 5, 10, 15, 7, 10, key, VOXEL_EMISSIVE).fill(14, 5, 12, 15, 7, 12, key, VOXEL_EMISSIVE);
+  model.fill(13, 6, -6, 16, 10, -4, key, VOXEL_EMISSIVE);
+  for (let x = 14; x <= 15; x++) for (let y = 7; y <= 9; y++) for (let z = -6; z <= -4; z++) model.remove(x, y, z);
   model.fill(-3, 38, 3, 2, 40, 3, core, VOXEL_EMISSIVE).fill(-1, 45, -2, 0, 46, 1, core, VOXEL_EMISSIVE);
   for (let x = -6; x <= 5; x++) {
     if (x === 2 || x === 3) continue;
@@ -397,18 +447,18 @@ const LOOKS: Readonly<Record<string, CreatureLook>> = {
   gutterMite: { build: gutterMite, gait: 'scurry' },
   siltEel: { build: siltEel, gait: 'scurry' },
   scrapCrawler: { build: scrapCrawler, gait: 'scurry' },
-  rustling: { build: rustling, gait: 'trot' },
+  rustling: { build: rustling, gait: 'trot', scale: 1.25 },
   lineMimic: { build: lineMimic, gait: 'drift' },
   scrapMagpie: { build: scrapMagpie, gait: 'hop' },
-  lamplighter: { build: lamplighter, gait: 'drift', muzzle: [5.5, 12, -0.5], accent: 0xffb35a },
+  lamplighter: { build: lamplighter, gait: 'drift', muzzle: [5.5, 12, 5.5], accent: 0xffb35a },
   mothLantern: { build: mothLantern, gait: 'hover', muzzle: [-0.5, 6, 0], accent: 0xffd08a },
   glassHound: { build: glassHound, gait: 'trot' },
   hullKnocker: { build: hullKnocker, gait: 'scurry', scale: 1.8 },
-  tideWraith: { build: tideWraith, gait: 'drift', muzzle: [0, 23, 3], accent: 0xc79bff },
+  tideWraith: { build: tideWraith, gait: 'drift', muzzle: [0, 23, 4], accent: 0xc79bff },
   redTwin: { build: redTwin, gait: 'drift', muzzle: [-1, 14, 1], accent: 0xd8322a },
   cellBreaker: { build: cellBreaker, gait: 'trot' },
   cordonStalker: { build: cordonStalker, gait: 'trot' },
-  vaultEcho: { build: vaultEcho, gait: 'drift', muzzle: [-0.5, 32, 3], accent: 0x7fd8ff },
+  vaultEcho: { build: vaultEcho, gait: 'drift', muzzle: [-0.5, 32, 3], accent: 0xcfe6ff },
   warden: { build: warden, gait: 'loom', scale: 1.8, muzzle: [-0.5, 39, 3.5], accent: 0x7fd8ff },
 };
 

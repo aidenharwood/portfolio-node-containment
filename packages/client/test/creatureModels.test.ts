@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { buildCreatureModel, creatureLookAirborne, CREATURE_LOOK_KEYS } from '../src/render/models/wardCreatureModels.ts';
+import { buildCreatureModel, creatureLookAccent, creatureLookAirborne, CREATURE_LOOK_KEYS } from '../src/render/models/wardCreatureModels.ts';
 import { VOXEL_EMISSIVE, VOXEL_GLASS } from '../src/render/voxel/voxelKinds.ts';
 
 const NEIGHBOURS = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]] as const;
@@ -54,5 +54,19 @@ test('no creature is accidentally washed out to white', () => {
     const cells = buildCreatureModel(key).cells();
     const white = cells.filter((cell) => (cell.color >> 16 & 0xff) > 0xf0 && (cell.color >> 8 & 0xff) > 0xf0 && (cell.color & 0xff) > 0xf0);
     assert.ok(white.length < cells.length * 0.05, `${key} is ${white.length} of ${cells.length} near-white voxels`);
+  }
+});
+
+test('a creature with an accent glow shows it to the overhead camera', () => {
+  for (const key of CREATURE_LOOK_KEYS) {
+    if (creatureLookAccent(key) === undefined) continue;
+    const model = buildCreatureModel(key);
+    const top = model.bounds?.max[1] ?? 0;
+    const open = model.cells().filter((cell) => {
+      if (cell.kind !== VOXEL_EMISSIVE) return false;
+      for (let y = cell.y + 1; y < top; y++) if (model.has(cell.x, y, cell.z) && model.kindAt(cell.x, y, cell.z) !== VOXEL_GLASS) return false;
+      return true;
+    });
+    assert.ok(open.length >= 2, `${key} shows ${open.length} glowing voxels from above`);
   }
 });
