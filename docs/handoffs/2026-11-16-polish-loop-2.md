@@ -58,9 +58,7 @@ The working rules from `2026-11-16-polish-loop.md` still apply:
 
 ## Open items
 
-1. **Unverified:**
-   - Lamp-lit canal glints. The specular is clamped to 1.2 and sampled per voxel cell, but no shot has a lamp beside open water.
-   - The Terminus terrazzo panels (`tx/4` tone) have had no fresh shot.
+1. **Verified headlessly after the loop:** neon-lit canal water beside the Canal Basin sign (pink body light and mist, no blown specular) and the Terminus terrazzo panels (aligned with the brass strips). Nothing is left open from the fidelity loop.
 2. **Albedo-aware light shoulder** and the optional low-pitch skyline ring were not attempted.
 3. **Skipped renames:** Focus → Conduit and Plate → Cuirass. Doing them needs `RENAMED_WARD_ITEMS` entries.
 4. **Panel drop shadows:** `.panel` uses `clip-path`, which clips its `box-shadow`.
