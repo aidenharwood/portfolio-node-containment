@@ -278,7 +278,7 @@ test('the strongest creature an operative can safely farm pays the most experien
   assert.equal(best, 'scrap-crawler', `${best} pays ${perMinute(best).toFixed(0)} a minute`);
 });
 
-test('counting the wait to heal, the Fringe pays better than crawlers and the Cordon does not jump the queue', () => {
+test('counting the wait to heal, the Fringe pays better than crawlers until the Cordon takes over at the sinter rung', () => {
   const set = (key: string): EquipmentState => ({ primary: `${key}-baton`, head: `${key}-helm`, torso: `${key}-plate`, hands: `${key}-gauntlets`, legs: `${key}-greaves`, feet: `${key}-boots` });
   const perMinute = (level: number, key: string, creatureId: string): number => {
     const creature = GAME_CONTENT.creatures.get(creatureId);
@@ -298,6 +298,64 @@ test('counting the wait to heal, the Fringe pays better than crawlers and the Co
     assert.ok(knockers > crawlers * 1.2, `at ${level} knockers pay ${knockers.toFixed(0)} against crawlers' ${crawlers.toFixed(0)}`);
     assert.ok(perMinute(level, key, 'cordon-stalker') < knockers, `at ${level} the Cordon outpays the Fringe`);
   }
+  for (const level of [40, 45]) {
+    const knockers = perMinute(level, 'sinter', 'hull-knocker');
+    const cordon = perMinute(level, 'sinter', 'cordon-stalker');
+    assert.ok(cordon >= knockers, `at ${level} the Cordon pays ${cordon.toFixed(0)} against knockers' ${knockers.toFixed(0)}`);
+  }
+});
+
+const RUNG_SETS: readonly (readonly [number, string])[] = MATERIAL_LADDER.map((rung) => [rung.level, rung.key]);
+
+const plateAt = (level: number): Operative => {
+  const key = RUNG_SETS.filter(([rungLevel]) => rungLevel <= level).at(-1)![1];
+  return { closeQuarters: level, fortitude: level, gear: { primary: `${key}-baton`, head: `${key}-helm`, torso: `${key}-plate`, hands: `${key}-gauntlets`, legs: `${key}-greaves`, feet: `${key}-boots` } };
+};
+
+function plateFight(level: number, creatureId: string, fights = 1500): { win: number; lost: number } {
+  const creature = GAME_CONTENT.creatures.get(creatureId);
+  assert.ok(creature, creatureId);
+  const operative = plateAt(level);
+  const skills = { ...createStartingSkills(), closeQuarters: experienceForLevel(level), fortitude: experienceForLevel(level) };
+  const attack = playerAttackProfile(skills, operative.gear, GAME_CONTENT.items);
+  const profile = deriveCombatProfile(skills, equipmentStats(operative.gear, GAME_CONTENT.items));
+  const guard = defenceAgainst(profile, creature.attack.style);
+  const theirs = creatureAttackProfile(creature);
+  const random = mulberry(creature.level * 104729 + level);
+  let wins = 0;
+  let lost = 0;
+  for (let run = 0; run < fights; run++) {
+    let mine = profile.integrity;
+    let its = creature.integrity;
+    for (let tick = 0; mine > 0 && its > 0; tick++) {
+      if (tick % attack.speedTicks === 0) its -= rollAttack(attack, creatureDefence(creature, attack.style, false), random).damage;
+      if (its > 0 && tick % theirs.speedTicks === 0) mine -= rollAttack(theirs, guard, random).damage;
+    }
+    if (mine > 0) wins++;
+    lost += (profile.integrity - Math.max(0, mine)) / profile.integrity;
+  }
+  return { win: wins / fights, lost: lost / fights };
+}
+
+test('past level 28, aggressive creatures are a fair fight at level and a real danger ten levels under, even in plate', () => {
+  const veterans = [...GAME_CONTENT.creatures.values()].filter((creature) => creature.level > 28 && creature.aggressive && creature.id !== 'the-warden');
+  assert.ok(veterans.length >= 5);
+  for (const creature of veterans) {
+    const even = plateFight(creature.level, creature.id);
+    const under = plateFight(creature.level - 10, creature.id);
+    const label = (fight: { win: number; lost: number }) => `${(fight.win * 100).toFixed(0)}% win, ${(fight.lost * 100).toFixed(0)}% lost`;
+    if (creature.attack.style === 'psionic') {
+      assert.ok(even.win >= 0.95, `${creature.id} at level: ${label(even)}`);
+      assert.ok(under.win <= 0.75, `${creature.id} ten under: ${label(under)}`);
+      continue;
+    }
+    const near = plateFight(creature.level - 5, creature.id);
+    assert.ok(even.win >= 0.97 && even.lost >= 0.3 && even.lost <= 0.5, `${creature.id} at level: ${label(even)}`);
+    assert.ok(near.win >= 0.9 && near.lost >= 0.55 && near.lost <= 0.75, `${creature.id} five under: ${label(near)}`);
+    assert.ok(under.win <= 0.85 && under.lost >= 0.75, `${creature.id} ten under: ${label(under)}`);
+  }
+  const warden = plateFight(54, 'the-warden');
+  assert.ok(warden.win >= 0.85 && warden.win <= 0.95, `the Warden at 54 in plate: ${(warden.win * 100).toFixed(0)}%`);
 });
 
 test('an NPC with a waiting line says it while the quest is active', () => {

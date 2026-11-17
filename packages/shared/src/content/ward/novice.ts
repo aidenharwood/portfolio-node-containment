@@ -71,6 +71,8 @@ interface Beast {
   readonly containment?: CreatureDefinition['containment'];
   readonly designation?: string;
   readonly integrity?: number;
+  readonly accuracy?: number;
+  readonly defence?: number;
   readonly range?: number;
 }
 
@@ -78,21 +80,36 @@ const KILL_BONUS_LEVEL_CAP = 16;
 
 const VETERAN_LEVEL = 14;
 
-const VETERAN_LEVEL_CAP = 34;
+const VETERAN_LEVEL_CAP = 44;
+
+const THREAT_LEVEL = 28;
+
+const THREAT_ACCURACY_PER_LEVEL: Readonly<Record<CreatureDefinition['attack']['style'], number>> = { melee: 5, ranged: 5, psionic: 1.5 };
+
+const THREAT_DEFENCE_PER_LEVEL = 2;
+
+const THREAT_INTEGRITY_PER_LEVEL = 2;
+
+const THREAT_EXPERIENCE_PER_LEVEL = 0.035;
+
+const threatLevels = (level: number): number => Math.max(0, level - THREAT_LEVEL);
 
 export const killExperience = (level: number): number =>
-  level * 6 + 2 * Math.min(level, KILL_BONUS_LEVEL_CAP) ** 2 + 8 * Math.max(0, Math.min(level, VETERAN_LEVEL_CAP) - VETERAN_LEVEL) ** 2;
+  Math.round(
+    (level * 6 + 2 * Math.min(level, KILL_BONUS_LEVEL_CAP) ** 2 + 8 * Math.max(0, Math.min(level, VETERAN_LEVEL_CAP) - VETERAN_LEVEL) ** 2) *
+      (1 + THREAT_EXPERIENCE_PER_LEVEL * threatLevels(level)),
+  );
 
-export const beast = (spec: Beast): CreatureDefinition => ({
+export const beast = (spec: Beast, style = spec.style ?? 'melee', threat = threatLevels(spec.level)): CreatureDefinition => ({
   id: spec.id,
   name: spec.name,
   ...(spec.designation ? { designation: spec.designation } : {}),
   examine: spec.examine,
   model: spec.model,
   level: spec.level,
-  integrity: spec.integrity ?? spec.level * 3 + 4,
-  defence: Math.round(spec.level * 0.6),
-  attack: { style: spec.style ?? 'melee', accuracy: Math.round(spec.level * 0.6) + 1, maxHit: 1 + Math.floor(spec.level / 4), range: spec.range ?? 1, speedTicks: 4 },
+  integrity: spec.integrity ?? spec.level * 3 + 4 + THREAT_INTEGRITY_PER_LEVEL * threat,
+  defence: spec.defence ?? Math.round(spec.level * 0.6) + THREAT_DEFENCE_PER_LEVEL * threat,
+  attack: { style, accuracy: spec.accuracy ?? Math.round(spec.level * 0.6) + 1 + Math.round(THREAT_ACCURACY_PER_LEVEL[style] * threat), maxHit: 1 + Math.floor(spec.level / 4), range: spec.range ?? 1, speedTicks: 4 },
   ...(spec.aggressive ? { aggressive: true } : {}),
   aggroRadius: spec.aggressive ? 3 : 0,
   leashRadius: 7,
