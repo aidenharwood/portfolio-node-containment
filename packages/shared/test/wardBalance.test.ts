@@ -284,32 +284,43 @@ type Style = keyof typeof COMBAT_STYLE_INFO;
 
 const STYLES = Object.keys(COMBAT_STYLE_INFO) as Style[];
 
-const LINE_KIT: Readonly<Record<Style, { readonly weapon: string; readonly pieces: Readonly<Record<'head' | 'torso' | 'hands' | 'legs' | 'feet', string>> }>> = {
-  melee: { weapon: 'baton', pieces: { head: 'helm', torso: 'plate', hands: 'gauntlets', legs: 'greaves', feet: 'boots' } },
-  ranged: { weapon: 'pistol', pieces: { head: 'hood', torso: 'jacket', hands: 'gloves', legs: 'trousers', feet: 'treads' } },
-  psionic: { weapon: 'focus', pieces: { head: 'cowl', torso: 'robe', hands: 'wraps', legs: 'breeches', feet: 'footwraps' } },
+const LINE_KIT: Readonly<Record<Style, { readonly weapon: string; readonly weapons: readonly string[]; readonly pieces: Readonly<Record<'head' | 'torso' | 'hands' | 'legs' | 'feet', string>> }>> = {
+  melee: { weapon: 'baton', weapons: ['baton', 'blade', 'maul'], pieces: { head: 'helm', torso: 'plate', hands: 'gauntlets', legs: 'greaves', feet: 'boots' } },
+  ranged: { weapon: 'pistol', weapons: ['pistol', 'carbine', 'rifle'], pieces: { head: 'hood', torso: 'jacket', hands: 'gloves', legs: 'trousers', feet: 'treads' } },
+  psionic: { weapon: 'focus', weapons: ['focus', 'resonator'], pieces: { head: 'cowl', torso: 'robe', hands: 'wraps', legs: 'breeches', feet: 'footwraps' } },
 };
 
 const slugOf = (name: string): string => name.toLowerCase().replace(/[^a-z]+/g, '-');
 
 const rungAt = (level: number) => MATERIAL_LADDER.filter((rung) => rung.level <= level).at(-1)!;
 
-function lineGear(style: Style, level: number): EquipmentState {
+function strongestWeapon(style: Style, rungKey: string, level: number): string {
+  const perTick = (kind: string): number => {
+    const weapon = GAME_CONTENT.items.get(`${rungKey}-${kind}`)?.equipment;
+    assert.ok(weapon?.weapon, `${rungKey}-${kind}`);
+    const rating = level + Object.values(weapon.stats).reduce((sum, value) => sum + (value ?? 0), 0);
+    const maxHit = 1 + Math.floor((rating * WEAPON_KIND_INFO[weapon.weapon.kind].damageScale) / 4);
+    return (hitChance(rating, level) * (1 + maxHit)) / 2 / weapon.weapon.speedTicks;
+  };
+  return LINE_KIT[style].weapons.reduce((top, kind) => (perTick(kind) > perTick(top) ? kind : top));
+}
+
+function lineGear(style: Style, level: number, strongest = false): EquipmentState {
   const rung = rungAt(level);
   const line = style === 'melee' ? rung.key : slugOf(style === 'ranged' ? rung.skirmisher : rung.warden);
   const kit = LINE_KIT[style];
   const pieces = Object.fromEntries(Object.entries(kit.pieces).map(([slot, noun]) => [slot, `${line}-${noun}`]));
-  const gear = { primary: `${rung.key}-${kit.weapon}`, ...pieces };
+  const gear = { primary: `${rung.key}-${strongest ? strongestWeapon(style, rung.key, level) : kit.weapon}`, ...pieces };
   for (const itemId of Object.values(gear)) assert.ok(GAME_CONTENT.items.get(itemId), `${itemId} exists`);
   return gear;
 }
 
 const lineSkills = (style: Style, level: number) => ({ ...createStartingSkills(), [COMBAT_STYLE_INFO[style].skill]: experienceForLevel(level), fortitude: experienceForLevel(typicalFortitude(level)) });
 
-function lineFight(style: Style, level: number, creatureId: string, fights = 1500): { win: number; lost: number } {
+function lineFight(style: Style, level: number, creatureId: string, strongest = false, fights = 1500): { win: number; lost: number } {
   const creature = GAME_CONTENT.creatures.get(creatureId);
   assert.ok(creature, creatureId);
-  const gear = lineGear(style, level);
+  const gear = lineGear(style, level, strongest);
   const skills = lineSkills(style, level);
   const attack = playerAttackProfile(skills, gear, GAME_CONTENT.items);
   assert.equal(attack.style, style);
@@ -334,10 +345,10 @@ function lineFight(style: Style, level: number, creatureId: string, fights = 150
 
 const plateFight = (level: number, creatureId: string): { win: number; lost: number } => lineFight('melee', level, creatureId);
 
-function linePace(style: Style, level: number, creatureId: string, gearLevel = level): number {
+function linePace(style: Style, level: number, creatureId: string, gearLevel = level, strongest = false): number {
   const creature = GAME_CONTENT.creatures.get(creatureId);
   assert.ok(creature, creatureId);
-  const gear = lineGear(style, gearLevel);
+  const gear = lineGear(style, gearLevel, strongest);
   const skills = lineSkills(style, level);
   const attack = playerAttackProfile(skills, gear, GAME_CONTENT.items);
   const profile = deriveCombatProfile(skills, equipmentStats(gear, GAME_CONTENT.items));
@@ -371,13 +382,13 @@ const farmable = (): string[] => {
   return [...spots].filter(([, count]) => count >= 2).map(([id]) => id);
 };
 
-test('at combat levels 20, 30, 40 and 50 every style has a safe farm in its own armour line that keeps pace with melee', () => {
+test('at combat levels 20, 30, 40 and 50 every style has a safe farm in its own armour line and strongest weapon that keeps pace with melee', () => {
   const creatures = farmable();
   assert.ok(!creatures.includes('the-warden') && !creatures.includes('the-lamplighter'));
   for (const level of [20, 30, 40, 50]) {
     const best = (style: Style) =>
       creatures
-        .map((id) => ({ id, ...lineFight(style, level, id), pace: linePace(style, level, id) }))
+        .map((id) => ({ id, ...lineFight(style, level, id, true), pace: linePace(style, level, id, level, true) }))
         .filter((fight) => fight.win >= 0.95 && fight.lost <= 0.6)
         .sort((a, b) => b.pace - a.pace)[0];
     const melee = best('melee');
