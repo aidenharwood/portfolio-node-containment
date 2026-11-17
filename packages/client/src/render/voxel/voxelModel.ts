@@ -9,12 +9,12 @@ const pack = (x: number, y: number, z: number): number => x + OFFSET + (y + OFFS
 export type Paint = number | ((x: number, y: number, z: number) => number | null);
 
 export class VoxelModel implements VoxelSource {
-  private readonly cells = new Map<number, { color: number; kind: VoxelKind; readonly x: number; readonly y: number; readonly z: number }>();
+  private readonly voxels = new Map<number, { color: number; kind: VoxelKind; readonly x: number; readonly y: number; readonly z: number }>();
   private readonly min: [number, number, number] = [Infinity, Infinity, Infinity];
   private readonly max: [number, number, number] = [-Infinity, -Infinity, -Infinity];
 
   set(x: number, y: number, z: number, color: number, kind: VoxelKind = VOXEL_SOLID): this {
-    this.cells.set(pack(x, y, z), { color, kind, x, y, z });
+    this.voxels.set(pack(x, y, z), { color, kind, x, y, z });
     if (x < this.min[0]) this.min[0] = x;
     if (y < this.min[1]) this.min[1] = y;
     if (z < this.min[2]) this.min[2] = z;
@@ -25,7 +25,7 @@ export class VoxelModel implements VoxelSource {
   }
 
   remove(x: number, y: number, z: number): this {
-    this.cells.delete(pack(x, y, z));
+    this.voxels.delete(pack(x, y, z));
     return this;
   }
 
@@ -45,7 +45,7 @@ export class VoxelModel implements VoxelSource {
     for (let x = Math.min(x0, x1); x <= Math.max(x0, x1); x++) {
       for (let y = Math.min(y0, y1); y <= Math.max(y0, y1); y++) {
         for (let z = Math.min(z0, z1); z <= Math.max(z0, z1); z++) {
-          const cell = this.cells.get(pack(x, y, z));
+          const cell = this.voxels.get(pack(x, y, z));
           if (!cell) continue;
           const color = typeof paint === 'number' ? paint : paint(x, y, z);
           if (color === null) continue;
@@ -57,20 +57,33 @@ export class VoxelModel implements VoxelSource {
     return this;
   }
 
+  cells(): { readonly x: number; readonly y: number; readonly z: number; readonly color: number; readonly kind: VoxelKind }[] {
+    return [...this.voxels.values()];
+  }
+
+  merge(other: VoxelModel): this {
+    for (const cell of other.cells()) this.set(cell.x, cell.y, cell.z, cell.color, cell.kind);
+    return this;
+  }
+
+  occupied(): string[] {
+    return [...this.voxels.values()].map((cell) => `${cell.x},${cell.y},${cell.z}`);
+  }
+
   has(x: number, y: number, z: number): boolean {
-    return this.cells.has(pack(x, y, z));
+    return this.voxels.has(pack(x, y, z));
   }
 
   kindAt(x: number, y: number, z: number): number {
-    return this.cells.get(pack(x, y, z))?.kind ?? VOXEL_EMPTY;
+    return this.voxels.get(pack(x, y, z))?.kind ?? VOXEL_EMPTY;
   }
 
   colorAt(x: number, y: number, z: number): number {
-    return this.cells.get(pack(x, y, z))?.color ?? 0;
+    return this.voxels.get(pack(x, y, z))?.color ?? 0;
   }
 
   baseBounds(layers: number): VoxelBounds | null {
-    const cells = [...this.cells.values()].filter((cell) => cell.y < layers);
+    const cells = [...this.voxels.values()].filter((cell) => cell.y < layers);
     if (cells.length === 0) return null;
     const xs = cells.map((cell) => cell.x);
     const zs = cells.map((cell) => cell.z);
@@ -78,7 +91,7 @@ export class VoxelModel implements VoxelSource {
   }
 
   get isEmpty(): boolean {
-    return this.cells.size === 0;
+    return this.voxels.size === 0;
   }
 
   get bounds(): VoxelBounds | null {
@@ -100,7 +113,7 @@ export class VoxelModel implements VoxelSource {
     const [minX, minY, minZ] = this.min;
     const width = this.max[0] - minX + 1;
     const depth = this.max[2] - minZ + 1;
-    const order = [...this.cells.values()].map(({ x, y, z }) => ((y - minY) * depth + (z - minZ)) * width + (x - minX)).sort((a, b) => a - b);
+    const order = [...this.voxels.values()].map(({ x, y, z }) => ((y - minY) * depth + (z - minZ)) * width + (x - minX)).sort((a, b) => a - b);
     const cells = new Int32Array(order.length * 3);
     order.forEach((key, index) => {
       cells[index * 3] = (key % width) + minX;

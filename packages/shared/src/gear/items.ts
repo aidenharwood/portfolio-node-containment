@@ -24,6 +24,7 @@ export type ItemIconShape =
   | 'boots'
   | 'pack'
   | 'cape'
+  | 'shield'
   | 'baton'
   | 'pistol'
   | 'datapad'
@@ -81,11 +82,16 @@ export const GEAR_MOTIF_INFO: Readonly<Record<GearMotif, { name: string; summary
   warden: { name: 'Adept', summary: 'Warded vestments for operatives who face the mind-bending.' },
 };
 
+export const GEAR_FORMS = ['scrap', 'iron', 'steel', 'alloy', 'sinter', 'vaultGlass'] as const;
+
+export type GearForm = (typeof GEAR_FORMS)[number];
+
 export interface GearVisual {
   readonly primary: string;
   readonly secondary: string;
   readonly emissive?: string;
   readonly motif?: GearMotif;
+  readonly form?: GearForm;
 }
 
 export interface EquipRequirements {

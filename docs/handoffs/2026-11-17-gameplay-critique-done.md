@@ -115,3 +115,29 @@ The owner asked for early levels to come fairly quickly. The model in `scripts/_
 | 5 | about 5 min | about 2 min |
 | 10 | about 19 min | about 10 min |
 | 20 | about 63 min | about 44 min |
+
+## Follow-up: gear models per tier and back items
+
+The owner said the gear lines were only recolours and that back items were missing. I ran the critic loop again. Fable 5.2 needed usage credits, so the critic was Opus, as the brief allows. Verdicts: rounds 1–3 "not yet", round 4 **"ship it"**.
+
+**Forms**
+- `GearVisual.form` (`GEAR_FORMS`) comes from `MATERIAL_LADDER`. Every worn piece, held weapon and icon now changes its outline per tier:
+  - Helms: dented bucket, kettle hat with nasal bar, crested T-slot sallet, porthole diving dome, sealed faceplate with canisters, crystal crown.
+  - Cowls and hoods: sack hood, felt cone hat, mitre with sigil, weed tendrils with coral crown, a nimbus, a void hood.
+  - Every torso, glove, leg and boot gets matching changes.
+  - Maul, pistol, carbine and rifle swap their head or receiver per form.
+- `reshapeForForm` remaps icons, held weapons and backs per form.
+- Modules: `gearFormWorn.ts`, `itemFormPasses.ts`, `weaponHeads.ts`, `formReshape.ts`. ARCHITECTURE.md ("Gear on the character model") has the summary.
+
+**Back line**
+- 18 new craftable pieces: `{tier}-pavise` (new `shield` shape), `{line}-pack` and `{line}-mantle`.
+- Stats: `HEAVY.back = 1 + 0.3l`, Hazard 1. Inputs: 2 of the tier's bar, fibre or trace.
+- Kit Order picks up the scrap backs automatically.
+
+**Guard**
+- `packages/client/test/gearForms.test.ts` (52 tests) compares bounding-box-normalised 16×16 silhouettes and needs Jaccard ≥ 0.2 between any two tiers.
+- `VoxelModel` gained `cells()`, `merge()` and `occupied()`. `wornModelsFor` exposes the unmeshed rig parts.
+
+**Open polish**
+- Check the Redline nimbus (radius 7, arc segments) and the reduced Cordon top cell in a fresh shot.
+- `scripts/_formDist.ts` (local) prints the closest tier pair per piece.

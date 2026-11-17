@@ -55,7 +55,7 @@ test('every material in the ladder has a full set of weapons and armour', () => 
     const weapons = ['baton', 'blade', 'maul', 'pistol', 'carbine', 'rifle', 'focus', 'resonator'].map((kind) => `${material}-${kind}`);
     for (const id of weapons) assert.ok(GAME_CONTENT.items.get(id)?.equipment?.weapon, `${id} is a weapon`);
     const armour = [...GAME_CONTENT.items.values()].filter((item) => item.equipment && !item.equipment.weapon && !item.unique && GAME_CONTENT.recipes.get(`fabricator:${item.id}`)?.inputs.some((input) => input.itemId === bar || input.itemId === fibre));
-    assert.equal(armour.length, 15, `${material} has fifteen armour pieces`);
+    assert.equal(armour.length, 18, `${material} has fifteen armour pieces and three back pieces`);
   }
 });
 

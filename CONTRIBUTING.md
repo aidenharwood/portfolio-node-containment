@@ -43,7 +43,8 @@ Characters differ only in how they look. There are no classes, origins or attrib
 1. Append an `ItemDefinition` to `ITEMS` with an `equipment` block: `slot`, `stats`, optional `requirements`, and a `visual`.
 2. `icon` decides both the inventory sprite and how the item looks when worn. It must be one of the shapes `EQUIPMENT_SHAPES` lists for the item's slot (`shared/src/gear/slots.ts`); `npm test` enforces this. `visual` only sets the colours.
 3. For a new shape, add it to `EQUIPMENT_SHAPES`, add an icon builder in `client/src/render/items/itemModels.ts`, and add a renderer to the matching record in `client/src/render/models/characterModel.ts`. The typecheck fails until all three exist.
-4. Give it a recipe. See "Add a craftable item".
+4. Ladder gear made in `ward/items.ts` gets its tier's `form` automatically. A new body shape or weapon kind also needs a case in each form pass (`gearFormWorn.ts`, `itemFormPasses.ts`), and must pass `gearForms.test.ts`, which fails when two tiers share a silhouette.
+5. Give it a recipe. See "Add a craftable item".
 
 ### Add a craftable item
 

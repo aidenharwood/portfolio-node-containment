@@ -1,7 +1,7 @@
 import type { SkillId } from '../../character/skills.ts';
 import type { WeaponKind } from '../../combat/weapons.ts';
 import type { CraftingStation, RecipeDefinition } from '../../crafting/recipes.ts';
-import type { ConsumableKind, GearMotif, ItemDefinition, ItemIconShape, ItemRarity } from '../../gear/items.ts';
+import type { ConsumableKind, GearForm, GearMotif, ItemDefinition, ItemIconShape, ItemRarity } from '../../gear/items.ts';
 import type { EquipmentSlot } from '../../gear/slots.ts';
 import type { StatBlock } from '../../gear/stats.ts';
 import { boostTicksForMinutes } from '../../character/boosts.ts';
@@ -93,6 +93,7 @@ export const WARD_FOOD: readonly ItemDefinition[] = [
 
 interface Material {
   readonly key: string;
+  readonly form: GearForm;
   readonly name: string;
   readonly level: number;
   readonly rarity: ItemRarity;
@@ -113,6 +114,7 @@ interface Material {
 export const MATERIAL_LADDER: readonly Material[] = [
   {
     key: 'scrap',
+    form: 'scrap',
     name: 'Scrap',
     level: 1,
     rarity: 'standard',
@@ -131,6 +133,7 @@ export const MATERIAL_LADDER: readonly Material[] = [
   },
   {
     key: 'iron',
+    form: 'iron',
     name: 'Iron',
     level: 10,
     rarity: 'issued',
@@ -149,6 +152,7 @@ export const MATERIAL_LADDER: readonly Material[] = [
   },
   {
     key: 'steel',
+    form: 'steel',
     name: 'Steel',
     level: 20,
     rarity: 'restricted',
@@ -167,6 +171,7 @@ export const MATERIAL_LADDER: readonly Material[] = [
   },
   {
     key: 'alloy',
+    form: 'alloy',
     name: 'Alloy',
     level: 30,
     rarity: 'classified',
@@ -185,6 +190,7 @@ export const MATERIAL_LADDER: readonly Material[] = [
   },
   {
     key: 'sinter',
+    form: 'sinter',
     name: 'Sinter',
     level: 40,
     rarity: 'classified',
@@ -203,6 +209,7 @@ export const MATERIAL_LADDER: readonly Material[] = [
   },
   {
     key: 'vault-glass',
+    form: 'vaultGlass',
     name: 'Vault Glass',
     level: 50,
     rarity: 'anomalous',
@@ -250,9 +257,14 @@ const WEAPONS: readonly WeaponShape[] = [
 
 type BodySlot = Extract<EquipmentSlot, 'head' | 'torso' | 'hands' | 'legs' | 'feet'>;
 
+type ArmourSlot = BodySlot | 'back';
+
 const BODY_SLOTS: readonly BodySlot[] = ['head', 'torso', 'hands', 'legs', 'feet'];
 
-const HEAVY: Readonly<Record<BodySlot, (l: number) => number>> = {
+const ARMOUR_SLOTS: readonly ArmourSlot[] = [...BODY_SLOTS, 'back'];
+
+const HEAVY: Readonly<Record<ArmourSlot, (l: number) => number>> = {
+  back: (l) => 1 + r(l * 0.3),
   head: (l) => 2 + r(l * 0.4),
   torso: (l) => 4 + r(l * 0.9),
   hands: (l) => 1 + r(l * 0.25),
@@ -260,17 +272,17 @@ const HEAVY: Readonly<Record<BodySlot, (l: number) => number>> = {
   feet: (l) => 1 + r(l * 0.25),
 };
 
-const LINES: Readonly<Record<GearMotif, { readonly skill: SkillId; readonly shapes: Readonly<Record<BodySlot, { readonly noun: string; readonly icon: ItemIconShape }>> }>> = {
-  bulwark: { skill: 'fortitude', shapes: { head: { noun: 'Helm', icon: 'helmet' }, torso: { noun: 'Plate', icon: 'plate' }, hands: { noun: 'Gauntlets', icon: 'gloves' }, legs: { noun: 'Greaves', icon: 'trousers' }, feet: { noun: 'Boots', icon: 'boots' } } },
-  skirmisher: { skill: 'marksmanship', shapes: { head: { noun: 'Hood', icon: 'hood' }, torso: { noun: 'Jacket', icon: 'vest' }, hands: { noun: 'Gloves', icon: 'gloves' }, legs: { noun: 'Trousers', icon: 'trousers' }, feet: { noun: 'Treads', icon: 'boots' } } },
-  warden: { skill: 'psionics', shapes: { head: { noun: 'Cowl', icon: 'cowl' }, torso: { noun: 'Robe', icon: 'coat' }, hands: { noun: 'Wraps', icon: 'gloves' }, legs: { noun: 'Breeches', icon: 'trousers' }, feet: { noun: 'Footwraps', icon: 'boots' } } },
+const LINES: Readonly<Record<GearMotif, { readonly skill: SkillId; readonly shapes: Readonly<Record<ArmourSlot, { readonly noun: string; readonly icon: ItemIconShape }>> }>> = {
+  bulwark: { skill: 'fortitude', shapes: { head: { noun: 'Helm', icon: 'helmet' }, torso: { noun: 'Plate', icon: 'plate' }, hands: { noun: 'Gauntlets', icon: 'gloves' }, legs: { noun: 'Greaves', icon: 'trousers' }, feet: { noun: 'Boots', icon: 'boots' }, back: { noun: 'Pavise', icon: 'shield' } } },
+  skirmisher: { skill: 'marksmanship', shapes: { head: { noun: 'Hood', icon: 'hood' }, torso: { noun: 'Jacket', icon: 'vest' }, hands: { noun: 'Gloves', icon: 'gloves' }, legs: { noun: 'Trousers', icon: 'trousers' }, feet: { noun: 'Treads', icon: 'boots' }, back: { noun: 'Pack', icon: 'pack' } } },
+  warden: { skill: 'psionics', shapes: { head: { noun: 'Cowl', icon: 'cowl' }, torso: { noun: 'Robe', icon: 'coat' }, hands: { noun: 'Wraps', icon: 'gloves' }, legs: { noun: 'Breeches', icon: 'trousers' }, feet: { noun: 'Footwraps', icon: 'boots' }, back: { noun: 'Mantle', icon: 'cape' } } },
 };
 
 const prune = (stats: Record<string, number>): StatBlock => Object.fromEntries(Object.entries(stats).filter(([, value]) => value > 0)) as StatBlock;
 
-function armourStats(motif: GearMotif, slot: BodySlot, level: number): StatBlock {
+function armourStats(motif: GearMotif, slot: ArmourSlot, level: number): StatBlock {
   const base = HEAVY[slot](level);
-  const hazard = slot === 'torso' || slot === 'head' ? 1 : 0;
+  const hazard = slot === 'torso' || slot === 'head' || slot === 'back' ? 1 : 0;
   switch (motif) {
     case 'bulwark':
       return prune({ armor: base, deflection: r(base * 0.4), hazardShielding: hazard, power: slot === 'hands' ? 1 + r(level * 0.1) : 0 });
@@ -281,9 +293,9 @@ function armourStats(motif: GearMotif, slot: BodySlot, level: number): StatBlock
   }
 }
 
-const ARMOUR_COUNTS: Readonly<Record<BodySlot, number>> = { head: 2, torso: 4, hands: 1, legs: 3, feet: 1 };
+const ARMOUR_COUNTS: Readonly<Record<ArmourSlot, number>> = { head: 2, torso: 4, hands: 1, legs: 3, feet: 1, back: 2 };
 
-function armourInputs(tier: Material, motif: GearMotif, slot: BodySlot): Readonly<Record<string, number>> {
+function armourInputs(tier: Material, motif: GearMotif, slot: ArmourSlot): Readonly<Record<string, number>> {
   const count = ARMOUR_COUNTS[slot];
   if (motif === 'bulwark') return { [tier.bar]: count };
   if (motif === 'skirmisher') return count > 1 ? { [tier.fibre]: count, [tier.bar]: 1 } : { [tier.fibre]: 1 };
@@ -321,7 +333,7 @@ function ladderGear(tier: Material): { readonly items: ItemDefinition[]; readonl
         slot: 'primary',
         stats: weapon.stats(tier.level),
         requires: requirement(weapon.skill, tier.level),
-        visual: { primary: tier.metal[0], secondary: tier.metal[1], emissive: tier.glow },
+        visual: { primary: tier.metal[0], secondary: tier.metal[1], emissive: tier.glow, form: tier.form },
         value: tier.value * inputCount(inputs),
         weapon: { kind: weapon.kind, range: weapon.range, speedTicks: weapon.speedTicks },
       }),
@@ -332,7 +344,7 @@ function ladderGear(tier: Material): { readonly items: ItemDefinition[]; readonl
     const line = LINES[motif];
     const lineName = motif === 'bulwark' ? tier.name : motif === 'skirmisher' ? tier.skirmisher : tier.warden;
     const palette = motif === 'bulwark' ? tier.metal : tier.cloth;
-    for (const slot of BODY_SLOTS) {
+    for (const slot of ARMOUR_SLOTS) {
       const shape = line.shapes[slot];
       const id = `${slugOf(lineName)}-${slugOf(shape.noun)}`;
       const inputs = armourInputs(tier, motif, slot);
@@ -346,7 +358,7 @@ function ladderGear(tier: Material): { readonly items: ItemDefinition[]; readonl
           slot,
           stats: armourStats(motif, slot, tier.level),
           requires: requirement(line.skill, tier.level),
-          visual: motif === 'skirmisher' ? { primary: tier.cloth[0], secondary: tier.metal[1], motif } : { primary: palette[0], secondary: palette[1], ...(motif === 'bulwark' ? {} : { emissive: tier.glow }), motif },
+          visual: motif === 'skirmisher' ? { primary: tier.cloth[0], secondary: tier.metal[1], motif, form: tier.form } : { primary: palette[0], secondary: palette[1], ...(motif === 'bulwark' ? {} : { emissive: tier.glow }), motif, form: tier.form },
           value: tier.value * inputCount(inputs),
         }),
       );

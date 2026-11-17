@@ -21,6 +21,8 @@ import { VoxelModel } from '../voxel/voxelModel.ts';
 import { CHARACTER_VOXEL_SIZE } from '../world/worldScale.ts';
 import { swingCurve, type EntityRig } from './entityRig.ts';
 import { attackPose, combinePoses, gripFor, heldWeaponOf, motionFor } from './weaponPoses.ts';
+import { HELD_AXES, reshapeForForm } from '../voxel/formReshape.ts';
+import { backForm, bootForm, formPaintOf, gloveForm, headForm, heldForm, legForm, shoulderForm, torsoForm } from './gearFormWorn.ts';
 
 interface WornGear<S extends EquipmentSlot> extends GearVisual {
   readonly shape: GearShape<S>;
@@ -230,23 +232,45 @@ function partLayouts(build: Build): Readonly<Record<PartName, PartLayout>> {
   };
 }
 
-function buildRigGeometry(appearance: CharacterAppearance, visuals: GearVisuals): RigGeometry {
+export interface WornModels {
+  readonly parts: Readonly<Record<PartName, VoxelModel>>;
+  readonly weapon: VoxelModel | null;
+}
+
+function buildWornModels(appearance: CharacterAppearance, visuals: GearVisuals): WornModels {
   const build = buildOf(appearance);
-  const layout = partLayouts(build);
-  const meshPart = (name: PartName, model: VoxelModel) => model.mesh(CHARACTER_VOXEL_SIZE, layout[name].pivot);
   const handX = build.shoulderHalf + 1;
+  return {
+    weapon: visuals.primary ? buildHeld(visuals.primary, handX) : null,
+    parts: {
+      legLeft: buildLeg(build, visuals, -1),
+      legRight: buildLeg(build, visuals, 1),
+      torso: buildTorso(build, visuals),
+      head: buildHead(appearance, visuals),
+      armLeft: buildArm(appearance, build, visuals, -1),
+      armRight: buildArm(appearance, build, visuals, 1),
+    },
+  };
+}
+
+export const wornModelsFor = (appearance: CharacterAppearance, gear: readonly ItemId[]): WornModels => buildWornModels(appearance, resolveGearVisuals(gear));
+
+function buildRigGeometry(appearance: CharacterAppearance, visuals: GearVisuals): RigGeometry {
+  const layout = partLayouts(buildOf(appearance));
+  const handX = buildOf(appearance).shoulderHalf + 1;
   const grip = [handX, 12.5, -0.5] as const;
-  const primary = visuals.primary;
+  const models = buildWornModels(appearance, visuals);
+  const meshPart = (name: PartName) => models.parts[name].mesh(CHARACTER_VOXEL_SIZE, layout[name].pivot);
   return {
     grip,
-    weapon: primary ? buildHeld(primary, handX).mesh(CHARACTER_VOXEL_SIZE, grip) : null,
+    weapon: models.weapon ? models.weapon.mesh(CHARACTER_VOXEL_SIZE, grip) : null,
     parts: {
-    legLeft: meshPart('legLeft', buildLeg(build, visuals, -1)),
-    legRight: meshPart('legRight', buildLeg(build, visuals, 1)),
-    torso: meshPart('torso', buildTorso(build, visuals)),
-    head: meshPart('head', buildHead(appearance, visuals)),
-    armLeft: meshPart('armLeft', buildArm(appearance, build, visuals, -1)),
-    armRight: meshPart('armRight', buildArm(appearance, build, visuals, 1)),
+      legLeft: meshPart('legLeft'),
+      legRight: meshPart('legRight'),
+      torso: meshPart('torso'),
+      head: meshPart('head'),
+      armLeft: meshPart('armLeft'),
+      armRight: meshPart('armRight'),
     },
   };
 }
@@ -312,6 +336,11 @@ function buildLeg(build: Build, visuals: GearVisuals, side: -1 | 1): VoxelModel 
       model.set(knee, 7, 3, lighten(plate, 0.3));
     }
   }
+  const legFrame = { inner, outer, outside, side };
+  const legPaint = legs && formPaintOf(legs);
+  if (legPaint) legForm(model, legFrame, legPaint);
+  const bootPaint = feet && formPaintOf(feet);
+  if (bootPaint) bootForm(model, legFrame, bootPaint);
   if (feet?.motif === 'skirmisher') model.paintExisting(footInner, 2, -1, footOuter, 2, 2, colorOf(feet.secondary, darken(bootColor, 0.3)));
   if (feet?.motif === 'warden') model.paintExisting(footInner, 3, -1, footOuter, 4, 1, (_x, y) => (y === 4 ? colorOf(feet.secondary, bootColor) : null));
   return model;
@@ -464,13 +493,27 @@ const BACK_GEAR: Readonly<Record<GearShape<'back'>, BackRenderer>> = {
     if (gear.motif === 'bulwark') model.fill(-half, top + 1, -5, half, top + 1, -4, lighten(body, 0.15));
     if (gear.emissive) model.set(slim ? 1 : 2, slim ? 18 : 20, depth - 1, hex(gear.emissive), VOXEL_EMISSIVE);
   },
+  shield: (model, build, gear) => {
+    const face = colorOf(gear.primary, 0x4a5056);
+    const rim = darken(colorOf(gear.secondary, face), 0.1);
+    for (let y = 11; y <= 22; y++) {
+      const half = y < 14 ? 1 + (y - 11) : 4;
+      for (let x = -half; x <= half; x++) {
+        model.set(x, y, -4, darken(face, 0.15));
+        model.set(x, y, -5, Math.abs(x) === half || y === 22 || y === 11 ? rim : jitter(face, 0.03, noise3(x, y, -5, 83)));
+      }
+    }
+    model.fill(-1, 16, -6, 1, 17, -6, lighten(face, 0.15));
+    for (const x of [-2, 2]) for (let y = 17; y <= SHOULDER_Y; y++) model.set(x, y, torsoFront(build, y, x) + 1, darken(rim, 0.2));
+    if (gear.emissive) model.set(0, 19, -6, hex(gear.emissive), VOXEL_EMISSIVE);
+  },
   cape: (model, build, gear) => {
     const cloth = colorOf(gear.primary, 0x3a2a4a);
     const hem = colorOf(gear.secondary, darken(cloth, 0.35));
-    for (let y = 5; y <= SHOULDER_Y; y++) {
-      const half = Math.min(build.shoulderHalf, 2 + Math.floor((SHOULDER_Y - y) / 4)) + (y < 10 ? 1 : 0);
-      const z = y < HIP_Y ? -5 : -4;
-      for (let x = -half; x <= half; x++) model.set(x, y, z, y <= 6 ? hem : jitter(x % 2 === 0 ? cloth : darken(cloth, 0.06), 0.02, noise3(x, y, z, 87)));
+    for (let y = 7; y <= SHOULDER_Y; y++) {
+      const half = Math.min(build.shoulderHalf, 2 + Math.floor((SHOULDER_Y - y) / 4));
+      const z = -4;
+      for (let x = -half; x <= half; x++) model.set(x, y, z, y <= 8 ? hem : jitter(x % 2 === 0 ? cloth : darken(cloth, 0.06), 0.02, noise3(x, y, z, 87)));
     }
     model.fill(-build.shoulderHalf, SHOULDER_Y, -4, build.shoulderHalf, SHOULDER_Y, -3, darken(cloth, 0.1));
     for (const x of [-build.shoulderHalf + 1, build.shoulderHalf - 1]) {
@@ -493,7 +536,17 @@ function buildTorso(build: Build, visuals: GearVisuals): VoxelModel {
   }
   if (torso) TORSO_GEAR[torso.shape](model, build, torso);
   if (torso?.motif) TORSO_MOTIF[torso.motif](model, build, torso);
-  if (visuals.back) BACK_GEAR[visuals.back.shape](model, build, visuals.back);
+  const torsoPaint = torso && formPaintOf(torso);
+  if (torsoPaint) torsoForm(model, { half: (y) => torsoHalf(build, y), front: (y, x) => torsoFront(build, y, x), shoulderHalf: build.shoulderHalf, hipHalf: build.hipHalf }, torsoPaint);
+  if (visuals.back) {
+    const backPaint = formPaintOf(visuals.back);
+    if (backPaint) {
+      const back = new VoxelModel();
+      BACK_GEAR[visuals.back.shape](back, build, visuals.back);
+      backForm(back, visuals.back.shape, backPaint);
+      model.merge(reshapeForForm(back, backPaint.form));
+    } else BACK_GEAR[visuals.back.shape](model, build, visuals.back);
+  }
 
   const badge = visuals.utility;
   if (badge) {
@@ -535,6 +588,11 @@ function buildArm(appearance: CharacterAppearance, build: Build, visuals: GearVi
     model.fill(Math.min(x0, outer), 19, -2, Math.max(x1, outer), SHOULDER_Y + 1, 1, (x, y, z) => (y === 19 ? darken(plate, 0.3) : jitter(lighten(plate, 0.08), 0.03, noise3(x, y, z, 5))));
     model.fill(x0, 15, -2, x1, 16, 1, darken(plate, 0.05));
   }
+  const armFrame = { x0, x1, outer: side > 0 ? x1 + 1 : x0 - 1, side };
+  const shoulderPaint = torso?.shape === 'plate' ? formPaintOf(torso) : null;
+  if (shoulderPaint) shoulderForm(model, armFrame, shoulderPaint, SHOULDER_Y + 1);
+  const glovePaint = gloves && formPaintOf(gloves);
+  if (glovePaint) gloveForm(model, armFrame, glovePaint);
 
   if (side < 0 && visuals.secondary) HELD_GEAR[visuals.secondary.shape](model, visuals.secondary, x1);
   return model;
@@ -582,7 +640,10 @@ function buildHeld(gear: WornGear<'primary'>, handX: number): VoxelModel {
   const model = new VoxelModel();
   HELD_GEAR[gear.shape](model, gear, handX);
   addWeaponMotif(model, gear, gear.shape === 'resonator' ? RESONATOR_AXIS : handX);
-  return model;
+  const paint = formPaintOf(gear);
+  if (!paint) return model;
+  heldForm(model, gear.shape, WEAPON_SPAN[gear.shape], gear.shape === 'resonator' ? RESONATOR_AXIS : handX, paint);
+  return reshapeForForm(model, paint.form, HELD_AXES);
 }
 
 const RESONATOR_AXIS = 2;
@@ -810,7 +871,11 @@ function buildHead(appearance: CharacterAppearance, visuals: GearVisuals): Voxel
 
   if (visuals.implant) model.set(0, NECK_Y, -2, colorOf(visuals.implant.emissive, 0xb57cff), VOXEL_EMISSIVE);
   if (visuals.eyes) EYE_GEAR[visuals.eyes.shape](model, visuals.eyes);
-  if (helmet) HEAD_GEAR[helmet.shape](model, helmet);
+  if (helmet) {
+    HEAD_GEAR[helmet.shape](model, helmet);
+    const headPaint = formPaintOf(helmet);
+    if (headPaint) headForm(model, helmet.shape, headPaint);
+  }
   return model;
 }
 

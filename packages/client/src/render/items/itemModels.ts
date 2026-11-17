@@ -1,4 +1,6 @@
-import type { GearMotif, ItemDefinition, ItemIconShape } from '@containment/shared';
+import type { GearForm, GearMotif, ItemDefinition, ItemIconShape } from '@containment/shared';
+import { iconForm } from './itemFormPasses.ts';
+import { reshapeForForm } from '../voxel/formReshape.ts';
 import { darken, hex, jitter, lighten, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE, VOXEL_GLASS, type VoxelKind } from '../voxel/voxelKinds.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
@@ -8,6 +10,7 @@ export interface ItemPalette {
   readonly secondary: number;
   readonly emissive: number | null;
   readonly motif: GearMotif | null;
+  readonly form: GearForm | null;
 }
 
 type ItemBuilder = (palette: ItemPalette) => VoxelModel;
@@ -15,10 +18,10 @@ type ItemBuilder = (palette: ItemPalette) => VoxelModel;
 export function itemPalette(item: ItemDefinition): ItemPalette {
   const visual = item.equipment?.visual;
   if (visual) {
-    return { primary: hex(visual.primary), secondary: hex(visual.secondary), emissive: visual.emissive ? hex(visual.emissive) : null, motif: visual.motif ?? null };
+    return { primary: hex(visual.primary), secondary: hex(visual.secondary), emissive: visual.emissive ? hex(visual.emissive) : null, motif: visual.motif ?? null, form: visual.form ?? null };
   }
   const [primary, secondary] = item.iconColors;
-  return { primary: hex(primary), secondary: hex(secondary), emissive: null, motif: null };
+  return { primary: hex(primary), secondary: hex(secondary), emissive: null, motif: null, form: null };
 }
 
 const grain = (color: number, amount = 0.035) => (x: number, y: number, z: number) => jitter(color, amount, noise3(x, y, z, 13));
@@ -481,6 +484,17 @@ const scattergun: ItemBuilder = ({ primary, secondary, emissive }) => {
   return model;
 };
 
+const shield: ItemBuilder = ({ primary, secondary, emissive }) => {
+  const model = new VoxelModel();
+  for (let y = 0; y <= 14; y++) {
+    const half = y < 4 ? 2 + y : 6;
+    for (let x = -half; x <= half; x++) model.set(x, y, 0, Math.abs(x) === half || y === 14 || y === 0 ? darken(secondary, 0.1) : grain(primary)(x, y, 0)).set(x, y, -1, darken(primary, 0.2));
+  }
+  model.fill(-1, 7, 1, 1, 9, 1, lighten(primary, 0.15));
+  if (emissive) model.set(0, 8, 2, emissive, VOXEL_EMISSIVE);
+  return model;
+};
+
 const plate: ItemBuilder = ({ primary, secondary, emissive }) => {
   const model = new VoxelModel().fill(-6, 0, -2, 6, 13, 1, grain(primary, 0.05));
   for (let y = 2; y <= 12; y += 3) model.fill(-6, y, 2, 6, y + 1, 2, darken(primary, 0.2));
@@ -831,6 +845,7 @@ const BUILDERS: Readonly<Record<ItemIconShape, ItemBuilder>> = {
   hood,
   pack,
   cape,
+  shield,
   cowl,
   visor,
   jumpsuit: garment(false),
@@ -854,4 +869,10 @@ const BUILDERS: Readonly<Record<ItemIconShape, ItemBuilder>> = {
   credits,
 };
 
-export const buildItemModel = (item: ItemDefinition): VoxelModel => BUILDERS[item.icon](itemPalette(item));
+export function buildItemModel(item: ItemDefinition): VoxelModel {
+  const palette = itemPalette(item);
+  const model = BUILDERS[item.icon](palette);
+  if (!palette.form) return model;
+  iconForm(model, item.icon, palette.form, palette);
+  return reshapeForForm(model, palette.form);
+}
