@@ -1,6 +1,6 @@
-import type { DialogueDefinition } from '../dialogue/dialogue.ts';
+import { dialogueEffects, type DialogueDefinition } from '../dialogue/dialogue.ts';
 import type { ItemId, NpcId } from '../ids.ts';
-import type { GameEffect } from '../rules/effects.ts';
+import { givenItems, type GameEffect } from '../rules/effects.ts';
 import type { ObjectInteraction } from '../world/entities.ts';
 import type { GameContent } from './gameContent.ts';
 
@@ -23,14 +23,9 @@ export function forgetDestroyed(flags: readonly string[], itemIds: readonly Item
   return flags.filter((flag) => !prefixes.some((prefix) => flag.startsWith(prefix)));
 }
 
-const grantedItems = (effects: readonly GameEffect[] | undefined): ItemId[] =>
-  (effects ?? []).flatMap((effect) => (effect.type === 'giveItem' ? [effect.itemId] : []));
+const grantedItems = (effects: readonly GameEffect[] | undefined): ItemId[] => givenItems(effects).map((grant) => grant.itemId);
 
-const dialogueGrants = (dialogue: DialogueDefinition): ItemId[] =>
-  Object.values(dialogue.nodes).flatMap((node) => [
-    ...grantedItems(node.effects),
-    ...(node.options ?? []).flatMap((option) => grantedItems(option.effects)),
-  ]);
+const dialogueGrants = (dialogue: DialogueDefinition): ItemId[] => grantedItems(dialogueEffects(dialogue));
 
 const isQuestItem = (content: GameContent, itemId: ItemId): boolean => content.items.get(itemId)?.category === 'quest';
 

@@ -14,6 +14,7 @@ import {
   STATION_INFO,
   type CraftingStation,
   type GearMotif,
+  type ItemId,
   type RecipeDefinition,
   type RecipeGroup,
   type SelfState,
@@ -50,9 +51,12 @@ export class CraftingWindow {
   private readonly search = h('input', { className: 'crafting-search', type: 'search', placeholder: 'Search patterns', ariaLabel: 'Search patterns' });
   private readonly unsubscribers: (() => void)[];
 
-  constructor(connection: GameConnection, world: WorldState) {
+  private readonly showSources: (itemId: ItemId) => void;
+
+  constructor(connection: GameConnection, world: WorldState, showSources: (itemId: ItemId) => void) {
     this.connection = connection;
     this.world = world;
+    this.showSources = showSources;
     this.unsubscribers = [
       connection.on('crafting.opened', ({ station }) => this.open(station)),
       connection.on('crafting.closed', () => this.hide()),
@@ -237,9 +241,15 @@ export class CraftingWindow {
           const material = GAME_CONTENT.items.get(input.itemId);
           const have = countItem(self.inventory, input.itemId);
           const row = h('li', { className: have >= input.count ? 'met' : 'unmet' },
-            material && h('img', { src: itemIconUrl(material), alt: '' }),
+            material ? h('img', { src: itemIconUrl(material), alt: '' }) : h('span', {}),
             h('span', {}, material?.name ?? input.itemId),
             h('strong', {}, `${have} / ${input.count}`),
+            h('button', {
+              className: 'button ghost small crafting-source',
+              type: 'button',
+              title: `Where to get ${material?.name ?? input.itemId}`,
+              onclick: () => this.showSources(input.itemId),
+            }, 'Sources'),
           );
           if (material) attachItemTooltip(row, () => material);
           return row;

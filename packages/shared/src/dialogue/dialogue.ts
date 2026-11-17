@@ -30,6 +30,9 @@ export interface DialogueDefinition {
   readonly nodes: Readonly<Record<DialogueNodeId, DialogueNode>>;
 }
 
+export const dialogueEffects = (definition: DialogueDefinition): GameEffect[] =>
+  Object.values(definition.nodes).flatMap((node) => [...(node.effects ?? []), ...(node.options ?? []).flatMap((option) => option.effects ?? [])]);
+
 export const selectEntryNode = (definition: DialogueDefinition, context: ConditionContext): DialogueNodeId | null =>
   definition.entries.find((entry) => areConditionsMet(entry.conditions, context))?.node ?? null;
 

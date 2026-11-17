@@ -1,4 +1,4 @@
-import { GAME_CONTENT, INVENTORY_CAPACITY, type ItemDefinition, type SelfState } from '@containment/shared';
+import { GAME_CONTENT, INVENTORY_CAPACITY, type ItemDefinition, type ItemId, type SelfState } from '@containment/shared';
 import type { GameConnection } from '../../net/gameConnection.ts';
 import { itemIconUrl } from '../../render/items/itemSprites.ts';
 import { h, replaceChildren } from '../../ui/dom.ts';
@@ -11,6 +11,7 @@ import { inventoryColumns } from './inventoryLayout.ts';
 
 export interface ItemExaminer {
   examine(text: string): void;
+  sources(itemId: ItemId): void;
 }
 
 export function createInventoryTab(connection: GameConnection, menu: ContextMenu, examiner: ItemExaminer, modes: InventoryModeSlot): PanelTab {
@@ -31,7 +32,11 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
 
   const actionsFor = (index: number, item: ItemDefinition): MenuAction[] => {
     const mode = modes.current;
-    if (mode) return [...mode.actions(index, item), { verb: 'Examine', subject: item.name, subjectTone: 'item', run: () => examiner.examine(item.examine) }];
+    const lookups: MenuAction[] = [
+      { verb: 'Examine', subject: item.name, subjectTone: 'item', run: () => examiner.examine(item.examine) },
+      { verb: 'Sources', subject: item.name, subjectTone: 'item', run: () => examiner.sources(item.id) },
+    ];
+    if (mode) return [...mode.actions(index, item), ...lookups];
     const actions: MenuAction[] = [];
     if (item.consumable) {
       actions.push({ verb: item.consumable.verb, subject: item.name, subjectTone: 'item', run: () => connection.send({ type: 'inventory.use', slotIndex: index }) });
@@ -45,8 +50,7 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
     } else {
       actions.push({ verb: 'Drop', subject: item.name, subjectTone: 'item', run: () => connection.send({ type: 'inventory.drop', slotIndex: index }) });
     }
-    actions.push({ verb: 'Examine', subject: item.name, subjectTone: 'item', run: () => examiner.examine(item.examine) });
-    return actions;
+    return [...actions, ...lookups];
   };
 
   const slots = Array.from({ length: INVENTORY_CAPACITY }, (_, index) => {

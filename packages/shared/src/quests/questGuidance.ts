@@ -1,8 +1,8 @@
 import type { RecipeDefinition } from '../crafting/recipes.ts';
 import type { ShopDefinition } from '../economy/shop.ts';
-import type { DialogueDefinition } from '../dialogue/dialogue.ts';
+import { dialogueEffects, type DialogueDefinition } from '../dialogue/dialogue.ts';
 import type { AreaId, DialogueId, DistrictId, ItemId, NpcId, QuestId, WorldObjectId } from '../ids.ts';
-import type { GameEffect } from '../rules/effects.ts';
+import { givenItems, type GameEffect } from '../rules/effects.ts';
 import type { NpcDefinition, WorldObjectDefinition } from '../world/entities.ts';
 import { objectiveGoal, type QuestDefinition, type QuestObjective, type QuestStepDefinition } from './questDefinition.ts';
 import type { QuestLog } from './questProgress.ts';
@@ -144,10 +144,9 @@ export function objectIdsForObjective(
 }
 
 const givesItem = (effects: readonly GameEffect[] | undefined, itemId: ItemId): boolean =>
-  (effects ?? []).some((effect) => effect.type === 'giveItem' && effect.itemId === itemId);
+  givenItems(effects).some((grant) => grant.itemId === itemId);
 
-const dialogueGivesItem = (dialogue: DialogueDefinition, itemId: ItemId): boolean =>
-  Object.values(dialogue.nodes).some((node) => givesItem(node.effects, itemId) || (node.options ?? []).some((option) => givesItem(option.effects, itemId)));
+const dialogueGivesItem = (dialogue: DialogueDefinition, itemId: ItemId): boolean => givesItem(dialogueEffects(dialogue), itemId);
 
 export function npcIdsForObjective(
   objective: QuestObjective,

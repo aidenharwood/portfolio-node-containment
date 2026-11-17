@@ -1,15 +1,10 @@
 import type { GameContent } from '../content/gameContent.ts';
-import type { DistrictId, ItemId, LevelId, WorldObjectId } from '../ids.ts';
+import type { ItemId, WorldObjectId } from '../ids.ts';
 import type { WorldObjectDefinition } from '../world/entities.ts';
 import type { GatheringSource } from './gathering.ts';
+import { placementLocations, type SourceLocation } from './itemSources.ts';
 
-export interface SalvageGuideLocation {
-  readonly levelId: LevelId;
-  readonly levelName: string;
-  readonly districtId: DistrictId | null;
-  readonly districtName: string;
-  readonly count: number;
-}
+export type SalvageGuideLocation = SourceLocation;
 
 export interface SalvageGuideEntry {
   readonly objectId: WorldObjectId;
@@ -26,26 +21,8 @@ const salvageInteractionOf = (definition: WorldObjectDefinition) =>
 
 export const salvageSourceOf = (definition: WorldObjectDefinition): GatheringSource | undefined => salvageInteractionOf(definition)?.gather;
 
-function locationsOf(objectId: WorldObjectId, content: GameContent): SalvageGuideLocation[] {
-  const locations: SalvageGuideLocation[] = [];
-  for (const level of content.levels.values()) {
-    const counts = new Map<DistrictId | null, number>();
-    for (const placement of level.objects) {
-      if (placement.objectId !== objectId) continue;
-      const districtId = level.layout.districtAt(placement.position) ?? null;
-      counts.set(districtId, (counts.get(districtId) ?? 0) + 1);
-    }
-    const here = [...counts].map(([districtId, count]) => ({
-      levelId: level.id,
-      levelName: level.name,
-      districtId,
-      districtName: districtId ? (content.districts.get(districtId)?.name ?? '') : '',
-      count,
-    }));
-    locations.push(...here.sort((a, b) => a.districtName.localeCompare(b.districtName)));
-  }
-  return locations;
-}
+const locationsOf = (objectId: WorldObjectId, content: GameContent): SalvageGuideLocation[] =>
+  placementLocations(content, (level) => level.objects.filter((placement) => placement.objectId === objectId).map((placement) => placement.position));
 
 export function salvageGuide(content: GameContent): SalvageGuideEntry[] {
   const entries: SalvageGuideEntry[] = [];

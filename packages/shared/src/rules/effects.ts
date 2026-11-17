@@ -21,3 +21,6 @@ export type GameEffect =
   | { readonly type: 'restoreIntegrity' }
   | { readonly type: 'openTramMap' }
   | { readonly type: 'discoverStation'; readonly stationId: TramStationId };
+
+export const givenItems = (effects: readonly GameEffect[] | undefined): { readonly itemId: ItemId; readonly count: number }[] =>
+  (effects ?? []).flatMap((effect) => (effect.type === 'giveItem' ? [{ itemId: effect.itemId, count: effect.count ?? 1 }] : []));

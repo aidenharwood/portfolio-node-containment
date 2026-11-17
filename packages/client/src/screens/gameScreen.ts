@@ -27,6 +27,7 @@ import { ShopWindow } from '../hud/shopWindow.ts';
 import { ActivityBar } from '../hud/activityBar.ts';
 import { CraftingWindow } from '../hud/craftingWindow.ts';
 import { QuestInfoWindow } from '../hud/questInfoWindow.ts';
+import { ItemSourcesWindow } from '../hud/itemSourcesWindow.ts';
 import { SalvageGuideWindow } from '../hud/salvageGuideWindow.ts';
 import { StorageWindow } from '../hud/storageWindow.ts';
 import { TramRide } from '../hud/tramRide.ts';
@@ -112,7 +113,8 @@ export function createGameScreen(app: AppNavigator): Screen {
   const questInfo = new QuestInfoWindow(guidanceTracking);
   const market = new MarketWindow(connection, world);
   const contractBoard = new ContractBoardWindow(connection, world);
-  const crafting = new CraftingWindow(connection, world);
+  const itemSourcesWindow = new ItemSourcesWindow();
+  const crafting = new CraftingWindow(connection, world, (itemId) => itemSourcesWindow.show(itemId));
   const activity = new ActivityBar(connection, world);
   const clickIndicator = new ClickIndicator();
   const zoneBanner = h('div', { className: 'zone-banner' });
@@ -166,7 +168,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   const minimap = new Minimap(world, walkTo, () => worldMap.toggle(), () => settings.toggle());
   const topRight = h('div', { className: 'hud-top-right' }, minimap.element, objectives.element);
   const sidePanel = new SidePanel([
-    createInventoryTab(connection, menu, { examine }, inventoryModes),
+    createInventoryTab(connection, menu, { examine, sources: (itemId) => itemSourcesWindow.show(itemId) }, inventoryModes),
     createEquipmentTab(connection, world),
     createSkillsTab(() => salvageGuideWindow.show()),
     createQuestsTab(menu, guidanceTracking, questInfo),
@@ -429,6 +431,10 @@ export function createGameScreen(app: AppNavigator): Screen {
       && event.target instanceof Element
       && event.target.closest('button, [role="button"], input, textarea, select') !== null;
     if (activatesFocused) return;
+    if (event.key === 'Escape' && itemSourcesWindow.isOpen) {
+      itemSourcesWindow.hide();
+      return;
+    }
     if (event.key === 'Escape' && shop.isOpen) {
       shop.requestClose();
       return;
@@ -547,6 +553,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     crafting.element,
     storage.element,
     salvageGuideWindow.element,
+    itemSourcesWindow.element,
     questInfo.element,
     market.element,
     contractBoard.element,
