@@ -75,7 +75,7 @@ export const WARD_MATERIALS: readonly ItemDefinition[] = [
 ];
 
 export const WARD_FOOD: readonly ItemDefinition[] = [
-  food('smoked-eel', 'Smoked Eel', 'Brined, smoked and chewy. A Ward staple.', 'eel', ['#6a4a2a', '#2a1a10'], 9, 5),
+  food('smoked-eel', 'Smoked Eel', 'Brined, smoked and chewy. A Ward staple.', 'eel', ['#6a4a2a', '#2a1a10'], 9, 8),
   boosted(medicine('greens-poultice', 'Greens Poultice', 'Mashed greens bound with trace dust. It stings, then it helps.', 'gel', ['#7cf29a', '#1f5f35'], 10, 3, 'Apply'), { armor: 2, hazardShielding: 2 }, 3),
   food('noodle-bowl', 'Bowl of Noodles', "Vance's broth, noodles and whatever came in on the train.", 'bowl', ['#e8c070', '#8a5a2a'], 15, 10),
   food('eel-pie', 'Eel Pie', "Ostrowski's crust, a basin eel inside. A head pokes through the top. Tradition, apparently.", 'pie', ['#c8904a', '#4a3020'], 24, 16),
@@ -127,7 +127,7 @@ export const MATERIAL_LADDER: readonly Material[] = [
     origin: 'Hammered out of whatever the heaps gave up.',
     clothOrigin: 'Stitched from rags the heaps gave up.',
     value: 12,
-    experience: 10,
+    experience: 14,
   },
   {
     key: 'iron',
@@ -238,12 +238,12 @@ interface WeaponShape {
 const r = Math.round;
 
 const WEAPONS: readonly WeaponShape[] = [
-  { kind: 'baton', noun: 'Baton', icon: 'baton', skill: 'closeQuarters', range: 1, speedTicks: 4, stats: (l) => ({ power: 4 + r(l * 0.7), accuracy: 2 + r(l * 0.4) }), inputs: (t) => ({ [t.bar]: 1 }), examine: 'A short stun club with a side handle. Simple and quick.' },
-  { kind: 'blade', noun: 'Blade', icon: 'blade', skill: 'closeQuarters', range: 1, speedTicks: 4, stats: (l) => ({ power: 3 + r(l * 0.6), accuracy: 3 + r(l * 0.55) }), inputs: (t) => ({ [t.bar]: 2 }), examine: 'A long knife with a wrapped grip.' },
-  { kind: 'maul', noun: 'Maul', icon: 'maul', skill: 'closeQuarters', range: 1, speedTicks: 5, stats: (l) => ({ power: 6 + r(l * 0.95), accuracy: 1 + r(l * 0.3) }), inputs: (t) => ({ [t.bar]: 3 }), examine: 'A heavy two-handed hammer. Slow, and very persuasive.' },
-  { kind: 'pistol', noun: 'Pistol', icon: 'pistol', skill: 'marksmanship', range: 5, speedTicks: 5, stats: (l) => ({ accuracy: 4 + r(l * 0.7), power: 2 + r(l * 0.3) }), inputs: (t) => ({ [t.bar]: 2 }), examine: 'A dart pistol, hand-built and hand-tuned.' },
-  { kind: 'carbine', noun: 'Carbine', icon: 'carbine', skill: 'marksmanship', range: 7, speedTicks: 5, stats: (l) => ({ accuracy: 6 + r(l * 0.9), power: 3 + r(l * 0.35) }), inputs: (t) => ({ [t.bar]: 2, [t.fibre]: 1 }), examine: 'A two-handed bolt carbine with a strap.' },
-  { kind: 'rifle', noun: 'Rifle', icon: 'rifle', skill: 'marksmanship', range: 9, speedTicks: 7, stats: (l) => ({ accuracy: 7 + r(l * 1.0), power: 4 + r(l * 0.4) }), inputs: (t) => ({ [t.bar]: 3, [t.fibre]: 1 }), examine: 'A long rifle. It outreaches anything that wants to bite you.' },
+  { kind: 'baton', noun: 'Baton', icon: 'baton', skill: 'closeQuarters', range: 1, speedTicks: 4, stats: (l) => ({ power: 4 + r(l * 0.7) }), inputs: (t) => ({ [t.bar]: 1 }), examine: 'A short stun club with a side handle. Simple and quick.' },
+  { kind: 'blade', noun: 'Blade', icon: 'blade', skill: 'closeQuarters', range: 1, speedTicks: 4, stats: (l) => ({ power: 6 + r(l * 0.8) }), inputs: (t) => ({ [t.bar]: 2 }), examine: 'A long knife with a wrapped grip.' },
+  { kind: 'maul', noun: 'Maul', icon: 'maul', skill: 'closeQuarters', range: 1, speedTicks: 5, stats: (l) => ({ power: 8 + r(l * 1.0) }), inputs: (t) => ({ [t.bar]: 3 }), examine: 'A heavy two-handed hammer. Slow, and very persuasive.' },
+  { kind: 'pistol', noun: 'Pistol', icon: 'pistol', skill: 'marksmanship', range: 5, speedTicks: 5, stats: (l) => ({ accuracy: 4 + r(l * 0.7) }), inputs: (t) => ({ [t.bar]: 2 }), examine: 'A dart pistol, hand-built and hand-tuned.' },
+  { kind: 'carbine', noun: 'Carbine', icon: 'carbine', skill: 'marksmanship', range: 7, speedTicks: 5, stats: (l) => ({ accuracy: 6 + r(l * 0.9) }), inputs: (t) => ({ [t.bar]: 2, [t.fibre]: 1 }), examine: 'A two-handed bolt carbine with a strap.' },
+  { kind: 'rifle', noun: 'Rifle', icon: 'rifle', skill: 'marksmanship', range: 9, speedTicks: 7, stats: (l) => ({ accuracy: 7 + r(l * 1.0) }), inputs: (t) => ({ [t.bar]: 3, [t.fibre]: 1 }), examine: 'A long rifle. It outreaches anything that wants to bite you.' },
   { kind: 'focus', noun: 'Focus', icon: 'focus', skill: 'psionics', range: 4, speedTicks: 5, stats: (l) => ({ focus: 4 + r(l * 0.7) }), inputs: (t) => ({ [t.trace]: 2, [t.bar]: 1 }), examine: 'A hand clamp around a splinter of trace that will not sit still. It wants to point at things.' },
   { kind: 'resonator', noun: 'Resonator', icon: 'resonator', skill: 'psionics', range: 4, speedTicks: 6, stats: (l) => ({ focus: 6 + r(l * 0.95) }), inputs: (t) => ({ [t.trace]: 3, [t.bar]: 2 }), examine: 'A two-handed pylon. The rings touch nothing, and it hums a note only you can hear.' },
 ];

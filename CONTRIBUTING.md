@@ -141,39 +141,21 @@ Add an entry to `CONTRACTS` in `content/contracts.ts` with `daily(...)` or `week
 
 ### Balancing
 
-`packages/shared/test/balance.test.ts` simulates hundreds of fights between a player whose skills match what the storyline has paid out so far and each creature. Keep these targets when tuning creatures, XP rewards or gear:
+`packages/shared/test/wardBalance.test.ts` runs seeded fights between operatives at set skill levels and each Hollow Bay creature, using the shared combat maths. Keep these bands when tuning creatures, XP rewards or gear:
 
 | Fight | Target win rate |
 | --- | --- |
-| Gloam Mites, straight after Live Fire | ≥ 95% |
-| Hollow Warden, without healing | ≥ 70% |
-| Static Wraiths, for a fresh operative | < 60% |
-| Thorn Crawlers, straight after Live Fire | 60–85% |
-| Thorn Crawlers, after Sector 2 | ≥ 90% |
-| Spore Drifters, after Sector 2 | 70–90% |
-| Pipe Leeches, straight after The Knocking | ≥ 95% |
-| Lone Rust Hounds, straight after The Knocking | ≥ 75% |
-| The Foreman, straight after The Knocking | < 10% |
-| The Foreman, trained up in issued gear | < 50% |
-| The Foreman, trained up and in Undercroft gear | ≥ 60% |
+| Canal rats and stray dogs, fresh operative in the issue kit (baton and plate) | ≥ 95% |
+| Gutter mites, fresh operative | ≤ 85% (Lost Cat and the alley vent wait for combat level 4) |
+| Gutter mites, combat level 4 in the issue kit | ≥ 95% |
+| Silt eels, Close Quarters 6 in scrap | ≥ 85% |
+| The Lamplighter, Close Quarters 10 in scrap | ≤ 40% |
+| The Lamplighter, the same operative with an iron baton | 75–97% |
+| Scrap crawlers, level 10 in a full iron set | ≥ 90% |
 
-Act II is tuned against level-matched operatives (Close Quarters and Fortitude at the same level) wearing a full tier set, with the ranged path checked against each tier's carbine or pistol:
+The same file also checks that ladder weapons carry only their style's offence stat (blade beats baton, maul beats blade), that quest rewards give only craftable, non-unique gear and consumables, that the Site Meridian chapters lead straight on with `followUpQuestId`, that quests before Dead Band pay at least three quarters of the Engineering its receiver needs, and that tier-1 food costs no more than 1.5 scrip per point healed.
 
-| Fight | Target win rate |
-| --- | --- |
-| Each deep district's first regulars, in the previous tier's gear | ≥ 70–85% |
-| Each tier's regulars, in that tier's gear | ≥ 85% |
-| Echo Operators at 17 in Rimeguard; Slag Golems at 26 in Archive gear | below 60% and 75% (upgrades matter) |
-| Curator 14, Choir 19, Last Archivist 24, Stoker 29, Host 34, each in its own tier's gear | 50–85% |
-| Each of those bosses for an operative one tier early | < 30% |
-| Act III: Franking Clerks at 34 and Courier Echoes at 35 in Threshold gear | ≥ 85% |
-| Act III: the Postmaster at 38 in Threshold gear (melee 50–85%, ranged 50–90%), and at 33 | < 30% at 33 |
-| Act III: Courier Echoes at 36 in Dispatch gear | ≥ 90% |
-| Act III: the Postmaster at 38 in Dispatch gear, melee and ranged | better than Threshold, ≤ 92% |
-
-The Act II tiers are Rimeguard (12), Relay (16), Archive (20), Furnace (25) and Threshold (30). Each is crafted from the district of the same tier: frost crystal, signal copper, vellum and ink, ember ore, and mirror glass. Act III adds Dispatch (35), crafted from the Dead Letter Office's franking wax and dead letters.
-
-The test fails if a change breaks this curve. Quests can declare a `recommendedRating`; the journal shows it next to the player's own rating.
+The material ladder runs Scrap (1), Iron (10), Steel (20), Alloy (30), Sinter (40) and Vault Glass (50). Quests can declare a `recommendedLevel`; the journal shows it next to the player's own level.
 
 ### Add a new effect or condition
 

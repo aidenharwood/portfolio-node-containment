@@ -20,7 +20,7 @@ export const SITE_ITEMS: readonly ItemDefinition[] = [
 ];
 
 export const SITE_RECIPES: readonly RecipeDefinition[] = [
-  { id: 'fabricator:dead-band-receiver', station: 'fabricator', skill: 'engineering', level: 15, inputs: [{ itemId: 'iron-bar', count: 2 }, { itemId: 'culvert-trace', count: 2 }], output: { itemId: 'dead-band-receiver', count: 1 }, experience: 104, ticks: 6 },
+  { id: 'fabricator:dead-band-receiver', station: 'fabricator', skill: 'engineering', level: 8, inputs: [{ itemId: 'iron-bar', count: 2 }, { itemId: 'culvert-trace', count: 2 }], output: { itemId: 'dead-band-receiver', count: 1 }, experience: 104, ticks: 6 },
 ];
 
 export const SITE_CREATURES: readonly CreatureDefinition[] = [
@@ -102,13 +102,15 @@ export const SITE_QUESTS: readonly QuestDefinition[] = [
     offeredBy: 'tam-reilly',
     offerRequires: ['rent-day'],
     recommendedLevel: 8,
+    followUpQuestId: 'dead-band',
     steps: [
+      { id: 'tam', journal: "Fennick's notes point down. Tam Reilly, on his bench in the Tenements, unloaded the Site's steel forty years ago. Talk to him.", objectives: [{ type: 'talkTo', npcId: 'tam-reilly', label: 'Talk to Tam Reilly' }] },
       { id: 'quill', journal: "Ask Harbourmaster Quill at the Canal Basin harbour office for the delivery ledgers from the year the Site was built.", objectives: [{ type: 'talkTo', npcId: 'harbourmaster-quill', label: 'Ask Quill for the ledgers' }], onComplete: [{ type: 'giveItem', itemId: 'steel-ledger' }] },
       { id: 'ferris', journal: "Show the ledger to Clerk Ferris in the intake hall on the Site's island.", objectives: [{ type: 'signal', signal: 'steel.ferris', npcId: 'clerk-ferris', label: 'Show Ferris the ledger' }], onComplete: [{ type: 'setFlag', flag: 'clearance-b1' }] },
       { id: 'brandt', journal: 'Take the headhouse lift down to B1 and report to Officer Brandt.', objectives: [{ type: 'talkTo', npcId: 'officer-brandt', label: 'Report to Officer Brandt on B1' }] },
     ],
-    rewards: [xp('research', 800), scrip(200)],
-    rewardSummary: ['1 Quest Point', '800 Research XP', '200 Scrip', 'B1 clearance: the headhouse lift runs for you'],
+    rewards: [xp('research', 800), xp('engineering', 800), scrip(200)],
+    rewardSummary: ['1 Quest Point', '800 Research XP', '800 Engineering XP', '200 Scrip', 'B1 clearance: the headhouse lift runs for you'],
   },
   {
     id: 'dead-band',
@@ -119,7 +121,8 @@ export const SITE_QUESTS: readonly QuestDefinition[] = [
     offerRequires: ['steel-below'],
     recommendedLevel: 18,
     steps: [
-      { id: 'receiver', journal: 'Make a dead-band receiver at a fabricator: two iron bars and two culvert traces, Engineering 15.', objectives: [{ type: 'craft', itemId: 'dead-band-receiver', count: 1, label: 'Make a dead-band receiver' }] },
+      { id: 'sefa', journal: 'Sefa Lind at The Signal on Market Row hears the Site breathing on the dead band. Talk to her.', objectives: [{ type: 'talkTo', npcId: 'sefa-lind', label: 'Talk to Sefa Lind' }] },
+      { id: 'receiver', journal: 'Make a dead-band receiver at a fabricator: two iron bars and two culvert traces, Engineering 8.', objectives: [{ type: 'craft', itemId: 'dead-band-receiver', count: 1, label: 'Make a dead-band receiver' }] },
       {
         id: 'readings',
         journal: 'Take readings at the Directorate survey stakes on the Cut, in the Scrapyards and on the Shipyard Fringe.',
@@ -131,8 +134,8 @@ export const SITE_QUESTS: readonly QuestDefinition[] = [
       },
       { id: 'report', journal: 'Take the readings back to Sefa Lind at The Signal.', objectives: [{ type: 'signal', signal: 'band.reported', npcId: 'sefa-lind', label: 'Report to Sefa' }] },
     ],
-    rewards: [xp('research', 1200), xp('engineering', 600), scrip(300)],
-    rewardSummary: ['1 Quest Point', '1200 Research XP', '600 Engineering XP', '300 Scrip'],
+    rewards: [xp('research', 1200), xp('engineering', 600), scrip(300), { type: 'giveItem', itemId: 'reed-tonic', count: 5 }],
+    rewardSummary: ['1 Quest Point', '1200 Research XP', '600 Engineering XP', '300 Scrip', '5 Reed Tonics'],
   },
 ];
 
@@ -140,6 +143,7 @@ export const SITE_DIALOGUES: readonly DialogueDefinition[] = [
   questTalk({
     npc: 'tam-reilly',
     questId: 'steel-below',
+    report: { stepId: 'tam', text: "Fennick's notes, is it? I knew him. He used to sit on this bench and count. Here's something for your notes, then: I unloaded the steel for that Site myself, forty years back. Ten ships of it. Look over the canal and tell me where ten ships of steel went. Quill keeps the old ledgers. Ask him." },
     offer: {
       text: "Fennick's notes, is it? I knew him. He used to sit on this bench and count. Here's something for your notes, then: I unloaded the steel for that Site myself, forty years back. Ten ships of it. Look over the canal and tell me where ten ships of steel went. Quill keeps the old ledgers. Ask him.",
       accept: "I'll ask Quill.",
@@ -183,12 +187,11 @@ export const SITE_DIALOGUES: readonly DialogueDefinition[] = [
   questTalk({
     npc: 'sefa-lind',
     questId: 'dead-band',
+    report: { stepId: 'sefa', text: "You've been down. I can tell, you've got that B1 look. Listen. On the dead band the Site breathes, in and out, like it's asleep. I've a receiver design but my hands shake. Two iron bars and two culvert traces at a fabricator. Build it, take readings from three stakes round the Ward, and we'll know where the breathing comes from." },
     offer: {
       text: "You've been down. I can tell, you've got that B1 look. Listen. On the dead band the Site breathes, in and out, like it's asleep. I've a receiver design but my hands shake. Build it, take readings from three stakes round the Ward, and we'll know where the breathing comes from.",
       accept: "I'll build the receiver.",
       requires: ['steel-below'],
-      conditions: [{ type: 'skillLevel', skill: 'engineering', atLeast: 15 }],
-      notReady: "You've the look of someone who'd help, but the receiver needs steady hands. Come back when you've Engineering 15.",
     },
     waiting: "Two iron bars, two culvert traces, a fabricator. Then the stakes: the Cut, the Scrapyards, the Fringe.",
     hand: {

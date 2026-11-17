@@ -26,7 +26,14 @@ export const WARD_QUESTS: readonly QuestDefinition[] = [
           { type: 'giveItem', itemId: 'scrap-plate' },
         ],
       },
-      { id: 'equip', journal: 'Equip your scrap baton.', objectives: [{ type: 'equipItem', itemId: 'scrap-baton', label: 'Equip the scrap baton' }] },
+      {
+        id: 'equip',
+        journal: 'Equip your scrap baton and wear your scrap plate.',
+        objectives: [
+          { type: 'equipItem', itemId: 'scrap-baton', label: 'Equip the scrap baton' },
+          { type: 'equipItem', itemId: 'scrap-plate', label: 'Wear the scrap plate' },
+        ],
+      },
       { id: 'drone', journal: 'Beat a training drone in the rail yard behind the station.', objectives: [{ type: 'defeat', creatureId: 'training-drone', count: 1, label: 'Defeat a training drone' }] },
       { id: 'wisp', journal: 'Subdue and contain the crate wisp in the rail yard. Wear it down, then contain it before it fades.', objectives: [{ type: 'contain', creatureId: 'crate-wisp', count: 1, label: 'Contain the crate wisp' }] },
       { id: 'vance', journal: "Get something hot at Vance's Noodles, south of the clock.", objectives: [{ type: 'talkTo', npcId: 'li-vance', label: 'Talk to Li Vance' }], onComplete: [{ type: 'giveItem', itemId: 'noodle-bowl' }] },
@@ -38,6 +45,7 @@ export const WARD_QUESTS: readonly QuestDefinition[] = [
       { type: 'notify', text: 'The city is yours. Bettina Crane in the Tenements has a tenant nobody has seen in months. Start there.' },
     ],
     rewardSummary: ['50 Scrip', 'The freedom of the Ward'],
+    followUpQuestId: 'rent-day',
   },
   {
     id: 'noodle-run',
@@ -61,10 +69,10 @@ export const WARD_QUESTS: readonly QuestDefinition[] = [
     rewards: [
       { type: 'giveItem', itemId: 'noodle-bowl', count: 5 },
       { type: 'giveItem', itemId: 'meridian-scrip', count: 40 },
-      { type: 'grantExperience', skill: 'biochemistry', amount: 250 },
+      { type: 'grantExperience', skill: 'biochemistry', amount: 600 },
       { type: 'grantExperience', skill: 'salvage', amount: 50 },
     ],
-    rewardSummary: ['1 Quest Point', '250 Biochemistry XP', '50 Salvage XP', '5 Bowls of Noodles', '40 Scrip'],
+    rewardSummary: ['1 Quest Point', '600 Biochemistry XP', '50 Salvage XP', '5 Bowls of Noodles', '40 Scrip'],
   },
 ];
 
@@ -109,9 +117,9 @@ export const WARD_DIALOGUES: readonly DialogueDefinition[] = [
       { node: 'chat' },
     ],
     nodes: {
-      kit: say("So you're the new one. Issue kit: a baton, a pistol, a focus and a plate. Scrap, all of it, but scrap kills things the same as anything. Wear the baton.", 'kit-2'),
+      kit: say("So you're the new one. Issue kit: a baton, a pistol, a focus and a plate. Scrap, all of it, but scrap kills things the same as anything. Wear the baton and the plate.", 'kit-2'),
       'kit-2': say('Then out to the rail yard behind the station. There is a training drone there. Hit it until it stops. After that, there is something in a crate. Wear it down gently and contain it. Do not kill it, it is the only one we have.'),
-      equip: say('Open your gear and put the baton on. It goes in your hand, not your pocket.'),
+      equip: say('Open your gear. The baton goes in your hand and the plate goes on your chest, not in your pocket.'),
       yard: say('Rail yard, behind the station. Drone first, then the wisp. And eat something after, you look terrible.'),
       report: say("Drone down, wisp in a crate and Vance has fed you. That is everything I teach. You have the Directorate's thanks, which is worth less than it sounds.", 'report-2'),
       'report-2': say('The rest of the Ward is yours. Talk to people. Most of them want something. The board here has paid work when you want it, and the map shows you where you have been. Good luck, operative.'),

@@ -33,6 +33,7 @@ import { SITE_CREATURES, SITE_DIALOGUES, SITE_ITEMS, SITE_OBJECTS, SITE_QUESTS, 
 import { DEPTHS_CREATURES, DEPTHS_DIALOGUES, DEPTHS_ITEMS, DEPTHS_OBJECTS, DEPTHS_QUESTS, DEPTHS_RECIPES } from './ward/depths.ts';
 import { combineDialogues, NOVICE_CREATURES, NOVICE_DIALOGUES, NOVICE_ITEMS, NOVICE_OBJECTS, NOVICE_QUESTS, NOVICE_RECIPES } from './ward/novice.ts';
 import { SEED_DIALOGUES, SEED_NPCS, SEED_OBJECTS, SEED_REGIONS, SEED_SHOPS } from './seed/lowWard.ts';
+import { CONTRACTS } from './contracts.ts';
 import { buildTramNetwork, TRAM_LINES, TRAM_STATIONS } from './tramNetwork.ts';
 
 export interface GameContent {
@@ -105,7 +106,7 @@ export const GAME_CONTENT: GameContent = {
   creatures: indexById<CreatureDefinition>([...WARD_CREATURES, ...NOVICE_CREATURES, ...SITE_CREATURES, ...DEPTHS_CREATURES]),
   shops: indexById(SEED_SHOPS),
   recipes: indexById<RecipeDefinition>([...WARD_RECIPES, ...NOVICE_RECIPES, ...SITE_RECIPES, ...DEPTHS_RECIPES]),
-  contracts: indexById<ContractDefinition>([]),
+  contracts: indexById<ContractDefinition>(CONTRACTS),
   newCharacter: {
     startingLocation: placed(TERMINUS_SQUARE.id, TERMINUS_SQUARE_ANCHORS.start),
     trainingLocation: placed(TERMINUS_SQUARE.id, TERMINUS_SQUARE_ANCHORS.start),

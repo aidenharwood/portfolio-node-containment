@@ -1,5 +1,11 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { createStartingSkills, experienceForLevel } from '../src/character/skills.ts';
+import { deriveCombatProfile } from '../src/character/derivedStats.ts';
+import { creatureAttackProfile, defenceAgainst, playerAttackProfile, rollAttack } from '../src/combat/combatMath.ts';
+import { creatureDefence } from '../src/combat/study.ts';
+import { COMBAT_STYLE_INFO, WEAPON_KIND_INFO } from '../src/combat/weapons.ts';
+import { equipmentStats, type EquipmentState } from '../src/gear/equipment.ts';
 import { GAME_CONTENT, tierForLevel, type ItemDefinition } from '../src/index.ts';
 import { gatheringSourcesOf } from '../src/content/craftingIntegrity.ts';
 import { MATERIAL_LADDER } from '../src/content/ward/items.ts';
@@ -85,4 +91,117 @@ test('the Ward offers enough quest points to reach The Heart', () => {
   assert.ok(heart);
   const available = [...GAME_CONTENT.quests.values()].filter((quest) => quest.id !== 'the-heart').reduce((sum, quest) => sum + (quest.questPoints ?? (quest.category === 'tutorial' ? 0 : 1)), 0);
   assert.ok(available >= 12, `${available} quest points are on offer before The Heart`);
+});
+
+const mulberry = (seed: number) => () => {
+  seed = (seed + 0x6d2b79f5) | 0;
+  let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+};
+
+interface Operative {
+  readonly closeQuarters: number;
+  readonly fortitude: number;
+  readonly gear: EquipmentState;
+}
+
+function winRate(operative: Operative, creatureId: string, fights = 2000): number {
+  const creature = GAME_CONTENT.creatures.get(creatureId);
+  assert.ok(creature, creatureId);
+  const skills = { ...createStartingSkills(), closeQuarters: experienceForLevel(operative.closeQuarters), fortitude: experienceForLevel(operative.fortitude) };
+  const attack = playerAttackProfile(skills, operative.gear, GAME_CONTENT.items);
+  const profile = deriveCombatProfile(skills, equipmentStats(operative.gear, GAME_CONTENT.items));
+  const guard = defenceAgainst(profile, creature.attack.style);
+  const theirs = creatureAttackProfile(creature);
+  const random = mulberry(creature.level * 7919 + operative.closeQuarters);
+  let wins = 0;
+  for (let fight = 0; fight < fights; fight++) {
+    let mine = profile.integrity;
+    let its = creature.integrity;
+    for (let tick = 0; mine > 0 && its > 0; tick++) {
+      if (tick % attack.speedTicks === 0) its -= rollAttack(attack, creatureDefence(creature, attack.style, false), random).damage;
+      if (its > 0 && tick % theirs.speedTicks === 0) mine -= rollAttack(theirs, guard, random).damage;
+    }
+    if (its <= 0) wins++;
+  }
+  return wins / fights;
+}
+
+const KIT: EquipmentState = { primary: 'scrap-baton', torso: 'scrap-plate' };
+const SCRAP_SET: EquipmentState = { primary: 'scrap-baton', head: 'scrap-helm', torso: 'scrap-plate', legs: 'scrap-greaves' };
+const IRON_SET: EquipmentState = { primary: 'iron-baton', head: 'iron-helm', torso: 'iron-plate', hands: 'iron-gauntlets', legs: 'iron-greaves', feet: 'iron-boots' };
+
+const BANDS: readonly { readonly name: string; readonly operative: Operative; readonly creature: string; readonly min: number; readonly max: number }[] = [
+  { name: 'a fresh operative in the issue kit beats canal rats', operative: { closeQuarters: 1, fortitude: 1, gear: KIT }, creature: 'canal-rat', min: 0.95, max: 1 },
+  { name: 'a fresh operative in the issue kit beats stray dogs', operative: { closeQuarters: 1, fortitude: 1, gear: KIT }, creature: 'stray-dog', min: 0.95, max: 1 },
+  { name: 'a fresh operative is not yet safe against gutter mites', operative: { closeQuarters: 1, fortitude: 1, gear: KIT }, creature: 'gutter-mite', min: 0, max: 0.85 },
+  { name: 'combat level 4 in the issue kit handles gutter mites', operative: { closeQuarters: 4, fortitude: 3, gear: KIT }, creature: 'gutter-mite', min: 0.95, max: 1 },
+  { name: 'Close Quarters 6 in scrap handles silt eels', operative: { closeQuarters: 6, fortitude: 5, gear: SCRAP_SET }, creature: 'silt-eel', min: 0.85, max: 1 },
+  { name: 'the Lamplighter turns back an operative still in scrap', operative: { closeQuarters: 10, fortitude: 7, gear: SCRAP_SET }, creature: 'the-lamplighter', min: 0, max: 0.4 },
+  { name: 'the Lamplighter falls to the same operative with an iron baton', operative: { closeQuarters: 10, fortitude: 7, gear: { ...SCRAP_SET, primary: 'iron-baton' } }, creature: 'the-lamplighter', min: 0.75, max: 0.97 },
+  { name: 'an operative at 10 in iron clears scrap crawlers', operative: { closeQuarters: 10, fortitude: 10, gear: IRON_SET }, creature: 'scrap-crawler', min: 0.9, max: 1 },
+];
+
+for (const band of BANDS) {
+  test(`balance: ${band.name}`, () => {
+    const rate = winRate(band.operative, band.creature);
+    assert.ok(rate >= band.min && rate <= band.max, `${band.creature}: ${(rate * 100).toFixed(1)}% is outside ${band.min * 100}-${band.max * 100}%`);
+  });
+}
+
+test('ladder weapons carry only the offence stat their style uses, and the blade outhits the baton', () => {
+  for (const rung of MATERIAL_LADDER) {
+    for (const kind of ['baton', 'blade', 'maul', 'pistol', 'carbine', 'rifle', 'focus', 'resonator']) {
+      const item = GAME_CONTENT.items.get(`${rung.key}-${kind}`);
+      const weapon = item?.equipment?.weapon;
+      assert.ok(item && weapon, `${rung.key}-${kind}`);
+      const offence = COMBAT_STYLE_INFO[WEAPON_KIND_INFO[weapon.kind].style].offenceStat;
+      assert.deepEqual(Object.keys(item.equipment?.stats ?? {}), [offence], `${item.id} carries only ${offence}`);
+    }
+    const power = (kind: string) => GAME_CONTENT.items.get(`${rung.key}-${kind}`)?.equipment?.stats.power ?? 0;
+    assert.ok(power('blade') > power('baton'), `${rung.key} blade outhits the baton`);
+    assert.ok(power('maul') > power('blade'), `${rung.key} maul outhits the blade`);
+  }
+});
+
+test('the Site Meridian storyline hands each chapter straight to the next', () => {
+  const tutorial = GAME_CONTENT.quests.get(GAME_CONTENT.newCharacter.startingQuestId ?? '');
+  assert.equal(tutorial?.followUpQuestId, GAME_CONTENT.questlines.get('site-meridian')?.questIds[0]);
+  const chapters = GAME_CONTENT.questlines.get('site-meridian')?.questIds ?? [];
+  for (const [index, questId] of chapters.slice(0, 2).entries()) {
+    assert.equal(GAME_CONTENT.quests.get(questId)?.followUpQuestId, chapters[index + 1], `${questId} leads on`);
+  }
+});
+
+test('quest rewards hand out only craftable, non-unique gear and consumables', () => {
+  for (const quest of GAME_CONTENT.quests.values()) {
+    for (const effect of quest.rewards) {
+      if (effect.type !== 'giveItem') continue;
+      const item = GAME_CONTENT.items.get(effect.itemId);
+      if (!item?.equipment && !item?.consumable) continue;
+      assert.ok(!item.unique, `${quest.id} rewards unique ${item.id}`);
+      assert.ok([...GAME_CONTENT.recipes.values()].some((recipe) => recipe.output.itemId === item.id), `${quest.id} rewards ${item.id}, which has no recipe`);
+    }
+  }
+});
+
+test('quests before Dead Band pay most of the Engineering its receiver needs', () => {
+  const receiver = [...GAME_CONTENT.recipes.values()].find((recipe) => recipe.output.itemId === 'dead-band-receiver');
+  assert.ok(receiver);
+  const before = ['valve-trouble', 'steel-below'];
+  const paid = before.flatMap((id) => GAME_CONTENT.quests.get(id)?.rewards ?? []).reduce((sum, effect) => sum + (effect.type === 'grantExperience' && effect.skill === 'engineering' ? effect.amount : 0), 0);
+  assert.ok(paid >= 0.75 * experienceForLevel(receiver.level), `${paid} Engineering XP against ${experienceForLevel(receiver.level)}`);
+});
+
+test('tier-1 food sells for no more than 1.5 scrip per point healed', () => {
+  for (const shop of GAME_CONTENT.shops.values()) {
+    if (shop.currency) continue;
+    for (const listing of shop.listings) {
+      const recipe = [...GAME_CONTENT.recipes.values()].find((entry) => entry.output.itemId === listing.itemId);
+      const food = GAME_CONTENT.items.get(listing.itemId)?.consumable;
+      if (!recipe || recipe.level >= 5 || food?.kind !== 'food') continue;
+      assert.ok(listing.price <= food.heal * 1.5, `${shop.id} sells ${listing.itemId} at ${listing.price} for ${food.heal} integrity`);
+    }
+  }
 });
