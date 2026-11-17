@@ -1,9 +1,8 @@
 import {
   GAME_CONTENT,
-  objectiveGoal,
+  questRequirements,
   QUESTLINE_KIND_LABELS,
   QUESTLINE_KINDS,
-  questlineOf,
   type QuestDefinition,
   type QuestId,
   type QuestlineDefinition,
@@ -14,11 +13,12 @@ import { guidedQuest } from '../../state/guidanceGoals.ts';
 import type { GuidanceTracking } from '../../state/guidanceTracking.ts';
 import { h, replaceChildren } from '../../ui/dom.ts';
 import type { ContextMenu, MenuAction } from '../contextMenu.ts';
+import { canTrackQuest, type QuestInfoWindow } from '../questInfoWindow.ts';
 import type { PanelTab } from '../sidePanel.ts';
 
 type QuestState = 'active' | 'completed' | 'available' | 'locked';
 
-const STATE_TAGS: Record<QuestState, string> = { active: 'In progress', available: 'Rumoured', completed: 'Done', locked: 'Locked' };
+const STATE_TAGS: Record<QuestState, string> = { active: 'In progress', available: 'Available', completed: 'Done', locked: 'Locked' };
 
 const questlinePriority = (states: readonly QuestState[]): number => {
   if (states.includes('active')) return 0;
@@ -26,42 +26,37 @@ const questlinePriority = (states: readonly QuestState[]): number => {
   return 2;
 };
 
-export function createQuestsTab(menu: ContextMenu, tracking: GuidanceTracking): PanelTab {
-  let selected: QuestId | null = null;
+export function createQuestsTab(menu: ContextMenu, tracking: GuidanceTracking, info: QuestInfoWindow): PanelTab {
   let self: SelfState | null = null;
   const toggled = new Set<QuestlineId>();
   const body = h('div', { className: 'quest-body' });
   const element = h('div', { className: 'tab-quests' }, body);
 
-  const stateOf = (quest: QuestDefinition): QuestState | null => {
+  const stateOf = (quest: QuestDefinition): QuestState => {
     const progress = self?.quests[quest.id];
     if (progress) return progress.status;
-    const unlocked = (quest.offerRequires ?? []).every((questId) => self?.quests[questId]?.status === 'completed');
-    if (quest.offeredBy && unlocked) return 'available';
-    return quest.category !== 'side' && quest.offeredBy ? 'locked' : null;
+    const ready = self && questRequirements(quest, self.quests, self.skills, GAME_CONTENT).every((requirement) => requirement.met || requirement.recommended);
+    return quest.offeredBy && ready ? 'available' : 'locked';
   };
 
   const trackedId = (): QuestId | null =>
     self ? guidedQuest(tracking.target, self.quests)?.quest.id ?? null : null;
 
-  const open = (questId: QuestId | null) => {
-    selected = questId;
+  const open = (questId: QuestId) => {
+    info.show(questId);
     render();
   };
 
-  const actionsFor = (quest: QuestDefinition, state: QuestState): MenuAction[] => {
+  const actionsFor = (quest: QuestDefinition): MenuAction[] => {
     const actions: MenuAction[] = [{ verb: 'View', subject: quest.name, run: () => open(quest.id) }];
-    if (state === 'active' && trackedId() !== quest.id) {
+    if (self && canTrackQuest(quest, self) && trackedId() !== quest.id) {
       actions.unshift({ verb: 'Track', subject: quest.name, run: () => tracking.trackQuest(quest.id) });
     }
     return actions;
   };
 
   const render = () => {
-    if (!self) return;
-    const quest = selected ? GAME_CONTENT.quests.get(selected) : undefined;
-    if (quest) renderDetail(quest, self);
-    else renderList();
+    if (self) renderList();
   };
 
   const renderQuestEntry = (quest: QuestDefinition, state: QuestState, tracked: QuestId | null) =>
@@ -71,7 +66,7 @@ export function createQuestsTab(menu: ContextMenu, tracking: GuidanceTracking): 
       onclick: () => open(quest.id),
       oncontextmenu: (event: MouseEvent) => {
         event.preventDefault();
-        menu.open(event.clientX, event.clientY, actionsFor(quest, state));
+        menu.open(event.clientX, event.clientY, actionsFor(quest));
       },
     },
     h('span', { className: 'quest-entry-name' }, quest.name, tracked === quest.id && h('span', { className: 'quest-tracked-mark' }, ' ◆')),
@@ -104,8 +99,7 @@ export function createQuestsTab(menu: ContextMenu, tracking: GuidanceTracking): 
     const questlines = [...GAME_CONTENT.questlines.values()].map((questline) => {
       const entries = questline.questIds.flatMap((questId): [QuestDefinition, QuestState][] => {
         const quest = GAME_CONTENT.quests.get(questId);
-        const state = quest ? stateOf(quest) : null;
-        return quest && state ? [[quest, state]] : [];
+        return quest ? [[quest, stateOf(quest)]] : [];
       });
       return { questline, entries, priority: questlinePriority(entries.map(([, state]) => state)) };
     });
@@ -123,51 +117,7 @@ export function createQuestsTab(menu: ContextMenu, tracking: GuidanceTracking): 
           ];
         }),
       ),
-      h('p', { className: 'tab-hint' }, 'Tap a quest to read it. Right-click or hold to track.'),
-    );
-  };
-
-  const renderDetail = (quest: QuestDefinition, current: SelfState) => {
-    const progress = current.quests[quest.id];
-    const step = progress && progress.status === 'active' ? quest.steps[progress.stepIndex] : undefined;
-    const giver = quest.offeredBy ? GAME_CONTENT.npcs.get(quest.offeredBy)?.name : undefined;
-    const isTracked = trackedId() === quest.id;
-    const questline = questlineOf(GAME_CONTENT.questlines.values(), quest.id);
-    const missing = (quest.offerRequires ?? [])
-      .filter((questId) => current.quests[questId]?.status !== 'completed')
-      .map((questId) => GAME_CONTENT.quests.get(questId)?.name ?? questId);
-    replaceChildren(
-      body,
-      h('div', { className: 'quest-detail' },
-        h('div', { className: 'quest-detail-bar' },
-          h('button', { className: 'quest-back', type: 'button', onclick: () => open(null) }, '‹ All quests'),
-          step && h('button', {
-            className: `button quest-track${isTracked ? ' active' : ''}`,
-            type: 'button',
-            disabled: isTracked,
-            onclick: () => tracking.trackQuest(quest.id),
-          }, isTracked ? 'Tracking' : 'Track'),
-        ),
-        questline && h('p', { className: `quest-questline kind-${questline.kind}` }, `${QUESTLINE_KIND_LABELS[questline.kind]} · ${questline.name}`),
-        h('h4', {}, quest.name),
-        h('p', { className: 'quest-summary' }, quest.summary),
-        quest.recommendedLevel !== undefined &&
-          h('p', { className: `quest-recommended${current.combatLevel < quest.recommendedLevel ? ' under' : ''}` },
-            `Recommended combat level ${quest.recommendedLevel} · yours ${current.combatLevel}`),
-        !progress && giver && missing.length === 0 && h('p', { className: 'quest-journal' }, `Speak with ${giver} to begin.`),
-        !progress && missing.length > 0 && h('p', { className: 'quest-journal' }, `Unlocks after ${missing.join(' and ')}.`),
-        step && h('p', { className: 'quest-journal' }, step.journal),
-        step &&
-          h('ul', { className: 'quest-objectives' },
-            ...step.objectives.map((objective, index) => {
-              const goal = objectiveGoal(objective);
-              const count = progress?.objectiveProgress[index] ?? 0;
-              return h('li', { className: count >= goal ? 'done' : '' }, objective.label, goal > 1 && ` (${count}/${goal})`);
-            }),
-          ),
-        progress?.status === 'completed' && h('p', { className: 'quest-journal' }, 'Completed.'),
-        h('p', { className: 'quest-rewards' }, `Rewards: ${quest.rewardSummary.join(' · ')}`),
-      ),
+      h('p', { className: 'tab-hint' }, 'Tap a quest for details. Right-click or hold to track.'),
     );
   };
 
@@ -180,6 +130,7 @@ export function createQuestsTab(menu: ContextMenu, tracking: GuidanceTracking): 
     element,
     update(next) {
       self = next;
+      info.update(next);
       render();
     },
   };

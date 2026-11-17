@@ -49,6 +49,7 @@ export * from './quests/questGuidance.ts';
 export * from './quests/questRoute.ts';
 export * from './quests/questTransit.ts';
 export * from './quests/questProgress.ts';
+export * from './quests/questRequirements.ts';
 
 export * from './dialogue/dialogue.ts';
 

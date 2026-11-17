@@ -48,7 +48,7 @@ export class ObjectiveTracker {
   }
 
   private questBlock(self: SelfState): HTMLElement | null {
-    const tracked = trackedQuest(self.quests, GAME_CONTENT.quests, this.tracking.questId);
+    const tracked = trackedQuest(self.quests, GAME_CONTENT.quests, this.tracking.questId, GAME_CONTENT.npcs);
     if (!tracked) return null;
     const { quest, objectives } = tracked;
     return h('div', { className: `objective-quest category-${quest.category}` },

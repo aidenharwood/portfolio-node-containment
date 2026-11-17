@@ -45,13 +45,31 @@ export function activeQuests(log: QuestLog, quests: ReadonlyMap<QuestId, QuestDe
   return tracked.sort((a, b) => categoryOrder(a.quest) - categoryOrder(b.quest));
 }
 
+export function pendingQuest(
+  log: QuestLog,
+  quests: ReadonlyMap<QuestId, QuestDefinition>,
+  preferred: QuestId | null,
+  npcs?: ReadonlyMap<NpcId, { readonly name: string }>,
+): ActiveQuest | undefined {
+  const quest = preferred ? quests.get(preferred) : undefined;
+  if (!quest?.offeredBy || log[quest.id]) return undefined;
+  const giver = npcs?.get(quest.offeredBy)?.name ?? 'the quest giver';
+  const objective: QuestObjective = { type: 'talkTo', npcId: quest.offeredBy, label: `Speak with ${giver} to begin` };
+  return {
+    quest,
+    step: { id: 'offer', journal: `Speak with ${giver} to begin.`, objectives: [objective] },
+    objectives: [{ objective, progress: 0, goal: 1, done: false }],
+  };
+}
+
 export function trackedQuest(
   log: QuestLog,
   quests: ReadonlyMap<QuestId, QuestDefinition>,
   preferred: QuestId | null,
+  npcs?: ReadonlyMap<NpcId, { readonly name: string }>,
 ): ActiveQuest | undefined {
   const active = activeQuests(log, quests);
-  return active.find(({ quest }) => quest.id === preferred) ?? active[0];
+  return active.find(({ quest }) => quest.id === preferred) ?? pendingQuest(log, quests, preferred, npcs) ?? active[0];
 }
 
 const openObjectives = (log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>, preferred: QuestId | null): QuestObjective[] =>

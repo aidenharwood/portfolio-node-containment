@@ -26,6 +26,7 @@ import { InventoryModeSlot } from '../hud/inventoryMode.ts';
 import { ShopWindow } from '../hud/shopWindow.ts';
 import { ActivityBar } from '../hud/activityBar.ts';
 import { CraftingWindow } from '../hud/craftingWindow.ts';
+import { QuestInfoWindow } from '../hud/questInfoWindow.ts';
 import { SalvageGuideWindow } from '../hud/salvageGuideWindow.ts';
 import { StorageWindow } from '../hud/storageWindow.ts';
 import { TramRide } from '../hud/tramRide.ts';
@@ -108,6 +109,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   const shop = new ShopWindow(connection, world, menu, inventoryModes);
   const storage = new StorageWindow(connection, world, menu, inventoryModes);
   const salvageGuideWindow = new SalvageGuideWindow(world, guidanceTracking);
+  const questInfo = new QuestInfoWindow(guidanceTracking);
   const market = new MarketWindow(connection, world);
   const contractBoard = new ContractBoardWindow(connection, world);
   const crafting = new CraftingWindow(connection, world);
@@ -167,7 +169,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     createInventoryTab(connection, menu, { examine }, inventoryModes),
     createEquipmentTab(connection, world),
     createSkillsTab(() => salvageGuideWindow.show()),
-    createQuestsTab(menu, guidanceTracking),
+    createQuestsTab(menu, guidanceTracking, questInfo),
     createContractsTab(),
     createSocialTab(connection, social, { whisper }),
     createBestiaryTab(),
@@ -435,6 +437,10 @@ export function createGameScreen(app: AppNavigator): Screen {
       crafting.requestClose();
       return;
     }
+    if (event.key === 'Escape' && questInfo.isOpen) {
+      questInfo.hide();
+      return;
+    }
     if (event.key === 'Escape' && salvageGuideWindow.isOpen) {
       salvageGuideWindow.hide();
       return;
@@ -541,6 +547,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     crafting.element,
     storage.element,
     salvageGuideWindow.element,
+    questInfo.element,
     market.element,
     contractBoard.element,
     worldMap.element,
