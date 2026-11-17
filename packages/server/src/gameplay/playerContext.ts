@@ -5,6 +5,7 @@ import {
   equipmentStats,
   isEquipped,
   combatLevel,
+  levelForExperience,
   PRONOUN_SETS,
   questPointsEarned,
   questStanding,
@@ -33,9 +34,14 @@ export const conditionContextFor = (player: Player, content: GameContent): Condi
   },
 });
 
-export const questProbeFor = (player: Player): QuestStateProbe => ({
+export const questProbeFor = (player: Player, content: GameContent): QuestStateProbe => ({
   countItem: (itemId) => countItem(player.record.inventory, itemId),
   isEquipped: (itemId) => isEquipped(player.record.equipment, itemId),
+  levelOf: (measure) => {
+    if (measure === 'combat') return combatLevel(player.record.skills);
+    if (measure === 'questPoints') return questPointsEarned(player.record.quests, content.quests);
+    return levelForExperience(player.record.skills[measure]);
+  },
 });
 
 export const dialogueTemplateValuesFor = (player: Player): Record<string, string> => {

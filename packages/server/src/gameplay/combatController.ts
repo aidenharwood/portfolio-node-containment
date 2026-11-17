@@ -7,6 +7,11 @@ import {
   combatExperience,
   combatLevel,
   awaitsContainment,
+  REGENERATION_INTERVAL_TICKS,
+  regenerationPerInterval,
+  activeQuestWantsItem,
+  countItem,
+  type LootEntry,
   CONTAINMENT_CLASS_INFO,
   containmentBlocker,
   containmentReadiness,
@@ -61,7 +66,6 @@ const DEATH_ANIMATION_TICKS = 3;
 export const PLAYER_RECOVERY_TICKS = 7;
 const CHASE_REPATH_TICKS = 2;
 const CREATURE_PATH_SEARCH_LIMIT = 400;
-const REGENERATION_INTERVAL_TICKS = 20;
 const OUT_OF_COMBAT_TICKS = 16;
 const ENGAGEMENT_TICKS = 12;
 const ENGAGED_CHASE_EXTRA_TILES = 10;
@@ -430,7 +434,7 @@ export class CombatController implements EncounterHost {
     const label = creature.definition.designation ? `${creature.definition.designation} (${creature.definition.name})` : creature.definition.name;
     this.host.notify(player, 'success', `${label} contained. Class: ${CONTAINMENT_CLASS_INFO[profile.containmentClass].name}.`);
     this.effects.awardExperience(player, 'containment', profile.experience, true);
-    const loot = profile.loot.filter((entry) => this.random() < entry.chance);
+    const loot = this.lootFor(player, profile.loot);
     if (loot.length > 0) {
       for (const entry of loot) this.host.dropToGround(player, entry.itemId, entry.count, position);
       const names = loot.map((entry) => `${entry.count > 1 ? `${entry.count} × ` : ''}${this.content.items.get(entry.itemId)?.name ?? entry.itemId}`);
@@ -439,12 +443,20 @@ export class CombatController implements EncounterHost {
     this.host.raiseQuestEvent(player, { type: 'contained', creatureId: creature.definition.id });
   }
 
+  private lootFor(player: Player, entries: readonly LootEntry[]): LootEntry[] {
+    return entries.filter((entry) => {
+      if (this.content.items.get(entry.itemId)?.category !== 'quest') return this.random() < entry.chance;
+      const held = countItem(player.record.inventory, entry.itemId);
+      return activeQuestWantsItem(player.record.quests, this.content.quests, entry.itemId, held) && this.random() < entry.chance;
+    });
+  }
+
   private rewardDefeat(player: Player, creature: Creature, position: TilePoint): void {
     const style = playerAttackProfile(player.record.skills, player.record.equipment, this.content.items).style;
     for (const award of defeatExperience(style, creature.definition.experience)) {
       this.effects.awardExperience(player, award.skill, award.amount, false);
     }
-    const loot = creature.transient ? [] : creature.definition.loot.filter((entry) => this.random() < entry.chance);
+    const loot = creature.transient ? [] : this.lootFor(player, creature.definition.loot);
     if (loot.length > 0) {
       for (const entry of loot) this.host.dropToGround(player, entry.itemId, entry.count, position);
       const names = loot.map((entry) => `${entry.count > 1 ? `${entry.count} × ` : ''}${this.content.items.get(entry.itemId)?.name ?? entry.itemId}`);
@@ -559,7 +571,7 @@ export class CombatController implements EncounterHost {
   private regenerate(level: LevelInstance, tick: number): void {
     for (const player of level.players.values()) {
       if (player.incapacitatedAtTick !== null || player.integrity >= player.maxIntegrity || tick - player.lastCombatTick < OUT_OF_COMBAT_TICKS) continue;
-      player.setIntegrity(player.integrity + 1);
+      player.setIntegrity(Math.min(player.maxIntegrity, player.integrity + regenerationPerInterval(player.maxIntegrity)));
     }
   }
 }

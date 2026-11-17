@@ -1,12 +1,13 @@
 import type { CreatureId } from '../combat/creatures.ts';
 import type { AreaId, ItemId, NpcId, QuestId, WorldObjectId, DistrictId } from '../ids.ts';
 import type { QuestStanding } from '../rules/conditions.ts';
-import { objectiveGoal, type QuestDefinition, type QuestObjective, type QuestStepDefinition } from './questDefinition.ts';
+import { objectiveGoal, type QuestDefinition, type QuestMeasure, type QuestObjective, type QuestStepDefinition } from './questDefinition.ts';
 
 export interface QuestProgress {
   readonly questId: QuestId;
   readonly status: 'active' | 'completed';
   readonly stepIndex: number;
+  readonly stepId?: string;
   readonly objectiveProgress: readonly number[];
 }
 
@@ -18,6 +19,7 @@ export type QuestEvent =
   | { readonly type: 'interactedWith'; readonly objectId: WorldObjectId }
   | { readonly type: 'signal'; readonly signal: string }
   | { readonly type: 'loadoutChanged' }
+  | { readonly type: 'standingChanged' }
   | { readonly type: 'defeated'; readonly creatureId: CreatureId }
   | { readonly type: 'contained'; readonly creatureId: CreatureId }
   | { readonly type: 'usedItem'; readonly itemId: ItemId }
@@ -27,6 +29,7 @@ export type QuestEvent =
 export interface QuestStateProbe {
   countItem(itemId: ItemId): number;
   isEquipped(itemId: ItemId): boolean;
+  levelOf(measure: QuestMeasure): number;
 }
 
 export interface QuestAdvance {
@@ -59,6 +62,7 @@ function progressFromEvent(objective: QuestObjective, current: number, event: Qu
       return event.type === 'crafted' && event.itemId === objective.itemId ? current + event.count : current;
     case 'obtainItem':
     case 'equipItem':
+    case 'reach':
       return current;
   }
 }
@@ -69,6 +73,8 @@ function progressFromState(objective: QuestObjective, current: number, probe: Qu
       return probe.countItem(objective.itemId);
     case 'equipItem':
       return probe.isEquipped(objective.itemId) ? 1 : 0;
+    case 'reach':
+      return probe.levelOf(objective.measure);
     default:
       return current;
   }
@@ -81,6 +87,7 @@ export function startQuest(definition: QuestDefinition, probe: QuestStateProbe):
     questId: definition.id,
     status: 'active',
     stepIndex: 0,
+    stepId: definition.steps[0]?.id,
     objectiveProgress: freshCounts(definition.steps[0]),
   };
   return advanceQuest(definition, progress, null, probe);
@@ -134,6 +141,7 @@ export function advanceQuest(
       questId: definition.id,
       status: questCompleted ? 'completed' : 'active',
       stepIndex: Math.min(stepIndex, definition.steps.length - 1),
+      stepId: definition.steps[Math.min(stepIndex, definition.steps.length - 1)]?.id,
       objectiveProgress: questCompleted ? [] : counts,
     },
     completedSteps,
@@ -157,4 +165,23 @@ export function questStanding(log: QuestLog, definition: QuestDefinition | undef
   if (!progress) return { status: 'notStarted' };
   if (progress.status === 'completed') return { status: 'completed' };
   return { status: 'active', stepId: definition?.steps[progress.stepIndex]?.id ?? '' };
+}
+
+export function activeQuestWantsItem(log: QuestLog, quests: ReadonlyMap<QuestId, QuestDefinition>, itemId: ItemId, held: number): boolean {
+  return Object.values(log).some((progress) => {
+    if (progress.status !== 'active') return false;
+    const steps = quests.get(progress.questId)?.steps ?? [];
+    return steps.some((step) => step.objectives.some((objective) => objective.type === 'obtainItem' && objective.itemId === itemId && held < objective.count));
+  });
+}
+
+export function realignedProgress(definition: QuestDefinition, progress: QuestProgress): QuestProgress {
+  if (progress.status === 'active' && progress.stepId === undefined && definition.stepsAddedBeforeStepIds) {
+    const stepIndex = Math.min(progress.stepIndex + definition.stepsAddedBeforeStepIds, definition.steps.length - 1);
+    return { ...progress, stepIndex, stepId: definition.steps[stepIndex]?.id, objectiveProgress: freshCounts(definition.steps[stepIndex]) };
+  }
+  if (progress.status !== 'active' || progress.stepId === undefined || definition.steps[progress.stepIndex]?.id === progress.stepId) return progress;
+  const stepIndex = definition.steps.findIndex((step) => step.id === progress.stepId);
+  if (stepIndex < 0) return progress;
+  return { ...progress, stepIndex, objectiveProgress: freshCounts(definition.steps[stepIndex]).map((zero, index) => progress.objectiveProgress[index] ?? zero) };
 }

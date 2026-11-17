@@ -1,5 +1,6 @@
 import {
   advanceQuest,
+  realignedProgress,
   startQuest,
   type GameContent,
   type GameEffect,
@@ -17,6 +18,7 @@ export type EffectApplier = (player: Player, effects: readonly GameEffect[]) => 
 const sameProgress = (a: QuestProgress, b: QuestProgress): boolean =>
   a.status === b.status &&
   a.stepIndex === b.stepIndex &&
+  a.stepId === b.stepId &&
   a.objectiveProgress.length === b.objectiveProgress.length &&
   a.objectiveProgress.every((value, index) => value === b.objectiveProgress[index]);
 
@@ -34,10 +36,15 @@ export class QuestTracker {
     if (!definition || player.record.quests[questId]) return;
     player.send({ type: 'chat.message', channel: 'quest', text: `New quest: ${definition.name}` });
     player.send({ type: 'notice', tone: 'info', text: `Quest started — ${definition.name}` });
-    this.commit(player, definition, startQuest(definition, questProbeFor(player)), true);
+    this.commit(player, definition, startQuest(definition, questProbeFor(player, this.content)), true);
   }
 
   resumeFollowUps(player: Player): void {
+    for (const progress of Object.values(player.record.quests)) {
+      const definition = this.content.quests.get(progress.questId);
+      const realigned = definition ? realignedProgress(definition, progress) : progress;
+      if (realigned !== progress) player.update({ quests: { ...player.record.quests, [progress.questId]: realigned } });
+    }
     for (const progress of Object.values(player.record.quests)) {
       const definition = this.content.quests.get(progress.questId);
       if (progress.status === 'active' && definition && progress.stepIndex >= definition.steps.length) this.completeRetiredSteps(player, definition);
@@ -64,7 +71,7 @@ export class QuestTracker {
       if (!definition) continue;
       const current = player.record.quests[progress.questId];
       if (!current) continue;
-      const advance = advanceQuest(definition, current, event, questProbeFor(player));
+      const advance = advanceQuest(definition, current, event, questProbeFor(player, this.content));
       if (!sameProgress(advance.progress, current)) this.commit(player, definition, advance, false);
     }
   }
@@ -81,6 +88,7 @@ export class QuestTracker {
       player.send({ type: 'notice', tone: 'success', text: `Quest complete — ${definition.name}` });
       this.applyEffects(player, definition.rewards);
       if (definition.followUpQuestId) this.start(player, definition.followUpQuestId);
+      this.handle(player, { type: 'standingChanged' });
       return;
     }
 

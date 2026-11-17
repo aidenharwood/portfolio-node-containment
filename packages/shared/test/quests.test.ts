@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { advanceQuest, trackedQuest, npcQuestMarker, startQuest, type QuestDefinition, type QuestStateProbe } from '../src/index.ts';
+import { activeQuestWantsItem, realignedProgress, advanceQuest, trackedQuest, npcQuestMarker, startQuest, type QuestDefinition, type QuestProgress, type QuestStateProbe } from '../src/index.ts';
 import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
 
 const quest: QuestDefinition = {
@@ -20,9 +20,47 @@ const quest: QuestDefinition = {
 const probeWith = (widgets: number): QuestStateProbe => ({
   countItem: (itemId) => (itemId === 'widget' ? widgets : 0),
   isEquipped: () => false,
+  levelOf: () => 1,
 });
 
 describe('quest progression', () => {
+  test('a reach objective follows the measured level and completes once it is met', () => {
+    const gated: QuestDefinition = { id: 'gated', name: 'Gated', category: 'main', summary: '', rewards: [], rewardSummary: [], steps: [
+      { id: 'ready', journal: '', objectives: [{ type: 'reach', measure: 'research', level: 25, label: '' }] },
+      { id: 'go', journal: '', objectives: [{ type: 'talkTo', npcId: 'guide', label: '' }] },
+    ] };
+    const at = (research: number): QuestStateProbe => ({ countItem: () => 0, isEquipped: () => false, levelOf: (measure) => (measure === 'research' ? research : 1) });
+    const started = startQuest(gated, at(11)).progress;
+    assert.deepEqual([started.stepIndex, started.objectiveProgress], [0, [11]]);
+    const ready = advanceQuest(gated, started, { type: 'standingChanged' }, at(25));
+    assert.equal(ready.progress.stepIndex, 1);
+    assert.equal(startQuest(gated, at(30)).progress.stepIndex, 1);
+  });
+
+  test('a quest item is wanted only while an active quest still needs it', () => {
+    const quests = new Map([[quest.id, quest]]);
+    const step: QuestProgress = { questId: quest.id, status: 'active', stepIndex: 2, objectiveProgress: [0] };
+    const onReturn = { [quest.id]: step };
+    assert.equal(activeQuestWantsItem(onReturn, quests, 'widget', 0), true);
+    assert.equal(activeQuestWantsItem(onReturn, quests, 'widget', 2), false);
+    assert.equal(activeQuestWantsItem({ [quest.id]: { ...step, status: 'completed' } }, quests, 'widget', 0), false);
+    assert.equal(activeQuestWantsItem({}, quests, 'widget', 0), false);
+  });
+
+  test('saved progress follows its step when a step is inserted before it', () => {
+    const saved = advanceQuest(quest, startQuest(quest, probeWith(0)).progress, { type: 'talkedTo', npcId: 'guide' }, probeWith(1)).progress;
+    assert.equal(saved.stepId, 'fetch');
+    const grown: QuestDefinition = { ...quest, steps: [{ id: 'ready', journal: '', objectives: [{ type: 'reach', measure: 'combat', level: 3, label: '' }] }, ...quest.steps] };
+    const moved = realignedProgress(grown, saved);
+    assert.equal(grown.steps[moved.stepIndex]?.id, 'fetch');
+    assert.deepEqual(moved.objectiveProgress, saved.objectiveProgress);
+    assert.equal(realignedProgress(quest, saved), saved);
+    const legacy = { questId: quest.id, status: 'active' as const, stepIndex: 1, objectiveProgress: [1] };
+    const shifted = realignedProgress({ ...grown, stepsAddedBeforeStepIds: 1 }, legacy);
+    assert.equal(shifted.stepId, 'fetch');
+    assert.equal(realignedProgress({ ...grown, stepsAddedBeforeStepIds: 1 }, shifted), shifted);
+  });
+
   test('starts on the first step with no progress', () => {
     const { progress } = startQuest(quest, probeWith(0));
     assert.equal(progress.stepIndex, 0);

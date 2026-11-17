@@ -38,6 +38,7 @@ export function createCharacterRecord(
   const probe = {
     countItem: (itemId: ItemId) => countItem(inventory, itemId),
     isEquipped: (itemId: ItemId) => isEquipped(equipment, itemId),
+    levelOf: () => 1,
   };
 
   return {

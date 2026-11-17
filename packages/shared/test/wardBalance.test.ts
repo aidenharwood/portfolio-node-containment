@@ -4,6 +4,7 @@ import { createStartingSkills, experienceForLevel } from '../src/character/skill
 import { deriveCombatProfile } from '../src/character/derivedStats.ts';
 import { creatureAttackProfile, defenceAgainst, hitChance, playerAttackProfile, rollAttack } from '../src/combat/combatMath.ts';
 import { creatureDefence } from '../src/combat/study.ts';
+import { REGENERATION_INTERVAL_TICKS, regenerationPerInterval } from '../src/combat/regeneration.ts';
 import { COMBAT_STYLE_INFO, WEAPON_KIND_INFO } from '../src/combat/weapons.ts';
 import { equipmentStats, type EquipmentState } from '../src/gear/equipment.ts';
 import { GAME_CONTENT, tierForLevel, type ItemDefinition } from '../src/index.ts';
@@ -171,7 +172,7 @@ test('the Site Meridian storyline hands each chapter straight to the next', () =
   const tutorial = GAME_CONTENT.quests.get(GAME_CONTENT.newCharacter.startingQuestId ?? '');
   assert.equal(tutorial?.followUpQuestId, GAME_CONTENT.questlines.get('site-meridian')?.questIds[0]);
   const chapters = GAME_CONTENT.questlines.get('site-meridian')?.questIds ?? [];
-  for (const [index, questId] of chapters.slice(0, 2).entries()) {
+  for (const [index, questId] of chapters.slice(0, -1).entries()) {
     assert.equal(GAME_CONTENT.quests.get(questId)?.followUpQuestId, chapters[index + 1], `${questId} leads on`);
   }
 });
@@ -258,4 +259,58 @@ test('the strongest creature an operative can safely farm pays the most experien
   };
   const best = farmable.reduce((top, id) => (perMinute(id) > perMinute(top) ? id : top));
   assert.equal(best, 'scrap-crawler', `${best} pays ${perMinute(best).toFixed(0)} a minute`);
+});
+
+test('counting the wait to heal, the Fringe pays better than crawlers and the Cordon does not jump the queue', () => {
+  const set = (key: string): EquipmentState => ({ primary: `${key}-baton`, head: `${key}-helm`, torso: `${key}-plate`, hands: `${key}-gauntlets`, legs: `${key}-greaves`, feet: `${key}-boots` });
+  const perMinute = (level: number, key: string, creatureId: string): number => {
+    const creature = GAME_CONTENT.creatures.get(creatureId);
+    assert.ok(creature);
+    const skills = { ...createStartingSkills(), closeQuarters: experienceForLevel(level), fortitude: experienceForLevel(level) };
+    const attack = playerAttackProfile(skills, set(key), GAME_CONTENT.items);
+    const profile = deriveCombatProfile(skills, equipmentStats(set(key), GAME_CONTENT.items));
+    const fight = (creature.integrity / (hitChance(attack.accuracy, creatureDefence(creature, attack.style, false)) * (1 + attack.maxHit) / 2)) * attack.speedTicks;
+    const theirs = creatureAttackProfile(creature);
+    const taken = (fight / theirs.speedTicks) * hitChance(theirs.accuracy, defenceAgainst(profile, creature.attack.style)) * (1 + theirs.maxHit) / 2;
+    const healing = (taken / regenerationPerInterval(profile.integrity)) * REGENERATION_INTERVAL_TICKS;
+    return ((creature.integrity * 4 + creature.experience) / (fight + Math.max(15, healing))) * 200;
+  };
+  for (const [level, key] of [[20, 'steel'], [25, 'steel'], [30, 'alloy'], [35, 'alloy']] as const) {
+    const knockers = perMinute(level, key, 'hull-knocker');
+    const crawlers = perMinute(level, key, 'scrap-crawler');
+    assert.ok(knockers > crawlers * 1.2, `at ${level} knockers pay ${knockers.toFixed(0)} against crawlers' ${crawlers.toFixed(0)}`);
+    assert.ok(perMinute(level, key, 'cordon-stalker') < knockers, `at ${level} the Cordon outpays the Fringe`);
+  }
+});
+
+test('an NPC with a waiting line says it while the quest is active', () => {
+  for (const dialogue of GAME_CONTENT.dialogues.values()) {
+    for (const [id, node] of Object.entries(dialogue.nodes)) {
+      if (!id.endsWith('waiting') || !node.text) continue;
+      assert.ok(dialogue.entries.some((entry) => entry.node === id), `${dialogue.id} never says ${id}`);
+    }
+  }
+});
+
+test('a story chapter that starts on its own has no gated offer left to hide its story, and its gates are reachable', () => {
+  const chapters = GAME_CONTENT.questlines.get('site-meridian')?.questIds ?? [];
+  const followUps = new Set([...GAME_CONTENT.quests.values()].flatMap((quest) => (quest.followUpQuestId ? [quest.followUpQuestId] : [])));
+  const skipped = new Set(['skillLevel', 'combatLevel', 'questPoints']);
+  for (const dialogue of GAME_CONTENT.dialogues.values()) {
+    for (const entry of dialogue.entries) {
+      const starts = dialogue.nodes[entry.node]?.options?.flatMap((option) => option.effects ?? []).filter((effect) => effect.type === 'startQuest') ?? [];
+      for (const effect of starts) {
+        if (effect.type !== 'startQuest' || !followUps.has(effect.questId)) continue;
+        assert.ok(!(entry.conditions ?? []).some((condition) => skipped.has(condition.type)), `${dialogue.id} gates ${effect.questId}, which starts on its own`);
+      }
+    }
+  }
+  const available = [...GAME_CONTENT.quests.values()].filter((quest) => quest.id !== 'the-heart' && quest.category !== 'tutorial').reduce((sum, quest) => sum + (quest.questPoints ?? 1), 0);
+  for (const questId of chapters) {
+    for (const step of GAME_CONTENT.quests.get(questId)?.steps ?? []) {
+      for (const objective of step.objectives) {
+        if (objective.type === 'reach' && objective.measure === 'questPoints') assert.ok(objective.level <= available, `${questId} asks ${objective.level} of ${available} quest points`);
+      }
+    }
+  }
 });

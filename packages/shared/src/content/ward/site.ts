@@ -120,6 +120,7 @@ export const SITE_QUESTS: readonly QuestDefinition[] = [
     offeredBy: 'sefa-lind',
     offerRequires: ['steel-below'],
     recommendedLevel: 12,
+    followUpQuestId: 'bill-of-lading',
     steps: [
       { id: 'sefa', journal: 'Sefa Lind at The Signal on Market Row hears the Site breathing on the dead band. Talk to her.', objectives: [{ type: 'talkTo', npcId: 'sefa-lind', label: 'Talk to Sefa Lind' }] },
       { id: 'receiver', journal: 'Make a dead-band receiver at a fabricator: two iron bars and two culvert traces, Engineering 8.', objectives: [{ type: 'craft', itemId: 'dead-band-receiver', count: 1, label: 'Make a dead-band receiver' }] },
@@ -200,7 +201,7 @@ export const SITE_DIALOGUES: readonly DialogueDefinition[] = [
       option: 'Show Sefa the readings.',
       items: [],
       signal: 'band.reported',
-      thanks: "Three bearings and they cross under the island. Not under the Site. Under what the Site is sitting on. It isn't breathing in its sleep. It's breathing through something. Here, you've earned this, and you'll need it if you go any deeper.",
+      thanks: "Three bearings and they cross under the island. Not under the Site. Under what the Site is sitting on. It isn't breathing in its sleep. It's breathing through something. Here, you've earned this, and you'll need it if you go any deeper. Officer Brandt on B1 has been waiting for somebody to bring him this. Go and see him once you can read the old Directorate files, Research 25.",
     },
     done: "I've stopped listening to the dead band at night. I still hear it.",
     chat: "Tune a set to the dead band at night and you'll hear the Site breathing.",

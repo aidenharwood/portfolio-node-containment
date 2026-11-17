@@ -76,7 +76,12 @@ interface Beast {
 
 const KILL_BONUS_LEVEL_CAP = 16;
 
-export const killExperience = (level: number): number => level * 6 + 2 * Math.min(level, KILL_BONUS_LEVEL_CAP) ** 2;
+const VETERAN_LEVEL = 14;
+
+const VETERAN_LEVEL_CAP = 34;
+
+export const killExperience = (level: number): number =>
+  level * 6 + 2 * Math.min(level, KILL_BONUS_LEVEL_CAP) ** 2 + 8 * Math.max(0, Math.min(level, VETERAN_LEVEL_CAP) - VETERAN_LEVEL) ** 2;
 
 export const beast = (spec: Beast): CreatureDefinition => ({
   id: spec.id,
@@ -333,6 +338,7 @@ export interface QuestTalk {
   readonly waiting: string;
   readonly hand?: Hand;
   readonly report?: { readonly stepId: string; readonly text: string };
+  readonly notes?: readonly { readonly stepId: string; readonly text: string }[];
   readonly done: string;
   readonly chat: string;
   readonly chatOptions?: readonly DialogueOption[];
@@ -376,8 +382,12 @@ export function questTalk(talk: QuestTalk): DialogueDefinition {
       nodes['not-ready'] = say(talk.offer.notReady);
       entries.push({ node: 'not-ready', conditions: ready });
     }
-    entries.push({ node: 'waiting', conditions: [active(talk.questId)] });
   }
+  for (const note of talk.notes ?? []) {
+    nodes[`note-${note.stepId}`] = say(note.text);
+    entries.push({ node: `note-${note.stepId}`, conditions: [active(talk.questId, note.stepId)] });
+  }
+  if (talk.waiting) entries.push({ node: 'waiting', conditions: [active(talk.questId)] });
   entries.push({ node: 'done', conditions: [completed(talk.questId)] }, { node: 'chat' });
   return { id: talk.npc, entries, nodes };
 }

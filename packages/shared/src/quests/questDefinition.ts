@@ -1,6 +1,9 @@
 import type { AreaId, ItemId, NpcId, QuestId, WorldObjectId, DistrictId } from '../ids.ts';
 import type { CreatureId } from '../combat/creatures.ts';
 import type { GameEffect } from '../rules/effects.ts';
+import type { SkillId } from '../character/skills.ts';
+
+export type QuestMeasure = SkillId | 'combat' | 'questPoints';
 
 export type QuestObjective =
   | { readonly type: 'talkTo'; readonly npcId: NpcId; readonly label: string }
@@ -13,7 +16,8 @@ export type QuestObjective =
   | { readonly type: 'contain'; readonly creatureId: CreatureId; readonly count: number; readonly label: string }
   | { readonly type: 'useItem'; readonly itemId: ItemId; readonly label: string }
   | { readonly type: 'gather'; readonly itemId: ItemId; readonly count: number; readonly label: string }
-  | { readonly type: 'craft'; readonly itemId: ItemId; readonly count: number; readonly label: string };
+  | { readonly type: 'craft'; readonly itemId: ItemId; readonly count: number; readonly label: string }
+  | { readonly type: 'reach'; readonly measure: QuestMeasure; readonly level: number; readonly label: string };
 
 export interface QuestStepDefinition {
   readonly id: string;
@@ -33,6 +37,7 @@ export interface QuestDefinition {
   readonly rewards: readonly GameEffect[];
   readonly rewardSummary: readonly string[];
   readonly followUpQuestId?: QuestId;
+  readonly stepsAddedBeforeStepIds?: number;
   readonly offeredBy?: NpcId;
   readonly offerRequires?: readonly QuestId[];
   readonly recommendedLevel?: number;
@@ -50,6 +55,8 @@ export const objectiveGoal = (objective: QuestObjective): number => {
     case 'gather':
     case 'craft':
       return objective.count;
+    case 'reach':
+      return objective.level;
     default:
       return 1;
   }

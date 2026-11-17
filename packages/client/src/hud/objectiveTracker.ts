@@ -1,4 +1,4 @@
-import { countItem, GAME_CONTENT, levelForExperience, salvageSourceOf, trackedQuest, type SelfState, type WorldObjectId } from '@containment/shared';
+import { combatLevel, countItem, experienceForLevel, GAME_CONTENT, SKILL_INFO, type QuestObjective, levelForExperience, salvageSourceOf, trackedQuest, type SelfState, type WorldObjectId } from '@containment/shared';
 import type { GuidanceTracking } from '../state/guidanceTracking.ts';
 import { h, replaceChildren } from '../ui/dom.ts';
 
@@ -51,19 +51,28 @@ export class ObjectiveTracker {
     const tracked = trackedQuest(self.quests, GAME_CONTENT.quests, this.tracking.questId, GAME_CONTENT.npcs);
     if (!tracked) return null;
     const { quest, objectives } = tracked;
+    const yours = combatLevel(self.skills);
+    const underLevel = quest.recommendedLevel !== undefined && yours < quest.recommendedLevel;
     return h('div', { className: `objective-quest category-${quest.category}` },
       h('p', { className: 'objective-quest-name' }, quest.name),
+      underLevel && h('p', { className: 'objective-level' }, `Recommended combat level ${quest.recommendedLevel} · yours ${yours}`),
       h('ul', {},
         ...objectives.map(({ objective, progress, goal, done }) =>
           h('li', { className: done ? 'done' : '' },
             h('span', { className: 'objective-check' }, done ? '✓' : '◇'),
             objective.label,
-            goal > 1 && h('span', { className: 'objective-count' }, ` ${progress}/${goal}`),
+            goal > 1 && h('span', { className: 'objective-count' }, ` ${this.countOf(self, objective, progress, goal)}`),
           ),
         ),
       ),
       this.route.via && h('p', { className: 'objective-via' }, `Next: ${this.route.via}`),
     );
+  }
+
+  private countOf(self: SelfState, objective: QuestObjective, progress: number, goal: number): string {
+    if (objective.type !== 'reach' || !(objective.measure in SKILL_INFO) || progress >= goal) return `${progress}/${goal}`;
+    const earned = self.skills[objective.measure as keyof typeof SKILL_INFO];
+    return `${progress} · ${earned.toLocaleString('en-GB')} / ${experienceForLevel(goal).toLocaleString('en-GB')} XP`;
   }
 
   private resourceBlock(self: SelfState, resourceId: WorldObjectId): HTMLElement | null {

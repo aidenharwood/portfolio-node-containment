@@ -130,6 +130,7 @@ export class EffectRunner {
     if (newLevel > levelForExperience(before)) {
       this.host.notify(player, 'success', `${SKILL_INFO[skill].name} advanced to level ${newLevel}.`);
       this.host.cue(player, 'levelUp');
+      this.host.raiseQuestEvent(player, { type: 'standingChanged' });
     }
   }
 }

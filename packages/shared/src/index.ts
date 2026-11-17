@@ -15,6 +15,7 @@ export * from './combat/containment.ts';
 export * from './combat/creatures.ts';
 export * from './combat/encounters.ts';
 export * from './combat/study.ts';
+export * from './combat/regeneration.ts';
 export * from './combat/weapons.ts';
 
 export * from './crafting/gathering.ts';
