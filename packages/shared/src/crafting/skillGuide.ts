@@ -17,7 +17,7 @@ import { STATION_INFO, type CraftingStation } from './recipes.ts';
 export type SkillGuideEntry =
   | { readonly kind: 'gather'; readonly name: string; readonly level: number; readonly objectId: WorldObjectId; readonly verb: string; readonly itemId: ItemId; readonly experience: number; readonly onlyDuring: QuestId | null; readonly locations: readonly SourceLocation[] }
   | { readonly kind: 'recipe'; readonly name: string; readonly level: number; readonly recipeId: string; readonly station: CraftingStation; readonly itemId: ItemId; readonly count: number; readonly experience: number }
-  | { readonly kind: 'equip'; readonly name: string; readonly level: number; readonly itemId: ItemId; readonly slot: EquipmentSlot }
+  | { readonly kind: 'equip'; readonly name: string; readonly level: number; readonly itemId: ItemId; readonly slot: EquipmentSlot; readonly mastery: boolean }
   | { readonly kind: 'contain'; readonly name: string; readonly level: number; readonly creatureId: CreatureId; readonly experience: number; readonly locations: readonly SourceLocation[] }
   | { readonly kind: 'study'; readonly name: string; readonly level: number; readonly creatureId: CreatureId; readonly experience: number; readonly locations: readonly SourceLocation[] }
   | { readonly kind: 'quest'; readonly name: string; readonly level: number; readonly questId: QuestId }
@@ -78,7 +78,7 @@ function buildSkillGuides(content: GameContent): ReadonlyMap<SkillId, readonly S
     const equipment = item.equipment;
     if (!equipment) continue;
     for (const [skill, level] of Object.entries(equipment.requirements?.skills ?? {}) as [SkillId, number | undefined][]) {
-      if (level !== undefined) add(skill, { kind: 'equip', name: item.name, level, itemId: item.id, slot: equipment.slot });
+      if (level !== undefined) add(skill, { kind: 'equip', name: item.name, level, itemId: item.id, slot: equipment.slot, mastery: item.mastery === skill });
     }
   }
 
@@ -137,7 +137,7 @@ export function skillGuideLabel(entry: SkillGuideEntry): string {
     case 'recipe':
       return `${STATION_INFO[entry.station].verb} ${entry.name}`;
     case 'equip':
-      return `Equip ${entry.name}`;
+      return entry.mastery ? 'Mastery mantle (claim at the contract board)' : `Equip ${entry.name}`;
     case 'contain':
       return `Contain ${entry.name}`;
     case 'study':

@@ -86,6 +86,7 @@ export class Player {
   boosts: ActiveBoost[] = [];
   boostTick = 0;
   lastCombatTick = -Infinity;
+  lastNoteTick = -Infinity;
   lastChaseTarget: TilePoint | null = null;
   incapacitatedAtTick: number | null = null;
   interestChunk: ChunkCoord | null = null;

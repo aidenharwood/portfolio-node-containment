@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { countItem, experienceForLevel, masteryFlag, masteryMantleId, SKILL_LEVEL_CAP, type CharacterRecord } from '@containment/shared';
+import { countItem, experienceForLevel, masteryFlag, masteryMantleId, SKILL_INFO, SKILL_LEVEL_CAP, type CharacterRecord } from '@containment/shared';
 import { createHarness, inRoom } from './support/testHarness.ts';
 
 const atTheBoard = (skills: Partial<CharacterRecord['skills']>) => (record: CharacterRecord): CharacterRecord => ({
@@ -26,13 +26,13 @@ describe('mastery mantles', () => {
 
     claim(harness);
     assert.equal(countItem(player.record.inventory, masteryMantleId('psionics')), 1);
-    assert.equal(harness.sink.last('notice')?.text, 'No mastery to claim yet.');
+    assert.equal(harness.sink.last('notice')?.text, `No mastery to claim yet. Closest: ${SKILL_INFO.salvage.name} ${SKILL_LEVEL_CAP - 1}/${SKILL_LEVEL_CAP}.`);
   });
 
-  test('give nothing below the cap', () => {
-    const harness = createHarness({ prepare: atTheBoard({}) });
+  test('give nothing below the cap and name the closest skill', () => {
+    const harness = createHarness({ prepare: atTheBoard({ biochemistry: experienceForLevel(52) }) });
     claim(harness);
-    assert.equal(harness.sink.last('notice')?.text, 'No mastery to claim yet.');
+    assert.equal(harness.sink.last('notice')?.text, `No mastery to claim yet. Closest: ${SKILL_INFO.biochemistry.name} 52/${SKILL_LEVEL_CAP}.`);
     assert.ok(!harness.player.record.inventory.some((slot) => slot?.itemId.endsWith('-mastery-mantle')));
   });
 });

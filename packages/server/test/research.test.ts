@@ -4,6 +4,7 @@ import {
   createStartingSkills,
   experienceForLevel,
   maxIntegrityFor,
+  REPEAT_STUDY_COOLDOWN_TICKS,
   STUDY_INTERACTION,
   STUDY_TICKS,
   studiedFlag,
@@ -82,9 +83,44 @@ describe('studying anomalies', () => {
     for (let tick = 0; tick < 5 && specimen.state === 'despawned'; tick++) harness.gameplay.tick();
     assert.equal(specimen.state, 'alive');
     assert.equal(specimen.notedBy.size, 0);
+    for (let tick = 0; tick < REPEAT_STUDY_COOLDOWN_TICKS; tick++) harness.gameplay.tick();
     study(harness);
     tickUntilStudied(harness);
     assert.equal(harness.player.record.skills.research - afterFirst, Math.round(studyExperience(warden, true) * 0.2));
+  });
+
+  test('repeat notes on fresh spawns are rate limited per character', () => {
+    assert.ok(warden);
+    const harness = createHarness({ prepare: researcher(warden.level, [studiedFlag('hollow-warden')]) });
+    const specimen = harness.gameplay.world.levelOf(harness.player).creatureByInstance('arena-warden');
+    assert.ok(specimen);
+    const before = harness.player.record.skills.research;
+    study(harness);
+    tickUntilStudied(harness);
+    const first = harness.player.record.skills.research - before;
+    assert.equal(first, studyExperience(warden, false));
+    for (let tick = 0; tick < 50 - STUDY_TICKS; tick++) harness.gameplay.tick();
+    specimen.notedBy.clear();
+    const afterFirst = harness.player.record.skills.research;
+    study(harness);
+    assert.equal(harness.player.activity, null);
+    assert.equal(harness.sink.last('notice')?.text, 'Your notes need a minute to settle.');
+    for (let tick = 0; tick < STUDY_TICKS * 2; tick++) harness.gameplay.tick();
+    assert.equal(harness.player.record.skills.research, afterFirst);
+    for (let tick = 0; tick < REPEAT_STUDY_COOLDOWN_TICKS; tick++) harness.gameplay.tick();
+    study(harness);
+    tickUntilStudied(harness);
+    assert.equal(harness.player.record.skills.research - afterFirst, studyExperience(warden, false));
+  });
+
+  test('a first study is never rate limited', () => {
+    assert.ok(warden);
+    const harness = createHarness({ prepare: researcher(warden.level) });
+    harness.player.lastNoteTick = 0;
+    const before = harness.player.record.skills.research;
+    study(harness);
+    tickUntilStudied(harness);
+    assert.equal(harness.player.record.skills.research - before, studyExperience(warden, true));
   });
 
   test('a study is refused when Analysis is below the specimen level', () => {

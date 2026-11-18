@@ -9,6 +9,8 @@ export const STUDY_REACH = 4;
 
 export const STUDY_TICKS = 6;
 
+export const REPEAT_STUDY_COOLDOWN_TICKS = 300;
+
 export const EXPLOITED_DEFENCE_FACTOR = 0.7;
 
 const FIRST_STUDY_BASE_EXPERIENCE = 60;

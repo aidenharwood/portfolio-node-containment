@@ -130,7 +130,15 @@ export class EffectRunner {
       this.giveItem(player, mantle.id, 1);
       claimed++;
     }
-    if (claimed === 0) this.host.notify(player, 'info', 'No mastery to claim yet.');
+    if (claimed === 0) this.host.notify(player, 'info', `No mastery to claim yet.${this.closestMastery(player)}`);
+  }
+
+  private closestMastery(player: Player): string {
+    const open = SKILL_IDS.filter((skill) => !player.hasFlag(masteryFlag(skill)));
+    if (open.length === 0) return '';
+    const level = (skill: SkillId) => levelForExperience(player.record.skills[skill]);
+    const best = open.reduce((top, skill) => (level(skill) > level(top) ? skill : top));
+    return ` Closest: ${SKILL_INFO[best].name} ${level(best)}/${SKILL_LEVEL_CAP}.`;
   }
 
   private takeItem(player: Player, itemId: string, count: number): void {

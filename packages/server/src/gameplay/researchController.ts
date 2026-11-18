@@ -3,6 +3,7 @@ import {
   equipmentStats,
   hasLineOfSight,
   isWithinStudyReach,
+  REPEAT_STUDY_COOLDOWN_TICKS,
   samePoint,
   STUDY_TICKS,
   studiedFlag,
@@ -20,6 +21,8 @@ import type { Player } from '../world/player.ts';
 import type { World } from '../world/world.ts';
 import type { EffectRunner } from './effectRunner.ts';
 
+const NOTES_SETTLING = 'Your notes need a minute to settle.';
+
 export interface ResearchHost {
   notify(player: Player, tone: NoticeTone, text: string): void;
   sendActivity(player: Player, label: string | null, ticksPerAction?: number, remaining?: number | null): void;
@@ -30,6 +33,7 @@ export class ResearchController {
   private readonly world: World;
   private readonly effects: EffectRunner;
   private readonly host: ResearchHost;
+  private currentTick = 0;
 
   constructor(content: GameContent, world: World, effects: EffectRunner, host: ResearchHost) {
     this.content = content;
@@ -51,11 +55,20 @@ export class ResearchController {
       this.host.notify(player, 'info', 'You already have notes on this one. Find another.');
       return;
     }
+    if (this.noteCoolingDown(player, creature.definition.id)) {
+      this.host.notify(player, 'info', NOTES_SETTLING);
+      return;
+    }
     player.pendingInteraction = null;
     player.activity = { kind: 'study', creatureEntityId: creature.entityId, dueTick: null, lastApproach: null };
   }
 
+  private noteCoolingDown(player: Player, creatureId: string): boolean {
+    return player.hasFlag(studiedFlag(creatureId)) && this.currentTick - player.lastNoteTick < REPEAT_STUDY_COOLDOWN_TICKS;
+  }
+
   tick(tick: number): void {
+    this.currentTick = tick;
     for (const level of this.world.instances()) {
       for (const player of level.players.values()) {
         if (player.activity?.kind === 'study') this.advance(player, level, tick);
@@ -118,8 +131,13 @@ export class ResearchController {
       this.host.notify(player, 'warning', blocker);
       return;
     }
+    if (this.noteCoolingDown(player, creature.id)) {
+      this.host.notify(player, 'info', NOTES_SETTLING);
+      return;
+    }
     instance.notedBy.add(player.record.id);
     const firstStudy = player.addFlag(studiedFlag(creature.id));
+    if (!firstStudy) player.lastNoteTick = this.currentTick;
     const label = creature.designation ? `${creature.designation} (${creature.name})` : creature.name;
     const weakness = weaknessOf(creature);
     const finding = weakness ? `Its weakness to ${COMBAT_STYLE_INFO[weakness].name.toLowerCase()} attacks is now in your bestiary.` : 'It has no particular weakness.';

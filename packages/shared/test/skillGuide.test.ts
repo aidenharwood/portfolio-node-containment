@@ -5,6 +5,7 @@ import {
   GAME_CONTENT,
   nextSkillUnlocks,
   SKILL_IDS,
+  SKILL_LEVEL_CAP,
   skillGuide,
   skillGuideLabel,
   skillGuides,
@@ -70,6 +71,17 @@ describe('skill guide', () => {
     for (const creature of creatures) {
       if (creature.containment) assert.equal(contain.find((candidate) => candidate.kind === 'contain' && candidate.creatureId === creature.id)?.level, containmentLevelFor(creature));
       assert.equal(study.find((candidate) => candidate.kind === 'study' && candidate.creatureId === creature.id)?.level, creature.level);
+    }
+  });
+
+  test('shows each mastery mantle as an unlock at the cap with a claim hint', () => {
+    for (const skill of SKILL_IDS) {
+      const mantle = [...GAME_CONTENT.items.values()].find((item) => item.mastery === skill);
+      assert.ok(mantle, skill);
+      const found = skillGuide(GAME_CONTENT, skill).find((candidate) => candidate.kind === 'equip' && candidate.itemId === mantle.id);
+      assert.equal(found?.level, SKILL_LEVEL_CAP, skill);
+      assert.ok(found && nextSkillUnlocks(skillGuide(GAME_CONTENT, skill), SKILL_LEVEL_CAP - 1).includes(found), skill);
+      assert.equal(found && skillGuideLabel(found), 'Mastery mantle (claim at the contract board)');
     }
   });
 
