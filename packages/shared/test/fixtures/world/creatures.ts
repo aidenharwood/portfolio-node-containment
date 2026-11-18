@@ -87,7 +87,6 @@ export const FIXTURE_CREATURES: readonly CreatureDefinition[] = [
       containmentClass: 'euclid',
       requiredLevel: 3,
       procedures: 'Wear it down, then contain it.',
-      experience: 300,
       loot: [
         { itemId: 'meridian-scrip', count: 10, chance: 1 },
         { itemId: 'medgel', count: 2, chance: 1 },
@@ -127,6 +126,6 @@ export const FIXTURE_CREATURES: readonly CreatureDefinition[] = [
     respawnTicks: 30,
     experience: 10,
     loot: [],
-    containment: { containmentClass: 'safe', procedures: 'Contain it.', experience: 20, loot: [] },
+    containment: { containmentClass: 'safe', procedures: 'Contain it.', loot: [] },
   },
 ];

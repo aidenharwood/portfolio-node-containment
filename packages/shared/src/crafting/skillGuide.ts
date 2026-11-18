@@ -1,6 +1,6 @@
 import { deriveCombatProfile } from '../character/derivedStats.ts';
 import { combatLevel, createStartingSkills, experienceForLevel, SKILL_IDS, SKILL_LEVEL_CAP, type SkillId } from '../character/skills.ts';
-import { containmentLevelFor } from '../combat/containment.ts';
+import { containmentExperience, containmentLevelFor } from '../combat/containment.ts';
 import type { CreatureId } from '../combat/creatures.ts';
 import { studyExperience } from '../combat/study.ts';
 import type { ContractId } from '../contracts/contract.ts';
@@ -85,7 +85,7 @@ function buildSkillGuides(content: GameContent): ReadonlyMap<SkillId, readonly S
   for (const creature of content.creatures.values()) {
     const locations = creaturesAt(creature.id);
     if (creature.containment) {
-      add('containment', { kind: 'contain', name: creature.name, level: containmentLevelFor(creature), creatureId: creature.id, experience: creature.containment.experience, locations });
+      add('containment', { kind: 'contain', name: creature.name, level: containmentLevelFor(creature), creatureId: creature.id, experience: containmentExperience(creature), locations });
     }
     for (const skill of FIGHT_GUIDE_SKILLS) add(skill, { kind: 'fight', name: creature.name, level: creature.level, creatureId: creature.id, locations });
     add('research', { kind: 'study', name: creature.name, level: creature.level, creatureId: creature.id, experience: studyExperience(creature, true), locations });

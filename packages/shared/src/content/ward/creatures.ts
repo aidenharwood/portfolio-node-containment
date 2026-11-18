@@ -33,7 +33,7 @@ export const WARD_CREATURES: readonly CreatureDefinition[] = [
     respawnTicks: 12,
     experience: 6,
     loot: [{ itemId: 'trace-dust', count: 1, chance: 0.5 }],
-    containment: { containmentClass: 'safe', procedures: 'Subdue gently. Seal in any crate. Keep away from light bulbs, which it likes too much.', experience: 25, loot: [{ itemId: 'trace-dust', count: 2, chance: 1 }] },
+    containment: { containmentClass: 'safe', procedures: 'Subdue gently. Seal in any crate. Keep away from light bulbs, which it likes too much.', loot: [{ itemId: 'trace-dust', count: 2, chance: 1 }] },
   },
   {
     id: 'canal-rat',

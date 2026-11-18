@@ -3,11 +3,11 @@ import { test } from 'node:test';
 import { createStartingSkills, experienceForLevel, levelForExperience, SKILL_LEVEL_CAP } from '../src/character/skills.ts';
 import { deriveCombatProfile } from '../src/character/derivedStats.ts';
 import { creatureAttackProfile, defenceAgainst, hitChance, playerAttackProfile, rollAttack } from '../src/combat/combatMath.ts';
-import { creatureDefence, weaknessOf } from '../src/combat/study.ts';
+import { creatureDefence, studyExperience, weaknessOf } from '../src/combat/study.ts';
 import { REGENERATION_INTERVAL_TICKS, regenerationPerInterval } from '../src/combat/regeneration.ts';
 import { COMBAT_STYLE_INFO, WEAPON_KIND_INFO, styleBeating } from '../src/combat/weapons.ts';
 import { equipmentStats, type EquipmentState } from '../src/gear/equipment.ts';
-import { GAME_CONTENT, containmentLevelFor, objectiveDistricts, realignedProgress, tierForLevel, type ItemDefinition } from '../src/index.ts';
+import { GAME_CONTENT, containmentExperience, containmentLevelFor, objectiveDistricts, realignedProgress, tierForLevel, type ItemDefinition } from '../src/index.ts';
 import { gatheringSourcesOf } from '../src/content/craftingIntegrity.ts';
 import { MATERIAL_LADDER } from '../src/content/ward/items.ts';
 
@@ -518,4 +518,12 @@ test('the level cap is 200 and mastery mantles do not out-stat the best tier-50 
   const mantles = [...GAME_CONTENT.items.values()].filter((item) => item.mastery);
   assert.equal(mantles.length, 10);
   for (const mantle of mantles) assert.ok(total(mantle) <= best, `${mantle.id} totals ${total(mantle)} against ${best}`);
+});
+
+test('containment and first-study experience are proportional to a creature’s integrity', () => {
+  const creatures = [...GAME_CONTENT.creatures.values()];
+  const studyRates = new Set(creatures.map((creature) => studyExperience(creature, true) / creature.integrity));
+  const containRates = new Set(creatures.filter((creature) => creature.containment).map((creature) => containmentExperience(creature) / creature.integrity));
+  assert.equal(studyRates.size, 1, [...studyRates].join(', '));
+  assert.equal(containRates.size, 1, [...containRates].join(', '));
 });

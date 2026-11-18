@@ -52,7 +52,7 @@ export const DEPTHS_CREATURES: readonly CreatureDefinition[] = [
     style: 'psionic',
     range: 4,
     loot: [{ itemId: 'red-trace', count: 1, chance: 0.5 }, { itemId: 'directorate-salvage', count: 1, chance: 0.3 }, { itemId: 'twin-mask', count: 1, chance: 0.01 }],
-    containment: { containmentClass: 'keter', procedures: 'Separate them. Subdue the quiet one first. Contain both in adjoining cells and never open either alone.', experience: 3600, loot: [{ itemId: 'red-trace', count: 3, chance: 1 }], requiredLevel: 35 },
+    containment: { containmentClass: 'keter', procedures: 'Separate them. Subdue the quiet one first. Contain both in adjoining cells and never open either alone.', loot: [{ itemId: 'red-trace', count: 3, chance: 1 }], requiredLevel: 35 },
   }),
   beast({
     id: 'cell-breaker',
@@ -106,7 +106,7 @@ export const DEPTHS_CREATURES: readonly CreatureDefinition[] = [
     style: 'psionic',
     range: 5,
     loot: [{ itemId: 'vault-residue', count: 4, chance: 1 }, { itemId: 'vault-trace', count: 3, chance: 1 }, { itemId: 'wardens-key', count: 1, chance: 0.05 }],
-    containment: { containmentClass: 'keter', procedures: 'Do not. If you must: wear it down to the last plate, then contain it in the Heart itself. Nothing else will hold it.', experience: 7700, loot: [{ itemId: 'vault-trace', count: 6, chance: 1 }], requiredLevel: 50 },
+    containment: { containmentClass: 'keter', procedures: 'Do not. If you must: wear it down to the last plate, then contain it in the Heart itself. Nothing else will hold it.', loot: [{ itemId: 'vault-trace', count: 6, chance: 1 }], requiredLevel: 50 },
   }),
 ];
 

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import {
+  containmentExperience,
   createStartingSkills,
   experienceForLevel,
 
@@ -82,7 +83,7 @@ describe('containment', () => {
     harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 1 });
     harness.ticksUntil(() => !creature.isAlive, 50);
     const after = harness.player.record.skills;
-    assert.ok(after.containment >= before.containment + (creature.definition.containment?.experience ?? Infinity));
+    assert.ok(after.containment >= before.containment + containmentExperience(creature.definition));
     const combatGain = after.closeQuarters - before.closeQuarters + after.fortitude - before.fortitude;
     assert.ok(combatGain > 0, 'combat experience is paid on containment');
   });

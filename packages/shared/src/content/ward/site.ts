@@ -37,7 +37,7 @@ export const SITE_CREATURES: readonly CreatureDefinition[] = [
     style: 'psionic',
     range: 3,
     loot: [{ itemId: 'amber-trace', count: 1, chance: 0.4 }, { itemId: 'lab-culture', count: 1, chance: 0.3 }, { itemId: 'moth-wing-cloak', count: 1, chance: 0.01 }],
-    containment: { containmentClass: 'safe', procedures: 'Dim the lights. Subdue. Contain in an opaque cell. It sulks.', experience: 180, loot: [{ itemId: 'amber-trace', count: 2, chance: 1 }] },
+    containment: { containmentClass: 'safe', procedures: 'Dim the lights. Subdue. Contain in an opaque cell. It sulks.', loot: [{ itemId: 'amber-trace', count: 2, chance: 1 }] },
   }),
   beast({
     id: 'glass-hound',
@@ -52,7 +52,7 @@ export const SITE_CREATURES: readonly CreatureDefinition[] = [
     style: 'psionic',
     range: 3,
     loot: [{ itemId: 'amber-trace', count: 1, chance: 0.5 }, { itemId: 'steel-bar', count: 1, chance: 0.15 }, { itemId: 'glass-eye', count: 1, chance: 0.01 }],
-    containment: { containmentClass: 'euclid', procedures: 'Wear it down without breaking it. A cracked hound cannot be contained. Contain in a padded cell.', experience: 580, loot: [{ itemId: 'amber-trace', count: 3, chance: 1 }], requiredLevel: 15 },
+    containment: { containmentClass: 'euclid', procedures: 'Wear it down without breaking it. A cracked hound cannot be contained. Contain in a padded cell.', loot: [{ itemId: 'amber-trace', count: 3, chance: 1 }], requiredLevel: 15 },
   }),
   beast({
     id: 'hull-knocker',
@@ -77,7 +77,7 @@ export const SITE_CREATURES: readonly CreatureDefinition[] = [
     style: 'ranged',
     range: 4,
     loot: [{ itemId: 'tide-weed', count: 2, chance: 0.6 }, { itemId: 'hull-trace', count: 1, chance: 0.4 }, { itemId: 'wraith-shroud', count: 1, chance: 0.01 }],
-    containment: { containmentClass: 'euclid', procedures: 'Draw it away from water. Subdue while it is dry. Contain in a sealed, drained cell.', experience: 2400, loot: [{ itemId: 'hull-trace', count: 3, chance: 1 }], requiredLevel: 25 },
+    containment: { containmentClass: 'euclid', procedures: 'Draw it away from water. Subdue while it is dry. Contain in a sealed, drained cell.', loot: [{ itemId: 'hull-trace', count: 3, chance: 1 }], requiredLevel: 25 },
   }),
 ];
 

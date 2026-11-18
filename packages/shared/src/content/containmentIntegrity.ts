@@ -12,7 +12,6 @@ export function findContainmentIssues(content: GameContent): string[] {
     if (profile.requiredLevel !== undefined && (!Number.isInteger(profile.requiredLevel) || profile.requiredLevel < 1 || profile.requiredLevel > creature.level)) {
       report(where, `required containment level ${profile.requiredLevel} must be a whole number from 1 to the specimen level ${creature.level}`);
     }
-    if (profile.experience <= 0) report(where, 'containment experience must be positive');
     if (profile.procedures.trim().length === 0) report(where, 'containment procedures must be written');
     for (const entry of profile.loot) {
       const item = content.items.get(entry.itemId);

@@ -43,7 +43,6 @@ export type ContainmentClass = (typeof CONTAINMENT_CLASSES)[number];
 export interface ContainmentProfile {
   readonly containmentClass: ContainmentClass;
   readonly procedures: string;
-  readonly experience: number;
   readonly loot: readonly LootEntry[];
   readonly requiredLevel?: number;
 }

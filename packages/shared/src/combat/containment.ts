@@ -24,6 +24,10 @@ export const CONTAINMENT_THRESHOLD_PER_RESEARCH_LEVEL = 0.01;
 
 export const MAX_CONTAINMENT_THRESHOLD = 0.25;
 
+export const CONTAINMENT_EXPERIENCE_PER_INTEGRITY = 12;
+
+export const containmentExperience = (creature: CreatureDefinition): number => creature.integrity * CONTAINMENT_EXPERIENCE_PER_INTEGRITY;
+
 export const containmentLevelFor = (creature: CreatureDefinition): number => creature.containment?.requiredLevel ?? creature.level;
 
 export const containmentResearchEdge = (creature: CreatureDefinition, skills: SkillExperience): number =>

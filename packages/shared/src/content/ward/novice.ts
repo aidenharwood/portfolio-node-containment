@@ -134,7 +134,7 @@ export const NOVICE_CREATURES: readonly CreatureDefinition[] = [
     level: 6,
     aggressive: true,
     loot: [{ itemId: 'culvert-trace', count: 1, chance: 0.3 }, { itemId: 'basin-eel', count: 1, chance: 0.25 }, { itemId: 'rag-bundle', count: 1, chance: 0.2 }],
-    containment: { containmentClass: 'safe', procedures: 'Subdue. Jar it. Do not let it near anything it can chew.', experience: 55, loot: [{ itemId: 'culvert-trace', count: 2, chance: 1 }] },
+    containment: { containmentClass: 'safe', procedures: 'Subdue. Jar it. Do not let it near anything it can chew.', loot: [{ itemId: 'culvert-trace', count: 2, chance: 1 }] },
   }),
   beast({
     id: 'silt-eel',
@@ -172,7 +172,7 @@ export const NOVICE_CREATURES: readonly CreatureDefinition[] = [
     aggressive: true,
     wander: 2,
     loot: [{ itemId: 'scrap-bar', count: 2, chance: 0.6 }, { itemId: 'iron-bar', count: 1, chance: 0.25 }, { itemId: 'rustling-core', count: 1, chance: 0.01 }],
-    containment: { containmentClass: 'euclid', procedures: 'Wear it down until the amber light dims. Contain before it reassembles. Use non-ferrous restraints.', experience: 370, loot: [{ itemId: 'iron-bar', count: 2, chance: 1 }], requiredLevel: 10 },
+    containment: { containmentClass: 'euclid', procedures: 'Wear it down until the amber light dims. Contain before it reassembles. Use non-ferrous restraints.', loot: [{ itemId: 'iron-bar', count: 2, chance: 1 }], requiredLevel: 10 },
   }),
   beast({
     id: 'line-mimic',
@@ -183,7 +183,7 @@ export const NOVICE_CREATURES: readonly CreatureDefinition[] = [
     level: 4,
     wander: 2,
     loot: [{ itemId: 'rag-bundle', count: 2, chance: 0.8 }, { itemId: 'okafor-coat', count: 1, chance: 1 }],
-    containment: { containmentClass: 'safe', procedures: 'Distract with clean laundry. Subdue. Contain. Return the clothes.', experience: 30, loot: [{ itemId: 'okafor-coat', count: 1, chance: 1 }] },
+    containment: { containmentClass: 'safe', procedures: 'Distract with clean laundry. Subdue. Contain. Return the clothes.', loot: [{ itemId: 'okafor-coat', count: 1, chance: 1 }] },
   }),
   beast({
     id: 'scrap-magpie',
