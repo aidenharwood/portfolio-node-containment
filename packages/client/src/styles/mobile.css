@@ -638,3 +638,54 @@ body {
     min-width: 0;
   }
 }
+
+@media (pointer: coarse), (max-width: 760px), (max-height: 520px) {
+  .hud-objectives {
+    font-size: 13px;
+  }
+
+  .objectives-toggle {
+    min-height: 36px;
+    padding: 8px 10px 8px 0;
+    font-size: 12px;
+  }
+
+  .objectives-list {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    pointer-events: auto;
+    touch-action: pan-y;
+  }
+
+  .objectives-untrack {
+    min-width: 36px;
+    min-height: 32px;
+    margin: -8px -6px -8px auto;
+    font-size: 18px;
+  }
+
+  .objective-via,
+  .objective-level,
+  .objective-resource-level,
+  .objective-count.objective-experience {
+    font-size: 12.5px;
+  }
+
+  .inventory-mode {
+    font-size: 12px;
+  }
+
+  .inventory-grid {
+    gap: 6px;
+  }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  .objectives-list {
+    max-height: 38vh;
+  }
+
+  .inventory-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
