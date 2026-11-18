@@ -22,8 +22,8 @@
   "anchors": {},
   "objects": [
     { "id": "cg-gate", "object": "cordon-gate", "at": { "room": "ground", "dx": 62, "dy": 30 }, "facing": "west" },
-    { "id": "cg-rivet-seam-0", "object": "rivet-seam", "at": { "room": "ground", "dx": 24, "dy": 39 } },
-    { "id": "cg-rivet-seam-1", "object": "rivet-seam", "at": { "room": "ground", "dx": 36, "dy": 19 } },
+    { "id": "cg-rivet-seam-0", "object": "rivet-seam", "at": { "room": "ground", "dx": 55, "dy": 4 } },
+    { "id": "cg-rivet-seam-1", "object": "rivet-seam", "at": { "room": "ground", "dx": 60, "dy": 2 } },
     { "id": "cg-post-table", "object": "table", "at": { "room": "cordon-post", "dx": 2, "dy": 3 } },
     { "id": "cg-post-chair", "object": "chair", "at": { "room": "cordon-post", "dx": 2, "dy": 4 }, "facing": "north" },
     { "id": "cg-post-notices", "object": "notice-board", "at": { "room": "cordon-post", "dx": 1, "dy": 0 } },
