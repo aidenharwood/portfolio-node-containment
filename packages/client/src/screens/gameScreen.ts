@@ -548,7 +548,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   };
 
   chat.element.prepend(vitals.element);
-  chat.element.append(boosts.element);
+  chat.element.append(h('div', { className: 'hud-chat-above' }, vitals.targetElement, boosts.element));
   const element = h(
     'div',
     { className: 'screen game-screen' },
@@ -559,7 +559,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     fpsCounter,
     zoneBanner,
     cameraHint,
-    h('div', { className: 'hud-top-left' }, vitals.targetElement, party.element),
+    h('div', { className: 'hud-top-left' }, party.element),
     topRight,
     loadingMarker,
     sidePanel.element,
