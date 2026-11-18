@@ -42,6 +42,7 @@ export interface WeatherFrame {
   readonly camera: Vector3;
   readonly ambience: BlendedAmbience;
   readonly enabled: boolean;
+  readonly density: number;
   readonly sources: readonly LightSource[];
   readonly pixelRatio: number;
   readonly viewportHeight: number;
@@ -194,7 +195,7 @@ class Precipitation implements WeatherSystem {
 
   update(pass: Pass, weight: number): void {
     const { count, speed, length, drift } = this.style;
-    const active = Math.floor(count * Math.min(1, weight));
+    const active = Math.floor(count * Math.min(1, weight) * pass.frame.density);
     this.object.visible = active > 0;
     if (!this.object.visible) {
       this.seeded = false;
@@ -289,6 +290,7 @@ class Motes implements WeatherSystem {
   private readonly scratch = new Color();
   private readonly candidates: LightSource[] = [];
   private seeded = false;
+  private activeCount = 0;
 
   constructor(style: MoteStyle, sky: SkyTest) {
     this.style = style;
@@ -368,7 +370,12 @@ class Motes implements WeatherSystem {
       return;
     }
     this.gather(pass);
-    const { count, floor, ceiling, rise, sway, drift, twinkle } = this.style;
+    const { floor, ceiling, rise, sway, drift, twinkle } = this.style;
+    const count = Math.max(1, Math.floor(this.style.count * pass.frame.density));
+    if (count !== this.activeCount) {
+      this.activeCount = count;
+      this.seeded = false;
+    }
     const range = ceiling - floor;
     this.material.opacity = this.style.opacity * Math.min(1, weight);
     this.material.size = this.style.size * MathUtils.clamp(pass.zoom, 0.7, 1.6);
@@ -397,6 +404,7 @@ class Motes implements WeatherSystem {
       }
     }
     this.seeded = true;
+    this.object.geometry.setDrawRange(0, count);
     this.object.geometry.attributes.position!.needsUpdate = true;
     if (twinkle) this.object.geometry.attributes.color!.needsUpdate = true;
   }

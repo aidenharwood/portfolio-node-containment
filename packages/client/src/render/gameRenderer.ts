@@ -1,4 +1,4 @@
-import type { GameSettings } from '../state/gameSettings.ts';
+import { particleDensityFor, weatherDensityFor, type GameSettings } from '../state/gameSettings.ts';
 import { GAME_CONTENT, WEAPON_KIND_INFO, type EntityId, type Facing, type ItemId, type NpcQuestMarker, type TilePoint } from '@containment/shared';
 import { Color, Group, MathUtils, Plane, Raycaster, Scene, Vector2, Vector3, MeshBasicMaterial, Mesh, OctahedronGeometry, type Object3D } from 'three';
 import type { ClientEntity, CombatHitEvent, WorldEffectEvent, WorldState } from '../state/worldState.ts';
@@ -119,7 +119,7 @@ export class GameRenderer {
   private zone: LevelScene | null = null;
   private readonly weather: WeatherLayer;
   private readonly skyMask = new SkyMask();
-  private weatherEnabled = true;
+  private weatherDensity = 1;
   private readonly ambience = createBlendedAmbience();
   private readonly ambienceTarget = createBlendedAmbience();
   private ambienceTile: string | null = null;
@@ -155,7 +155,8 @@ export class GameRenderer {
   }
 
   applyGraphics(settings: GameSettings): void {
-    this.weatherEnabled = settings.weather;
+    this.weatherDensity = weatherDensityFor(settings.weather);
+    this.particles.density = particleDensityFor(settings.particles);
     if (this.look.applyGraphics(settings)) this.resize();
   }
 
@@ -242,7 +243,8 @@ export class GameRenderer {
       focus,
       camera: this.cameraRig.camera.position,
       ambience: this.ambience,
-      enabled: this.weatherEnabled,
+      enabled: this.weatherDensity > 0,
+      density: this.weatherDensity,
       sources: this.zone.lights,
       pixelRatio: this.look.renderer.getPixelRatio(),
       viewportHeight: this.look.renderer.domElement.height,

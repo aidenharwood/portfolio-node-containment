@@ -1,4 +1,18 @@
 import {
+  ANTIALIASING_LABELS,
+  ANTIALIASING_MODES,
+  BRIGHTNESS_MAX,
+  BRIGHTNESS_MIN,
+  BRIGHTNESS_STEP,
+  DETAIL_LABELS,
+  DETAIL_LEVELS,
+  FRAME_CAP_LABELS,
+  FRAME_CAPS,
+  GLOW_LABELS,
+  GLOW_LEVELS,
+  GRAPHICS_PRESETS,
+  PRESET_LABELS,
+  presetOf,
   RENDER_SCALE_LABELS,
   RENDER_SCALES,
   SHADOW_LABELS,
@@ -6,17 +20,20 @@ import {
   UI_SCALE_MAX,
   UI_SCALE_MIN,
   UI_SCALE_STEP,
+  WEATHER_LABELS,
+  WEATHER_LEVELS,
   type GameSettings,
+  type PresetChoice,
   type SettingsStore,
 } from '../state/gameSettings.ts';
 import { h } from '../ui/dom.ts';
 
-interface Choice<T extends string> {
+interface Control<T> {
   readonly element: HTMLElement;
   sync(value: T): void;
 }
 
-function choiceRow<T extends string>(name: string, options: readonly T[], labels: Readonly<Record<T, string>>, pick: (value: T) => void): Choice<T> {
+function choiceRow<T extends string>(name: string, options: readonly T[], labels: Readonly<Record<T, string>>, pick: (value: T) => void): Control<T> {
   const buttons = options.map((option) => h('button', {
     className: 'settings-choice',
     type: 'button',
@@ -36,41 +53,84 @@ function choiceRow<T extends string>(name: string, options: readonly T[], labels
   };
 }
 
-function toggleRow(name: string, pick: (value: boolean) => void): { readonly element: HTMLLabelElement; sync(value: boolean): void } {
-  const input = h('input', { type: 'checkbox', className: 'settings-toggle', onchange: () => pick(input.checked) });
+function toggleControl(name: string, pick: (value: boolean) => void): Control<boolean> {
+  const input = h('input', { type: 'checkbox', className: 'settings-toggle', ariaLabel: name, onchange: () => pick(input.checked) });
   return {
-    element: h('label', { className: 'settings-row settings-switch' }, h('span', { className: 'settings-label' }, name), input),
+    element: input,
     sync(value) {
       input.checked = value;
     },
   };
 }
 
+function sliderControl(name: string, min: number, max: number, step: number, pick: (value: number) => void): Control<number> {
+  const output = h('output', { className: 'settings-value' });
+  const input = h('input', {
+    type: 'range',
+    className: 'settings-range',
+    min: String(min),
+    max: String(max),
+    step: String(step),
+    ariaLabel: name,
+    oninput: () => {
+      output.textContent = percent(Number(input.value));
+    },
+    onchange: () => pick(Number(input.value)),
+  });
+  return {
+    element: h('span', { className: 'settings-slider' }, input, output),
+    sync(value) {
+      input.value = String(value);
+      output.textContent = percent(value);
+    },
+  };
+}
+
+let hintCount = 0;
+
+function row(name: string, hint: string, control: HTMLElement, wide = false): HTMLElement {
+  const tag = control instanceof HTMLInputElement ? 'label' : 'div';
+  const hintId = `settings-hint-${++hintCount}`;
+  const described = control.querySelector('input') ?? control;
+  described.setAttribute('aria-describedby', hintId);
+  return h(tag, { className: `settings-row${wide ? ' settings-row-wide' : ''}${tag === 'label' ? ' settings-switch' : ''}` },
+    h('span', { className: 'settings-text' }, h('span', { className: 'settings-label' }, name), h('span', { className: 'settings-hint', id: hintId }, hint)),
+    control,
+  );
+}
+
 const percent = (value: number): string => `${Math.round(value * 100)}%`;
+
+const PRESET_CHOICES: readonly PresetChoice[] = [...GRAPHICS_PRESETS, 'custom'];
 
 export class SettingsWindow {
   readonly element = h('section', { className: 'settings-window panel', hidden: true, role: 'dialog', ariaLabel: 'Settings' });
   private readonly unsubscribe: () => void;
 
   constructor(store: SettingsStore) {
-    const renderScale = choiceRow('Resolution', RENDER_SCALES, RENDER_SCALE_LABELS, (value) => store.update({ renderScale: value }));
-    const shadows = choiceRow('Shadows', SHADOW_QUALITIES, SHADOW_LABELS, (value) => store.update({ shadows: value }));
-    const bloom = toggleRow('Glow', (value) => store.update({ bloom: value }));
-    const weather = toggleRow('Weather', (value) => store.update({ weather: value }));
-    const scanlines = toggleRow('Scanlines', (value) => store.update({ scanlines: value }));
-    const scaleValue = h('output', { className: 'settings-value' });
-    const scale = h('input', {
-      type: 'range',
-      className: 'settings-range',
-      min: String(UI_SCALE_MIN),
-      max: String(UI_SCALE_MAX),
-      step: String(UI_SCALE_STEP),
-      ariaLabel: 'Interface scale',
-      oninput: () => {
-        scaleValue.textContent = percent(Number(scale.value));
-      },
-      onchange: () => store.update({ uiScale: Number(scale.value) }),
+    const preset = choiceRow('Quality preset', PRESET_CHOICES, PRESET_LABELS, (value) => {
+      if (value !== 'custom') store.applyPreset(value);
     });
+    const customButton = preset.element.lastElementChild;
+    if (customButton instanceof HTMLButtonElement) customButton.disabled = true;
+    const renderScale = choiceRow('Resolution', RENDER_SCALES, RENDER_SCALE_LABELS, (value) => store.update({ renderScale: value }));
+    const antialiasing = choiceRow('Anti-aliasing', ANTIALIASING_MODES, ANTIALIASING_LABELS, (value) => store.update({ antialiasing: value }));
+    const frameCap = choiceRow('Frame rate', FRAME_CAPS, FRAME_CAP_LABELS, (value) => store.update({ frameCap: value }));
+    const shadows = choiceRow('Shadows', SHADOW_QUALITIES, SHADOW_LABELS, (value) => store.update({ shadows: value }));
+    const lights = choiceRow('Dynamic lights', DETAIL_LEVELS, DETAIL_LABELS, (value) => store.update({ lights: value }));
+    const brightness = sliderControl('Brightness', BRIGHTNESS_MIN, BRIGHTNESS_MAX, BRIGHTNESS_STEP, (value) => store.update({ brightness: value }));
+    const glow = choiceRow('Glow', GLOW_LEVELS, GLOW_LABELS, (value) => store.update({ glow: value }));
+    const weather = choiceRow('Weather', WEATHER_LEVELS, WEATHER_LABELS, (value) => store.update({ weather: value }));
+    const particles = choiceRow('Particles', DETAIL_LEVELS, DETAIL_LABELS, (value) => store.update({ particles: value }));
+    const grading = toggleControl('Colour grading', (value) => store.update({ grading: value }));
+    const vignette = toggleControl('Vignette', (value) => store.update({ vignette: value }));
+    const grain = toggleControl('Film grain', (value) => store.update({ grain: value }));
+    const sharpen = toggleControl('Sharpening', (value) => store.update({ sharpen: value }));
+    const scanlines = toggleControl('Scanlines', (value) => store.update({ scanlines: value }));
+    const fpsCounter = toggleControl('Frame counter', (value) => store.update({ fpsCounter: value }));
+    const uiScale = sliderControl('Interface scale', UI_SCALE_MIN, UI_SCALE_MAX, UI_SCALE_STEP, (value) => store.update({ uiScale: value }));
+
+    const group = (title: string, ...rows: HTMLElement[]) => h('section', { className: 'settings-group' }, h('p', { className: 'eyebrow' }, title), ...rows);
 
     this.element.append(
       h('header', { className: 'shop-header' },
@@ -78,17 +138,34 @@ export class SettingsWindow {
         h('button', { className: 'dialogue-close', type: 'button', ariaLabel: 'Close settings', onclick: () => this.requestClose() }, '×'),
       ),
       h('div', { className: 'settings-body' },
-        h('section', { className: 'settings-group' },
-          h('p', { className: 'eyebrow' }, 'Graphics'),
-          h('div', { className: 'settings-row' }, h('span', { className: 'settings-label' }, 'Resolution'), renderScale.element),
-          h('div', { className: 'settings-row' }, h('span', { className: 'settings-label' }, 'Shadows'), shadows.element),
-          bloom.element,
-          weather.element,
-          scanlines.element,
+        group('Quality',
+          row('Preset', 'Sets every graphics option below at once. Changing any of them makes it Custom.', preset.element, true),
         ),
-        h('section', { className: 'settings-group' },
-          h('p', { className: 'eyebrow' }, 'Interface'),
-          h('label', { className: 'settings-row' }, h('span', { className: 'settings-label' }, 'Scale'), h('span', { className: 'settings-slider' }, scale, scaleValue)),
+        group('Display',
+          row('Resolution', 'How many pixels the 3D view draws. Native is sharpest; Performance is fastest.', renderScale.element, true),
+          row('Anti-aliasing', 'Smooths jagged block edges. Auto picks a level from your resolution.', antialiasing.element, true),
+          row('Frame rate', 'Caps how often the view redraws to save power and heat.', frameCap.element, true),
+        ),
+        group('Lighting',
+          row('Shadows', 'Detail of the shadows cast by the sun. Ultra is crispest but costs the most.', shadows.element, true),
+          row('Dynamic lights', 'How many nearby lamps, fires and signs light the world at once.', lights.element, true),
+          row('Brightness', 'Overall exposure of the scene.', brightness.element),
+        ),
+        group('Effects',
+          row('Glow', 'Bloom around lamps, screens and energy.', glow.element, true),
+          row('Weather', 'Falling rain, ash and floating motes. Ground fog is part of the scene and stays.', weather.element, true),
+          row('Particles', 'Sparks, debris and bursts from combat, gathering and level-ups.', particles.element, true),
+        ),
+        group('Post-processing',
+          row('Colour grading', 'Film-like contrast and tinted shadows and highlights.', grading.element),
+          row('Vignette', 'Darkens the corners of the screen.', vignette.element),
+          row('Film grain', 'A faint moving noise over the image.', grain.element),
+          row('Sharpening', 'Crisps edges at lower resolutions.', sharpen.element),
+        ),
+        group('Interface',
+          row('Scale', 'Size of the panels, text and windows.', uiScale.element),
+          row('Scanlines', 'CRT-style lines over the whole screen.', scanlines.element),
+          row('Frame counter', 'Shows frames per second in the corner.', fpsCounter.element),
         ),
       ),
       h('footer', { className: 'settings-footer' },
@@ -97,13 +174,23 @@ export class SettingsWindow {
     );
 
     this.unsubscribe = store.subscribe((settings: GameSettings) => {
+      preset.sync(presetOf(settings));
       renderScale.sync(settings.renderScale);
+      antialiasing.sync(settings.antialiasing);
+      frameCap.sync(settings.frameCap);
       shadows.sync(settings.shadows);
-      bloom.sync(settings.bloom);
+      lights.sync(settings.lights);
+      brightness.sync(settings.brightness);
+      glow.sync(settings.glow);
       weather.sync(settings.weather);
+      particles.sync(settings.particles);
+      grading.sync(settings.grading);
+      vignette.sync(settings.vignette);
+      grain.sync(settings.grain);
+      sharpen.sync(settings.sharpen);
       scanlines.sync(settings.scanlines);
-      scale.value = String(settings.uiScale);
-      scaleValue.textContent = percent(settings.uiScale);
+      fpsCounter.sync(settings.fpsCounter);
+      uiScale.sync(settings.uiScale);
     });
   }
 

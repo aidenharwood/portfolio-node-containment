@@ -3657,7 +3657,7 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: min(470px, calc(100% - 32px));
+  width: min(520px, calc(100% - 32px));
   max-height: calc(100% - 32px);
   display: flex;
   flex-direction: column;
@@ -3721,6 +3721,14 @@
   border-color: var(--color-line-strong);
   color: var(--color-text);
   outline: none;
+}
+
+.settings-choice:disabled {
+  cursor: default;
+}
+
+.settings-choice:disabled:not(.active) {
+  opacity: 0.5;
 }
 
 .settings-choice.active {
@@ -3790,6 +3798,47 @@
   text-align: right;
   font-size: 12px;
   color: var(--color-accent);
+}
+
+.settings-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.settings-hint {
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--color-text-muted);
+}
+
+.settings-row-wide {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.settings-row-wide .settings-choices {
+  justify-content: flex-start;
+}
+
+.fps-counter {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 6px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent);
+  background: var(--color-surface-inset);
+  border: 1px solid var(--color-line);
+  pointer-events: none;
+  z-index: 30;
+}
+
+.fps-counter[hidden] {
+  display: none;
 }
 
 .settings-footer {
