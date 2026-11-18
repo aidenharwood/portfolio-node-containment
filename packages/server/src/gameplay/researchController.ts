@@ -10,7 +10,6 @@ import {
   studyExperience,
   weaknessOf,
   COMBAT_STYLE_INFO,
-  type CreatureDefinition,
   type GameContent,
   type InstanceId,
   type NoticeTone,
@@ -46,6 +45,10 @@ export class ResearchController {
     const blocker = studyBlocker(creature.definition, this.analysisOf(player));
     if (blocker) {
       this.host.notify(player, 'warning', blocker);
+      return;
+    }
+    if (player.hasFlag(studiedFlag(creature.definition.id)) && creature.notedBy.has(player.record.id)) {
+      this.host.notify(player, 'info', 'You already have notes on this one. Find another.');
       return;
     }
     player.pendingInteraction = null;
@@ -93,7 +96,7 @@ export class ResearchController {
     }
     if (tick < activity.dueTick) return;
     this.stop(player);
-    this.complete(player, creature.definition);
+    this.complete(player, creature);
   }
 
   private approach(player: Player, creature: Creature): void {
@@ -108,12 +111,14 @@ export class ResearchController {
     player.activity = { ...activity, lastApproach: creature.position };
   }
 
-  private complete(player: Player, creature: CreatureDefinition): void {
+  private complete(player: Player, instance: Creature): void {
+    const creature = instance.definition;
     const blocker = studyBlocker(creature, this.analysisOf(player));
     if (blocker) {
       this.host.notify(player, 'warning', blocker);
       return;
     }
+    instance.notedBy.add(player.record.id);
     const firstStudy = player.addFlag(studiedFlag(creature.id));
     const label = creature.designation ? `${creature.designation} (${creature.name})` : creature.name;
     const weakness = weaknessOf(creature);

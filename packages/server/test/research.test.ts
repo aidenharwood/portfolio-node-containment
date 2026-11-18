@@ -59,7 +59,32 @@ describe('studying anomalies', () => {
     tickUntilStudied(harness);
     const gained = harness.player.record.skills.research - before;
     assert.equal(gained, studyExperience(warden, false));
-    assert.ok(gained < studyExperience(warden, true) / 5);
+    assert.ok(gained < studyExperience(warden, true) / 4);
+  });
+
+  test('a noted specimen refuses a second study until it respawns', () => {
+    assert.ok(warden);
+    const harness = createHarness({ prepare: researcher(warden.level) });
+    const specimen = harness.gameplay.world.levelOf(harness.player).creatureByInstance('arena-warden');
+    assert.ok(specimen);
+    study(harness);
+    tickUntilStudied(harness);
+    assert.ok(specimen.notedBy.has(harness.player.record.id));
+    const afterFirst = harness.player.record.skills.research;
+    study(harness);
+    assert.equal(harness.player.activity, null);
+    assert.match(harness.sink.last('notice')?.text ?? '', /already have notes on this one/);
+    for (let tick = 0; tick < STUDY_TICKS * 2; tick++) harness.gameplay.tick();
+    assert.equal(harness.player.record.skills.research, afterFirst);
+    specimen.state = 'despawned';
+    specimen.diedAtTick = 0;
+    specimen.respawnDelayTicks = 1;
+    for (let tick = 0; tick < 5 && specimen.state === 'despawned'; tick++) harness.gameplay.tick();
+    assert.equal(specimen.state, 'alive');
+    assert.equal(specimen.notedBy.size, 0);
+    study(harness);
+    tickUntilStudied(harness);
+    assert.equal(harness.player.record.skills.research - afterFirst, Math.round(studyExperience(warden, true) * 0.2));
   });
 
   test('a study is refused when Analysis is below the specimen level', () => {

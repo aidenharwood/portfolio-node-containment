@@ -29,6 +29,7 @@ export class Creature {
   diedAtTick = 0;
   respawnDelayTicks = 0;
   readonly contributors = new Set<EntityId>();
+  readonly notedBy = new Set<string>();
   engagedWith: EntityId | null = null;
   engagedUntilTick = 0;
   readonly encounter: EncounterState | null;
@@ -103,6 +104,7 @@ export class Creature {
     this.returningHome = false;
     this.engagedWith = null;
     this.contributors.clear();
+    this.notedBy.clear();
   }
 
   snapshot(): EntitySnapshot {
