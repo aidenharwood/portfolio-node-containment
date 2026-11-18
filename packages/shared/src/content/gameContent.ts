@@ -26,7 +26,8 @@ import { SITE_MERIDIAN_DISTRICTS } from './districts/siteMeridian.ts';
 import { SITE_MERIDIAN_LIFTS } from './seed/siteMeridian.ts';
 import { CURRENCY_ITEMS } from './seed/items.ts';
 import { WARD_CREATURES } from './ward/creatures.ts';
-import { RENAMED_WARD_ITEMS, WARD_FOOD, WARD_GEAR, WARD_MATERIALS, WARD_RECIPES, WARD_UNIQUES } from './ward/items.ts';
+import { MASTERY_MANTLES } from './ward/mastery.ts';
+import { RENAMED_WARD_ITEMS, WARD_FOOD, WARD_GEAR, WARD_KITS, WARD_MATERIALS, WARD_RECIPES, WARD_UNIQUES } from './ward/items.ts';
 import { WARD_SPOTS, WARD_STATIONS } from './ward/objects.ts';
 import { TUTORIAL_QUEST_ID, WARD_DIALOGUES, WARD_QUESTLINES, WARD_QUESTS } from './ward/quests.ts';
 import { SITE_CREATURES, SITE_DIALOGUES, SITE_ITEMS, SITE_OBJECTS, SITE_QUESTS, SITE_RECIPES } from './ward/site.ts';
@@ -90,7 +91,7 @@ function placed(districtId: DistrictId, position: TilePoint): WorldLocation {
 }
 
 export const GAME_CONTENT: GameContent = {
-  items: indexById([...CURRENCY_ITEMS, ...WARD_MATERIALS, ...WARD_FOOD, ...WARD_GEAR, ...WARD_UNIQUES, ...NOVICE_ITEMS, ...SITE_ITEMS, ...DEPTHS_ITEMS]),
+  items: indexById([...CURRENCY_ITEMS, ...WARD_MATERIALS, ...WARD_FOOD, ...WARD_KITS, ...WARD_GEAR, ...WARD_UNIQUES, ...MASTERY_MANTLES, ...NOVICE_ITEMS, ...SITE_ITEMS, ...DEPTHS_ITEMS]),
   renamedItems: RENAMED_WARD_ITEMS,
   npcs: indexById([...SEED_NPCS]),
   worldObjects: indexById(INSTALLED.objects),

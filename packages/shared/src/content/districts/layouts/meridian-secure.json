@@ -66,6 +66,8 @@
     { "id": "b2-records", "object": "b2-records", "at": { "room": "observation", "dx": 4, "dy": 8 } },
     { "id": "ms-salvage-0", "object": "directorate-salvage", "at": { "room": "breach-ward", "dx": 21, "dy": 12 } },
     { "id": "ms-salvage-1", "object": "directorate-salvage", "at": { "room": "breach-ward", "dx": 1, "dy": 4 } },
+    { "id": "ms-cell-door-0", "object": "sprung-cell-door", "at": { "room": "cellblock", "dx": 19, "dy": 5 } },
+    { "id": "ms-cell-door-1", "object": "sprung-cell-door", "at": { "room": "cellblock", "dx": 39, "dy": 5 } },
     { "id": "ms-moss-0", "object": "red-moss", "at": { "room": "breach-ward", "dx": 13, "dy": 12 } },
     { "id": "ms-moss-1", "object": "red-moss", "at": { "room": "cellblock", "dx": 41, "dy": 9 } },
     { "id": "ms-red-trace-0", "object": "red-trace", "at": { "room": "cellblock", "dx": 47, "dy": 10 } },

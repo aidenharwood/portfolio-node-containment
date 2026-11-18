@@ -50,7 +50,7 @@ test('discovery experience grows with level and dwarfs repeat studies', () => {
   const high = creatures[creatures.length - 1];
   assert.ok(low && high);
   assert.ok(studyExperience(high, true) > studyExperience(low, true));
-  for (const creature of creatures) assert.ok(studyExperience(creature, false) * 5 < studyExperience(creature, true), creature.id);
+  for (const creature of creatures) assert.ok(studyExperience(creature, false) * 4 < studyExperience(creature, true), creature.id);
 });
 
 test('a guard follows the triangle', () => {
@@ -79,4 +79,11 @@ test('only a studied weakness is exploited', () => {
 
 test('studied creatures are read back from flags', () => {
   assert.deepEqual(studiedCreaturesOf(['visited:x', studiedFlag('gloam-mite'), studiedFlag('the-host')]), ['gloam-mite', 'the-host']);
+});
+
+test('repeat studies pay a fifth of discovery experience', () => {
+  for (const creature of FIXTURE_CONTENT.creatures.values()) {
+    const discovery = studyExperience(creature, true);
+    assert.equal(studyExperience(creature, false), Math.max(1, Math.round(discovery * 0.2)), creature.id);
+  }
 });

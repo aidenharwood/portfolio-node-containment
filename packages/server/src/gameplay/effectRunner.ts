@@ -5,6 +5,9 @@ import {
   equippedStyleSkill,
   locate,
   levelForExperience,
+  masteryFlag,
+  SKILL_IDS,
+  SKILL_LEVEL_CAP,
   removeItem,
   SKILL_INFO,
   skillGuide,
@@ -87,6 +90,8 @@ export class EffectRunner {
         return this.host.openContracts(player);
       case 'restoreIntegrity':
         return player.setIntegrity(player.maxIntegrity);
+      case 'grantMasteryMantles':
+        return this.grantMasteryMantles(player);
       case 'openTramMap':
         return this.host.openTramMap(player);
       case 'discoverStation':
@@ -113,6 +118,27 @@ export class EffectRunner {
       this.host.notify(player, 'warning', `Your inventory is full. ${outcome.overflow} × ${name} falls to the floor.`);
     }
     this.host.raiseQuestEvent(player, { type: 'loadoutChanged' });
+  }
+
+  private grantMasteryMantles(player: Player): void {
+    const claimable = SKILL_IDS.filter((skill) => levelForExperience(player.record.skills[skill]) >= SKILL_LEVEL_CAP && !player.hasFlag(masteryFlag(skill)));
+    let claimed = 0;
+    for (const skill of claimable) {
+      const mantle = [...this.content.items.values()].find((item) => item.mastery === skill);
+      if (!mantle) continue;
+      player.addFlag(masteryFlag(skill));
+      this.giveItem(player, mantle.id, 1);
+      claimed++;
+    }
+    if (claimed === 0) this.host.notify(player, 'info', `No mastery to claim yet.${this.closestMastery(player)}`);
+  }
+
+  private closestMastery(player: Player): string {
+    const open = SKILL_IDS.filter((skill) => !player.hasFlag(masteryFlag(skill)));
+    if (open.length === 0) return '';
+    const level = (skill: SkillId) => levelForExperience(player.record.skills[skill]);
+    const best = open.reduce((top, skill) => (level(skill) > level(top) ? skill : top));
+    return ` Closest: ${SKILL_INFO[best].name} ${level(best)}/${SKILL_LEVEL_CAP}.`;
   }
 
   private takeItem(player: Player, itemId: string, count: number): void {

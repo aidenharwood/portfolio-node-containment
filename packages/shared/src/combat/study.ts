@@ -9,11 +9,13 @@ export const STUDY_REACH = 4;
 
 export const STUDY_TICKS = 6;
 
+export const REPEAT_STUDY_COOLDOWN_TICKS = 300;
+
 export const EXPLOITED_DEFENCE_FACTOR = 0.7;
 
 const FIRST_STUDY_BASE_EXPERIENCE = 60;
 const FIRST_STUDY_LEVEL_SHARE = 1.5;
-const REPEAT_STUDY_SHARE = 0.1;
+const REPEAT_STUDY_SHARE = 0.2;
 
 export const studiedFlag = (creatureId: CreatureId): string => `studied:${creatureId}`;
 

@@ -66,6 +66,31 @@ function placedDroppers(content: GameContent): Map<ItemId, CreatureDefinition[]>
 const highestRequirement =(item: ItemDefinition | undefined): number =>
   Math.max(1, ...Object.values(item?.equipment?.requirements?.skills ?? {}).map((level) => level ?? 1));
 
+function consumedByEffects(root: unknown, found: Set<ItemId> = new Set()): Set<ItemId> {
+  if (Array.isArray(root)) for (const entry of root) consumedByEffects(entry, found);
+  else if (root && typeof root === 'object') {
+    const record = root as Record<string, unknown>;
+    if ((record.type === 'takeItem' || record.type === 'useItem') && typeof record.itemId === 'string') found.add(record.itemId);
+    for (const value of Object.values(record)) consumedByEffects(value, found);
+  }
+  return found;
+}
+
+export function findMaterialSinkIssues(content: GameContent): string[] {
+  const consumed = new Set<ItemId>([...content.recipes.values()].flatMap((recipe) => recipe.inputs.map((input) => input.itemId)));
+  for (const itemId of consumedByEffects([...content.dialogues.values(), ...content.quests.values(), ...content.worldObjects.values()])) consumed.add(itemId);
+  const produced = new Set<ItemId>([...content.recipes.values()].map((recipe) => recipe.output.itemId));
+  for (const object of content.worldObjects.values()) {
+    for (const source of gatheringSourcesOf(content, object.id)) produced.add(source.itemId);
+  }
+  const issues: string[] = [];
+  for (const item of content.items.values()) {
+    if (item.category !== 'material' || !produced.has(item.id) || consumed.has(item.id)) continue;
+    issues.push(`item ${item.id}: a material that is crafted or gathered needs a recipe, quest or shop that consumes it`);
+  }
+  return issues;
+}
+
 export function findCraftingIssues(content: GameContent): string[] {
   const issues: string[] = [];
   const report = (where: string, problem: string) => issues.push(`${where}: ${problem}`);
@@ -84,6 +109,7 @@ export function findCraftingIssues(content: GameContent): string[] {
     if (output?.equipment && recipe.station !== 'fabricator') report(where, 'equipment is assembled at a fabricator');
     if (output?.consumable?.kind === 'medicine' && recipe.station !== 'synthesiser') report(where, 'medicine is synthesised at a bio-synthesiser');
     if (output?.consumable?.kind === 'food' && recipe.station !== 'cooker') report(where, 'food is cooked at a cooker');
+    if (output?.consumable?.kind === 'kit' && recipe.station !== 'refinery') report(where, 'a kit is refined at a refinery');
     if (output?.equipment && recipe.level < highestRequirement(output)) {
       report(where, `crafting level ${recipe.level} is below the item's equip requirement ${highestRequirement(output)}`);
     }
@@ -91,6 +117,7 @@ export function findCraftingIssues(content: GameContent): string[] {
 
   const droppers = placedDroppers(content);
   for (const item of content.items.values()) {
+    if (item.mastery) continue;
     if (item.unique) {
       const where = `item ${item.id}`;
       if (!item.equipment) report(where, 'only gear can be a unique drop');
@@ -140,6 +167,8 @@ export function findCraftingIssues(content: GameContent): string[] {
       }
     }
   }
+
+  issues.push(...findMaterialSinkIssues(content));
 
   return issues;
 }

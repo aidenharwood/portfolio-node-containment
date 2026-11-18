@@ -1,12 +1,16 @@
+import { boostTicksForMinutes } from '../../../src/character/boosts.ts';
 import type { ItemDefinition } from '../../../src/gear/items.ts';
+import { MASTERY_MANTLES } from '../../../src/content/ward/mastery.ts';
 
 export const FIXTURE_ITEMS: readonly ItemDefinition[] = [
+  ...MASTERY_MANTLES,
   { id: 'meridian-scrip', name: 'Scrip', examine: 'Test currency.', category: 'currency', rarity: 'standard', icon: 'credits', iconColors: ['#e3c35a', '#8a6a1f'], maxStack: 1_000_000, value: 1 },
   { id: 'directorate-commendation', name: 'Commendation', examine: 'Test commendation.', category: 'currency', rarity: 'issued', icon: 'keycard', iconColors: ['#ffcf4d', '#7a3a8a'], maxStack: 1_000_000, value: 0 },
   { id: 'scrap-alloy', name: 'Scrap Alloy', examine: 'Raw test salvage.', category: 'material', rarity: 'standard', icon: 'scrap', iconColors: ['#8a9aa6', '#4a5660'], maxStack: 100, value: 2 },
   { id: 'alloy-plate', name: 'Alloy Plate', examine: 'A refined test part.', category: 'material', rarity: 'standard', icon: 'plate', iconColors: ['#b8c4cc', '#5a6670'], maxStack: 100, value: 6 },
   { id: 'gel-sac', name: 'Gel Sac', examine: 'A raw test reagent dropped by mites.', category: 'material', rarity: 'standard', icon: 'vial', iconColors: ['#7cf29a', '#1f5f35'], maxStack: 100, value: 6 },
   { id: 'medgel', name: 'Medgel Ampoule', examine: 'Test healing gel.', category: 'consumable', rarity: 'standard', icon: 'vial', iconColors: ['#7cf29a', '#1f5f35'], maxStack: 20, value: 8, consumable: { kind: 'medicine', verb: 'Apply', heal: 8, boost: { stats: { armor: 4 }, durationTicks: 10 } } },
+  { id: 'edge-kit', name: 'Edge Kit', examine: 'Test field kit.', category: 'consumable', rarity: 'standard', icon: 'tin', iconColors: ['#8a7a6a', '#c8743a'], maxStack: 20, value: 12, consumable: { kind: 'kit', verb: 'Apply', heal: 0, boost: { stats: { power: 2 }, durationTicks: boostTicksForMinutes(10) } } },
   {
     id: 'stun-baton',
     name: 'Stun Baton',

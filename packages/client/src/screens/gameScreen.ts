@@ -33,7 +33,7 @@ import { StorageWindow } from '../hud/storageWindow.ts';
 import { TramRide } from '../hud/tramRide.ts';
 import { WorldMap } from '../hud/worldMap.ts';
 import { SettingsWindow } from '../hud/settingsWindow.ts';
-import { gameSettings } from '../state/gameSettings.ts';
+import { frameIntervalFor, gameSettings } from '../state/gameSettings.ts';
 import { setTooltipEquipment } from '../ui/itemTooltip.ts';
 import { PartyFrame } from '../hud/partyFrame.ts';
 import { SidePanel } from '../hud/sidePanel.ts';
@@ -57,6 +57,8 @@ import type { ClickMarker, PickTarget } from '../render/pickTarget.ts';
 import { h, isTextEntry, replaceChildren, type Screen } from '../ui/dom.ts';
 import { isCoarsePointer } from '../ui/viewport.ts';
 
+const FRAME_CAP_SLACK_MS = 2;
+const FPS_SAMPLE_MS = 500;
 const TOUCH_DRAG_THRESHOLD_PIXELS = 10;
 const LOADING_MIN_VISIBLE_MS = 450;
 const CAMERA_HINT_MS = 12_000;
@@ -137,6 +139,11 @@ export function createGameScreen(app: AppNavigator): Screen {
   let pinch: PinchState | null = null;
   let multiTouchGesture = false;
   let frameHandle = 0;
+  let frameInterval = 0;
+  let lastDrawn = -Infinity;
+  let fpsFrames = 0;
+  let fpsSince = performance.now();
+  const fpsCounter = h('div', { className: 'fps-counter', hidden: true, ariaHidden: 'true' });
   let clickOrigin: { clientX: number; clientY: number } | null = null;
 
   const examine = (text: string) => chat.push({ channel: 'examine', text });
@@ -518,6 +525,15 @@ export function createGameScreen(app: AppNavigator): Screen {
   const unsubscribers = [world.on('zoneChanged', onZoneChanged), world.on('selfChanged', refreshGuidance)];
 
   const loop = (now: number) => {
+    frameHandle = requestAnimationFrame(loop);
+    if (frameInterval > 0 && now - lastDrawn < frameInterval - FRAME_CAP_SLACK_MS) return;
+    lastDrawn = frameInterval > 0 && now - lastDrawn < frameInterval * 2 ? Math.min(now, lastDrawn + frameInterval) : now;
+    fpsFrames++;
+    if (now - fpsSince >= FPS_SAMPLE_MS) {
+      if (!fpsCounter.hidden) fpsCounter.textContent = `${Math.round((fpsFrames * 1000) / (now - fpsSince))} fps`;
+      fpsFrames = 0;
+      fpsSince = now;
+    }
     renderer.render(now, { hover, clickMarker, objectiveObjectIds: objectiveObjects, npcMarkers, objectiveCreatureIds: objectiveCreatures, objectiveBeacons, guidanceRoute: guidanceRoute.current(now, guidanceTracking.target) });
     objectives.setRoute(guidanceRoute.via, guidanceRoute.exhausted, guidanceRoute.unreachable);
     if (renderer.loading) loadingVisibleUntil = now + LOADING_MIN_VISIBLE_MS;
@@ -529,7 +545,6 @@ export function createGameScreen(app: AppNavigator): Screen {
     boosts.update(world, now);
     minimap.render(now, renderer.cameraRig.headingRadians);
     followDistrict();
-    frameHandle = requestAnimationFrame(loop);
   };
 
   chat.element.prepend(vitals.element);
@@ -541,6 +556,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     speech.element,
     combatOverlay.element,
     h('div', { className: 'scanlines' }),
+    fpsCounter,
     zoneBanner,
     cameraHint,
     h('div', { className: 'hud-top-left' }, vitals.targetElement, party.element),
@@ -570,6 +586,8 @@ export function createGameScreen(app: AppNavigator): Screen {
     renderer.applyGraphics(next);
     element.style.setProperty('--ui-scale', String(next.uiScale));
     element.classList.toggle('no-scanlines', !next.scanlines);
+    frameInterval = frameIntervalFor(next.frameCap);
+    fpsCounter.hidden = !next.fpsCounter;
     sidePanel.refit();
   });
 

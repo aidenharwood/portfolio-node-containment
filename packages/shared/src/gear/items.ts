@@ -106,7 +106,7 @@ export interface EquipmentProperties {
   readonly weapon?: WeaponProfile;
 }
 
-export type ConsumableKind = 'food' | 'medicine';
+export type ConsumableKind = 'food' | 'medicine' | 'kit';
 
 export interface ConsumableProperties {
   readonly kind: ConsumableKind;
@@ -126,6 +126,7 @@ export interface ItemDefinition {
   readonly maxStack: number;
   readonly value: number;
   readonly unique?: boolean;
+  readonly mastery?: SkillId;
   readonly equipment?: EquipmentProperties;
   readonly consumable?: ConsumableProperties;
 }

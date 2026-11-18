@@ -1,5 +1,5 @@
 import { objectFootprintTiles } from '../world/footprint.ts';
-import { SKILL_LEVEL_CAP } from '../character/skills.ts';
+import { SKILL_IDS, SKILL_LEVEL_CAP } from '../character/skills.ts';
 import type { DialogueDefinition } from '../dialogue/dialogue.ts';
 import type { Condition } from '../rules/conditions.ts';
 import type { GameEffect } from '../rules/effects.ts';
@@ -30,6 +30,14 @@ export function findContentIssues(content: GameContent): string[] {
   const report = (where: string, problem: string) => issues.push(`${where}: ${problem}`);
   const gatherable = rawSourceTiers(content);
   const craftable = new Set([...content.recipes.values()].map((recipe) => recipe.output.itemId));
+
+  for (const skill of SKILL_IDS) {
+    const mantles = [...content.items.values()].filter((item) => item.mastery === skill);
+    if (mantles.length !== 1) report(`skill ${skill}`, `needs exactly one mastery mantle, found ${mantles.length}`);
+  }
+  for (const item of content.items.values()) {
+    if (item.mastery && item.equipment?.requirements?.skills?.[item.mastery] !== SKILL_LEVEL_CAP) report(`item ${item.id}`, `a mastery mantle requires ${item.mastery} ${SKILL_LEVEL_CAP}`);
+  }
 
   const checkItem = (where: string, itemId: string) => {
     if (!content.items.has(itemId)) report(where, `unknown item "${itemId}"`);
