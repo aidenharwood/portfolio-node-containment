@@ -113,6 +113,43 @@ body {
     top: calc(var(--hud-inset) + var(--safe-top));
     left: calc(var(--hud-inset) + var(--safe-left));
     width: min(260px, calc(100% - 150px));
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+
+  .hud-top-left > .hud-objectives {
+    pointer-events: none;
+  }
+
+  .hud-objectives.cramped .objectives-list {
+    display: none;
+  }
+
+  .party-meta {
+    display: none;
+  }
+
+  .game-screen .hud-chat-above > .activity-bar {
+    position: static;
+    transform: none;
+    width: 100%;
+    zoom: 1;
+    pointer-events: none;
+  }
+
+  .loading-marker {
+    top: calc(var(--hud-inset) + var(--safe-top) + 6px);
+    right: calc(var(--hud-inset) + var(--safe-right) + 6px);
+    left: auto;
+    bottom: auto;
+    transform: none;
+    gap: 0;
+    padding: 5px;
+    font-size: 0;
+    letter-spacing: 0;
+    z-index: 19;
   }
 
   .hud-objectives {
@@ -222,11 +259,6 @@ body {
     z-index: 25;
   }
 
-  .activity-bar {
-    top: calc(50% + 48px);
-    bottom: auto;
-  }
-
   .camera-hint {
     top: 36%;
     text-align: center;
@@ -270,6 +302,14 @@ body {
 }
 
 @media (max-width: 760px) and (min-height: 521px) {
+  .hud-top-right {
+    max-width: 176px;
+  }
+
+  .hud-top-left {
+    width: min(260px, calc(100% - 176px - 3 * var(--hud-inset) - var(--safe-left) - var(--safe-right)));
+  }
+
   .hud-chat {
     bottom: calc(16px + var(--side-panel-height, 50px) + var(--safe-bottom));
   }
@@ -287,6 +327,7 @@ body {
 @media (max-width: 760px) and (min-height: 521px), (orientation: portrait) and (min-width: 761px) {
   .shop-window,
   .storage-window,
+  .market-window,
   .quest-info-window {
     top: calc(var(--hud-inset) + var(--safe-top));
     transform: translateX(-50%);
@@ -296,7 +337,7 @@ body {
 }
 
 @media (max-width: 760px) and (min-height: 521px) {
-  .game-screen:has(.shop-window:not([hidden]), .storage-window:not([hidden]), .quest-info-window:not([hidden])) .hud-side:not(.collapsed) {
+  .game-screen:has(.shop-window:not([hidden]), .storage-window:not([hidden]), .market-window:not([hidden]), .quest-info-window:not([hidden])) .hud-side:not(.collapsed) {
     max-height: calc(50% - 12px - var(--safe-bottom));
   }
 }
@@ -304,6 +345,7 @@ body {
 @media (max-height: 520px) and (orientation: landscape) {
   .shop-window,
   .storage-window,
+  .market-window,
   .quest-info-window {
     top: calc(var(--hud-inset) + var(--safe-top));
     left: calc(var(--hud-inset) + var(--safe-left));
@@ -383,7 +425,7 @@ body {
 
 @media (max-width: 760px), (max-height: 520px) {
   .roster-layout {
-    padding: calc(16px + var(--safe-top)) 12px calc(16px + var(--safe-bottom));
+    padding: calc(16px + var(--safe-top)) calc(12px + var(--safe-right)) calc(16px + var(--safe-bottom)) calc(12px + var(--safe-left));
   }
 
   .roster-screen .screen-header {
@@ -714,12 +756,16 @@ body {
 }
 
 @media (max-height: 520px) and (orientation: landscape) {
-  .hud-top-right > .hud-objectives {
-    position: fixed;
-    top: calc(var(--hud-inset) + var(--safe-top));
-    left: calc(var(--hud-inset) + var(--safe-left));
-    width: min(300px, calc(100% - 520px - var(--safe-left) - var(--safe-right)));
-    min-width: 220px;
+  .game-screen:has(.hud-side:not(.collapsed)) .hud-top-left {
+    width: min(260px, calc(100% - min(380px, 100% - 380px) - 176px - 4 * var(--hud-inset) - var(--safe-left) - var(--safe-right)));
+  }
+
+  .hud-chat-above {
+    width: min(260px, 100%);
+  }
+
+  .game-screen:has(.hud-dialogue:not([hidden])) .hud-top-left > .hud-objectives {
+    display: none;
   }
 
   .objectives-list {
@@ -731,25 +777,13 @@ body {
     right: calc(2 * var(--hud-inset) + min(380px, 100% - 380px) + var(--safe-right));
   }
 
-  .game-screen:has(.hud-side:not(.collapsed)) .hud-minimap {
-    padding: 0;
-    background: none;
-    border: none;
-    box-shadow: none;
-    clip-path: none;
-    backdrop-filter: none;
-  }
-
-  .game-screen:has(.hud-side:not(.collapsed)) .hud-minimap::before,
+  .game-screen:has(.hud-side:not(.collapsed)) .minimap-canvas,
   .game-screen:has(.hud-side:not(.collapsed)) .minimap-frame {
     display: none;
   }
 
-  .loading-marker {
-    left: auto;
-    right: calc(var(--hud-inset) + var(--safe-right));
-    bottom: calc(2 * var(--hud-inset) + var(--side-panel-height, 50px) + var(--safe-bottom));
-    transform: none;
+  .game-screen:has(.hud-side:not(.collapsed)) .loading-marker {
+    right: calc(2 * var(--hud-inset) + min(380px, 100% - 380px) + var(--safe-right) + 6px);
   }
 
   .game-screen .hud-side:not(.collapsed) {
@@ -778,6 +812,13 @@ body {
     font-size: var(--text-large);
   }
 
+  .contain-button,
+  .chat-action,
+  .party-leave,
+  .questline-header,
+  .quest-entry,
+  .bestiary-entry,
+  .roster-delete-button,
   .button.small,
   .crafting-tab,
   .crafting-chip,
@@ -798,4 +839,81 @@ body {
   .settings-row {
     min-height: var(--hud-control);
   }
+}
+
+.panel-heading {
+  display: none;
+}
+
+@media (pointer: coarse), (max-width: 760px), (max-height: 520px) {
+  .panel-heading {
+    display: block;
+    margin: 0 0 8px;
+    font-family: var(--font-display);
+    font-size: var(--text-label);
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .party-leave {
+    padding: 0 8px;
+    margin: -8px -8px -8px 0;
+  }
+
+  .chat-action {
+    min-width: 72px;
+  }
+}
+
+.chat-toasts {
+  display: none;
+}
+
+.hud-chat.collapsed .chat-toasts {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.chat-toast {
+  margin: 0;
+  padding: 6px 10px;
+  background: rgba(3, 8, 11, 0.86);
+  border-left: 2px solid var(--color-accent);
+  font-size: var(--text-small);
+  animation: chat-toast-fade 4.5s ease forwards;
+}
+
+.chat-toast.channel-notice.tone-warning {
+  border-left-color: var(--color-danger);
+}
+
+@keyframes chat-toast-fade {
+  0%,
+  85% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.chat-collapse.unread {
+  position: relative;
+}
+
+.chat-collapse.unread::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-gold);
+  box-shadow: 0 0 6px var(--color-gold);
 }

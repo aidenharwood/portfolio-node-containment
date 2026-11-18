@@ -5,12 +5,12 @@
   "tier": 10,
   "region": "low-ward",
   "condition": "breached",
-  "deadEnd": true,
   "ambience": { "darkness": 0.66, "tint": "#3a1c20", "fog": "#1a2028", "sky": "#2a3040", "weather": ["rain"], "haze": 1.1 },
   "size": { "width": 64, "height": 64 },
   "steps": [
     { "kind": "room", "id": "ground", "rect": { "x": 0, "y": 1, "width": 63, "height": 62 }, "floor": "gravel", "shape": "rect", "edge": "barrier" },
     { "kind": "exit", "id": "west", "room": "ground", "side": "west", "width": 62, "offset": 0, "gate": false },
+    { "kind": "exit", "id": "east", "room": "ground", "side": "east", "width": 2, "offset": 30, "gate": true, "floor": "door" },
     { "kind": "patch", "rect": { "x": 0, "y": 28, "width": 63, "height": 6 }, "tile": "asphalt" },
     { "kind": "building", "id": "cordon-post", "rect": { "x": 48, "y": 12, "width": 8, "height": 6 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2, "offset": 3 }] }
   ],
@@ -21,7 +21,8 @@
   ],
   "anchors": {},
   "objects": [
-    { "id": "cg-gate", "object": "cordon-gate", "at": { "room": "ground", "dx": 62, "dy": 30 }, "facing": "west" },
+    { "id": "cg-gate-leaf-0", "object": "cordon-gate-leaf", "at": { "exit": "east", "index": 0 }, "facing": "west" },
+    { "id": "cg-gate-leaf-1", "object": "cordon-gate-leaf", "at": { "exit": "east", "index": 1 }, "facing": "west" },
     { "id": "cg-rivet-seam-0", "object": "rivet-seam", "at": { "room": "ground", "dx": 55, "dy": 4 } },
     { "id": "cg-rivet-seam-1", "object": "rivet-seam", "at": { "room": "ground", "dx": 60, "dy": 2 } },
     { "id": "cg-post-table", "object": "table", "at": { "room": "cordon-post", "dx": 2, "dy": 3 } },

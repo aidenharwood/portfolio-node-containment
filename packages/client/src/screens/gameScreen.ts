@@ -55,7 +55,7 @@ import { actionsForTarget, type ActionContext } from '../input/worldActions.ts';
 import { GameRenderer } from '../render/gameRenderer.ts';
 import type { ClickMarker, PickTarget } from '../render/pickTarget.ts';
 import { h, isTextEntry, replaceChildren, type Screen } from '../ui/dom.ts';
-import { isCoarsePointer } from '../ui/viewport.ts';
+import { COMPACT_LANDSCAPE_QUERY, isCoarsePointer, isCompactLayout } from '../ui/viewport.ts';
 
 const FRAME_CAP_SLACK_MS = 2;
 const FPS_SAMPLE_MS = 500;
@@ -65,6 +65,11 @@ const CAMERA_HINT_MS = 12_000;
 const ORBIT_YAW_PER_PIXEL = 0.008;
 const ORBIT_PITCH_PER_PIXEL = 0.006;
 const ZOOM_STEP = 1.12;
+const UI_SCALE_REFERENCE_HEIGHT = 720;
+const UI_SCALE_CEILING = 1.5;
+const COMPACT_UI_SCALE_MAX = 1.1;
+const HUD_COLUMN_GAP = 8;
+const CRAMPED_OBJECTIVES_PX = 44;
 
 const isSalvageNode = (id: string): boolean => {
   const definition = GAME_CONTENT.worldObjects.get(id);
@@ -519,7 +524,11 @@ export function createGameScreen(app: AppNavigator): Screen {
   window.addEventListener('keyup', onKeyUp);
   window.addEventListener('blur', onBlur);
 
-  const onResize = () => renderer.resize();
+  const onResize = () => {
+    renderer.resize();
+    applyUiScale();
+    fitHudColumns();
+  };
   window.addEventListener('resize', onResize);
 
   const unsubscribers = [world.on('zoneChanged', onZoneChanged), world.on('selfChanged', refreshGuidance)];
@@ -548,7 +557,9 @@ export function createGameScreen(app: AppNavigator): Screen {
   };
 
   chat.element.prepend(vitals.element);
-  chat.element.append(h('div', { className: 'hud-chat-above' }, vitals.targetElement, boosts.element));
+  const chatAbove = h('div', { className: 'hud-chat-above' }, vitals.targetElement, boosts.element, chat.toasts);
+  chat.element.append(chatAbove);
+  const topLeft = h('div', { className: 'hud-top-left' }, party.element);
   const element = h(
     'div',
     { className: 'screen game-screen' },
@@ -559,7 +570,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     fpsCounter,
     zoneBanner,
     cameraHint,
-    h('div', { className: 'hud-top-left' }, party.element),
+    topLeft,
     topRight,
     loadingMarker,
     sidePanel.element,
@@ -582,9 +593,54 @@ export function createGameScreen(app: AppNavigator): Screen {
     menu.element,
   );
 
+  let requestedUiScale = 1;
+  const applyUiScale = () => {
+    const ceiling = Math.max(1, Math.min(window.innerHeight / UI_SCALE_REFERENCE_HEIGHT, isCompactLayout() ? COMPACT_UI_SCALE_MAX : UI_SCALE_CEILING));
+    element.style.setProperty('--ui-scale', String(Math.min(requestedUiScale, ceiling)));
+  };
+
+  const compactLandscape = window.matchMedia(COMPACT_LANDSCAPE_QUERY);
+  const objectivesList = objectives.element.querySelector<HTMLElement>('.objectives-list');
+  const visibleTop = (candidates: readonly Element[]) => Math.min(...candidates.map((candidate) => candidate.getBoundingClientRect()).filter((rect) => rect.height > 0).map((rect) => rect.top));
+  const placeCompactHud = () => {
+    const objectivesHome = compactLandscape.matches ? topLeft : topRight;
+    if (objectives.element.parentElement !== objectivesHome) objectivesHome.append(objectives.element);
+    const activityHome = isCompactLayout() ? chatAbove : element;
+    if (activity.element.parentElement !== activityHome) {
+      if (activityHome === chatAbove) chatAbove.insertBefore(activity.element, chat.toasts);
+      else element.insertBefore(activity.element, tramRide.element);
+    }
+  };
+  const fitHudColumns = () => {
+    placeCompactHud();
+    if (!isCompactLayout()) {
+      topLeft.style.removeProperty('max-height');
+      objectivesList?.style.removeProperty('max-height');
+      objectives.element.classList.remove('cramped');
+      renderer.cameraRig.shiftViewUp(0);
+      return;
+    }
+    const scale = parseFloat(getComputedStyle(topLeft).zoom) || 1;
+    const columnTop = visibleTop([chat.element, ...chatAbove.children]);
+    const leftRoom = (columnTop - topLeft.getBoundingClientRect().top - HUD_COLUMN_GAP) / scale;
+    topLeft.style.maxHeight = `${Math.max(0, Math.floor(leftRoom))}px`;
+    if (objectivesList && !compactLandscape.matches) {
+      const room = (columnTop - objectivesList.getBoundingClientRect().top - HUD_COLUMN_GAP) / scale;
+      objectivesList.style.maxHeight = `${Math.max(0, Math.floor(room))}px`;
+      objectives.element.classList.toggle('cramped', room < CRAMPED_OBJECTIVES_PX);
+    } else {
+      objectivesList?.style.removeProperty('max-height');
+      objectives.element.classList.remove('cramped');
+    }
+    const portraitPanelCover = !compactLandscape.matches && !sidePanel.isCollapsed ? window.innerHeight - columnTop : 0;
+    renderer.cameraRig.shiftViewUp(Math.max(0, portraitPanelCover / 2));
+  };
+  compactLandscape.addEventListener('change', fitHudColumns);
+
   const stopSettings = gameSettings.subscribe((next) => {
     renderer.applyGraphics(next);
-    element.style.setProperty('--ui-scale', String(next.uiScale));
+    requestedUiScale = next.uiScale;
+    applyUiScale();
     element.classList.toggle('no-scanlines', !next.scanlines);
     frameInterval = frameIntervalFor(next.frameCap);
     fpsCounter.hidden = !next.fpsCounter;
@@ -594,9 +650,9 @@ export function createGameScreen(app: AppNavigator): Screen {
   const panelObserver = new ResizeObserver(() => {
     element.style.setProperty('--side-panel-height', `${sidePanel.element.offsetHeight}px`);
     element.style.setProperty('--top-right-height', `${topRight.offsetHeight}px`);
+    fitHudColumns();
   });
-  panelObserver.observe(sidePanel.element);
-  panelObserver.observe(topRight);
+  for (const observed of [sidePanel.element, topRight, topLeft, chat.element, chatAbove, party.element]) panelObserver.observe(observed);
 
   requestAnimationFrame(() => {
     renderer.resize();
@@ -615,6 +671,7 @@ export function createGameScreen(app: AppNavigator): Screen {
       window.removeEventListener('resize', onResize);
       unsubscribers.forEach((unsubscribe) => unsubscribe());
       panelObserver.disconnect();
+      compactLandscape.removeEventListener('change', fitHudColumns);
       window.clearTimeout(cameraHintTimer);
       chat.dispose();
       combatOverlay.dispose();

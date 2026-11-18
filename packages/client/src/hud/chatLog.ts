@@ -21,6 +21,10 @@ export type ChatLine = {
 type Filter = 'all' | 'game' | 'chat' | 'party' | 'whisper';
 
 const MAX_LINES = 150;
+const TOAST_MS = 4500;
+const MAX_TOASTS = 3;
+const TOASTED = new Set<ChatLine['channel']>(['examine', 'notice', 'whisper', 'party']);
+const STICK_SLACK_PX = 24;
 
 const CONVERSATION = new Set<ChatLine['channel']>(['local', 'site', 'party', 'whisper']);
 
@@ -36,6 +40,7 @@ const FILTER_IDS = Object.keys(FILTERS) as Filter[];
 
 export class ChatLog {
   readonly element: HTMLElement;
+  readonly toasts: HTMLElement;
   private readonly log: HTMLElement;
   private readonly input: HTMLInputElement;
   private readonly collapseToggle: HTMLButtonElement;
@@ -47,6 +52,7 @@ export class ChatLog {
   constructor(connection: GameConnection, social: SocialState) {
     this.connection = connection;
     this.log = h('div', { className: 'chat-log', role: 'log', ariaLive: 'polite' });
+    this.toasts = h('div', { className: 'chat-toasts', role: 'status' });
     this.input = h('input', { className: 'chat-input', maxLength: 200, placeholder: isCoarsePointer() ? 'Tap to speak · /help' : 'Press Enter to speak · /help for commands' });
     const form = h('form', { className: 'chat-form' }, h('span', { className: 'chat-prompt' }, '›'), this.input);
     form.onsubmit = (event) => {
@@ -61,9 +67,15 @@ export class ChatLog {
       h('button', {
         className: `chat-tab${filter === this.filter ? ' active' : ''}`,
         type: 'button',
+        role: 'tab',
+        ariaSelected: String(filter === this.filter),
         onclick: () => {
           this.filter = filter;
-          tabs.forEach((tab, index) => tab.classList.toggle('active', FILTER_IDS[index] === filter));
+          tabs.forEach((tab, index) => {
+            tab.classList.toggle('active', FILTER_IDS[index] === filter);
+            tab.ariaSelected = String(FILTER_IDS[index] === filter);
+          });
+          if (this.isCollapsed()) this.setCollapsed(false);
           this.redraw();
         },
       }, FILTERS[filter].label),
@@ -75,7 +87,7 @@ export class ChatLog {
       onclick: () => this.setCollapsed(!this.element.classList.contains('collapsed')),
     });
 
-    this.element = h('section', { className: 'hud-chat' }, h('div', { className: 'chat-panel panel' }, h('div', { className: 'chat-tabs' }, ...tabs, this.collapseToggle), this.log, form));
+    this.element = h('section', { className: 'hud-chat' }, h('div', { className: 'chat-panel panel' }, h('div', { className: 'chat-tabs', role: 'tablist' }, ...tabs, this.collapseToggle), this.log, form));
     this.setCollapsed(isCompactLayout());
     this.unsubscribers = [
       connection.on('chat.message', (message) => this.push(message)),
@@ -97,10 +109,31 @@ export class ChatLog {
     this.lines.push(line);
     if (this.lines.length > MAX_LINES) this.lines.shift();
     if (FILTERS[this.filter].shows(line)) {
+      const pinned = this.isScrolledToEnd();
       this.log.append(renderLine(line));
       while (this.log.childElementCount > MAX_LINES) this.log.firstElementChild?.remove();
-      this.log.scrollTop = this.log.scrollHeight;
+      if (pinned) this.log.scrollTop = this.log.scrollHeight;
     }
+    if (this.isCollapsed()) {
+      this.collapseToggle.classList.add('unread');
+      if (TOASTED.has(line.channel) && !line.actions?.length) this.toast(line);
+    }
+  }
+
+  private isCollapsed(): boolean {
+    return this.element.classList.contains('collapsed');
+  }
+
+  private isScrolledToEnd(): boolean {
+    return this.log.scrollHeight - this.log.scrollTop - this.log.clientHeight <= STICK_SLACK_PX;
+  }
+
+  private toast(line: ChatLine): void {
+    const toast = renderLine(line);
+    toast.classList.add('chat-toast');
+    this.toasts.append(toast);
+    while (this.toasts.childElementCount > MAX_TOASTS) this.toasts.firstElementChild?.remove();
+    window.setTimeout(() => toast.remove(), TOAST_MS);
   }
 
   focusInput(prefill = ''): void {
@@ -157,7 +190,10 @@ export class ChatLog {
     this.element.classList.toggle('collapsed', collapsed);
     this.collapseToggle.ariaLabel = collapsed ? 'Show chat' : 'Hide chat';
     this.collapseToggle.ariaExpanded = String(!collapsed);
-    if (!collapsed) this.log.scrollTop = this.log.scrollHeight;
+    if (collapsed) return;
+    this.collapseToggle.classList.remove('unread');
+    this.toasts.replaceChildren();
+    this.log.scrollTop = this.log.scrollHeight;
   }
 
   private redraw(): void {

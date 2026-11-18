@@ -2,7 +2,7 @@
 
 Read this before adding or changing a district, a level or anything placed in one. It applies to humans and AI agents alike. Every district in the game follows these rules; there is no exemption list. The rules marked **checked** are enforced by `findWorldDesignIssues` (`packages/shared/src/content/worldDesignIntegrity.ts`), which runs inside `findContentIssues`: the server will not boot and `npm test` fails when one is broken. The rest is judgement, and reviewers hold changes to it.
 
-> **Status:** the world is being rebuilt as an open city (`docs/superpowers/specs/2026-11-14-first-region-design.md`). The Low Ward is built: nine open squares from Terminus Square out to the Cordon gate, and three levels below Site Meridian (Intake, the Secure Wing and the Vault) reached by the headhouse lift. Phase 4 adds the people's quests, items and creatures.
+> **Status:** the world is an open city (`docs/superpowers/specs/2026-11-14-first-region-design.md`). The Low Ward is built and peopled: nine open squares from Terminus Square out to the Cordon gate, and three levels below Site Meridian (Intake, the Secure Wing and the Vault) reached by the headhouse lift. Beyond the Cordon, the rest of Hollow Bay is blocked out to `docs/superpowers/specs/2026-11-18-hollow-bay-atlas.md`: seven wards of six squares ringing the bay, each with an outpost and a Site compound, joined by gated crossings. Their people, quests, creatures, gathering spots and Site levels come ward by ward.
 
 ## What the world should feel like
 
@@ -123,9 +123,19 @@ The rest is judgement, and reviewers hold it:
 
 **Floors.** `ceramic` is for medical, ward, lab, cold and canteen rooms; `boards` for homes, shops, offices, canteens and the like. Wall materials say who built a place: brick and blockwork for the old city, corrugated cladding for what went up after the anomalies, and the Directorate panel for the Directorate.
 
+## Wards
+
+Hollow Bay is a ring of wards around a bay. The Low Ward is on the west shore; the north shore (the Old Shipyards, the Heights, Ironside) runs east from the Cordon gate, the south shore (the Tidemarsh, Old Town, the Drowned Quarter) runs east from the sluice gate at the foot of the Cut, and both meet at the Lantern on the headland. The bay itself has no squares.
+
+- **A ward is a region.** Its squares join along whole edges like the Low Ward's. Squares of different wards that touch keep their edges, so the only way between wards is a gate.
+- **Gates join wards.** Each crossing is a two-wide `gate` exit with two leaves of one door object on its tiles, set in the edge of the gentler ward. The Cordon gate opens when The Heart is done; every other gate opens on the flag `ward-open:<region>`, which the content of the ward before it grants. Until then the ward is drawn and walkable in the editor, and closed in play.
+- **Every ward has** an outpost square (a safe building with a storage locker, a quartermaster, an exchange mailbox and a contract board), a Site square (a Directorate compound with a headhouse whose lift will lead to the Site's levels, a holding block and the ward's landmark), and filler squares.
+- **Tier only rises.** A ward's gate squares and Site compound take its lower tier and its far squares the higher one, so each square has a gentler neighbour on the way in.
+
 ## Reserved ground
 
-- **East of the Low Ward:** the Cordon, where the next region attaches through the Cordon gate.
+- **Under the bay:** the Hollow, reached only from the lowest level of every Site.
+- **Each Site's levels:** the headhouse lifts in the seven new Site compounds are dormant until their levels are built.
 
 ## Adding a district
 

@@ -570,7 +570,9 @@
 .loadout .slot-label {
   max-width: 100%;
   overflow: hidden;
-  font-size: min(10px, calc(var(--slot) * 0.19));
+  font-size: max(10px, min(11px, calc(var(--slot) * 0.2)));
+  text-overflow: ellipsis;
+  white-space: nowrap;
   letter-spacing: 0;
 }
 
@@ -1167,6 +1169,8 @@
   bottom: 230px;
   transform: translateX(-50%);
   width: min(620px, calc(100% - 32px));
+  max-height: calc(100% - 246px);
+  overflow-y: auto;
   padding: var(--window-padding);
   border-color: var(--color-line-strong);
 }
@@ -3564,7 +3568,7 @@
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.15s ease;
-  z-index: 21;
+  z-index: 11;
 }
 
 .loading-marker.visible {

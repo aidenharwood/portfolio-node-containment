@@ -22,6 +22,7 @@ export interface PanelTab {
 export class SidePanel {
   readonly element: HTMLElement;
   private readonly body: HTMLElement;
+  private readonly heading: HTMLElement;
   private readonly tabs: readonly PanelTab[];
   private readonly buttons = new Map<string, HTMLButtonElement>();
   private active: string;
@@ -48,7 +49,8 @@ export class SidePanel {
         return button;
       }),
     );
-    this.body = h('div', { className: 'panel-body' }, ...tabs.map((tab) => tab.element));
+    this.heading = h('h2', { className: 'panel-heading' });
+    this.body = h('div', { className: 'panel-body' }, this.heading, ...tabs.map((tab) => tab.element));
     this.element = h('section', { className: 'hud-side panel' }, strip, this.body);
     this.select(this.active);
     if (isCompactLayout()) this.collapse();
@@ -68,12 +70,16 @@ export class SidePanel {
 
   collapse(): void {
     this.element.classList.add('collapsed');
-    for (const button of this.buttons.values()) button.classList.remove('active');
+    for (const button of this.buttons.values()) {
+      button.classList.remove('active');
+      button.setAttribute('aria-selected', 'false');
+    }
   }
 
   select(id: string): void {
     this.active = id;
     this.element.classList.remove('collapsed');
+    this.heading.textContent = this.tabs.find((tab) => tab.id === id)?.label ?? '';
     for (const tab of this.tabs) {
       tab.element.hidden = tab.id !== id;
       const button = this.buttons.get(tab.id);

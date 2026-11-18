@@ -18,6 +18,8 @@ import type { PanelTab } from '../sidePanel.ts';
 const ARMOUR_COLUMN: readonly EquipmentSlot[] = ['head', 'eyes', 'torso', 'hands', 'legs', 'feet'];
 const KIT_COLUMN: readonly EquipmentSlot[] = ['primary', 'secondary', 'back', 'implant', 'utility'];
 
+const SHORT_SLOT_LABELS: Partial<Record<EquipmentSlot, string>> = { primary: 'Main', secondary: 'Off', implant: 'Chip', utility: 'Util' };
+
 export function createEquipmentTab(connection: GameConnection, world: WorldState): PanelTab {
   let self: SelfState | null = null;
   let preview: AvatarPreview | null = null;
@@ -75,7 +77,7 @@ export function createEquipmentTab(connection: GameConnection, world: WorldState
         const item = itemId ? GAME_CONTENT.items.get(itemId) : undefined;
         button.className = `equipment-slot${item ? ` filled rarity-${item.rarity}` : ''}`;
         button.ariaLabel = item ? `${EQUIPMENT_SLOT_LABELS[slot]}: ${item.name}` : `${EQUIPMENT_SLOT_LABELS[slot]}: empty`;
-        replaceChildren(button, item ? h('img', { src: itemIconUrl(item), alt: '' }) : h('span', { className: 'slot-label' }, EQUIPMENT_SLOT_LABELS[slot]));
+        replaceChildren(button, item ? h('img', { src: itemIconUrl(item), alt: '' }) : h('span', { className: 'slot-label' }, SHORT_SLOT_LABELS[slot] ?? EQUIPMENT_SLOT_LABELS[slot]));
       }
     },
     dispose() {

@@ -5,9 +5,10 @@ import { createBlendedAmbience, easeAmbience, sampleAmbience } from '../src/rend
 
 const overworld = GAME_CONTENT.levels.get('overworld')!;
 const vault = GAME_CONTENT.levels.get('meridian-b3')!;
+const fringeYard = overworld.layout.toLevelPoint('shipyard-fringe', { x: 32, y: 32 });
 
 test('the Fringe rains on open ground and the Vault grows spores under cover', () => {
-  const fringe = sampleAmbience(overworld, { x: 160, y: 96 });
+  const fringe = sampleAmbience(overworld, fringeYard);
   assert.equal(fringe.weather.rain, 1);
   assert.ok(fringe.exposure > 0.5);
   assert.ok(fringe.haze > 1);
@@ -19,6 +20,6 @@ test('the Fringe rains on open ground and the Vault grows spores under cover', (
 
 test('weather eases in rather than snapping', () => {
   const current = createBlendedAmbience();
-  easeAmbience(current, sampleAmbience(overworld, { x: 160, y: 96 }), 0.25);
+  easeAmbience(current, sampleAmbience(overworld, fringeYard), 0.25);
   assert.equal(current.weather.rain, 0.25);
 });

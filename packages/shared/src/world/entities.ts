@@ -80,7 +80,15 @@ export type WorldObjectModel =
   | 'cooker'
   | 'cat'
   | 'hatch'
-  | 'sluiceValve';
+  | 'sluiceValve'
+  | 'gateLeaf'
+  | 'gantryCrane'
+  | 'windpump'
+  | 'directorateSpire'
+  | 'bellTower'
+  | 'coolingTower'
+  | 'divingBell'
+  | 'lighthouse';
 
 export interface ObjectInteraction {
   readonly verb: string;

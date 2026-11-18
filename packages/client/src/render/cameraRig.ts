@@ -20,6 +20,10 @@ export class CameraRig {
   private desiredDistance: number = DEFAULT_ORBIT.distance;
   private readonly heldKeys = new Set<string>();
   private initialized = false;
+  private viewWidth = 1;
+  private viewHeight = 1;
+  private viewShift = 0;
+  private desiredViewShift = 0;
 
   get focusPoint(): Vector3 {
     return this.focus;
@@ -30,7 +34,19 @@ export class CameraRig {
   }
 
   resize(width: number, height: number): void {
-    this.camera.aspect = width / Math.max(1, height);
+    this.viewWidth = Math.max(1, width);
+    this.viewHeight = Math.max(1, height);
+    this.camera.aspect = this.viewWidth / this.viewHeight;
+    this.applyViewShift();
+  }
+
+  shiftViewUp(pixels: number): void {
+    this.desiredViewShift = pixels;
+  }
+
+  private applyViewShift(): void {
+    if (Math.abs(this.viewShift) < 0.5) this.camera.clearViewOffset();
+    else this.camera.setViewOffset(this.viewWidth, this.viewHeight, 0, this.viewShift, this.viewWidth, this.viewHeight);
     this.camera.updateProjectionMatrix();
   }
 
@@ -85,6 +101,11 @@ export class CameraRig {
     this.yaw += (this.desiredYaw - this.yaw) * orbit;
     this.pitch += (this.desiredPitch - this.pitch) * orbit;
     this.distance += (this.desiredDistance - this.distance) * orbit;
+    if (this.viewShift !== this.desiredViewShift) {
+      const next = this.viewShift + (this.desiredViewShift - this.viewShift) * follow;
+      this.viewShift = Math.abs(next - this.desiredViewShift) < 0.5 ? this.desiredViewShift : next;
+      this.applyViewShift();
+    }
 
     const horizontal = Math.cos(this.pitch) * this.distance;
     this.camera.position.set(

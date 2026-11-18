@@ -9,6 +9,7 @@
   "size": { "width": 64, "height": 64 },
   "steps": [
     { "kind": "room", "id": "ground", "rect": { "x": 0, "y": 0, "width": 63, "height": 63 }, "floor": "paving", "shape": "rect", "edge": "barrier" },
+    { "kind": "exit", "id": "south", "room": "ground", "side": "south", "width": 2, "offset": 31, "gate": true, "floor": "door" },
     { "kind": "exit", "id": "north", "room": "ground", "side": "north", "width": 63, "offset": 0, "gate": false },
     { "kind": "exit", "id": "west", "room": "ground", "side": "west", "width": 63, "offset": 0, "gate": false },
     { "kind": "patch", "rect": { "x": 8, "y": 28, "width": 55, "height": 6 }, "tile": "water" },
@@ -31,6 +32,8 @@
     "vent-arrival": { "room": "ground", "dx": 30, "dy": 56 }
   },
   "objects": [
+    { "id": "cut-sluice-leaf-0", "object": "sluice-gate-leaf", "at": { "exit": "south", "index": 0 }, "facing": "north" },
+    { "id": "cut-sluice-leaf-1", "object": "sluice-gate-leaf", "at": { "exit": "south", "index": 1 }, "facing": "north" },
     { "id": "cut-cottage-bed", "object": "bed", "at": { "room": "lock-cottage", "dx": 0, "dy": 0 } },
     { "id": "cut-cottage-shelf", "object": "shelving", "at": { "room": "lock-cottage", "dx": 7, "dy": 0 } },
     { "id": "cut-cottage-table", "object": "table", "at": { "room": "lock-cottage", "dx": 6, "dy": 3 } },

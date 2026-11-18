@@ -1,5 +1,7 @@
 export const COMPACT_LAYOUT_QUERY = '(max-width: 760px), (max-height: 520px)';
 
+export const COMPACT_LANDSCAPE_QUERY = '(max-height: 520px) and (orientation: landscape)';
+
 export const isCompactLayout = (): boolean => window.matchMedia(COMPACT_LAYOUT_QUERY).matches;
 
 export const isCoarsePointer = (): boolean => window.matchMedia('(pointer: coarse)').matches;

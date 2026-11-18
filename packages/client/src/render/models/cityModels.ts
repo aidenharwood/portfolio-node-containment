@@ -808,6 +808,172 @@ const sluiceValve: Builder = () => {
   return parts(model, 14);
 };
 
+function shellRing(model: VoxelModel, radius: number, thickness: number, y: number, paint: Paint, kind?: VoxelKind, keep: (angle: number) => boolean = () => true): void {
+  const reach = Math.ceil(radius);
+  for (let x = -reach; x <= reach; x++) {
+    for (let z = -reach; z <= reach; z++) {
+      const d = Math.hypot(x + 0.5, z + 0.5);
+      if (d <= radius && d >= radius - thickness && keep(Math.atan2(z + 0.5, x + 0.5))) model.set(x, y, z, typeof paint === 'number' ? paint : (paint(x, y, z) ?? CITY.concrete), kind);
+    }
+  }
+}
+
+function squareShell(model: VoxelModel, half: number, y0: number, y1: number, paint: Paint): VoxelModel {
+  return model.fill(-half, y0, -half, half - 1, y1, -half, paint).fill(-half, y0, half - 1, half - 1, y1, half - 1, paint).fill(-half, y0, -half, -half, y1, half - 1, paint).fill(half - 1, y0, -half, half - 1, y1, half - 1, paint);
+}
+
+const gateLeaf: Builder = () => {
+  const model = new VoxelModel().fill(-8, 0, -3, 7, 47, 2, (x, y) => (y % 8 === 0 ? darken(CITY.darkSteel, 0.25) : x === -8 || x === 7 ? lighten(CITY.darkSteel, 0.08) : CITY.darkSteel));
+  model.fill(-8, 43, 3, 7, 46, 3, CITY.band);
+  model.fill(-8, 3, 3, 7, 5, 3, (x) => (Math.floor((x + 8) / 4) % 2 === 0 ? CITY.amber : CITY.ink));
+  model.fill(-2, 34, 3, 1, 37, 3, CITY.red, VOXEL_EMISSIVE);
+  return parts(model, 48);
+};
+
+const gantryCrane: Builder = () => {
+  const yellow = grain(0xd8a03a, 0.04);
+  const model = new VoxelModel();
+  for (const x of [-23, 19]) {
+    model.fill(x, 0, -23, x + 3, 2, 22, grain(CITY.concrete));
+    for (const z of [-21, 17]) model.fill(x, 3, z, x + 3, 98, z + 3, yellow);
+    model.fill(x, 44, -21, x + 3, 47, 20, yellow);
+  }
+  model.fill(-23, 99, -22, 22, 105, -17, yellow).fill(-23, 99, 16, 22, 105, 21, yellow);
+  model.fill(-7, 106, -22, 6, 114, 21, grain(0x8a4a2a, 0.05));
+  model.fill(-5, 108, 22, 4, 112, 22, CITY.glass, VOXEL_GLASS);
+  model.fill(-1, 44, -1, 0, 105, 0, CITY.iron);
+  model.fill(-4, 36, -3, 3, 43, 2, CITY.darkSteel);
+  model.fill(-1, 115, -1, 0, 116, 0, CITY.red, VOXEL_EMISSIVE);
+  return parts(model, 117);
+};
+
+const windpump: Builder = () => {
+  const model = new VoxelModel().fill(-14, 0, -14, 13, 2, 13, grain(CITY.concrete));
+  for (let y = 3; y <= 72; y++) {
+    const inset = Math.floor((y - 3) / 7);
+    for (const px of [-12 + inset, 11 - inset]) for (const pz of [-12 + inset, 11 - inset]) model.set(px, y, pz, CITY.iron);
+    if (y % 14 === 0) {
+      const lo = -12 + inset;
+      const hi = 11 - inset;
+      model.fill(lo, y, lo, hi, y, lo, CITY.iron).fill(lo, y, hi, hi, y, hi, CITY.iron).fill(lo, y, lo, lo, y, hi, CITY.iron).fill(hi, y, lo, hi, y, hi, CITY.iron);
+    }
+  }
+  model.fill(-3, 73, -3, 2, 74, 2, CITY.darkWood);
+  for (let spoke = 0; spoke < 18; spoke++) {
+    const angle = (spoke / 18) * Math.PI * 2;
+    for (let r = 3; r <= 15; r++) {
+      const x = Math.round(Math.cos(angle) * r);
+      const y = 84 + Math.round(Math.sin(angle) * r);
+      model.set(x, y, 4, spoke % 2 === 0 ? CITY.paper : CITY.panelJoint).set(x, y, 5, CITY.paper);
+    }
+  }
+  for (let a = 0; a < 96; a++) {
+    const angle = (a / 96) * Math.PI * 2;
+    model.set(Math.round(Math.cos(angle) * 15), 84 + Math.round(Math.sin(angle) * 15), 4, CITY.red);
+  }
+  model.fill(-2, 82, 3, 1, 86, 6, CITY.darkSteel).fill(-1, 76, -2, 0, 83, 2, CITY.iron);
+  model.fill(-1, 80, -18, 0, 88, -7, CITY.panel);
+  return parts(model, 100);
+};
+
+const directorateSpire: Builder = () => {
+  const model = new VoxelModel().fill(-24, 0, -24, 23, 3, 23, grain(CITY.concrete));
+  const tiers = [
+    { half: 21, top: 72 },
+    { half: 16, top: 128 },
+    { half: 10, top: 166 },
+  ];
+  let bottom = 4;
+  for (const tier of tiers) {
+    squareShell(model, tier.half, bottom, tier.top, grain(CITY.panel, 0.015));
+    for (let y = bottom + 3; y < tier.top - 3; y += 6) {
+      for (let along = -tier.half + 2; along < tier.half - 2; along += 4) {
+        model.fill(along, y, tier.half - 1, along + 1, y + 1, tier.half - 1, CITY.lamp, VOXEL_EMISSIVE).fill(along, y, -tier.half, along + 1, y + 1, -tier.half, CITY.lamp, VOXEL_EMISSIVE);
+        model.fill(tier.half - 1, y, along, tier.half - 1, y + 1, along + 1, CITY.lamp, VOXEL_EMISSIVE).fill(-tier.half, y, along, -tier.half, y + 1, along + 1, CITY.lamp, VOXEL_EMISSIVE);
+      }
+    }
+    model.fill(-tier.half, tier.top - 2, -tier.half, tier.half - 1, tier.top, tier.half - 1, CITY.panelJoint);
+    squareShell(model, tier.half + 1, tier.top - 5, tier.top - 4, CITY.band);
+    bottom = tier.top + 1;
+  }
+  model.fill(-1, 167, -1, 0, 190, 0, CITY.iron).fill(-2, 191, -2, 1, 192, 1, CITY.red, VOXEL_EMISSIVE);
+  model.fill(-5, 4, 21, 4, 18, 21, CITY.ink).fill(-4, 20, 21, 3, 24, 21, CITY.band);
+  return parts(model, 193);
+};
+
+const bellTower: Builder = () => {
+  const stone = 0x8a8478;
+  const model = new VoxelModel().fill(-15, 0, -15, 14, 3, 14, grain(darken(stone, 0.15), 0.04));
+  const belfryOpening = (x: number, y: number, z: number): boolean => y >= 78 && y <= 90 && Math.abs((x === -13 || x === 12 ? z : x) + 0.5) <= 4;
+  squareShell(model, 13, 4, 96, (x, y, z) => (belfryOpening(x, y, z) ? null : jitter(stone, 0.05, noise3(x, y, z, 31))));
+  model.fill(-15, 96, -15, 14, 98, 14, darken(stone, 0.2));
+  for (let y = 99; y <= 146; y++) {
+    const half = Math.max(1, 13 - Math.floor((y - 99) / 4));
+    squareShell(model, half, y, y, (x, yy, z) => ((x + z + yy) % 7 === 0 ? 0x3a4a52 : 0x4a5a62));
+  }
+  model.fill(-1, 147, -1, 0, 156, 0, 0xd8a03a).fill(-3, 152, -1, 2, 153, 0, 0xd8a03a);
+  cylinder(model, 0, 0, 4.5, 80, 88, 0x6a4a2a);
+  for (let x = -6; x <= 5; x++) for (let y = 54; y <= 65; y++) {
+    if (Math.hypot(x + 0.5, y - 59.5) <= 6) model.set(x, y, 13, Math.hypot(x + 0.5, y - 59.5) >= 5 ? CITY.ink : CITY.paper);
+  }
+  model.fill(0, 59, 14, 0, 64, 14, CITY.ink).fill(0, 59, 14, 3, 59, 14, CITY.ink);
+  return parts(model, 157);
+};
+
+const coolingTower: Builder = () => {
+  const model = new VoxelModel();
+  for (let y = 0; y <= 92; y++) {
+    const t = y / 92;
+    const radius = 15 + (8 * (t - 0.68) ** 2) / 0.46;
+    const stain = (x: number, yy: number, z: number) => jitter(yy > 80 ? darken(CITY.concrete, 0.25) : noise3(x, 0, z, 41) > 0.85 ? darken(CITY.concrete, 0.18) : CITY.concrete, 0.03, noise3(x, yy, z, 43));
+    shellRing(model, radius, 2, y, stain, undefined, (angle) => y > 5 || Math.floor(((angle + Math.PI) / (Math.PI * 2)) * 24) % 2 === 0);
+  }
+  for (let i = 0; i < 70; i++) {
+    const x = Math.floor((noise3(i, 1, 0, 47) - 0.5) * 22);
+    const z = Math.floor((noise3(i, 2, 0, 47) - 0.5) * 22);
+    const y = 93 + Math.floor(noise3(i, 3, 0, 47) * 22);
+    model.fill(x, y, z, x + 2, y + 2, z + 2, 0xd8dce0, VOXEL_GLASS);
+  }
+  return parts(model, 116);
+};
+
+const divingBell: Builder = () => {
+  const model = new VoxelModel().fill(-15, 0, -15, 14, 2, 14, grain(CITY.concrete));
+  for (const z of [-13, 11]) {
+    for (let y = 3; y <= 78; y++) {
+      const lean = Math.floor(((y - 3) * 12) / 75);
+      model.fill(-14 + lean, y, z, -13 + lean, y, z + 1, CITY.steel).fill(12 - lean, y, z, 13 - lean, y, z + 1, CITY.steel);
+    }
+  }
+  model.fill(-2, 79, -13, 1, 82, 12, CITY.steel);
+  model.fill(0, 47, -1, 0, 78, 0, CITY.iron);
+  for (let y = 18; y <= 46; y++) {
+    const radius = 11 - ((y - 18) / 28) * 5 - (y > 40 ? (y - 40) * 0.8 : 0);
+    shellRing(model, radius, 2, y, (x, yy, z) => jitter(0x7a5a3a, 0.05, noise3(x, yy, z, 53)));
+  }
+  shellRing(model, 12, 3, 18, 0x5a3a22);
+  for (let x = -3; x <= 2; x++) for (let y = 27; y <= 32; y++) if (Math.hypot(x + 0.5, y - 29.5) <= 3) model.set(x, y, 10, 0x4fe3ff, VOXEL_EMISSIVE);
+  return parts(model, 83);
+};
+
+const lighthouse: Builder = () => {
+  const model = new VoxelModel().fill(-23, 0, -23, 22, 3, 22, grain(CITY.concrete));
+  for (let y = 4; y <= 110; y++) {
+    const radius = 19 - ((y - 4) / 106) * 7;
+    const band = Math.floor((y - 4) / 18) % 2 === 0 ? 0xe8e2d4 : CITY.red;
+    shellRing(model, radius, 2, y, (x, yy, z) => jitter(band, 0.02, noise3(x, yy, z, 59)));
+  }
+  model.fill(-3, 4, 16, 2, 14, 18, CITY.darkWood);
+  for (let y = 111; y <= 112; y++) shellRing(model, 16, 16, y, CITY.darkSteel);
+  shellRing(model, 16, 1, 113, CITY.iron);
+  shellRing(model, 16, 1, 115, CITY.iron);
+  for (let y = 113; y <= 128; y++) shellRing(model, 10, 1, y, CITY.glass, VOXEL_GLASS);
+  cylinder(model, 0, 0, 4.5, 115, 125, 0xfff2c8, VOXEL_EMISSIVE);
+  for (let y = 129; y <= 138; y++) shellRing(model, Math.max(1.5, 11 - (y - 129) * 1.1), 11, y, CITY.red);
+  model.fill(-1, 139, -1, 0, 144, 0, CITY.iron);
+  return parts(model, 145);
+};
+
 export const CITY_BUILDERS: Readonly<Record<CityModel, Builder>> = {
   streetLamp,
   bollard,
@@ -870,4 +1036,12 @@ export const CITY_BUILDERS: Readonly<Record<CityModel, Builder>> = {
   cat,
   hatch,
   sluiceValve,
+  gateLeaf,
+  gantryCrane,
+  windpump,
+  directorateSpire,
+  bellTower,
+  coolingTower,
+  divingBell,
+  lighthouse,
 };
