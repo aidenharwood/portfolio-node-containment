@@ -82,11 +82,64 @@ Written 2026-11-17. This loop ran on the `dev` branch, which was cut from `world
 - `scripts/_issues.ts` reports 0 content issues.
 - **Not checked in a running client:** the skill guide window and tooltip, the glass hound's lunge animation now that it attacks at range, and the rustling pellets.
 
-## Open items, all deprioritised by the critic
+## Second loop, 2026-11-18: Salvage, Refining, the cap and Research
 
-1. Salvage and Refining unlock only every 10 levels, and Refining is a pure 2→1 conversion. Add mid-tier nodes or recipes at 5, 15, 25…, or merge the two skills.
-2. Levels 55–60 hold nothing. Add a capstone, or lower the cap to 55.
-3. Repeat studies pay 10%, so Research after the first studies is trace clicking.
-4. Ranged at 20 clears the parity floor by only one point (71% against 70%). Slowing the carbine or the rustling would trip the test.
-5. Saves made on today's unreleased `dev` that sit on The Heart `tide` step would re-fight the Warden. Legacy saves without a `stepId` were already off by one after `hale`. Check the live DB before deploying.
-6. `dev` is not merged to `main`. Merge it when the owner is happy.
+The owner asked to work through the items the critic had deprioritised. The same critic ran rounds 4–6 with the same setup. Verdicts:
+- round 4: a spec, not a verdict;
+- round 5: **"not yet"**;
+- round 6: **"ship it"**, once the refined fittings were wired into the kits.
+
+**Commits:** `a0db865`, `519e607`, `380dff4`, `5d50646`, `caca004`, `367ca40` and `be0ce7f`.
+
+**Research exploit**
+- Re-studying the same creature had no limit, worth about 290k to 1.5M XP an hour.
+- Each spawn now takes one note per character (`Creature.notedBy`, cleared on respawn).
+- A repeat note pays 20% of the first study.
+- Each character waits `REPEAT_STUDY_COOLDOWN_TICKS = 300` between repeat notes (`Player.lastNoteTick`).
+- `studyCooldown.test.ts` keeps the note ceiling within 1.2× of rotating the best trace nodes.
+
+**Salvage half-tiers**
+| Node | Level | District |
+| --- | --- | --- |
+| cable-drum | 5 | the-cut |
+| lock-gear | 15 | scrapyards |
+| crusher-housing | 25 | shipyard-fringe |
+| rivet-seam | 35 | cordon-gate |
+| sprung-cell-door | 44 | meridian-secure |
+- District tiers forced these placements, because a node can only stand in a district deep enough for its level.
+
+**Refining field kits**
+- `edge`, `sight` and `tuning` kits, tiers I–V, at levels 8, 20, 30, 40 and 45. They give +2, +3, +4, +5 and +8 for 10 minutes and do not stack with tinctures.
+- Each kit is a two-step chain through refined fittings: copper coil, brass strip, bearing ring, and cell mesh plus rivets.
+- New Biochemistry Amber Tincture at 20.
+- New contracts: wire-pull, kit-bench and rivet-haul.
+- `skillBands.test.ts` checks every 5-level band.
+- `findMaterialSinkIssues` flags any gathered or refined material that nothing consumes.
+
+**Cap and capstone**
+- `SKILL_LEVEL_CAP = 55`.
+- Ten mastery mantles, claimed with "Claim mastery" at the contract board through the `grantMasteryMantles` effect.
+- The claim notice names the closest skill.
+
+**Safety**
+- `gatherNodeSafety.test.ts` covers creatures more than 5 levels over a node.
+- Five nodes moved, including three older Fringe nodes that tide wraiths could reach.
+
+**Checks:** typecheck is clean, 788 tests pass and content issues are 0.
+
+## Open items
+
+1. **Not checked in a running client:**
+   - the skill guide window and tooltip;
+   - the glass hound lunging at range;
+   - rustling pellets;
+   - the Claim mastery interaction.
+2. **Fortitude mantle.** Watch its triple defence (18 in total) against the Vault pavise (23).
+3. **Tight margins.**
+   - Ranged at 20 clears the parity floor by only one point.
+   - Moth notes pay about 16k an hour, a decorative tail.
+4. **Saves.**
+   - A save on The Heart's `tide` step from unreleased `dev` would re-fight the Warden.
+   - Legacy saves without a `stepId` were already one step off after `hale`.
+   - Check the live DB before deploying.
+5. **`dev` is not merged to `main`.** Another session is also committing graphics-settings work on `dev`.
