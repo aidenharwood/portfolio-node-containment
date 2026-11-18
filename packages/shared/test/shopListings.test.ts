@@ -20,3 +20,12 @@ test('the quest helper points at a shopkeeper who stocks the item', () => {
   assert.ok(bakers.length > 0);
   for (const baker of bakers) assert.ok(keepers.has(baker));
 });
+
+test('quest guidance skips shops whose listing of the item is still locked', () => {
+  const objective = { type: 'obtainItem', itemId: 'smoked-eel', count: 1, label: 'Buy a smoked eel' } as const;
+  const locked = npcIdsForObjective(objective, GAME_CONTENT.npcs, GAME_CONTENT.dialogues, GAME_CONTENT.shops, {});
+  assert.ok(locked.has('moss-kettering'));
+  assert.ok(!locked.has('li-vance'));
+  const unlocked = npcIdsForObjective(objective, GAME_CONTENT.npcs, GAME_CONTENT.dialogues, GAME_CONTENT.shops, { 'noodle-run': { status: 'completed' } } as never);
+  assert.ok(unlocked.has('li-vance'));
+});

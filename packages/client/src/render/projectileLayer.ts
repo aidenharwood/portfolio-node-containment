@@ -58,7 +58,7 @@ const BURST_END_SCALE = 0.42;
 const PELLET_LIFT = 0.08;
 
 const glow = (color: number, opacity: number): MeshBasicMaterial =>
-  new MeshBasicMaterial({ color, toneMapped: false, transparent: true, opacity, blending: AdditiveBlending, depthWrite: false });
+  new MeshBasicMaterial({ color, toneMapped: false, fog: false, transparent: true, opacity, blending: AdditiveBlending, depthWrite: false });
 
 export class ProjectileLayer {
   readonly root = new Group();

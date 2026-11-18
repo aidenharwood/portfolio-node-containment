@@ -8,5 +8,5 @@ export function guidedQuest(target: GuidanceTarget | null, log: QuestLog, conten
 export function guidanceGoals(target: GuidanceTarget | null, log: QuestLog, scene: RouteScene, content: GameContent = GAME_CONTENT): ResourceGoals {
   if (target?.kind === 'resource') return resourceRouteGoals(target.objectId, scene);
   const tracked = guidedQuest(target, log, content);
-  return { goals: tracked ? routeGoals(tracked, scene, content) : [], allDepleted: false };
+  return { goals: tracked ? routeGoals(tracked, scene, content, log) : [], allDepleted: false };
 }

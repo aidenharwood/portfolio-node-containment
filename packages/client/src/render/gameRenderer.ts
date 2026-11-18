@@ -229,7 +229,9 @@ export class GameRenderer {
     const focus = this.cameraRig.focusPoint;
     this.zone.stream({ x: focus.x, y: focus.z });
     this.followAmbience(focus, delta, false);
-    this.look.aimKeyLight(focus, this.cameraRig.camera.position.distanceTo(focus));
+    const viewDistance = this.cameraRig.camera.position.distanceTo(focus);
+    this.look.aimKeyLight(focus, viewDistance);
+    this.look.matchBloomToDistance(viewDistance);
     this.zone.update(time, overlay.objectiveObjectIds, this.world.depletedObjects, this.world.usedObjects, { open: this.world.openDoors, self: this.world.selfEntity?.to ?? null });
     this.zone.updateCutaway(this.cameraRig.camera.position, focus);
     this.look.updateLights(this.zone.lights, delta, time, focus);
@@ -638,7 +640,7 @@ export class GameRenderer {
       return;
     }
     if (!mark) {
-      mark = new Mesh(new OctahedronGeometry(0.16), new MeshBasicMaterial({ color: 0xff3c28, toneMapped: false }));
+      mark = new Mesh(new OctahedronGeometry(0.16), new MeshBasicMaterial({ color: 0xff3c28, toneMapped: false, fog: false }));
       mark.name = ENRAGE_MARK;
       view.rig.root.add(mark);
     }

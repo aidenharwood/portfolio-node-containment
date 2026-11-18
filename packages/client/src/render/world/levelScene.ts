@@ -72,7 +72,7 @@ export class LevelScene {
   private deferredCentre: ChunkKey | null = null;
   private awaitingPaint = false;
   private pendingNearby = true;
-  private readonly ringMaterial = new MeshBasicMaterial({ color: 0xffb347, transparent: true, opacity: 0.8, blending: AdditiveBlending, depthWrite: false, toneMapped: false });
+  private readonly ringMaterial = new MeshBasicMaterial({ color: 0xffb347, transparent: true, opacity: 0.8, blending: AdditiveBlending, depthWrite: false, toneMapped: false, fog: false });
 
   constructor(zone: ActiveZone, options: { readonly editable?: boolean; readonly content?: GameContent } = {}) {
     this.zone = zone;

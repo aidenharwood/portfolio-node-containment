@@ -82,11 +82,15 @@ const FLASH_AMBIENT = 2.2;
 const FLASH_KEY = 1.5;
 const FLASH_SKY = 0x8fa6c8;
 const FLASH_SKY_MIX = 0.6;
+const BLOOM_STRENGTH = 0.6;
+const BLOOM_REFERENCE_DISTANCE = 11;
+const BLOOM_DISTANCE_RESPONSE = 0.7;
+const BLOOM_STRENGTH_RANGE = { minimum: 0.25, maximum: 1 } as const;
 
 export class SceneLook {
   readonly renderer: WebGLRenderer;
   private readonly composer: EffectComposer;
-  private readonly bloom = new UnrealBloomPass(new Vector2(256, 256), 0.6, 0.55, 0.9);
+  private readonly bloom = new UnrealBloomPass(new Vector2(256, 256), BLOOM_STRENGTH, 0.55, 0.9);
   private renderScale: RenderScale = 'sharp';
   private readonly hemisphere = new HemisphereLight(0x9fc6d6, 0x05080a, 0.6);
   private readonly keyLight = new DirectionalLight(0xcfe8ff, 0.7);
@@ -226,6 +230,11 @@ export class SceneLook {
     this.snappedFocus.copy(LIGHT_RIGHT).multiplyScalar(along).addScaledVector(LIGHT_UP, across).addScaledVector(LIGHT_DIRECTION, depth);
     this.keyLight.position.copy(this.snappedFocus).addScaledVector(LIGHT_OFFSET, 1);
     this.keyLight.target.position.copy(this.snappedFocus);
+  }
+
+  matchBloomToDistance(distance: number): void {
+    const scale = Math.pow(Math.max(0, distance) / BLOOM_REFERENCE_DISTANCE, BLOOM_DISTANCE_RESPONSE);
+    this.bloom.strength = MathUtils.clamp(BLOOM_STRENGTH * scale, BLOOM_STRENGTH_RANGE.minimum, BLOOM_STRENGTH_RANGE.maximum);
   }
 
   resetLights(): void {

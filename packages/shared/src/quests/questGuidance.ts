@@ -1,6 +1,6 @@
 import type { CreatureId } from '../combat/creatures.ts';
 import type { RecipeDefinition } from '../crafting/recipes.ts';
-import type { ShopDefinition } from '../economy/shop.ts';
+import { isListingOffered, type ShopDefinition } from '../economy/shop.ts';
 import { dialogueEffects, type DialogueDefinition } from '../dialogue/dialogue.ts';
 import type { AreaId, DialogueId, DistrictId, ItemId, NpcId, QuestId, WorldObjectId } from '../ids.ts';
 import { givenItems, type GameEffect } from '../rules/effects.ts';
@@ -162,6 +162,7 @@ export function npcIdsForObjective(
   npcs: ReadonlyMap<NpcId, NpcDefinition>,
   dialogues: ReadonlyMap<DialogueId, DialogueDefinition>,
   shops: ReadonlyMap<string, ShopDefinition> = new Map(),
+  log?: QuestLog,
 ): Set<NpcId> {
   if (objective.type === 'talkTo') return new Set([objective.npcId]);
   if (objective.type === 'signal') return new Set(objective.npcId ? [objective.npcId] : []);
@@ -172,7 +173,7 @@ export function npcIdsForObjective(
       .filter((npc) => {
         const dialogue = npc.dialogueId ? dialogues.get(npc.dialogueId) : undefined;
         const shop = npc.shopId ? shops.get(npc.shopId) : undefined;
-        return (dialogue !== undefined && dialogueGivesItem(dialogue, itemId)) || (shop?.listings.some((listing) => listing.itemId === itemId) ?? false);
+        return (dialogue !== undefined && dialogueGivesItem(dialogue, itemId)) || (shop?.listings.some((listing) => listing.itemId === itemId && (log === undefined || isListingOffered(listing, log))) ?? false);
       })
       .map((npc) => npc.id),
   );

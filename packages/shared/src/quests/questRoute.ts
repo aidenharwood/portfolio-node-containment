@@ -7,6 +7,7 @@ import type { NpcDefinition, WorldObjectDefinition } from '../world/entities.ts'
 import type { TilePoint } from '../world/geometry.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
 import type { QuestObjective } from './questDefinition.ts';
+import type { QuestLog } from './questProgress.ts';
 import { creatureIdsForObjective, npcIdsForObjective, objectIdsForObjective, type ActiveQuest } from './questGuidance.ts';
 
 export interface RouteGoal {
@@ -69,7 +70,7 @@ export function resourceRouteGoals(objectId: WorldObjectId, scene: RouteScene): 
   return { goals: (allDepleted ? placements : live).map((placement) => adjacentTo(placement.position)), allDepleted };
 }
 
-function goalsForObjective(objective: QuestObjective, scene: RouteScene, content: RouteContent): RouteGoal[] {
+function goalsForObjective(objective: QuestObjective, scene: RouteScene, content: RouteContent, log?: QuestLog): RouteGoal[] {
   switch (objective.type) {
     case 'talkTo':
     case 'signal':
@@ -77,7 +78,7 @@ function goalsForObjective(objective: QuestObjective, scene: RouteScene, content
     case 'obtainItem':
       return [
         ...objectGoals(objective, scene, content),
-        ...[...npcIdsForObjective(objective, content.npcs, content.dialogues, content.shops)].flatMap((npcId) => npcGoals(npcId, scene)),
+        ...[...npcIdsForObjective(objective, content.npcs, content.dialogues, content.shops, log)].flatMap((npcId) => npcGoals(npcId, scene)),
       ];
     case 'defeat':
     case 'contain':
@@ -100,6 +101,6 @@ function goalsForObjective(objective: QuestObjective, scene: RouteScene, content
   }
 }
 
-export function routeGoals(tracked: ActiveQuest, scene: RouteScene, content: RouteContent): RouteGoal[] {
-  return tracked.objectives.flatMap(({ objective, done }) => (done ? [] : goalsForObjective(objective, scene, content)));
+export function routeGoals(tracked: ActiveQuest, scene: RouteScene, content: RouteContent, log?: QuestLog): RouteGoal[] {
+  return tracked.objectives.flatMap(({ objective, done }) => (done ? [] : goalsForObjective(objective, scene, content, log)));
 }
