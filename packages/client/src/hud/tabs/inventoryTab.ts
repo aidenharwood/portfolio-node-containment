@@ -1,4 +1,4 @@
-import { GAME_CONTENT, INVENTORY_CAPACITY, type ItemDefinition, type ItemId, type SelfState } from '@containment/shared';
+import { GAME_CONTENT, INVENTORY_CAPACITY, normalizeInventory, type ItemDefinition, type ItemId, type SelfState } from '@containment/shared';
 import type { GameConnection } from '../../net/gameConnection.ts';
 import { itemIconUrl } from '../../render/items/itemSprites.ts';
 import { h, replaceChildren } from '../../ui/dom.ts';
@@ -26,7 +26,7 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
   );
 
   const slotItem = (index: number): ItemDefinition | null => {
-    const stack = self?.inventory[index];
+    const stack = self ? normalizeInventory(self.inventory)[index] : null;
     return stack ? (GAME_CONTENT.items.get(stack.itemId) ?? null) : null;
   };
 
@@ -134,10 +134,13 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
     update(next) {
       self = next;
       let scripTotal = 0;
-      next.inventory.forEach((stack, index) => {
+      let filled = 0;
+      const inventory = normalizeInventory(next.inventory);
+      inventory.forEach((stack, index) => {
         const slot = slots[index];
         if (!slot) return;
         const item = stack ? GAME_CONTENT.items.get(stack.itemId) : undefined;
+        if (stack) filled++;
         if (stack?.itemId === 'meridian-scrip') scripTotal += stack.quantity;
         slot.className = `inventory-slot${item ? ` filled rarity-${item.rarity}` : ''}`;
         slot.ariaLabel = item ? (stack && stack.quantity > 1 ? `${item.name} × ${stack.quantity}` : item.name) : `Empty slot ${index + 1}`;
@@ -148,7 +151,7 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
         );
       });
       scrip.textContent = scripTotal.toLocaleString();
-      used.textContent = `${next.inventory.filter((stack) => stack !== null).length} / ${INVENTORY_CAPACITY}`;
+      used.textContent = `${filled} / ${INVENTORY_CAPACITY}`;
       paint();
     },
   };

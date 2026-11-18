@@ -54,6 +54,13 @@ describe('inventory', () => {
     assert.equal(outcome.overflow, 1);
   });
 
+  test('treats missing, undefined and empty stacks as free slots', () => {
+    const damaged = [undefined, { itemId: 'hazard-visor', quantity: 0 }, null] as unknown as Parameters<typeof addItem>[0];
+    const outcome = addItem(damaged, items, 'work-jumpsuit', INVENTORY_CAPACITY);
+    assert.equal(outcome.added, INVENTORY_CAPACITY);
+    assert.equal(outcome.inventory.length, INVENTORY_CAPACITY);
+  });
+
   test('refuses to remove more than is held', () => {
     const { inventory } = addItem(createEmptyInventory(), items, 'scrap-alloy', 2);
     assert.equal(removeItem(inventory, 'scrap-alloy', 3).ok, false);

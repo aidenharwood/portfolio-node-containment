@@ -24,7 +24,16 @@ export const createEmptyInventory = (): InventoryState => Array.from({ length: I
 export const countItem = (inventory: InventoryState, itemId: ItemId): number =>
   inventory.reduce((total, slot) => total + (slot?.itemId === itemId ? slot.quantity : 0), 0);
 
-export const freeSlotCount = (inventory: InventoryState): number => inventory.filter((slot) => slot === null).length;
+export const isEmptySlot = (slot: InventorySlot | undefined): boolean =>
+  !slot || !Number.isInteger(slot.quantity) || slot.quantity <= 0;
+
+export const normalizeInventory = (inventory: readonly (InventorySlot | undefined)[]): InventorySlot[] =>
+  Array.from({ length: INVENTORY_CAPACITY }, (_, index) => {
+    const slot = inventory[index];
+    return slot && !isEmptySlot(slot) ? slot : null;
+  });
+
+export const freeSlotCount = (inventory: InventoryState): number => normalizeInventory(inventory).filter((slot) => slot === null).length;
 
 export function addItem(
   inventory: InventoryState,
@@ -35,7 +44,7 @@ export function addItem(
   const item = catalog.get(itemId);
   if (!item || quantity <= 0) return { inventory, added: 0, overflow: Math.max(0, quantity) };
 
-  const slots = [...inventory];
+  const slots = normalizeInventory(inventory);
   let remaining = quantity;
 
   for (let index = 0; index < slots.length && remaining > 0; index++) {
@@ -47,7 +56,7 @@ export function addItem(
   }
 
   for (let index = 0; index < slots.length && remaining > 0; index++) {
-    if (slots[index] !== null) continue;
+    if (!isEmptySlot(slots[index])) continue;
     const moved = Math.min(remaining, item.maxStack);
     slots[index] = { itemId, quantity: moved };
     remaining -= moved;
@@ -57,8 +66,9 @@ export function addItem(
 }
 
 export function removeItem(inventory: InventoryState, itemId: ItemId, quantity: number): Result<InventoryState> {
+  if (!Number.isInteger(quantity) || quantity <= 0) return failure('That is not a valid amount.');
   if (countItem(inventory, itemId) < quantity) return failure('You do not have enough of that item.');
-  const slots = [...inventory];
+  const slots = normalizeInventory(inventory);
   let remaining = quantity;
   for (let index = slots.length - 1; index >= 0 && remaining > 0; index--) {
     const slot = slots[index];
@@ -72,7 +82,7 @@ export function removeItem(inventory: InventoryState, itemId: ItemId, quantity: 
 
 export function swapSlots(inventory: InventoryState, from: number, to: number): Result<InventoryState> {
   if (!isSlotIndex(from) || !isSlotIndex(to)) return failure('That inventory slot does not exist.');
-  const slots = [...inventory];
+  const slots = normalizeInventory(inventory);
   [slots[from], slots[to]] = [slots[to] ?? null, slots[from] ?? null];
   return success(slots);
 }

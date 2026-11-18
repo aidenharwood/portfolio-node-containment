@@ -1,6 +1,6 @@
 import type { ItemId } from '../ids.ts';
 import { failure, success, type Result } from '../result.ts';
-import { addItem, countItem, removeItem, type InventoryState, type ItemStack } from './inventory.ts';
+import { addItem, countItem, normalizeInventory, removeItem, type InventoryState, type ItemStack } from './inventory.ts';
 import type { ItemCatalog } from './items.ts';
 
 export const STORAGE_CAPACITY = 200;
@@ -29,7 +29,7 @@ function mergeShelves(storage: StorageState): ItemStack[] {
 }
 
 export function settleHoldings(inventory: InventoryState, storage: StorageState, catalog: ItemCatalog): { readonly inventory: InventoryState; readonly storage: StorageState } {
-  let slots: InventoryState = inventory;
+  let slots: InventoryState = normalizeInventory(inventory);
   const excess: ItemStack[] = [];
   slots = slots.map((slot) => {
     const limit = slot ? (catalog.get(slot.itemId)?.maxStack ?? slot.quantity) : 0;
