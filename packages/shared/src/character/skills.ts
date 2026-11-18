@@ -89,8 +89,7 @@ export const SKILL_LEVEL_CAP = 200;
 
 export function experienceForLevel(level: number): number {
   const n = Math.max(0, Math.min(SKILL_LEVEL_CAP, level) - 1);
-
-  return Math.floor(25 * n * n + 75 * n);
+  return Math.floor(12 * n * n + 18 * n);
 }
 
 export function levelForExperience(experience: number): number {
