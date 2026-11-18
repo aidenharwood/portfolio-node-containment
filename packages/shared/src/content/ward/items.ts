@@ -5,6 +5,7 @@ import type { ConsumableKind, GearForm, GearMotif, ItemDefinition, ItemIconShape
 import type { EquipmentSlot } from '../../gear/slots.ts';
 import type { StatBlock, StatId } from '../../gear/stats.ts';
 import { boostTicksForMinutes } from '../../character/boosts.ts';
+import { experienceForLevel } from '../../character/skills.ts';
 import { gear } from '../gearItem.ts';
 
 const material = (id: string, name: string, examine: string, icon: ItemIconShape, colors: readonly [string, string], value: number): ItemDefinition => ({
@@ -325,7 +326,7 @@ const recipe = (station: CraftingStation, skill: SkillId, output: string, level:
   level,
   inputs: Object.entries(inputs).map(([itemId, amount]) => ({ itemId, count: amount })),
   output: { itemId: output, count },
-  experience,
+  experience: Math.min(experience, Math.floor((experienceForLevel(level + 1) - experienceForLevel(level)) / 2)),
   ticks: level < 10 ? 4 : 6,
 });
 

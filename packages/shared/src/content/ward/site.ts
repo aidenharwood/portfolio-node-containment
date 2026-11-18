@@ -21,7 +21,7 @@ export const SITE_ITEMS: readonly ItemDefinition[] = [
 ];
 
 export const SITE_RECIPES: readonly RecipeDefinition[] = [
-  { id: 'fabricator:dead-band-receiver', station: 'fabricator', skill: 'engineering', level: 8, inputs: [{ itemId: 'iron-bar', count: 2 }, { itemId: 'culvert-trace', count: 2 }], output: { itemId: 'dead-band-receiver', count: 1 }, experience: 104, ticks: 6 },
+  { id: 'fabricator:dead-band-receiver', station: 'fabricator', skill: 'engineering', level: 8, inputs: [{ itemId: 'iron-bar', count: 2 }, { itemId: 'culvert-trace', count: 2 }], output: { itemId: 'dead-band-receiver', count: 1 }, experience: 99, ticks: 6 },
 ];
 
 export const SITE_CREATURES: readonly CreatureDefinition[] = [

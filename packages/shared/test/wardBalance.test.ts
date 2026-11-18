@@ -57,6 +57,27 @@ test('gathering pays more experience the higher the spot', () => {
   }
 });
 
+test('profession rewards stay within half a level at their unlock level', () => {
+  const professionSkills = new Set(['engineering', 'refining', 'salvage', 'biochemistry']);
+  const nextLevelExperience = (level: number) => experienceForLevel(level + 1) - experienceForLevel(level);
+  for (const recipe of GAME_CONTENT.recipes.values()) {
+    if (!professionSkills.has(recipe.skill)) continue;
+    assert.ok(
+      recipe.experience <= nextLevelExperience(recipe.level) / 2,
+      `${recipe.id} grants ${recipe.experience} XP at level ${recipe.level}, more than half of the ${nextLevelExperience(recipe.level)} XP level step`,
+    );
+  }
+  for (const object of GAME_CONTENT.worldObjects.values()) {
+    for (const source of gatheringSourcesOf(GAME_CONTENT, object.id)) {
+      if (!professionSkills.has(source.skill)) continue;
+      assert.ok(
+        source.experience <= nextLevelExperience(source.level) / 2,
+        `${object.id} grants ${source.experience} XP at level ${source.level}, more than half of the ${nextLevelExperience(source.level)} XP level step`,
+      );
+    }
+  }
+});
+
 for (const kind of ['food', 'medicine'] as const) {
   test(`higher ${kind} heals more`, () => {
     const healing = [...GAME_CONTENT.recipes.values()]
