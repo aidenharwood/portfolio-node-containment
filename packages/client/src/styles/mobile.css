@@ -146,7 +146,8 @@ body {
 
   .minimap-canvas {
     width: 112px;
-    height: 112px;
+    height: auto;
+    box-shadow: none;
   }
 
   .hud-vitals {

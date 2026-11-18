@@ -267,13 +267,12 @@
 }
 
 .minimap-canvas {
-  width: 220px;
-  height: 220px;
-  max-width: 100%;
-  aspect-ratio: 1;
+  width: 100%;
+  max-width: 256px;
+  height: auto;
+  aspect-ratio: 256 / 224;
   cursor: crosshair;
   display: block;
-  border-radius: 50%;
   box-shadow: 0 0 18px rgba(0, 0, 0, 0.6);
 }
 
