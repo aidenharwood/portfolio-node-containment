@@ -21,6 +21,22 @@
       ],
       "cwd": "packages/client",
       "port": 5174
+    },
+    {
+      "name": "kit-preview",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "C:/Users/aiden/AppData/Local/Temp/claude/429b5cc849355cac/83bdb4c7-ab8b-4d3a-a192-cc3ae5a7efb6/scratchpad/kitPreview.mjs"
+      ],
+      "port": 5175
+    },
+    {
+      "name": "game-preview",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "C:/Users/aiden/AppData/Local/Temp/claude/429b5cc849355cac/83bdb4c7-ab8b-4d3a-a192-cc3ae5a7efb6/scratchpad/gamePreview.mjs"
+      ],
+      "port": 5176
     }
   ]
 }

@@ -1,0 +1,10 @@
+import { createStartingSkills, experienceForLevel } from '../packages/shared/src/character/skills.ts';
+import { deriveCombatProfile } from '../packages/shared/src/character/derivedStats.ts';
+import { creatureAttackProfile, defenceAgainst, playerAttackProfile } from '../packages/shared/src/combat/combatMath.ts';
+import { equipmentStats } from '../packages/shared/src/gear/equipment.ts';
+import { GAME_CONTENT, tierForLevel } from '../packages/shared/src/index.ts';
+const skills = { ...createStartingSkills(), closeQuarters: experienceForLevel(18), fortitude: experienceForLevel(18) };
+const gear = { primary: 'steel-baton', head: 'steel-helm', torso: 'steel-plate' } as any;
+const p = deriveCombatProfile(skills, equipmentStats(gear, GAME_CONTENT.items));
+console.log(tierForLevel(18), tierForLevel(12), JSON.stringify(p), JSON.stringify(playerAttackProfile(skills, gear, GAME_CONTENT.items)));
+const c = GAME_CONTENT.creatures.get('cell-breaker')!; console.log(JSON.stringify(creatureAttackProfile(c)), defenceAgainst(p, c.attack.style), c.integrity);

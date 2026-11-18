@@ -75,7 +75,7 @@ export class ObjectiveTracker {
   private countOf(self: SelfState, objective: QuestObjective, progress: number, goal: number): string {
     if (!showsExperience(objective, progress, goal) || objective.type !== 'reach') return `${progress}/${goal}`;
     const earned = self.skills[objective.measure as keyof typeof SKILL_INFO];
-    return `${progress} · ${earned.toLocaleString('en-GB')} / ${experienceForLevel(goal).toLocaleString('en-GB')} XP`;
+    return `${experienceForLevel(goal).toLocaleString('en-GB')} XP`;
   }
 
   private resourceBlock(self: SelfState, resourceId: WorldObjectId): HTMLElement | null {

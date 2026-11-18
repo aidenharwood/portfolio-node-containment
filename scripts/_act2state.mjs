@@ -1,0 +1,10 @@
+import { DatabaseSync } from 'node:sqlite';
+const db = new DatabaseSync('C:/Users/aiden/AppData/Local/Temp/claude/429b5cc849355cac/83bdb4c7-ab8b-4d3a-a192-cc3ae5a7efb6/scratchpad/preview.sqlite');
+const row = db.prepare('SELECT id, record FROM characters').get();
+const r = JSON.parse(row.record);
+const done = (questId) => ({ questId, status: 'completed', stepIndex: 0, objectiveProgress: [] });
+r.quests = { ...r.quests, 'rent-day': done('rent-day'), 'steel-below': done('steel-below'), 'dead-band': done('dead-band'), 'bill-of-lading': { questId: 'bill-of-lading', status: 'active', stepIndex: 0, stepId: 'ready', objectiveProgress: [11] } };
+r.skills = { ...r.skills, research: 8120, closeQuarters: 20000, fortitude: 15000 };
+if (process.argv[2]) r.location = JSON.parse(process.argv[2]);
+db.prepare('UPDATE characters SET record = ? WHERE id = ?').run(JSON.stringify(r), row.id);
+console.log(JSON.stringify(r.location), JSON.stringify(r.skills));
