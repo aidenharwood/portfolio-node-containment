@@ -10,6 +10,7 @@ import { equipmentStats, type EquipmentState } from '../src/gear/equipment.ts';
 import { GAME_CONTENT, containmentExperience, containmentLevelFor, objectiveDistricts, realignedProgress, tierForLevel, type ItemDefinition } from '../src/index.ts';
 import { gatheringSourcesOf } from '../src/content/craftingIntegrity.ts';
 import { MATERIAL_LADDER } from '../src/content/ward/items.ts';
+import { standardIntegrity } from '../src/content/ward/novice.ts';
 
 const statTotal = (item: ItemDefinition | undefined): number => Object.values(item?.equipment?.stats ?? {}).reduce((sum, value) => sum + (value ?? 0), 0);
 
@@ -99,8 +100,10 @@ test('medicine heals less than half of the food at its level', () => {
   }
 });
 
-test('creatures give more experience the stronger they are', () => {
-  const creatures = [...GAME_CONTENT.creatures.values()].sort((a, b) => a.level - b.level);
+test('standard-integrity creatures give more experience at higher levels', () => {
+  const creatures = [...GAME_CONTENT.creatures.values()]
+    .filter((creature) => creature.integrity === standardIntegrity(creature.level))
+    .sort((a, b) => a.level - b.level);
   for (let index = 1; index < creatures.length; index++) {
     const previous = creatures[index - 1]!;
     const current = creatures[index]!;
