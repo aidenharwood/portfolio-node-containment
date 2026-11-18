@@ -17,7 +17,7 @@ const BANDS: readonly (readonly [number, number])[] = [
 
 const NEW_MATERIALS = ['copper-wire', 'brass-fittings', 'bearing-steel', 'hull-rivets', 'cell-mesh'];
 
-const FITTINGS = NEW_MATERIALS;
+const FITTINGS = ['copper-wire', 'copper-coil', 'brass-strip', 'bearing-ring', 'cell-mesh'];
 
 const OFFENCE_STATS: readonly StatId[] = ['power', 'accuracy', 'focus'];
 

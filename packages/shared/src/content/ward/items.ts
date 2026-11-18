@@ -416,10 +416,10 @@ interface KitLine {
 
 export const KIT_TIERS: readonly KitTier[] = [
   { numeral: 'I', level: 8, fittings: { 'copper-wire': 1 }, edge: 'scrap-bar', sight: 'rag-bundle', tuning: 'trace-dust', boost: 2, experience: 14, value: 12, note: 'Held together with copper wire and optimism.' },
-  { numeral: 'II', level: 20, fittings: { 'brass-fittings': 1 }, edge: 'iron-bar', sight: 'waxed-canvas', tuning: 'culvert-trace', boost: 3, experience: 30, value: 30, note: 'Brass-fitted, from a lock gear the yards broke up, with a basin-iron clamp that will outlive you.' },
-  { numeral: 'III', level: 30, fittings: { 'bearing-steel': 1 }, edge: 'steel-bar', sight: 'synth-weave', tuning: 'amber-trace', boost: 4, experience: 52, value: 60, note: 'Set in bearing steel from a crusher housing. It turns very smoothly.' },
-  { numeral: 'IV', level: 40, fittings: { 'hull-rivets': 1 }, edge: 'alloy-bar', sight: 'tarred-canvas', tuning: 'hull-trace', boost: 5, experience: 80, value: 100, note: 'Hull rivets, cut from a seam. Each one held back the sea once.' },
-  { numeral: 'V', level: 45, fittings: { 'cell-mesh': 1 }, edge: 'sinter-ingot', sight: 'red-mesh', tuning: 'red-trace', boost: 8, experience: 118, value: 150, note: 'Wrapped in cell mesh from a sprung door. Nobody signed it out.' },
+  { numeral: 'II', level: 20, fittings: { 'copper-coil': 1 }, edge: 'iron-bar', sight: 'waxed-canvas', tuning: 'culvert-trace', boost: 3, experience: 36, value: 30, note: 'Wound in copper coil, with a basin-iron clamp that will outlive you.' },
+  { numeral: 'III', level: 30, fittings: { 'brass-strip': 1 }, edge: 'steel-bar', sight: 'synth-weave', tuning: 'amber-trace', boost: 4, experience: 62, value: 60, note: 'Set in drawn brass strip, still green at the edges. It holds true.' },
+  { numeral: 'IV', level: 40, fittings: { 'bearing-ring': 1 }, edge: 'alloy-bar', sight: 'tarred-canvas', tuning: 'hull-trace', boost: 5, experience: 94, value: 100, note: 'Seated in a bearing ring ground from crusher steel. It turns very smoothly.' },
+  { numeral: 'V', level: 45, fittings: { 'cell-mesh': 1, 'hull-rivets': 1 }, edge: 'sinter-ingot', sight: 'red-mesh', tuning: 'red-trace', boost: 8, experience: 130, value: 150, note: 'Wrapped in cell mesh and pinned with hull rivets, each of which held back the sea once. Nobody signed it out.' },
 ];
 
 const KIT_LINES: readonly KitLine[] = [
