@@ -1,4 +1,4 @@
-import { ACESFilmicToneMapping, Color, DirectionalLight, FogExp2, HalfFloatType, HemisphereLight, MathUtils, PCFSoftShadowMap, SRGBColorSpace, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget, type Camera, type Scene } from 'three';
+import { ACESFilmicToneMapping, Color, CustomBlending, DirectionalLight, FogExp2, HalfFloatType, HemisphereLight, MathUtils, OneFactor, PCFSoftShadowMap, SRGBColorSpace, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget, ZeroFactor, type Camera, type Scene } from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
@@ -90,14 +90,37 @@ const FLASH_KEY = 1.5;
 const FLASH_SKY = 0x8fa6c8;
 const FLASH_SKY_MIX = 0.6;
 const BLOOM_STRENGTH = 0.6;
+const BLOOM_RADIUS = 0.35;
+const BLOOM_THRESHOLD = 0.86;
+const BLOOM_KNEE = 0.14;
+const BLOOM_PEAK = 0.8;
 const BLOOM_REFERENCE_DISTANCE = 11;
-const BLOOM_DISTANCE_RESPONSE = 0.7;
-const BLOOM_STRENGTH_RANGE = { minimum: 0.25, maximum: 1 } as const;
+const BLOOM_DISTANCE_RESPONSE = 0.4;
+const BLOOM_STRENGTH_RANGE = { minimum: 0.4, maximum: 0.8 } as const;
+const BRIGHT_PASS_SHADER = `uniform sampler2D tDiffuse;
+uniform vec2 sourceTexel;
+uniform float luminosityThreshold;
+uniform float smoothWidth;
+varying vec2 vUv;
+vec3 brightPart( vec2 uv ) {
+  vec3 c = texture2D( tDiffuse, uv ).rgb;
+  float peak = max( c.r, max( c.g, c.b ) );
+  float soft = clamp( peak - luminosityThreshold + smoothWidth, 0.0, 2.0 * smoothWidth );
+  soft = soft * soft / ( 4.0 * smoothWidth + 1e-5 );
+  float excess = max( soft, peak - luminosityThreshold );
+  float kept = min( excess, ${BLOOM_PEAK.toFixed(2)} );
+  return c * ( kept / max( peak, 1e-4 ) );
+}
+void main() {
+  vec2 o = sourceTexel;
+  vec3 c = brightPart( vUv + vec2( -o.x, -o.y ) ) + brightPart( vUv + vec2( o.x, -o.y ) ) + brightPart( vUv + vec2( -o.x, o.y ) ) + brightPart( vUv + vec2( o.x, o.y ) );
+  gl_FragColor = vec4( c * 0.25, 1.0 );
+}`;
 
 export class SceneLook {
   readonly renderer: WebGLRenderer;
   private readonly composer: EffectComposer;
-  private readonly bloom = new UnrealBloomPass(new Vector2(256, 256), BLOOM_STRENGTH, 0.55, 0.9);
+  private readonly bloom = new UnrealBloomPass(new Vector2(256, 256), BLOOM_STRENGTH, BLOOM_RADIUS, BLOOM_THRESHOLD);
   private graphics: GameSettings = DEFAULT_SETTINGS;
   private pixelRatio = 1;
   private glowStrength = 1;
@@ -150,8 +173,16 @@ export class SceneLook {
     this.composer.addPass(new OutputPass());
     this.composer.addPass(this.finish);
     const highPass = this.bloom.materialHighPassFilter;
-    highPass.fragmentShader = highPass.fragmentShader.replace('float v = luminance( texel.xyz );', 'float v = max( texel.r, max( texel.g, texel.b ) );');
+    highPass.uniforms['smoothWidth']!.value = BLOOM_KNEE;
+    highPass.uniforms['sourceTexel'] = { value: new Vector2(1, 1) };
+    highPass.fragmentShader = BRIGHT_PASS_SHADER;
     highPass.needsUpdate = true;
+    const blend = this.bloom.blendMaterial;
+    blend.blending = CustomBlending;
+    blend.blendSrc = OneFactor;
+    blend.blendDst = OneFactor;
+    blend.blendSrcAlpha = ZeroFactor;
+    blend.blendDstAlpha = OneFactor;
   }
 
   resize(width: number, height: number): void {
@@ -163,6 +194,7 @@ export class SceneLook {
     this.composer.setSize(width, height);
     this.applySamples(samplesFor(this.graphics.antialiasing, pixelRatio));
     this.finish.uniforms.texel!.value.set(1 / Math.max(1, width * pixelRatio), 1 / Math.max(1, height * pixelRatio));
+    this.bloom.materialHighPassFilter.uniforms['sourceTexel']!.value.set(1 / Math.max(1, width * pixelRatio), 1 / Math.max(1, height * pixelRatio));
     this.applyFinish();
   }
 
