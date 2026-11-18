@@ -500,26 +500,25 @@
   --cols: 4;
   --rows: 7;
   --gap: 4px;
-  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
-  grid-template-rows: repeat(var(--rows), minmax(0, 1fr));
+  --slot: min(calc((100cqw - (var(--cols) - 1) * var(--gap)) / var(--cols)), calc((var(--fit-h) - (var(--rows) - 1) * var(--gap)) / var(--rows)));
+  grid-template-columns: repeat(var(--cols), var(--slot));
+  grid-template-rows: repeat(var(--rows), var(--slot));
   gap: var(--gap);
-  justify-self: stretch;
-  width: 100%;
-  height: var(--fit-h);
+  justify-content: center;
 }
 
 .tab-inventory .inventory-slot {
-  aspect-ratio: auto;
+  width: var(--slot);
+  height: var(--slot);
+  aspect-ratio: 1;
   min-width: 0;
   min-height: 0;
+  overflow: hidden;
 }
 
 .tab-inventory .inventory-slot img {
-  width: auto;
-  height: auto;
-  max-width: min(86%, 64px);
-  max-height: min(86%, 64px);
-  aspect-ratio: 1;
+  width: 86%;
+  height: 86%;
   object-fit: contain;
 }
 
