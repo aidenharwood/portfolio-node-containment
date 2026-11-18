@@ -37,7 +37,7 @@ export interface TradeOutcome {
   readonly scripDelta: number;
 }
 
-export const MAX_TRADE_QUANTITY = 100;
+export const MAX_TRADE_QUANTITY = Number.MAX_SAFE_INTEGER;
 
 export function sellPrice(item: ItemDefinition, shop: ShopDefinition): number | null {
   if (item.id === CURRENCY_ITEM_ID || !shop.buysCategories.includes(item.category) || item.value <= 0) return null;

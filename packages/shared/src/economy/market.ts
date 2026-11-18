@@ -10,8 +10,8 @@ export type MarketOrderId = string;
 
 export type MarketAccess = 'trade' | 'collect';
 export const MARKET_ORDER_LIMIT = 8;
-export const MAX_MARKET_PRICE = 1_000_000_000;
-export const MAX_MARKET_QUANTITY = 1_000_000;
+export const MAX_MARKET_PRICE = Number.MAX_SAFE_INTEGER;
+export const MAX_MARKET_QUANTITY = Number.MAX_SAFE_INTEGER;
 
 export interface MarketOrder {
   readonly id: MarketOrderId;
