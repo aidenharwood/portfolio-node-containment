@@ -106,7 +106,7 @@ export interface EquipmentProperties {
   readonly weapon?: WeaponProfile;
 }
 
-export type ConsumableKind = 'food' | 'medicine';
+export type ConsumableKind = 'food' | 'medicine' | 'kit';
 
 export interface ConsumableProperties {
   readonly kind: ConsumableKind;

@@ -52,6 +52,8 @@
     { "id": "sf-plate-0", "object": "wreck-plate", "at": { "room": "ground", "dx": 22, "dy": 40 } },
     { "id": "sf-plate-1", "object": "wreck-plate", "at": { "room": "ground", "dx": 28, "dy": 49 } },
     { "id": "sf-plate-2", "object": "wreck-plate", "at": { "room": "ground", "dx": 46, "dy": 40 } },
+    { "id": "sf-crusher-0", "object": "crusher-housing", "at": { "room": "ground", "dx": 14, "dy": 21 } },
+    { "id": "sf-crusher-1", "object": "crusher-housing", "at": { "room": "ground", "dx": 52, "dy": 30 } },
     { "id": "sf-weed-0", "object": "tide-weed", "at": { "room": "ground", "dx": 10, "dy": 51 } },
     { "id": "sf-weed-1", "object": "tide-weed", "at": { "room": "ground", "dx": 34, "dy": 51 } },
     { "id": "sf-weed-2", "object": "tide-weed", "at": { "room": "ground", "dx": 58, "dy": 51 } },

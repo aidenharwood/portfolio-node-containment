@@ -84,6 +84,7 @@ export function findCraftingIssues(content: GameContent): string[] {
     if (output?.equipment && recipe.station !== 'fabricator') report(where, 'equipment is assembled at a fabricator');
     if (output?.consumable?.kind === 'medicine' && recipe.station !== 'synthesiser') report(where, 'medicine is synthesised at a bio-synthesiser');
     if (output?.consumable?.kind === 'food' && recipe.station !== 'cooker') report(where, 'food is cooked at a cooker');
+    if (output?.consumable?.kind === 'kit' && recipe.station !== 'refinery') report(where, 'a kit is refined at a refinery');
     if (output?.equipment && recipe.level < highestRequirement(output)) {
       report(where, `crafting level ${recipe.level} is below the item's equip requirement ${highestRequirement(output)}`);
     }

@@ -28,4 +28,5 @@ export const FIXTURE_RECIPES: readonly RecipeDefinition[] = [
   recipe('fabricator', 'field-vest', 1, { 'alloy-plate': 3 }, 36),
   recipe('fabricator', 'heavy-maul', 5, { 'alloy-plate': 5 }, 60),
   recipe('synthesiser', 'medgel', 1, { 'gel-sac': 1 }, 10),
+  recipe('refinery', 'edge-kit', 1, { 'scrap-alloy': 1, 'alloy-plate': 1 }, 10),
 ];
