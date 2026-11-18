@@ -80,6 +80,9 @@ export const WARD_MATERIALS: readonly ItemDefinition[] = [
   material('brass-fittings', 'Brass Fittings', 'Collars, pins and bushings knocked off an old lock gear. Green with age and still true.', 'cell', ['#c8a23a', '#4a6a3a'], 10),
   material('bearing-steel', 'Bearing Steel', 'Races and balls from a crusher housing. They roll downhill, and occasionally up it.', 'rotor', ['#9aa4ae', '#3a4048'], 22),
   material('hull-rivets', 'Hull Rivets', 'Fist-sized rivets cut from a seam. Each one held back the sea for eighty years, more or less.', 'scrap', ['#6a5a4a', '#c79bff'], 34),
+  material('copper-coil', 'Copper Coil', 'Stripped wire wound tight on a spindle. It springs back at you if you let go.', 'coil', ['#c8743a', '#7a3e1a'], 12),
+  material('brass-strip', 'Brass Strip', 'Fittings melted and drawn flat. Still green at the edges, still true.', 'ingot', ['#c8a23a', '#6a5a2a'], 26),
+  material('bearing-ring', 'Bearing Ring', 'Races ground into a single ring. It turns without being asked.', 'rotor', ['#9aa4ae', '#5a6068'], 52),
   material('cell-mesh', 'Cell Mesh', 'Directorate containment mesh from a sprung cell door. Whatever was behind it pushed outwards.', 'panel', ['#d8d6cc', '#d8322a'], 50),
   material('day-old-loaf', 'Day-old Loaf', "Too hard to eat on its own. Good for soaking up broth.", 'loaf', ['#c8a060', '#7a5a2a'], 2),
 ];
@@ -98,6 +101,7 @@ export const WARD_FOOD: readonly ItemDefinition[] = [
   boosted(medicine('red-salve', 'Red Salve', 'A Directorate field salve, made from what grows by the cells. It works. Do not ask how.', 'tin', ['#d8322a', '#3a0a08'], 160, 13, 'Apply'), { power: 8, accuracy: 8, focus: 8 }, 4),
   boosted(medicine('bloom-elixir', 'Bloom Distillate', 'Distilled vault bloom. You feel very well, and very watched.', 'vial', ['#c8d8e8', '#7fd8ff'], 260, 16), { armor: 16, deflection: 16, cognitiveWard: 16, hazardShielding: 6 }, 5),
   boosted(medicine('grip-tincture', 'Grip Tincture', "Marta's tincture of hand-leaf. Your fingers close a moment before you tell them to.", 'vial', ['#b6ff4f', '#3a5a2a'], 26, 5), { power: 2, accuracy: 2, focus: 2 }, 3),
+  boosted(medicine('amber-tincture', 'Amber Tincture', 'Culture and amber residue, cooked clear. It is warm going down and it keeps you warm after. Do not ask what remembers.', 'vial', ['#e8a21c', '#3a2a10'], 60, 6), { power: 4, accuracy: 4, focus: 4 }, 4),
   boosted(medicine('reed-tonic', 'Reed Tonic', 'Bitter green tonic with a bright sediment that never settles. Do not shake.', 'vial', ['#3fe0b0', '#1a4a3a'], 40, 5), { cognitiveWard: 5, insight: 2 }, 3),
 ];
 
@@ -412,10 +416,10 @@ interface KitLine {
 
 export const KIT_TIERS: readonly KitTier[] = [
   { numeral: 'I', level: 8, fittings: { 'copper-wire': 1 }, edge: 'scrap-bar', sight: 'rag-bundle', tuning: 'trace-dust', boost: 2, experience: 14, value: 12, note: 'Held together with copper wire and optimism.' },
-  { numeral: 'II', level: 15, fittings: { 'copper-wire': 1 }, edge: 'iron-bar', sight: 'waxed-canvas', tuning: 'culvert-trace', boost: 2, experience: 30, value: 30, note: 'Copper-wound, with a basin-iron clamp that will outlive you.' },
-  { numeral: 'III', level: 25, fittings: { 'brass-fittings': 1 }, edge: 'steel-bar', sight: 'synth-weave', tuning: 'amber-trace', boost: 2, experience: 52, value: 60, note: 'Brass-fitted, from a lock gear the yards broke up.' },
-  { numeral: 'IV', level: 35, fittings: { 'bearing-steel': 1 }, edge: 'alloy-bar', sight: 'tarred-canvas', tuning: 'hull-trace', boost: 5, experience: 80, value: 100, note: 'Set in bearing steel from a crusher housing. It turns very smoothly.' },
-  { numeral: 'V', level: 45, fittings: { 'cell-mesh': 1, 'hull-rivets': 1 }, edge: 'sinter-ingot', sight: 'red-mesh', tuning: 'red-trace', boost: 8, experience: 118, value: 150, note: 'Cell mesh and Cordon rivets. Nobody signed it out.' },
+  { numeral: 'II', level: 20, fittings: { 'brass-fittings': 1 }, edge: 'iron-bar', sight: 'waxed-canvas', tuning: 'culvert-trace', boost: 3, experience: 30, value: 30, note: 'Brass-fitted, from a lock gear the yards broke up, with a basin-iron clamp that will outlive you.' },
+  { numeral: 'III', level: 30, fittings: { 'bearing-steel': 1 }, edge: 'steel-bar', sight: 'synth-weave', tuning: 'amber-trace', boost: 4, experience: 52, value: 60, note: 'Set in bearing steel from a crusher housing. It turns very smoothly.' },
+  { numeral: 'IV', level: 40, fittings: { 'hull-rivets': 1 }, edge: 'alloy-bar', sight: 'tarred-canvas', tuning: 'hull-trace', boost: 5, experience: 80, value: 100, note: 'Hull rivets, cut from a seam. Each one held back the sea once.' },
+  { numeral: 'V', level: 45, fittings: { 'cell-mesh': 1 }, edge: 'sinter-ingot', sight: 'red-mesh', tuning: 'red-trace', boost: 8, experience: 118, value: 150, note: 'Wrapped in cell mesh from a sprung door. Nobody signed it out.' },
 ];
 
 const KIT_LINES: readonly KitLine[] = [
@@ -427,7 +431,7 @@ const KIT_LINES: readonly KitLine[] = [
 const kitId = (line: KitLine, tierIndex: number): string => `${line.key}-kit-${tierIndex + 1}`;
 
 export const WARD_KITS: readonly ItemDefinition[] = KIT_LINES.flatMap((line) =>
-  KIT_TIERS.map((tier, index) => kit(kitId(line, index), `${line.name} Kit ${tier.numeral}`, `${line.examine} ${tier.note}`, line.icon, line.colors, tier.value, { [line.stat]: tier.boost })),
+  KIT_TIERS.map((tier, index) => kit(kitId(line, index), `${line.name} Kit ${tier.numeral}`, `${line.examine} ${tier.note} It does not stack with tinctures.`, line.icon, line.colors, tier.value, { [line.stat]: tier.boost })),
 );
 
 const KIT_RECIPES: readonly RecipeDefinition[] = KIT_LINES.flatMap((line) =>
@@ -444,13 +448,17 @@ export const WARD_RECIPES: readonly RecipeDefinition[] = [
   recipe('synthesiser', 'biochemistry', 'grip-tincture', 8, { 'hand-leaf-cutting': 1, 'trace-dust': 1 }, 26),
   recipe('synthesiser', 'biochemistry', 'reed-tonic', 12, { 'reed-bundle': 2, 'culvert-trace': 1 }, 34),
   recipe('cooker', 'biochemistry', 'eel-pie', 14, { 'basin-eel': 2, 'day-old-loaf': 1 }, 40),
+  recipe('synthesiser', 'biochemistry', 'amber-tincture', 20, { 'lab-culture': 2, 'amber-trace': 1 }, 50),
+  recipe('refinery', 'refining', 'copper-coil', 15, { 'copper-wire': 3 }, 28),
   recipe('refinery', 'refining', 'steel-bar', 20, { 'iron-bar': 1, 'heavy-scrap': 2 }, 40),
   recipe('refinery', 'refining', 'synth-weave', 20, { 'lab-culture': 2 }, 38),
   recipe('synthesiser', 'biochemistry', 'culture-salve', 22, { 'lab-culture': 2, 'amber-trace': 1 }, 56),
   recipe('cooker', 'biochemistry', 'culture-cutlet', 24, { 'lab-culture': 2, 'day-old-loaf': 1 }, 62),
+  recipe('refinery', 'refining', 'brass-strip', 25, { 'brass-fittings': 2 }, 46),
   recipe('refinery', 'refining', 'alloy-bar', 30, { 'hull-plate': 2 }, 64),
   recipe('refinery', 'refining', 'tarred-canvas', 30, { 'tide-weed': 2 }, 60),
   recipe('cooker', 'biochemistry', 'tide-broth', 32, { 'tide-weed': 2, 'basin-eel': 1 }, 80),
+  recipe('refinery', 'refining', 'bearing-ring', 35, { 'bearing-steel': 2 }, 72),
   recipe('refinery', 'refining', 'sinter-ingot', 40, { 'directorate-salvage': 2 }, 96),
   recipe('refinery', 'refining', 'red-mesh', 40, { 'red-moss': 2 }, 90),
   recipe('synthesiser', 'biochemistry', 'tide-tincture', 32, { 'tide-weed': 2, 'hull-trace': 1 }, 86),

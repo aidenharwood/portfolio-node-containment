@@ -17,6 +17,8 @@ const BANDS: readonly (readonly [number, number])[] = [
 
 const NEW_MATERIALS = ['copper-wire', 'brass-fittings', 'bearing-steel', 'hull-rivets', 'cell-mesh'];
 
+const FITTINGS = NEW_MATERIALS;
+
 const OFFENCE_STATS: readonly StatId[] = ['power', 'accuracy', 'focus'];
 
 const recipeLevelOf = (itemId: string): number | undefined => [...GAME_CONTENT.recipes.values()].find((recipe) => recipe.output.itemId === itemId)?.level;
@@ -57,7 +59,7 @@ describe('skill bands', () => {
     }
   });
 
-  test('no kit boosts past the best offence tincture of its level band', () => {
+  test('no kit boosts past the best offence tincture within five levels of it', () => {
     assert.ok(offenceTinctures.length > 0);
     for (const kit of kits) {
       const kitLevel = recipeLevelOf(kit.id) ?? 0;
@@ -68,5 +70,28 @@ describe('skill bands', () => {
         assert.ok(boost <= ceiling(stat), `${kit.id} gives +${boost} ${stat}, above the +${ceiling(stat)} of tinctures up to level ${kitLevel + 5}`);
       }
     }
+  });
+
+  test('kit boosts strictly increase by tier and each tier has its own fitting', () => {
+    const boostOf = (item: ItemDefinition): number => Math.max(0, ...Object.values(item.consumable?.boost?.stats ?? {}).map((value) => value ?? 0));
+    const fittingOf = (item: ItemDefinition): string => {
+      const recipe = [...GAME_CONTENT.recipes.values()].find((candidate) => candidate.output.itemId === item.id);
+      return recipe?.inputs.map((input) => input.itemId).find((itemId) => FITTINGS.includes(itemId)) ?? '';
+    };
+    for (const line of ['edge', 'sight', 'tuning']) {
+      const tiers = [1, 2, 3, 4, 5].map((tier) => GAME_CONTENT.items.get(`${line}-kit-${tier}`)).filter((item): item is ItemDefinition => item !== undefined);
+      assert.equal(tiers.length, 5, line);
+      tiers.slice(1).forEach((item, index) => {
+        const previous = tiers[index];
+        assert.ok(previous && boostOf(item) > boostOf(previous), `${item.id} is no stronger than the kit before it`);
+      });
+      const fittings = tiers.map(fittingOf);
+      assert.ok(fittings.every((fitting) => fitting !== ''), `${line} kit missing a fitting`);
+      assert.equal(new Set(fittings).size, 5, `${line} kits share a fitting`);
+    }
+  });
+
+  test('every kit says it does not stack with tinctures', () => {
+    for (const kit of kits) assert.match(kit.examine, /does not stack with tinctures/, kit.id);
   });
 });
