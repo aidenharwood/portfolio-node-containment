@@ -122,6 +122,11 @@ export function itemSources(content: GameContent): ReadonlyMap<ItemId, readonly 
       for (const given of givenItems(interaction.effects)) {
         add(given.itemId, { kind: 'object', objectId: object.id, name: object.name, verb: interaction.verb, count: given.count, onlyDuring, once: interaction.oncePerCharacter ?? false, locations });
       }
+      if (interaction.effects.some((effect) => effect.type === 'grantMasteryMantles')) {
+        for (const item of content.items.values()) {
+          if (item.mastery) add(item.id, { kind: 'object', objectId: object.id, name: object.name, verb: interaction.verb, count: 1, onlyDuring, once: true, locations });
+        }
+      }
     }
   }
 

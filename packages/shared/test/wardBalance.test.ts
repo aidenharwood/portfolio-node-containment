@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { createStartingSkills, experienceForLevel, levelForExperience } from '../src/character/skills.ts';
+import { createStartingSkills, experienceForLevel, levelForExperience, SKILL_LEVEL_CAP } from '../src/character/skills.ts';
 import { deriveCombatProfile } from '../src/character/derivedStats.ts';
 import { creatureAttackProfile, defenceAgainst, hitChance, playerAttackProfile, rollAttack } from '../src/combat/combatMath.ts';
 import { creatureDefence, weaknessOf } from '../src/combat/study.ts';
@@ -257,7 +257,7 @@ test('early levels come quickly and the eased curve rejoins the old one by level
   assert.ok(experienceForLevel(5) <= 320, 'level 5 costs about a dozen small fights');
   assert.ok(experienceForLevel(10) <= 2800, 'level 10 costs under 2800');
   assert.equal(experienceForLevel(25), 37564);
-  for (let level = 3; level <= 60; level++) {
+  for (let level = 3; level <= SKILL_LEVEL_CAP; level++) {
     const step = experienceForLevel(level) - experienceForLevel(level - 1);
     const previous = experienceForLevel(level - 1) - experienceForLevel(level - 2);
     assert.ok(step >= previous, `level ${level} costs at least as much as level ${level - 1}`);
@@ -567,4 +567,16 @@ test('The Heart contains its tide wraith before the Warden, and saves on every s
   assert.equal(placed[0], 'hale');
   for (const stepId of placed) assert.ok(stepId && ids.indexOf(stepId) <= ids.indexOf('mercer'));
   assert.ok(ids.indexOf(placed[2] ?? '') <= ids.indexOf('warden'), 'a legacy save at the Warden is never moved past it');
+});
+
+test('the level cap is 55 and mastery mantles do not out-stat the best tier-50 back item', () => {
+  assert.equal(SKILL_LEVEL_CAP, 55);
+  assert.equal(levelForExperience(experienceForLevel(SKILL_LEVEL_CAP) * 3), SKILL_LEVEL_CAP);
+  const total = (item: ItemDefinition): number => Object.values(item.equipment?.stats ?? {}).reduce((sum, value) => sum + value, 0);
+  const tierFifty = [...GAME_CONTENT.items.values()].filter((item) => item.equipment?.slot === 'back' && !item.mastery && Math.max(1, ...Object.values(item.equipment.requirements?.skills ?? {}).map((level) => level ?? 1)) === 50);
+  assert.ok(tierFifty.length > 0);
+  const best = Math.max(...tierFifty.map(total));
+  const mantles = [...GAME_CONTENT.items.values()].filter((item) => item.mastery);
+  assert.equal(mantles.length, 10);
+  for (const mantle of mantles) assert.ok(total(mantle) <= best, `${mantle.id} totals ${total(mantle)} against ${best}`);
 });

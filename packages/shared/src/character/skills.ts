@@ -85,7 +85,7 @@ export const SKILL_INFO: Readonly<Record<SkillId, SkillInfo>> = {
   },
 };
 
-export const SKILL_LEVEL_CAP = 60;
+export const SKILL_LEVEL_CAP = 55;
 
 export const EASED_LEVEL_SPAN = 24;
 

@@ -92,6 +92,7 @@ export * from './content/assemblies.ts';
 export * from './content/contentIntegrity.ts';
 export * from './content/craftingIntegrity.ts';
 export * from './content/gameContent.ts';
+export * from './content/ward/mastery.ts';
 export * from './content/questItemReissue.ts';
 export * from './content/levelIndex.ts';
 export * from './content/levelIntegrity.ts';

@@ -126,6 +126,7 @@ export interface ItemDefinition {
   readonly maxStack: number;
   readonly value: number;
   readonly unique?: boolean;
+  readonly mastery?: SkillId;
   readonly equipment?: EquipmentProperties;
   readonly consumable?: ConsumableProperties;
 }

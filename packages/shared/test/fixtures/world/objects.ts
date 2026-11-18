@@ -25,6 +25,7 @@ export const FIXTURE_OBJECTS: readonly WorldObjectDefinition[] = [
     interactions: [
       { verb: 'Review contracts', effects: [{ type: 'openContracts' }] },
       { verb: 'Spend commendations', effects: [{ type: 'openShop', shopId: 'contracts-office' }] },
+      { verb: 'Claim mastery', effects: [{ type: 'grantMasteryMantles' }] },
     ],
   },
   { id: 'refinery', name: 'Refinery', examine: 'A test refinery.', ...placeholder, interactions: [{ verb: 'Refine', effects: [{ type: 'openCrafting', station: 'refinery' }] }] },

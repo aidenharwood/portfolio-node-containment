@@ -1,7 +1,9 @@
 import { boostTicksForMinutes } from '../../../src/character/boosts.ts';
 import type { ItemDefinition } from '../../../src/gear/items.ts';
+import { MASTERY_MANTLES } from '../../../src/content/ward/mastery.ts';
 
 export const FIXTURE_ITEMS: readonly ItemDefinition[] = [
+  ...MASTERY_MANTLES,
   { id: 'meridian-scrip', name: 'Scrip', examine: 'Test currency.', category: 'currency', rarity: 'standard', icon: 'credits', iconColors: ['#e3c35a', '#8a6a1f'], maxStack: 1_000_000, value: 1 },
   { id: 'directorate-commendation', name: 'Commendation', examine: 'Test commendation.', category: 'currency', rarity: 'issued', icon: 'keycard', iconColors: ['#ffcf4d', '#7a3a8a'], maxStack: 1_000_000, value: 0 },
   { id: 'scrap-alloy', name: 'Scrap Alloy', examine: 'Raw test salvage.', category: 'material', rarity: 'standard', icon: 'scrap', iconColors: ['#8a9aa6', '#4a5660'], maxStack: 100, value: 2 },

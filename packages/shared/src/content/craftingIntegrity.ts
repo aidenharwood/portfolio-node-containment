@@ -92,6 +92,7 @@ export function findCraftingIssues(content: GameContent): string[] {
 
   const droppers = placedDroppers(content);
   for (const item of content.items.values()) {
+    if (item.mastery) continue;
     if (item.unique) {
       const where = `item ${item.id}`;
       if (!item.equipment) report(where, 'only gear can be a unique drop');
