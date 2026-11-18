@@ -17,7 +17,7 @@ body {
   background: var(--color-void);
   color: var(--color-text);
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: var(--text-lead);
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
 }

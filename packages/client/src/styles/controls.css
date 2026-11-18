@@ -20,7 +20,7 @@
   font-family: var(--font-display);
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  font-size: 12px;
+  font-size: var(--text-small);
   color: var(--color-accent);
   padding: 14px 20px 0;
 }
@@ -29,7 +29,7 @@
   font-family: var(--font-display);
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  font-size: 11px;
+  font-size: var(--text-label);
   color: var(--color-accent);
 }
 
@@ -45,7 +45,7 @@
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  font-size: 12px;
+  font-size: var(--text-small);
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
   clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
@@ -84,7 +84,7 @@
 
 .button.small {
   padding: 6px 12px;
-  font-size: 11px;
+  font-size: var(--text-label);
 }
 
 .button.wide {
@@ -102,7 +102,7 @@
   font-family: var(--font-display);
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  font-size: 11px;
+  font-size: var(--text-label);
   color: var(--color-text-muted);
 }
 
@@ -131,21 +131,21 @@
 .field-error,
 .form-error {
   color: var(--color-danger);
-  font-size: 12px;
+  font-size: var(--text-small);
   min-height: 1em;
 }
 
 .submit-hint {
   margin-top: 8px;
   min-height: 1.4em;
-  font-size: 12px;
+  font-size: var(--text-small);
   color: var(--color-text-muted);
   text-align: center;
 }
 
 .form-errors {
   color: var(--color-danger);
-  font-size: 12px;
+  font-size: var(--text-small);
   padding-left: 18px;
   margin: 0 0 12px;
 }
@@ -153,7 +153,7 @@
 .field-hint,
 .form-hint {
   color: var(--color-text-faint);
-  font-size: 11px;
+  font-size: var(--text-label);
 }
 
 .tabs {
@@ -172,7 +172,7 @@
   font-family: var(--font-display);
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  font-size: 12px;
+  font-size: var(--text-small);
   color: var(--color-text-muted);
   cursor: pointer;
 }
@@ -195,7 +195,7 @@
   border: none;
   border-right: 1px solid var(--color-line);
   padding: 8px 6px;
-  font-size: 12px;
+  font-size: var(--text-small);
   cursor: pointer;
   color: var(--color-text-muted);
 }
@@ -218,7 +218,7 @@
 .chip {
   display: inline-block;
   padding: 4px 9px;
-  font-size: 11px;
+  font-size: var(--text-label);
   border: 1px solid var(--color-line);
   border-radius: 999px;
   color: var(--color-text-muted);
@@ -278,7 +278,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: var(--text-small);
   color: var(--color-text-muted);
   cursor: pointer;
 }

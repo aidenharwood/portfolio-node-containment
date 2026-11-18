@@ -40,6 +40,7 @@ body {
 
 .chat-collapse {
   margin-left: auto;
+  min-height: var(--hud-control);
   padding: 0 12px;
   background: none;
   border: none;
@@ -74,20 +75,20 @@ body {
   }
 
   .context-item {
-    min-height: 44px;
+    min-height: var(--touch-target);
     padding-top: 10px;
     padding-bottom: 10px;
-    font-size: 14px;
+    font-size: var(--text-lead);
   }
 
   .dialogue-options button {
-    min-height: 44px;
+    min-height: var(--touch-target);
     align-items: center;
   }
 
   .dialogue-close {
-    min-width: 44px;
-    min-height: 44px;
+    min-width: var(--touch-target);
+    min-height: var(--touch-target);
     top: 0;
     right: 0;
   }
@@ -97,7 +98,7 @@ body {
   }
 
   .chat-input {
-    font-size: 16px;
+    font-size: var(--text-large);
   }
 }
 
@@ -110,7 +111,7 @@ body {
   }
 
   .hud-objectives {
-    font-size: 12px;
+    font-size: var(--text-small);
   }
 
   .objectives-list {
@@ -159,12 +160,12 @@ body {
   }
 
   .vitals-label {
-    font-size: 11px;
+    font-size: var(--text-label);
   }
 
   .hud-vitals .vitals-value {
     white-space: nowrap;
-    font-size: 11px;
+    font-size: var(--text-label);
   }
 
   .hud-side {
@@ -217,8 +218,7 @@ body {
   }
 
   .camera-hint {
-    top: 32%;
-    max-width: calc(100% - 32px);
+    top: 36%;
     text-align: center;
   }
 
@@ -249,7 +249,8 @@ body {
   }
 
   .hud-side:not(.collapsed) {
-    max-height: min(460px, calc(100% - 188px - 156px - var(--safe-top) - var(--safe-bottom)));
+    height: min(460px, calc(100% - 188px - 156px - var(--safe-top) - var(--safe-bottom)));
+    max-height: none;
   }
 
   .game-screen:has(.hud-side:not(.collapsed)) .hud-chat:not(.collapsed) {
@@ -512,7 +513,7 @@ body {
     bottom: 6px;
     justify-content: space-between;
     gap: 6px;
-    font-size: 11px;
+    font-size: var(--text-label);
   }
 
   .creator-form {
@@ -548,7 +549,7 @@ body {
   }
 
   .creator-screen .screen-header h1 {
-    font-size: 18px;
+    font-size: var(--text-heading);
   }
 
   .creator-columns {
@@ -589,7 +590,7 @@ body {
     right: 6px;
     bottom: 6px;
     justify-content: space-between;
-    font-size: 11px;
+    font-size: var(--text-label);
   }
 
   .creator-form {
@@ -641,14 +642,17 @@ body {
 }
 
 @media (pointer: coarse), (max-width: 760px), (max-height: 520px) {
+  :root {
+    --hud-control: 36px;
+  }
+
   .hud-objectives {
-    font-size: 13px;
+    font-size: var(--text-body);
   }
 
   .objectives-toggle {
-    min-height: 36px;
     padding: 8px 10px 8px 0;
-    font-size: 12px;
+    font-size: var(--text-small);
   }
 
   .objectives-list {
@@ -659,21 +663,21 @@ body {
   }
 
   .objectives-untrack {
-    min-width: 36px;
-    min-height: 32px;
+    min-width: var(--hud-control);
+    min-height: var(--hud-control);
     margin: -8px -6px -8px auto;
-    font-size: 18px;
+    font-size: var(--text-heading);
   }
 
   .objective-via,
   .objective-level,
   .objective-resource-level,
   .objective-count.objective-experience {
-    font-size: 12.5px;
+    font-size: var(--text-body);
   }
 
   .inventory-mode {
-    font-size: 12px;
+    font-size: var(--text-small);
   }
 
   .inventory-grid {
@@ -720,9 +724,8 @@ body {
 
   .chat-collapse {
     flex: none;
-    min-width: 44px;
-    min-height: 36px;
+    min-width: var(--touch-target);
     padding: 0;
-    font-size: 16px;
+    font-size: var(--text-large);
   }
 }

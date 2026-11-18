@@ -30,8 +30,13 @@
   --text-label: 11px;
   --text-small: 12px;
   --text-body: 13px;
+  --text-lead: 14px;
   --text-title: 15px;
+  --text-large: 16px;
   --text-heading: 18px;
+
+  --hud-control: 24px;
+  --touch-target: 44px;
 
   --radius: 3px;
   --bevel: 10px;
