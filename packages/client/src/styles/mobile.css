@@ -682,15 +682,47 @@ body {
 }
 
 @media (max-height: 520px) and (orientation: landscape) {
-  .objectives-list {
-    max-height: max(64px, calc(100dvh - 300px - var(--safe-top) - var(--safe-bottom)));
+  .hud-top-right > .hud-objectives {
+    position: fixed;
+    top: calc(8px + var(--safe-top));
+    left: calc(8px + var(--safe-left));
+    width: min(300px, calc(100% - 520px - var(--safe-left) - var(--safe-right)));
+    min-width: 220px;
   }
 
-  .game-screen:has(.hud-side:not(.collapsed)) .hud-top-right {
+  .objectives-list {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .game-screen:has(.hud-side:not(.collapsed)) .hud-minimap {
     display: none;
   }
 
   .game-screen .hud-side:not(.collapsed) {
     max-height: calc(100% - 16px - var(--safe-top) - var(--safe-bottom));
+  }
+}
+
+@media (pointer: coarse), (max-width: 760px), (max-height: 520px) {
+  .chat-tabs {
+    min-width: 0;
+  }
+
+  .chat-tab {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 8px 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .chat-collapse {
+    flex: none;
+    min-width: 44px;
+    min-height: 36px;
+    padding: 0;
+    font-size: 16px;
   }
 }
