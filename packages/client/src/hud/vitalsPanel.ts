@@ -1,4 +1,4 @@
-import { CONTAINMENT_CLASS_INFO, containmentBlocker, containmentThreshold, GAME_CONTENT, relativeThreat } from '@containment/shared';
+import { CONTAINMENT_CLASS_INFO, containmentBlocker, containmentResearchEdge, containmentThreshold, GAME_CONTENT, relativeThreat } from '@containment/shared';
 import type { WorldState } from '../state/worldState.ts';
 import { h } from '../ui/dom.ts';
 
@@ -88,7 +88,7 @@ export class VitalsPanel {
     this.targetClass.textContent = profile ? CONTAINMENT_CLASS_INFO[profile.containmentClass].name : '';
     this.targetClass.dataset.class = profile?.containmentClass ?? '';
     if (!creature || !profile || !self) return;
-    this.targetThreshold.style.left = `${(containmentThreshold(target.vitals.maxIntegrity) / target.vitals.maxIntegrity) * 100}%`;
+    this.targetThreshold.style.left = `${(containmentThreshold(target.vitals.maxIntegrity, containmentResearchEdge(creature, self.skills)) / target.vitals.maxIntegrity) * 100}%`;
     const blocker = containmentBlocker(creature, target.vitals.integrity, self.skills);
     this.containButton.disabled = blocker !== null;
     this.containButton.title = blocker ?? `Seal ${target.name} now.`;

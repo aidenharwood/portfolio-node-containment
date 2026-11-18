@@ -20,12 +20,29 @@ export const CONTAINMENT_CLASS_INFO: Readonly<Record<ContainmentClass, Containme
 
 export const isContainable = (creature: CreatureDefinition): boolean => creature.containment !== undefined;
 
-export const containmentThreshold = (maxIntegrity: number): number => Math.max(1, Math.floor(maxIntegrity * CONTAINMENT_THRESHOLD));
+export const CONTAINMENT_THRESHOLD_PER_RESEARCH_LEVEL = 0.01;
 
-export const isWeakenedForContainment = (integrity: number, maxIntegrity: number): boolean =>
-  integrity > 0 && integrity <= containmentThreshold(maxIntegrity);
+export const MAX_CONTAINMENT_THRESHOLD = 0.25;
 
 export const containmentLevelFor = (creature: CreatureDefinition): number => creature.containment?.requiredLevel ?? creature.level;
+
+export const containmentResearchEdge = (creature: CreatureDefinition, skills: SkillExperience): number =>
+  Math.max(0, levelForExperience(skills.research) - containmentLevelFor(creature));
+
+export const containmentThresholdFraction = (researchEdge = 0): number =>
+  Math.min(MAX_CONTAINMENT_THRESHOLD, CONTAINMENT_THRESHOLD + Math.max(0, researchEdge) * CONTAINMENT_THRESHOLD_PER_RESEARCH_LEVEL);
+
+export const containmentThreshold = (maxIntegrity: number, researchEdge = 0): number =>
+  Math.max(1, Math.floor(maxIntegrity * containmentThresholdFraction(researchEdge)));
+
+export const containmentThresholdFor = (creature: CreatureDefinition, skills: SkillExperience): number =>
+  containmentThreshold(creature.integrity, containmentResearchEdge(creature, skills));
+
+export const isWeakenedForContainment = (integrity: number, maxIntegrity: number, researchEdge = 0): boolean =>
+  integrity > 0 && integrity <= containmentThreshold(maxIntegrity, researchEdge);
+
+export const isWeakenedFor = (creature: CreatureDefinition, integrity: number, skills: SkillExperience): boolean =>
+  isWeakenedForContainment(integrity, creature.integrity, containmentResearchEdge(creature, skills));
 
 export function isWithinContainmentReach(
   from: TilePoint,
@@ -46,8 +63,8 @@ export function containmentReadiness(creature: CreatureDefinition, skills: Skill
 export function containmentBlocker(creature: CreatureDefinition, integrity: number, skills: SkillExperience): string | null {
   const readiness = containmentReadiness(creature, skills);
   if (readiness) return readiness;
-  if (!isWeakenedForContainment(integrity, creature.integrity)) {
-    return `${creature.name} is too strong to contain. Wear it down to ${containmentThreshold(creature.integrity)} integrity first.`;
+  if (!isWeakenedFor(creature, integrity, skills)) {
+    return `${creature.name} is too strong to contain. Wear it down to ${containmentThresholdFor(creature, skills)} integrity first.`;
   }
   return null;
 }

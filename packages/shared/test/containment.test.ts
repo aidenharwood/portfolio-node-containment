@@ -6,6 +6,7 @@ import {
   containmentLevelFor,
   containmentReadiness,
   containmentThreshold,
+  containmentThresholdFor,
   createStartingSkills,
   experienceForLevel,
   findContentIssues,
@@ -27,6 +28,17 @@ describe('containment rules', () => {
     assert.ok(isWeakenedForContainment(10, 102));
     assert.ok(!isWeakenedForContainment(11, 102));
     assert.ok(!isWeakenedForContainment(0, 102));
+  });
+
+  test('research above the containment requirement raises the threshold', () => {
+    const warden = creature('hollow-warden');
+    const required = containmentLevelFor(warden);
+    const base = createStartingSkills({ research: experienceForLevel(required) });
+    const studied = createStartingSkills({ research: experienceForLevel(required + 5) });
+    const expert = createStartingSkills({ research: experienceForLevel(required + 90) });
+    assert.equal(containmentThresholdFor(warden, base), containmentThreshold(warden.integrity));
+    assert.equal(containmentThresholdFor(warden, studied), Math.max(1, Math.floor(warden.integrity * 0.15)));
+    assert.equal(containmentThresholdFor(warden, expert), Math.max(1, Math.floor(warden.integrity * 0.25)));
   });
 
   test('containment needs only the level and a weakened specimen', () => {

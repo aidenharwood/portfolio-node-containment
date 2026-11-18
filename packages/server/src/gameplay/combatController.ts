@@ -15,7 +15,7 @@ import {
   CONTAINMENT_CLASS_INFO,
   containmentBlocker,
   containmentReadiness,
-  isWeakenedForContainment,
+  isWeakenedFor,
   isWithinContainmentReach,
   ignoresOutclassedPlayer,
   defeatExperience,
@@ -105,7 +105,7 @@ export class CombatController implements EncounterHost {
     player.combatTargetId = creature.entityId;
     player.containTargetId = null;
     player.heldFireOn = null;
-    player.finishingTargetId = isWeakenedForContainment(creature.integrity, creature.definition.integrity) ? creature.entityId : null;
+    player.finishingTargetId = isWeakenedFor(creature.definition, creature.integrity, player.record.skills) ? creature.entityId : null;
     player.lastChaseTarget = null;
     player.sendVitals();
   }
@@ -185,7 +185,7 @@ export class CombatController implements EncounterHost {
         return;
       }
       const restrained = this.pullsBlows(player, creature);
-      if (restrained && isWeakenedForContainment(creature.integrity, creature.definition.integrity)) {
+      if (restrained && isWeakenedFor(creature.definition, creature.integrity, player.record.skills)) {
         this.holdFire(player, creature);
         return;
       }
