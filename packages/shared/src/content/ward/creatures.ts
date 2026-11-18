@@ -1,4 +1,5 @@
 import type { CreatureDefinition } from '../../combat/creatures.ts';
+import { killExperience } from './novice.ts';
 
 export const WARD_CREATURES: readonly CreatureDefinition[] = [
   {
@@ -14,7 +15,7 @@ export const WARD_CREATURES: readonly CreatureDefinition[] = [
     leashRadius: 4,
     wanderRadius: 1,
     respawnTicks: 10,
-    experience: 8,
+    experience: killExperience(1, 6),
     loot: [],
   },
   {
@@ -31,7 +32,7 @@ export const WARD_CREATURES: readonly CreatureDefinition[] = [
     leashRadius: 4,
     wanderRadius: 2,
     respawnTicks: 12,
-    experience: 6,
+    experience: killExperience(1, 5),
     loot: [{ itemId: 'trace-dust', count: 1, chance: 0.5 }],
     containment: { containmentClass: 'safe', procedures: 'Subdue gently. Seal in any crate. Keep away from light bulbs, which it likes too much.', loot: [{ itemId: 'trace-dust', count: 2, chance: 1 }] },
   },
@@ -48,7 +49,7 @@ export const WARD_CREATURES: readonly CreatureDefinition[] = [
     leashRadius: 6,
     wanderRadius: 3,
     respawnTicks: 20,
-    experience: 20,
+    experience: killExperience(2, 7),
     loot: [
       { itemId: 'rag-bundle', count: 1, chance: 0.4 },
       { itemId: 'scrap-metal', count: 1, chance: 0.2 },
@@ -68,7 +69,7 @@ export const WARD_CREATURES: readonly CreatureDefinition[] = [
     leashRadius: 5,
     wanderRadius: 3,
     respawnTicks: 16,
-    experience: 8,
+    experience: killExperience(1, 4),
     loot: [
       { itemId: 'rag-bundle', count: 1, chance: 0.3 },
       { itemId: 'feather-cap', count: 1, chance: 0.01 },
@@ -88,7 +89,7 @@ export const WARD_CREATURES: readonly CreatureDefinition[] = [
     leashRadius: 7,
     wanderRadius: 3,
     respawnTicks: 30,
-    experience: 56,
+    experience: killExperience(4, 12),
     loot: [
       { itemId: 'rag-bundle', count: 1, chance: 0.5 },
       { itemId: 'scrap-metal', count: 1, chance: 0.3 },

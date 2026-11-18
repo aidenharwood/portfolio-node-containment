@@ -527,3 +527,13 @@ test('containment and first-study experience are proportional to a creature’s 
   assert.equal(studyRates.size, 1, [...studyRates].join(', '));
   assert.equal(containRates.size, 1, [...containRates].join(', '));
 });
+
+test('creatures of the same level pay the same kill experience per point of integrity', () => {
+  const rates = new Map<number, number>();
+  for (const creature of GAME_CONTENT.creatures.values()) {
+    const rate = creature.experience / creature.integrity;
+    const seen = rates.get(creature.level) ?? rate;
+    assert.ok(Math.abs(seen - rate) <= 0.5 / creature.integrity + 0.5 / creature.integrity, `${creature.id} pays ${rate.toFixed(2)} per integrity at level ${creature.level}, others ${seen.toFixed(2)}`);
+    rates.set(creature.level, seen);
+  }
+});
