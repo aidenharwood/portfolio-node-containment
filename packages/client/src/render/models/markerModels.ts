@@ -36,7 +36,7 @@ export function createAreaBeacon(): Group {
   beacon.name = 'objective-beacon';
   const column = new Mesh(
     new CylinderGeometry(0.32, 0.5, BEACON_HEIGHT, 20, 1, true),
-    new MeshBasicMaterial({ color: 0x4fd8ff, transparent: true, opacity: 0.22, blending: AdditiveBlending, depthWrite: false, toneMapped: false, side: DoubleSide }),
+    new MeshBasicMaterial({ color: 0x4fd8ff, transparent: true, opacity: 0.22, blending: AdditiveBlending, depthWrite: false, toneMapped: false, fog: false, side: DoubleSide }),
   );
   column.position.y = BEACON_HEIGHT / 2;
   beacon.add(column, createGroundRing(0x4fd8ff, 0.55, 0.7), createGroundRing(0xc8f6ff, 0.9, 0.96));
@@ -65,7 +65,7 @@ export function createQuestMarker(kind: QuestMarkerKind): Group {
 export function createGroundRing(color: number, inner: number, outer: number): Mesh {
   const ring = new Mesh(
     new RingGeometry(inner, outer, 40),
-    new MeshBasicMaterial({ color, transparent: true, opacity: 0.85, blending: AdditiveBlending, depthWrite: false, toneMapped: false }),
+    new MeshBasicMaterial({ color, transparent: true, opacity: 0.85, blending: AdditiveBlending, depthWrite: false, toneMapped: false, fog: false }),
   );
   ring.rotation.x = -Math.PI / 2;
   ring.renderOrder = 2;
@@ -73,7 +73,7 @@ export function createGroundRing(color: number, inner: number, outer: number): M
 }
 
 export function createClickMarker(): { readonly group: Group; readonly material: MeshBasicMaterial } {
-  const material = new MeshBasicMaterial({ color: 0xffd23f, transparent: true, depthWrite: false, toneMapped: false, blending: AdditiveBlending });
+  const material = new MeshBasicMaterial({ color: 0xffd23f, transparent: true, depthWrite: false, toneMapped: false, fog: false, blending: AdditiveBlending });
   const group = new Group();
   for (const angle of [Math.PI / 4, -Math.PI / 4]) {
     const bar = new Mesh(new BoxGeometry(0.5, 0.03, 0.08), material);

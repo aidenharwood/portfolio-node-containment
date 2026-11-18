@@ -29,8 +29,8 @@ function meshesFor(itemId: string): VoxelMeshes | null {
 export class GroundItemLayer {
   readonly root = new Group();
   private readonly views = new Map<string, GroundItemView>();
-  private readonly ownedHalo = new MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: 0.55, blending: AdditiveBlending, depthWrite: false, toneMapped: false });
-  private readonly publicHalo = new MeshBasicMaterial({ color: 0x4fd8ff, transparent: true, opacity: 0.4, blending: AdditiveBlending, depthWrite: false, toneMapped: false });
+  private readonly ownedHalo = new MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: 0.55, blending: AdditiveBlending, depthWrite: false, toneMapped: false, fog: false });
+  private readonly publicHalo = new MeshBasicMaterial({ color: 0x4fd8ff, transparent: true, opacity: 0.4, blending: AdditiveBlending, depthWrite: false, toneMapped: false, fog: false });
 
   sync(items: ReadonlyMap<string, GroundItemSnapshot>, time: number): void {
     for (const [id, view] of this.views) {

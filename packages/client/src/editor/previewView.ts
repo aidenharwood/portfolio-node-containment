@@ -296,7 +296,9 @@ export class PreviewView {
     this.level.update(time, NOTHING, NOTHING, NOTHING, { open: NOTHING, self: null });
     this.actors.update(time);
     this.level.updateCutaway(this.camera.position, target);
-    this.sceneLook.aimKeyLight(target, this.camera.position.distanceTo(target));
+    const viewDistance = this.camera.position.distanceTo(target);
+    this.sceneLook.aimKeyLight(target, viewDistance);
+    this.sceneLook.matchBloomToDistance(viewDistance);
     this.sceneLook.updateLights(this.level.lights, delta, time, target);
     this.sceneLook.render(this.camera, delta);
     for (const listener of this.frameListeners) listener();

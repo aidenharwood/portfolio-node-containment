@@ -67,7 +67,7 @@ class Pool {
 
   constructor(geometry: BoxGeometry, glow: boolean) {
     const material = glow
-      ? new MeshBasicMaterial({ toneMapped: false, transparent: true, blending: AdditiveBlending, depthWrite: false })
+      ? new MeshBasicMaterial({ toneMapped: false, fog: false, transparent: true, blending: AdditiveBlending, depthWrite: false })
       : new MeshLambertMaterial();
     this.mesh = new InstancedMesh(geometry, material, PARTICLE_CAPACITY);
     this.mesh.instanceMatrix.setUsage(DynamicDrawUsage);

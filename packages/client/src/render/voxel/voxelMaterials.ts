@@ -1,19 +1,28 @@
-import { Color, Group, Mesh, MeshBasicMaterial, MeshLambertMaterial, type Material } from 'three';
+import { Color, Group, Mesh, MeshBasicMaterial, MeshLambertMaterial, ShaderChunk, type Material } from 'three';
 import { receiveFieldLights } from './fieldLights.ts';
 import type { VoxelMeshes } from './voxelMesher.ts';
 
 const EMISSIVE_GAIN = 1.15;
 const ACTOR_FILL = 0.22;
+const EMISSIVE_FOG = 0.35;
+
+function thinFog(material: MeshBasicMaterial): MeshBasicMaterial {
+  material.onBeforeCompile = (shader) => {
+    shader.fragmentShader = shader.fragmentShader.replace('#include <fog_fragment>', ShaderChunk.fog_fragment.replace('fogColor, fogFactor )', `fogColor, fogFactor * ${EMISSIVE_FOG.toFixed(2)} )`));
+  };
+  material.customProgramCacheKey = () => `thin-fog-${EMISSIVE_FOG}`;
+  return material;
+}
 
 export const VOXEL_MATERIALS = {
   solid: receiveFieldLights(new MeshLambertMaterial({ vertexColors: true })),
   actor: receiveFieldLights(new MeshLambertMaterial({ vertexColors: true }), ACTOR_FILL),
   actorFlash: receiveFieldLights(new MeshLambertMaterial({ vertexColors: true, emissive: 0xffe8e0, emissiveIntensity: 0.3 }), ACTOR_FILL),
   glassFlash: receiveFieldLights(new MeshLambertMaterial({ vertexColors: true, transparent: true, opacity: 0.65, depthWrite: false, emissive: 0xffffff, emissiveIntensity: 0.5 })),
-  emissive: new MeshBasicMaterial({ vertexColors: true, toneMapped: false, color: new Color(EMISSIVE_GAIN, EMISSIVE_GAIN, EMISSIVE_GAIN) }),
+  emissive: thinFog(new MeshBasicMaterial({ vertexColors: true, toneMapped: false, color: new Color(EMISSIVE_GAIN, EMISSIVE_GAIN, EMISSIVE_GAIN) })),
   glass: receiveFieldLights(new MeshLambertMaterial({ vertexColors: true, transparent: true, opacity: 0.32, depthWrite: false })),
   fadedSolid: receiveFieldLights(new MeshLambertMaterial({ vertexColors: true, transparent: true, opacity: 0.16, depthWrite: false })),
-  fadedEmissive: new MeshBasicMaterial({ vertexColors: true, toneMapped: false, transparent: true, opacity: 0.2, depthWrite: false }),
+  fadedEmissive: thinFog(new MeshBasicMaterial({ vertexColors: true, toneMapped: false, transparent: true, opacity: 0.2, depthWrite: false })),
   fadedGlass: receiveFieldLights(new MeshLambertMaterial({ vertexColors: true, transparent: true, opacity: 0.08, depthWrite: false })),
 } as const;
 
