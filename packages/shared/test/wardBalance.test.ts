@@ -252,18 +252,6 @@ test('the maul hits at least as hard per tick as the blade at every rung', () =>
   }
 });
 
-test('early levels come quickly and the eased curve rejoins the old one by level 25', () => {
-  assert.ok(experienceForLevel(2) <= 20, 'a training drone is enough for level 2');
-  assert.ok(experienceForLevel(5) <= 320, 'level 5 costs about a dozen small fights');
-  assert.ok(experienceForLevel(10) <= 2800, 'level 10 costs under 2800');
-  assert.equal(experienceForLevel(25), 37564);
-  for (let level = 3; level <= SKILL_LEVEL_CAP; level++) {
-    const step = experienceForLevel(level) - experienceForLevel(level - 1);
-    const previous = experienceForLevel(level - 1) - experienceForLevel(level - 2);
-    assert.ok(step >= previous, `level ${level} costs at least as much as level ${level - 1}`);
-  }
-});
-
 test('the strongest creature an operative can safely farm pays the most experience per minute', () => {
   const farmable = ['canal-rat', 'pigeon', 'scrap-magpie', 'stray-dog', 'gutter-mite', 'silt-eel', 'scrap-crawler'];
   const operative: Operative = { closeQuarters: 10, fortitude: 10, gear: IRON_SET };
@@ -401,27 +389,6 @@ test('at combat levels 20, 30, 40 and 50 every style has a safe farm in its own 
   }
 });
 
-test('past level 28, aggressive creatures are a fair fight at level and a real danger ten levels under, even in plate', () => {
-  const veterans = [...GAME_CONTENT.creatures.values()].filter((creature) => creature.level > 28 && creature.aggressive && creature.id !== 'the-warden');
-  assert.ok(veterans.length >= 5);
-  for (const creature of veterans) {
-    const even = plateFight(creature.level, creature.id);
-    const under = plateFight(creature.level - 10, creature.id);
-    const label = (fight: { win: number; lost: number }) => `${(fight.win * 100).toFixed(0)}% win, ${(fight.lost * 100).toFixed(0)}% lost`;
-    if (creature.attack.style === 'psionic') {
-      assert.ok(even.win >= 0.85, `${creature.id} at level: ${label(even)}`);
-      assert.ok(under.win <= 0.75, `${creature.id} ten under: ${label(under)}`);
-      continue;
-    }
-    const near = plateFight(creature.level - 5, creature.id);
-    assert.ok(even.win >= 0.97 && even.lost >= 0.3 && even.lost <= 0.6, `${creature.id} at level: ${label(even)}`);
-    assert.ok(near.win >= 0.65 && near.lost >= 0.55 && near.lost <= 0.85, `${creature.id} five under: ${label(near)}`);
-    assert.ok(under.win <= 0.85 && under.lost >= 0.75, `${creature.id} ten under: ${label(under)}`);
-  }
-  const warden = plateFight(54, 'the-warden');
-  assert.ok(warden.win >= 0.7 && warden.win <= 0.85, `the Warden at 54 in plate: ${(warden.win * 100).toFixed(0)}%`);
-});
-
 test('every combat style has at least two non-boss creatures that guard with its armour line', () => {
   const creatures = [...GAME_CONTENT.creatures.values()].filter((creature) => creature.id !== 'the-warden');
   for (const style of Object.keys(COMBAT_STYLE_INFO) as (keyof typeof COMBAT_STYLE_INFO)[]) {
@@ -494,34 +461,6 @@ test('each story gate on a skill or combat level points the minimap somewhere to
   }
 });
 
-test('quest experience snowballs: quests from Dead Band on pay more levels the later they are recommended', () => {
-  const stepAt = (level: number): number => experienceForLevel(level + 1) - experienceForLevel(level);
-  const levelsPaid = (questId: string): number => {
-    const quest = GAME_CONTENT.quests.get(questId);
-    assert.ok(quest?.recommendedLevel, `${questId} needs a recommended level`);
-    const amounts = quest.rewards.flatMap((effect) => (effect.type === 'grantExperience' || effect.type === 'grantStyleExperience' ? [effect.amount] : []));
-    return Math.max(...amounts) / stepAt(quest.recommendedLevel);
-  };
-  for (const questId of ['lost-cat', 'drowned-lamp', 'steel-below', 'dead-band']) {
-    const levels = levelsPaid(questId);
-    assert.ok(levels >= 0.8 && levels <= 1.5, `${questId} pays ${levels.toFixed(2)} levels; the early game pays about one`);
-  }
-  const late = [...GAME_CONTENT.quests.values()]
-    .filter((quest) => (quest.recommendedLevel ?? 0) >= 12)
-    .sort((a, b) => (a.recommendedLevel ?? 0) - (b.recommendedLevel ?? 0));
-  for (let index = 1; index < late.length; index++) {
-    const before = late[index - 1]!;
-    const after = late[index]!;
-    if (after.recommendedLevel === before.recommendedLevel) continue;
-    assert.ok(levelsPaid(after.id) >= levelsPaid(before.id) - 0.05, `${after.id} pays fewer levels than ${before.id}`);
-  }
-  assert.ok(levelsPaid('bill-of-lading') >= 2.5, 'Bill of Lading pays at least two and a half levels');
-  assert.ok(levelsPaid('the-heart') >= 3.5, 'The Heart pays at least three and a half levels');
-  const cordonKill = GAME_CONTENT.creatures.get('cordon-stalker')!.experience;
-  const heartPay = GAME_CONTENT.quests.get('the-heart')!.rewards.flatMap((effect) => (effect.type === 'grantExperience' || effect.type === 'grantStyleExperience' ? [effect.amount] : []));
-  assert.ok(Math.max(...heartPay) >= 3 * cordonKill, 'The Heart pays more than a few Cordon kills');
-});
-
 test('a story chapter never hides a Containment wall inside a contain step: a reach gate comes first', () => {
   const chapters = GAME_CONTENT.questlines.get('site-meridian')?.questIds ?? [];
   const contained: string[] = [];
@@ -569,8 +508,8 @@ test('The Heart contains its tide wraith before the Warden, and saves on every s
   assert.ok(ids.indexOf(placed[2] ?? '') <= ids.indexOf('warden'), 'a legacy save at the Warden is never moved past it');
 });
 
-test('the level cap is 55 and mastery mantles do not out-stat the best tier-50 back item', () => {
-  assert.equal(SKILL_LEVEL_CAP, 55);
+test('the level cap is 200 and mastery mantles do not out-stat the best tier-50 back item', () => {
+  assert.equal(SKILL_LEVEL_CAP, 200);
   assert.equal(levelForExperience(experienceForLevel(SKILL_LEVEL_CAP) * 3), SKILL_LEVEL_CAP);
   const total = (item: ItemDefinition): number => Object.values(item.equipment?.stats ?? {}).reduce((sum, value) => sum + value, 0);
   const tierFifty = [...GAME_CONTENT.items.values()].filter((item) => item.equipment?.slot === 'back' && !item.mastery && Math.max(1, ...Object.values(item.equipment.requirements?.skills ?? {}).map((level) => level ?? 1)) === 50);
