@@ -103,11 +103,16 @@ body {
 }
 
 @media (max-width: 760px), (max-height: 520px) {
+  :root {
+    --hud-inset: 8px;
+    --hud-gap: 6px;
+    --window-padding: 12px 14px;
+  }
+
   .hud-top-left {
-    top: calc(8px + var(--safe-top));
-    left: calc(8px + var(--safe-left));
+    top: calc(var(--hud-inset) + var(--safe-top));
+    left: calc(var(--hud-inset) + var(--safe-left));
     width: min(260px, calc(100% - 150px));
-    gap: 6px;
   }
 
   .hud-objectives {
@@ -120,15 +125,17 @@ body {
   }
 
   .hud-top-right {
-    top: calc(8px + var(--safe-top));
-    right: calc(8px + var(--safe-right));
+    top: calc(var(--hud-inset) + var(--safe-top));
+    right: calc(var(--hud-inset) + var(--safe-right));
     width: auto;
     max-width: min(200px, calc(100% - 150px));
     align-items: flex-end;
-    gap: 6px;
   }
 
   .hud-minimap {
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
     padding: 4px;
     --bevel: 6px;
   }
@@ -138,11 +145,14 @@ body {
   }
 
   .minimap-header {
-    position: absolute;
-    top: 2px;
-    right: 2px;
+    flex-direction: column;
+    gap: 4px;
     margin: 0;
-    z-index: 1;
+  }
+
+  .minimap-open-map {
+    width: var(--hud-control);
+    padding: 0;
   }
 
   .minimap-canvas {
@@ -171,9 +181,9 @@ body {
   .hud-side {
     top: auto;
     left: auto;
-    right: calc(8px + var(--safe-right));
-    bottom: calc(8px + var(--safe-bottom));
-    width: min(380px, calc(100% - 16px - var(--safe-left) - var(--safe-right)));
+    right: calc(var(--hud-inset) + var(--safe-right));
+    bottom: calc(var(--hud-inset) + var(--safe-bottom));
+    width: min(380px, calc(100% - 2 * var(--hud-inset) - var(--safe-left) - var(--safe-right)));
     height: auto;
     max-height: min(460px, calc(100% - 188px - var(--safe-top) - var(--safe-bottom)));
     z-index: 20;
@@ -191,24 +201,24 @@ body {
   }
 
   .hud-chat {
-    left: calc(8px + var(--safe-left));
+    left: calc(var(--hud-inset) + var(--safe-left));
     bottom: calc(66px + var(--safe-bottom));
-    width: min(380px, calc(100% - 16px - var(--safe-left) - var(--safe-right)));
+    width: min(380px, calc(100% - 2 * var(--hud-inset) - var(--safe-left) - var(--safe-right)));
     height: 190px;
     z-index: 10;
   }
 
   .hud-dialogue {
-    left: calc(8px + var(--safe-left));
-    right: calc(8px + var(--safe-right));
-    bottom: calc(8px + var(--safe-bottom));
+    left: calc(var(--hud-inset) + var(--safe-left));
+    right: calc(var(--hud-inset) + var(--safe-right));
+    bottom: calc(var(--hud-inset) + var(--safe-bottom));
     transform: none;
     width: auto;
     max-width: 620px;
     margin: 0 auto;
     max-height: calc(100% - 140px - var(--safe-top));
     overflow-y: auto;
-    padding: 12px 14px 12px;
+    padding: var(--window-padding);
     z-index: 25;
   }
 
@@ -226,20 +236,36 @@ body {
     top: 26%;
   }
 
+  .quest-info-window {
+    left: 50%;
+    right: auto;
+    top: 50%;
+    bottom: auto;
+    transform: translate(-50%, -50%);
+  }
+
   .shop-window,
   .crafting-window,
   .storage-window,
   .market-window,
-  .contract-window {
-    width: calc(100% - 16px - var(--safe-left) - var(--safe-right));
+  .contract-window,
+  .quest-info-window {
+    width: calc(100% - 2 * var(--hud-inset) - var(--safe-left) - var(--safe-right));
     height: auto;
-    max-height: calc(100% - 16px - var(--safe-top) - var(--safe-bottom));
-    padding: 12px 14px;
+    max-height: calc(100% - 2 * var(--hud-inset) - var(--safe-top) - var(--safe-bottom));
+    padding: var(--window-padding);
     overflow-y: auto;
   }
 
+  .settings-window,
+  .skill-guide-window,
+  .item-sources-window {
+    width: calc(100% - 2 * var(--hud-inset) - var(--safe-left) - var(--safe-right));
+    max-height: calc(100% - 2 * var(--hud-inset) - var(--safe-top) - var(--safe-bottom));
+  }
+
   .crafting-window {
-    height: calc(100% - 16px - var(--safe-top) - var(--safe-bottom));
+    height: calc(100% - 2 * var(--hud-inset) - var(--safe-top) - var(--safe-bottom));
   }
 }
 
@@ -260,8 +286,9 @@ body {
 
 @media (max-width: 760px) and (min-height: 521px), (orientation: portrait) and (min-width: 761px) {
   .shop-window,
-  .storage-window {
-    top: calc(8px + var(--safe-top));
+  .storage-window,
+  .quest-info-window {
+    top: calc(var(--hud-inset) + var(--safe-top));
     transform: translateX(-50%);
     height: auto;
     max-height: calc(100% - 24px - var(--side-panel-height, 50px) - var(--safe-top) - var(--safe-bottom));
@@ -269,36 +296,37 @@ body {
 }
 
 @media (max-width: 760px) and (min-height: 521px) {
-  .game-screen:has(.shop-window:not([hidden]), .storage-window:not([hidden])) .hud-side:not(.collapsed) {
+  .game-screen:has(.shop-window:not([hidden]), .storage-window:not([hidden]), .quest-info-window:not([hidden])) .hud-side:not(.collapsed) {
     max-height: calc(50% - 12px - var(--safe-bottom));
   }
 }
 
 @media (max-height: 520px) and (orientation: landscape) {
   .shop-window,
-  .storage-window {
-    top: calc(8px + var(--safe-top));
-    left: calc(8px + var(--safe-left));
+  .storage-window,
+  .quest-info-window {
+    top: calc(var(--hud-inset) + var(--safe-top));
+    left: calc(var(--hud-inset) + var(--safe-left));
     transform: none;
-    width: calc(100% - 24px - min(380px, 100% - 380px) - var(--safe-left) - var(--safe-right));
-    max-height: calc(100% - 16px - var(--safe-top) - var(--safe-bottom));
+    width: calc(100% - 3 * var(--hud-inset) - min(380px, 100% - 380px) - var(--safe-left) - var(--safe-right));
+    max-height: calc(100% - 2 * var(--hud-inset) - var(--safe-top) - var(--safe-bottom));
   }
 }
 
 @media (orientation: portrait) and (min-width: 761px) {
   .hud-side {
-    right: calc(12px + var(--safe-right));
-    bottom: calc(12px + var(--safe-bottom));
-    width: min(440px, calc(100% - 24px - var(--safe-left) - var(--safe-right)));
+    right: calc(var(--hud-inset) + var(--safe-right));
+    bottom: calc(var(--hud-inset) + var(--safe-bottom));
+    width: min(440px, calc(100% - 2 * var(--hud-inset) - var(--safe-left) - var(--safe-right)));
     height: auto;
     max-height: min(480px, calc(100% - 460px - var(--safe-top) - var(--safe-bottom)));
   }
 
   .hud-chat {
     left: auto;
-    right: calc(12px + var(--safe-right));
+    right: calc(var(--hud-inset) + var(--safe-right));
     bottom: calc(20px + var(--side-panel-height, 50px) + var(--safe-bottom));
-    width: min(440px, calc(100% - 24px - var(--safe-left) - var(--safe-right)));
+    width: min(440px, calc(100% - 2 * var(--hud-inset) - var(--safe-left) - var(--safe-right)));
     height: 200px;
   }
 
@@ -309,7 +337,7 @@ body {
 
 @media (max-height: 520px) and (orientation: landscape) {
   .hud-chat {
-    bottom: calc(8px + var(--safe-bottom));
+    bottom: calc(var(--hud-inset) + var(--safe-bottom));
     width: min(340px, calc(100% - 412px - var(--safe-left) - var(--safe-right)));
     height: 150px;
   }
@@ -320,11 +348,11 @@ body {
   }
 
   .hud-dialogue {
-    left: calc(8px + var(--safe-left));
+    left: calc(var(--hud-inset) + var(--safe-left));
     right: auto;
     width: min(560px, calc(100% - 412px - var(--safe-left) - var(--safe-right)));
     margin: 0;
-    max-height: calc(100% - 16px - var(--safe-top) - var(--safe-bottom));
+    max-height: calc(100% - 2 * var(--hud-inset) - var(--safe-top) - var(--safe-bottom));
   }
 }
 
@@ -688,8 +716,8 @@ body {
 @media (max-height: 520px) and (orientation: landscape) {
   .hud-top-right > .hud-objectives {
     position: fixed;
-    top: calc(8px + var(--safe-top));
-    left: calc(8px + var(--safe-left));
+    top: calc(var(--hud-inset) + var(--safe-top));
+    left: calc(var(--hud-inset) + var(--safe-left));
     width: min(300px, calc(100% - 520px - var(--safe-left) - var(--safe-right)));
     min-width: 220px;
   }
@@ -699,12 +727,33 @@ body {
     overflow: visible;
   }
 
+  .game-screen:has(.hud-side:not(.collapsed)) .hud-top-right {
+    right: calc(2 * var(--hud-inset) + min(380px, 100% - 380px) + var(--safe-right));
+  }
+
   .game-screen:has(.hud-side:not(.collapsed)) .hud-minimap {
+    padding: 0;
+    background: none;
+    border: none;
+    box-shadow: none;
+    clip-path: none;
+    backdrop-filter: none;
+  }
+
+  .game-screen:has(.hud-side:not(.collapsed)) .hud-minimap::before,
+  .game-screen:has(.hud-side:not(.collapsed)) .minimap-frame {
     display: none;
   }
 
+  .loading-marker {
+    left: auto;
+    right: calc(var(--hud-inset) + var(--safe-right));
+    bottom: calc(2 * var(--hud-inset) + var(--side-panel-height, 50px) + var(--safe-bottom));
+    transform: none;
+  }
+
   .game-screen .hud-side:not(.collapsed) {
-    max-height: calc(100% - 16px - var(--safe-top) - var(--safe-bottom));
+    max-height: calc(100% - 2 * var(--hud-inset) - var(--safe-top) - var(--safe-bottom));
   }
 }
 
@@ -727,5 +776,26 @@ body {
     min-width: var(--touch-target);
     padding: 0;
     font-size: var(--text-large);
+  }
+
+  .button.small,
+  .crafting-tab,
+  .crafting-chip,
+  .crafting-search,
+  .settings-choice,
+  .settings-range,
+  .quest-track,
+  .skill-guide-track,
+  .item-sources-chip,
+  .segmented button {
+    min-height: var(--hud-control);
+  }
+
+  .button.small {
+    min-width: var(--hud-control);
+  }
+
+  .settings-row {
+    min-height: var(--hud-control);
   }
 }

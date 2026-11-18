@@ -17,6 +17,11 @@
   --color-danger: #ff5e5e;
   --color-success: #7cf29a;
   --color-gold: #ffd23f;
+  --color-text-bright: #ffffff;
+  --color-accent-bright: #c8f6ff;
+  --color-accent-deep: #1aa9d6;
+  --color-speech: #ffe14d;
+  --color-party: #8fd8ff;
 
   --rarity-standard: #b8c4cb;
   --rarity-issued: #4fd8ff;
@@ -36,6 +41,9 @@
   --text-heading: 18px;
 
   --hud-control: 24px;
+  --hud-inset: 12px;
+  --hud-gap: 10px;
+  --window-padding: 16px 20px 14px;
   --touch-target: 44px;
 
   --radius: 3px;

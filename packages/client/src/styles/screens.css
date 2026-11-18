@@ -379,7 +379,7 @@
 .attribute-bar span {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, #1aa9d6, var(--color-accent));
+  background: linear-gradient(90deg, var(--color-accent-deep), var(--color-accent));
   box-shadow: 0 0 8px var(--color-accent);
   transition: width 0.2s;
 }
