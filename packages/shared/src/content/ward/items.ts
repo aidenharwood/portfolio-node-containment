@@ -27,7 +27,7 @@ const consumable = (kind: ConsumableKind) => (id: string, name: string, examine:
   rarity: 'standard',
   icon,
   iconColors: colors,
-  maxStack: 20,
+  maxStack: 1,
   value,
   consumable: { kind, verb, heal },
 });

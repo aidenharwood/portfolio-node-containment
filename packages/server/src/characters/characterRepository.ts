@@ -1,4 +1,4 @@
-import { emptyContractLedger, maxIntegrityFor, normalizeAppearance, normalizeSkills, type AccountId, type FriendEntry, type CharacterId, type CharacterRecord, type EquipmentState, type GameContent, type ItemId, type ItemStack } from '@containment/shared';
+import { emptyContractLedger, maxIntegrityFor, normalizeAppearance, normalizeSkills, settleHoldings, type AccountId, type FriendEntry, type CharacterId, type CharacterRecord, type EquipmentState, type GameContent, type ItemId, type ItemStack } from '@containment/shared';
 import { withStartingQuest } from './characterFactory.ts';
 import { restoreLocation, storeLocation } from './storedLocation.ts';
 import type { Database } from '../persistence/database.ts';
@@ -20,8 +20,11 @@ function renameEquipment(equipment: EquipmentState, content: GameContent): Equip
 function parseRecord(json: string, content: GameContent): CharacterRecord {
   const { wardrobe: _retiredWardrobe, ...stored } = JSON.parse(json) as Omit<CharacterRecord, 'vitals' | 'storage' | 'location' | 'friends' | 'contracts'> & Partial<Pick<CharacterRecord, 'vitals' | 'storage' | 'friends' | 'contracts'>> & { readonly location: unknown; readonly wardrobe?: unknown };
   const skills = normalizeSkills(stored.skills);
-  const inventory = dropUnknownItems(stored.inventory, content);
-  const storage = dropUnknownItems(stored.storage ?? [], content).filter((stack): stack is ItemStack => stack !== null);
+  const { inventory, storage } = settleHoldings(
+    dropUnknownItems(stored.inventory, content),
+    dropUnknownItems(stored.storage ?? [], content).filter((stack): stack is ItemStack => stack !== null),
+    content.items,
+  );
   const equipment = renameEquipment(stored.equipment, content);
   return { ...stored, inventory, storage, equipment, quests: withStartingQuest(stored.quests ?? {}, inventory, equipment, content), location: restoreLocation(stored.location, content), appearance: normalizeAppearance(stored.appearance), friends: stored.friends ?? [], contracts: stored.contracts ?? emptyContractLedger(), skills, vitals: stored.vitals ?? { integrity: maxIntegrityFor(skills) } };
 }

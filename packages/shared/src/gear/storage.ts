@@ -22,6 +22,30 @@ function addToStorage(storage: StorageState, itemId: ItemId, quantity: number): 
   return success([...storage, { itemId, quantity }]);
 }
 
+function mergeShelves(storage: StorageState): ItemStack[] {
+  const shelves = new Map<ItemId, number>();
+  for (const stack of storage) shelves.set(stack.itemId, (shelves.get(stack.itemId) ?? 0) + stack.quantity);
+  return [...shelves].filter(([, quantity]) => quantity > 0).map(([itemId, quantity]) => ({ itemId, quantity }));
+}
+
+export function settleHoldings(inventory: InventoryState, storage: StorageState, catalog: ItemCatalog): { readonly inventory: InventoryState; readonly storage: StorageState } {
+  let slots: InventoryState = inventory;
+  const excess: ItemStack[] = [];
+  slots = slots.map((slot) => {
+    const limit = slot ? (catalog.get(slot.itemId)?.maxStack ?? slot.quantity) : 0;
+    if (!slot || slot.quantity <= limit) return slot;
+    excess.push({ itemId: slot.itemId, quantity: slot.quantity - limit });
+    return { itemId: slot.itemId, quantity: limit };
+  });
+  const shelved: ItemStack[] = [...storage];
+  for (const stack of excess) {
+    const added = addItem(slots, catalog, stack.itemId, stack.quantity);
+    slots = added.inventory;
+    if (added.overflow > 0) shelved.push({ itemId: stack.itemId, quantity: added.overflow });
+  }
+  return { inventory: slots, storage: mergeShelves(shelved) };
+}
+
 export function deposit(
   inventory: InventoryState,
   storage: StorageState,

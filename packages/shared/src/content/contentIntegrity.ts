@@ -128,6 +128,7 @@ export function findContentIssues(content: GameContent): string[] {
 
   for (const item of content.items.values()) {
     if (item.category === 'equipment' && !item.equipment) report(`item ${item.id}`, 'equipment item lacks equipment properties');
+    if (item.consumable && item.maxStack !== 1) report(`item ${item.id}`, 'a consumable must not stack');
     if (item.equipment && !isShapeForSlot(item.equipment.slot, item.icon)) {
       report(`item ${item.id}`, `icon "${item.icon}" is not a ${item.equipment.slot} shape, so the worn model would not match the icon`);
     }

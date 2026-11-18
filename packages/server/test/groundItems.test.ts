@@ -16,7 +16,7 @@ function setup() {
   const join = (name: string, x: number) => {
     const record = createCharacterRecord({ ...createDefaultDraft(), name }, { id: name, accountId: name }, CONTENT);
     const sink = new RecordingSink();
-    const inventory = addItem(record.inventory, CONTENT.items, 'medgel', 3).inventory;
+    const inventory = addItem(record.inventory, CONTENT.items, 'scrap-alloy', 3).inventory;
     const player = gameplay.enterWorld({ ...record, inventory, location: at('fx-hub', { x, y: 8 }) }, sink);
     return { player, sink };
   };
@@ -35,9 +35,9 @@ const visibleIds = (sink: RecordingSink): Set<string> => {
 describe('ground items', () => {
   test('dropped items are private to their owner for a minute, then public, then expire', () => {
     const { gameplay, owner, bystander } = setup();
-    const slot = owner.player.record.inventory.findIndex((stack) => stack?.itemId === 'medgel');
+    const slot = owner.player.record.inventory.findIndex((stack) => stack?.itemId === 'scrap-alloy');
     gameplay.handle(owner.player, { type: 'inventory.drop', slotIndex: slot });
-    assert.equal(countItem(owner.player.record.inventory, 'medgel'), 0);
+    assert.equal(countItem(owner.player.record.inventory, 'scrap-alloy'), 0);
 
     const [dropped] = [...gameplay.world.levelOf(owner.player).groundItems.values()];
     assert.ok(dropped);
@@ -46,7 +46,7 @@ describe('ground items', () => {
 
     gameplay.handle(bystander.player, { type: 'world.pickup', groundItemId: dropped.id });
     for (let tick = 0; tick < 20; tick++) gameplay.tick();
-    assert.equal(countItem(bystander.player.record.inventory, 'medgel'), 3, 'cannot take an item you cannot see');
+    assert.equal(countItem(bystander.player.record.inventory, 'scrap-alloy'), 3, 'cannot take an item you cannot see');
 
     for (let tick = 0; tick < OWNER_PRIVACY_TICKS; tick++) gameplay.tick();
     assert.ok(visibleIds(bystander.sink).has(dropped.id), 'items go public after the privacy window');
@@ -58,28 +58,28 @@ describe('ground items', () => {
 
   test('the owner can walk over and pick their item back up', () => {
     const { gameplay, owner } = setup();
-    const slot = owner.player.record.inventory.findIndex((stack) => stack?.itemId === 'medgel');
+    const slot = owner.player.record.inventory.findIndex((stack) => stack?.itemId === 'scrap-alloy');
     gameplay.handle(owner.player, { type: 'inventory.drop', slotIndex: slot });
     const [dropped] = [...gameplay.world.levelOf(owner.player).groundItems.values()];
     assert.ok(dropped);
     gameplay.handle(owner.player, { type: 'world.walk', target: levelPoint('fx-hub', localInRoom('fx-hub', 'plaza')) });
     for (let tick = 0; tick < 10; tick++) gameplay.tick();
     gameplay.handle(owner.player, { type: 'world.pickup', groundItemId: dropped.id });
-    for (let tick = 0; tick < 20 && countItem(owner.player.record.inventory, 'medgel') === 0; tick++) gameplay.tick();
-    assert.equal(countItem(owner.player.record.inventory, 'medgel'), 3);
+    for (let tick = 0; tick < 20 && countItem(owner.player.record.inventory, 'scrap-alloy') === 0; tick++) gameplay.tick();
+    assert.equal(countItem(owner.player.record.inventory, 'scrap-alloy'), 3);
     assert.equal(gameplay.world.levelOf(owner.player).groundItems.size, 0);
   });
 
   test('a late arrival sees public ground items in the level snapshot', () => {
     const { gameplay, owner } = setup();
-    const slot = owner.player.record.inventory.findIndex((stack) => stack?.itemId === 'medgel');
+    const slot = owner.player.record.inventory.findIndex((stack) => stack?.itemId === 'scrap-alloy');
     gameplay.handle(owner.player, { type: 'inventory.drop', slotIndex: slot });
     for (let tick = 0; tick < OWNER_PRIVACY_TICKS + 1; tick++) gameplay.tick();
     const record = createCharacterRecord({ ...createDefaultDraft(), name: 'Late Operative' }, { id: 'late', accountId: 'late' }, CONTENT);
     const sink = new RecordingSink();
     gameplay.enterWorld({ ...record, location: at('fx-hub', { x: 9, y: 8 }) }, sink);
     const entered = sink.last('world.entered');
-    assert.ok(entered?.groundItems.some((item: GroundItemSnapshot) => item.itemId === 'medgel' && !item.owned));
+    assert.ok(entered?.groundItems.some((item: GroundItemSnapshot) => item.itemId === 'scrap-alloy' && !item.owned));
   });
 
   test('quest items cannot be dropped', () => {

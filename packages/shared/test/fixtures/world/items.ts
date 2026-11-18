@@ -9,8 +9,8 @@ export const FIXTURE_ITEMS: readonly ItemDefinition[] = [
   { id: 'scrap-alloy', name: 'Scrap Alloy', examine: 'Raw test salvage.', category: 'material', rarity: 'standard', icon: 'scrap', iconColors: ['#8a9aa6', '#4a5660'], maxStack: 100, value: 2 },
   { id: 'alloy-plate', name: 'Alloy Plate', examine: 'A refined test part.', category: 'material', rarity: 'standard', icon: 'plate', iconColors: ['#b8c4cc', '#5a6670'], maxStack: 100, value: 6 },
   { id: 'gel-sac', name: 'Gel Sac', examine: 'A raw test reagent dropped by mites.', category: 'material', rarity: 'standard', icon: 'vial', iconColors: ['#7cf29a', '#1f5f35'], maxStack: 100, value: 6 },
-  { id: 'medgel', name: 'Medgel Ampoule', examine: 'Test healing gel.', category: 'consumable', rarity: 'standard', icon: 'vial', iconColors: ['#7cf29a', '#1f5f35'], maxStack: 20, value: 8, consumable: { kind: 'medicine', verb: 'Apply', heal: 8, boost: { stats: { armor: 4 }, durationTicks: 10 } } },
-  { id: 'edge-kit', name: 'Edge Kit', examine: 'Test field kit.', category: 'consumable', rarity: 'standard', icon: 'tin', iconColors: ['#8a7a6a', '#c8743a'], maxStack: 20, value: 12, consumable: { kind: 'kit', verb: 'Apply', heal: 0, boost: { stats: { power: 2 }, durationTicks: boostTicksForMinutes(10) } } },
+  { id: 'medgel', name: 'Medgel Ampoule', examine: 'Test healing gel.', category: 'consumable', rarity: 'standard', icon: 'vial', iconColors: ['#7cf29a', '#1f5f35'], maxStack: 1, value: 8, consumable: { kind: 'medicine', verb: 'Apply', heal: 8, boost: { stats: { armor: 4 }, durationTicks: 10 } } },
+  { id: 'edge-kit', name: 'Edge Kit', examine: 'Test field kit.', category: 'consumable', rarity: 'standard', icon: 'tin', iconColors: ['#8a7a6a', '#c8743a'], maxStack: 1, value: 12, consumable: { kind: 'kit', verb: 'Apply', heal: 0, boost: { stats: { power: 2 }, durationTicks: boostTicksForMinutes(10) } } },
   {
     id: 'stun-baton',
     name: 'Stun Baton',
