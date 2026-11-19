@@ -650,10 +650,10 @@ function start(root: HTMLElement, services: ViewerServices): void {
   }
 
   let planQueued = 0;
-  editorDocument.onChange((id) => {
+  editorDocument.onChange((change) => {
     content = services.liveContent();
     whole = null;
-    if (!inLevel() && id !== state.district) {
+    if (!inLevel() && (change.kind === 'land' || change.id !== state.district)) {
       refreshEditing();
       return;
     }
@@ -764,7 +764,9 @@ function start(root: HTMLElement, services: ViewerServices): void {
 export function startViewer(root: HTMLElement): void {
   const editorDocument = new EditorDocument(LAYOUT_SOURCES);
   const touched = new Set<DistrictId>();
-  editorDocument.onChange((id) => touched.add(id));
+  editorDocument.onChange((change) => {
+    if (change.kind === 'district') touched.add(change.id);
+  });
   const edits = (): Map<DistrictId, EditedDistrict> => new Map([...touched].map((id) => [id, { district: editorDocument.district(id), layout: editorDocument.layout(id) }]));
   let messages: readonly string[] = findContentIssues(GAME_CONTENT);
   const services: ViewerServices = {
@@ -772,10 +774,10 @@ export function startViewer(root: HTMLElement): void {
     document: editorDocument,
     liveContent: () =>
       touched.size === 0 ? GAME_CONTENT : { ...GAME_CONTENT, districts: new Map([...GAME_CONTENT.districts, ...[...touched].map((id) => [id, editorDocument.district(id)] as const)]) },
-    wholeContent: () => contentWith(GAME_CONTENT, edits()),
+    wholeContent: () => contentWith(GAME_CONTENT, edits(), undefined, undefined, editorDocument.editedLands()),
     messages: () => messages,
     refreshChecks: () => {
-      messages = findContentIssues(contentWith(GAME_CONTENT, edits()));
+      messages = findContentIssues(contentWith(GAME_CONTENT, edits(), undefined, undefined, editorDocument.editedLands()));
     },
   };
   start(root, services);
