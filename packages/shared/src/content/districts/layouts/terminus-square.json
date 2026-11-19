@@ -5,7 +5,7 @@
   "tier": 1,
   "region": "low-ward",
   "condition": "worn",
-  "ambience": { "darkness": 0.55, "tint": "#2a2c3a", "fog": "#2a2838", "sky": "#46356a", "weather": ["drizzle"], "haze": 1 },
+  "ambience": { "darkness": 0.5, "tint": "#2a2c3a", "fog": "#2a2838", "sky": "#46356a", "weather": ["drizzle"], "haze": 1 },
   "size": { "width": 64, "height": 64 },
   "steps": [
     { "kind": "room", "id": "ground", "rect": { "x": 1, "y": 0, "width": 63, "height": 64 }, "floor": "paving", "shape": "rect" },
@@ -16,12 +16,14 @@
     { "kind": "patch", "rect": { "x": 40, "y": 0, "width": 6, "height": 55 }, "tile": "asphalt" },
     { "kind": "patch", "rect": { "x": 1, "y": 36, "width": 39, "height": 3 }, "tile": "asphalt" },
     { "kind": "patch", "rect": { "x": 1, "y": 55, "width": 63, "height": 9 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 61, "y": 29, "width": 3, "height": 9 }, "tile": "asphalt" },
+    { "kind": "patch", "rect": { "x": 46, "y": 35, "width": 15, "height": 3 }, "tile": "asphalt" },
     { "kind": "building", "id": "station", "rect": { "x": 3, "y": 41, "width": 26, "height": 11 }, "floor": "terrazzo", "wall": "brick", "doors": [{ "side": "north", "width": 4, "offset": 11 }, { "side": "south", "width": 3, "offset": 11 }] },
     { "kind": "building", "id": "general-store", "rect": { "x": 48, "y": 16, "width": 12, "height": 8 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "west", "width": 2, "offset": 3 }] },
     { "kind": "building", "id": "locker-office", "rect": { "x": 48, "y": 28, "width": 12, "height": 6 }, "floor": "terrazzo", "wall": "blockwork", "doors": [{ "side": "west", "width": 2, "offset": 2 }] },
     { "kind": "building", "id": "response-post", "rect": { "x": 48, "y": 39, "width": 12, "height": 9 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "west", "width": 3, "offset": 3 }] },
     { "kind": "building", "id": "noodle-bar", "rect": { "x": 32, "y": 42, "width": 6, "height": 7 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "north", "width": 2, "offset": 2 }] },
-    { "kind": "building", "id": "rail-yard", "rect": { "x": 2, "y": 56, "width": 59, "height": 6 }, "floor": "gravel", "wall": "brick", "edge": "fence", "doors": [{ "side": "north", "width": 3, "offset": 12 }, { "side": "east", "width": 2, "offset": 2 }] }
+    { "kind": "building", "id": "rail-yard", "rect": { "x": 2, "y": 56, "width": 59, "height": 6 }, "floor": "gravel", "wall": "brick", "edge": "fence", "doors": [{ "side": "north", "width": 3, "offset": 12 }, { "side": "north", "width": 4, "offset": 38 }, { "side": "south", "width": 4, "offset": 38 }, { "side": "east", "width": 2, "offset": 2 }] }
   ],
   "tiles": [],
   "areas": [
@@ -137,7 +139,16 @@
     { "id": "ts-locker-bank-a", "object": "storage-locker", "at": { "room": "locker-office", "dx": 11, "dy": 2 }, "facing": "west" },
     { "id": "ts-locker-bank-b", "object": "storage-locker", "at": { "room": "locker-office", "dx": 11, "dy": 4 }, "facing": "west" },
     { "id": "ts-holo-a", "object": "holo-billboard", "at": { "room": "ground", "dx": 41, "dy": 40 }, "facing": "west" },
-    { "id": "ts-holo-b", "object": "holo-billboard", "at": { "room": "ground", "dx": 22, "dy": 9 }, "facing": "south" }
+    { "id": "ts-holo-b", "object": "holo-billboard", "at": { "room": "ground", "dx": 22, "dy": 9 }, "facing": "south" },
+    { "id": "ts-rank-car-0", "object": "parked-car", "at": { "room": "ground", "dx": 47, "dy": 4 } },
+    { "id": "ts-rank-car-1", "object": "parked-car", "at": { "room": "ground", "dx": 51, "dy": 4 } },
+    { "id": "ts-rank-car-2", "object": "parked-car", "at": { "room": "ground", "dx": 55, "dy": 4 } },
+    { "id": "ts-rank-bollard-0", "object": "bollard", "at": { "room": "ground", "dx": 46, "dy": 6 } },
+    { "id": "ts-rank-bollard-1", "object": "bollard", "at": { "room": "ground", "dx": 50, "dy": 6 } },
+    { "id": "ts-rank-bollard-2", "object": "bollard", "at": { "room": "ground", "dx": 54, "dy": 6 } },
+    { "id": "ts-rank-bollard-3", "object": "bollard", "at": { "room": "ground", "dx": 58, "dy": 6 } },
+    { "id": "ts-rank-bench", "object": "street-bench", "at": { "room": "ground", "dx": 60, "dy": 2 }, "facing": "west" },
+    { "id": "ts-rank-bin", "object": "litter-bin", "at": { "room": "ground", "dx": 60, "dy": 4 } }
   ],
   "assemblies": [],
   "npcs": [
@@ -156,13 +167,13 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "station": { "theme": "transit", "people": 0 },
+    "station": { "theme": "transit", "people": 3, "cast": ["ward-commuter", "ward-porter"] },
     "general-store": { "theme": "shop", "people": 0 },
     "locker-office": { "theme": "civic", "people": 0 },
     "response-post": { "theme": "office", "people": 0 },
-    "noodle-bar": { "theme": "canteen", "people": 0 },
+    "noodle-bar": { "theme": "canteen", "people": 2, "cast": ["ward-commuter", "ward-dockhand"] },
     "rail-yard": { "theme": "street", "people": 0 },
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 6, "cast": ["ward-commuter", "ward-constable", "ward-stallholder"] }
   },
   "furnish": {}
 }

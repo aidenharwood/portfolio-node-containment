@@ -5,7 +5,7 @@
   "tier": 1,
   "region": "low-ward",
   "condition": "worn",
-  "ambience": { "darkness": 0.55, "tint": "#3a2636", "fog": "#3a2240", "sky": "#5a2a6a", "weather": ["drizzle"], "haze": 1.15 },
+  "ambience": { "darkness": 0.5, "tint": "#3a2636", "fog": "#3a2240", "sky": "#4a2c5a", "weather": ["drizzle"], "haze": 1.05 },
   "size": { "width": 64, "height": 64 },
   "steps": [
     { "kind": "room", "id": "ground", "rect": { "x": 0, "y": 1, "width": 64, "height": 63 }, "floor": "paving", "shape": "rect", "edge": "barrier" },
@@ -127,7 +127,18 @@
     { "id": "mr-fenwick-counter-4", "object": "counter", "at": { "room": "tool-shop", "dx": 9, "dy": 3 } },
     { "id": "mr-lind-counter-3", "object": "counter", "at": { "room": "signal-shop", "dx": 8, "dy": 3 } },
     { "id": "mr-holo-a", "object": "holo-billboard", "at": { "room": "ground", "dx": 33, "dy": 20 }, "facing": "south" },
-    { "id": "mr-holo-b", "object": "holo-billboard", "at": { "room": "ground", "dx": 9, "dy": 46 }, "facing": "east" }
+    { "id": "mr-holo-b", "object": "holo-billboard", "at": { "room": "ground", "dx": 9, "dy": 46 }, "facing": "east" },
+    { "id": "mr-sw-stall-n0", "object": "market-stall", "at": { "room": "ground", "dx": 3, "dy": 50 }, "facing": "south" },
+    { "id": "mr-sw-stall-n1", "object": "market-stall", "at": { "room": "ground", "dx": 7, "dy": 50 }, "facing": "south" },
+    { "id": "mr-sw-stall-n2", "object": "market-stall", "at": { "room": "ground", "dx": 11, "dy": 50 }, "facing": "south" },
+    { "id": "mr-sw-stall-s0", "object": "market-stall", "at": { "room": "ground", "dx": 3, "dy": 54 }, "facing": "north" },
+    { "id": "mr-sw-stall-s1", "object": "market-stall", "at": { "room": "ground", "dx": 7, "dy": 54 }, "facing": "north" },
+    { "id": "mr-sw-stall-s2", "object": "market-stall", "at": { "room": "ground", "dx": 11, "dy": 54 }, "facing": "north" },
+    { "id": "mr-sw-food", "object": "food-stall", "at": { "room": "ground", "dx": 15, "dy": 52 }, "facing": "west" },
+    { "id": "mr-sw-bench", "object": "street-bench", "at": { "room": "ground", "dx": 16, "dy": 58 }, "facing": "north" },
+    { "id": "mr-sw-bin", "object": "litter-bin", "at": { "room": "ground", "dx": 18, "dy": 58 } },
+    { "id": "mr-sw-lamp-a", "object": "street-lamp", "at": { "room": "ground", "dx": 1, "dy": 56 } },
+    { "id": "mr-sw-lamp-b", "object": "street-lamp", "at": { "room": "ground", "dx": 17, "dy": 48 } }
   ],
   "assemblies": [],
   "npcs": [
@@ -148,12 +159,12 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "market-hall": { "theme": "shop", "people": 0 },
+    "market-hall": { "theme": "shop", "people": 4, "cast": ["ward-stallholder", "ward-commuter"] },
     "pawnbroker": { "theme": "shop", "people": 0 },
     "tool-shop": { "theme": "shop", "people": 0 },
     "apothecary": { "theme": "shop", "people": 0 },
     "signal-shop": { "theme": "shop", "people": 0 },
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 6, "cast": ["ward-commuter", "ward-stallholder", "ward-constable"] }
   },
   "furnish": {}
 }

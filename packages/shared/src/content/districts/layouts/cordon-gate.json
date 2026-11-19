@@ -68,18 +68,18 @@
     { "id": "cg-mercer", "npc": "lieutenant-mercer", "at": { "room": "cordon-post", "dx": 5, "dy": 2 } }
   ],
   "creatures": [
-    { "id": "cg-stalker-0", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 6, "dy": 5 } },
-    { "id": "cg-stalker-1", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 20, "dy": 5 } },
-    { "id": "cg-stalker-2", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 34, "dy": 5 } },
-    { "id": "cg-stalker-3", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 6, "dy": 17 } },
-    { "id": "cg-stalker-4", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 30, "dy": 15 } },
-    { "id": "cg-stalker-5", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 6, "dy": 43 } },
-    { "id": "cg-stalker-6", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 20, "dy": 43 } },
-    { "id": "cg-stalker-7", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 34, "dy": 43 } },
-    { "id": "cg-stalker-8", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 48, "dy": 43 } },
-    { "id": "cg-stalker-9", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 10, "dy": 55 } },
-    { "id": "cg-stalker-10", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 30, "dy": 55 } },
-    { "id": "cg-stalker-11", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 50, "dy": 55 } }
+    { "id": "cg-stalker-0", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 8, "dy": 3 } },
+    { "id": "cg-stalker-1", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 19, "dy": 8 } },
+    { "id": "cg-stalker-2", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 37, "dy": 4 } },
+    { "id": "cg-stalker-3", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 4, "dy": 19 } },
+    { "id": "cg-stalker-4", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 27, "dy": 17 } },
+    { "id": "cg-stalker-5", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 9, "dy": 41 } },
+    { "id": "cg-stalker-6", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 17, "dy": 46 } },
+    { "id": "cg-stalker-7", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 36, "dy": 40 } },
+    { "id": "cg-stalker-8", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 51, "dy": 44 } },
+    { "id": "cg-stalker-9", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 7, "dy": 57 } },
+    { "id": "cg-stalker-10", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 32, "dy": 52 } },
+    { "id": "cg-stalker-11", "creature": "cordon-stalker", "at": { "room": "ground", "dx": 47, "dy": 57 } }
   ],
   "lights": [
     { "at": { "room": "ground", "dx": 60, "dy": 30 }, "radius": 6, "color": "#ff2a2a", "intensity": 1 },

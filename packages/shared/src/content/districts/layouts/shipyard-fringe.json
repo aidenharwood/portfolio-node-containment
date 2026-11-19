@@ -5,7 +5,7 @@
   "tier": 8,
   "region": "low-ward",
   "condition": "breached",
-  "ambience": { "darkness": 0.6, "tint": "#22303a", "fog": "#1a262c", "sky": "#2e3450", "weather": ["rain", "mist"], "haze": 1.4 },
+  "ambience": { "darkness": 0.6, "tint": "#22303a", "fog": "#1a262c", "sky": "#2e3450", "weather": ["rain", "mist"], "haze": 1.2 },
   "size": { "width": 64, "height": 64 },
   "steps": [
     { "kind": "room", "id": "ground", "rect": { "x": 0, "y": 0, "width": 64, "height": 63 }, "floor": "gravel", "shape": "rect", "edge": "barrier" },
@@ -66,22 +66,28 @@
     { "id": "shipyard-lamp-x2", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 35 } },
     { "id": "shipyard-lamp-x3", "object": "street-lamp", "at": { "room": "ground", "dx": 60, "dy": 35 } },
     { "id": "shipyard-lamp-x4", "object": "street-lamp", "at": { "room": "ground", "dx": 24, "dy": 26 } },
-    { "id": "shipyard-lamp-x5", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 26 } }
+    { "id": "shipyard-lamp-x5", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 26 } },
+    { "id": "sf-slip-barricade-a", "object": "barricade", "at": { "room": "ground", "dx": 42, "dy": 42 } },
+    { "id": "sf-slip-barricade-b", "object": "barricade", "at": { "room": "ground", "dx": 43, "dy": 42 } },
+    { "id": "sf-slip-hulk-a", "object": "parked-car", "at": { "room": "ground", "dx": 42, "dy": 47 }, "facing": "east" },
+    { "id": "sf-slip-hulk-b", "object": "parked-car", "at": { "room": "ground", "dx": 49, "dy": 43 } },
+    { "id": "sf-slip-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 47, "dy": 46 } },
+    { "id": "sf-slip-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 52, "dy": 39 } }
   ],
   "assemblies": [],
   "npcs": [
     { "id": "sf-sato", "npc": "corporal-sato", "at": { "room": "guard-hut", "dx": 2, "dy": 2 } }
   ],
   "creatures": [
-    { "id": "sf-knocker-0", "creature": "hull-knocker", "at": { "room": "ground", "dx": 6, "dy": 4 } },
-    { "id": "sf-knocker-1", "creature": "hull-knocker", "at": { "room": "ground", "dx": 30, "dy": 4 } },
-    { "id": "sf-knocker-2", "creature": "hull-knocker", "at": { "room": "ground", "dx": 58, "dy": 4 } },
+    { "id": "sf-knocker-0", "creature": "hull-knocker", "at": { "room": "ground", "dx": 4, "dy": 3 } },
+    { "id": "sf-knocker-1", "creature": "hull-knocker", "at": { "room": "ground", "dx": 28, "dy": 5 } },
+    { "id": "sf-knocker-2", "creature": "hull-knocker", "at": { "room": "ground", "dx": 59, "dy": 2 } },
     { "id": "sf-knocker-3", "creature": "hull-knocker", "at": { "room": "ground", "dx": 34, "dy": 14 } },
     { "id": "sf-knocker-4", "creature": "hull-knocker", "at": { "room": "ground", "dx": 58, "dy": 18 } },
     { "id": "sf-knocker-5", "creature": "hull-knocker", "at": { "room": "ground", "dx": 14, "dy": 44 } },
     { "id": "sf-knocker-6", "creature": "hull-knocker", "at": { "room": "ground", "dx": 60, "dy": 48 } },
-    { "id": "sf-wraith-0", "creature": "tide-wraith", "at": { "room": "ground", "dx": 8, "dy": 49 } },
-    { "id": "sf-wraith-1", "creature": "tide-wraith", "at": { "room": "ground", "dx": 36, "dy": 49 } },
+    { "id": "sf-wraith-0", "creature": "tide-wraith", "at": { "room": "ground", "dx": 10, "dy": 47 } },
+    { "id": "sf-wraith-1", "creature": "tide-wraith", "at": { "room": "ground", "dx": 34, "dy": 48 } },
     { "id": "sf-wraith-2", "creature": "tide-wraith", "at": { "room": "ground", "dx": 48, "dy": 36 } },
     { "id": "sf-wraith-3", "creature": "tide-wraith", "at": { "room": "ground", "dx": 20, "dy": 34 } }
   ],

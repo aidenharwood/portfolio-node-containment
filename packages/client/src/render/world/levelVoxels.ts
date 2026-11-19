@@ -348,7 +348,7 @@ function floorVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: nu
     case 'plating': {
       if (edge) return solid(COLORS.platingSeam);
       if (lx === 1 && lz === 1) return solid(COLORS.rivet);
-      if (tile.tone > 0.975 && lz >= 3 && lz <= 4 && lx >= 2 && lx <= 5) return { color: COLORS.inlay, kind: VOXEL_EMISSIVE };
+      if (tile.tone > 0.975 && lz >= 3 && lz <= 4 && lx >= 2 && lx <= 5) return solid(darken(COLORS.inlay, 0.4));
       return solid(jitter(COLORS.plating, 0.018, tile.tone));
     }
     case 'concrete': {

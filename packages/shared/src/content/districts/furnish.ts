@@ -32,7 +32,7 @@ const TILES_PER_PERSON = 170;
 const MAX_PEOPLE_PER_ROOM = 9;
 const PEOPLE_INSET = 3;
 const CROWD_SPACING = 4;
-const GATHERING_POINTS: ReadonlySet<WorldObjectId> = new Set<WorldObjectId>(['briefing-bench', 'pew', 'stool', 'canteen-table', 'bench-curve']);
+const GATHERING_POINTS: ReadonlySet<WorldObjectId> = new Set<WorldObjectId>(['briefing-bench', 'pew', 'stool', 'canteen-table', 'bench-curve', 'street-bench', 'food-stall', 'market-stall']);
 const CARDINAL: readonly TilePoint[] = [{ x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }];
 
 const DRESSING_OBJECTS = new Map<WorldObjectId, WorldObjectDefinition>();

@@ -5,7 +5,7 @@
   "tier": 3,
   "region": "low-ward",
   "condition": "worn",
-  "ambience": { "darkness": 0.55, "tint": "#1c2e38", "fog": "#1e2a34", "sky": "#2e3a58", "weather": ["drizzle", "mist"], "haze": 1.3 },
+  "ambience": { "darkness": 0.55, "tint": "#1c2e38", "fog": "#1e2a34", "sky": "#2e3a58", "weather": ["drizzle", "mist"], "haze": 1.15 },
   "size": { "width": 64, "height": 64 },
   "steps": [
     { "kind": "room", "id": "ground", "rect": { "x": 0, "y": 0, "width": 64, "height": 64 }, "floor": "paving", "shape": "rect", "edge": "barrier" },
@@ -17,6 +17,7 @@
     { "kind": "patch", "rect": { "x": 17, "y": 17, "width": 30, "height": 30 }, "tile": "paving" },
     { "kind": "patch", "rect": { "x": 8, "y": 29, "width": 9, "height": 6 }, "tile": "asphalt" },
     { "kind": "patch", "rect": { "x": 20, "y": 0, "width": 6, "height": 8 }, "tile": "asphalt" },
+    { "kind": "patch", "rect": { "x": 0, "y": 29, "width": 8, "height": 6 }, "tile": "asphalt" },
     { "kind": "building", "id": "site-meridian", "rect": { "x": 19, "y": 19, "width": 26, "height": 26 }, "floor": "asphalt", "wall": "wall", "edge": "barrier", "doors": [{ "side": "west", "width": 6, "offset": 10 }] },
     { "kind": "building", "id": "gatehouse", "rect": { "x": 21, "y": 22, "width": 6, "height": 5 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2, "offset": 2 }] },
     { "kind": "building", "id": "intake-hall", "rect": { "x": 30, "y": 21, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 3, "offset": 4 }] },
@@ -140,7 +141,7 @@
     "headhouse": { "theme": "transit", "people": 0 },
     "harbour-office": { "theme": "office", "people": 0 },
     "chandlery": { "theme": "shop", "people": 0 },
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 3, "cast": ["ward-dockhand", "ward-constable"] }
   },
   "furnish": {}
 }

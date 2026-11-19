@@ -5,7 +5,7 @@
   "tier": 10,
   "region": "low-ward",
   "condition": "breached",
-  "ambience": { "darkness": 0.85, "tint": "#22262a", "fog": "#140c0e", "fixtures": "failing", "weather": ["sparks", "dust"], "haze": 1.2 },
+  "ambience": { "darkness": 0.8, "tint": "#1a1c22", "fog": "#140c0e", "fixtures": "failing", "weather": ["sparks", "dust"], "haze": 1 },
   "size": { "width": 64, "height": 48 },
   "steps": [
     { "kind": "room", "id": "secure-lift", "rect": { "x": 2, "y": 19, "width": 8, "height": 8 }, "floor": "plating", "shape": "rect" },

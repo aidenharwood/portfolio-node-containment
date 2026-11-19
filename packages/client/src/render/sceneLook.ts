@@ -16,7 +16,7 @@ const LIGHT_INTENSITY_SCALE = 14;
 const LIGHT_REACH = 1.4;
 const AMBIENT_BASE = 2.9;
 const AMBIENT_DARKNESS_WEIGHT = 2.3;
-const AMBIENT_FLOOR = 1;
+const AMBIENT_FLOOR = 0.8;
 const AMBIENT_SKY_LIFT = 0.74;
 const AMBIENT_GROUND_LIFT = 0.32;
 const KEY_BASE = 1;
@@ -37,6 +37,7 @@ const DUSK_AMBIENT_CUT = 0.72;
 const DUSK_KEY_CUT = 0.55;
 const SKY_SUN_TINT = 0.8;
 const DAYLIGHT_FOG_THINNING = 0.55;
+const VOID_SKY_MIX = 0.35;
 const NO_LIGHTS: LightAssignment<LightSource> = { lights: [], edge: Infinity };
 const FINISH_SHADER = {
   uniforms: { tDiffuse: { value: null }, texel: { value: new Vector2(1, 1) }, sharpen: { value: 0.15 }, grade: { value: 1 }, vignette: { value: 1 }, grain: { value: 1 }, time: { value: 0 } },
@@ -81,8 +82,8 @@ const SHADOW_REACH_MAX = 20;
 const SHADOW_REACH_STEP = 0.5;
 const GROUND_FOG_PER_HAZE = 1.6;
 const GROUND_FOG_PER_MIST = 0.18;
-const GROUND_FOG_LIMIT = 0.6;
-const MIST_GAIN = 1.7;
+const GROUND_FOG_LIMIT = 0.4;
+const MIST_GAIN = 2.4;
 const MIST_WHITE = 0.04;
 const DRIZZLE_WETNESS = 0.6;
 const FLASH_AMBIENT = 2.2;
@@ -247,7 +248,7 @@ export class SceneLook {
   applyAmbience(ambience: BlendedAmbience): void {
     this.lastAmbience = ambience;
     this.fog.color.copy(ambience.fog);
-    this.background.copy(ambience.fog).multiplyScalar(0.55).lerp(ambience.sky, ambience.daylight);
+    this.background.copy(ambience.fog).multiplyScalar(0.55).lerp(ambience.sky, ambience.daylight * VOID_SKY_MIX);
     const tint = ambience.tint.getHex();
     this.hemisphere.color.setHex(lighten(tint, AMBIENT_SKY_LIFT));
     this.hemisphere.groundColor.setHex(lighten(tint, AMBIENT_GROUND_LIFT));

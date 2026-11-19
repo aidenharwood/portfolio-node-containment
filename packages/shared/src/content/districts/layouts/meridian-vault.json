@@ -5,7 +5,7 @@
   "tier": 12,
   "region": "low-ward",
   "condition": "alien",
-  "ambience": { "darkness": 0.85, "tint": "#1a2230", "fog": "#06080e", "fixtures": "failing", "weather": ["spores"], "haze": 1.3 },
+  "ambience": { "darkness": 0.9, "tint": "#1a2230", "fog": "#06080e", "fixtures": "failing", "weather": ["spores"], "haze": 1.3 },
   "size": { "width": 80, "height": 64 },
   "steps": [
     { "kind": "room", "id": "landing", "rect": { "x": 4, "y": 25, "width": 12, "height": 12 }, "floor": "plating", "shape": "rect" },

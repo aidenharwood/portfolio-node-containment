@@ -459,17 +459,18 @@ const clockTower: Builder = () => {
 
 const washingLine: Builder = (seed) => {
   const model = new VoxelModel();
-  for (const x of [-7, 6]) model.fill(x, 0, 0, x, 20, 0, CITY.iron);
-  model.fill(-6, 19, 0, 5, 19, 0, CITY.paper);
+  for (const x of [-7, 6]) model.fill(x, 0, 0, x, 34, 0, CITY.iron).fill(x, 34, -1, x, 34, 1, CITY.iron);
+  model.fill(-6, 33, 0, 5, 33, 0, CITY.paper);
+  for (const x of [-4, 0, 4]) model.set(x, 34, 0, CITY.lamp, VOXEL_EMISSIVE);
   const cloth = [0xc84a4a, 0x4a7ac8, CITY.paper, 0xd8b84a, 0x5aa86a, 0x8a5ab8];
   let x = -5;
   for (let i = 0; x < 5; i++) {
     const width = 2 + Math.floor(noise3(seed, i, 0, 13) * 3);
-    const drop = 5 + Math.floor(noise3(seed, i, 1, 13) * 6);
-    model.fill(x, 19 - drop, 0, Math.min(5, x + width - 1), 18, 0, cloth[Math.floor(noise3(seed, i, 2, 13) * cloth.length) % cloth.length] as number);
+    const drop = 8 + Math.floor(noise3(seed, i, 1, 13) * 7);
+    model.fill(x, 33 - drop, 0, Math.min(5, x + width - 1), 32, 0, cloth[Math.floor(noise3(seed, i, 2, 13) * cloth.length) % cloth.length] as number);
     x += width + 1;
   }
-  return parts(model, 21);
+  return parts(model, 35);
 };
 
 const exchangePost: Builder = () => {
@@ -632,7 +633,7 @@ const beachedHull: Builder = (seed) => {
         if (!shell) continue;
         const hole = y > 8 && y < 24 && x > -12 && x < 6 && z > 0 && noise3(x, y, 1, 13) > 0.3;
         if (hole) continue;
-        const rust = noise3(x, y, z, seed + 5) > 0.68;
+        const rust = (y < 14 && noise3(Math.floor(x / 6), Math.floor(y / 5), 0, seed + 5) > 0.6) || (y < 28 && y > 4 && noise3(x, 0, 0, seed + 7) > 0.9);
         model.set(x, y, z, rust ? 0x8a4a2a : y > 27 ? CITY.paper : jitter(paint, 0.05, noise3(x, y, z, 2)));
       }
     }
