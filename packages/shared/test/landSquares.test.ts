@@ -6,6 +6,8 @@ import type { GameContent } from '../src/content/gameContent.ts';
 import { findLandIssues, findLandPlanIssues } from '../src/content/landIntegrity.ts';
 import { buildLevelIndex } from '../src/content/levelIndex.ts';
 import { findLevelIssues } from '../src/content/levelIntegrity.ts';
+import { findPlacementIssues } from '../src/content/placementIntegrity.ts';
+import { PREFABS } from '../src/content/prefabs/index.ts';
 import { findSealedWardIssues } from '../src/content/wardIntegrity.ts';
 import { findTerrainSeamIssues, findWorldDesignIssues } from '../src/content/worldDesignIntegrity.ts';
 import type { DistrictDefinition } from '../src/world/district.ts';
@@ -233,6 +235,8 @@ describe('land squares', () => {
       issues.some((issue) => issue.startsWith('district fx-wild-east: its land at') && issue.endsWith('belongs to fx-far, not its region fx-home')),
       issues.join('\n'),
     );
+    const [x, y] = (/its land at (\d+),(\d+)/.exec(issues.find((issue) => issue.startsWith('district fx-wild-east')) ?? '') ?? []).slice(1).map(Number);
+    assert.ok((x as number) < 32 && (y as number) < 32, `${x},${y} is not local to the square`);
   });
 
   test("painting into the sibling's half overlaps it", () => {
@@ -242,6 +246,42 @@ describe('land squares', () => {
       issues.some((issue) => /placements "fx-wild-gate-\w+" and "fx-wild-gate-\w+" overlap/.test(issue)),
       issues.join('\n'),
     );
+  });
+
+  test('a ward gate is a doorway from the side that does not own it', () => {
+    const blocker = { id: 'gate-west-blocker', object: 'crate', at: { room: 'ground', dx: 15, dy: 15 } };
+    const issues = findPlacementIssues(wildsWith((layout) => (layout.id === 'fx-wild-gate-west' ? { ...layout, objects: [...layout.objects, blocker] } : layout)));
+    assert.ok(
+      issues.some((issue) => issue.includes('"gate-west-blocker" at 15,15') && issue.includes('crowds a doorway of room "ground"')),
+      issues.join('\n'),
+    );
+  });
+
+  test("a set piece on the sibling's side fails with its path", () => {
+    const layout = FIXTURE_WILDS_LAYOUTS.get('fx-wild-gate-west');
+    const prefab = Object.keys(PREFABS)[0];
+    assert.ok(layout && prefab);
+    assert.throws(
+      () => buildDistrict({ ...layout, setPieces: [{ prefab, at: { room: 'ground', dx: 24, dy: 8 }, facing: 'south' }] }, FIXTURE_LAND),
+      (error: Error) => /setPieces\[0\]/.test(error.message) && /24,8 in room "ground" is void/.test(error.message),
+    );
+  });
+
+  test('a gate drawn over is reported', () => {
+    const covered = drawLand({
+      id: 'covered',
+      squareSize: 8,
+      columns: 1,
+      rows: 1,
+      steps: [
+        { kind: 'fill', shape: { kind: 'rect', rect: { x: 1, y: 1, width: 6, height: 6 } }, tile: 'grass' },
+        { kind: 'gate', id: 'lost-gate', rect: { x: 3, y: 3, width: 1, height: 2 }, tile: 'door' },
+        { kind: 'fill', shape: { kind: 'rect', rect: { x: 3, y: 4, width: 2, height: 2 } }, tile: 'grass' },
+        { kind: 'ward', shape: { kind: 'rect', rect: { x: 0, y: 0, width: 4, height: 8 } }, ward: 'west' },
+        { kind: 'ward', shape: { kind: 'rect', rect: { x: 4, y: 0, width: 4, height: 8 } }, ward: 'east' },
+      ],
+    });
+    assert.ok(findLandPlanIssues(covered).includes('land covered: gate "lost-gate" at 3,4 is grass, not door; draw over it before the gate, not after'), findLandPlanIssues(covered).join('\n'));
   });
 
   test('tier is walked across land squares', () => {

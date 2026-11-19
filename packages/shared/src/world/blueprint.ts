@@ -278,11 +278,11 @@ export function findCliffs(
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const point = { x, y };
-      if (!walkableAt(point)) continue;
       const own = heightAt(point);
+      if (own < CLIFF_DROP || !walkableAt(point)) continue;
       const drops = NEIGHBOURS.some((offset) => {
         const beside = { x: x + offset.x, y: y + offset.y };
-        return walkableAt(beside) && own - heightAt(beside) >= CLIFF_DROP;
+        return own - heightAt(beside) >= CLIFF_DROP && walkableAt(beside);
       });
       if (drops) cliffs.push(point);
     }

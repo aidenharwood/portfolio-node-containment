@@ -95,12 +95,12 @@ The rest is judgement, and reviewers hold it:
 ### Joining districts
 
 8. **Districts meet at exits.** Overworld squares meet along a whole side: the `ground` room runs flush to that edge, and the exit spans it. A side with no neighbour keeps a one-tile edge (`barrier`, `fence`, `rock` or `trees`). An exit is declared with `exit(id, room, side, width)` and placed on a level with `joinDistricts` (`world/levelPlan.ts`), which works out origins. Do not write origin arithmetic by hand except for a district that is deliberately detached (`{ districtId, from, offset }`), such as the Intake Wing across its chasm.
-   **Land squares** are the exception. Their edges come from the land plan, so they have no exit steps and no two-ways-in rule. A square crossed by a ward border is split, with one district per ward. Where land meets a square with no district, the sea or rock is scenery, not a seam.
+   **Land squares** are the exception. Their edges come from the land plan, so they have no exit steps and no two-ways-in rule. A square crossed by a ward border is split, with one district per ward. Where land meets a square with no district, the sea or rock is scenery, not a seam; land the plan never painted is void, and is a seam.
 9. **Open exits are at least 9 tiles wide.** Only an exit that is a door, bulkhead or gate may be narrower, and it is marked `gate: true`. **Checked.**
 10. **No floor opens onto the void.** Every exit must meet the floor of a neighbouring district. When a loop of districts has to close, the sizes are yours to get right; the check tells you when they are not. **Checked.**
 11. **Two ways in.** On a level with more than one district, a district has at least two exits, so the world has loops. A boss room, vault or other deliberate cul-de-sac sets `deadEnd: true`. **Checked.**
 12. **Walk first.** Every district on the overworld is reachable on foot from the spawn (`findOverworldIssues`). Trams and lifts are shortcuts.
-13. **Wards are sealed.** Flooding a ward's walkable ground with every door shut never reaches another ward. Every walkable tile of a land plan lies in a district of its ward, and every land gate holds a door. **Checked** (`findSealedWardIssues`, `findLandIssues`).
+12a. **Wards are sealed.** Flooding a ward's walkable ground with every door shut never reaches another ward. Every walkable tile of a land plan lies in a district of its ward, and every land gate holds a door. **Checked** (`findSealedWardIssues`, `findLandIssues`).
 
 ### Difficulty and population
 

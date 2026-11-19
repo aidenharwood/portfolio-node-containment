@@ -40,6 +40,11 @@ export function findLandPlanIssues(land: LandMap): string[] {
   for (const [gate, tiles] of Object.entries(land.gates)) {
     if (wardsBeside(land, tiles, gateTiles).size < 2) issues.push(`land ${id}: gate "${gate}" does not join two wards`);
   }
+  for (const step of land.plan.steps) {
+    if (step.kind !== 'gate') continue;
+    const lost = land.gates[step.id]?.find((tile) => land.tileAt(tile) !== step.tile);
+    if (lost) issues.push(`land ${id}: gate "${step.id}" at ${lost.x},${lost.y} is ${land.tileAt(lost)}, not ${step.tile}; draw over it before the gate, not after`);
+  }
   return issues;
 }
 
@@ -74,7 +79,8 @@ function findForeignLand(content: GameContent, level: ResolvedLevel, land: LandM
       const ward = land.wardAt({ x, y });
       if (ward === district.region) continue;
       reported.add(districtId);
-      issues.push(`district ${districtId}: its land at ${x},${y} belongs to ${ward ?? 'no ward'}, not its region ${district.region}`);
+      const local = layout.toLocalPoint({ x, y })?.position ?? { x, y };
+      issues.push(`district ${districtId}: its land at ${local.x},${local.y} belongs to ${ward ?? 'no ward'}, not its region ${district.region}`);
     }
   }
 }

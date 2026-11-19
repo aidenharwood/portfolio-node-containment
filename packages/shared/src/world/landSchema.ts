@@ -23,7 +23,7 @@ const shape = z.union([
 
 const STEP_SCHEMA = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('fill'), shape, tile }).strict(),
-  z.object({ kind: z.literal('line'), points: z.array(point).min(2), width: int.positive(), tile }).strict(),
+  z.object({ kind: z.literal('line'), points: z.array(point).min(2), width: int.positive().refine((width) => width % 2 === 1, 'a line is an odd number of tiles wide'), tile }).strict(),
   z.object({ kind: z.literal('rise'), shape, height: level }).strict(),
   z.object({ kind: z.literal('ramp'), rect, side: z.enum(SIDES), from: level, to: level }).strict(),
   z.object({ kind: z.literal('ward'), shape, ward: z.string() }).strict(),

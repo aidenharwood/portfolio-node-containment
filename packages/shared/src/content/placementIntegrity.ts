@@ -151,7 +151,7 @@ function openingsOf(scene: Scene, rect: TileRect): TilePoint[] {
   for (let y = rect.y - 1; y <= rect.y + rect.height; y++) {
     for (let x = rect.x - 1; x <= rect.x + rect.width; x++) {
       const point = { x, y };
-      if (rectContains(rect, point) || !scene.walkableBeyond(point)) continue;
+      if (!scene.walkableBeyond(point) || (rectContains(rect, point) && scene.layout.tileAt(point) !== 'void')) continue;
       if (CARDINAL_OFFSETS.some((offset) => rectContains(rect, add(point, offset)) && isWalkableTile(scene.layout, add(point, offset)))) openings.push(point);
     }
   }

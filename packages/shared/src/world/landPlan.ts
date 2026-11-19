@@ -1,6 +1,7 @@
 import type { RegionId } from '../ids.ts';
 import { findCliffs, isInsideShape, rampHeightAt, type BlueprintBase, type ExitSide, type RoomShape } from './blueprint.ts';
 import type { TileLayout } from './district.ts';
+import { parseLandPlan } from './landSchema.ts';
 import type { TilePoint, TileRect } from './geometry.ts';
 import { TILE_KINDS, type TileKindId } from './tiles.ts';
 
@@ -45,61 +46,85 @@ interface Bounds {
   readonly bottom: number;
 }
 
-interface Coverage {
-  readonly bounds: Bounds;
-  covers(x: number, y: number): boolean;
-}
+type Paint = (x: number, y: number) => void;
 
 const LINE_TOLERANCE = 1e-9;
+const MAX_WARDS = 255;
 
 const rectBounds = (rect: TileRect): Bounds => ({ left: rect.x, top: rect.y, right: rect.x + rect.width, bottom: rect.y + rect.height });
 
-const insidePolygon = (points: readonly TilePoint[], x: number, y: number): boolean => {
-  let inside = false;
-  for (let index = 0, previous = points.length - 1; index < points.length; previous = index++) {
-    const a = points[index] as TilePoint;
-    const b = points[previous] as TilePoint;
-    if (a.y > y !== b.y > y && x < ((b.x - a.x) * (y - a.y)) / (b.y - a.y) + a.x) inside = !inside;
+function visitBounds(bounds: Bounds, width: number, height: number, covers: (x: number, y: number) => boolean, paint: Paint): void {
+  for (let y = Math.max(0, bounds.top); y < Math.min(height, bounds.bottom); y++) {
+    for (let x = Math.max(0, bounds.left); x < Math.min(width, bounds.right); x++) {
+      if (covers(x, y)) paint(x, y);
+    }
   }
-  return inside;
-};
-
-const distanceToSegment = (a: TilePoint, b: TilePoint, x: number, y: number): number => {
-  const dx = b.x - a.x;
-  const dy = b.y - a.y;
-  const lengthSquared = dx * dx + dy * dy;
-  const along = lengthSquared === 0 ? 0 : Math.max(0, Math.min(1, ((x - a.x) * dx + (y - a.y) * dy) / lengthSquared));
-  return Math.hypot(x - (a.x + along * dx), y - (a.y + along * dy));
-};
-
-function shapeCoverage(shape: LandShape): Coverage {
-  if (shape.kind === 'polygon') {
-    const xs = shape.points.map((point) => point.x);
-    const ys = shape.points.map((point) => point.y);
-    return {
-      bounds: { left: Math.min(...xs), top: Math.min(...ys), right: Math.max(...xs), bottom: Math.max(...ys) },
-      covers: (x, y) => insidePolygon(shape.points, x + 0.5, y + 0.5),
-    };
-  }
-  return { bounds: rectBounds(shape.rect), covers: (x, y) => isInsideShape(shape.kind, shape.rect, { x, y }) };
 }
 
-function lineCoverage(points: readonly TilePoint[], width: number): Coverage {
-  const reach = width / 2 + LINE_TOLERANCE;
-  const xs = points.map((point) => point.x);
+function fillPolygon(points: readonly TilePoint[], width: number, height: number, paint: Paint): void {
   const ys = points.map((point) => point.y);
-  return {
-    bounds: { left: Math.floor(Math.min(...xs) - reach), top: Math.floor(Math.min(...ys) - reach), right: Math.ceil(Math.max(...xs) + reach) + 1, bottom: Math.ceil(Math.max(...ys) + reach) + 1 },
-    covers: (x, y) => {
-      for (let index = 1; index < points.length; index++) {
-        if (distanceToSegment(points[index - 1] as TilePoint, points[index] as TilePoint, x, y) <= reach) return true;
-      }
-      return false;
-    },
-  };
+  const crossings: number[] = [];
+  for (let y = Math.max(0, Math.min(...ys)); y < Math.min(height, Math.max(...ys)); y++) {
+    const centre = y + 0.5;
+    crossings.length = 0;
+    for (let index = 0, previous = points.length - 1; index < points.length; previous = index++) {
+      const a = points[index] as TilePoint;
+      const b = points[previous] as TilePoint;
+      if (a.y > centre !== b.y > centre) crossings.push(((b.x - a.x) * (centre - a.y)) / (b.y - a.y) + a.x);
+    }
+    crossings.sort((first, second) => first - second);
+    for (let index = 0; index + 1 < crossings.length; index += 2) {
+      const from = Math.max(0, Math.ceil((crossings[index] as number) - 0.5));
+      const to = Math.min(width, Math.ceil((crossings[index + 1] as number) - 0.5));
+      for (let x = from; x < to; x++) paint(x, y);
+    }
+  }
 }
 
-export function drawLand(plan: LandPlan): LandMap {
+function paintShape(shape: LandShape, width: number, height: number, paint: Paint): void {
+  if (shape.kind === 'polygon') fillPolygon(shape.points, width, height, paint);
+  else visitBounds(rectBounds(shape.rect), width, height, (x, y) => isInsideShape(shape.kind, shape.rect, { x, y }), paint);
+}
+
+function segmentMeetsBox(a: TilePoint, b: TilePoint, centreX: number, centreY: number, reach: number): boolean {
+  let enter = 0;
+  let leave = 1;
+  for (const [start, delta, centre] of [
+    [a.x, b.x - a.x, centreX],
+    [a.y, b.y - a.y, centreY],
+  ] as const) {
+    const low = centre - reach - start;
+    const high = centre + reach - start;
+    if (delta === 0) {
+      if (low > 0 || high < 0) return false;
+      continue;
+    }
+    const first = low / delta;
+    const second = high / delta;
+    enter = Math.max(enter, Math.min(first, second));
+    leave = Math.min(leave, Math.max(first, second));
+    if (enter > leave) return false;
+  }
+  return true;
+}
+
+function paintLine(points: readonly TilePoint[], lineWidth: number, width: number, height: number, paint: Paint): void {
+  const reach = lineWidth / 2 + LINE_TOLERANCE;
+  for (let index = 1; index < points.length; index++) {
+    const a = points[index - 1] as TilePoint;
+    const b = points[index] as TilePoint;
+    const bounds = {
+      left: Math.floor(Math.min(a.x, b.x) - reach),
+      top: Math.floor(Math.min(a.y, b.y) - reach),
+      right: Math.ceil(Math.max(a.x, b.x) + reach) + 1,
+      bottom: Math.ceil(Math.max(a.y, b.y) + reach) + 1,
+    };
+    visitBounds(bounds, width, height, (x, y) => segmentMeetsBox(a, b, x, y, reach), paint);
+  }
+}
+
+export function drawLand(source: LandPlan): LandMap {
+  const plan = parseLandPlan(source);
   const { id, squareSize, columns, rows } = plan;
   const width = columns * squareSize;
   const height = rows * squareSize;
@@ -107,22 +132,15 @@ export function drawLand(plan: LandPlan): LandMap {
   const heights = new Uint8Array(width * height);
   const wards = new Uint8Array(width * height);
   const wardNames: RegionId[] = [];
-  const gates: Record<string, readonly TilePoint[]> = {};
+  const gates: Record<string, readonly TilePoint[]> = Object.create(null);
 
   const indexOf = (point: TilePoint): number =>
     point.x < 0 || point.y < 0 || point.x >= width || point.y >= height || !Number.isInteger(point.x) || !Number.isInteger(point.y) ? -1 : point.y * width + point.x;
 
-  const visit = (bounds: Bounds, covers: (x: number, y: number) => boolean, paint: (index: number) => void): void => {
-    for (let y = Math.max(0, bounds.top); y < Math.min(height, bounds.bottom); y++) {
-      for (let x = Math.max(0, bounds.left); x < Math.min(width, bounds.right); x++) {
-        if (covers(x, y)) paint(y * width + x);
-      }
-    }
-  };
-
-  const wardIndex = (ward: RegionId): number => {
+  const wardIndex = (ward: RegionId, fail: (reason: string) => never): number => {
     const known = wardNames.indexOf(ward);
     if (known >= 0) return known + 1;
+    if (wardNames.length >= MAX_WARDS) fail(`ward "${ward}" is one more than the ${MAX_WARDS} wards a plan can hold`);
     wardNames.push(ward);
     return wardNames.length;
   };
@@ -132,31 +150,27 @@ export function drawLand(plan: LandPlan): LandMap {
       throw new Error(`land ${id}: steps[${stepIndex}]: ${reason}`);
     };
     if (step.kind === 'fill') {
-      const { bounds, covers } = shapeCoverage(step.shape);
-      visit(bounds, covers, (index) => (tiles[index] = step.tile));
+      paintShape(step.shape, width, height, (x, y) => (tiles[y * width + x] = step.tile));
     } else if (step.kind === 'line') {
-      const { bounds, covers } = lineCoverage(step.points, step.width);
-      visit(bounds, covers, (index) => (tiles[index] = step.tile));
+      paintLine(step.points, step.width, width, height, (x, y) => (tiles[y * width + x] = step.tile));
     } else if (step.kind === 'rise') {
-      const { bounds, covers } = shapeCoverage(step.shape);
-      visit(bounds, covers, (index) => (heights[index] = step.height));
+      paintShape(step.shape, width, height, (x, y) => (heights[y * width + x] = step.height));
     } else if (step.kind === 'ramp') {
       try {
         rampHeightAt(step, { x: step.rect.x, y: step.rect.y });
       } catch (error) {
         fail((error as Error).message);
       }
-      visit(rectBounds(step.rect), () => true, (index) => (heights[index] = rampHeightAt(step, { x: index % width, y: Math.floor(index / width) })));
+      visitBounds(rectBounds(step.rect), width, height, () => true, (x, y) => (heights[y * width + x] = rampHeightAt(step, { x, y })));
     } else if (step.kind === 'ward') {
-      const { bounds, covers } = shapeCoverage(step.shape);
-      const ward = wardIndex(step.ward);
-      visit(bounds, covers, (index) => (wards[index] = ward));
+      const ward = wardIndex(step.ward, fail);
+      paintShape(step.shape, width, height, (x, y) => (wards[y * width + x] = ward));
     } else {
       const { rect } = step;
       if (rect.x < 0 || rect.y < 0 || rect.x + rect.width > width || rect.y + rect.height > height) {
         fail(`gate "${step.id}" at ${rect.x},${rect.y} ${rect.width}x${rect.height} is outside the ${width}x${height} plan`);
       }
-      if (gates[step.id]) fail(`gate "${step.id}" is named twice`);
+      if (Object.hasOwn(gates, step.id)) fail(`gate "${step.id}" is named twice`);
       const covered: TilePoint[] = [];
       for (let y = rect.y; y < rect.y + rect.height; y++) {
         for (let x = rect.x; x < rect.x + rect.width; x++) {

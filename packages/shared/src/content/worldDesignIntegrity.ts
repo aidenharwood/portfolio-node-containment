@@ -79,7 +79,8 @@ function findTrackIssues(content: GameContent, district: DistrictDefinition, lay
 
 function isBareLand(land: LandMap | undefined, point: TilePoint): boolean {
   if (!land || point.x < 0 || point.y < 0 || point.x >= land.width || point.y >= land.height) return false;
-  return !TILE_KINDS[land.tileAt(point)].walkable;
+  const kind = land.tileAt(point);
+  return kind !== 'void' && !TILE_KINDS[kind].walkable;
 }
 
 function findSeamIssues(level: ResolvedLevel, rebuilt: ReadonlySet<DistrictId>, issues: string[]): void {

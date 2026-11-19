@@ -103,4 +103,75 @@ describe('land plan', () => {
     assert.throws(() => parseLandPlan({ ...base, steps: [{ kind: 'line', points: [{ x: 1, y: 1 }], width: 1, tile: 'grass' }] }), /steps\[0\]\.points/);
     assert.throws(() => parseLandPlan({ ...base, steps: [{ kind: 'fill', shape: { kind: 'polygon', points: [{ x: 1, y: 1 }, { x: 2, y: 2 }] }, tile: 'grass' }] }), /steps\[0\]\.shape/);
   });
+  test('a line of width w paints w tiles across, and only odd widths are drawn', () => {
+    for (const width of [1, 3, 5]) {
+      const map = land({ kind: 'line', points: [{ x: 4, y: 4 }, { x: 10, y: 4 }], width, tile: 'asphalt' });
+      const across = [0, 1, 2, 3, 4, 5, 6, 7].filter((y) => map.tileAt({ x: 7, y }) === 'asphalt');
+      assert.equal(across.length, width);
+    }
+    for (const width of [2, 4]) {
+      assert.throws(() => land({ kind: 'line', points: [{ x: 4, y: 4 }, { x: 10, y: 4 }], width, tile: 'asphalt' }), /steps\[1\]\.width: a line is an odd number of tiles wide/);
+    }
+  });
+
+  test('line points are tile centres and polygon points are tile corners', () => {
+    const line = land({ kind: 'line', points: [{ x: 2, y: 3 }, { x: 6, y: 3 }], width: 1, tile: 'asphalt' });
+    assert.deepEqual([1, 2, 6, 7].map((x) => line.tileAt({ x, y: 3 })), ['grass', 'asphalt', 'asphalt', 'grass']);
+    const polygon = land({ kind: 'fill', shape: { kind: 'polygon', points: [{ x: 2, y: 3 }, { x: 6, y: 3 }, { x: 6, y: 4 }, { x: 2, y: 4 }] }, tile: 'asphalt' });
+    assert.deepEqual([1, 2, 5, 6].map((x) => polygon.tileAt({ x, y: 3 })), ['grass', 'asphalt', 'asphalt', 'grass']);
+  });
+
+  test('a diagonal line stays joined edge to edge', () => {
+    for (const end of [{ x: 7, y: 7 }, { x: 15, y: 4 }]) {
+      const map = land({ kind: 'line', points: [{ x: 0, y: 0 }, end], width: 1, tile: 'asphalt' });
+      const painted = new Set<string>();
+      for (let y = 0; y < 8; y++) for (let x = 0; x < 16; x++) if (map.tileAt({ x, y }) === 'asphalt') painted.add(`${x},${y}`);
+      const reached = new Set(['0,0']);
+      const queue = [{ x: 0, y: 0 }];
+      for (const here of queue) {
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+          const key = `${here.x + dx},${here.y + dy}`;
+          if (!painted.has(key) || reached.has(key)) continue;
+          reached.add(key);
+          queue.push({ x: here.x + dx, y: here.y + dy });
+        }
+      }
+      assert.ok(reached.has(`${end.x},${end.y}`), `${end.x},${end.y}`);
+      assert.equal(reached.size, painted.size);
+    }
+  });
+
+  test('a polygon fills by the even-odd rule at tile centres', () => {
+    const points = [{ x: 1, y: 1 }, { x: 14, y: 0 }, { x: 9, y: 4 }, { x: 15, y: 7 }, { x: 4, y: 6 }, { x: 7, y: 3 }, { x: 0, y: 7 }, { x: 3, y: 3 }];
+    const map = land({ kind: 'fill', shape: { kind: 'polygon', points }, tile: 'water' });
+    const inside = (x: number, y: number): boolean => {
+      let crossed = false;
+      for (let index = 0, previous = points.length - 1; index < points.length; previous = index++) {
+        const a = points[index] as { x: number; y: number };
+        const b = points[previous] as { x: number; y: number };
+        if (a.y > y !== b.y > y && x < ((b.x - a.x) * (y - a.y)) / (b.y - a.y) + a.x) crossed = !crossed;
+      }
+      return crossed;
+    };
+    for (let y = 0; y < 8; y++) for (let x = 0; x < 16; x++) assert.equal(map.tileAt({ x, y }), inside(x + 0.5, y + 0.5) ? 'water' : 'grass', `${x},${y}`);
+  });
+
+  test('gate ids are only names', () => {
+    const map = land(
+      { kind: 'gate', id: 'constructor', rect: { x: 2, y: 2, width: 1, height: 1 }, tile: 'door' },
+      { kind: 'gate', id: '__proto__', rect: { x: 4, y: 2, width: 1, height: 1 }, tile: 'door' },
+    );
+    assert.deepEqual(Object.keys(map.gates), ['constructor', '__proto__']);
+    assert.deepEqual(map.gates.__proto__, [{ x: 4, y: 2 }]);
+  });
+
+  test('a plan holds at most 255 wards', () => {
+    const wards = (count: number): LandStep[] => Array.from({ length: count }, (_, index) => ({ kind: 'ward', shape: { kind: 'rect', rect: { x: 0, y: 0, width: 1, height: 1 } }, ward: `ward-${index}` }));
+    assert.equal(land(...wards(255)).wardAt({ x: 0, y: 0 }), 'ward-254');
+    assert.throws(() => land(...wards(256)), /steps\[256\]: ward "ward-255" is one more than the 255 wards/);
+  });
+
+  test('drawLand checks its plan', () => {
+    assert.throws(() => land({ kind: 'fill', shape: { kind: 'rect', rect: { x: 0.5, y: 0, width: 2, height: 2 } }, tile: 'water' }), /steps\[1\]\.shape/);
+  });
 });
