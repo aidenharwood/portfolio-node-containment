@@ -4,7 +4,7 @@ import type { WorldObjectDefinition } from '../world/entities.ts';
 import { isWallFixture, objectFootprintTiles } from '../world/footprint.ts';
 import { CARDINAL_OFFSETS, chebyshevDistance, rectContains, tileKey, type Facing, type TilePoint } from '../world/geometry.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
-import { TILE_KINDS } from '../world/tiles.ts';
+import { CLIFF_DROP, TILE_KINDS } from '../world/tiles.ts';
 import type { GameContent } from './gameContent.ts';
 import { findFootprintIssues } from './footprintIntegrity.ts';
 import { overworldLevelOf } from './overworldIntegrity.ts';
@@ -87,6 +87,30 @@ function findSeamIssues(level: ResolvedLevel, rebuilt: ReadonlySet<DistrictId>, 
     const local = layout.toLocalPoint(point)?.position ?? point;
     issues.push(`district ${districtId}: floor at ${local.x},${local.y} opens onto the void; an exit must meet a neighbouring district`);
   }
+}
+
+export function findTerrainSeamIssues(level: Pick<ResolvedLevel, 'id' | 'layout'>): string[] {
+  const issues: string[] = [];
+  const { layout } = level;
+  const reported = new Set<string>();
+  const FORWARD: readonly TilePoint[] = [{ x: 1, y: 0 }, { x: -1, y: 1 }, { x: 0, y: 1 }, { x: 1, y: 1 }];
+  for (let y = 0; y < layout.height; y++) {
+    for (let x = 0; x < layout.width; x++) {
+      const here = { x, y };
+      if (!isWalkableTile(layout, here)) continue;
+      for (const offset of FORWARD) {
+        const there = { x: x + offset.x, y: y + offset.y };
+        if (!isWalkableTile(layout, there)) continue;
+        const drop = Math.abs(layout.heightAt(here) - layout.heightAt(there));
+        if (drop < CLIFF_DROP) continue;
+        const owners = [layout.districtAt(here) ?? 'a connector', layout.districtAt(there) ?? 'a connector'].sort().join(' and ');
+        if (reported.has(owners)) continue;
+        reported.add(owners);
+        issues.push(`level ${level.id}: the ground between ${owners} drops ${drop} steps at ${x},${y}; walkable ground at a seam must match within one step`);
+      }
+    }
+  }
+  return issues;
 }
 
 function trackNear(layout: ResolvedLevel['layout'], platform: TilePoint): TilePoint[] {
@@ -228,7 +252,7 @@ export function findWorldDesignIssues(content: GameContent): string[] {
         report('its map was not drawn from a blueprint (it has no rooms)');
         continue;
       }
-      const layout = parseTileLayout(district.map);
+      const layout = parseTileLayout(district.map, district.heights);
       findPlacementIssues(district, layout, report);
       findExitIssues(district, level, report);
       findDensityIssues(district, layout, report);
@@ -236,6 +260,7 @@ export function findWorldDesignIssues(content: GameContent): string[] {
     }
     if (rebuilt.size === 0) continue;
     findSeamIssues(level, rebuilt, issues);
+    issues.push(...findTerrainSeamIssues(level));
     findTierIssues(content, level, rebuilt, issues);
     findFixtureIssues(content, level, issues);
   }

@@ -5,7 +5,7 @@ import type { Condition } from '../content/conditions.ts';
 import type { DressingTheme, PrefabRole } from '../content/prefabs/types.ts';
 import type { AssemblyPlacement } from './assemblies.ts';
 import type { FloorDecal } from './decals.ts';
-import type { DistrictExit } from './blueprint.ts';
+import { decodeHeight, type DistrictExit } from './blueprint.ts';
 import type { WorldObjectDefinition } from './entities.ts';
 import type { WeatherKind } from './weather.ts';
 import { objectFootprintTiles } from './footprint.ts';
@@ -88,6 +88,7 @@ export interface DistrictDefinition {
   readonly exits?: Readonly<Record<string, DistrictExit>>;
   readonly anchors?: Readonly<Record<string, TilePoint>>;
   readonly map: readonly string[];
+  readonly heights?: readonly string[];
   readonly recovery?: { readonly districtId: DistrictId; readonly position: TilePoint };
   readonly ambience: ZoneAmbience;
   readonly areas: readonly AreaDefinition[];
@@ -105,9 +106,10 @@ export interface TileLayout {
   readonly width: number;
   readonly height: number;
   tileAt(point: TilePoint): TileKindId;
+  heightAt(point: TilePoint): number;
 }
 
-export function parseTileLayout(map: readonly string[]): TileLayout {
+export function parseTileLayout(map: readonly string[], heightRows?: readonly string[]): TileLayout {
   const height = map.length;
   const width = map[0]?.length ?? 0;
   const tiles: TileKindId[] = [];
@@ -121,10 +123,16 @@ export function parseTileLayout(map: readonly string[]): TileLayout {
     }
   });
 
+  if (heightRows !== undefined && (heightRows.length !== height || heightRows.some((row) => row.length !== width))) {
+    throw new Error(`Zone heights are not the map's ${width}x${height}.`);
+  }
+  const heights = heightRows === undefined ? undefined : Uint8Array.from(heightRows.flatMap((row) => [...row].map(decodeHeight)));
+
   return {
     width,
     height,
     tileAt: ({ x, y }) => (x < 0 || y < 0 || x >= width || y >= height ? 'void' : (tiles[y * width + x] ?? 'void')),
+    heightAt: ({ x, y }) => (heights === undefined || x < 0 || y < 0 || x >= width || y >= height ? 0 : (heights[y * width + x] ?? 0)),
   };
 }
 

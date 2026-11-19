@@ -56,6 +56,8 @@ const STEP_SCHEMA = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('pillars'), room: z.string(), everyX: int.positive(), everyY: int.positive(), inset: int.nonnegative() }).strict(),
   z.object({ kind: z.literal('hollow'), rect }).strict(),
   z.object({ kind: z.literal('track'), points: z.array(point) }).strict(),
+  z.object({ kind: z.literal('rise'), rect, height: int.nonnegative(), shape: z.enum(SHAPES).optional() }).strict(),
+  z.object({ kind: z.literal('ramp'), rect, side: z.enum(FACINGS), from: int.nonnegative(), to: int.nonnegative() }).strict(),
 ]);
 
 const areaOptions = { safe: z.boolean().optional(), multiCombat: z.boolean().optional() };
@@ -83,6 +85,7 @@ export const DISTRICT_LAYOUT_SCHEMA = z
     size: z.object({ width: int.positive(), height: int.positive() }).strict(),
     steps: z.array(STEP_SCHEMA),
     tiles: z.array(z.object({ x: int, y: int, tile }).strict()),
+    heights: z.array(z.object({ x: int, y: int, height: int.nonnegative() }).strict()).optional(),
     areas: z.array(z.union([z.object({ room: z.string(), name: z.string(), ...areaOptions }).strict(), z.object({ id: z.string(), name: z.string(), rect, ...areaOptions }).strict()])),
     anchors: z.record(LAYOUT_POSITION_SCHEMA),
     recovery: z.union([z.object({ districtId: z.string(), at: LAYOUT_POSITION_SCHEMA }).strict(), z.object({ districtId: z.string(), anchor: z.string() }).strict()]).optional(),

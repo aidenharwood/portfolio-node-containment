@@ -1,6 +1,6 @@
 import type { AreaDefinition } from './district.ts';
 import { rectContains, tileKey, type Facing, type TilePoint, type TileRect } from './geometry.ts';
-import { isOutdoorFloor, MAP_LEGEND, TILE_KINDS, type EdgeTileKindId, type TileKindId, type WallMaterialId } from './tiles.ts';
+import { CLIFF_DROP, isOutdoorFloor, MAP_LEGEND, MAX_TERRAIN_HEIGHT, TILE_KINDS, type EdgeTileKindId, type TileKindId, type WallMaterialId } from './tiles.ts';
 
 export type RoomShape = 'rect' | 'octagon' | 'round';
 
@@ -76,7 +76,22 @@ export interface TrackStep {
   readonly points: readonly TilePoint[];
 }
 
-export type BlueprintStep = RoomStep | BuildingStep | LinkStep | ExitStep | PatchStep | PillarsStep | HollowStep | TrackStep;
+export interface RiseStep {
+  readonly kind: 'rise';
+  readonly rect: TileRect;
+  readonly height: number;
+  readonly shape?: RoomShape;
+}
+
+export interface RampStep {
+  readonly kind: 'ramp';
+  readonly rect: TileRect;
+  readonly side: ExitSide;
+  readonly from: number;
+  readonly to: number;
+}
+
+export type BlueprintStep = RoomStep | BuildingStep | LinkStep | ExitStep | PatchStep | PillarsStep | HollowStep | TrackStep | RiseStep | RampStep;
 
 export const TRACK_GAUGE = 2;
 
@@ -92,10 +107,18 @@ export interface PaintedTile {
   readonly tile: TileKindId;
 }
 
+export interface PaintedHeight {
+  readonly x: number;
+  readonly y: number;
+  readonly height: number;
+}
+
 export interface Blueprint {
   readonly size: { readonly width: number; readonly height: number };
   readonly steps: readonly BlueprintStep[];
   readonly map: readonly string[];
+  readonly heights?: readonly string[];
+  heightAt(point: TilePoint): number;
   readonly rooms: Readonly<Record<string, TileRect>>;
   readonly shapes: Readonly<Record<string, RoomShape>>;
   readonly exits: Readonly<Record<string, DistrictExit>>;
@@ -179,6 +202,25 @@ export function trackBed(points: readonly TilePoint[]): TileRect[] {
 
 export const hollow = (x: number, y: number, width: number, height: number): HollowStep => ({ kind: 'hollow', rect: { x, y, width, height } });
 
+export const rise = (x: number, y: number, width: number, height: number, level: number, shape: RoomShape = 'rect'): RiseStep => ({
+  kind: 'rise',
+  rect: { x, y, width, height },
+  height: level,
+  ...(shape === 'rect' ? {} : { shape }),
+});
+
+export const ramp = (x: number, y: number, width: number, height: number, side: ExitSide, from: number, to: number): RampStep => ({
+  kind: 'ramp',
+  rect: { x, y, width, height },
+  side,
+  from,
+  to,
+});
+
+export const encodeHeight = (height: number): string => height.toString(36);
+
+export const decodeHeight = (symbol: string | undefined): number => (symbol === undefined ? 0 : parseInt(symbol, 36) || 0);
+
 const SYMBOL_OF = new Map<TileKindId, string>(Object.entries(MAP_LEGEND).map(([symbol, kind]) => [kind, symbol]));
 
 const NEIGHBOURS: readonly TilePoint[] = [
@@ -235,9 +277,16 @@ function overlapStart(aStart: number, aLength: number, bStart: number, bLength: 
   return offset === undefined ? start + Math.floor((end - start - width) / 2) : start + offset;
 }
 
-export function drawBlueprint(size: { readonly width: number; readonly height: number }, steps: readonly BlueprintStep[], painted: readonly PaintedTile[] = []): Blueprint {
+export function drawBlueprint(
+  size: { readonly width: number; readonly height: number },
+  steps: readonly BlueprintStep[],
+  painted: readonly PaintedTile[] = [],
+  paintedHeights: readonly PaintedHeight[] = [],
+): Blueprint {
   const { width, height } = size;
   const tiles: TileKindId[] = new Array(width * height).fill('void');
+  const elevation: number[] = new Array(width * height).fill(0);
+  const buildings: BuildingStep[] = [];
   const rooms: Record<string, TileRect> = {};
   const shapes: Record<string, RoomShape> = {};
   const exits: Record<string, DistrictExit> = {};
@@ -252,6 +301,12 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
   const setTile = (point: TilePoint, tile: TileKindId): void => {
     if (!inBounds(point)) throw new Error(`Blueprint tile ${point.x},${point.y} is outside ${width}x${height}.`);
     tiles[point.y * width + point.x] = tile;
+  };
+  const elevationAt = (point: TilePoint): number => (inBounds(point) ? (elevation[point.y * width + point.x] as number) : 0);
+  const setElevation = (point: TilePoint, value: number, what: string): void => {
+    if (!inBounds(point)) throw new Error(`Blueprint ${what} tile ${point.x},${point.y} is outside ${width}x${height}.`);
+    if (!Number.isInteger(value) || value < 0 || value > MAX_TERRAIN_HEIGHT) throw new Error(`Blueprint ${what} height ${value} is not a whole step from 0 to ${MAX_TERRAIN_HEIGHT}.`);
+    elevation[point.y * width + point.x] = value;
   };
   const rectOf = (roomId: string): TileRect => {
     const rect = rooms[roomId];
@@ -362,6 +417,28 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
     links[`${step.id}>outside`] = doorTiles;
   };
 
+  const drawRise = (step: RiseStep): void => {
+    for (let y = step.rect.y; y < step.rect.y + step.rect.height; y++) {
+      for (let x = step.rect.x; x < step.rect.x + step.rect.width; x++) {
+        if (isInsideShape(step.shape ?? 'rect', step.rect, { x, y })) setElevation({ x, y }, step.height, 'rise');
+      }
+    }
+  };
+
+  const drawRamp = (step: RampStep): void => {
+    const { rect, side, from, to } = step;
+    const length = side === 'north' || side === 'south' ? rect.height : rect.width;
+    const levels = Math.abs(to - from) + 1;
+    if (length < levels) throw new Error(`Blueprint ramp at ${rect.x},${rect.y} is too steep: climbing ${levels - 1} steps needs ${levels} tiles, and it has ${length}.`);
+    const direction = Math.sign(to - from);
+    for (let y = rect.y; y < rect.y + rect.height; y++) {
+      for (let x = rect.x; x < rect.x + rect.width; x++) {
+        const along = side === 'north' ? rect.y + rect.height - 1 - y : side === 'south' ? y - rect.y : side === 'west' ? rect.x + rect.width - 1 - x : x - rect.x;
+        setElevation({ x, y }, from + direction * Math.floor((along * levels) / length), 'ramp');
+      }
+    }
+  };
+
   const drawPillars = (step: PillarsStep): void => {
     const rect = rectOf(step.room);
     for (let y = rect.y + step.inset; y < rect.y + rect.height - step.inset; y += step.everyY) {
@@ -373,7 +450,11 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
 
   for (const step of steps) {
     if (step.kind === 'room') drawRoom(step);
-    else if (step.kind === 'building') drawBuilding(step);
+    else if (step.kind === 'building') {
+      drawBuilding(step);
+      buildings.push(step);
+    } else if (step.kind === 'rise') drawRise(step);
+    else if (step.kind === 'ramp') drawRamp(step);
     else if (step.kind === 'link') drawLink(step);
     else if (step.kind === 'exit') drawExit(step);
     else if (step.kind === 'patch') drawPatch(step);
@@ -422,10 +503,57 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
   }
   for (const wall of walls) setTile(wall.point, wall.tile);
   for (const paint of painted) setTile(paint, paint.tile);
+  for (const paint of paintedHeights) setElevation(paint, paint.height, 'painted');
+
+  for (const wall of walls) {
+    const ground = NEIGHBOURS.map((offset) => ({ x: wall.point.x + offset.x, y: wall.point.y + offset.y })).filter((beside) => {
+      const kind = tileAt(beside);
+      return kind !== 'void' && TILE_KINDS[kind].structure !== 'wall';
+    });
+    if (ground.length > 0) elevation[wall.point.y * width + wall.point.x] = Math.max(...ground.map(elevationAt));
+  }
+
+  for (const building of buildings) {
+    const { rect } = building;
+    const level = elevationAt(rect);
+    for (let y = rect.y; y < rect.y + rect.height; y++) {
+      for (let x = rect.x; x < rect.x + rect.width; x++) {
+        if (elevationAt({ x, y }) !== level) {
+          throw new Error(`Blueprint building "${building.id}" does not stand on level ground: ${rect.x},${rect.y} is step ${level} and ${x},${y} is step ${elevationAt({ x, y })}.`);
+        }
+      }
+    }
+  }
+
+  const walkableAt = (point: TilePoint): boolean => TILE_KINDS[tileAt(point)].walkable;
+  const doorways = new Map<string, string>();
+  for (const [name, exitDefinition] of Object.entries(exits)) for (const tile of exitDefinition.tiles) doorways.set(tileKey(tile), `exit "${name}"`);
+  for (const [name, linkTiles] of Object.entries(links)) for (const tile of linkTiles) doorways.set(tileKey(tile), `link "${name}"`);
+  const cliffs: TilePoint[] = [];
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const point = { x, y };
+      if (!walkableAt(point)) continue;
+      const own = elevationAt(point);
+      const drop = NEIGHBOURS.reduce((deepest, offset) => {
+        const beside = { x: x + offset.x, y: y + offset.y };
+        return walkableAt(beside) ? Math.max(deepest, own - elevationAt(beside)) : deepest;
+      }, 0);
+      if (drop < CLIFF_DROP) continue;
+      const doorway = doorways.get(tileKey(point)) ?? (tileAt(point) === 'door' ? 'door' : undefined);
+      if (doorway) throw new Error(`Blueprint ${doorway} at ${x},${y} would be cliff: the ground beside it drops ${drop} steps.`);
+      cliffs.push(point);
+    }
+  }
+  for (const cliff of cliffs) setTile(cliff, 'cliff');
+  for (let index = 0; index < tiles.length; index++) if (tiles[index] === 'void') elevation[index] = 0;
 
   const map = Array.from({ length: height }, (_, y) =>
     Array.from({ length: width }, (_, x) => SYMBOL_OF.get(tiles[y * width + x] as TileKindId) as string).join(''),
   );
+  const heights = elevation.some((value) => value > 0)
+    ? Array.from({ length: height }, (_, y) => Array.from({ length: width }, (_, x) => encodeHeight(elevation[y * width + x] as number)).join(''))
+    : undefined;
 
   const spot = (roomId: string, dx: number, dy: number): TilePoint => {
     const rect = rectOf(roomId);
@@ -527,6 +655,8 @@ export function drawBlueprint(size: { readonly width: number; readonly height: n
     size,
     steps,
     map,
+    ...(heights === undefined ? {} : { heights }),
+    heightAt: elevationAt,
     rooms,
     shapes,
     exits,

@@ -52,6 +52,9 @@ function checkGeometry(layout: DistrictLayout): void {
   layout.tiles.forEach((tile, index) => {
     if (outside(tile.x, tile.y)) fail(`tiles[${index}]`, `${tile.x},${tile.y} is outside the district's ${size.width}x${size.height}`);
   });
+  (layout.heights ?? []).forEach((tile, index) => {
+    if (outside(tile.x, tile.y)) fail(`heights[${index}]`, `${tile.x},${tile.y} is outside the district's ${size.width}x${size.height}`);
+  });
 }
 
 function drawLayout(layout: DistrictLayout): Blueprint {
@@ -69,7 +72,13 @@ function drawLayout(layout: DistrictLayout): Blueprint {
     const doorway = doorways.get(tileKey(tile));
     if (doorway) throw new Error(`${layout.id}: tiles[${index}]: ${tile.x},${tile.y} is part of ${doorway}; change that step instead of painting over it`);
   });
-  return layout.tiles.length === 0 ? plan : drawBlueprint(layout.size, layout.steps, layout.tiles);
+  const heights = layout.heights ?? [];
+  if (layout.tiles.length === 0 && heights.length === 0) return plan;
+  try {
+    return drawBlueprint(layout.size, layout.steps, layout.tiles, heights);
+  } catch (error) {
+    throw new Error(`${layout.id}: ${(error as Error).message}`);
+  }
 }
 
 const foreignAnchors = new Map<string, TilePoint>();
@@ -133,6 +142,7 @@ export function buildDistrict(source: unknown): DistrictDefinition {
     ...(layout.deadEnd === undefined ? {} : { deadEnd: layout.deadEnd }),
     ambience: layout.ambience,
     map: plan.map,
+    ...(plan.heights === undefined ? {} : { heights: plan.heights }),
     rooms: plan.rooms,
     exits: plan.exits,
     ...(Object.keys(anchors).length > 0 ? { anchors } : {}),

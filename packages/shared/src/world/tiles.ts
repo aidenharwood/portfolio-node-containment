@@ -28,6 +28,7 @@ export const TILE_KIND_IDS = [
   'blockwork',
   'cladding',
   'paving',
+  'cliff',
 ] as const;
 
 export type TileKindId = (typeof TILE_KIND_IDS)[number];
@@ -70,6 +71,7 @@ export const TILE_KINDS: Readonly<Record<TileKindId, TileKind>> = {
   blockwork: { id: 'blockwork', structure: 'wall', walkable: false },
   cladding: { id: 'cladding', structure: 'wall', walkable: false },
   paving: { id: 'paving', structure: 'floor', walkable: true },
+  cliff: { id: 'cliff', structure: 'wall', walkable: false },
 };
 
 export const MAP_LEGEND: Readonly<Record<string, TileKindId>> = {
@@ -102,6 +104,7 @@ export const MAP_LEGEND: Readonly<Record<string, TileKindId>> = {
   Q: 'blockwork',
   C: 'cladding',
   P: 'paving',
+  X: 'cliff',
 };
 
 export const EDGE_TILE_KINDS = ['barrier', 'rock', 'trees', 'fence'] as const;
@@ -117,5 +120,9 @@ export const WALL_MATERIALS = ['wall', 'brick', 'blockwork', 'cladding'] as cons
 export type WallMaterialId = (typeof WALL_MATERIALS)[number];
 
 const WALL_MATERIAL_SET: ReadonlySet<TileKindId> = new Set<TileKindId>(WALL_MATERIALS);
+
+export const MAX_TERRAIN_HEIGHT = 15;
+
+export const CLIFF_DROP = 2;
 
 export const isBuildingWall = (kind: TileKindId): kind is WallMaterialId => WALL_MATERIAL_SET.has(kind);

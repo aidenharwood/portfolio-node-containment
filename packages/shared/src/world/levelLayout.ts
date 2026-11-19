@@ -71,7 +71,7 @@ function stampsOf(level: LevelDefinition, districts: ReadonlyMap<DistrictId, Dis
     ...level.districts.map((placement) => ({
       owner: { kind: 'district' as const, id: placement.districtId },
       origin: placement.origin,
-      layout: parseTileLayout(districtOf(districts, placement.districtId).map),
+      layout: parseTileLayout(districtOf(districts, placement.districtId).map, districtOf(districts, placement.districtId).heights),
     })),
     ...level.connectors.map((connector) => ({
       owner: { kind: 'connector' as const, id: connector.id },
@@ -87,6 +87,7 @@ export function assembleLevel(level: LevelDefinition, districts: ReadonlyMap<Dis
   const height = Math.max(0, ...stamps.map((stamp) => stamp.origin.y + stamp.layout.height));
   const tiles: TileKindId[] = new Array(width * height).fill('void');
   const owners: (Owner | undefined)[] = new Array(width * height).fill(undefined);
+  const heights = new Uint8Array(width * height);
   const origins = new Map(level.districts.map((placement) => [placement.districtId, placement.origin]));
 
   for (const stamp of stamps) {
@@ -96,6 +97,7 @@ export function assembleLevel(level: LevelDefinition, districts: ReadonlyMap<Dis
         if (kind === 'void') continue;
         const index = (stamp.origin.y + y) * width + stamp.origin.x + x;
         tiles[index] = kind;
+        heights[index] = stamp.layout.heightAt({ x, y });
         owners[index] = stamp.owner;
       }
     }
@@ -107,6 +109,7 @@ export function assembleLevel(level: LevelDefinition, districts: ReadonlyMap<Dis
     width,
     height,
     tileAt: ({ x, y }) => (x < 0 || y < 0 || x >= width || y >= height ? 'void' : (tiles[y * width + x] ?? 'void')),
+    heightAt: ({ x, y }) => (x < 0 || y < 0 || x >= width || y >= height ? 0 : (heights[y * width + x] ?? 0)),
     districtAt: (point) => {
       const owner = ownerAt(point);
       return owner?.kind === 'district' ? owner.id : undefined;
