@@ -1,0 +1,78 @@
+:root {
+  color-scheme: dark;
+  --ink: #d8e4ea;
+  --muted: #7d909a;
+  --panel: #0d151b;
+  --line: #1f2d36;
+  --accent: #4fd8ff;
+}
+
+body {
+  margin: 0;
+  background: #05090c;
+  color: var(--ink);
+  font: 13px/1.4 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+#gallery {
+  padding: 16px;
+  display: grid;
+  gap: 16px;
+}
+
+.tier {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.tier h2 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  color: var(--accent);
+}
+
+.mannequins {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mannequin {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  color: var(--muted);
+}
+
+.mannequin canvas {
+  background: #0a1116;
+  border-radius: 4px;
+}
+
+.icons {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 6px;
+}
+
+.icon {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.icon img {
+  width: 72px;
+  height: 72px;
+  image-rendering: pixelated;
+}
+
+.icon strong {
+  color: var(--ink);
+  font-weight: 500;
+}

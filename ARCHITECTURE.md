@@ -216,7 +216,7 @@ A creature's optional `encounter` (`shared/src/combat/encounters.ts`) lists type
 
 ### Weapons
 
-A weapon is `equipment.weapon`: a `kind`, a `range` and `speedTicks`. `WEAPON_KIND_INFO` in `shared/src/combat/weapons.ts` gives each kind its style, grip, attack motion, projectile and damage scale:
+A weapon is `equipment.weapon`: a `kind`, a `range` and `speedTicks`. `WEAPON_KIND_INFO` in `shared/src/combat/weapons.ts` gives each kind its display name, style, grip, attack motion, projectile and damage scale. The kinds keep short internal keys; players see the sci-fi names (the maul is a Power Hammer, the blade a Monoblade, the rifle a Rail Rifle):
 
 | Kind | Grip | Style | Motion | Projectile | Notes |
 | --- | --- | --- | --- | --- | --- |
@@ -333,13 +333,15 @@ An equipped item is drawn on the character from its `icon` shape. The inventory 
 - `EQUIPMENT_SHAPES` in `shared/src/gear/slots.ts` lists the shapes each slot accepts. `findContentIssues` rejects an item whose icon is not one of its slot's shapes.
 - `characterModel.ts` keeps one renderer per shape in records typed `Record<GearShape<slot>, …>`, so adding a shape without a renderer fails the typecheck.
 - Bodies come from `BUILDS[physique][bodyType]`: shoulder, waist and hip widths, plus a bust for female builds. Torso armour is laid one voxel outside the body profile, so it follows the silhouette underneath.
-- **Forms:** ladder gear carries `GearVisual.form`, one per material tier (`GEAR_FORMS`: scrap, iron, steel, alloy, sinter, vaultGlass), so each tier is its own model rather than a recolour. Uniques leave `form` out and keep their base shape.
+- **Forms:** ladder gear carries `GearVisual.form`, one per material tier (`GEAR_FORMS`: scrap, ferro, plasteel, duralloy, sinter, vaultGlass), so each tier is its own model rather than a recolour. Uniques leave `form` out and keep their base shape. Every ladder piece also carries its tier's glow as `emissive`, which lights visors, cores and emitters.
   - Worn pieces run a per-form pass after their shape and motif renderers (`render/models/gearFormWorn.ts`: head, torso, gloves, shoulders, legs, boots, back, held).
   - Icons run `iconForm` (`render/items/itemFormPasses.ts`).
-  - Maul, pistol, carbine and rifle swap their head or receiver per form (`render/items/weaponHeads.ts`).
+  - The power hammer (`maul`), pistol, carbine and rifle swap their head or receiver per form (`render/items/weaponHeads.ts`).
   - Icons, held weapons and back items are then remapped by `reshapeForForm` (`render/voxel/formReshape.ts`): lopsided, squat, tall, rounded, slabbed or shattered.
   - `client/test/gearForms.test.ts` requires every pair of tiers of a line and slot, and of every weapon kind, to differ by at least 20% in bounding-box-normalised silhouette, both worn and as icons.
-- **Back line:** every armour line has a craftable back piece per tier: a bulwark Pavise (`shield`), a skirmisher Pack and a warden Mantle. Eyes, implant, utility and secondary stay unique-only.
+- **Back line:** every armour line has a craftable back piece per tier: a bulwark Barrier (`shield`, a generator throwing a hard-light lattice), a skirmisher Pack and a warden Cloak (`cape`). Eyes, implant, utility and secondary stay unique-only.
+- **Look:** gear is near-future military and street tech, not medieval. Helmets are sealed with visors, the bulwark torso is a segmented carapace with a power spine, the warden head is a hood with a neural crown, scrap gear is bound with grey tape, and melee weapons have no crossguards.
+- **Gear gallery:** the dev-only page `/gear.html` (`client/src/gallery/`) shows every ladder tier on mannequins and as icons. Query options: `forms=ferro,sinter`, `lines=bulwark`, `facing=north`, `scale=1.5`, `icon=130`, `one` (one weapon per line), `mannequins` (no icons) and `components` (materials and kits).
 
 ### Economy
 

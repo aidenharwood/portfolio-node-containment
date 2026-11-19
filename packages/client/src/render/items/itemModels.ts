@@ -1,7 +1,7 @@
 import type { GearForm, GearMotif, ItemDefinition, ItemIconShape } from '@containment/shared';
 import { iconForm } from './itemFormPasses.ts';
 import { reshapeForForm } from '../voxel/formReshape.ts';
-import { darken, hex, jitter, lighten, noise3 } from '../voxel/palette.ts';
+import { darken, hex, jitter, lighten, mix, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE, VOXEL_GLASS, type VoxelKind } from '../voxel/voxelKinds.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 
@@ -51,9 +51,12 @@ const helmet: ItemBuilder = ({ primary, secondary, emissive }) => {
       }
     }
   }
-  model.fill(-4, 2, 6, 4, 4, 6, 0x0c1216);
-  if (emissive) model.fill(-4, 3, 7, 4, 3, 7, emissive, VOXEL_EMISSIVE);
-  model.fill(-1, 7, -3, 0, 8, 3, lighten(primary, 0.15));
+  const visor = emissive ? mix(emissive, 0x0c1216, 0.72) : 0x1a2630;
+  model.fill(-4, 1, 6, 4, 4, 6, (x, y) => (y === 4 ? 0x0c1216 : x === 2 && y === 2 ? lighten(visor, 0.35) : visor));
+  model.fill(-6, 2, 4, -6, 3, 5, visor).fill(6, 2, 4, 6, 3, 5, visor);
+  if (emissive) model.fill(-3, 3, 7, 3, 3, 7, emissive, VOXEL_EMISSIVE);
+  model.fill(-7, 2, -1, -7, 3, 1, secondary).fill(-7, 4, -1, -7, 6, -1, darken(primary, 0.3));
+  model.fill(-4, -1, -6, 4, 0, -6, darken(primary, 0.15));
   return model;
 };
 
@@ -94,10 +97,14 @@ const cape: ItemBuilder = ({ primary, secondary, emissive }) => {
   const model = new VoxelModel();
   for (let y = 0; y <= 12; y++) {
     const half = 3 + Math.floor((12 - y) / 3);
-    for (let x = -half; x <= half; x++) model.set(x, y, Math.round(Math.abs(x) * 0.3), y <= 1 ? secondary : jitter(x % 2 === 0 ? primary : darken(primary, 0.08), 0.03, noise3(x, y, 0, 9)));
+    for (let x = -half; x <= half; x++) {
+      if (x === 0 && y < 7) continue;
+      model.set(x, y, Math.round(Math.abs(x) * 0.3), y <= 1 || Math.abs(x) === half ? secondary : jitter(x % 2 === 0 ? primary : darken(primary, 0.08), 0.03, noise3(x, y, 0, 9)));
+    }
   }
   model.fill(-4, 13, 0, 4, 13, 1, darken(primary, 0.15));
-  for (const x of [-3, 3]) model.set(x, 12, -1, emissive ?? secondary, emissive ? VOXEL_EMISSIVE : undefined);
+  if (emissive) model.fill(-2, 12, -1, 2, 12, -1, emissive, VOXEL_EMISSIVE);
+  else for (const x of [-3, 3]) model.set(x, 12, -1, secondary);
   return model;
 };
 
@@ -117,7 +124,11 @@ const hood: ItemBuilder = (palette) => {
 
 const cowl: ItemBuilder = (palette) => {
   const model = cowlBase(palette);
-  model.fill(-2, 9, -5, 2, 9, -2, palette.primary).fill(-1, 10, -5, 1, 10, -3, palette.primary).set(0, 11, -5, lighten(palette.primary, 0.1));
+  const glow = palette.emissive ?? lighten(palette.secondary, 0.4);
+  const kind = palette.emissive ? VOXEL_EMISSIVE : undefined;
+  for (let angle = 0; angle < Math.PI * 2; angle += 0.1) model.set(Math.round(Math.cos(angle) * 7), 5, Math.round(Math.sin(angle) * 7), darken(palette.primary, 0.25));
+  for (const [x, z] of [[7, 0], [-7, 0], [0, 7], [0, -7]] as const) model.set(x, 5, z, glow, kind);
+  for (const x of [-3, 3]) model.fill(x, 9, -3, x, 10, -3, darken(palette.secondary, 0.2)).set(x, 11, -3, glow, kind);
   for (let y = -6; y <= -4; y++) {
     for (let angle = 0; angle < Math.PI * 2; angle += 0.12) {
       const radius = 7 + (y + 6) * 0.5;
@@ -230,13 +241,15 @@ const boots: ItemBuilder = ({ primary, secondary, emissive, motif }) => {
 
 const baton: ItemBuilder = ({ primary, secondary, emissive }) => {
   const model = new VoxelModel();
-  line(model, [-6, 0, 0], [7, 13, 0], primary);
-  line(model, [-6, 1, 0], [7, 14, 0], darken(primary, 0.2));
+  line(model, [-6, 0, 0], [6, 12, 0], primary);
+  line(model, [-6, 1, 0], [6, 13, 0], darken(primary, 0.2));
   line(model, [-6, 0, 0], [-3, 3, 0], secondary);
   line(model, [-3, 3, 1], [-1, 1, 1], secondary);
-  const band = emissive ?? lighten(primary, 0.3);
+  model.fill(-2, 3, -1, -1, 4, 1, darken(primary, 0.35));
+  const glow = emissive ?? lighten(primary, 0.4);
   const kind = emissive ? VOXEL_EMISSIVE : undefined;
-  model.set(4, 10, 0, band, kind).set(5, 11, 0, band, kind);
+  line(model, [7, 12, 0], [8, 13, 0], glow, kind);
+  line(model, [6, 14, 0], [7, 15, 0], glow, kind);
   return model;
 };
 
@@ -245,7 +258,8 @@ const pistol: ItemBuilder = ({ primary, secondary, emissive }) => {
   model.fill(-5, 0, -1, -2, 6, 1, secondary);
   model.fill(-1, 4, 0, 1, 5, 0, darken(primary, 0.4));
   model.fill(8, 7, 0, 8, 8, 0, darken(primary, 0.5));
-  if (emissive) model.fill(2, 10, 0, 6, 10, 0, emissive, VOXEL_EMISSIVE);
+  for (const x of [1, 4]) model.fill(x, 5, -2, x, 10, 2, (_x, y, z) => (y === 5 || y === 10 || Math.abs(z) === 2 ? darken(primary, 0.25) : null));
+  if (emissive) model.fill(2, 10, 0, 3, 10, 0, emissive, VOXEL_EMISSIVE);
   return model;
 };
 
@@ -444,7 +458,7 @@ const knife: ItemBuilder = ({ primary, secondary, emissive }) => {
 const blade: ItemBuilder = ({ primary, secondary, emissive }) => {
   const model = new VoxelModel();
   for (const offset of [0, 1]) line(model, [-8 + offset, -2, 0], [-5 + offset, 1, 0], secondary);
-  line(model, [-7, 3, 0], [-3, -1, 0], darken(secondary, 0.3));
+  model.fill(-5, 1, -1, -4, 2, 1, darken(secondary, 0.3));
   for (const offset of [0, 1, 2]) line(model, [-4 + offset, 2, 0], [8, 13 - offset, 0], offset === 2 ? lighten(primary, 0.2) : primary);
   if (emissive) line(model, [-1, 2, 1], [7, 10, 1], emissive, VOXEL_EMISSIVE);
   return model;
@@ -469,6 +483,7 @@ const rifle: ItemBuilder = ({ primary, secondary, emissive }) => {
   model.fill(-5, 8, -1, 6, 9, 1, darken(primary, 0.3));
   model.fill(-2, 7, 0, 1, 7, 0, darken(primary, 0.45));
   model.fill(7, 8, 0, 7, 9, 0, emissive ?? lighten(primary, 0.35), emissive ? VOXEL_EMISSIVE : undefined);
+  for (const y of [4, 7]) model.fill(11, y, 0, 17, y, 0, (x) => (x % 2 === 0 ? darken(primary, 0.25) : darken(primary, 0.4)));
   line(model, [9, 4, 0], [8, 1, 0], darken(primary, 0.4));
   line(model, [10, 4, 0], [11, 1, 0], darken(primary, 0.4));
   return model;
@@ -486,21 +501,28 @@ const scattergun: ItemBuilder = ({ primary, secondary, emissive }) => {
 
 const shield: ItemBuilder = ({ primary, secondary, emissive }) => {
   const model = new VoxelModel();
-  for (let y = 0; y <= 14; y++) {
-    const half = y < 4 ? 2 + y : 6;
-    for (let x = -half; x <= half; x++) model.set(x, y, 0, Math.abs(x) === half || y === 14 || y === 0 ? darken(secondary, 0.1) : grain(primary)(x, y, 0)).set(x, y, -1, darken(primary, 0.2));
+  const glow = emissive ?? lighten(primary, 0.45);
+  model.fill(-4, 2, -1, 4, 10, 1, (x, y, z) => (y === 2 || y === 10 ? darken(secondary, 0.1) : grain(primary)(x, y, z)));
+  model.fill(-1, 5, 2, 1, 7, 2, (x, y) => (x === 0 && y === 6 ? null : darken(primary, 0.3))).set(0, 6, 2, glow, VOXEL_EMISSIVE);
+  for (const x of [-5, 5]) model.fill(x, 3, 0, x, 13, 0, secondary).set(x, 14, 0, glow, VOXEL_EMISSIVE);
+  for (let x = -7; x <= 7; x++) {
+    for (let y = 0; y <= 15; y++) {
+      const edge = Math.abs(x) === 7 || y === 0 || y === 15;
+      const lattice = y % 2 === 0 && (x + (y % 4 === 0 ? 1 : 0)) % 2 === 0;
+      if (edge || lattice) model.set(x, y, -3, lighten(glow, edge ? 0.1 : 0.35), VOXEL_GLASS);
+    }
   }
-  model.fill(-1, 7, 1, 1, 9, 1, lighten(primary, 0.15));
-  if (emissive) model.set(0, 8, 2, emissive, VOXEL_EMISSIVE);
   return model;
 };
 
 const plate: ItemBuilder = ({ primary, secondary, emissive }) => {
   const model = new VoxelModel().fill(-6, 0, -2, 6, 13, 1, grain(primary, 0.05));
-  for (let y = 2; y <= 12; y += 3) model.fill(-6, y, 2, 6, y + 1, 2, darken(primary, 0.2));
+  for (const x0 of [-5, 1]) model.fill(x0, 7, 2, x0 + 4, 12, 2, grain(lighten(primary, 0.08), 0.04));
+  for (const [y0, y1] of [[1, 2], [4, 5]] as const) model.fill(-4, y0, 2, -1, y1, 2, primary).fill(1, y0, 2, 4, y1, 2, primary);
   model.fill(-8, 10, -2, -6, 13, 1, lighten(primary, 0.1)).fill(6, 10, -2, 8, 13, 1, lighten(primary, 0.1));
+  model.fill(-3, 14, -2, 3, 14, 1, (x, _y, z) => (Math.abs(x) === 3 || z === -2 || z === 1 ? darken(primary, 0.15) : null));
   model.fill(-6, 0, 2, 6, 0, 2, secondary);
-  if (emissive) model.fill(-1, 6, 3, 1, 8, 3, emissive, VOXEL_EMISSIVE);
+  model.fill(0, 7, 2, 0, 11, 2, emissive ?? darken(primary, 0.3), emissive ? VOXEL_EMISSIVE : undefined);
   return model;
 };
 
@@ -567,14 +589,31 @@ const coil: ItemBuilder = ({ primary, secondary }) => {
   return model;
 };
 
-const ingot: ItemBuilder = ({ primary, secondary }) => {
+const plating: ItemBuilder = ({ primary, secondary }) => {
   const model = new VoxelModel();
-  for (let y = 0; y <= 5; y++) {
-    const inset = Math.floor(y / 2);
-    model.fill(-7 + inset, y, -3 + Math.min(inset, 2), 7 - inset, y, 3 - Math.min(inset, 2), y === 5 ? lighten(primary, 0.2) : grain(primary, 0.04));
-  }
-  model.fill(-6, 0, 4, 6, 0, 4, secondary);
-  model.fill(-2, 6, 0, 1, 6, 0, darken(primary, 0.3));
+  const slab = (y: number, dx: number, dz: number, color: number) =>
+    model.fill(-7 + dx, y, -5 + dz, 7 + dx, y + 1, 5 + dz, (x, vy, z) => {
+      const rimX = Math.abs(x - dx) === 7;
+      const rimZ = Math.abs(z - dz) === 5;
+      if (rimX && rimZ) return null;
+      return vy === y + 1 && (rimX || rimZ) ? lighten(color, 0.18) : grain(color, 0.04)(x, vy, z);
+    });
+  slab(0, 0, 0, darken(primary, 0.15));
+  slab(2, 1, -1, primary);
+  model.paintExisting(2, 3, -5, 2, 3, 3, darken(primary, 0.3));
+  model.paintExisting(-4, 3, 0, -1, 3, 2, secondary);
+  for (const [x, z] of [[-4, -4], [6, -4], [-4, 2], [6, 2]] as const) model.set(x, 4, z, lighten(primary, 0.3));
+  return model;
+};
+
+const servo: ItemBuilder = ({ primary, secondary }) => {
+  const model = new VoxelModel();
+  model.fill(-5, 0, -3, 5, 6, 3, (x, y, z) => (y === 6 ? lighten(primary, 0.15) : grain(primary)(x, y, z)));
+  for (const x of [-6, 6]) model.fill(x, 2, -3, x, 4, 3, (_x, _y, z) => (Math.abs(z) === 2 ? null : darken(primary, 0.2)));
+  model.fill(1, 7, -1, 3, 7, 1, lighten(secondary, 0.1)).set(2, 8, 0, lighten(secondary, 0.25));
+  model.fill(2, 9, -5, 2, 9, 5, (_x, _y, z) => (Math.abs(z) === 5 ? darken(secondary, 0.2) : secondary));
+  line(model, [-5, 1, 3], [-8, 0, 6], 0xc83a3a);
+  line(model, [-5, 2, 3], [-8, 1, 7], 0x2a2a2a);
   return model;
 };
 
@@ -828,7 +867,8 @@ const BUILDERS: Readonly<Record<ItemIconShape, ItemBuilder>> = {
   moss,
   gel,
   coil,
-  ingot,
+  plating,
+  servo,
   sheet,
   cell,
   seal,

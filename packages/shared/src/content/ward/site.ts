@@ -21,7 +21,7 @@ export const SITE_ITEMS: readonly ItemDefinition[] = [
 ];
 
 export const SITE_RECIPES: readonly RecipeDefinition[] = [
-  { id: 'fabricator:dead-band-receiver', station: 'fabricator', skill: 'engineering', level: 8, inputs: [{ itemId: 'iron-bar', count: 2 }, { itemId: 'culvert-trace', count: 2 }], output: { itemId: 'dead-band-receiver', count: 1 }, experience: 99, ticks: 6 },
+  { id: 'fabricator:dead-band-receiver', station: 'fabricator', skill: 'engineering', level: 8, inputs: [{ itemId: 'ferro-plating', count: 2 }, { itemId: 'culvert-trace', count: 2 }], output: { itemId: 'dead-band-receiver', count: 1 }, experience: 99, ticks: 6 },
 ];
 
 export const SITE_CREATURES: readonly CreatureDefinition[] = [
@@ -51,7 +51,7 @@ export const SITE_CREATURES: readonly CreatureDefinition[] = [
     wander: 2,
     style: 'psionic',
     range: 3,
-    loot: [{ itemId: 'amber-trace', count: 1, chance: 0.5 }, { itemId: 'steel-bar', count: 1, chance: 0.15 }, { itemId: 'glass-eye', count: 1, chance: 0.01 }],
+    loot: [{ itemId: 'amber-trace', count: 1, chance: 0.5 }, { itemId: 'plasteel-plating', count: 1, chance: 0.15 }, { itemId: 'glass-eye', count: 1, chance: 0.01 }],
     containment: { containmentClass: 'euclid', procedures: 'Wear it down without breaking it. A cracked hound cannot be contained. Contain in a padded cell.', loot: [{ itemId: 'amber-trace', count: 3, chance: 1 }], requiredLevel: 15 },
   }),
   beast({
@@ -62,7 +62,7 @@ export const SITE_CREATURES: readonly CreatureDefinition[] = [
     level: 28,
     guard: 'bulwark',
     aggressive: true,
-    loot: [{ itemId: 'hull-plate', count: 1, chance: 0.5 }, { itemId: 'heavy-scrap', count: 2, chance: 0.4 }, { itemId: 'alloy-bar', count: 1, chance: 0.08 }, { itemId: 'knocker-fist', count: 1, chance: 0.01 }],
+    loot: [{ itemId: 'hull-plate', count: 1, chance: 0.5 }, { itemId: 'heavy-scrap', count: 2, chance: 0.4 }, { itemId: 'duralloy-plating', count: 1, chance: 0.08 }, { itemId: 'knocker-fist', count: 1, chance: 0.01 }],
   }),
   beast({
     id: 'tide-wraith',
@@ -132,7 +132,7 @@ export const SITE_QUESTS: readonly QuestDefinition[] = [
     followUpQuestId: 'bill-of-lading',
     steps: [
       { id: 'sefa', journal: 'Sefa Lind at The Signal on Market Row hears the Site breathing on the dead band. Talk to her.', objectives: [{ type: 'talkTo', npcId: 'sefa-lind', label: 'Talk to Sefa Lind' }] },
-      { id: 'receiver', journal: 'Make a dead-band receiver at a fabricator: two iron bars and two culvert traces, Engineering 8.', objectives: [{ type: 'craft', itemId: 'dead-band-receiver', count: 1, label: 'Make a dead-band receiver' }] },
+      { id: 'receiver', journal: 'Make a dead-band receiver at a fabricator: two sheets of ferro plating and two culvert traces, Engineering 8.', objectives: [{ type: 'craft', itemId: 'dead-band-receiver', count: 1, label: 'Make a dead-band receiver' }] },
       {
         id: 'readings',
         journal: 'Take readings at the Directorate survey stakes on the Cut, in the Scrapyards and on the Shipyard Fringe. The Scrapyards want iron in your hand and combat level 10. On the Fringe, come in from the north and stay off the road by the water.',
@@ -197,13 +197,13 @@ export const SITE_DIALOGUES: readonly DialogueDefinition[] = [
   questTalk({
     npc: 'sefa-lind',
     questId: 'dead-band',
-    report: { stepId: 'sefa', text: "You've been down. I can tell, you've got that B1 look. Listen. On the dead band the Site breathes, in and out, like it's asleep. I've a receiver design but my hands shake. Two iron bars and two culvert traces at a fabricator. Build it, take readings from three stakes round the Ward, and we'll know where the breathing comes from." },
+    report: { stepId: 'sefa', text: "You've been down. I can tell, you've got that B1 look. Listen. On the dead band the Site breathes, in and out, like it's asleep. I've a receiver design but my hands shake. Two sheets of ferro plating and two culvert traces at a fabricator. Build it, take readings from three stakes round the Ward, and we'll know where the breathing comes from." },
     offer: {
       text: "You've been down. I can tell, you've got that B1 look. Listen. On the dead band the Site breathes, in and out, like it's asleep. I've a receiver design but my hands shake. Build it, take readings from three stakes round the Ward, and we'll know where the breathing comes from.",
       accept: "I'll build the receiver.",
       requires: ['steel-below'],
     },
-    waiting: "Two iron bars, two culvert traces, a fabricator. Then the stakes: the Cut, the Scrapyards, the Fringe. If the fabricator won't take you yet, Kofi Mensah on the Cut needs valve parts made, and the board's Kit Order counts too.",
+    waiting: "Two sheets of ferro plating, two culvert traces, a fabricator. Then the stakes: the Cut, the Scrapyards, the Fringe. If the fabricator won't take you yet, Kofi Mensah on the Cut needs valve parts made, and the board's Kit Order counts too.",
     hand: {
       stepId: 'report',
       text: 'Well? Show me the needle.',

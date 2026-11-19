@@ -6,18 +6,18 @@ import { wornModelsFor } from '../src/render/models/characterModel.ts';
 
 const APPEARANCE: CharacterAppearance = { physique: 'male', bodyType: 'average', height: 1, skinTone: '#c48a62', hairStyle: 'crop', hairColor: '#3b2618', eyeColor: '#3d6e9c', faceMark: 'none', augment: 'none' } as CharacterAppearance;
 
-const TIERS = ['scrap', 'iron', 'steel', 'alloy', 'sinter', 'vault-glass'];
+const TIERS = ['scrap', 'ferro', 'plasteel', 'duralloy', 'sinter', 'vault-glass'];
 const LINES: Readonly<Record<string, readonly string[]>> = {
   bulwark: TIERS,
-  skirmisher: ['patchwork', 'oilskin', 'rigger', 'slipway', 'cordon', 'gloam'],
-  warden: ['sackcloth', 'felt', 'vigil', 'tidewarden', 'redline', 'hollow'],
+  skirmisher: ['scav', 'runner', 'rigger', 'slipway', 'cordon', 'gloam'],
+  warden: ['static', 'null', 'vigil', 'tidewarden', 'redline', 'hollow'],
 };
 const PIECES: Readonly<Record<string, readonly string[]>> = {
-  bulwark: ['helm', 'plate', 'gauntlets', 'greaves', 'boots', 'pavise'],
-  skirmisher: ['hood', 'jacket', 'gloves', 'trousers', 'treads', 'pack'],
-  warden: ['cowl', 'robe', 'wraps', 'breeches', 'footwraps', 'mantle'],
+  bulwark: ['helmet', 'carapace', 'gauntlets', 'legguards', 'mag-boots', 'barrier'],
+  skirmisher: ['hood', 'jacket', 'gloves', 'fatigues', 'treads', 'pack'],
+  warden: ['crown', 'longcoat', 'conduits', 'leggings', 'boots', 'cloak'],
 };
-const WEAPONS = ['baton', 'blade', 'maul', 'pistol', 'carbine', 'rifle', 'focus', 'resonator'];
+const WEAPONS = ['shock-baton', 'monoblade', 'power-hammer', 'coil-pistol', 'pulse-carbine', 'rail-rifle', 'psi-focus', 'resonator'];
 
 const MIN_DISTANCE = 0.2;
 const GRID = 16;

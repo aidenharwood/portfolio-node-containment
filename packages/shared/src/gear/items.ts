@@ -52,7 +52,8 @@ export type ItemIconShape =
   | 'moss'
   | 'gel'
   | 'coil'
-  | 'ingot'
+  | 'plating'
+  | 'servo'
   | 'sheet'
   | 'cell'
   | 'seal'
@@ -77,12 +78,12 @@ export const GEAR_MOTIFS = ['bulwark', 'skirmisher', 'warden'] as const;
 export type GearMotif = (typeof GEAR_MOTIFS)[number];
 
 export const GEAR_MOTIF_INFO: Readonly<Record<GearMotif, { name: string; summary: string }>> = {
-  bulwark: { name: 'Bulwark', summary: 'Heavy plate built to stand in the way.' },
-  skirmisher: { name: 'Skirmisher', summary: 'Light harness cut for marksmen who keep moving.' },
-  warden: { name: 'Adept', summary: 'Warded vestments for operatives who face the mind-bending.' },
+  bulwark: { name: 'Bulwark', summary: 'Powered plate built to stand in the way.' },
+  skirmisher: { name: 'Skirmisher', summary: 'Light tactical rigs for marksmen who keep moving.' },
+  warden: { name: 'Adept', summary: 'Shielded neural suits for operatives who face the mind-bending.' },
 };
 
-export const GEAR_FORMS = ['scrap', 'iron', 'steel', 'alloy', 'sinter', 'vaultGlass'] as const;
+export const GEAR_FORMS = ['scrap', 'ferro', 'plasteel', 'duralloy', 'sinter', 'vaultGlass'] as const;
 
 export type GearForm = (typeof GEAR_FORMS)[number];
 

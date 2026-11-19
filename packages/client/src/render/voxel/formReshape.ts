@@ -62,18 +62,18 @@ export function reshapeForForm(model: VoxelModel, form: GearForm, axes: ReshapeA
         targets.push(at(p[w] + leanW, p[l] + sag, p[d]));
         break;
       }
-      case 'iron': {
+      case 'ferro': {
         const lv = Math.round(cl + (p[l] - cl) * 0.85);
         for (const wv of span(Math.round(cw + (p[w] - cw) * 1.3), Math.round(cw + (p[w] + Math.sign(p[w] - cw || 1) - cw) * 1.3) - Math.sign(p[w] - cw || 1))) targets.push(at(wv, lv, p[d]));
         break;
       }
-      case 'steel': {
+      case 'plasteel': {
         const taper = 1 - 0.22 * ((p[l] - min[l]) / extent);
         const wv = Math.round(cw + (p[w] - cw) * taper);
         for (const lv of span(Math.round(cl + (p[l] - cl) * 1.25), Math.round(cl + (p[l] + 1 - cl) * 1.25) - 1)) targets.push(at(wv, lv, p[d]));
         break;
       }
-      case 'alloy': {
+      case 'duralloy': {
         const rw = Math.max(1, (max[w] - min[w]) / 2 + 0.5);
         const rl = Math.max(1, (max[l] - min[l]) / 2 + 0.5);
         const u = (p[w] - cw) / rw;

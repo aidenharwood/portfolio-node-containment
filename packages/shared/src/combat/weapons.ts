@@ -53,15 +53,15 @@ export interface WeaponKindInfo {
 export const WEAPON_KIND_INFO: Readonly<Record<WeaponKind, WeaponKindInfo>> = {
   unarmed: { name: 'Unarmed', style: 'melee', grip: 'oneHanded', motion: 'jab', projectile: null, damageScale: 1 },
   knife: { name: 'Knife', style: 'melee', grip: 'oneHanded', motion: 'stab', projectile: null, damageScale: 0.75 },
-  baton: { name: 'Baton', style: 'melee', grip: 'oneHanded', motion: 'strike', projectile: null, damageScale: 1 },
-  blade: { name: 'Blade', style: 'melee', grip: 'oneHanded', motion: 'slash', projectile: null, damageScale: 1 },
-  maul: { name: 'Maul', style: 'melee', grip: 'twoHanded', motion: 'slam', projectile: null, damageScale: 1 },
-  polearm: { name: 'Polearm', style: 'melee', grip: 'twoHanded', motion: 'lunge', projectile: null, damageScale: 0.9 },
-  pistol: { name: 'Pistol', style: 'ranged', grip: 'oneHanded', motion: 'snapShot', projectile: 'dart', damageScale: 1 },
-  carbine: { name: 'Carbine', style: 'ranged', grip: 'twoHanded', motion: 'shoulderShot', projectile: 'bolt', damageScale: 1 },
-  rifle: { name: 'Rifle', style: 'ranged', grip: 'twoHanded', motion: 'heavyShot', projectile: 'tracer', damageScale: 1.35 },
+  baton: { name: 'Shock Baton', style: 'melee', grip: 'oneHanded', motion: 'strike', projectile: null, damageScale: 1 },
+  blade: { name: 'Monoblade', style: 'melee', grip: 'oneHanded', motion: 'slash', projectile: null, damageScale: 1 },
+  maul: { name: 'Power Hammer', style: 'melee', grip: 'twoHanded', motion: 'slam', projectile: null, damageScale: 1 },
+  polearm: { name: 'Shock Lance', style: 'melee', grip: 'twoHanded', motion: 'lunge', projectile: null, damageScale: 0.9 },
+  pistol: { name: 'Coil Pistol', style: 'ranged', grip: 'oneHanded', motion: 'snapShot', projectile: 'dart', damageScale: 1 },
+  carbine: { name: 'Pulse Carbine', style: 'ranged', grip: 'twoHanded', motion: 'shoulderShot', projectile: 'bolt', damageScale: 1 },
+  rifle: { name: 'Rail Rifle', style: 'ranged', grip: 'twoHanded', motion: 'heavyShot', projectile: 'tracer', damageScale: 1.35 },
   scattergun: { name: 'Scattergun', style: 'ranged', grip: 'twoHanded', motion: 'blast', projectile: 'pellets', damageScale: 1.15 },
-  focus: { name: 'Focus', style: 'psionic', grip: 'oneHanded', motion: 'channel', projectile: 'pulse', damageScale: 1 },
+  focus: { name: 'Psi Focus', style: 'psionic', grip: 'oneHanded', motion: 'channel', projectile: 'pulse', damageScale: 1 },
   resonator: { name: 'Resonator', style: 'psionic', grip: 'twoHanded', motion: 'invoke', projectile: 'wave', damageScale: 1.3 },
 };
 

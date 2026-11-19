@@ -8,6 +8,7 @@ import {
   marketQuotes,
   matchOrder,
   placeOrder,
+  withCurrentItem,
   type CharacterId,
   type GameContent,
   type MarketAccess,
@@ -50,7 +51,11 @@ export class MarketController {
     this.host = host;
     this.store = store;
     this.onlinePlayer = onlinePlayer;
-    for (const order of store.load()) this.orders.set(order.id, order);
+    for (const stored of store.load()) {
+      const order = withCurrentItem(stored, content.renamedItems);
+      this.orders.set(order.id, order);
+      if (order !== stored) store.save(order);
+    }
     this.nextSequence = Math.max(0, ...[...this.orders.values()].map((order) => order.sequence)) + 1;
   }
 

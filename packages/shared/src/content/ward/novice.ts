@@ -41,7 +41,7 @@ export const NOVICE_ITEMS: readonly ItemDefinition[] = [
   {
     id: 'valve-part',
     name: 'Valve Part',
-    examine: "A sluice valve seat, hammered from a scrap bar to Kofi's pattern.",
+    examine: "A sluice valve seat, machined from scrap plating to Kofi's pattern.",
     category: 'material',
     rarity: 'standard',
     icon: 'coil',
@@ -56,7 +56,7 @@ export const NOVICE_ITEMS: readonly ItemDefinition[] = [
 ];
 
 export const NOVICE_RECIPES: readonly RecipeDefinition[] = [
-  { id: 'fabricator:valve-part', station: 'fabricator', skill: 'engineering', level: 1, inputs: [{ itemId: 'scrap-bar', count: 1 }], output: { itemId: 'valve-part', count: 1 }, experience: 10, ticks: 4 },
+  { id: 'fabricator:valve-part', station: 'fabricator', skill: 'engineering', level: 1, inputs: [{ itemId: 'scrap-plating', count: 1 }], output: { itemId: 'valve-part', count: 1 }, experience: 10, ticks: 4 },
 ];
 
 interface Beast {
@@ -158,7 +158,7 @@ export const NOVICE_CREATURES: readonly CreatureDefinition[] = [
     model: 'scrapCrawler',
     level: 14,
     aggressive: true,
-    loot: [{ itemId: 'scrap-metal', count: 2, chance: 0.8 }, { itemId: 'silt-iron', count: 1, chance: 0.3 }, { itemId: 'iron-bar', count: 1, chance: 0.1 }, { itemId: 'crawler-shell', count: 1, chance: 0.01 }],
+    loot: [{ itemId: 'scrap-metal', count: 2, chance: 0.8 }, { itemId: 'silt-iron', count: 1, chance: 0.3 }, { itemId: 'ferro-plating', count: 1, chance: 0.1 }, { itemId: 'crawler-shell', count: 1, chance: 0.01 }],
   }),
   beast({
     id: 'rustling',
@@ -174,8 +174,8 @@ export const NOVICE_CREATURES: readonly CreatureDefinition[] = [
     guard: 'bulwark',
     aggressive: true,
     wander: 2,
-    loot: [{ itemId: 'scrap-bar', count: 2, chance: 0.6 }, { itemId: 'iron-bar', count: 1, chance: 0.25 }, { itemId: 'rustling-core', count: 1, chance: 0.01 }],
-    containment: { containmentClass: 'euclid', procedures: 'Wear it down until the amber light dims. Contain before it reassembles. Use non-ferrous restraints.', loot: [{ itemId: 'iron-bar', count: 2, chance: 1 }], requiredLevel: 10 },
+    loot: [{ itemId: 'scrap-plating', count: 2, chance: 0.6 }, { itemId: 'ferro-plating', count: 1, chance: 0.25 }, { itemId: 'rustling-core', count: 1, chance: 0.01 }],
+    containment: { containmentClass: 'euclid', procedures: 'Wear it down until the amber light dims. Contain before it reassembles. Use non-ferrous restraints.', loot: [{ itemId: 'ferro-plating', count: 2, chance: 1 }], requiredLevel: 10 },
   }),
   beast({
     id: 'line-mimic',
@@ -264,8 +264,8 @@ export const NOVICE_QUESTS: readonly QuestDefinition[] = [
       { id: 'catch', journal: "Find whatever is wearing Mr Okafor's coat in the Tenements courtyard. Contain it or put it down, and get the coat back.", objectives: [{ type: 'obtainItem', itemId: 'okafor-coat', count: 1, label: "Recover Mr Okafor's coat" }] },
       { id: 'return', journal: 'Take the coat back to Ada Okafor.', objectives: [{ type: 'signal', signal: 'line.returned', npcId: 'ada-okafor', label: 'Return the coat to Ada' }] },
     ],
-    rewards: [xp('containment', 300), scrip(60), { type: 'giveItem', itemId: 'scrap-greaves' }],
-    rewardSummary: ['1 Quest Point', '300 Containment XP', '60 Scrip', 'Scrap Greaves'],
+    rewards: [xp('containment', 300), scrip(60), { type: 'giveItem', itemId: 'scrap-legguards' }],
+    rewardSummary: ['1 Quest Point', '300 Containment XP', '60 Scrip', 'Scrap Legguards'],
   }),
   novice({
     id: 'bed-six',
@@ -285,7 +285,7 @@ export const NOVICE_QUESTS: readonly QuestDefinition[] = [
     summary: "Three of Kofi Mensah's sluice valves on the Cut have seized, and the water is rising.",
     offeredBy: 'kofi-mensah',
     steps: [
-      { id: 'parts', journal: "Make three valve parts at a fabricator. Each takes a scrap bar: refine scrap metal at Fenwick Tools' refinery first.", objectives: [{ type: 'craft', itemId: 'valve-part', count: 3, label: 'Make valve parts' }] },
+      { id: 'parts', journal: "Make three valve parts at a fabricator. Each takes a sheet of scrap plating: press scrap metal at Fenwick Tools' refinery first.", objectives: [{ type: 'craft', itemId: 'valve-part', count: 3, label: 'Make valve parts' }] },
       { id: 'fit', journal: 'Fit the parts to the three seized sluices along the Cut.', objectives: [{ type: 'interactWith', objectId: 'seized-sluice', count: 3, label: 'Repair seized sluices' }] },
       { id: 'report', journal: 'Tell Kofi Mensah at the pump house.', objectives: [{ type: 'talkTo', npcId: 'kofi-mensah', label: 'Report to Kofi' }] },
     ],
@@ -320,8 +320,8 @@ export const NOVICE_QUESTS: readonly QuestDefinition[] = [
       { id: 'cat', journal: 'Find the cat near the culvert.', objectives: [{ type: 'obtainItem', itemId: 'grey-cat', count: 1, label: 'Pick up the grey cat' }] },
       { id: 'return', journal: 'Take the cat back to Pell in the Tenements alley.', objectives: [{ type: 'signal', signal: 'cat.returned', npcId: 'pell', label: 'Return the cat to Pell' }] },
     ],
-    rewards: [xp('fortitude', 200), styleExperiencePay(200).effect, scrip(40), { type: 'giveItem', itemId: 'scrap-helm' }],
-    rewardSummary: ['1 Quest Point', '200 Fortitude XP', styleExperiencePay(200).line, '40 Scrip', 'Scrap Helm'],
+    rewards: [xp('fortitude', 200), styleExperiencePay(200).effect, scrip(40), { type: 'giveItem', itemId: 'scrap-helmet' }],
+    rewardSummary: ['1 Quest Point', '200 Fortitude XP', styleExperiencePay(200).line, '40 Scrip', 'Scrap Helmet'],
   }),
   novice({
     id: 'bright-things',
@@ -332,8 +332,8 @@ export const NOVICE_QUESTS: readonly QuestDefinition[] = [
       { id: 'magpies', journal: 'Thin out the scrap magpies nesting in the allotments. They keep their distance, so a pistol helps.', objectives: [{ type: 'defeat', creatureId: 'scrap-magpie', count: 3, label: 'Defeat scrap magpies' }] },
       { id: 'report', journal: 'Tell Nell Carraway in the Market Row stall yard.', objectives: [{ type: 'talkTo', npcId: 'nell-carraway', label: 'Report to Nell' }] },
     ],
-    rewards: [xp('marksmanship', 300), scrip(40), { type: 'giveItem', itemId: 'scrap-carbine' }],
-    rewardSummary: ['1 Quest Point', '300 Marksmanship XP', '40 Scrip', 'Scrap Carbine'],
+    rewards: [xp('marksmanship', 300), scrip(40), { type: 'giveItem', itemId: 'scrap-pulse-carbine' }],
+    rewardSummary: ['1 Quest Point', '300 Marksmanship XP', '40 Scrip', 'Scrap Pulse Carbine'],
   }),
   novice({
     id: 'drowned-lamp',
@@ -348,8 +348,8 @@ export const NOVICE_QUESTS: readonly QuestDefinition[] = [
       { id: 'lamp', journal: 'Defeat the Lamplighter and take back the Drowned Lamp.', objectives: [{ type: 'defeat', creatureId: 'the-lamplighter', count: 1, label: 'Defeat the Lamplighter' }, { type: 'obtainItem', itemId: 'drowned-lamp', count: 1, label: 'Take the Drowned Lamp' }] },
       { id: 'return', journal: 'Bring the lamp back to Sol Marsh at the Drowned Lamp.', objectives: [{ type: 'signal', signal: 'lamp.returned', npcId: 'sol-marsh', label: 'Return the lamp to Sol' }] },
     ],
-    rewards: [...lamp.map((pay) => pay.effect), scrip(150), { type: 'giveItem', itemId: 'iron-bar', count: 3 }, { type: 'giveItem', itemId: 'culvert-trace', count: 2 }],
-    rewardSummary: ['2 Quest Points', ...lamp.map((pay) => pay.line), '150 Scrip', '3 Iron Bars', '2 Culvert Traces'],
+    rewards: [...lamp.map((pay) => pay.effect), scrip(150), { type: 'giveItem', itemId: 'ferro-plating', count: 3 }, { type: 'giveItem', itemId: 'culvert-trace', count: 2 }],
+    rewardSummary: ['2 Quest Points', ...lamp.map((pay) => pay.line), '150 Scrip', '3 Ferro Plating', '2 Culvert Traces'],
   }),
 ];
 
@@ -457,7 +457,7 @@ export const NOVICE_DIALOGUES: readonly DialogueDefinition[] = [
   questTalk({
     npc: 'kofi-mensah',
     questId: 'valve-trouble',
-    offer: { text: "Three of my sluices have seized along the Cut, and the water's coming up. I need three new valve parts, hammered from scrap bar at a fabricator. Make them, fit them, and I'll give you a key to my culvert hatches.", accept: "I'll make the parts." },
+    offer: { text: "Three of my sluices have seized along the Cut, and the water's coming up. I need three new valve parts, machined from scrap plating at a fabricator. Make them, fit them, and I'll give you a key to my culvert hatches.", accept: "I'll make the parts." },
     waiting: 'Three valve parts, one per sluice. The refinery and fabricator at Fenwick Tools will do it. Quickly, if you can.',
     report: { stepId: 'report', text: "Hear that? That's the Cut going back down. Here's the hatch key. The culvert runs from the hatch by the pump house to the basin quay. Mind the mites." },
     done: 'The pumps are singing. The Site stays dry another week.',

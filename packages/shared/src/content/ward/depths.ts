@@ -36,7 +36,7 @@ export const DEPTHS_ITEMS: readonly ItemDefinition[] = [
 
 export const DEPTHS_RECIPES: readonly RecipeDefinition[] = [
   { id: 'fabricator:survey-loupe', station: 'fabricator', skill: 'engineering', level: 12, inputs: [{ itemId: 'silt-iron', count: 2 }, { itemId: 'culvert-trace', count: 3 }], output: { itemId: 'survey-loupe', count: 1 }, experience: 120, ticks: 6 },
-  { id: 'fabricator:pump-impeller', station: 'fabricator', skill: 'engineering', level: 25, inputs: [{ itemId: 'steel-bar', count: 2 }], output: { itemId: 'pump-impeller', count: 1 }, experience: 96, ticks: 6 },
+  { id: 'fabricator:pump-impeller', station: 'fabricator', skill: 'engineering', level: 25, inputs: [{ itemId: 'plasteel-plating', count: 2 }], output: { itemId: 'pump-impeller', count: 1 }, experience: 96, ticks: 6 },
 ];
 
 export const DEPTHS_CREATURES: readonly CreatureDefinition[] = [
@@ -63,7 +63,7 @@ export const DEPTHS_CREATURES: readonly CreatureDefinition[] = [
     guard: 'bulwark',
     aggressive: true,
     wander: 2,
-    loot: [{ itemId: 'directorate-salvage', count: 2, chance: 0.6 }, { itemId: 'sinter-ingot', count: 1, chance: 0.1 }, { itemId: 'breaker-plate', count: 1, chance: 0.01 }],
+    loot: [{ itemId: 'directorate-salvage', count: 2, chance: 0.6 }, { itemId: 'sinter-plating', count: 1, chance: 0.1 }, { itemId: 'breaker-plate', count: 1, chance: 0.01 }],
   }),
   beast({
     id: 'cordon-stalker',
@@ -225,12 +225,12 @@ export const DEPTHS_QUESTS: readonly QuestDefinition[] = [
     offerRequires: ['valve-trouble'],
     recommendedLevel: 25,
     steps: [
-      { id: 'impeller', journal: 'Make a pump impeller at a fabricator: two steel bars, Engineering 25.', objectives: [{ type: 'craft', itemId: 'pump-impeller', count: 1, label: 'Make a pump impeller' }] },
+      { id: 'impeller', journal: 'Make a pump impeller at a fabricator: two sheets of plasteel plating, Engineering 25.', objectives: [{ type: 'craft', itemId: 'pump-impeller', count: 1, label: 'Make a pump impeller' }] },
       { id: 'fit', journal: 'Fit the impeller to the main pump in the pump house.', objectives: [{ type: 'interactWith', objectId: 'pump-engine', label: 'Fit the impeller' }] },
       { id: 'kofi', journal: 'Tell Kofi Mensah the pump is running.', objectives: [{ type: 'talkTo', npcId: 'kofi-mensah', label: 'Tell Kofi' }] },
     ],
-    rewards: [...bottom.map((pay) => pay.effect), scrip(400), { type: 'giveItem', itemId: 'steel-bar', count: 4 }],
-    rewardSummary: ['1 Quest Point', ...bottom.map((pay) => pay.line), '400 Scrip', '4 Steel Bars'],
+    rewards: [...bottom.map((pay) => pay.effect), scrip(400), { type: 'giveItem', itemId: 'plasteel-plating', count: 4 }],
+    rewardSummary: ['1 Quest Point', ...bottom.map((pay) => pay.line), '400 Scrip', '4 Plasteel Plating'],
   },
   {
     id: 'knock-back',
@@ -245,8 +245,8 @@ export const DEPTHS_QUESTS: readonly QuestDefinition[] = [
       { id: 'answer', journal: 'Deal with what answers.', objectives: [{ type: 'defeat', creatureId: 'hull-knocker', count: 4, label: 'Defeat hull knockers' }] },
       { id: 'sato', journal: 'Report to Corporal Sato at the Fringe watch hut.', objectives: [{ type: 'talkTo', npcId: 'corporal-sato', label: 'Report to Sato' }] },
     ],
-    rewards: [...knock.map((pay) => pay.effect), scrip(500), { type: 'giveItem', itemId: 'alloy-pavise' }],
-    rewardSummary: ['1 Quest Point', ...knock.map((pay) => pay.line), '500 Scrip', 'Alloy Pavise'],
+    rewards: [...knock.map((pay) => pay.effect), scrip(500), { type: 'giveItem', itemId: 'duralloy-barrier' }],
+    rewardSummary: ['1 Quest Point', ...knock.map((pay) => pay.line), '500 Scrip', 'Duralloy Barrier'],
   },
 ];
 
@@ -302,7 +302,7 @@ export const DEPTHS_DIALOGUES: readonly DialogueDefinition[] = [
         conditions: [{ type: 'skillLevel', skill: 'engineering', atLeast: 25 }],
         notReady: 'I need an impeller made by someone with Engineering 25. Come back when your hands are ready.',
       },
-      waiting: 'Two steel bars at a fabricator, then fit it to the main pump in here.',
+      waiting: 'Two sheets of plasteel plating at a fabricator, then fit it to the main pump in here.',
       report: { stepId: 'kofi', text: "Listen. That's the main pump. Do you know what's under the Site? Neither do I. But it doesn't like water, and it's going to stay dry. Thank you." },
       done: 'The pumps are singing. The Site stays dry another week.',
       chat: 'If these pumps stop, the basin rises and the Site floods from the bottom up.',

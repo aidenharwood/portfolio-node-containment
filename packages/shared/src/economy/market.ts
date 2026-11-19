@@ -68,6 +68,11 @@ export const defaultMarketPrice = (item: ItemDefinition): number => Math.max(1, 
 
 export const tradableItems = (catalog: ItemCatalog): ItemDefinition[] => [...catalog.values()].filter(isTradable);
 
+export function withCurrentItem(order: MarketOrder, renamedItems: ReadonlyMap<ItemId, ItemId> | undefined): MarketOrder {
+  const itemId = renamedItems?.get(order.itemId);
+  return itemId ? { ...order, itemId } : order;
+}
+
 export const remainingQuantity = (order: MarketOrder): number => order.quantity - order.filled;
 
 export const isSettled = (order: MarketOrder): boolean => !order.open && order.uncollectedItems === 0 && order.uncollectedScrip === 0;

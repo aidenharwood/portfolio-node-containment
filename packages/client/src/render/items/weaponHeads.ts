@@ -13,7 +13,7 @@ export interface HeadPalette {
   readonly emissive: number | null;
 }
 
-const ROPE = 0x8a7a5a;
+const TAPE = 0x9a9fa3;
 const HAZARD = 0xe86a1c;
 
 const diamond = (model: VoxelModel, cx: number, cy: number, radius: number, color: number, kind: VoxelKind = VOXEL_GLASS): void => {
@@ -28,18 +28,17 @@ export function iconWeaponHead(model: VoxelModel, shape: WeaponHeadShape, form: 
     for (let x = 1; x <= 8; x++) for (let y = 12; y <= 17; y++) for (let z = -2; z <= 2; z++) model.remove(x, y, z);
     switch (form) {
       case 'scrap':
-        model.fill(0, 11, -2, 5, 15, 2, (x, y) => (x === 5 && y > 13 ? null : primary)).fill(6, 12, -1, 6, 14, 1, darken(primary, 0.15)).fill(4, 16, 0, 4, 18, 0, darken(primary, 0.25)).set(5, 18, 0, darken(primary, 0.25));
+        model.fill(0, 11, -2, 6, 15, 2, (x, y, z) => (x === 6 && y > 13 && z > 0 ? null : x === 3 ? TAPE : primary)).fill(1, 16, -1, 2, 17, 1, darken(secondary, 0.2));
         return;
-      case 'iron':
-        model.fill(1, 11, -2, 7, 16, 2, primary).fill(0, 13, -3, 8, 14, 3, (x, _y, z) => (x === 0 || x === 8 || Math.abs(z) === 3 ? lighten(primary, 0.25) : null));
+      case 'ferro':
+        model.fill(1, 11, -2, 7, 16, 2, (x) => (x === 1 || x === 7 ? darken(primary, 0.25) : primary)).fill(3, 17, -1, 5, 18, 1, lighten(primary, 0.2));
         return;
-      case 'steel':
-        model.fill(1, 12, -1, 5, 16, 1, primary).fill(6, 13, 0, 8, 15, 0, lighten(primary, 0.15)).fill(9, 14, 0, 10, 14, 0, lighten(primary, 0.3)).fill(-1, 14, 0, 0, 14, 0, primary);
+      case 'plasteel':
+        for (let t = 0; t <= 4; t++) model.fill(1 + t, 12 + t, -1, 2 + t, 13 + t, 1, t === 2 ? glow : primary, t === 2 ? VOXEL_EMISSIVE : undefined);
+        model.fill(7, 17, -2, 8, 18, 2, darken(primary, 0.3)).fill(2, 15, 0, 3, 16, 0, darken(primary, 0.2)).fill(5, 12, 0, 6, 13, 0, darken(primary, 0.2));
         return;
-      case 'alloy':
-        model.fill(3, 12, 0, 4, 18, 0, primary).fill(-1, 18, -1, 8, 18, 1, lighten(primary, 0.1));
-        for (const [x, y] of [[-1, 17], [-2, 16], [-2, 15], [-1, 14], [8, 17], [9, 16], [9, 15], [8, 14]] as const) model.fill(x, y, -1, x, y, 1, primary);
-        model.fill(2, 19, 0, 5, 20, 0, (x) => (x === 2 || x === 5 ? secondary : null));
+      case 'duralloy':
+        model.fill(0, 11, -2, 2, 17, 2, primary).fill(6, 11, -2, 8, 17, 2, primary).fill(3, 13, -1, 5, 15, 1, glow, VOXEL_EMISSIVE);
         return;
       case 'sinter':
         model.fill(1, 12, -2, 7, 16, 2, primary).fill(8, 12, -1, 9, 16, 1, (_x, y) => (y % 2 === 0 ? HAZARD : null)).fill(1, 17, -1, 7, 17, 1, glow, VOXEL_EMISSIVE);
@@ -54,15 +53,15 @@ export function iconWeaponHead(model: VoxelModel, shape: WeaponHeadShape, form: 
   if (shape === 'pistol') {
     switch (form) {
       case 'scrap':
-        model.fill(-1, 3, -1, 7, 5, 1, darken(secondary, 0.1)).fill(8, 4, 0, 9, 4, 0, ROPE);
+        model.fill(-1, 3, -1, 7, 5, 1, darken(secondary, 0.1)).fill(8, 4, 0, 9, 4, 0, TAPE);
         return;
-      case 'iron':
+      case 'ferro':
         model.fill(0, 3, -2, 4, 12, 2, (x, y) => ((x + y) % 2 === 0 ? darken(primary, 0.15) : primary));
         return;
-      case 'steel':
+      case 'plasteel':
         model.fill(-6, 10, -1, 6, 11, 1, lighten(primary, 0.1)).fill(-5, -4, -1, -3, 0, 1, darken(secondary, 0.2));
         return;
-      case 'alloy':
+      case 'duralloy':
         model.fill(8, 4, -2, 8, 11, 2, (_x, y, z) => (y === 4 || y === 11 || Math.abs(z) === 2 ? lighten(primary, 0.15) : null)).fill(9, 3, -3, 9, 12, 3, (_x, y, z) => (y === 3 || y === 12 || Math.abs(z) === 3 ? primary : null));
         return;
       case 'sinter':
@@ -79,15 +78,15 @@ export function iconWeaponHead(model: VoxelModel, shape: WeaponHeadShape, form: 
   switch (form) {
     case 'scrap':
       model.fill(-4, 9, 0, tip - 2, 10, 0, darken(secondary, 0.1));
-      for (const x of [-1, 5]) model.fill(x, 5, -1, x, 10, 1, ROPE);
+      for (const x of [-1, 5]) model.fill(x, 5, -1, x, 10, 1, TAPE);
       return;
-    case 'iron':
+    case 'ferro':
       model.fill(-7, -3, 0, -1, 0, 0, (x, y) => (x === -7 || x === -1 || y === -3 ? darken(primary, 0.2) : null));
       return;
-    case 'steel':
+    case 'plasteel':
       model.fill(-4, 9, -1, 5, 11, 1, (x, y) => (y === 9 && Math.abs(x) < 3 ? null : darken(primary, 0.3))).fill(tip - 6, -1, 0, tip - 6, 4, 0, darken(primary, 0.35)).fill(tip - 4, -1, 0, tip - 4, 4, 0, darken(primary, 0.35));
       return;
-    case 'alloy':
+    case 'duralloy':
       for (let x = -3; x <= 3; x++) for (let y = -3; y <= 3; y++) if (x * x + y * y <= 10) model.fill(2 + x, 1 + y, -1, 2 + x, 1 + y, 1, (x + y) % 3 === 0 ? lighten(primary, 0.2) : primary);
       return;
     case 'sinter':
@@ -108,16 +107,18 @@ export function heldWeaponHead(model: VoxelModel, shape: WeaponHeadShape, form: 
     for (let dx = -2; dx <= 2; dx++) for (let y = 8; y <= 16; y++) for (let z = 8; z <= 12; z++) model.remove(x + dx, y, z);
     switch (form) {
       case 'scrap':
-        model.fill(x - 1, 9, 8, x + 1, 13, 11, (vx, vy, vz) => (vz === 11 && vy > 11 ? null : vx === x + 1 && vy === 9 ? null : primary)).fill(x, 14, 9, x, 15, 9, darken(primary, 0.25));
+        model.fill(x - 1, 9, 8, x + 1, 14, 10, (vx, vy, vz) => (vz === 10 && vy > 12 && vx > x ? null : vy === 12 ? TAPE : primary)).fill(x + 2, 10, 8, x + 2, 12, 9, darken(secondary, 0.2));
         return;
-      case 'iron':
-        model.fill(x - 1, 9, 8, x + 1, 15, 10, primary).fill(x - 2, 11, 7, x + 2, 13, 7, lighten(primary, 0.25));
+      case 'ferro':
+        model.fill(x - 1, 9, 8, x + 1, 15, 10, (_vx, vy) => (vy === 9 || vy === 15 ? darken(primary, 0.25) : primary)).fill(x, 16, 8, x, 16, 10, lighten(primary, 0.2));
         return;
-      case 'steel':
-        model.fill(x - 1, 10, 8, x + 1, 14, 10, primary).fill(x, 7, 9, x, 9, 9, lighten(primary, 0.2)).fill(x, 15, 9, x, 16, 9, lighten(primary, 0.1));
+      case 'plasteel':
+        model.fill(x - 1, 11, 8, x + 1, 13, 12, (_vx, _vy, vz) => (vz === 12 ? darken(primary, 0.3) : primary));
+        model.fill(x - 1, 11, 10, x + 1, 13, 10, (vx, vy) => (vx === x && vy === 12 ? null : glow), VOXEL_EMISSIVE);
+        model.fill(x - 2, 12, 8, x - 2, 12, 9, darken(primary, 0.2)).fill(x + 2, 12, 8, x + 2, 12, 9, darken(primary, 0.2));
         return;
-      case 'alloy':
-        model.fill(x, 12, 8, x, 12, 12, primary).fill(x, 8, 11, x, 16, 11, lighten(primary, 0.1)).fill(x, 8, 9, x, 8, 10, primary).fill(x, 16, 9, x, 16, 10, primary);
+      case 'duralloy':
+        model.fill(x - 1, 8, 8, x + 1, 10, 11, primary).fill(x - 1, 14, 8, x + 1, 16, 11, primary).fill(x, 11, 9, x, 13, 10, glow, VOXEL_EMISSIVE);
         return;
       case 'sinter':
         model.fill(x - 1, 10, 8, x + 1, 14, 10, primary).fill(x - 2, 10, 8, x - 2, 14, 10, (_vx, vy) => (vy % 2 === 0 ? HAZARD : null)).fill(x + 2, 10, 8, x + 2, 14, 10, (_vx, vy) => (vy % 2 === 0 ? HAZARD : null)).fill(x, 12, 11, x, 12, 11, glow, VOXEL_EMISSIVE);
@@ -130,15 +131,15 @@ export function heldWeaponHead(model: VoxelModel, shape: WeaponHeadShape, form: 
   if (shape === 'pistol') {
     switch (form) {
       case 'scrap':
-        model.fill(x, 12, 2, x, 12, 5, darken(secondary, 0.1)).set(x, 13, 6, ROPE);
+        model.fill(x, 12, 2, x, 12, 5, darken(secondary, 0.1)).set(x, 13, 6, TAPE);
         return;
-      case 'iron':
+      case 'ferro':
         model.fill(x - 1, 12, 2, x + 1, 14, 3, darken(primary, 0.1));
         return;
-      case 'steel':
+      case 'plasteel':
         model.fill(x, 9, 1, x, 11, 1, darken(secondary, 0.2)).fill(x, 14, 1, x, 14, 5, lighten(primary, 0.1));
         return;
-      case 'alloy':
+      case 'duralloy':
         model.fill(x - 1, 12, 6, x + 1, 14, 6, (vx, vy) => (vx === x && vy === 13 ? null : lighten(primary, 0.15)));
         return;
       case 'sinter':
@@ -152,15 +153,15 @@ export function heldWeaponHead(model: VoxelModel, shape: WeaponHeadShape, form: 
   const tip = shape === 'rifle' ? 14 : 10;
   switch (form) {
     case 'scrap':
-      model.fill(x, 14, 0, x, 14, tip - 1, darken(secondary, 0.1)).set(x, 15, 2, ROPE).set(x, 15, 6, ROPE);
+      model.fill(x, 14, 0, x, 14, tip - 1, darken(secondary, 0.1)).set(x, 15, 2, TAPE).set(x, 15, 6, TAPE);
       return;
-    case 'iron':
+    case 'ferro':
       model.fill(x, 9, -1, x, 11, 3, (_vx, vy, vz) => (vy === 9 || vz === -1 || vz === 3 ? darken(primary, 0.2) : null));
       return;
-    case 'steel':
+    case 'plasteel':
       model.fill(x, 15, 1, x, 16, 6, darken(primary, 0.3)).fill(x - 1, 10, tip - 2, x - 1, 12, tip - 2, darken(primary, 0.35)).fill(x + 1, 10, tip - 2, x + 1, 12, tip - 2, darken(primary, 0.35));
       return;
-    case 'alloy':
+    case 'duralloy':
       model.fill(x - 1, 9, 1, x + 1, 11, 4, (vx, vy, vz) => (Math.abs(vx - x) + Math.abs(vy - 10) + Math.abs(vz - 2.5) > 3.5 ? null : primary));
       return;
     case 'sinter':

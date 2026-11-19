@@ -13,6 +13,7 @@ import {
   marketQuotes,
   matchOrder,
   placeOrder,
+  withCurrentItem,
   type MarketOrder,
   type MarketOrderRequest,
 } from '../src/index.ts';
@@ -109,5 +110,14 @@ describe('market orders', () => {
       order('c', { side: 'buy', itemId: 'scrap-alloy', price: 3, quantity: 7 }),
     ]);
     assert.deepEqual(quotes, [{ itemId: 'scrap-alloy', lowestSell: 4, sellVolume: 5, highestBuy: 3, buyVolume: 7 }]);
+  });
+
+  test('an order on a renamed item moves to the item it was renamed to', () => {
+    const stored = order('seller', { side: 'sell', itemId: 'retired-plate', price: 4, quantity: 2 });
+    const renamed = new Map([['retired-plate', 'alloy-plate']]);
+    assert.equal(withCurrentItem(stored, renamed).itemId, 'alloy-plate');
+    assert.equal(withCurrentItem(stored, undefined), stored);
+    const current = order('seller', { side: 'sell', itemId: 'alloy-plate', price: 4, quantity: 2 });
+    assert.equal(withCurrentItem(current, renamed), current);
   });
 });

@@ -17,7 +17,7 @@ const BANDS: readonly (readonly [number, number])[] = [
 
 const NEW_MATERIALS = ['copper-wire', 'brass-fittings', 'bearing-steel', 'hull-rivets', 'cell-mesh'];
 
-const FITTINGS = ['copper-wire', 'copper-coil', 'brass-strip', 'bearing-ring', 'cell-mesh'];
+const FITTINGS = ['copper-wire', 'induction-coil', 'servo', 'gyro-stabiliser', 'cell-mesh'];
 
 const OFFENCE_STATS: readonly StatId[] = ['power', 'accuracy', 'focus'];
 
@@ -78,7 +78,7 @@ describe('skill bands', () => {
       const recipe = [...GAME_CONTENT.recipes.values()].find((candidate) => candidate.output.itemId === item.id);
       return recipe?.inputs.map((input) => input.itemId).find((itemId) => FITTINGS.includes(itemId)) ?? '';
     };
-    for (const line of ['edge', 'sight', 'tuning']) {
+    for (const line of ['overdrive', 'optics', 'tuning']) {
       const tiers = [1, 2, 3, 4, 5].map((tier) => GAME_CONTENT.items.get(`${line}-kit-${tier}`)).filter((item): item is ItemDefinition => item !== undefined);
       assert.equal(tiers.length, 5, line);
       tiers.slice(1).forEach((item, index) => {

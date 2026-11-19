@@ -51,7 +51,7 @@ test('the torso stays seated on the hips through every attack motion', () => {
   }
 });
 
-const ARMED: readonly [AttackMotion, string][] = [['strike', 'iron-baton'], ['slash', 'iron-blade'], ['slam', 'iron-maul'], ['snapShot', 'iron-pistol'], ['shoulderShot', 'iron-carbine'], ['heavyShot', 'iron-rifle']];
+const ARMED: readonly [AttackMotion, string][] = [['strike', 'ferro-shock-baton'], ['slash', 'ferro-monoblade'], ['slam', 'ferro-power-hammer'], ['snapShot', 'ferro-coil-pistol'], ['shoulderShot', 'ferro-pulse-carbine'], ['heavyShot', 'ferro-rail-rifle']];
 
 const posed = (gear: string, motion: AttackMotion, progress: number | null): CharacterRig => {
   const rig = new CharacterRig(APPEARANCE, [gear]);
@@ -105,12 +105,12 @@ test('the left hand rests on the barrel of a two-handed gun', () => {
 });
 
 test('gathering puts a gun away and keeps a melee tool in hand', () => {
-  const rifle = new CharacterRig(APPEARANCE, ['iron-rifle']);
+  const rifle = new CharacterRig(APPEARANCE, ['ferro-rail-rifle']);
   rifle.animate({ moving: false, walkPhase: 0, time: 0, attackProgress: 0.45, attackMotion: 'work' });
   assert.equal(rifle.weaponShown, false);
   rifle.animate({ moving: false, walkPhase: 0, time: 0, attackProgress: null });
   assert.equal(rifle.weaponShown, true);
-  const baton = new CharacterRig(APPEARANCE, ['iron-baton']);
+  const baton = new CharacterRig(APPEARANCE, ['ferro-shock-baton']);
   baton.animate({ moving: false, walkPhase: 0, time: 0, attackProgress: 0.45, attackMotion: 'work' });
   assert.equal(baton.weaponShown, true);
 });

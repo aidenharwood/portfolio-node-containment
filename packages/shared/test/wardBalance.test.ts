@@ -5,11 +5,11 @@ import { deriveCombatProfile } from '../src/character/derivedStats.ts';
 import { creatureAttackProfile, defenceAgainst, hitChance, playerAttackProfile, rollAttack } from '../src/combat/combatMath.ts';
 import { creatureDefence, studyExperience, weaknessOf } from '../src/combat/study.ts';
 import { REGENERATION_INTERVAL_TICKS, regenerationPerInterval } from '../src/combat/regeneration.ts';
-import { COMBAT_STYLE_INFO, WEAPON_KIND_INFO, styleBeating } from '../src/combat/weapons.ts';
+import { COMBAT_STYLE_INFO, WEAPON_KIND_INFO, styleBeating, type WeaponKind } from '../src/combat/weapons.ts';
 import { equipmentStats, type EquipmentState } from '../src/gear/equipment.ts';
 import { GAME_CONTENT, containmentExperience, containmentLevelFor, objectiveDistricts, realignedProgress, tierForLevel, type ItemDefinition } from '../src/index.ts';
 import { gatheringSourcesOf } from '../src/content/craftingIntegrity.ts';
-import { MATERIAL_LADDER } from '../src/content/ward/items.ts';
+import { ladderArmourId, ladderWeaponId, MATERIAL_LADDER } from '../src/content/ward/items.ts';
 import { standardIntegrity } from '../src/content/ward/novice.ts';
 
 const statTotal = (item: ItemDefinition | undefined): number => Object.values(item?.equipment?.stats ?? {}).reduce((sum, value) => sum + (value ?? 0), 0);
@@ -24,18 +24,23 @@ test('creatures never outrank the tier of the ground they live on', () => {
   }
 });
 
+const LADDER_WEAPONS: readonly WeaponKind[] = ['baton', 'blade', 'maul', 'pistol', 'carbine', 'rifle', 'focus', 'resonator'];
+
+const BODY_SLOTS = ['head', 'torso', 'hands', 'legs', 'feet'] as const;
+
 test('every weapon and armour piece gets stronger at each rung of the material ladder', () => {
-  const kinds = ['baton', 'blade', 'maul', 'pistol', 'carbine', 'rifle', 'focus', 'resonator'];
   for (let rung = 1; rung < MATERIAL_LADDER.length; rung++) {
     const lower = MATERIAL_LADDER[rung - 1]!;
     const upper = MATERIAL_LADDER[rung]!;
     assert.ok(upper.level > lower.level);
-    for (const kind of kinds) {
-      assert.ok(statTotal(GAME_CONTENT.items.get(`${upper.key}-${kind}`)) > statTotal(GAME_CONTENT.items.get(`${lower.key}-${kind}`)), `${upper.key}-${kind} beats ${lower.key}-${kind}`);
+    for (const kind of LADDER_WEAPONS) {
+      const upperId = ladderWeaponId(upper, kind);
+      const lowerId = ladderWeaponId(lower, kind);
+      assert.ok(statTotal(GAME_CONTENT.items.get(upperId)) > statTotal(GAME_CONTENT.items.get(lowerId)), `${upperId} beats ${lowerId}`);
     }
-    for (const noun of ['helm', 'plate', 'gauntlets', 'greaves', 'boots']) {
-      const upperId = `${upper.key}-${noun}`;
-      const lowerId = `${lower.key}-${noun}`;
+    for (const slot of BODY_SLOTS) {
+      const upperId = ladderArmourId(upper, 'bulwark', slot);
+      const lowerId = ladderArmourId(lower, 'bulwark', slot);
       assert.ok(statTotal(GAME_CONTENT.items.get(upperId)) > statTotal(GAME_CONTENT.items.get(lowerId)), `${upperId} beats ${lowerId}`);
     }
   }
@@ -160,9 +165,9 @@ function gauntletWinRate(operative: Operative, creatureId: string, count: number
 
 const winRate = (operative: Operative, creatureId: string, fights = 2000): number => gauntletWinRate(operative, creatureId, 1, 0, fights);
 
-const KIT: EquipmentState = { primary: 'scrap-baton', torso: 'scrap-plate' };
-const SCRAP_SET: EquipmentState = { primary: 'scrap-baton', head: 'scrap-helm', torso: 'scrap-plate', legs: 'scrap-greaves' };
-const IRON_SET: EquipmentState = { primary: 'iron-baton', head: 'iron-helm', torso: 'iron-plate', hands: 'iron-gauntlets', legs: 'iron-greaves', feet: 'iron-boots' };
+const KIT: EquipmentState = { primary: 'scrap-shock-baton', torso: 'scrap-carapace' };
+const SCRAP_SET: EquipmentState = { primary: 'scrap-shock-baton', head: 'scrap-helmet', torso: 'scrap-carapace', legs: 'scrap-legguards' };
+const IRON_SET: EquipmentState = { primary: 'ferro-shock-baton', head: 'ferro-helmet', torso: 'ferro-carapace', hands: 'ferro-gauntlets', legs: 'ferro-legguards', feet: 'ferro-mag-boots' };
 
 const BANDS: readonly { readonly name: string; readonly operative: Operative; readonly creature: string; readonly min: number; readonly max: number }[] = [
   { name: 'a fresh operative in the issue kit beats canal rats', operative: { closeQuarters: 1, fortitude: 1, gear: KIT }, creature: 'canal-rat', min: 0.95, max: 1 },
@@ -171,9 +176,9 @@ const BANDS: readonly { readonly name: string; readonly operative: Operative; re
   { name: 'combat level 4 in the issue kit handles gutter mites', operative: { closeQuarters: 5, fortitude: 3, gear: KIT }, creature: 'gutter-mite', min: 0.95, max: 1 },
   { name: 'Close Quarters 6 in scrap handles silt eels', operative: { closeQuarters: 6, fortitude: 5, gear: SCRAP_SET }, creature: 'silt-eel', min: 0.85, max: 1 },
   { name: 'the Lamplighter turns back an operative still in scrap', operative: { closeQuarters: 10, fortitude: 7, gear: SCRAP_SET }, creature: 'the-lamplighter', min: 0, max: 0.4 },
-  { name: 'the Lamplighter falls to the same operative with an iron baton', operative: { closeQuarters: 10, fortitude: 7, gear: { ...SCRAP_SET, primary: 'iron-baton' } }, creature: 'the-lamplighter', min: 0.75, max: 0.97 },
+  { name: 'the Lamplighter falls to the same operative with an iron baton', operative: { closeQuarters: 10, fortitude: 7, gear: { ...SCRAP_SET, primary: 'ferro-shock-baton' } }, creature: 'the-lamplighter', min: 0.75, max: 0.97 },
   { name: 'the Scrapyards stake is no place for Close Quarters 8 in scrap', operative: { closeQuarters: 8, fortitude: 6, gear: SCRAP_SET }, creature: 'rustling', min: 0, max: 0.25 },
-  { name: 'an iron blade at Close Quarters 10 handles rustlings', operative: { closeQuarters: 10, fortitude: 7, gear: { ...SCRAP_SET, primary: 'iron-blade' } }, creature: 'rustling', min: 0.8, max: 1 },
+  { name: 'an iron blade at Close Quarters 10 handles rustlings', operative: { closeQuarters: 10, fortitude: 7, gear: { ...SCRAP_SET, primary: 'ferro-monoblade' } }, creature: 'rustling', min: 0.8, max: 1 },
   { name: 'an operative at 10 in iron clears scrap crawlers', operative: { closeQuarters: 10, fortitude: 10, gear: IRON_SET }, creature: 'scrap-crawler', min: 0.9, max: 1 },
 ];
 
@@ -186,14 +191,14 @@ for (const band of BANDS) {
 
 test('ladder weapons carry only the offence stat their style uses, and the blade outhits the baton', () => {
   for (const rung of MATERIAL_LADDER) {
-    for (const kind of ['baton', 'blade', 'maul', 'pistol', 'carbine', 'rifle', 'focus', 'resonator']) {
-      const item = GAME_CONTENT.items.get(`${rung.key}-${kind}`);
+    for (const kind of LADDER_WEAPONS) {
+      const item = GAME_CONTENT.items.get(ladderWeaponId(rung, kind));
       const weapon = item?.equipment?.weapon;
-      assert.ok(item && weapon, `${rung.key}-${kind}`);
+      assert.ok(item && weapon, ladderWeaponId(rung, kind));
       const offence = COMBAT_STYLE_INFO[WEAPON_KIND_INFO[weapon.kind].style].offenceStat;
       assert.deepEqual(Object.keys(item.equipment?.stats ?? {}), [offence], `${item.id} carries only ${offence}`);
     }
-    const power = (kind: string) => GAME_CONTENT.items.get(`${rung.key}-${kind}`)?.equipment?.stats.power ?? 0;
+    const power = (kind: WeaponKind) => GAME_CONTENT.items.get(ladderWeaponId(rung, kind))?.equipment?.stats.power ?? 0;
     assert.ok(power('blade') > power('baton'), `${rung.key} blade outhits the baton`);
     assert.ok(power('maul') > power('blade'), `${rung.key} maul outhits the blade`);
   }
@@ -264,8 +269,8 @@ test('Kit Order counts every scrap piece a fabricator makes', () => {
 
 test('the maul hits at least as hard per tick as the blade at every rung', () => {
   for (const rung of MATERIAL_LADDER) {
-    const perTick = (kind: string) => {
-      const item = GAME_CONTENT.items.get(`${rung.key}-${kind}`);
+    const perTick = (kind: WeaponKind) => {
+      const item = GAME_CONTENT.items.get(ladderWeaponId(rung, kind));
       const weapon = item?.equipment?.weapon;
       assert.ok(item && weapon);
       const rating = rung.level + (item.equipment?.stats.power ?? 0);
@@ -296,20 +301,18 @@ type Style = keyof typeof COMBAT_STYLE_INFO;
 
 const STYLES = Object.keys(COMBAT_STYLE_INFO) as Style[];
 
-const LINE_KIT: Readonly<Record<Style, { readonly weapon: string; readonly weapons: readonly string[]; readonly pieces: Readonly<Record<'head' | 'torso' | 'hands' | 'legs' | 'feet', string>> }>> = {
-  melee: { weapon: 'baton', weapons: ['baton', 'blade', 'maul'], pieces: { head: 'helm', torso: 'plate', hands: 'gauntlets', legs: 'greaves', feet: 'boots' } },
-  ranged: { weapon: 'pistol', weapons: ['pistol', 'carbine', 'rifle'], pieces: { head: 'hood', torso: 'jacket', hands: 'gloves', legs: 'trousers', feet: 'treads' } },
-  psionic: { weapon: 'focus', weapons: ['focus', 'resonator'], pieces: { head: 'cowl', torso: 'robe', hands: 'wraps', legs: 'breeches', feet: 'footwraps' } },
+const LINE_KIT: Readonly<Record<Style, { readonly weapon: WeaponKind; readonly weapons: readonly WeaponKind[] }>> = {
+  melee: { weapon: 'baton', weapons: ['baton', 'blade', 'maul'] },
+  ranged: { weapon: 'pistol', weapons: ['pistol', 'carbine', 'rifle'] },
+  psionic: { weapon: 'focus', weapons: ['focus', 'resonator'] },
 };
-
-const slugOf = (name: string): string => name.toLowerCase().replace(/[^a-z]+/g, '-');
 
 const rungAt = (level: number) => MATERIAL_LADDER.filter((rung) => rung.level <= level).at(-1)!;
 
-function strongestWeapon(style: Style, rungKey: string, level: number): string {
-  const perTick = (kind: string): number => {
-    const weapon = GAME_CONTENT.items.get(`${rungKey}-${kind}`)?.equipment;
-    assert.ok(weapon?.weapon, `${rungKey}-${kind}`);
+function strongestWeapon(style: Style, rung: (typeof MATERIAL_LADDER)[number], level: number): WeaponKind {
+  const perTick = (kind: WeaponKind): number => {
+    const weapon = GAME_CONTENT.items.get(ladderWeaponId(rung, kind))?.equipment;
+    assert.ok(weapon?.weapon, ladderWeaponId(rung, kind));
     const rating = level + Object.values(weapon.stats).reduce((sum, value) => sum + (value ?? 0), 0);
     const maxHit = 1 + Math.floor((rating * WEAPON_KIND_INFO[weapon.weapon.kind].damageScale) / 4);
     return (hitChance(rating, level) * (1 + maxHit)) / 2 / weapon.weapon.speedTicks;
@@ -319,10 +322,9 @@ function strongestWeapon(style: Style, rungKey: string, level: number): string {
 
 function lineGear(style: Style, level: number, strongest = false): EquipmentState {
   const rung = rungAt(level);
-  const line = style === 'melee' ? rung.key : slugOf(style === 'ranged' ? rung.skirmisher : rung.warden);
   const kit = LINE_KIT[style];
-  const pieces = Object.fromEntries(Object.entries(kit.pieces).map(([slot, noun]) => [slot, `${line}-${noun}`]));
-  const gear = { primary: `${rung.key}-${strongest ? strongestWeapon(style, rung.key, level) : kit.weapon}`, ...pieces };
+  const pieces = Object.fromEntries(BODY_SLOTS.map((slot) => [slot, ladderArmourId(rung, COMBAT_STYLE_INFO[style].line, slot)]));
+  const gear = { primary: ladderWeaponId(rung, strongest ? strongestWeapon(style, rung, level) : kit.weapon), ...pieces };
   for (const itemId of Object.values(gear)) assert.ok(GAME_CONTENT.items.get(itemId), `${itemId} exists`);
   return gear;
 }

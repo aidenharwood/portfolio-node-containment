@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { findContentIssues, GAME_CONTENT } from '../src/index.ts';
+import { ladderWeaponId, MATERIAL_LADDER } from '../src/content/ward/items.ts';
 
 test('the shipped world passes every content check', () => {
   assert.deepEqual(findContentIssues(GAME_CONTENT), []);
@@ -50,12 +51,11 @@ test('the opening quest can be finished in Terminus Square', () => {
 });
 
 test('every material in the ladder has a full set of weapons and armour', () => {
-  const parts: Readonly<Record<string, readonly [string, string]>> = { scrap: ['scrap-bar', 'rag-bundle'], iron: ['iron-bar', 'waxed-canvas'], steel: ['steel-bar', 'synth-weave'], alloy: ['alloy-bar', 'tarred-canvas'] };
-  for (const [material, [bar, fibre]] of Object.entries(parts)) {
-    const weapons = ['baton', 'blade', 'maul', 'pistol', 'carbine', 'rifle', 'focus', 'resonator'].map((kind) => `${material}-${kind}`);
+  for (const rung of MATERIAL_LADDER) {
+    const weapons = (['baton', 'blade', 'maul', 'pistol', 'carbine', 'rifle', 'focus', 'resonator'] as const).map((kind) => ladderWeaponId(rung, kind));
     for (const id of weapons) assert.ok(GAME_CONTENT.items.get(id)?.equipment?.weapon, `${id} is a weapon`);
-    const armour = [...GAME_CONTENT.items.values()].filter((item) => item.equipment && !item.equipment.weapon && !item.unique && GAME_CONTENT.recipes.get(`fabricator:${item.id}`)?.inputs.some((input) => input.itemId === bar || input.itemId === fibre));
-    assert.equal(armour.length, 18, `${material} has fifteen armour pieces and three back pieces`);
+    const armour = [...GAME_CONTENT.items.values()].filter((item) => item.equipment && !item.equipment.weapon && !item.unique && GAME_CONTENT.recipes.get(`fabricator:${item.id}`)?.inputs.some((input) => input.itemId === rung.plating || input.itemId === rung.fibre));
+    assert.equal(armour.length, 18, `${rung.name} has fifteen armour pieces and three back pieces`);
   }
 });
 
