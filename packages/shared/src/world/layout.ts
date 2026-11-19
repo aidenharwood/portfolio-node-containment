@@ -1,4 +1,3 @@
-import type { ZodIssue } from 'zod';
 import { furnish } from '../content/districts/furnish.ts';
 import { setPiece, type SetPiece } from '../content/districts/setPiece.ts';
 import { drawBlueprint, type Blueprint } from './blueprint.ts';
@@ -7,14 +6,7 @@ import { tileKey, type TilePoint } from './geometry.ts';
 import { LAYOUT_SOURCES } from '../content/districts/layouts/index.ts';
 import { resolvePosition } from './layoutPosition.ts';
 import { DISTRICT_LAYOUT_SCHEMA, type DistrictLayout, type LayoutPosition } from './layoutSchema.ts';
-
-const pathOf = (path: readonly (string | number)[]): string =>
-  path.reduce<string>((text, segment) => (typeof segment === 'number' ? `${text}[${segment}]` : text === '' ? segment : `${text}.${segment}`), '');
-
-const describeIssue = (issue: ZodIssue): string => {
-  const where = pathOf(issue.path);
-  return where === '' ? issue.message : `${where}: ${issue.message}`;
-};
+import { describeIssue } from './schemaIssues.ts';
 
 const idOf = (source: unknown): string =>
   source !== null && typeof source === 'object' && typeof (source as { id?: unknown }).id === 'string' ? (source as { id: string }).id : 'layout';
