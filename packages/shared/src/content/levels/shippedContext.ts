@@ -2,6 +2,7 @@ import { LOW_WARD_DISTRICTS } from '../districts/lowWard.ts';
 import { SITE_MERIDIAN_DISTRICTS } from '../districts/siteMeridian.ts';
 import { HOLLOW_BAY_DISTRICTS } from '../districts/hollowBay.ts';
 import { LAYOUT_SOURCES } from '../districts/layouts/index.ts';
+import { landFrom, SHIPPED_LANDS } from '../land/index.ts';
 import type { DistrictId } from '../../ids.ts';
 import type { DistrictDefinition } from '../../world/district.ts';
 import { firstHollowOf } from '../../world/layout.ts';
@@ -16,4 +17,5 @@ export const SHIPPED_CONTEXT: LevelContext = {
     return district;
   },
   hollowOf: (id) => firstHollowOf(LAYOUT_SOURCES[id]),
+  landOf: (id) => landFrom(SHIPPED_LANDS, id),
 };

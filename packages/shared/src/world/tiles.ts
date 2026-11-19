@@ -1,3 +1,6 @@
+import type { TileLayout } from './district.ts';
+import type { TilePoint } from './geometry.ts';
+
 export const TILE_KIND_IDS = [
   'void',
   'wall',
@@ -126,3 +129,5 @@ export const MAX_TERRAIN_HEIGHT = 15;
 export const CLIFF_DROP = 2;
 
 export const isBuildingWall = (kind: TileKindId): kind is WallMaterialId => WALL_MATERIAL_SET.has(kind);
+
+export const isWalkableTile = (layout: Pick<TileLayout, 'tileAt'>, point: TilePoint): boolean => TILE_KINDS[layout.tileAt(point)].walkable;

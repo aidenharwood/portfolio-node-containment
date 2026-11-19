@@ -5,6 +5,7 @@ import { buildTramNetwork } from '../../../src/content/tramNetwork.ts';
 import { joinDistricts, placeLandSquares } from '../../../src/world/levelPlan.ts';
 import type { LevelContext, LevelDefinition, LevelRecipe, WorldLocation } from '../../../src/world/level.ts';
 import type { DistrictDefinition } from '../../../src/world/district.ts';
+import type { LandMap } from '../../../src/world/landPlan.ts';
 import { FIXTURE_CREATURES } from './creatures.ts';
 import { KIT_OBJECTS } from './furnishing.ts';
 import { FIXTURE_LAYOUTS, FIXTURE_ARENA, FIXTURE_FIELD, FIXTURE_HUB, FIXTURE_HUB_ANCHORS, FIXTURE_ISLAND, FIXTURE_ISLAND_ANCHORS, FIXTURE_OUTPOST, FIXTURE_OUTPOST_ANCHORS } from './districts.ts';
@@ -55,12 +56,14 @@ export const wildsRecipe =
     depth: 0,
     capacity: 50,
     spawn: { districtId: 'fx-wild-west', position: FIXTURE_WILD_WEST_ANCHORS.start },
-    land: FIXTURE_LAND,
-    districts: placeLandSquares(FIXTURE_LAND, ids.map(context.districtOf)),
+    land: context.landOf('fx-land'),
+    districts: placeLandSquares(context.landOf('fx-land'), ids.map(context.districtOf)),
     connectors: [],
   });
 
 const WILDS_RECIPE = wildsRecipe(FIXTURE_WILDS_IDS);
+
+const LANDS: ReadonlyMap<string, LandMap> = new Map([[FIXTURE_LAND.plan.id, FIXTURE_LAND]]);
 
 const DISTRICTS = indexById([...FLOOR_DISTRICTS, FIXTURE_ARENA, FIXTURE_WILD_WEST, FIXTURE_WILD_GATE_WEST, FIXTURE_WILD_GATE_EAST, FIXTURE_WILD_EAST]);
 
@@ -71,6 +74,11 @@ export const FIXTURE_CONTEXT: LevelContext = {
     return district;
   },
   hollowOf: () => ({ x: 0, y: 0 }),
+  landOf: (id) => {
+    const land = LANDS.get(id);
+    if (!land) throw new Error(`There is no land plan "${id}".`);
+    return land;
+  },
 };
 
 export const FIXTURE_FLOOR: LevelDefinition = FLOOR_RECIPE(FIXTURE_CONTEXT);
@@ -105,6 +113,7 @@ export const FIXTURE_CONTENT: GameContent = {
   districts: DISTRICTS,
   levels: LEVELS.levels,
   levelOfDistrict: LEVELS.levelOfDistrict,
+  lands: LANDS,
   regions: indexById(FIXTURE_REGIONS),
   tram: buildTramNetwork(STATIONS, [{ id: 'test-line', name: 'Test Line', color: '#ff4fa8', stations: ['hub-station', 'outpost-station', 'island-station'] }], DISTRICTS, LEVELS),
   creatures: indexById(FIXTURE_CREATURES),

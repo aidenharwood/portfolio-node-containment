@@ -10,6 +10,7 @@ import type { QuestDefinition } from '../quests/questDefinition.ts';
 import type { QuestlineDefinition, QuestlineId } from '../quests/questline.ts';
 import type { AssemblyDefinition } from '../world/assemblies.ts';
 import type { DistrictDefinition } from '../world/district.ts';
+import type { LandMap } from '../world/landPlan.ts';
 import type { NpcDefinition, WorldObjectDefinition } from '../world/entities.ts';
 import type { TilePoint } from '../world/geometry.ts';
 import type { WorldLocation } from '../world/level.ts';
@@ -19,6 +20,7 @@ import type { TramNetwork } from '../world/tram.ts';
 import { ASSEMBLIES } from './assemblies.ts';
 import { LOW_WARD_DISTRICTS, TERMINUS_SQUARE, TERMINUS_SQUARE_ANCHORS } from './districts/lowWard.ts';
 import { buildInstallations } from './installations.ts';
+import { SHIPPED_LANDS } from './land/index.ts';
 import { buildLevelIndex, locate, type LevelIndex } from './levelIndex.ts';
 import { OVERWORLD } from './levels/overworld.ts';
 import { MERIDIAN_LEVELS } from './levels/siteMeridian.ts';
@@ -51,6 +53,7 @@ export interface GameContent {
   readonly districts: ReadonlyMap<DistrictId, DistrictDefinition>;
   readonly levels: ReadonlyMap<LevelId, ResolvedLevel>;
   readonly levelOfDistrict: ReadonlyMap<DistrictId, LevelId>;
+  readonly lands: ReadonlyMap<string, LandMap>;
   readonly regions: ReadonlyMap<RegionId, RegionDefinition>;
   readonly tram: TramNetwork;
   readonly creatures: ReadonlyMap<CreatureId, CreatureDefinition>;
@@ -104,6 +107,7 @@ export const GAME_CONTENT: GameContent = {
   districts: DISTRICTS,
   levels: LEVEL_INDEX.levels,
   levelOfDistrict: LEVEL_INDEX.levelOfDistrict,
+  lands: SHIPPED_LANDS,
   regions: indexById([...SEED_REGIONS, ...HOLLOW_BAY_REGIONS]),
   tram: buildTramNetwork(TRAM_STATIONS, TRAM_LINES, DISTRICTS, LEVEL_INDEX),
   creatures: indexById<CreatureDefinition>([...WARD_CREATURES, ...NOVICE_CREATURES, ...SITE_CREATURES, ...DEPTHS_CREATURES]),

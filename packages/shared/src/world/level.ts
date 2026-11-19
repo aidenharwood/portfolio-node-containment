@@ -6,6 +6,7 @@ import type { LandMap } from './landPlan.ts';
 export interface LevelContext {
   districtOf(id: DistrictId): DistrictDefinition;
   hollowOf(id: DistrictId): TilePoint;
+  landOf(id: string): LandMap;
 }
 
 export type LevelRecipe = (context: LevelContext) => LevelDefinition;

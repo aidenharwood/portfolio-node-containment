@@ -4,7 +4,7 @@ import { objectFootprintTiles } from '../world/footprint.ts';
 import { CARDINAL_OFFSETS, rectContains, tileKey, type TilePoint, type TileRect } from '../world/geometry.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
 import type { WalkabilityGrid } from '../world/pathfinding.ts';
-import { TILE_KINDS } from '../world/tiles.ts';
+import { isWalkableTile } from '../world/tiles.ts';
 import type { GameContent } from './gameContent.ts';
 import { findPlacementIssues } from './placementIntegrity.ts';
 import { findPrefabIssues, findPrefabLibraryIssues, PREFABS } from './prefabs/index.ts';
@@ -14,7 +14,6 @@ export const MIN_KINDS_IN_LARGE_ROOM = 3;
 
 type Report = (problem: string) => void;
 
-const isWalkableTile = (layout: TileLayout, point: TilePoint): boolean => TILE_KINDS[layout.tileAt(point)].walkable;
 
 const tilesOf = (rect: TileRect): TilePoint[] => {
   const tiles: TilePoint[] = [];

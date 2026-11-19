@@ -1,0 +1,9 @@
+{
+  "id": "hinterland",
+  "squareSize": 64,
+  "columns": 12,
+  "rows": 10,
+  "steps": [
+    { "kind": "fill", "shape": { "kind": "rect", "rect": { "x": 0, "y": 0, "width": 768, "height": 640 } }, "tile": "water" }
+  ]
+}

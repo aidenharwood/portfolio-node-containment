@@ -3,10 +3,10 @@ import { doorTilesOf } from '../world/doors.ts';
 import { CARDINAL_OFFSETS, tileKey, type TilePoint } from '../world/geometry.ts';
 import type { LandMap } from '../world/landPlan.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
-import { TILE_KINDS } from '../world/tiles.ts';
+import { isWalkableTile, TILE_KINDS } from '../world/tiles.ts';
 import type { GameContent } from './gameContent.ts';
 
-const isWalkableLand = (land: LandMap, point: TilePoint): boolean => TILE_KINDS[land.tileAt(point)].walkable;
+const isWalkableLand = (land: LandMap, point: TilePoint): boolean => isWalkableTile(land, point);
 
 function firstWalkableEdge(land: LandMap): TilePoint | undefined {
   for (let y = 0; y < land.height; y++) {
@@ -101,6 +101,10 @@ export function findLandIssues(content: GameContent): string[] {
     findUncoveredLand(level, land, issues);
     findForeignLand(content, level, land, issues);
     findDoorlessGates(content, level, land, issues);
+  }
+  const used = new Set([...content.levels.values()].flatMap((level) => (level.definition.land ? [level.definition.land.plan.id] : [])));
+  for (const land of content.lands.values()) {
+    if (!used.has(land.plan.id)) issues.push(...findLandPlanIssues(land));
   }
   return issues;
 }

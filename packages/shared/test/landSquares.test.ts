@@ -18,6 +18,7 @@ import { drawLand, type LandMap } from '../src/world/landPlan.ts';
 import { pinPlacements, placeLandSquares } from '../src/world/levelPlan.ts';
 import { printLayout } from '../src/world/printLayout.ts';
 import { MAP_LEGEND } from '../src/world/tiles.ts';
+import { GAME_CONTENT } from '../src/content/gameContent.ts';
 
 const SYMBOL_OF = Object.fromEntries(Object.entries(MAP_LEGEND).map(([symbol, kind]) => [kind, symbol]));
 
@@ -314,6 +315,31 @@ describe('land squares', () => {
       ],
     });
     assert.deepEqual(findLandPlanIssues(inside), ['land inside: gate "lone-gate" does not join two wards']);
+  });
+
+  test('the shipped land plans are content and are clean', () => {
+    assert.ok(GAME_CONTENT.lands.has('hinterland'));
+    assert.deepEqual(findLandIssues(GAME_CONTENT), []);
+  });
+
+  test('a land plan no level uses is still checked', () => {
+    const edge = drawLand({
+      id: 'stray',
+      squareSize: 8,
+      columns: 1,
+      rows: 1,
+      steps: [{ kind: 'fill', shape: { kind: 'rect', rect: { x: 0, y: 2, width: 8, height: 4 } }, tile: 'grass' }],
+    });
+    const content: GameContent = { ...FIXTURE_CONTENT, lands: new Map([...FIXTURE_CONTENT.lands, ['stray', edge]]) };
+    assert.ok(findLandIssues(content).includes('land stray: walkable land at 0,2 meets the edge of the plan'), findLandIssues(content).join('\n'));
+    assert.deepEqual(findLandIssues(FIXTURE_CONTENT), []);
+  });
+
+  test('a recipe asks for its land by id', () => {
+    assert.equal(FIXTURE_CONTEXT.landOf('fx-land'), FIXTURE_LAND);
+    assert.equal(FIXTURE_CONTENT.lands.get('fx-land'), FIXTURE_LAND);
+    assert.equal(FIXTURE_CONTENT.levels.get('fx-wilds')?.definition.land, FIXTURE_LAND);
+    assert.throws(() => FIXTURE_CONTEXT.landOf('nowhere'), { message: 'There is no land plan "nowhere".' });
   });
 });
 

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { buildDistrict, findContentIssues, parseLayout, type DistrictDefinition, type DistrictLayout } from '@containment/shared';
-import { FIXTURE_CONTENT, FIXTURE_CONTEXT, FIXTURE_LAYOUT_SOURCES, FIXTURE_LEVEL_RECIPES } from '@containment/shared/fixtures';
+import { buildDistrict, drawLand, findContentIssues, parseLayout, type DistrictDefinition, type DistrictLayout, type LandMap } from '@containment/shared';
+import { FIXTURE_CONTENT, FIXTURE_CONTEXT, FIXTURE_LAND, FIXTURE_LAYOUT_SOURCES, FIXTURE_LEVEL_RECIPES, FIXTURE_WILDS_LAYOUTS } from '@containment/shared/fixtures';
 import { contentWith } from '../src/editor/contentWith.ts';
 
 const restitch = (edited: Parameters<typeof contentWith>[1]) => contentWith(FIXTURE_CONTENT, edited, FIXTURE_LEVEL_RECIPES, FIXTURE_CONTEXT.hollowOf);
@@ -36,4 +36,20 @@ test('levels are re-stitched from the edited districts', () => {
 
 test('with nothing edited the base content comes back unchanged', () => {
   assert.equal(restitch(new Map()), FIXTURE_CONTENT);
+  assert.equal(contentWith(FIXTURE_CONTENT, new Map(), FIXTURE_LEVEL_RECIPES, FIXTURE_CONTEXT.hollowOf, new Map()), FIXTURE_CONTENT);
+});
+
+test('an edited land is served to the level recipes and drawn in the scene', () => {
+  const { plan } = FIXTURE_LAND;
+  const sea: LandMap = drawLand({ ...plan, steps: [...plan.steps, { kind: 'fill', shape: { kind: 'rect', rect: { x: 0, y: 0, width: 32, height: 32 } }, tile: 'water' }] });
+  const layout = FIXTURE_WILDS_LAYOUTS.get('fx-wild-west');
+  assert.ok(layout);
+  const recut = new Map([['fx-wild-west', { layout, district: buildDistrict(layout, sea) }]]);
+  const content = contentWith(FIXTURE_CONTENT, recut, FIXTURE_LEVEL_RECIPES, FIXTURE_CONTEXT.hollowOf, new Map([['fx-land', sea]]));
+  const level = content.levels.get('fx-wilds');
+  assert.ok(level);
+  assert.equal(content.lands.get('fx-land'), sea);
+  assert.equal(level.definition.land, sea);
+  for (const point of [{ x: 16, y: 16 }, { x: 4, y: 28 }, { x: -1, y: 16 }]) assert.equal(level.scene.tileAt(point), 'water');
+  assert.equal(FIXTURE_CONTENT.levels.get('fx-wilds')?.scene.tileAt({ x: 16, y: 16 }), 'grass');
 });
