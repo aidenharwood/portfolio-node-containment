@@ -4,7 +4,7 @@ import { createCharacterRecord } from '../src/characters/characterFactory.ts';
 import { Gameplay } from '../src/gameplay/gameplay.ts';
 import type { MessageSink, Player } from '../src/world/player.ts';
 
-const LEVEL_ID = 'main-floor';
+const LEVEL_ID = 'overworld';
 const WANDER_RADIUS = 16;
 const WARMUP_TICKS = 20;
 const MEASURED_TICKS = 200;

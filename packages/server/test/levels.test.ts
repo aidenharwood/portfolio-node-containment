@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { createDefaultDraft, type CharacterRecord, type TilePoint } from '@containment/shared';
+import { createDefaultDraft, GAME_CONTENT, isSafeIn, rectContains, type CharacterRecord, type GameContent, type LevelId, type ResolvedArea, type TilePoint } from '@containment/shared';
 import { createCharacterRecord } from '../src/characters/characterFactory.ts';
 import { CharacterRepository } from '../src/characters/characterRepository.ts';
 import { LevelInstance } from '../src/world/levelInstance.ts';
@@ -130,5 +130,41 @@ describe('split squares', () => {
     assert.equal(level.isSafe({ x: 40, y: 10 }), true);
     assert.equal(level.isSafe({ x: 52, y: 10 }), false);
     assert.ok(level.creatureGrid.isWalkable({ x: 52, y: 10 }));
+  });
+});
+
+describe('safe mask', () => {
+  const oracleAreasAt = (level: LevelInstance, point: TilePoint): ResolvedArea[] => {
+    const districtId = level.layout.districtAt(point);
+    return level.definition.areas.filter((area) => area.districtId === districtId && rectContains(area.rect, point));
+  };
+
+  const agreesWithFilter = (content: GameContent, levelId: LevelId) => {
+    const level = new LevelInstance(content.levels.get(levelId)!, content, 0);
+    let safeTiles = 0;
+    for (let y = -1; y <= level.layout.height; y++) {
+      for (let x = -1; x <= level.layout.width; x++) {
+        const point = { x, y };
+        const expected = oracleAreasAt(level, point);
+        const areas = level.areasAt(point);
+        if (areas.length !== expected.length || areas.some((area, index) => area !== expected[index])) {
+          assert.fail(`areas differ at ${x},${y} on ${levelId}`);
+        }
+        const safe = isSafeIn(expected, point);
+        if (level.isSafe(point) !== safe) assert.fail(`safety differs at ${x},${y} on ${levelId}`);
+        if (safe) safeTiles++;
+      }
+    }
+    assert.ok(safeTiles > 0);
+  };
+
+  test('the shipped overworld answers safety and areas as the filter does on every tile', () => agreesWithFilter(GAME_CONTENT, 'overworld'));
+
+  test('fx-wilds answers safety and areas as the filter does on every tile', () => agreesWithFilter(CONTENT, 'fx-wilds'));
+
+  test('asking for safety and areas allocates no new lists', () => {
+    const level = new LevelInstance(CONTENT.levels.get('fx-wilds')!, CONTENT, 0);
+    assert.equal(level.areasAt({ x: 52, y: 10 }), level.areasAt({ x: 52, y: 10 }));
+    assert.equal(level.areasAt({ x: -5, y: 3 }), level.areasAt({ x: 9999, y: 3 }));
   });
 });

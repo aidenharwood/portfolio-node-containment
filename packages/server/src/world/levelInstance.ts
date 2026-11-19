@@ -16,7 +16,6 @@ import {
   nearestFootprintTile,
   tileKey,
   CARDINAL_OFFSETS,
-  rectContains,
   type ChunkKey,
   type CreatureDefinition,
   type EntityId,
@@ -82,6 +81,51 @@ function groupByChunk(moves: readonly IndexedMove[], keyOf: (move: IndexedMove) 
   return groups;
 }
 const NO_CHANGE: InterestChange = { entered: NO_CHUNKS, left: NO_CHUNKS };
+const NO_AREAS: readonly ResolvedArea[] = [];
+
+interface AreaIndex {
+  readonly lists: readonly (readonly ResolvedArea[])[];
+  readonly listAt: Int32Array;
+  readonly safe: Uint8Array;
+}
+
+function buildAreaIndex(layout: LevelLayout, areas: readonly ResolvedArea[]): AreaIndex {
+  const { width, height } = layout;
+  const listAt = new Int32Array(width * height);
+  const lists: ResolvedArea[][] = [[]];
+  const extended = new Map<number, number>();
+  for (const [areaIndex, area] of areas.entries()) {
+    const { rect } = area;
+    const left = Math.max(0, rect.x);
+    const top = Math.max(0, rect.y);
+    const right = Math.min(width, rect.x + rect.width);
+    const bottom = Math.min(height, rect.y + rect.height);
+    for (let y = top; y < bottom; y++) {
+      for (let x = left; x < right; x++) {
+        if (layout.districtAt({ x, y }) !== area.districtId) continue;
+        const index = y * width + x;
+        const from = listAt[index]!;
+        const key = from * areas.length + areaIndex;
+        let next = extended.get(key);
+        if (next === undefined) {
+          next = lists.length;
+          lists.push([...lists[from]!, area]);
+          extended.set(key, next);
+        }
+        listAt[index] = next;
+      }
+    }
+  }
+  const safe = new Uint8Array(width * height);
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const index = y * width + x;
+      const list = listAt[index]!;
+      if (list !== 0 && isSafeIn(lists[list]!, { x, y })) safe[index] = 1;
+    }
+  }
+  return { lists, listAt, safe };
+}
 
 export interface PlacedObject {
   readonly placement: ObjectPlacement;
@@ -101,6 +145,7 @@ export class LevelInstance {
   readonly groundItems = new Map<string, GroundItem>();
   private readonly bodyOccupancy = new Map<string, EntityId>();
   private readonly sizedGrids = new Map<number, WalkabilityGrid>();
+  private readonly areaIndex: AreaIndex;
   private transientCount = 0;
   readonly depletedUntil = new Map<InstanceId, number>();
   private readonly nodeCharges = new Map<InstanceId, number>();
@@ -111,6 +156,7 @@ export class LevelInstance {
     this.definition = definition;
     this.layer = layer;
     this.layout = definition.layout;
+    this.areaIndex = buildAreaIndex(this.layout, definition.areas);
 
     for (const placement of definition.objects) {
       const objectDefinition = content.worldObjects.get(placement.objectId);
@@ -275,13 +321,19 @@ export class LevelInstance {
     this.nodeCharges.delete(instanceId);
   }
 
-  areasAt(point: TilePoint): ResolvedArea[] {
-    const districtId = this.layout.districtAt(point);
-    return this.definition.areas.filter((area) => area.districtId === districtId && rectContains(area.rect, point));
+  private tileIndex(point: TilePoint): number {
+    const { width, height } = this.layout;
+    return point.x < 0 || point.y < 0 || point.x >= width || point.y >= height ? -1 : point.y * width + point.x;
+  }
+
+  areasAt(point: TilePoint): readonly ResolvedArea[] {
+    const index = this.tileIndex(point);
+    return index < 0 ? NO_AREAS : this.areaIndex.lists[this.areaIndex.listAt[index]!]!;
   }
 
   isSafe(point: TilePoint): boolean {
-    return isSafeIn(this.areasAt(point), point);
+    const index = this.tileIndex(point);
+    return index >= 0 && this.areaIndex.safe[index] === 1;
   }
 
   gridWithDoors(openDoors: ReadonlySet<WorldObjectId>): WalkabilityGrid {
