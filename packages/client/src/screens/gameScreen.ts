@@ -622,7 +622,11 @@ export function createGameScreen(app: AppNavigator): Screen {
     chatYieldedToPanel = false;
     if (compactPortrait.matches && !sidePanel.isCollapsed) sidePanel.collapse();
   });
-  const visibleTop = (candidates: readonly Element[]) => Math.min(...candidates.map((candidate) => candidate.getBoundingClientRect()).filter((rect) => rect.height > 0).map((rect) => rect.top));
+  const visibleTop = (candidates: readonly Element[]) => Math.min(...candidates
+    .filter((candidate) => getComputedStyle(candidate).visibility !== 'hidden')
+    .map((candidate) => candidate.getBoundingClientRect())
+    .filter((rect) => rect.height > 0)
+    .map((rect) => rect.top));
   const placeCompactHud = () => {
     const objectivesHome = compactLandscape.matches && !sidePanel.isCollapsed ? topLeft : topRight;
     if (objectives.element.parentElement !== objectivesHome) objectivesHome.append(objectives.element);
@@ -649,7 +653,7 @@ export function createGameScreen(app: AppNavigator): Screen {
       return;
     }
     const scale = parseFloat(getComputedStyle(topLeft).zoom) || 1;
-    const columnTop = visibleTop([chat.element, ...chatAbove.children]);
+    const columnTop = visibleTop([chat.element, ...chatAbove.children, sidePanel.element]);
     const leftRoom = (columnTop - topLeft.getBoundingClientRect().top - HUD_COLUMN_GAP) / scale;
     topLeft.style.maxHeight = `${Math.max(0, Math.floor(leftRoom))}px`;
     topLeft.classList.toggle('overflowing', topLeft.scrollHeight > topLeft.clientHeight + 1);
