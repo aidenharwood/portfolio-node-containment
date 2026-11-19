@@ -28,7 +28,7 @@ import { PlanCanvas, planDrawList, type PlanShape } from './planCanvas.ts';
 import { landLevel, previewZone, zoneOfLevel } from './previewLevel.ts';
 import { PreviewView, type EditPointer } from './previewView.ts';
 import { PropertiesPanel } from './propertiesPanel.ts';
-import { saveDistrict } from './saveClient.ts';
+import { saveDistrict, saveLand } from './saveClient.ts';
 import { PLAN_LAYERS, readViewState, writeViewState, type PlanLayer, type ViewState } from './viewState.ts';
 
 const LEVEL_PREFIX = 'level:';
@@ -584,9 +584,9 @@ function start(root: HTMLElement, services: ViewerServices): void {
     palette.setActive(controller.tool === 'add' ? controller.pending : null);
     undo.disabled = !editorDocument.canUndo();
     redo.disabled = !editorDocument.canRedo();
-    const unsaved = editorDocument.dirtyIds();
     const districtName = (id: DistrictId): string => base.districts.get(id)?.name ?? id;
-    dirty.textContent = unsaved.length === 0 ? 'All changes saved' : `Unsaved changes in ${unsaved.map(districtName).join(', ')}`;
+    const unsaved = [...editorDocument.dirtyLands().map((id) => 'land ' + id), ...editorDocument.dirtyIds().map(districtName)];
+    dirty.textContent = unsaved.length === 0 ? 'All changes saved' : `Unsaved changes in ${unsaved.join(', ')}`;
     dirty.dataset.unsaved = String(unsaved.length > 0);
     editToggle.dataset.unsaved = String(unsaved.length > 0);
     save.disabled = unsaved.length === 0;
@@ -738,20 +738,33 @@ function start(root: HTMLElement, services: ViewerServices): void {
   };
 
   const saveAll = async (): Promise<void> => {
+    const landIds = editorDocument.dirtyLands();
     const ids = editorDocument.dirtyIds();
-    if (ids.length === 0) return;
-    banner.textContent = `Saving ${ids.join(', ')}…`;
-    const failures: string[] = [];
+    if (ids.length === 0 && landIds.length === 0) return;
+    banner.textContent = `Saving ${[...landIds, ...ids].join(', ')}…`;
+    let failure = '';
     const saved: string[] = [];
-    for (const id of ids) {
+    for (const id of landIds) {
+      const landPlan = editorDocument.landPlan(id);
+      const outcome = await saveLand(id, landPlan);
+      if (!outcome.ok) {
+        failure = `Could not save land ${id}: ${outcome.error}`;
+        break;
+      }
+      editorDocument.markLandSaved(id, landPlan);
+      saved.push(id);
+    }
+    for (const id of failure ? [] : ids) {
       const layout = editorDocument.layout(id);
       const outcome = await saveDistrict(id, layout);
-      if (outcome.ok) {
-        editorDocument.markSaved(id, layout);
-        saved.push(base.districts.get(id)?.name ?? id);
-      } else failures.push(`Could not save ${id}: ${outcome.error}`);
+      if (!outcome.ok) {
+        failure = `Could not save ${id}: ${outcome.error}`;
+        break;
+      }
+      editorDocument.markSaved(id, layout);
+      saved.push(base.districts.get(id)?.name ?? id);
     }
-    controller.status = failures.join(' · ');
+    controller.status = failure;
     if (saved.length > 0) announce(`Saved ${saved.join(', ')}.`);
     runChecks();
   };
@@ -792,7 +805,7 @@ function start(root: HTMLElement, services: ViewerServices): void {
     if (controller.key(event.key, { ctrl: event.ctrlKey || event.metaKey, shift: event.shiftKey })) event.preventDefault();
   });
   window.addEventListener('beforeunload', (event) => {
-    if (editorDocument.dirtyIds().length > 0) event.preventDefault();
+    if (editorDocument.dirtyIds().length > 0 || editorDocument.dirtyLands().length > 0) event.preventDefault();
   });
 
   scopeSelect.addEventListener('change', () => {

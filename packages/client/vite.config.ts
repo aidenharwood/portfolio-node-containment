@@ -5,9 +5,10 @@ import { layoutSavePlugin } from './editorSave.ts';
 const GAME_SERVER_URL = process.env.GAME_SERVER_URL ?? 'http://localhost:7420';
 
 const LAYOUTS = fileURLToPath(new URL('../shared/src/content/districts/layouts', import.meta.url));
+const LANDS = fileURLToPath(new URL('../shared/src/content/land', import.meta.url));
 
 export default defineConfig({
-  plugins: [layoutSavePlugin(LAYOUTS)],
+  plugins: [layoutSavePlugin(LAYOUTS, LANDS)],
   server: {
     port: 5173,
     proxy: {
