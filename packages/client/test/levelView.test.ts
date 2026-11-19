@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { resolveLevel, type ResolvedLevel } from '@containment/shared';
-import { FIXTURE_CONTENT as GAME_CONTENT, FIXTURE_WILDS } from '@containment/shared/fixtures';
+import { FIXTURE_CONTENT as GAME_CONTENT, FIXTURE_LAND, FIXTURE_WILDS } from '@containment/shared/fixtures';
 import { districtAtLevelTile, levelIssues, levelPlan, tileImageOf } from '../src/editor/levelView.ts';
 import { tileColor } from '../src/editor/planCanvas.ts';
+import { landLevel } from '../src/editor/previewLevel.ts';
 
 const level = GAME_CONTENT.levels.get('fx-floor') as ResolvedLevel;
 const placed = (id: string) => level.districts.find((each) => each.districtId === id)?.rect ?? { x: NaN, y: NaN, width: 0, height: 0 };
@@ -62,4 +63,42 @@ test('the tile image of a level with land paints the land no district owns', () 
   const at = (point.y * image.width + point.x) * 4;
   const colour = tileColor('water');
   assert.deepEqual([...image.pixels.slice(at, at + 3)], [parseInt(colour.slice(1, 3), 16), parseInt(colour.slice(3, 5), 16), parseInt(colour.slice(5, 7), 16)]);
+});
+
+test('the land layer outlines every step of the land plan', () => {
+  const wilds = GAME_CONTENT.levels.get('fx-wilds') as ResolvedLevel;
+  const outlines = levelPlan(GAME_CONTENT, wilds, ['land']);
+  const steps = FIXTURE_LAND.plan.steps;
+  assert.equal(outlines.length, steps.length);
+  assert.deepEqual(outlines.map((shape) => shape.step), steps.map((_, index) => index));
+  assert.deepEqual(outlines[0]?.points, [{ x: 0, y: 0 }, { x: 128, y: 0 }, { x: 128, y: 32 }, { x: 0, y: 32 }]);
+  const polygon = steps[1];
+  assert.ok(polygon?.kind === 'fill' && polygon.shape.kind === 'polygon');
+  assert.deepEqual([outlines[1]?.kind, outlines[1]?.points], ['polygon', polygon.shape.points]);
+  const line = steps[3];
+  assert.ok(line?.kind === 'line');
+  assert.deepEqual([outlines[3]?.kind, outlines[3]?.points], ['polyline', line.points.map((point) => ({ x: point.x + 0.5, y: point.y + 0.5 }))]);
+  assert.deepEqual([outlines[2]?.x, outlines[2]?.y, outlines[2]?.width, outlines[2]?.height], [24, 10, 16, 12]);
+  assert.deepEqual([outlines[4]?.x, outlines[4]?.y, outlines[4]?.width, outlines[4]?.height], [48, 15, 1, 2]);
+});
+
+test('the squares layer labels each square by the districts cut from it', () => {
+  const wilds = GAME_CONTENT.levels.get('fx-wilds') as ResolvedLevel;
+  const squares = levelPlan(GAME_CONTENT, wilds, ['squares']);
+  assert.deepEqual(
+    squares.map((shape) => [shape.x, shape.y, shape.width, shape.height, shape.label]),
+    [
+      [0, 0, 32, 32, 'Test Wild West'],
+      [32, 0, 32, 32, 'Test Gate West / Test Gate East'],
+      [64, 0, 32, 32, 'Test Wild East'],
+      [96, 0, 32, 32, '3,0'],
+    ],
+  );
+});
+
+test('a land level shows its steps and its squares by column and row', () => {
+  const level = landLevel(FIXTURE_LAND, 'fx-land');
+  const shapes = levelPlan(GAME_CONTENT, level, ['land', 'squares', 'rooms', 'objects']);
+  assert.equal(shapes.filter((shape) => shape.step !== undefined).length, FIXTURE_LAND.plan.steps.length);
+  assert.deepEqual(shapes.filter((shape) => shape.kind === 'square').map((shape) => shape.label), ['0,0', '1,0', '2,0', '3,0']);
 });

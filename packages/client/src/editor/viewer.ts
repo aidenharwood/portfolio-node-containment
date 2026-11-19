@@ -7,6 +7,7 @@ import {
   LAYOUT_SOURCES,
   type DistrictId,
   type GameContent,
+  type LandMap,
   type LevelId,
   type PlanIssue,
   type ResolvedLevel,
@@ -24,13 +25,14 @@ import { footprintOf, modelOf } from './itemModels.ts';
 import { districtAtLevelTile, levelIssues, levelPlan, originOf, tileImageOf } from './levelView.ts';
 import { Palette, paletteEntries } from './palette.ts';
 import { PlanCanvas, planDrawList, type PlanShape } from './planCanvas.ts';
-import { previewZone, zoneOfLevel } from './previewLevel.ts';
+import { landLevel, previewZone, zoneOfLevel } from './previewLevel.ts';
 import { PreviewView, type EditPointer } from './previewView.ts';
 import { PropertiesPanel } from './propertiesPanel.ts';
 import { saveDistrict } from './saveClient.ts';
 import { PLAN_LAYERS, readViewState, writeViewState, type PlanLayer, type ViewState } from './viewState.ts';
 
 const LEVEL_PREFIX = 'level:';
+const LAND_PREFIX = 'land:';
 const ORIGIN: TilePoint = { x: 0, y: 0 };
 
 const element = <K extends keyof HTMLElementTagNameMap>(tag: K, attributes: Record<string, string> = {}, text?: string): HTMLElementTagNameMap[K] => {
@@ -51,21 +53,26 @@ export interface ViewerServices {
   refreshChecks(): void;
 }
 
+const scopeOf = (view: ViewState): string => view.level ?? (view.land === undefined ? view.district : LAND_PREFIX + view.land);
+
 function start(root: HTMLElement, services: ViewerServices): void {
   const { base, document: editorDocument } = services;
   const known = new Set([...base.districts.keys()].sort());
   const levels = new Set([...base.levels.keys()]);
-  let state: ViewState = readViewState(location.search, known, levels);
+  const lands = new Set([...base.lands.keys()].sort());
+  let state: ViewState = readViewState(location.search, known, levels, lands);
   let editing = false;
 
   const bar = element('header', { class: 'bar' });
   const title = element('h1', {}, 'Region editor');
-  const scopeSelect = element('select', { 'aria-label': 'District or level' });
+  const scopeSelect = element('select', { 'aria-label': 'District, level or land' });
   const levelGroup = element('optgroup', { label: 'Levels' });
   for (const id of levels) levelGroup.append(element('option', { value: `${LEVEL_PREFIX}${id}` }, base.levels.get(id)?.name ?? id));
   const districtGroup = element('optgroup', { label: 'Districts' });
   for (const id of known) districtGroup.append(element('option', { value: id }, base.districts.get(id)?.name ?? id));
-  scopeSelect.append(levelGroup, districtGroup);
+  const landGroup = element('optgroup', { label: 'Land' });
+  for (const id of lands) landGroup.append(element('option', { value: LAND_PREFIX + id }, id));
+  scopeSelect.append(levelGroup, districtGroup, landGroup);
   const roomSelect = element('select', { 'aria-label': 'Room' });
   const viewButtons = (['split', '2d', '3d'] as const).map((mode) => {
     const button = element('button', { type: 'button', 'data-view': mode }, mode === 'split' ? 'Split' : mode.toUpperCase());
@@ -270,12 +277,20 @@ function start(root: HTMLElement, services: ViewerServices): void {
   let whole: GameContent | null = null;
   let pointerOrigin: TilePoint = ORIGIN;
 
-  const inLevel = (): boolean => state.level !== undefined;
+  const inLand = (): boolean => state.level === undefined && state.land !== undefined;
+  const inLevel = (): boolean => state.level !== undefined || inLand();
   const wholeNow = (): GameContent => {
     whole ??= services.wholeContent();
     return whole;
   };
-  const levelNow = (): ResolvedLevel | undefined => (state.level ? wholeNow().levels.get(state.level) : undefined);
+  let landShown: { readonly land: LandMap; readonly level: ResolvedLevel } | null = null;
+  const landLevelNow = (id: string): ResolvedLevel | undefined => {
+    const land = wholeNow().lands.get(id);
+    if (!land) return undefined;
+    if (landShown?.land !== land) landShown = { land, level: landLevel(land, id) };
+    return landShown.level;
+  };
+  const levelNow = (): ResolvedLevel | undefined => (state.level ? wholeNow().levels.get(state.level) : state.land ? landLevelNow(state.land) : undefined);
   const districtNow = () => content.districts.get(state.district);
   const editOrigin = (): TilePoint => {
     const level = levelNow();
@@ -519,7 +534,11 @@ function start(root: HTMLElement, services: ViewerServices): void {
     side.hidden = !editing;
     views.dataset.editing = String(editing);
     plan.setEditing(editing);
-    for (const button of toolButtons) button.setAttribute('aria-pressed', String(controller.tool === button.dataset.tool));
+    for (const button of toolButtons) {
+      button.setAttribute('aria-pressed', String(controller.tool === button.dataset.tool));
+      button.hidden = inLand();
+    }
+    if (inLand()) side.hidden = true;
     views.dataset.tool = controller.tool;
     brushLabel.hidden = controller.tool !== 'paint';
     heightLabel.hidden = controller.tool !== 'height';
@@ -575,10 +594,10 @@ function start(root: HTMLElement, services: ViewerServices): void {
   let shownLayers = '';
   let shownRoom: string | undefined;
 
-  function update(change: Partial<ViewState>): void {
-    const scopeOf = (view: ViewState): string => view.level ?? view.district;
+  function update(change: Partial<ViewState>, drop: readonly ('level' | 'land')[] = []): void {
     const before = scopeOf(state);
-    state = { ...state, ...change };
+    const { level, land, ...rest } = { ...state, ...change };
+    state = { ...rest, ...(level === undefined || drop.includes('level') ? {} : { level }), ...(land === undefined || drop.includes('land') ? {} : { land }) };
     if (scopeOf(state) !== before) {
       const { room: _room, focus: _focus, ...rest } = state;
       state = rest;
@@ -590,7 +609,7 @@ function start(root: HTMLElement, services: ViewerServices): void {
   function render(): void {
     history.replaceState(null, '', writeViewState(state));
     const level = levelNow();
-    scopeSelect.value = level ? `${LEVEL_PREFIX}${level.id}` : state.district;
+    scopeSelect.value = state.level ? LEVEL_PREFIX + state.level : state.land ? LAND_PREFIX + state.land : state.district;
     const district = districtNow();
     roomSelect.hidden = Boolean(level);
     roomSelect.replaceChildren(element('option', { value: '' }, 'Whole district'), ...Object.keys(district?.rooms ?? {}).map((room) => element('option', { value: room }, room)));
@@ -599,7 +618,7 @@ function start(root: HTMLElement, services: ViewerServices): void {
     views.dataset.view = state.view;
     for (const [layer, input] of layerInputs) input.checked = state.layers.includes(layer);
     preview3d.showActors(state.layers.includes('npcs'));
-    const scope = state.level ?? state.district;
+    const scope = scopeOf(state);
     const layersKey = state.layers.join(',');
     if (scope !== shownScope || layersKey !== shownLayers) {
       const fresh = scope !== shownScope;
@@ -723,12 +742,9 @@ function start(root: HTMLElement, services: ViewerServices): void {
 
   scopeSelect.addEventListener('change', () => {
     const value = scopeSelect.value;
-    if (value.startsWith(LEVEL_PREFIX)) update({ level: value.slice(LEVEL_PREFIX.length) as LevelId });
-    else {
-      const { level: _level, ...rest } = state;
-      state = rest;
-      update({ district: value });
-    }
+    if (value.startsWith(LEVEL_PREFIX)) update({ level: value.slice(LEVEL_PREFIX.length) as LevelId }, ['land']);
+    else if (value.startsWith(LAND_PREFIX)) update({ land: value.slice(LAND_PREFIX.length) }, ['level']);
+    else update({ district: value }, ['level', 'land']);
   });
   roomSelect.addEventListener('change', () => {
     const room = roomSelect.value;

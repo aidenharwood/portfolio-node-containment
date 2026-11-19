@@ -43,7 +43,10 @@ export class PartyFrame {
     replaceChildren(
       this.element,
       ...invites.map((invite) => h('div', { className: 'party-invite panel' },
-        h('p', { className: 'party-invite-text' }, `${invite.inviterName} wants you in their party.`),
+        h('p', { className: 'party-invite-text', title: `${invite.inviterName} wants you in their party.` },
+          h('span', { className: 'party-invite-label' }, 'Party invite'),
+          h('span', { className: 'party-invite-name' }, invite.inviterName),
+        ),
         h('div', { className: 'party-invite-actions' },
           h('button', { className: 'button small', type: 'button', onclick: () => this.social.respond(invite.inviterId, true) }, 'Accept'),
           h('button', { className: 'button ghost small', type: 'button', onclick: () => this.social.respond(invite.inviterId, false) }, 'Decline'),

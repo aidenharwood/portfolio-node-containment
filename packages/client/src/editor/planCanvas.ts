@@ -3,7 +3,7 @@ import { parseTileLayout, planMarks, TILE_KINDS, type DistrictId, type Facing, t
 import { DECAL_KIND_COLORS } from '../render/world/floorDecals.ts';
 import type { PlanLayer } from './viewState.ts';
 
-export type PlanShapeKind = 'tile' | 'mark' | 'room' | 'light' | 'decal' | 'issue';
+export type PlanShapeKind = 'tile' | 'mark' | 'room' | 'light' | 'decal' | 'issue' | 'polygon' | 'polyline' | 'square';
 
 export interface PlanShape {
   readonly kind: PlanShapeKind;
@@ -15,6 +15,8 @@ export interface PlanShape {
   readonly label?: string;
   readonly facing?: Facing;
   readonly markKind?: PlanMarkKind;
+  readonly points?: readonly TilePoint[];
+  readonly step?: number;
 }
 
 const MARK_COLORS: Readonly<Record<PlanMarkKind, string>> = {
@@ -93,6 +95,8 @@ export function planDrawList(content: GameContent, districtId: DistrictId, layer
   }
   return shapes;
 }
+
+const FONT_OF = (scale: number): string => `${Math.max(9, Math.min(14, scale * 1.4))}px "IBM Plex Mono", monospace`;
 
 const FACING_STEP: Readonly<Record<Facing, TilePoint>> = { north: { x: 0, y: -1 }, south: { x: 0, y: 1 }, east: { x: 1, y: 0 }, west: { x: -1, y: 0 } };
 
@@ -297,6 +301,25 @@ export class PlanCanvas {
           context.fillStyle = shape.color;
           context.font = `${Math.max(9, Math.min(14, s * 1.4))}px "IBM Plex Mono", monospace`;
           context.fillText(shape.label, x + 3, y + Math.max(10, s * 1.6));
+        }
+      } else if (shape.kind === 'polygon' || shape.kind === 'polyline') {
+        const points = shape.points ?? [];
+        context.strokeStyle = shape.color;
+        context.lineWidth = 1.5;
+        context.beginPath();
+        points.forEach((point, index) => (index === 0 ? context.moveTo(point.x * s, point.y * s) : context.lineTo(point.x * s, point.y * s)));
+        if (shape.kind === 'polygon') context.closePath();
+        context.stroke();
+        context.lineWidth = 1;
+      } else if (shape.kind === 'square') {
+        context.strokeStyle = shape.color;
+        context.setLineDash([6, 4]);
+        context.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
+        context.setLineDash([]);
+        if (shape.label) {
+          context.fillStyle = shape.color;
+          context.font = FONT_OF(s);
+          context.fillText(shape.label, x + 3, y + h - 4);
         }
       } else if (shape.kind === 'light') {
         context.strokeStyle = shape.color;

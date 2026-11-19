@@ -34,3 +34,14 @@ test('a known level wins over the district and an unknown level is dropped', () 
   const state = readViewState('?level=main-floor', KNOWN, levels);
   assert.equal(readViewState(writeViewState(state), KNOWN, levels).level, 'main-floor');
 });
+
+test('a known land opens on its own, an unknown land is dropped, and a level wins over a land', () => {
+  const levels = new Set(['main-floor']);
+  const lands = new Set(['hinterland']);
+  assert.equal(readViewState('?land=hinterland', KNOWN, levels, lands).land, 'hinterland');
+  assert.equal(readViewState('?land=nowhere', KNOWN, levels, lands).land, undefined);
+  const both = readViewState('?level=main-floor&land=hinterland', KNOWN, levels, lands);
+  assert.deepEqual([both.level, both.land], ['main-floor', undefined]);
+  const state = readViewState('?land=hinterland', KNOWN, levels, lands);
+  assert.equal(readViewState(writeViewState(state), KNOWN, levels, lands).land, 'hinterland');
+});

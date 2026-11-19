@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { type DistrictDefinition } from '@containment/shared';
-import { FIXTURE_CONTENT as GAME_CONTENT } from '@containment/shared/fixtures';
-import { previewLevel, previewZone } from '../src/editor/previewLevel.ts';
+import { FIXTURE_CONTENT as GAME_CONTENT, FIXTURE_LAND } from '@containment/shared/fixtures';
+import { landLevel, previewLevel, previewZone, zoneOfLevel } from '../src/editor/previewLevel.ts';
 
 const atrium = GAME_CONTENT.districts.get('fx-hub') as DistrictDefinition;
 
@@ -25,4 +25,22 @@ test('a preview zone walks the same tiles as the level', () => {
 
 test('every district can be previewed', () => {
   for (const id of GAME_CONTENT.districts.keys()) assert.doesNotThrow(() => previewLevel(GAME_CONTENT, id), id);
+});
+
+test('a land level draws the land in its scene and has nothing to walk on', () => {
+  const level = landLevel(FIXTURE_LAND, 'fx-land');
+  assert.deepEqual(level.districts, []);
+  assert.deepEqual(level.objects, []);
+  assert.deepEqual(level.areas, []);
+  assert.deepEqual(level.spawn, { x: FIXTURE_LAND.width / 2, y: FIXTURE_LAND.height / 2 });
+  for (let y = 0; y < FIXTURE_LAND.height; y++) {
+    for (let x = 0; x < FIXTURE_LAND.width; x++) {
+      assert.equal(level.scene.tileAt({ x, y }), FIXTURE_LAND.tileAt({ x, y }));
+      assert.equal(level.scene.heightAt({ x, y }), FIXTURE_LAND.heightAt({ x, y }));
+      assert.equal(level.layout.tileAt({ x, y }), 'void');
+      assert.equal(level.layout.districtAt({ x, y }), undefined);
+    }
+  }
+  const zone = zoneOfLevel(GAME_CONTENT, level);
+  for (let y = 0; y < FIXTURE_LAND.height; y++) for (let x = 0; x < FIXTURE_LAND.width; x++) assert.equal(zone.grid.isWalkable({ x, y }), false);
 });

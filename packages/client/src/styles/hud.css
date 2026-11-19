@@ -388,6 +388,7 @@
 }
 
 .inventory-mode {
+  text-wrap: balance;
   flex: 1 0 100%;
   order: 3;
   min-width: 0;
@@ -3306,8 +3307,23 @@
 
 .party-invite-text {
   margin: 0;
+  display: grid;
+  min-width: 0;
   font-size: var(--text-small);
   color: var(--color-text);
+}
+
+.party-invite-label {
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+}
+
+.party-invite-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .party-invite-actions {

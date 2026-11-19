@@ -71,7 +71,9 @@ const COMPACT_UI_SCALE_MAX = 1.1;
 const HUD_COLUMN_GAP = 8;
 const CRAMPED_OBJECTIVES_PX = 44;
 const PLAYER_CLEARANCE_PX = 60;
-const TOP_WINDOWS = ['.shop-window', '.storage-window', '.market-window', '.quest-info-window'];
+const TOP_WINDOWS = ['.shop-window', '.storage-window', '.market-window', '.quest-info-window', '.skill-guide-window', '.item-sources-window'];
+const DESKTOP_TOP_WINDOWS = ['.shop-window', '.storage-window', '.crafting-window', '.market-window', '.contract-window', '.settings-window', '.skill-guide-window', '.item-sources-window'];
+const PLAYER_HEAD_ROOM_PX = 85;
 const COMPACT_PORTRAIT_QUERY = '(max-width: 760px) and (min-height: 521px)';
 
 const isSalvageNode = (id: string): boolean => {
@@ -653,7 +655,7 @@ export function createGameScreen(app: AppNavigator): Screen {
       return;
     }
     const scale = parseFloat(getComputedStyle(topLeft).zoom) || 1;
-    const columnTop = visibleTop([chat.element, ...chatAbove.children, sidePanel.element]);
+    const columnTop = visibleTop(compactLandscape.matches ? [chat.element, ...chatAbove.children] : [chat.element, ...chatAbove.children, sidePanel.element]);
     const leftRoom = (columnTop - topLeft.getBoundingClientRect().top - HUD_COLUMN_GAP) / scale;
     topLeft.style.maxHeight = `${Math.max(0, Math.floor(leftRoom))}px`;
     topLeft.classList.toggle('overflowing', topLeft.scrollHeight > topLeft.clientHeight + 1);
@@ -684,20 +686,38 @@ export function createGameScreen(app: AppNavigator): Screen {
       renderer.cameraRig.shiftView(Math.min(0, centreX - targetX), 0);
       return;
     }
+    const shown = (names: readonly string[]) => names.flatMap((name) => {
+      const candidate = document.querySelector<HTMLElement>(name);
+      const rect = candidate ? visibleRect(candidate) : null;
+      return rect && getComputedStyle(candidate as HTMLElement).visibility !== 'hidden' ? [rect] : [];
+    });
     if (portraitColumnTop !== null) {
-      const covers = [topRight, topLeft, ...TOP_WINDOWS.map((name) => element.querySelector<HTMLElement>(name))]
-        .flatMap((candidate) => {
-          const rect = candidate ? visibleRect(candidate) : null;
-          return rect && getComputedStyle(candidate as HTMLElement).visibility !== 'hidden' ? [rect.bottom] : [];
-        });
-      const freeTop = Math.max(0, ...covers);
-      const target = portraitColumnTop > freeTop ? (freeTop + portraitColumnTop) / 2 : portraitColumnTop / 2;
-      renderer.cameraRig.shiftView(0, Math.max(0, centreY - target));
+      const covers = [topRight, topLeft].flatMap((candidate) => {
+        const rect = visibleRect(candidate);
+        return rect && getComputedStyle(candidate).visibility !== 'hidden' ? [rect] : [];
+      });
+      const freeTop = Math.max(0, ...[...covers, ...shown(TOP_WINDOWS)].map((rect) => rect.bottom));
+      const middle = portraitColumnTop > freeTop ? (freeTop + portraitColumnTop) / 2 : portraitColumnTop / 2;
+      const target = Math.min(Math.max(middle, freeTop + PLAYER_HEAD_ROOM_PX), portraitColumnTop);
+      renderer.cameraRig.shiftView(0, centreY - target);
       return;
     }
     if (dialogueRect && dialogueRect.top < centreY + PLAYER_CLEARANCE_PX) {
       renderer.cameraRig.shiftView(0, Math.max(0, centreY - dialogueRect.top / 2));
       return;
+    }
+    if (!isCompactLayout()) {
+      const quest = visibleRect(questInfo.element);
+      if (quest && quest.left < centreX + PLAYER_CLEARANCE_PX) {
+        renderer.cameraRig.shiftView(Math.max(0, centreX - quest.left / 2), 0);
+        return;
+      }
+      const top = shown(DESKTOP_TOP_WINDOWS).find((rect) => rect.bottom > centreY - PLAYER_CLEARANCE_PX && rect.left < centreX && rect.right > centreX);
+      if (top) {
+        const target = (top.bottom + window.innerHeight) / 2;
+        renderer.cameraRig.shiftView(0, Math.min(0, centreY - target));
+        return;
+      }
     }
     renderer.cameraRig.shiftView(0, 0);
   };
@@ -718,7 +738,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     element.style.setProperty('--top-right-height', `${topRight.offsetHeight}px`);
     fitHudColumns();
   });
-  for (const observed of [sidePanel.element, topRight, topLeft, chat.element, chatAbove, party.element, objectives.element, dialogue.element, shop.element, storage.element, market.element, questInfo.element]) panelObserver.observe(observed);
+  for (const observed of [sidePanel.element, topRight, topLeft, chat.element, chatAbove, party.element, objectives.element, dialogue.element, shop.element, storage.element, market.element, questInfo.element, crafting.element, contractBoard.element, settings.element, skillGuideWindow.element, itemSourcesWindow.element]) panelObserver.observe(observed);
 
   requestAnimationFrame(() => {
     renderer.resize();

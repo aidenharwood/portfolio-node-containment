@@ -1,9 +1,18 @@
 import { heightShade, shadeHex } from '../hud/heightShade.ts';
-import { footprintsOf, rectContains, type DistrictId, type GameContent, type PlanIssue, type ResolvedLevel, type TilePoint } from '@containment/shared';
+import { footprintsOf, rectContains, type DistrictId, type GameContent, type LandMap, type LandStep, type PlanIssue, type ResolvedLevel, type TilePoint, type TileRect } from '@containment/shared';
 import { planDrawList, tileColor, type PlanShape } from './planCanvas.ts';
 import type { PlanLayer } from './viewState.ts';
 
 const OUTLINE = '#ffd23f';
+const SQUARE_COLOUR = '#7d8f9c';
+const STEP_COLOURS: Readonly<Record<LandStep['kind'], string>> = {
+  fill: '#7fd3ff',
+  line: '#ffffff',
+  rise: '#d9b26f',
+  ramp: '#f0d79a',
+  ward: '#c78bff',
+  gate: '#ffd23f',
+};
 const ISSUE_PATTERN = /^(district|level|zone) ([^:]+): (.*)$/;
 const TILE_PATTERN = /(-?\d+),(-?\d+)/;
 
@@ -31,7 +40,61 @@ export function levelPlan(content: GameContent, level: ResolvedLevel, layers: re
     for (const shape of planDrawList(content, placed.districtId, withoutTiles)) shapes.push({ ...shape, x: shape.x + x, y: shape.y + y });
     if (layers.includes('rooms')) shapes.push({ kind: 'room', ...(footprints.get(placed.districtId)?.bounds ?? placed.rect), color: OUTLINE, label: content.districts.get(placed.districtId)?.name ?? placed.districtId });
   }
+  const land = level.definition.land;
+  if (land && layers.includes('land')) shapes.push(...landStepShapes(land));
+  if (land && layers.includes('squares')) shapes.push(...squareShapes(content, level, land));
   if (layers.includes('issues')) for (const issue of issues) if (issue.tile) shapes.push({ kind: 'issue', ...issue.tile, width: 1, height: 1, color: '#ff3b3b', label: issue.message });
+  return shapes;
+}
+
+const cornersOf = (rect: TileRect): TilePoint[] => [
+  { x: rect.x, y: rect.y },
+  { x: rect.x + rect.width, y: rect.y },
+  { x: rect.x + rect.width, y: rect.y + rect.height },
+  { x: rect.x, y: rect.y + rect.height },
+];
+
+const boxOf = (points: readonly TilePoint[]): TileRect => {
+  const xs = points.map((point) => point.x);
+  const ys = points.map((point) => point.y);
+  const x = Math.floor(Math.min(...xs));
+  const y = Math.floor(Math.min(...ys));
+  return { x, y, width: Math.ceil(Math.max(...xs)) - x, height: Math.ceil(Math.max(...ys)) - y };
+};
+
+const stepLabel = (step: LandStep): string => {
+  if (step.kind === 'fill' || step.kind === 'line') return step.kind + ' ' + step.tile;
+  if (step.kind === 'rise') return 'rise ' + step.height;
+  if (step.kind === 'ramp') return 'ramp ' + step.from + '-' + step.to;
+  if (step.kind === 'ward') return 'ward ' + step.ward;
+  return 'gate ' + step.id;
+};
+
+export function landStepOutline(step: LandStep): { readonly kind: 'polygon' | 'polyline'; readonly points: readonly TilePoint[] } {
+  if (step.kind === 'line') return { kind: 'polyline', points: step.points.map((point) => ({ x: point.x + 0.5, y: point.y + 0.5 })) };
+  if (step.kind === 'ramp' || step.kind === 'gate') return { kind: 'polygon', points: cornersOf(step.rect) };
+  return { kind: 'polygon', points: step.shape.kind === 'polygon' ? step.shape.points : cornersOf(step.shape.rect) };
+}
+
+export function landStepShapes(land: LandMap): PlanShape[] {
+  return land.plan.steps.map((step, index) => {
+    const outline = landStepOutline(step);
+    return { ...outline, ...boxOf(outline.points), color: STEP_COLOURS[step.kind], label: stepLabel(step), step: index };
+  });
+}
+
+function squareShapes(content: GameContent, level: ResolvedLevel, land: LandMap): PlanShape[] {
+  const { squareSize, columns, rows } = land.plan;
+  const shapes: PlanShape[] = [];
+  for (let row = 0; row < rows; row++) {
+    for (let column = 0; column < columns; column++) {
+      const names = level.districts.flatMap((placed) => {
+        const district = content.districts.get(placed.districtId);
+        return district?.square?.column === column && district.square.row === row ? [district.name] : [];
+      });
+      shapes.push({ kind: 'square', x: column * squareSize, y: row * squareSize, width: squareSize, height: squareSize, color: SQUARE_COLOUR, label: names.length > 0 ? names.join(' / ') : column + ',' + row });
+    }
+  }
   return shapes;
 }
 
