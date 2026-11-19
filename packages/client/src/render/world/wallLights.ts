@@ -1,4 +1,4 @@
-import { isBuildingWall, isOutdoorFloor, TILE_KINDS, type Facing, type TilePoint, type TileRect, type ZoneLight } from '@containment/shared';
+import { isBuildingWall, isOutdoorFloor, TILE_KINDS, type Facing, type ResolvedArea, type TilePoint, type ZoneLight } from '@containment/shared';
 import type { ActiveZone } from '../../state/worldState.ts';
 import { noise3 } from '../voxel/palette.ts';
 import { litWindowGlow, type Side } from './levelVoxels.ts';
@@ -38,17 +38,20 @@ const WINDOW_SIDES: readonly Side[] = ['south', 'east', 'west', 'north'];
 export const FACING_STEP: Readonly<Record<Facing, TilePoint>> = { north: { x: 0, y: -1 }, east: { x: 1, y: 0 }, west: { x: -1, y: 0 }, south: { x: 0, y: 1 } };
 const MOUNT_PREFERENCE: readonly Facing[] = ['north', 'east', 'west', 'south'];
 
-interface Mount {
+export interface Mount {
   readonly floor: TilePoint;
   readonly wall: TilePoint;
   readonly facing: Facing;
 }
 
-function mountsIn(zone: ActiveZone, rect: TileRect, occupied: ReadonlySet<string>): Mount[] {
+export function mountsIn(zone: ActiveZone, area: Pick<ResolvedArea, 'rect' | 'districtId'>, occupied: ReadonlySet<string>): Mount[] {
   const tile = (x: number, y: number) => zone.layout.tileAt({ x, y });
+  const owners = zone.definition.layout;
+  const { rect } = area;
   const mounts: Mount[] = [];
   for (let y = rect.y; y < rect.y + rect.height; y++) {
     for (let x = rect.x; x < rect.x + rect.width; x++) {
+      if (owners.districtAt({ x, y }) !== area.districtId) continue;
       if (!TILE_KINDS[tile(x, y)].walkable || isOutdoorFloor(tile(x, y)) || tile(x, y) === 'door' || occupied.has(`${x},${y}`)) continue;
       if (MOUNT_PREFERENCE.some((facing) => tile(x + FACING_STEP[facing].x, y + FACING_STEP[facing].y) === 'door')) continue;
       const facing = MOUNT_PREFERENCE.find((side) => isBuildingWall(tile(x + FACING_STEP[side].x, y + FACING_STEP[side].y)));
@@ -62,7 +65,7 @@ function mountsIn(zone: ActiveZone, rect: TileRect, occupied: ReadonlySet<string
 export function planWallLighting(zone: ActiveZone): WallLighting {
   const occupied = new Set(zone.definition.objects.map((placement) => `${placement.position.x},${placement.position.y}`));
   const areas = [...zone.definition.areas].sort((a, b) => a.rect.width * a.rect.height - b.rect.width * b.rect.height);
-  const mountsByArea = areas.map(({ rect }) => mountsIn(zone, rect, occupied));
+  const mountsByArea = areas.map((area) => mountsIn(zone, area, occupied));
   const allMounts = mountsByArea.flat();
   const sconces: SconceSpot[] = [];
   const fills: FillLight[] = [];

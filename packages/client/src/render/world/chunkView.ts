@@ -32,7 +32,7 @@ import { decalsForLevel } from './floorDecals.ts';
 import { BEAM_GEOMETRY, createLightBeam } from './lightBeams.ts';
 import { buildFloorScatter } from './floorScatter.ts';
 import { groundAt } from './ground.ts';
-import { createTileVolume, paintTileRows, regionTop, tileBase } from './levelVoxels.ts';
+import { createTileVolume, paintTileRows, regionTop, tileBase, type OwnedLayout } from './levelVoxels.ts';
 import { FLOOR_LAYERS, MODEL_VOXEL_SIZE, TILE_RESOLUTION, ZONE_MESH_ORIGIN, ZONE_VOLUME_HEIGHT, ZONE_VOXEL_SIZE } from './worldScale.ts';
 
 export interface LightSource {
@@ -94,6 +94,19 @@ export function chunkRegion(chunk: ChunkCoord, zone: ActiveZone): TileRect | nul
   const height = Math.min((chunk.cy + 1) * CHUNK_SIZE, bounds.y + bounds.height) - y;
   if (width <= 0 || height <= 0) return null;
   return { x, y, width, height };
+}
+
+function ownedLayoutOf(zone: ActiveZone): OwnedLayout {
+  const { layout, definition } = zone;
+  if (!definition.definition.land) return layout;
+  const owners = definition.layout;
+  return {
+    width: layout.width,
+    height: layout.height,
+    tileAt: (point) => layout.tileAt(point),
+    heightAt: (point) => layout.heightAt(point),
+    ownerAt: (point) => owners.districtAt(point) ?? owners.connectorAt(point),
+  };
 }
 
 function hasStructure(zone: ActiveZone, region: TileRect): boolean {
@@ -273,7 +286,7 @@ export class ChunkView {
   }
 
   private planStructure(zone: ActiveZone, region: TileRect, occupied: ReadonlySet<string>): void {
-    const { layout } = zone;
+    const layout = ownedLayoutOf(zone);
     const decals = decalsForLevel(zone.definition);
     const volume = createTileVolume(region, layout);
     const meshOptions = { voxelSize: ZONE_VOXEL_SIZE, origin: ZONE_MESH_ORIGIN };

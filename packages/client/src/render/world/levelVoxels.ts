@@ -1,4 +1,4 @@
-import { isBuildingWall, isOutdoorFloor, TILE_KINDS, tileKey, type DecalCell, type TileKindId, type TileLayout, type TileRect, type WallMaterialId } from '@containment/shared';
+import { isBuildingWall, isOutdoorFloor, TILE_KINDS, tileKey, type DecalCell, type TileKindId, type TileLayout, type TilePoint, type TileRect, type WallMaterialId } from '@containment/shared';
 import { DenseVolume, RaisedCanvas, type VoxelCanvas } from '../voxel/denseVolume.ts';
 import { darken, jitter, lighten, mix, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE, VOXEL_GLASS, VOXEL_SOLID } from '../voxel/voxelKinds.ts';
@@ -104,6 +104,17 @@ export type Side = 'north' | 'south' | 'east' | 'west';
 
 const isWallKind = (kind: TileKindId): boolean => TILE_KINDS[kind].structure === 'wall';
 
+export interface OwnedLayout extends TileLayout {
+  readonly ownerAt?: (point: TilePoint) => string | undefined;
+}
+
+const besideKind = (layout: OwnedLayout, tx: number, ty: number, x: number, y: number): TileKindId => {
+  const kind = layout.tileAt({ x, y });
+  const { ownerAt } = layout;
+  if (!ownerAt || kind === 'void' || ownerAt({ x, y }) !== undefined || ownerAt({ x: tx, y: ty }) === undefined) return kind;
+  return 'void';
+};
+
 export const tileBase = (layout: TileLayout, tx: number, ty: number): number => layout.heightAt({ x: tx, y: ty }) * STEP_VOXELS;
 
 export function regionTop(layout: TileLayout, region: TileRect): number {
@@ -114,7 +125,7 @@ export function regionTop(layout: TileLayout, region: TileRect): number {
   return top;
 }
 
-export function buildTileVolume(layout: TileLayout, region: TileRect): DenseVolume {
+export function buildTileVolume(layout: OwnedLayout, region: TileRect): DenseVolume {
   const volume = createTileVolume(region, layout);
   paintTileRows(volume, layout, region, region.y - 1, region.y + region.height + 1);
   return volume;
@@ -126,7 +137,7 @@ export function createTileVolume(region: TileRect, layout: TileLayout): DenseVol
 
 type DecalMap = ReadonlyMap<string, readonly DecalCell[]>;
 
-export function paintTileRows(volume: DenseVolume, layout: TileLayout, region: TileRect, fromRow: number, toRow: number, decals?: DecalMap): DenseVolume {
+export function paintTileRows(volume: DenseVolume, layout: OwnedLayout, region: TileRect, fromRow: number, toRow: number, decals?: DecalMap): DenseVolume {
   const canvas = new RaisedCanvas(volume);
   for (let ty = Math.max(fromRow, region.y - 1); ty < Math.min(toRow, region.y + region.height + 1); ty++) {
     for (let tx = region.x - 1; tx < region.x + region.width + 1; tx++) {
@@ -233,12 +244,12 @@ interface BlendNeighbor {
 
 const blends = (a: TileKindId, b: TileKindId): boolean => a !== b && BLENDED.has(a) && BLENDED.has(b);
 
-function blendNeighborsOf(layout: TileLayout, kind: TileKindId, tx: number, ty: number): readonly BlendNeighbor[] {
+function blendNeighborsOf(layout: OwnedLayout, kind: TileKindId, tx: number, ty: number): readonly BlendNeighbor[] {
   if (!BLENDED.has(kind)) return [];
   const neighbors: BlendNeighbor[] = [];
   for (let dy = -1; dy <= 1; dy++) {
     for (let dx = -1; dx <= 1; dx++) {
-      const other = layout.tileAt({ x: tx + dx, y: ty + dy });
+      const other = besideKind(layout, tx, ty, tx + dx, ty + dy);
       if (blends(kind, other)) neighbors.push({ kind: other, tx: tx + dx, ty: ty + dy, sign: kind < other ? 1 : -1 });
     }
   }
@@ -282,10 +293,10 @@ function floorBlend(own: TileKindId, neighbors: readonly BlendNeighbor[], vx: nu
   };
 }
 
-function seamsOf(layout: TileLayout, kind: TileKindId, tx: number, ty: number): Seams | null {
+function seamsOf(layout: OwnedLayout, kind: TileKindId, tx: number, ty: number): Seams | null {
   if (!SURFACES.has(kind) || kind === 'grate') return null;
   const differs = (x: number, y: number): boolean => {
-    const other = layout.tileAt({ x, y });
+    const other = besideKind(layout, tx, ty, x, y);
     return other !== kind && SURFACES.has(other) && !blends(kind, other);
   };
   const seams = { north: differs(tx, ty - 1), south: differs(tx, ty + 1), east: differs(tx + 1, ty), west: differs(tx - 1, ty) };
@@ -298,18 +309,18 @@ function onSeam(seams: Seams, lx: number, lz: number): boolean {
 
 const KERBED: ReadonlySet<TileKindId> = new Set<TileKindId>(['paving', 'asphalt', 'concrete']);
 
-function kerbsOf(layout: TileLayout, kind: TileKindId, tx: number, ty: number): Seams | null {
+function kerbsOf(layout: OwnedLayout, kind: TileKindId, tx: number, ty: number): Seams | null {
   if (!KERBED.has(kind)) return null;
   const road = (x: number, y: number): boolean => {
-    const other = layout.tileAt({ x, y });
+    const other = besideKind(layout, tx, ty, x, y);
     return other === 'water' || (kind === 'paving' && other === 'asphalt');
   };
   const kerbs = { north: road(tx, ty - 1), south: road(tx, ty + 1), east: road(tx + 1, ty), west: road(tx - 1, ty) };
   return kerbs.north || kerbs.south || kerbs.east || kerbs.west ? kerbs : null;
 }
 
-function wallsBeside(layout: TileLayout, tx: number, ty: number): Seams | null {
-  const walled = (x: number, y: number): boolean => isWallKind(layout.tileAt({ x, y }));
+function wallsBeside(layout: OwnedLayout, tx: number, ty: number): Seams | null {
+  const walled = (x: number, y: number): boolean => isWallKind(besideKind(layout, tx, ty, x, y));
   const walls = { north: walled(tx, ty - 1), south: walled(tx, ty + 1), east: walled(tx + 1, ty), west: walled(tx - 1, ty) };
   return walls.north || walls.south || walls.east || walls.west ? walls : null;
 }
@@ -404,17 +415,17 @@ function smoothNoise(x: number, z: number, scale: number, salt: number): number 
   return top * (1 - fz) + bottom * fz;
 }
 
-function doorwayRunsAlongX(layout: TileLayout, tx: number, ty: number): boolean {
+function doorwayRunsAlongX(layout: OwnedLayout, tx: number, ty: number): boolean {
   const walledBeyond = (dx: number): boolean => {
     let x = tx + dx;
-    while (layout.tileAt({ x, y: ty }) === 'door') x += dx;
-    const neighbor = layout.tileAt({ x, y: ty });
+    while (besideKind(layout, tx, ty, x, ty) === 'door') x += dx;
+    const neighbor = besideKind(layout, tx, ty, x, ty);
     return neighbor === 'void' || isWallKind(neighbor);
   };
   return walledBeyond(-1) || walledBeyond(1);
 }
 
-function doorAxis(layout: TileLayout, tx: number, ty: number): Axis {
+function doorAxis(layout: OwnedLayout, tx: number, ty: number): Axis {
   return doorwayRunsAlongX(layout, tx, ty) ? 'y' : 'x';
 }
 
@@ -516,10 +527,10 @@ function floorVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: nu
   }
 }
 
-function openSides(layout: TileLayout, tx: number, ty: number): Set<Side> {
+function openSides(layout: OwnedLayout, tx: number, ty: number): Set<Side> {
   const open = new Set<Side>();
   const check = (side: Side, x: number, y: number) => {
-    const neighbor = layout.tileAt({ x, y });
+    const neighbor = besideKind(layout, tx, ty, x, y);
     if (neighbor !== 'void' && !isWallKind(neighbor)) open.add(side);
   };
   check('north', tx, ty - 1);
@@ -565,9 +576,9 @@ interface FaceVoxel {
 
 const OUTWARD: Readonly<Record<Side, readonly [number, number]>> = { north: [0, -1], south: [0, 1], west: [-1, 0], east: [1, 0] };
 
-function facesOutdoors(layout: TileLayout, tx: number, ty: number, side: Side): boolean {
+function facesOutdoors(layout: OwnedLayout, tx: number, ty: number, side: Side): boolean {
   const [dx, dy] = OUTWARD[side];
-  return isOutdoorFloor(layout.tileAt({ x: tx + dx, y: ty + dy }));
+  return isOutdoorFloor(besideKind(layout, tx, ty, tx + dx, ty + dy));
 }
 
 const WINDOW_GLOWS = [FACADE.litWindow, FACADE.litWindow, FACADE.litWindow, FACADE.litWindow, 0x6ab8ff, 0xff4fa8];
@@ -632,7 +643,7 @@ function interiorVoxel(material: WallMaterialId, h: number, u: number, grain: nu
   return { color: darken(jitter(FACADE.plaster, 0.03, grain), u === 0 ? 0.12 : 0) };
 }
 
-function paintWall(volume: VoxelCanvas, layout: TileLayout, tx: number, ty: number, material: WallMaterialId): void {
+function paintWall(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number, material: WallMaterialId): void {
   const open = openSides(layout, tx, ty);
   const palette = MATERIAL[material];
   const outdoors = new Set([...open].filter((side) => facesOutdoors(layout, tx, ty, side)));
@@ -692,7 +703,7 @@ function paintGround(volume: VoxelCanvas, tx: number, ty: number, color: number,
   }
 }
 
-function paintRock(volume: VoxelCanvas, layout: TileLayout, tx: number, ty: number): void {
+function paintRock(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number): void {
   paintGround(volume, tx, ty, COLORS.rockDark, 97);
   const open = openSides(layout, tx, ty);
   for (let lz = 0; lz < R; lz++) {
@@ -738,7 +749,7 @@ function paintTrees(volume: VoxelCanvas, tx: number, ty: number): void {
   }
 }
 
-function paintBarrier(volume: VoxelCanvas, layout: TileLayout, tx: number, ty: number): void {
+function paintBarrier(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number): void {
   paintGround(volume, tx, ty, COLORS.barrierDark, 151);
   const open = openSides(layout, tx, ty);
   const lamp = noise3(tx, ty, 0, 157) > 0.7;
@@ -775,13 +786,13 @@ function paintBarrier(volume: VoxelCanvas, layout: TileLayout, tx: number, ty: n
   }
 }
 
-function fenceAxis(layout: TileLayout, tx: number, ty: number): Axis {
-  const isFence = (x: number, y: number): boolean => layout.tileAt({ x, y }) === 'fence';
+function fenceAxis(layout: OwnedLayout, tx: number, ty: number): Axis {
+  const isFence = (x: number, y: number): boolean => besideKind(layout, tx, ty, x, y) === 'fence';
   return isFence(tx - 1, ty) || isFence(tx + 1, ty) ? 'x' : 'y';
 }
 
-function paintFence(volume: VoxelCanvas, layout: TileLayout, tx: number, ty: number): void {
-  const beside = [layout.tileAt({ x: tx, y: ty - 1 }), layout.tileAt({ x: tx, y: ty + 1 }), layout.tileAt({ x: tx - 1, y: ty }), layout.tileAt({ x: tx + 1, y: ty })];
+function paintFence(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number): void {
+  const beside = [besideKind(layout, tx, ty, tx, ty - 1), besideKind(layout, tx, ty, tx, ty + 1), besideKind(layout, tx, ty, tx - 1, ty), besideKind(layout, tx, ty, tx + 1, ty)];
   const ground = beside.find(isOutdoorGround);
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
@@ -941,7 +952,7 @@ function paintGlass(volume: VoxelCanvas, tx: number, ty: number): void {
   }
 }
 
-function paintLintel(volume: VoxelCanvas, layout: TileLayout, tx: number, ty: number): void {
+function paintLintel(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number): void {
   const alongX = doorwayRunsAlongX(layout, tx, ty);
   for (let along = 0; along < R; along++) {
     for (let across = 3; across <= 4; across++) {
