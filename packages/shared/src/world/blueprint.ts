@@ -241,7 +241,7 @@ const STEP_INTO: Readonly<Record<ExitSide, TilePoint>> = {
   west: { x: -1, y: 0 },
 };
 
-function isInsideShape(shape: RoomShape, rect: TileRect, point: TilePoint): boolean {
+export function isInsideShape(shape: RoomShape, rect: TileRect, point: TilePoint): boolean {
   if (!rectContains(rect, point)) return false;
   const dx = point.x - rect.x;
   const dy = point.y - rect.y;
@@ -257,6 +257,43 @@ function isInsideShape(shape: RoomShape, rect: TileRect, point: TilePoint): bool
   const nx = (dx + 0.5 - rect.width / 2) / (rect.width / 2);
   const ny = (dy + 0.5 - rect.height / 2) / (rect.height / 2);
   return nx * nx + ny * ny <= 1;
+}
+
+export function rampHeightAt(ramp: Omit<RampStep, 'kind'>, point: TilePoint): number {
+  const { rect, side, from, to } = ramp;
+  const length = side === 'north' || side === 'south' ? rect.height : rect.width;
+  const levels = Math.abs(to - from) + 1;
+  if (length < levels) throw new Error(`Blueprint ramp at ${rect.x},${rect.y} is too steep: climbing ${levels - 1} steps needs ${levels} tiles, and it has ${length}.`);
+  const along = side === 'north' ? rect.y + rect.height - 1 - point.y : side === 'south' ? point.y - rect.y : side === 'west' ? rect.x + rect.width - 1 - point.x : point.x - rect.x;
+  return from + Math.sign(to - from) * Math.floor((along * levels) / length);
+}
+
+export function findCliffs(
+  width: number,
+  height: number,
+  walkableAt: (point: TilePoint) => boolean,
+  heightAt: (point: TilePoint) => number,
+): TilePoint[] {
+  const cliffs: TilePoint[] = [];
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const point = { x, y };
+      if (!walkableAt(point)) continue;
+      const own = heightAt(point);
+      const drops = NEIGHBOURS.some((offset) => {
+        const beside = { x: x + offset.x, y: y + offset.y };
+        return walkableAt(beside) && own - heightAt(beside) >= CLIFF_DROP;
+      });
+      if (drops) cliffs.push(point);
+    }
+  }
+  return cliffs;
+}
+
+export interface BlueprintBase {
+  readonly tiles: readonly TileKindId[];
+  readonly heights: readonly number[];
+  readonly rooms: Readonly<Record<string, TileRect>>;
 }
 
 function seededRandom(seed: string): () => number {
@@ -282,10 +319,16 @@ export function drawBlueprint(
   steps: readonly BlueprintStep[],
   painted: readonly PaintedTile[] = [],
   paintedHeights: readonly PaintedHeight[] = [],
+  base?: BlueprintBase,
 ): Blueprint {
   const { width, height } = size;
-  const tiles: TileKindId[] = new Array(width * height).fill('void');
-  const elevation: number[] = new Array(width * height).fill(0);
+  if (base && (base.tiles.length !== width * height || base.heights.length !== width * height)) {
+    throw new Error(`Blueprint base is ${base.tiles.length} tiles; the blueprint is ${width}x${height}.`);
+  }
+  const tiles: TileKindId[] = base ? [...base.tiles] : new Array(width * height).fill('void');
+  const elevation: number[] = base ? [...base.heights] : new Array(width * height).fill(0);
+  const baseVoid = new Set<number>();
+  if (base) for (let index = 0; index < tiles.length; index++) if (tiles[index] === 'void') baseVoid.add(index);
   const buildings: BuildingStep[] = [];
   const rooms: Record<string, TileRect> = {};
   const shapes: Record<string, RoomShape> = {};
@@ -295,6 +338,12 @@ export function drawBlueprint(
   const floors: Record<string, TileKindId> = {};
   const edges: Record<string, EdgeTileKindId> = {};
   const materials: Record<string, WallMaterialId> = {};
+  if (base) {
+    for (const [id, rect] of Object.entries(base.rooms)) {
+      rooms[id] = rect;
+      shapes[id] = 'rect';
+    }
+  }
 
   const inBounds = ({ x, y }: TilePoint): boolean => x >= 0 && y >= 0 && x < width && y < height;
   const tileAt = (point: TilePoint): TileKindId => (inBounds(point) ? (tiles[point.y * width + point.x] as TileKindId) : 'void');
@@ -426,16 +475,9 @@ export function drawBlueprint(
   };
 
   const drawRamp = (step: RampStep): void => {
-    const { rect, side, from, to } = step;
-    const length = side === 'north' || side === 'south' ? rect.height : rect.width;
-    const levels = Math.abs(to - from) + 1;
-    if (length < levels) throw new Error(`Blueprint ramp at ${rect.x},${rect.y} is too steep: climbing ${levels - 1} steps needs ${levels} tiles, and it has ${length}.`);
-    const direction = Math.sign(to - from);
+    const { rect } = step;
     for (let y = rect.y; y < rect.y + rect.height; y++) {
-      for (let x = rect.x; x < rect.x + rect.width; x++) {
-        const along = side === 'north' ? rect.y + rect.height - 1 - y : side === 'south' ? y - rect.y : side === 'west' ? rect.x + rect.width - 1 - x : x - rect.x;
-        setElevation({ x, y }, from + direction * Math.floor((along * levels) / length), 'ramp');
-      }
+      for (let x = rect.x; x < rect.x + rect.width; x++) setElevation({ x, y }, rampHeightAt(step, { x, y }), 'ramp');
     }
   };
 
@@ -465,6 +507,7 @@ export function drawBlueprint(
 
   const needsWall = (point: TilePoint): boolean =>
     !hollows.some((rect) => rectContains(rect, point)) &&
+    !baseVoid.has(point.y * width + point.x) &&
     NEIGHBOURS.some((offset) => {
       const neighbour = tileAt({ x: point.x + offset.x, y: point.y + offset.y });
       return neighbour !== 'void' && TILE_KINDS[neighbour].structure !== 'wall';
@@ -529,21 +572,16 @@ export function drawBlueprint(
   const doorways = new Map<string, string>();
   for (const [name, exitDefinition] of Object.entries(exits)) for (const tile of exitDefinition.tiles) doorways.set(tileKey(tile), `exit "${name}"`);
   for (const [name, linkTiles] of Object.entries(links)) for (const tile of linkTiles) doorways.set(tileKey(tile), `link "${name}"`);
-  const cliffs: TilePoint[] = [];
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const point = { x, y };
-      if (!walkableAt(point)) continue;
-      const own = elevationAt(point);
-      const drop = NEIGHBOURS.reduce((deepest, offset) => {
-        const beside = { x: x + offset.x, y: y + offset.y };
-        return walkableAt(beside) ? Math.max(deepest, own - elevationAt(beside)) : deepest;
-      }, 0);
-      if (drop < CLIFF_DROP) continue;
-      const doorway = doorways.get(tileKey(point)) ?? (tileAt(point) === 'door' ? 'door' : undefined);
-      if (doorway) throw new Error(`Blueprint ${doorway} at ${x},${y} would be cliff: the ground beside it drops ${drop} steps.`);
-      cliffs.push(point);
-    }
+  const cliffs = findCliffs(width, height, walkableAt, elevationAt);
+  for (const point of cliffs) {
+    const doorway = doorways.get(tileKey(point)) ?? (tileAt(point) === 'door' ? 'door' : undefined);
+    if (!doorway) continue;
+    const own = elevationAt(point);
+    const drop = NEIGHBOURS.reduce((deepest, offset) => {
+      const beside = { x: point.x + offset.x, y: point.y + offset.y };
+      return walkableAt(beside) ? Math.max(deepest, own - elevationAt(beside)) : deepest;
+    }, 0);
+    throw new Error(`Blueprint ${doorway} at ${point.x},${point.y} would be cliff: the ground beside it drops ${drop} steps.`);
   }
   for (const cliff of cliffs) setTile(cliff, 'cliff');
   for (let index = 0; index < tiles.length; index++) if (tiles[index] === 'void') elevation[index] = 0;

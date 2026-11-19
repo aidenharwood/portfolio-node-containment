@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { drawBlueprint, exit, joinDistricts, link, patch, pillars, room, track, trackBed, type DistrictDefinition } from '../src/index.ts';
+import { drawBlueprint, exit, joinDistricts, link, MAP_LEGEND, patch, pillars, room, track, trackBed, type BlueprintBase, type DistrictDefinition } from '../src/index.ts';
 
 const plan = drawBlueprint({ width: 24, height: 12 }, [
   room('hall', 1, 1, 10, 10, 'plating'),
@@ -151,5 +151,42 @@ describe('buildings on open ground', () => {
   test('the ground outside stays open and unwalled', () => {
     assert.equal(plan.map[0]?.[0], plan.map[11]?.[15]);
     assert.notEqual(plan.map[1]?.[1], 'K');
+  });
+});
+
+describe('blueprints on a base', () => {
+  const base = (width: number, height: number, voidColumn = -1): BlueprintBase => ({
+    tiles: Array.from({ length: width * height }, (_, index) => (index % width === voidColumn ? 'void' : 'grass')),
+    heights: new Array(width * height).fill(1),
+    rooms: { ground: { x: 0, y: 0, width, height } },
+  });
+
+  test('a based blueprint keeps the base tiles and heights under its steps', () => {
+    const drawn = drawBlueprint({ width: 8, height: 8 }, [patch(2, 2, 2, 2, 'asphalt')], [], [], base(8, 8));
+    assert.equal(MAP_LEGEND[drawn.map[3]![3]!], 'asphalt');
+    assert.equal(MAP_LEGEND[drawn.map[1]![1]!], 'grass');
+    assert.equal(drawn.heightAt({ x: 1, y: 1 }), 1);
+  });
+
+  test('base void never grows walls, but a building ring still does', () => {
+    const drawn = drawBlueprint(
+      { width: 10, height: 10 },
+      [{ kind: 'building', id: 'shed', rect: { x: 4, y: 4, width: 3, height: 3 }, floor: 'boards', wall: 'brick', doors: [{ side: 'south', width: 1 }] }],
+      [],
+      [],
+      base(10, 10, 0),
+    );
+    for (let y = 0; y < 10; y++) assert.equal(MAP_LEGEND[drawn.map[y]![0]!], 'void', `row ${y}`);
+    assert.equal(MAP_LEGEND[drawn.map[3]![5]!], 'brick');
+  });
+
+  test('base rooms are named rooms', () => {
+    const drawn = drawBlueprint({ width: 8, height: 8 }, [], [], [], base(8, 8));
+    assert.deepEqual(drawn.rooms.ground, { x: 0, y: 0, width: 8, height: 8 });
+    assert.deepEqual(drawn.at('ground', 2, 2), { x: 2, y: 2 });
+  });
+
+  test('a base of the wrong size is refused', () => {
+    assert.throws(() => drawBlueprint({ width: 8, height: 8 }, [], [], [], base(4, 4)), /base is 4x4|base/);
   });
 });
