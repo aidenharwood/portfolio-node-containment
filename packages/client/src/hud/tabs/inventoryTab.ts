@@ -63,12 +63,16 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
 
   const slots = Array.from({ length: INVENTORY_CAPACITY }, (_, index) => {
     const slot = h('div', { className: 'inventory-slot', draggable: true, tabIndex: 0, role: 'button', ariaLabel: `Empty slot ${index + 1}`, dataset: { index: String(index) } });
+    let tapped = false;
+    slot.addEventListener('pointerdown', (event) => {
+      tapped = event.pointerType === 'touch' || event.pointerType === 'pen';
+    });
     slot.onclick = (event) => {
       const item = slotItem(index);
       const mode = modes.current;
       if (!item) return;
       if (mode) mode.primary(index, item, event.shiftKey);
-      else if (event.pointerType === 'touch') openMenuAt(slot, index, item);
+      else if (tapped && event.detail > 0) openMenuAt(slot, index, item);
       else actionsFor(index, item).find((action) => action.verb !== 'Drop' && action.verb !== 'Destroy')?.run();
     };
     slot.onkeydown = (event) => {
@@ -123,6 +127,7 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
     const mode = modes.current;
     modeHint.hidden = !mode;
     modeHint.textContent = mode?.hint ?? '';
+    modeHint.title = mode?.hint ?? '';
     element.classList.toggle('trading', mode !== null);
     slots.forEach((slot, index) => {
       const item = slotItem(index);

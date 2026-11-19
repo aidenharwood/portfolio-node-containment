@@ -44,6 +44,7 @@ export class ChatLog {
   private readonly log: HTMLElement;
   private readonly input: HTMLInputElement;
   private readonly collapseToggle: HTMLButtonElement;
+  private expandListener: (() => void) | null = null;
   private readonly lines: ChatLine[] = [];
   private filter: Filter = 'all';
   private readonly unsubscribers: (() => void)[];
@@ -120,8 +121,12 @@ export class ChatLog {
     }
   }
 
-  private isCollapsed(): boolean {
+  isCollapsed(): boolean {
     return this.element.classList.contains('collapsed');
+  }
+
+  onExpand(listener: () => void): void {
+    this.expandListener = listener;
   }
 
   private isScrolledToEnd(): boolean {
@@ -186,8 +191,10 @@ export class ChatLog {
     }
   }
 
-  private setCollapsed(collapsed: boolean): void {
+  setCollapsed(collapsed: boolean): void {
+    const expanding = !collapsed && this.isCollapsed();
     this.element.classList.toggle('collapsed', collapsed);
+    if (expanding) this.expandListener?.();
     this.collapseToggle.ariaLabel = collapsed ? 'Show chat' : 'Hide chat';
     this.collapseToggle.ariaExpanded = String(!collapsed);
     if (collapsed) return;

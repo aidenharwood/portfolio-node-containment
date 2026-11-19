@@ -26,6 +26,7 @@ export class SidePanel {
   private readonly tabs: readonly PanelTab[];
   private readonly buttons = new Map<string, HTMLButtonElement>();
   private active: string;
+  private changeListener: ((open: boolean) => void) | null = null;
   private readonly probe = h('div', { ariaHidden: 'true', style: { position: 'absolute', visibility: 'hidden', pointerEvents: 'none', top: '0', left: '0', width: '0' } });
   private readonly fitObserver = new ResizeObserver(() => this.fitActiveTab());
 
@@ -49,7 +50,7 @@ export class SidePanel {
         return button;
       }),
     );
-    this.heading = h('h2', { className: 'panel-heading' });
+    this.heading = h('h2', { className: 'side-panel-heading' });
     this.body = h('div', { className: 'panel-body' }, this.heading, ...tabs.map((tab) => tab.element));
     this.element = h('section', { className: 'hud-side panel' }, strip, this.body);
     this.select(this.active);
@@ -68,8 +69,14 @@ export class SidePanel {
     return this.element.classList.contains('collapsed');
   }
 
+  onChange(listener: (open: boolean) => void): void {
+    this.changeListener = listener;
+  }
+
   collapse(): void {
+    const wasOpen = !this.isCollapsed;
     this.element.classList.add('collapsed');
+    if (wasOpen) this.changeListener?.(false);
     for (const button of this.buttons.values()) {
       button.classList.remove('active');
       button.setAttribute('aria-selected', 'false');
@@ -77,8 +84,10 @@ export class SidePanel {
   }
 
   select(id: string): void {
+    const wasCollapsed = this.isCollapsed;
     this.active = id;
     this.element.classList.remove('collapsed');
+    if (wasCollapsed) this.changeListener?.(true);
     this.heading.textContent = this.tabs.find((tab) => tab.id === id)?.label ?? '';
     for (const tab of this.tabs) {
       tab.element.hidden = tab.id !== id;

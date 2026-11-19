@@ -78,7 +78,7 @@ const levelDepthLabel = (level: ResolvedLevel): string => (level.definition.kind
 export class WorldMap {
   readonly element = h('section', { className: 'world-map', hidden: true, role: 'dialog', ariaLabel: 'World map' });
   private readonly canvas = h('canvas', { className: 'world-map-canvas' });
-  private legendOpen = !isCompactLayout();
+  private legendOpen = !isCompactLayout() && window.innerHeight >= 800;
   private readonly connection: GameConnection;
   private readonly world: WorldState;
   private readonly questTracking: GuidanceTracking;

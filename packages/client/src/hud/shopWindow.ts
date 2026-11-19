@@ -121,8 +121,9 @@ export class ShopWindow implements InventoryMode {
           h('span', { className: 'shop-name' }, item.name),
           h('span', { className: `shop-price${scrip < listing.price ? ' unaffordable' : ''}` }, `${listing.price}`),
           h('button', { className: 'button small', type: 'button', disabled: scrip < listing.price, onclick: () => buy(1) }, 'Buy'),
-          item.maxStack > 1 &&
-            h('button', { className: 'button ghost small', type: 'button', disabled: scrip < listing.price * BULK_QUANTITY, onclick: () => buy(BULK_QUANTITY) }, `×${BULK_QUANTITY}`),
+          item.maxStack > 1
+            ? h('button', { className: 'button ghost small', type: 'button', disabled: scrip < listing.price * BULK_QUANTITY, onclick: () => buy(BULK_QUANTITY) }, `×${BULK_QUANTITY}`)
+            : h('span', { className: 'shop-bulk-gap' }),
         );
         row.oncontextmenu = (event: MouseEvent) => {
           event.preventDefault();

@@ -2,7 +2,7 @@ import { containmentBlocker, containmentReadiness, containmentResearchEdge, cont
 import type { GameRenderer } from '../render/gameRenderer.ts';
 import type { PickTarget } from '../render/pickTarget.ts';
 import type { ClientEntity, CombatHitEvent, WorldState } from '../state/worldState.ts';
-import { h } from '../ui/dom.ts';
+import { h, replaceChildren } from '../ui/dom.ts';
 
 interface Splat {
   readonly element: HTMLElement;
@@ -17,6 +17,7 @@ interface OverheadBar {
   readonly threshold: HTMLElement;
   readonly phases: HTMLElement;
   readonly chip: HTMLElement;
+  readonly label: HTMLElement;
   signature: string;
 }
 
@@ -98,9 +99,20 @@ export class CombatOverlay {
     if (!vitals) return;
     const creature = entity.creatureId ? GAME_CONTENT.creatures.get(entity.creatureId) : undefined;
     const skills = world.self?.skills;
-    const signature = `${vitals.integrity}/${vitals.maxIntegrity}|${entity.phase}|${creature?.containment && skills ? `${skills.containment}/${skills.research}` : ''}`;
+    const targeted = entity.id === world.combatTargetId;
+    const signature = `${vitals.integrity}/${vitals.maxIntegrity}|${entity.phase}|${targeted}|${creature?.containment && skills ? `${skills.containment}/${skills.research}` : ''}`;
     if (signature === bar.signature) return;
     bar.signature = signature;
+    bar.element.dataset.target = String(targeted);
+    bar.label.hidden = !targeted;
+    if (targeted) {
+      replaceChildren(
+        bar.label,
+        h('span', { className: 'overhead-name' }, entity.name),
+        entity.level !== undefined && h('span', { className: 'overhead-level' }, ` Lv ${entity.level}`),
+        h('span', { className: 'overhead-numbers' }, ` ${vitals.integrity}/${vitals.maxIntegrity}`),
+      );
+    }
     const ratio = Math.max(0, Math.min(1, vitals.integrity / vitals.maxIntegrity));
     bar.fill.style.width = `${ratio * 100}%`;
     bar.fill.dataset.state = healthState(ratio);
@@ -176,11 +188,12 @@ export class CombatOverlay {
     const threshold = h('span', { className: 'overhead-threshold', hidden: true });
     const phases = h('span', { className: 'overhead-phases' });
     const chip = h('span', { className: 'overhead-chip', hidden: true }, 'Contain');
+    const label = h('span', { className: 'overhead-label', hidden: true });
     const track = h('div', { className: 'overhead-track' }, fill, phases, threshold);
-    const element = h('div', { className: 'overhead-bar' }, chip, track);
+    const element = h('div', { className: 'overhead-bar' }, label, chip, track);
     element.dataset.kind = kind;
     this.element.prepend(element);
-    const bar = { element, fill, threshold, phases, chip, signature: '' };
+    const bar = { element, fill, threshold, phases, chip, label, signature: '' };
     bars.set(key, bar);
     return bar;
   }

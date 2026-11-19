@@ -3,6 +3,8 @@ import type { GameConnection } from '../../net/gameConnection.ts';
 import type { WorldState } from '../../state/worldState.ts';
 import { AvatarPreview } from '../../ui/avatarPreview.ts';
 import { h, replaceChildren } from '../../ui/dom.ts';
+import { primaryGesture } from '../../ui/viewport.ts';
+import { confirmButton } from '../settingsWindow.ts';
 import type { PanelTab } from '../sidePanel.ts';
 
 export function createDossierTab(connection: GameConnection, world: WorldState): PanelTab {
@@ -18,8 +20,8 @@ export function createDossierTab(connection: GameConnection, world: WorldState):
       profile,
     ),
     h('footer', { className: 'dossier-actions' },
-      h('button', { className: 'button ghost small', type: 'button', onclick: () => connection.send({ type: 'character.leaveWorld' }) }, 'Personnel files'),
-      h('button', { className: 'button ghost small', type: 'button', onclick: () => connection.send({ type: 'auth.logout' }) }, 'Sign out'),
+      h('button', { className: 'button ghost small', type: 'button', onclick: () => connection.send({ type: 'character.leaveWorld' }) }, 'Change operative'),
+      confirmButton('Sign out', `${primaryGesture()} again to sign out`, () => connection.send({ type: 'auth.logout' })),
     ),
   );
 

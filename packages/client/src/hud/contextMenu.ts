@@ -156,7 +156,10 @@ export class ContextMenu {
   };
 
   private readonly dismissOnEscape = (event: KeyboardEvent): void => {
-    if (event.key === 'Escape') this.close();
+    if (event.key !== 'Escape' || !this.isOpen) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    this.close();
   };
 }
 

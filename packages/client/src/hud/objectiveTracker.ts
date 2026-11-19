@@ -63,7 +63,7 @@ export class ObjectiveTracker {
         ...objectives.map(({ objective, progress, goal, done }) =>
           h('li', { className: done ? 'done' : '' },
             h('span', { className: 'objective-check' }, done ? '✓' : '◇'),
-            objective.label,
+            h('span', { className: 'objective-label' }, objective.label),
             goal > 1 && h('span', { className: `objective-count${showsExperience(objective, progress, goal) ? ' objective-experience' : ''}` }, ` ${this.countOf(self, objective, progress, goal)}`),
           ),
         ),
@@ -95,7 +95,7 @@ export class ObjectiveTracker {
       h('ul', {},
         h('li', {},
           h('span', { className: 'objective-check' }, '◇'),
-          item?.name ?? source.itemId,
+          h('span', { className: 'objective-label' }, item?.name ?? source.itemId),
           h('span', { className: 'objective-count' }, ` ×${countItem(self.inventory, source.itemId)}`),
         ),
       ),

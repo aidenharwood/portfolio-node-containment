@@ -27,6 +27,7 @@ import {
   type SettingsStore,
 } from '../state/gameSettings.ts';
 import { h } from '../ui/dom.ts';
+import { primaryGesture } from '../ui/viewport.ts';
 
 interface Control<T> {
   readonly element: HTMLElement;
@@ -86,15 +87,43 @@ function sliderControl(name: string, min: number, max: number, step: number, pic
   };
 }
 
+const CONFIRM_WINDOW_MS = 4000;
+
+export function confirmButton(label: string, confirmLabel: string, run: () => void): HTMLButtonElement {
+  let timer: number | null = null;
+  const reset = () => {
+    if (timer !== null) window.clearTimeout(timer);
+    timer = null;
+    button.textContent = label;
+    button.classList.remove('confirming');
+  };
+  const button = h('button', {
+    className: 'button ghost small',
+    type: 'button',
+    onclick: () => {
+      if (timer === null) {
+        button.textContent = confirmLabel;
+        button.classList.add('confirming');
+        timer = window.setTimeout(reset, CONFIRM_WINDOW_MS);
+        return;
+      }
+      reset();
+      run();
+    },
+  }, label);
+  button.addEventListener('blur', reset);
+  return button;
+}
+
 let hintCount = 0;
 
-function row(name: string, hint: string, control: HTMLElement, wide = false): HTMLElement {
+function row(name: string, hint: string, control: HTMLElement, wide = false, note: HTMLElement | null = null): HTMLElement {
   const tag = control instanceof HTMLInputElement ? 'label' : 'div';
   const hintId = `settings-hint-${++hintCount}`;
   const described = control.querySelector('input') ?? control;
   described.setAttribute('aria-describedby', hintId);
   return h(tag, { className: `settings-row${wide ? ' settings-row-wide' : ''}${tag === 'label' ? ' settings-switch' : ''}` },
-    h('span', { className: 'settings-text' }, h('span', { className: 'settings-label' }, name), h('span', { className: 'settings-hint', id: hintId }, hint)),
+    h('span', { className: 'settings-text' }, h('span', { className: 'settings-label' }, name), h('span', { className: 'settings-hint', id: hintId }, hint), note),
     control,
   );
 }
@@ -111,6 +140,9 @@ export interface SessionActions {
 export class SettingsWindow {
   readonly element = h('section', { className: 'settings-window panel', hidden: true, role: 'dialog', ariaLabel: 'Settings' });
   private readonly unsubscribe: () => void;
+  private readonly scaleLimit = h('span', { className: 'settings-limit' });
+  private scaleCeiling = UI_SCALE_MAX;
+  private requestedScale = 1;
 
   constructor(store: SettingsStore, session: SessionActions) {
     const preset = choiceRow('Quality preset', PRESET_CHOICES, PRESET_LABELS, (value) => {
@@ -168,16 +200,17 @@ export class SettingsWindow {
           row('Sharpening', 'Crisps edges at lower resolutions.', sharpen.element),
         ),
         group('Interface',
-          row('Scale', 'Size of the panels, text and windows.', uiScale.element),
+          row('Scale', 'Size of the panels, text and windows.', uiScale.element, false, this.scaleLimit),
           row('Scanlines', 'CRT-style lines over the whole screen.', scanlines.element),
           row('Frame counter', 'Shows frames per second in the corner.', fpsCounter.element),
         ),
       ),
       h('footer', { className: 'settings-footer' },
-        h('button', { className: 'button ghost small', type: 'button', onclick: () => store.reset() }, 'Restore defaults'),
-        h('span', { className: 'settings-footer-gap' }),
-        h('button', { className: 'button ghost small', type: 'button', onclick: () => session.leaveWorld() }, 'Personnel files'),
-        h('button', { className: 'button ghost small', type: 'button', onclick: () => session.signOut() }, 'Sign out'),
+        confirmButton('Restore defaults', `${primaryGesture()} again to restore`, () => store.reset()),
+        h('div', { className: 'settings-session' },
+          h('button', { className: 'button ghost small', type: 'button', title: 'Return to your personnel files to pick another operative', onclick: () => session.leaveWorld() }, 'Change operative'),
+          confirmButton('Sign out', `${primaryGesture()} again to sign out`, () => session.signOut()),
+        ),
       ),
     );
 
@@ -199,7 +232,20 @@ export class SettingsWindow {
       scanlines.sync(settings.scanlines);
       fpsCounter.sync(settings.fpsCounter);
       uiScale.sync(settings.uiScale);
+      this.requestedScale = settings.uiScale;
+      this.paintScaleLimit();
     });
+  }
+
+  setScaleCeiling(ceiling: number): void {
+    this.scaleCeiling = ceiling;
+    this.paintScaleLimit();
+  }
+
+  private paintScaleLimit(): void {
+    const limited = this.requestedScale > this.scaleCeiling + 0.001;
+    this.scaleLimit.hidden = !limited;
+    this.scaleLimit.textContent = limited ? `This window fits up to ${percent(this.scaleCeiling)}; a larger window uses the rest.` : '';
   }
 
   get isOpen(): boolean {

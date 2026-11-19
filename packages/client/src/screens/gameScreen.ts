@@ -65,11 +65,13 @@ const CAMERA_HINT_MS = 12_000;
 const ORBIT_YAW_PER_PIXEL = 0.008;
 const ORBIT_PITCH_PER_PIXEL = 0.006;
 const ZOOM_STEP = 1.12;
-const UI_SCALE_REFERENCE_HEIGHT = 720;
+const UI_SCALE_REFERENCE_HEIGHT = 600;
 const UI_SCALE_CEILING = 1.5;
 const COMPACT_UI_SCALE_MAX = 1.1;
 const HUD_COLUMN_GAP = 8;
 const CRAMPED_OBJECTIVES_PX = 44;
+const MIN_PLAYER_BAND_PX = 120;
+const COMPACT_PORTRAIT_QUERY = '(max-width: 760px) and (min-height: 521px)';
 
 const isSalvageNode = (id: string): boolean => {
   const definition = GAME_CONTENT.worldObjects.get(id);
@@ -599,10 +601,26 @@ export function createGameScreen(app: AppNavigator): Screen {
   const applyUiScale = () => {
     const ceiling = Math.max(1, Math.min(window.innerHeight / UI_SCALE_REFERENCE_HEIGHT, isCompactLayout() ? COMPACT_UI_SCALE_MAX : UI_SCALE_CEILING));
     document.documentElement.style.setProperty('--ui-scale', String(Math.min(requestedUiScale, ceiling)));
+    settings.setScaleCeiling(ceiling);
   };
 
   const compactLandscape = window.matchMedia(COMPACT_LANDSCAPE_QUERY);
-  const objectivesList = objectives.element.querySelector<HTMLElement>('.objectives-list');
+  const compactPortrait = window.matchMedia(COMPACT_PORTRAIT_QUERY);
+  let chatYieldedToPanel = false;
+  sidePanel.onChange((open) => {
+    if (!compactPortrait.matches) return;
+    if (open && !chat.isCollapsed()) {
+      chatYieldedToPanel = true;
+      chat.setCollapsed(true);
+    } else if (!open && chatYieldedToPanel) {
+      chatYieldedToPanel = false;
+      chat.setCollapsed(false);
+    }
+  });
+  chat.onExpand(() => {
+    chatYieldedToPanel = false;
+    if (compactPortrait.matches && !sidePanel.isCollapsed) sidePanel.collapse();
+  });
   const visibleTop = (candidates: readonly Element[]) => Math.min(...candidates.map((candidate) => candidate.getBoundingClientRect()).filter((rect) => rect.height > 0).map((rect) => rect.top));
   const placeCompactHud = () => {
     const objectivesHome = compactLandscape.matches ? topLeft : topRight;
@@ -612,12 +630,17 @@ export function createGameScreen(app: AppNavigator): Screen {
       if (activityHome === chatAbove) chatAbove.insertBefore(activity.element, chat.toasts);
       else element.insertBefore(activity.element, tramRide.element);
     }
+    if (isCompactLayout()) {
+      if (chatAbove.lastElementChild !== vitals.element) chatAbove.append(vitals.element);
+    } else if (chat.element.firstElementChild !== vitals.element) {
+      chat.element.prepend(vitals.element);
+    }
   };
   const fitHudColumns = () => {
     placeCompactHud();
     if (!isCompactLayout()) {
       topLeft.style.removeProperty('max-height');
-      objectivesList?.style.removeProperty('max-height');
+      objectives.element.style.removeProperty('--objectives-room');
       objectives.element.classList.remove('cramped');
       renderer.cameraRig.shiftViewUp(0);
       return;
@@ -626,16 +649,24 @@ export function createGameScreen(app: AppNavigator): Screen {
     const columnTop = visibleTop([chat.element, ...chatAbove.children]);
     const leftRoom = (columnTop - topLeft.getBoundingClientRect().top - HUD_COLUMN_GAP) / scale;
     topLeft.style.maxHeight = `${Math.max(0, Math.floor(leftRoom))}px`;
-    if (objectivesList && !compactLandscape.matches) {
-      const room = (columnTop - objectivesList.getBoundingClientRect().top - HUD_COLUMN_GAP) / scale;
-      objectivesList.style.maxHeight = `${Math.max(0, Math.floor(room))}px`;
-      objectives.element.classList.toggle('cramped', room < CRAMPED_OBJECTIVES_PX);
+    topLeft.classList.toggle('overflowing', topLeft.scrollHeight > topLeft.clientHeight + 1);
+    const portraitPanelOpen = !compactLandscape.matches && !sidePanel.isCollapsed;
+    if (!compactLandscape.matches) {
+      const listTop = objectives.element.getBoundingClientRect().top + (objectives.element.querySelector('.objectives-toggle')?.getBoundingClientRect().height ?? 0);
+      const room = (columnTop - listTop - HUD_COLUMN_GAP) / scale;
+      objectives.element.style.setProperty('--objectives-room', `${Math.max(0, Math.floor(room))}px`);
+      objectives.element.classList.toggle('cramped', portraitPanelOpen || room < CRAMPED_OBJECTIVES_PX);
     } else {
-      objectivesList?.style.removeProperty('max-height');
+      objectives.element.style.removeProperty('--objectives-room');
       objectives.element.classList.remove('cramped');
     }
-    const portraitPanelCover = !compactLandscape.matches && !sidePanel.isCollapsed ? window.innerHeight - columnTop : 0;
-    renderer.cameraRig.shiftViewUp(Math.max(0, portraitPanelCover / 2));
+    if (!portraitPanelOpen) {
+      renderer.cameraRig.shiftViewUp(0);
+      return;
+    }
+    const freeTop = topRight.getBoundingClientRect().bottom;
+    const target = columnTop - freeTop >= MIN_PLAYER_BAND_PX ? (freeTop + columnTop) / 2 : columnTop / 2;
+    renderer.cameraRig.shiftViewUp(Math.max(0, window.innerHeight / 2 - target));
   };
   compactLandscape.addEventListener('change', fitHudColumns);
 
@@ -654,7 +685,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     element.style.setProperty('--top-right-height', `${topRight.offsetHeight}px`);
     fitHudColumns();
   });
-  for (const observed of [sidePanel.element, topRight, topLeft, chat.element, chatAbove, party.element]) panelObserver.observe(observed);
+  for (const observed of [sidePanel.element, topRight, topLeft, chat.element, chatAbove, party.element, objectives.element]) panelObserver.observe(observed);
 
   requestAnimationFrame(() => {
     renderer.resize();

@@ -27,6 +27,7 @@ export function createEquipmentTab(connection: GameConnection, world: WorldState
   let preview: AvatarPreview | null = null;
   const figure = h('div', { className: 'loadout-figure' });
   const worn = h('span', { className: 'tab-hint' });
+  const tappedSlots = new Set<EquipmentSlot>();
 
   const slots = new Map<EquipmentSlot, HTMLButtonElement>(
     EQUIPMENT_SLOTS.map((slot) => {
@@ -39,7 +40,7 @@ export function createEquipmentTab(connection: GameConnection, world: WorldState
           if (!itemId) return;
           const item = GAME_CONTENT.items.get(itemId);
           const unequip = () => connection.send({ type: 'equipment.unequip', slot });
-          if (!item || (event as PointerEvent).pointerType !== 'touch') return unequip();
+          if (!item || !tappedSlots.has(slot) || event.detail === 0) return unequip();
           const bounds = button.getBoundingClientRect();
           hideItemTooltip();
           menu.open(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2, [
@@ -50,6 +51,10 @@ export function createEquipmentTab(connection: GameConnection, world: WorldState
           button.classList.add('selected');
           menu.onClose(() => button.classList.remove('selected'));
         },
+      });
+      button.addEventListener('pointerdown', (event) => {
+        if (event.pointerType === 'touch' || event.pointerType === 'pen') tappedSlots.add(slot);
+        else tappedSlots.delete(slot);
       });
       attachItemTooltip(button, () => {
         const itemId = self?.equipment[slot];
