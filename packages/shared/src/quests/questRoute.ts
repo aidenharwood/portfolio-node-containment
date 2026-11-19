@@ -4,6 +4,7 @@ import type { DialogueDefinition } from '../dialogue/dialogue.ts';
 import type { ShopDefinition } from '../economy/shop.ts';
 import type { DialogueId, NpcId, WorldObjectId } from '../ids.ts';
 import type { NpcDefinition, WorldObjectDefinition } from '../world/entities.ts';
+import { areaGoal } from '../world/districtFootprint.ts';
 import type { TilePoint } from '../world/geometry.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
 import type { QuestObjective } from './questDefinition.ts';
@@ -21,7 +22,7 @@ export interface LiveCreature {
 }
 
 export interface RouteScene {
-  readonly level: Pick<ResolvedLevel, 'areas' | 'npcs' | 'objects' | 'creatures'>;
+  readonly level: Pick<ResolvedLevel, 'areas' | 'npcs' | 'objects' | 'creatures' | 'layout'>;
   readonly npcPositions: ReadonlyMap<NpcId, TilePoint>;
   readonly creatures: readonly LiveCreature[];
   readonly depletedInstances: ReadonlySet<string>;
@@ -95,7 +96,7 @@ function goalsForObjective(objective: QuestObjective, scene: RouteScene, content
     case 'enterArea':
       return scene.level.areas
         .filter((area) => area.districtId === objective.districtId && area.id === objective.areaId)
-        .map((area) => ({ point: { x: area.rect.x + Math.floor(area.rect.width / 2), y: area.rect.y + Math.floor(area.rect.height / 2) }, arriveAdjacent: false }));
+        .map((area) => ({ point: areaGoal(scene.level, area), arriveAdjacent: false }));
     default:
       return [];
   }

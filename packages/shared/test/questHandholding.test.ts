@@ -10,6 +10,8 @@ import {
   objectUseFlag,
   usedObjectsOf,
   objectiveCreatureIds,
+  areaGoal,
+  GAME_CONTENT,
   type ActiveQuest,
   type QuestLog,
   type RouteScene,
@@ -128,5 +130,35 @@ describe('quest handholding', () => {
     const goals = routeGoals(tracked, sceneOf('fx-floor'), FIXTURE_CONTENT);
     assert.equal(goals.length, 1);
     assert.equal(goals[0]?.arriveAdjacent, false);
+  });
+
+  test('an area step in a split square routes to a tile its own district owns', () => {
+    const quest = FIXTURE_CONTENT.quests.get('survey');
+    assert.ok(quest?.steps[0]);
+    const wilds = level('fx-wilds');
+    for (const districtId of ['fx-wild-gate-east', 'fx-wild-gate-west']) {
+      const objective = { type: 'enterArea', districtId, areaId: 'ground', label: 'Go to the gate' } as const;
+      const tracked: ActiveQuest = { quest, step: quest.steps[0], objectives: [{ objective, progress: 0, goal: 1, done: false }] };
+      const area = wilds.areas.find((candidate) => candidate.districtId === districtId && candidate.id === 'ground');
+      assert.ok(area);
+      const goals = routeGoals(tracked, sceneOf('fx-wilds'), FIXTURE_CONTENT);
+      assert.deepEqual(goals, [{ point: areaGoal(wilds, area), arriveAdjacent: false }]);
+      assert.equal(wilds.layout.districtAt(goals[0]?.point as { x: number; y: number }), districtId);
+    }
+  });
+
+  test('a shipped area step whose centre is walkable and owned still routes to its centre', () => {
+    const levelId = GAME_CONTENT.levelOfDistrict.get('tenements');
+    assert.ok(levelId);
+    const shipped = GAME_CONTENT.levels.get(levelId);
+    const quest = GAME_CONTENT.quests.get('rent-day');
+    assert.ok(shipped && quest);
+    const stepIndex = quest.steps.findIndex((step) => step.id === 'search');
+    const tracked = trackedQuest({ 'rent-day': { questId: 'rent-day', status: 'active', stepIndex, objectiveProgress: [0] } }, GAME_CONTENT.quests, 'rent-day');
+    assert.ok(tracked);
+    const area = shipped.areas.find((candidate) => candidate.districtId === 'tenements' && candidate.id === 'home-gale');
+    assert.ok(area);
+    const goals = routeGoals(tracked, { level: shipped, npcPositions: new Map(), creatures: [], depletedInstances: new Set() }, GAME_CONTENT);
+    assert.deepEqual(goals, [{ point: { x: area.rect.x + Math.floor(area.rect.width / 2), y: area.rect.y + Math.floor(area.rect.height / 2) }, arriveAdjacent: false }]);
   });
 });

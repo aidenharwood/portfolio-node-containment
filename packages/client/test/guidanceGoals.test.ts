@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import type { QuestLog, RouteScene } from '@containment/shared';
+import type { QuestLog, ResolvedLevel, RouteScene } from '@containment/shared';
 import { FIXTURE_CONTENT } from '@containment/shared/fixtures';
 import { guidanceGoals as goalsIn, guidedQuest as questIn } from '../src/state/guidanceGoals.ts';
 
@@ -9,6 +9,7 @@ const guidedQuest = (...args: [Parameters<typeof questIn>[0], Parameters<typeof 
 
 const scene: RouteScene = {
   level: {
+    layout: (FIXTURE_CONTENT.levels.get('fx-floor') as ResolvedLevel).layout,
     areas: [],
     npcs: [],
     creatures: [],

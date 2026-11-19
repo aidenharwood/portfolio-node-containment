@@ -1,9 +1,13 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { resourceRouteGoals, type RouteScene } from '../src/index.ts';
+import { resourceRouteGoals, type ResolvedLevel, type RouteScene } from '../src/index.ts';
+import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
+
+const { layout } = FIXTURE_CONTENT.levels.get('fx-floor') as ResolvedLevel;
 
 const scene = (depleted: readonly string[] = []): RouteScene => ({
   level: {
+    layout,
     areas: [],
     npcs: [],
     creatures: [],
