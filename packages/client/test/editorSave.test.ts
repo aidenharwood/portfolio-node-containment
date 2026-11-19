@@ -117,3 +117,23 @@ test('a land body whose id does not match the url is refused', () => {
 test('a land plan that leaves a square crate with no land is refused with that district', () => {
   refusedLand('fx-land', JSON.stringify(withStep({ kind: 'fill', shape: { kind: 'rect', rect: { x: 12, y: 8, width: 1, height: 1 } }, tile: 'void' })), 422, /fx-wild-west: objects\[0\]/);
 });
+
+test('a land square layout is saved when it builds on the land beside it', () => {
+  const layout = FIXTURE_WILDS_LAYOUTS.get('fx-wild-west');
+  assert.ok(layout);
+  const result = saveLayout(squareRoot, 'fx-wild-west', JSON.stringify(layout), landRoot);
+  assert.ok(result.ok);
+  assert.equal(readFileSync(join(squareRoot, 'fx-wild-west.json'), 'utf8'), printLayout(parseLayout(layout)));
+});
+
+test('a land square layout is refused without a land plan, and when it no longer builds on the land', () => {
+  const layout = FIXTURE_WILDS_LAYOUTS.get('fx-wild-west');
+  assert.ok(layout);
+  const before = readFileSync(join(squareRoot, 'fx-wild-west.json'), 'utf8');
+  const unlanded = saveLayout(squareRoot, 'fx-wild-west', JSON.stringify(layout));
+  assert.match(unlanded.ok ? '' : unlanded.error, /needs the land plan/);
+  const moved = { ...layout, objects: [{ id: 'wild-west-crate', object: 'crate', at: { room: 'no-such-room', dx: 0, dy: 0 } }] };
+  const broken = saveLayout(squareRoot, 'fx-wild-west', JSON.stringify(moved), landRoot);
+  assert.equal(broken.ok, false);
+  assert.equal(readFileSync(join(squareRoot, 'fx-wild-west.json'), 'utf8'), before);
+});

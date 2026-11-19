@@ -10,7 +10,27 @@ const SUPPRESS_MS = 2000;
 const ROUTE = /^\/__editor\/layouts\/([^/?]+)$/;
 const LAND_ROUTE = /^\/__editor\/land\/([^/?]+)$/;
 
-export function saveLayout(root: string, districtId: string, body: string): SaveResult {
+function buildOnLand(layout: ReturnType<typeof parseLayout>, root: string, landRoot: string | undefined): void {
+  if (!layout.square) {
+    buildDistrict(layout);
+    return;
+  }
+  if (!landRoot) throw new Error(`${layout.id}: square: a land square needs the land plan`);
+  const layouts = readLayouts(root);
+  let failure: Error | undefined;
+  for (const name of readdirSync(landRoot)) {
+    if (!name.endsWith('.json')) continue;
+    try {
+      buildDistrict(layout, drawLand(JSON.parse(readFileSync(join(landRoot, name), 'utf8'))), layouts);
+      return;
+    } catch (error) {
+      failure = error as Error;
+    }
+  }
+  throw failure ?? new Error(`${layout.id}: square: there is no land plan to cut it from`);
+}
+
+export function saveLayout(root: string, districtId: string, body: string, landRoot?: string): SaveResult {
   if (!DISTRICT_ID.test(districtId)) return { ok: false, status: 400, error: `"${districtId}" is not a district id.` };
   const file = join(root, `${districtId}.json`);
   if (!existsSync(file)) return { ok: false, status: 404, error: `There is no layout for "${districtId}".` };
@@ -23,7 +43,7 @@ export function saveLayout(root: string, districtId: string, body: string): Save
   try {
     const layout = parseLayout(source);
     if (layout.id !== districtId) return { ok: false, status: 422, error: `The layout's id "${layout.id}" does not match "${districtId}".` };
-    buildDistrict(layout);
+    buildOnLand(layout, root, landRoot);
     const text = printLayout(layout);
     writeFileSync(file, text);
     return { ok: true, text };
@@ -110,7 +130,7 @@ export function layoutSavePlugin(root: string, landRoot?: string): Plugin {
           const id = decodeURIComponent((match ?? landMatch)?.[1] ?? '');
           const text = Buffer.concat(chunks).toString('utf8');
           const folder = match ? root : (landRoot ?? root);
-          const result = match ? saveLayout(root, id, text) : saveLand(folder, root, id, text);
+          const result = match ? saveLayout(root, id, text, landRoot) : saveLand(folder, root, id, text);
           if (result.ok) log.record(join(folder, `${id}.json`), Date.now());
           response.statusCode = result.ok ? 200 : result.status;
           response.setHeader('Content-Type', 'application/json');
