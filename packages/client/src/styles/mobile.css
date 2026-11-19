@@ -322,7 +322,7 @@ body {
 
   .hud-side:not(.collapsed) {
     height: auto;
-    max-height: min(420px, calc(100% - 228px - 156px - var(--safe-top) - var(--safe-bottom)));
+    max-height: min(420px, var(--portrait-panel-max, calc(100% - 228px - 156px - var(--safe-top) - var(--safe-bottom))));
   }
 
   .game-screen:has(.hud-side:not(.collapsed)) .hud-chat:not(.collapsed) {
@@ -402,6 +402,27 @@ body {
     width: min(560px, calc(100% - 412px - var(--safe-left) - var(--safe-right)));
     margin: 0;
     max-height: calc(100% - 2 * var(--hud-inset) - var(--safe-top) - var(--safe-bottom));
+  }
+
+  .skill-guide-window,
+  .item-sources-window {
+    left: calc(var(--hud-inset) + var(--safe-left));
+    top: calc(var(--hud-inset) + var(--safe-top));
+    transform: none;
+    width: min(560px, calc(100% - 412px - var(--safe-left) - var(--safe-right)));
+    height: auto;
+    max-height: calc(100% - 2 * var(--hud-inset) - var(--safe-top) - var(--safe-bottom));
+  }
+
+  .game-screen:has(.quest-info-window:not([hidden])) .hud-side .panel-body {
+    display: none;
+  }
+
+  .party-invite-name {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
   }
 }
 

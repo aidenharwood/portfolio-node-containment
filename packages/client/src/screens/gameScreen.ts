@@ -73,7 +73,9 @@ const CRAMPED_OBJECTIVES_PX = 44;
 const PLAYER_CLEARANCE_PX = 60;
 const TOP_WINDOWS = ['.shop-window', '.storage-window', '.market-window', '.quest-info-window', '.skill-guide-window', '.item-sources-window'];
 const DESKTOP_TOP_WINDOWS = ['.shop-window', '.storage-window', '.crafting-window', '.market-window', '.contract-window', '.settings-window', '.skill-guide-window', '.item-sources-window'];
-const PLAYER_HEAD_ROOM_PX = 85;
+const PLAYER_HEAD_ROOM_PX = 75;
+const AVATAR_BAND_PX = 200;
+const PLAYER_FEET_ROOM_PX = 125;
 const COMPACT_PORTRAIT_QUERY = '(max-width: 760px) and (min-height: 521px)';
 
 const isSalvageNode = (id: string): boolean => {
@@ -632,18 +634,27 @@ export function createGameScreen(app: AppNavigator): Screen {
   const placeCompactHud = () => {
     const objectivesHome = compactLandscape.matches && !sidePanel.isCollapsed ? topLeft : topRight;
     if (objectives.element.parentElement !== objectivesHome) objectivesHome.append(objectives.element);
-    const activityHome = isCompactLayout() ? chatAbove : element;
-    if (activity.element.parentElement !== activityHome) {
-      if (activityHome === chatAbove) chatAbove.insertBefore(activity.element, chat.toasts);
-      else element.insertBefore(activity.element, tramRide.element);
-    }
+    if (activity.element.parentElement !== chatAbove) chatAbove.insertBefore(activity.element, chat.toasts);
     if (isCompactLayout()) {
       if (chatAbove.lastElementChild !== vitals.element) chatAbove.append(vitals.element);
     } else if (chat.element.firstElementChild !== vitals.element) {
       chat.element.prepend(vitals.element);
     }
   };
+  let panelYieldedToDialogue: string | null = null;
+  const yieldPanelToDialogue = () => {
+    const open = !dialogue.element.hidden;
+    if (open && isCompactLayout() && !sidePanel.isCollapsed && panelYieldedToDialogue === null) {
+      panelYieldedToDialogue = sidePanel.activeId;
+      sidePanel.collapse();
+    } else if (!open && panelYieldedToDialogue !== null) {
+      const restore = panelYieldedToDialogue;
+      panelYieldedToDialogue = null;
+      if (sidePanel.isCollapsed) sidePanel.select(restore);
+    }
+  };
   const fitHudColumns = () => {
+    yieldPanelToDialogue();
     placeCompactHud();
     const chatTop = visibleTop([chat.element, ...chatAbove.children]);
     if (Number.isFinite(chatTop)) element.style.setProperty('--hud-chat-top', `${Math.round(chatTop)}px`);
@@ -670,6 +681,15 @@ export function createGameScreen(app: AppNavigator): Screen {
       objectives.element.classList.remove('cramped');
     }
     topLeft.classList.toggle('panel-open', portraitPanelOpen);
+    if (!compactLandscape.matches) {
+      const panelRect = sidePanel.element.getBoundingClientRect();
+      const stackTop = visibleTop([chat.element, ...chatAbove.children]);
+      const stackHeight = Number.isFinite(stackTop) ? panelRect.top - stackTop : 0;
+      const room = panelRect.bottom - topRight.getBoundingClientRect().bottom - AVATAR_BAND_PX - stackHeight - HUD_COLUMN_GAP;
+      element.style.setProperty('--portrait-panel-max', `${Math.max(120, Math.floor(room / scale))}px`);
+    } else {
+      element.style.removeProperty('--portrait-panel-max');
+    }
     frameCamera(portraitPanelOpen ? columnTop : null);
   };
   const visibleRect = (candidate: HTMLElement): DOMRect | null => {
@@ -681,8 +701,11 @@ export function createGameScreen(app: AppNavigator): Screen {
     const centreX = window.innerWidth / 2;
     const centreY = window.innerHeight / 2;
     const dialogueRect = visibleRect(dialogue.element);
-    if (dialogueRect && compactLandscape.matches) {
-      const targetX = (dialogueRect.right + window.innerWidth) / 2;
+    const leftDock = compactLandscape.matches
+      ? [dialogue.element, questInfo.element, skillGuideWindow.element, itemSourcesWindow.element].map(visibleRect).find((rect) => rect !== null)
+      : null;
+    if (leftDock) {
+      const targetX = (leftDock.right + window.innerWidth) / 2;
       renderer.cameraRig.shiftView(Math.min(0, centreX - targetX), 0);
       return;
     }
@@ -692,13 +715,14 @@ export function createGameScreen(app: AppNavigator): Screen {
       return rect && getComputedStyle(candidate as HTMLElement).visibility !== 'hidden' ? [rect] : [];
     });
     if (portraitColumnTop !== null) {
-      const covers = [topRight, topLeft].flatMap((candidate) => {
-        const rect = visibleRect(candidate);
+      const covers = [...topRight.children, ...topLeft.children].flatMap((candidate) => {
+        const rect = candidate instanceof HTMLElement ? visibleRect(candidate) : null;
         return rect && getComputedStyle(candidate).visibility !== 'hidden' ? [rect] : [];
       });
       const freeTop = Math.max(0, ...[...covers, ...shown(TOP_WINDOWS)].map((rect) => rect.bottom));
       const middle = portraitColumnTop > freeTop ? (freeTop + portraitColumnTop) / 2 : portraitColumnTop / 2;
-      const target = Math.min(Math.max(middle, freeTop + PLAYER_HEAD_ROOM_PX), portraitColumnTop);
+      const roomy = portraitColumnTop - freeTop >= AVATAR_BAND_PX;
+      const target = roomy ? Math.min(Math.max(middle, freeTop + PLAYER_HEAD_ROOM_PX), portraitColumnTop - PLAYER_FEET_ROOM_PX) : middle;
       renderer.cameraRig.shiftView(0, centreY - target);
       return;
     }

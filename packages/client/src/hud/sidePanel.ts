@@ -65,6 +65,10 @@ export class SidePanel {
     else this.select(id);
   }
 
+  get activeId(): string {
+    return this.active;
+  }
+
   get isCollapsed(): boolean {
     return this.element.classList.contains('collapsed');
   }
