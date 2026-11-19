@@ -70,7 +70,6 @@ const UI_SCALE_CEILING = 1.5;
 const COMPACT_UI_SCALE_MAX = 1.1;
 const HUD_COLUMN_GAP = 8;
 const CRAMPED_OBJECTIVES_PX = 44;
-const MIN_PLAYER_BAND_PX = 120;
 const COMPACT_PORTRAIT_QUERY = '(max-width: 760px) and (min-height: 521px)';
 
 const isSalvageNode = (id: string): boolean => {
@@ -623,7 +622,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   });
   const visibleTop = (candidates: readonly Element[]) => Math.min(...candidates.map((candidate) => candidate.getBoundingClientRect()).filter((rect) => rect.height > 0).map((rect) => rect.top));
   const placeCompactHud = () => {
-    const objectivesHome = compactLandscape.matches ? topLeft : topRight;
+    const objectivesHome = compactLandscape.matches && !sidePanel.isCollapsed ? topLeft : topRight;
     if (objectives.element.parentElement !== objectivesHome) objectivesHome.append(objectives.element);
     const activityHome = isCompactLayout() ? chatAbove : element;
     if (activity.element.parentElement !== activityHome) {
@@ -638,6 +637,8 @@ export function createGameScreen(app: AppNavigator): Screen {
   };
   const fitHudColumns = () => {
     placeCompactHud();
+    const chatTop = visibleTop([chat.element, ...chatAbove.children]);
+    if (Number.isFinite(chatTop)) element.style.setProperty('--hud-chat-top', `${Math.round(chatTop)}px`);
     if (!isCompactLayout()) {
       topLeft.style.removeProperty('max-height');
       objectives.element.style.removeProperty('--objectives-room');
@@ -661,11 +662,13 @@ export function createGameScreen(app: AppNavigator): Screen {
       objectives.element.classList.remove('cramped');
     }
     if (!portraitPanelOpen) {
+      topLeft.classList.remove('panel-open');
       renderer.cameraRig.shiftViewUp(0);
       return;
     }
-    const freeTop = topRight.getBoundingClientRect().bottom;
-    const target = columnTop - freeTop >= MIN_PLAYER_BAND_PX ? (freeTop + columnTop) / 2 : columnTop / 2;
+    topLeft.classList.add('panel-open');
+    const freeTop = Math.max(topRight.getBoundingClientRect().bottom, topLeft.getBoundingClientRect().bottom);
+    const target = columnTop > freeTop ? (freeTop + columnTop) / 2 : columnTop / 2;
     renderer.cameraRig.shiftViewUp(Math.max(0, window.innerHeight / 2 - target));
   };
   compactLandscape.addEventListener('change', fitHudColumns);

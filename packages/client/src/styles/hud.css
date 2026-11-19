@@ -264,7 +264,8 @@
 
 .minimap-canvas {
   width: 100%;
-  max-width: 256px;
+  max-width: calc(256px / var(--ui-scale, 1));
+  margin-inline: auto;
   height: auto;
   aspect-ratio: 256 / 224;
   cursor: crosshair;
@@ -387,7 +388,8 @@
 }
 
 .inventory-mode {
-  flex: 1 1 0;
+  flex: 1 0 100%;
+  order: 3;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1175,6 +1177,7 @@
 
 .dialogue-speaker {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   gap: 10px;
   margin-bottom: 8px;
@@ -1863,6 +1866,47 @@
   pointer-events: none;
   user-select: none;
   transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+.vitals-target {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(40px, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  margin-top: 5px;
+  font-size: var(--text-label);
+}
+
+.vitals-target[hidden] {
+  display: none;
+}
+
+.vitals-target-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text);
+}
+
+.vitals-target-level {
+  color: var(--color-hostile);
+}
+
+.vitals-target-bar {
+  height: 5px;
+  background: rgba(120, 10, 16, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.7);
+}
+
+.vitals-target-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--color-hostile);
+}
+
+.vitals-target-value {
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 .hud-vitals.alert {
@@ -2933,7 +2977,8 @@
   top: 50%;
   transform: translate(-50%, -50%);
   width: min(760px, calc(100% - 32px));
-  height: min(580px, calc(100% - 120px));
+  height: auto;
+  max-height: min(580px, calc(100% - 120px));
   display: flex;
   flex-direction: column;
   padding: var(--window-padding);
@@ -3568,7 +3613,7 @@
 .loading-marker {
   position: absolute;
   left: 50%;
-  bottom: 22%;
+  top: calc(var(--hud-inset) + 10px);
   transform: translateX(-50%);
   display: flex;
   align-items: center;
@@ -3748,6 +3793,8 @@
 }
 
 .settings-body {
+  scrollbar-gutter: stable;
+  padding-right: 4px;
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
@@ -4390,5 +4437,34 @@
   .market-window {
     left: calc((100% - 272px - var(--hud-inset)) / 2);
     width: min(760px, calc(100% - 272px - 3 * var(--hud-inset) - 16px));
+  }
+}
+
+@media (min-width: 761px) and (min-height: 521px) and (max-height: 800px) {
+  .hud-dialogue {
+    left: var(--hud-inset);
+    bottom: var(--hud-inset);
+    transform: none;
+    width: min(560px, calc(100% - 314px));
+    max-height: calc(100% - 2 * var(--hud-inset));
+    z-index: 25;
+  }
+
+  .shop-window,
+  .storage-window,
+  .crafting-window,
+  .market-window,
+  .contract-window,
+  .settings-window,
+  .skill-guide-window,
+  .item-sources-window,
+  .quest-info-window {
+    top: var(--hud-inset);
+    transform: translateX(-50%);
+    max-height: calc((var(--hud-chat-top, 100vh) - 2 * var(--hud-inset)) / var(--ui-scale, 1));
+  }
+
+  .crafting-window {
+    height: calc((var(--hud-chat-top, 100vh) - 2 * var(--hud-inset)) / var(--ui-scale, 1));
   }
 }

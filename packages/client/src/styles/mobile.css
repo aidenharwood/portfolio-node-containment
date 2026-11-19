@@ -1011,16 +1011,26 @@ body {
 
   .party-invite {
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
     gap: 6px;
   }
 
   .party-invite-text {
-    flex: 1 1 0;
+    flex: 1 1 100%;
     min-width: 0;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  }
+
+  .hud-top-left.panel-open .party-members {
+    display: none;
+  }
+
+  .overhead-label {
+    display: none;
   }
 
   .party-invite-actions .button.small {
@@ -1052,8 +1062,13 @@ body {
 }
 
 @media (max-width: 760px), (max-height: 520px) {
-  .game-screen:has(.skill-guide-window:not([hidden]), .quest-info-window:not([hidden]), .item-sources-window:not([hidden])) :is(.hud-objectives, .hud-chat-above, .party-frame) {
+  .game-screen:has(.skill-guide-window:not([hidden]), .quest-info-window:not([hidden]), .item-sources-window:not([hidden])) :is(.hud-objectives, .hud-chat-above, .party-frame, .hud-top-right) {
     visibility: hidden;
+  }
+
+  .hud-vitals {
+    background: rgba(6, 12, 16, 0.78);
+    opacity: 1;
   }
 }
 
@@ -1064,9 +1079,35 @@ body {
 
   .hud-dialogue .speaker-name,
   .hud-dialogue .speaker-title {
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow-wrap: anywhere;
+  }
+
+  .crafting-actions {
+    flex-wrap: wrap;
+  }
+
+  .crafting-actions > span {
+    flex: 1 1 100%;
+  }
+
+  .game-screen:has(.skill-guide-window:not([hidden]), .quest-info-window:not([hidden]), .item-sources-window:not([hidden])) .hud-side .panel-body {
+    visibility: hidden;
+  }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  .party-invite {
+    flex-wrap: nowrap;
+  }
+
+  .party-invite-text {
+    flex: 1 1 0;
+    display: block;
     white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .game-screen:has(.hud-chat:not(.collapsed)) .party-invite {
+    display: none;
   }
 }
