@@ -1,5 +1,4 @@
 import {
-  CONTAIN_INTERACTION,
   GAME_CONTENT,
   salvageSourceOf,
   npcQuestMarker,
@@ -110,9 +109,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   const speech = new SpeechLayer();
   const combatOverlay = new CombatOverlay(world);
   const boosts = new BoostBar();
-  const vitals = new VitalsPanel((entityId) => {
-    connection.send({ type: 'world.interact', targetKind: 'creature', instanceId: entityId.replace(/^creature:/, ''), interactionIndex: CONTAIN_INTERACTION });
-  });
+  const vitals = new VitalsPanel();
   const inventoryModes = new InventoryModeSlot();
   const shop = new ShopWindow(connection, world, menu, inventoryModes);
   const storage = new StorageWindow(connection, world, menu, inventoryModes);
@@ -549,7 +546,7 @@ export function createGameScreen(app: AppNavigator): Screen {
     loadingMarker.classList.toggle('visible', now < loadingVisibleUntil);
     refreshHover();
     speech.update(world, renderer, now);
-    combatOverlay.update(world, renderer, now);
+    combatOverlay.update(world, renderer, now, hover);
     vitals.update(world);
     boosts.update(world, now);
     minimap.render(now, renderer.cameraRig.headingRadians);
@@ -557,7 +554,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   };
 
   chat.element.prepend(vitals.element);
-  const chatAbove = h('div', { className: 'hud-chat-above' }, vitals.targetElement, boosts.element, chat.toasts);
+  const chatAbove = h('div', { className: 'hud-chat-above' }, boosts.element, chat.toasts);
   chat.element.append(chatAbove);
   const topLeft = h('div', { className: 'hud-top-left' }, party.element);
   const element = h(

@@ -15,7 +15,7 @@ import {
   type TileRect,
   type WorldObjectDefinition,
 } from '@containment/shared';
-import { Box3, Color, Group, Matrix4, Mesh, Quaternion, RingGeometry, Vector3, type BufferGeometry, type Material, type Object3D } from 'three';
+import { Box3, BoxGeometry, Color, Group, Matrix4, Mesh, MeshBasicMaterial, Quaternion, RingGeometry, Vector3, type BufferGeometry, type Material, type Object3D } from 'three';
 import type { ActiveZone } from '../../state/worldState.ts';
 import { buildObjectModel, type AnimatedPart } from '../models/objectModels.ts';
 import { hex } from '../voxel/palette.ts';
@@ -114,6 +114,11 @@ const SHARED_GEOMETRY = new WeakSet<BufferGeometry>();
 const OBJECTIVE_RING_GEOMETRY = new RingGeometry(0.52, 0.62, 32);
 SHARED_GEOMETRY.add(OBJECTIVE_RING_GEOMETRY);
 SHARED_GEOMETRY.add(BEAM_GEOMETRY);
+const PICK_PROXY_GEOMETRY = new BoxGeometry(1, 1, 1).translate(0, 0.5, 0);
+SHARED_GEOMETRY.add(PICK_PROXY_GEOMETRY);
+const PICK_PROXY_MATERIAL = new MeshBasicMaterial({ visible: false });
+const PICK_PROXY_MIN_HEIGHT = 0.9;
+const PICK_PROXY_PAD = 0.15;
 const VOXEL_LAYERS: readonly VoxelLayer[] = ['solid', 'emissive', 'glass'];
 const UP = new Vector3(0, 1, 0);
 const MODEL_VARIANTS = 8;
@@ -370,6 +375,8 @@ export class ChunkView {
       return { part, spec };
     });
     group.userData.pick = { kind: 'object', instanceId: placement.instanceId };
+    const height = parts.heightVoxels * MODEL_VOXEL_SIZE * scale;
+    if (definition.interactions.length > 0) group.add(this.pickProxy(definition, height, scale));
 
     const objectiveRing = new Mesh(OBJECTIVE_RING_GEOMETRY, this.ringMaterial);
     objectiveRing.rotation.x = -Math.PI / 2;
@@ -377,8 +384,15 @@ export class ChunkView {
     objectiveRing.visible = false;
 
     this.root.add(group, objectiveRing);
-    const height = parts.heightVoxels * MODEL_VOXEL_SIZE * scale;
     this.objects.push({ instanceId: placement.instanceId, placement, definition, group, objectiveRing, height, animated, seed });
+  }
+
+  private pickProxy(definition: WorldObjectDefinition, height: number, scale: number): Mesh {
+    const { width, height: depth } = definition.footprint ?? { width: 1, height: 1 };
+    const proxy = new Mesh(PICK_PROXY_GEOMETRY, PICK_PROXY_MATERIAL);
+    proxy.name = 'pick-proxy';
+    proxy.scale.set((width + PICK_PROXY_PAD) / scale, Math.max(PICK_PROXY_MIN_HEIGHT, height + PICK_PROXY_PAD) / scale, (depth + PICK_PROXY_PAD) / scale);
+    return proxy;
   }
 
   private addFootprint(definition: WorldObjectDefinition, parts: ObjectMeshes, placement: ObjectPlacement, origin: { x: number; z: number }, scale: number): void {

@@ -25,6 +25,7 @@ import {
   type GroundItemSnapshot,
   type GameContent,
   type InstanceId,
+  type NodeCharge,
   type ObjectPlacement,
   type ServerMessage,
   type TilePoint,
@@ -187,6 +188,19 @@ export class LevelInstance {
     });
   }
 
+  nodeChargesIn(chunks: ReadonlySet<ChunkKey>): NodeCharge[] {
+    return [...this.nodeCharges]
+      .filter(([instanceId]) => {
+        const position = this.objects.get(instanceId)?.placement.position;
+        return !this.depletedUntil.has(instanceId) && position !== undefined && chunks.has(chunkKeyOf(position));
+      })
+      .map(([instanceId, remaining]) => ({ instanceId, remaining }));
+  }
+
+  nodeChargesLeft(instanceId: InstanceId, capacity: number): number {
+    return this.nodeCharges.get(instanceId) ?? capacity;
+  }
+
   syncInterest(player: Player): InterestChange {
     const next = chunkOf(player.position);
     const delta = interestDelta(player.interestChunk, next);
@@ -200,6 +214,7 @@ export class LevelInstance {
         entities: this.entitySnapshotsIn(entered).filter((entity) => entity.id !== player.entityId),
         groundItems: this.groundItemsVisibleIn(entered, player.entityId),
         depletedObjects: this.depletedObjectsIn(entered),
+        nodeCharges: this.nodeChargesIn(entered),
       });
       for (const message of this.encounterMessagesIn(entered)) player.send(message);
     }

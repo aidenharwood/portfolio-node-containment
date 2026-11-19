@@ -1,6 +1,6 @@
 import { particleDensityFor, weatherDensityFor, type GameSettings } from '../state/gameSettings.ts';
-import { GAME_CONTENT, WEAPON_KIND_INFO, type EntityId, type Facing, type ItemId, type NpcQuestMarker, type TilePoint } from '@containment/shared';
-import { Color, Group, MathUtils, Plane, Raycaster, Scene, Vector2, Vector3, MeshBasicMaterial, Mesh, OctahedronGeometry, type Object3D } from 'three';
+import { GAME_CONTENT, WEAPON_KIND_INFO, type EntityId, type Facing, type ItemId, type NpcQuestMarker, type TilePoint, type WorldObjectDefinition } from '@containment/shared';
+import { Color, CylinderGeometry, Group, MathUtils, Plane, Raycaster, Scene, Vector2, Vector3, MeshBasicMaterial, Mesh, OctahedronGeometry, type Object3D } from 'three';
 import type { ClientEntity, CombatHitEvent, WorldEffectEvent, WorldState } from '../state/worldState.ts';
 import { CameraRig } from './cameraRig.ts';
 import { CharacterRig } from './models/characterModel.ts';
@@ -95,6 +95,19 @@ const TRAIL_MAX_STEPS = 24;
 const TRAIL_SPACING = 0.05;
 const SPIRIT_SQUASH_FROM = 1 - 150 / 700;
 const AMBIENCE_EASE_PER_SECOND = 3;
+const ENTITY_PICK_RADIUS = 0.5;
+const ENTITY_PICK_HEADROOM = 0.2;
+const PICK_SLOP_PIXELS = 14;
+const ENTITY_PICK_GEOMETRY = new CylinderGeometry(ENTITY_PICK_RADIUS, ENTITY_PICK_RADIUS, 1, 12).translate(0, 0.5, 0);
+const PICK_PROXY_MATERIAL = new MeshBasicMaterial({ visible: false });
+
+const distanceToSegment = (px: number, py: number, a: ScreenAnchor, b: ScreenAnchor): number => {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const length = dx * dx + dy * dy;
+  const t = length === 0 ? 0 : Math.max(0, Math.min(1, ((px - a.x) * dx + (py - a.y) * dy) / length));
+  return Math.hypot(px - (a.x + dx * t), py - (a.y + dy * t));
+};
 
 const animationProgress = (startedAt: number, duration: number, now: number): number | null => {
   const progress = (now - startedAt) / duration;
@@ -210,7 +223,7 @@ export class GameRenderer {
 
     this.world.settle(now);
     this.syncEntities(now, delta, overlay);
-    this.groundItems.sync(this.world.groundItems, now / 1000);
+    this.groundItems.sync(this.world.groundItems);
     this.resolveHits(now);
     this.resolveChips(now);
     this.projectiles.update(now);
@@ -286,6 +299,10 @@ export class GameRenderer {
       const target = this.targetFor(hit.object);
       if (target) add(target);
     }
+    if (targets.length === 0) {
+      const near = this.nearestOnScreen(canvasX, canvasY);
+      if (near) add(near);
+    }
     if (!groundPoint) return targets;
 
     const tile = { x: Math.round(groundPoint.x), y: Math.round(groundPoint.z) };
@@ -298,6 +315,45 @@ export class GameRenderer {
     const walkTarget = this.world.walkTargetFor(tile);
     if (walkTarget) add({ kind: 'tile', tile: walkTarget });
     return targets;
+  }
+
+  private nearestOnScreen(canvasX: number, canvasY: number): PickTarget | null {
+    if (!this.zone) return null;
+    const now = performance.now();
+    let best: PickTarget | null = null;
+    let bestDistance = PICK_SLOP_PIXELS;
+    const consider = (target: PickTarget, foot: Vector3, height: number) => {
+      const base = this.project(foot);
+      const top = this.project(foot.clone().setY(foot.y + height));
+      if (!base.visible || !top.visible) return;
+      const distance = distanceToSegment(canvasX, canvasY, base, top);
+      if (distance >= bestDistance) return;
+      bestDistance = distance;
+      best = target;
+    };
+    for (const [id, view] of this.entities) {
+      const entity = this.world.entities.get(id);
+      if (!entity || id === this.world.selfEntityId || entity.dyingAt !== null) continue;
+      const position = this.world.bodyPosition(entity, now);
+      consider({ kind: 'entity', entity }, new Vector3(position.x, 0, position.y), view.rig.height * view.scale);
+    }
+    for (const view of this.zone.objects.values()) {
+      if (view.definition.interactions.length === 0) continue;
+      const origin = view.group.getWorldPosition(new Vector3());
+      consider({ kind: 'object', instanceId: view.instanceId, placement: view.placement, definition: view.definition }, origin.setY(0), Math.max(0.5, view.height));
+    }
+    return best;
+  }
+
+  objectDefinition(instanceId: string): WorldObjectDefinition | null {
+    return this.zone?.objects.get(instanceId)?.definition ?? null;
+  }
+
+  objectAnchor(instanceId: string, extraHeight = 0.25): ScreenAnchor | null {
+    const view = this.zone?.objects.get(instanceId);
+    if (!view) return null;
+    const position = view.group.getWorldPosition(new Vector3());
+    return this.project(position.setY(view.height + extraHeight));
   }
 
   anchorFor(entityId: EntityId, now: number, extraHeight = 0.25): ScreenAnchor | null {
@@ -625,6 +681,10 @@ export class GameRenderer {
     const character = !creature && entity.appearance ? new CharacterRig(entity.appearance, entity.gear) : null;
     const rig: EntityRig = creature ? createCreatureRig(creature.model) : (character as CharacterRig);
     rig.root.userData.pick = { kind: 'entity', entityId: entity.id };
+    const pickProxy = new Mesh(ENTITY_PICK_GEOMETRY, PICK_PROXY_MATERIAL);
+    pickProxy.name = 'pick-proxy';
+    pickProxy.scale.y = rig.height + ENTITY_PICK_HEADROOM;
+    rig.root.add(pickProxy);
     this.scene.add(rig.root);
     const scale = FOOTPRINT_MODEL_SCALE[this.world.bodySize(entity)] ?? 1;
     rig.root.scale.setScalar(scale);

@@ -51,6 +51,11 @@ export interface GroundItemSnapshot {
   readonly owned: boolean;
 }
 
+export interface NodeCharge {
+  readonly instanceId: string;
+  readonly remaining: number;
+}
+
 export interface EntityMovement {
   readonly entityId: EntityId;
   readonly position: TilePoint;
@@ -114,6 +119,7 @@ export type ServerMessage =
       readonly entities: readonly EntitySnapshot[];
       readonly groundItems: readonly GroundItemSnapshot[];
       readonly depletedObjects: readonly string[];
+      readonly nodeCharges: readonly NodeCharge[];
       readonly tickMs: number;
       readonly layer: number;
     }
@@ -125,6 +131,7 @@ export type ServerMessage =
       readonly entities: readonly EntitySnapshot[];
       readonly groundItems: readonly GroundItemSnapshot[];
       readonly depletedObjects: readonly string[];
+      readonly nodeCharges: readonly NodeCharge[];
     }
   | { readonly type: 'world.chunksLeft'; readonly chunks: readonly ChunkKey[] }
   | { readonly type: 'world.tick'; readonly movements: readonly EntityMovement[] }
@@ -172,6 +179,7 @@ export type ServerMessage =
   | { readonly type: 'market.closed' }
   | { readonly type: 'player.activity'; readonly activity: PlayerActivityView | null }
   | { readonly type: 'world.objectDepleted'; readonly instanceId: string; readonly depleted: boolean }
+  | { readonly type: 'world.nodeCharge'; readonly instanceId: string; readonly remaining: number }
   | { readonly type: 'world.entityCue'; readonly entityId: EntityId; readonly cue: EntityCue; readonly instanceId?: string }
   | { readonly type: 'tram.mapOpened'; readonly stationId: TramStationId }
   | { readonly type: 'tram.departed'; readonly originStationId: TramStationId; readonly destinationStationId: TramStationId; readonly rideTicks: number }

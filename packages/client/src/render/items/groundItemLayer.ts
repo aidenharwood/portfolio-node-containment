@@ -1,20 +1,23 @@
 import { GAME_CONTENT, type GroundItemSnapshot } from '@containment/shared';
-import { AdditiveBlending, Group, Mesh, MeshBasicMaterial, RingGeometry, type Object3D } from 'three';
+import { AdditiveBlending, Box3, BoxGeometry, Group, Mesh, MeshBasicMaterial, RingGeometry, Vector3, type Object3D } from 'three';
 import type { VoxelMeshes } from '../voxel/voxelMesher.ts';
 import { createVoxelObject } from '../voxel/voxelMaterials.ts';
 import { buildItemModel } from './itemModels.ts';
 
 const GROUND_VOXEL_SIZE = 1 / 30;
 const STACK_SPREAD = 0.18;
+const FLOOR_CLEARANCE = 0.005;
+const PICK_SIZE = 0.62;
+const PICK_HEIGHT = 0.3;
 
 interface GroundItemView {
   readonly group: Group;
-  readonly model: Group;
   readonly halo: Mesh;
-  readonly seed: number;
 }
 
 const meshCache = new Map<string, VoxelMeshes>();
+const pickGeometry = new BoxGeometry(PICK_SIZE, PICK_HEIGHT, PICK_SIZE).translate(0, PICK_HEIGHT / 2, 0);
+const pickMaterial = new MeshBasicMaterial({ visible: false });
 
 function meshesFor(itemId: string): VoxelMeshes | null {
   const cached = meshCache.get(itemId);
@@ -26,13 +29,34 @@ function meshesFor(itemId: string): VoxelMeshes | null {
   return meshes;
 }
 
+const hashOf = (text: string): number => {
+  let hash = 0;
+  for (let index = 0; index < text.length; index++) hash = (hash * 31 + text.charCodeAt(index)) | 0;
+  return Math.abs(hash);
+};
+
+function layFlat(model: Object3D, seed: number): Group {
+  const resting = new Group();
+  resting.add(model);
+  const size = new Box3().setFromObject(model).getSize(new Vector3());
+  const thinnest = Math.min(size.x, size.y, size.z);
+  if (thinnest === size.x && thinnest < size.y) model.rotation.z = Math.PI / 2;
+  else if (thinnest === size.z && thinnest < size.y) model.rotation.x = Math.PI / 2;
+  resting.updateMatrixWorld(true);
+  const bounds = new Box3().setFromObject(resting);
+  const centre = bounds.getCenter(new Vector3());
+  model.position.set(-centre.x, -bounds.min.y + FLOOR_CLEARANCE, -centre.z);
+  resting.rotation.y = ((seed % 360) / 360) * Math.PI * 2;
+  return resting;
+}
+
 export class GroundItemLayer {
   readonly root = new Group();
   private readonly views = new Map<string, GroundItemView>();
-  private readonly ownedHalo = new MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: 0.55, blending: AdditiveBlending, depthWrite: false, toneMapped: false, fog: false });
+  private readonly ownedHalo = new MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: 0.5, blending: AdditiveBlending, depthWrite: false, toneMapped: false, fog: false });
   private readonly publicHalo = new MeshBasicMaterial({ color: 0x4fd8ff, transparent: true, opacity: 0.4, blending: AdditiveBlending, depthWrite: false, toneMapped: false, fog: false });
 
-  sync(items: ReadonlyMap<string, GroundItemSnapshot>, time: number): void {
+  sync(items: ReadonlyMap<string, GroundItemSnapshot>): void {
     for (const [id, view] of this.views) {
       if (items.has(id)) continue;
       view.group.removeFromParent();
@@ -49,11 +73,8 @@ export class GroundItemLayer {
       const angle = slot * 2.4;
       const offset = slot === 0 ? 0 : STACK_SPREAD;
       view.group.position.set(item.position.x + Math.cos(angle) * offset, 0, item.position.y + Math.sin(angle) * offset);
-      view.model.position.y = 0.12 + Math.sin(time * 2 + view.seed) * 0.03;
-      view.model.rotation.y = time * 0.8 + view.seed;
       view.halo.material = item.owned ? this.ownedHalo : this.publicHalo;
     }
-    this.ownedHalo.opacity = 0.4 + Math.sin(time * 3) * 0.15;
   }
 
   pickables(): Object3D[] {
@@ -65,13 +86,15 @@ export class GroundItemLayer {
     if (!meshes) return null;
     const group = new Group();
     const model = createVoxelObject(meshes, { castShadow: true, receiveShadow: false });
-    const halo = new Mesh(new RingGeometry(0.12, 0.2, 24), this.publicHalo);
+    const resting = layFlat(model, hashOf(item.id));
+    const halo = new Mesh(new RingGeometry(0.16, 0.22, 24), this.publicHalo);
     halo.rotation.x = -Math.PI / 2;
-    halo.position.y = 0.02;
-    group.add(model, halo);
+    halo.position.y = 0.01;
+    const pickProxy = new Mesh(pickGeometry, pickMaterial);
+    group.add(resting, halo, pickProxy);
     group.userData.pick = { kind: 'groundItem', instanceId: item.id };
     this.root.add(group);
-    const view = { group, model, halo, seed: (item.id.length * 7 + item.position.x) % 10 };
+    const view = { group, halo };
     this.views.set(item.id, view);
     return view;
   }

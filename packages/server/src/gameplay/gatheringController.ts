@@ -4,6 +4,7 @@ import {
   gatherChance,
   isCardinallyAdjacent,
   levelForExperience,
+  objectFootprintTiles,
   SKILL_INFO,
   type GameContent,
   type GatheringSource,
@@ -65,7 +66,7 @@ export class GatheringController {
   private attempt(player: Player, level: LevelInstance, instanceId: InstanceId, interactionIndex: number, tick: number): void {
     const placed = level.objects.get(instanceId);
     const source = placed?.definition.interactions[interactionIndex]?.gather;
-    if (!placed || !source || !isCardinallyAdjacent(player.position, placed.placement.position)) return this.stop(player);
+    if (!placed || !source || !objectFootprintTiles(placed.definition, placed.placement).some((tile) => isCardinallyAdjacent(player.position, tile))) return this.stop(player);
     const refusal = this.refusal(player, level, placed, source);
     if (refusal) {
       this.host.notify(player, 'info', refusal);
@@ -85,11 +86,14 @@ export class GatheringController {
     this.host.raiseQuestEvent(player, { type: 'gathered', itemId: source.itemId, count: 1 });
     this.host.raiseQuestEvent(player, { type: 'loadoutChanged' });
 
-    if (this.random() < depletionChance(source) && level.spendNodeCharge(instanceId, source.charges)) {
-      level.depletedUntil.set(instanceId, tick + source.respawnTicks);
-      level.broadcastNear(placed.placement.position, { type: 'world.objectDepleted', instanceId, depleted: true });
-      this.host.notify(player, 'info', `The ${placed.definition.name} is exhausted for now.`);
-      return this.stop(player);
+    if (this.random() < depletionChance(source)) {
+      if (level.spendNodeCharge(instanceId, source.charges)) {
+        level.depletedUntil.set(instanceId, tick + source.respawnTicks);
+        level.broadcastNear(placed.placement.position, { type: 'world.objectDepleted', instanceId, depleted: true });
+        this.host.notify(player, 'info', `The ${placed.definition.name} is exhausted for now.`);
+        return this.stop(player);
+      }
+      level.broadcastNear(placed.placement.position, { type: 'world.nodeCharge', instanceId, remaining: level.nodeChargesLeft(instanceId, source.charges) });
     }
     if (addItem(player.record.inventory, this.content.items, source.itemId, 1).added === 0) {
       this.host.notify(player, 'info', 'Your inventory is full.');

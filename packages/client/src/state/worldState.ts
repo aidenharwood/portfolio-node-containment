@@ -141,6 +141,8 @@ export class WorldState {
   readonly entities = new Map<EntityId, ClientEntity>();
   readonly groundItems = new Map<string, GroundItemSnapshot>();
   readonly depletedObjects = new Set<string>();
+  readonly nodeCharges = new Map<string, number>();
+  readonly workedObjects = new Map<string, number>();
   readonly telegraphs = new Map<string, ClientTelegraph>();
   readonly hazards = new Map<string, ClientHazard>();
   private readonly listeners = new Map<WorldEvent, Set<() => void>>();
@@ -167,7 +169,10 @@ export class WorldState {
         this.telegraphs.delete(key);
         if (telegraph) this.emitEffect({ kind: 'telegraphResolved', telegraph });
       }),
-      connection.on('world.entityCue', ({ entityId, cue, instanceId }) => this.emitEffect({ kind: 'cue', entityId, cue, ...(instanceId ? { instanceId } : {}) })),
+      connection.on('world.entityCue', ({ entityId, cue, instanceId }) => {
+        if (cue === 'work' && instanceId) this.workedObjects.set(instanceId, performance.now());
+        this.emitEffect({ kind: 'cue', entityId, cue, ...(instanceId ? { instanceId } : {}) });
+      }),
       connection.on('encounter.hazard', ({ entityId, mechanicId, hazard, tiles }) => this.hazards.set(`${entityId}/${mechanicId}`, { entityId, hazard, tiles })),
       connection.on('encounter.phase', ({ entityId, phase }) => {
         const entity = this.entities.get(entityId);
@@ -221,7 +226,9 @@ export class WorldState {
         if (depleted && !this.depletedObjects.has(instanceId)) this.emitEffect({ kind: 'depleted', instanceId });
         if (depleted) this.depletedObjects.add(instanceId);
         else this.depletedObjects.delete(instanceId);
+        this.nodeCharges.delete(instanceId);
       }),
+      connection.on('world.nodeCharge', ({ instanceId, remaining }) => this.nodeCharges.set(instanceId, remaining)),
       connection.on('combat.death', ({ entityId, containedBy }) => {
         const entity = this.entities.get(entityId);
         if (entity) {
@@ -383,6 +390,9 @@ export class WorldState {
     for (const item of message.groundItems) this.groundItems.set(item.id, item);
     this.depletedObjects.clear();
     for (const instanceId of message.depletedObjects) this.depletedObjects.add(instanceId);
+    this.nodeCharges.clear();
+    this.workedObjects.clear();
+    for (const { instanceId, remaining } of message.nodeCharges) this.nodeCharges.set(instanceId, remaining);
     this.emit('zoneChanged');
   }
 
@@ -390,6 +400,7 @@ export class WorldState {
     for (const entity of message.entities) this.entities.set(entity.id, toClientEntity(entity));
     for (const item of message.groundItems) this.groundItems.set(item.id, item);
     for (const instanceId of message.depletedObjects) this.depletedObjects.add(instanceId);
+    for (const { instanceId, remaining } of message.nodeCharges) this.nodeCharges.set(instanceId, remaining);
   }
 
   private leaveChunks(chunks: ReadonlySet<ChunkKey>): void {
@@ -400,7 +411,10 @@ export class WorldState {
       if (chunks.has(chunkKeyOf(item.position))) this.groundItems.delete(id);
     }
     for (const placement of this.zone?.definition.objects ?? []) {
-      if (chunks.has(chunkKeyOf(placement.position))) this.depletedObjects.delete(placement.instanceId);
+      if (!chunks.has(chunkKeyOf(placement.position))) continue;
+      this.depletedObjects.delete(placement.instanceId);
+      this.nodeCharges.delete(placement.instanceId);
+      this.workedObjects.delete(placement.instanceId);
     }
   }
 

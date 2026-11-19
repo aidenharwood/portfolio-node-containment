@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import {
   addItem,
+  countItem,
   createDefaultDraft,
   createObjectWalkabilityGrid,
   createStartingSkills,
@@ -148,7 +149,7 @@ const PLINTH: WorldObjectDefinition = {
   interactions: [{ verb: 'Examine', effects: [{ type: 'notify', text: PLINTH_NOTICE }] }],
 };
 
-function plinthScenario() {
+function plinthScenario(definition: WorldObjectDefinition = PLINTH) {
   const levelId = CONTENT.newCharacter.startingLocation.levelId;
   const level = CONTENT.levels.get(levelId) as ResolvedLevel;
   const baseGrid = createObjectWalkabilityGrid(level.layout, level.objects, (id) => CONTENT.worldObjects.get(id));
@@ -167,10 +168,10 @@ function plinthScenario() {
     }
   }
   assert.ok(origin, 'no open floor for the plinth');
-  const placement = { instanceId: 'plinth-1', objectId: PLINTH.id, position: origin };
+  const placement = { instanceId: 'plinth-1', objectId: definition.id, position: origin };
   const content: GameContent = {
     ...CONTENT,
-    worldObjects: new Map([...CONTENT.worldObjects, [PLINTH.id, PLINTH]]),
+    worldObjects: new Map([...CONTENT.worldObjects, [definition.id, definition]]),
     levels: new Map([...CONTENT.levels, [levelId, { ...level, objects: [...level.objects, placement] }]]),
   };
   const gameplay = new Gameplay(content, { save: () => {}, findByName: () => null }, {
@@ -190,6 +191,13 @@ function plinthScenario() {
   return { gameplay, player, origin, stand, interact, noticed };
 }
 
+function gatheringPlinth(): WorldObjectDefinition {
+  const heap = CONTENT.worldObjects.get('scrap-heap');
+  const gather = heap?.interactions[0]?.gather;
+  assert.ok(gather);
+  return { ...PLINTH, id: 'test-heap', interactions: [{ verb: 'Salvage', effects: [], gather: { ...gather, level: 1 } }] };
+}
+
 describe('object footprints', () => {
   test('a player beside the middle of a wide object interacts without walking', () => {
     const { player, origin, stand, interact, noticed } = plinthScenario();
@@ -207,5 +215,16 @@ describe('object footprints', () => {
     for (let tick = 0; tick < 30 && !noticed(); tick++) gameplay.tick();
     assert.equal(noticed(), true);
     assert.deepEqual(player.position, { x: origin.x + 3, y: origin.y + 1 });
+  });
+
+  test('a player beside a footprint tile other than the anchor keeps gathering', () => {
+    const heap = gatheringPlinth();
+    const { gameplay, player, origin, stand, interact } = plinthScenario(heap);
+    stand({ x: origin.x + 2, y: origin.y + 2 });
+    interact();
+    assert.equal(player.activity?.kind, 'gather');
+    for (let tick = 0; tick < 12; tick++) gameplay.tick();
+    assert.equal(player.activity?.kind, 'gather');
+    assert.ok(countItem(player.record.inventory, heap.interactions[0]?.gather?.itemId ?? '') > 0);
   });
 });

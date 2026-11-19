@@ -106,6 +106,7 @@ export class World {
       entities: level.entitySnapshotsIn(interest),
       groundItems: level.groundItemsVisibleIn(interest, player.entityId),
       depletedObjects: level.depletedObjectsIn(interest),
+      nodeCharges: level.nodeChargesIn(interest),
       tickMs: this.tickMs,
       layer: level.layer,
     });
