@@ -149,6 +149,8 @@
 .roster-vacant {
   justify-content: center;
   min-height: 220px;
+  backdrop-filter: none;
+  background: rgba(3, 8, 11, 0.55);
   border-style: dashed;
   cursor: default;
   opacity: 0.45;

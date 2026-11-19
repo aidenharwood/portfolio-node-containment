@@ -39,12 +39,13 @@ export function createBackdrop(): Backdrop {
     }
     context.restore();
 
-    const sweep = ((time * 0.15) % 1) * height;
-    const gradient = context.createLinearGradient(0, sweep - 80, 0, sweep);
+    const sweep = ((time * 0.15) % 1) * (height + 240) - 120;
+    const gradient = context.createLinearGradient(0, sweep - 120, 0, sweep + 120);
     gradient.addColorStop(0, 'rgba(79, 216, 255, 0)');
-    gradient.addColorStop(1, 'rgba(79, 216, 255, 0.06)');
+    gradient.addColorStop(0.5, 'rgba(79, 216, 255, 0.045)');
+    gradient.addColorStop(1, 'rgba(79, 216, 255, 0)');
     context.fillStyle = gradient;
-    context.fillRect(0, sweep - 80, width, 80);
+    context.fillRect(0, sweep - 120, width, 240);
 
     const vignette = context.createRadialGradient(width / 2, height / 2, height * 0.2, width / 2, height / 2, Math.max(width, height) * 0.8);
     vignette.addColorStop(0, 'rgba(0, 0, 0, 0)');

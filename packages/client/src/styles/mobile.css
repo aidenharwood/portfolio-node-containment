@@ -338,6 +338,7 @@ body {
 
 @media (max-width: 760px) and (min-height: 521px) {
   .game-screen:has(.shop-window:not([hidden]), .storage-window:not([hidden]), .market-window:not([hidden]), .quest-info-window:not([hidden])) .hud-side:not(.collapsed) {
+    height: min(360px, calc(50% - 12px - var(--safe-bottom)));
     max-height: calc(50% - 12px - var(--safe-bottom));
   }
 }
@@ -512,6 +513,12 @@ body {
 
   .roster-new-plus {
     font-size: 28px;
+  }
+
+  .roster-vacant {
+    display: flex;
+    min-height: 48px;
+    padding: 10px 12px;
   }
 
   .roster-new .roster-meta {
@@ -969,5 +976,15 @@ body {
 
   .context-menu:has(.context-details) > :not(.context-details) {
     grid-column: 2;
+  }
+}
+
+@media (max-width: 760px) and (min-height: 521px) {
+  .game-screen:has(.shop-window:not([hidden]), .storage-window:not([hidden]), .market-window:not([hidden])) .panel-heading {
+    display: none;
+  }
+
+  .shop-window .shop-greeting {
+    display: none;
   }
 }
