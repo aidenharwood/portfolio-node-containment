@@ -1,0 +1,36 @@
+{
+  "id": "west-gate-road",
+  "name": "West Gate Road",
+  "subtitle": "Hinterland, the Old Shipyards",
+  "tier": 15,
+  "region": "old-shipyards",
+  "condition": "overgrown",
+  "ambience": { "darkness": 0.62, "tint": "#2e2622", "fog": "#1e2428", "sky": "#2e3444", "weather": ["rain", "mist"], "haze": 1.35 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 7, "row": 5, "split": true },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "West Gate Road" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 22, "dy": 30 }
+  },
+  "objects": [
+    { "id": "west-gate-road-gate-leaf-1", "object": "west-gate-leaf", "at": { "room": "ground", "dx": 42, "dy": 35 }, "facing": "west" },
+    { "id": "west-gate-road-gate-leaf-0", "object": "west-gate-leaf", "at": { "room": "ground", "dx": 42, "dy": 34 }, "facing": "west" },
+    { "id": "west-gate-road-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 22, "dy": 28 } },
+    { "id": "west-gate-road-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 22, "dy": 33 } },
+    { "id": "west-gate-road-barricade", "object": "barricade", "at": { "room": "ground", "dx": 27, "dy": 30 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

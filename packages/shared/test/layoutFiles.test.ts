@@ -23,6 +23,6 @@ test('every layout file names its own district and is printed canonically', () =
 
 test('every district module builds from its layout file', () => {
   const modules = readdirSync(new URL('../src/content/districts/', import.meta.url)).filter((name) => name.endsWith('.ts'));
-  const calls = modules.flatMap((name) => readFileSync(new URL(`../src/content/districts/${name}`, import.meta.url), 'utf8').match(/buildDistrict\(\w+\)/g) ?? []);
+  const calls = modules.flatMap((name) => readFileSync(new URL(`../src/content/districts/${name}`, import.meta.url), 'utf8').match(/buildDistrict\(\w+(?:, \w+)?\)/g) ?? []);
   assert.equal(calls.length, GAME_CONTENT.districts.size);
 });

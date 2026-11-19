@@ -1,0 +1,34 @@
+{
+  "id": "watch-road",
+  "name": "Watch Road",
+  "subtitle": "Hinterland, the Lantern",
+  "tier": 27,
+  "region": "the-lantern",
+  "condition": "breached",
+  "ambience": { "darkness": 0.58, "tint": "#26303a", "fog": "#2a3440", "sky": "#3e4a5e", "weather": ["mist", "drizzle"], "haze": 1.7 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 10, "row": 6, "split": true },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Watch Road" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 10, "dy": 34 }
+  },
+  "objects": [
+    { "id": "watch-road-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 10, "dy": 32 } },
+    { "id": "watch-road-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 10, "dy": 37 } },
+    { "id": "watch-road-barricade", "object": "barricade", "at": { "room": "ground", "dx": 5, "dy": 34 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

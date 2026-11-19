@@ -1,0 +1,34 @@
+{
+  "id": "charcoal-clearing",
+  "name": "Charcoal Clearing",
+  "subtitle": "Hinterland, the Tidemarsh",
+  "tier": 17,
+  "region": "tidemarsh",
+  "condition": "overgrown",
+  "ambience": { "darkness": 0.5, "tint": "#24342e", "fog": "#34443e", "sky": "#5a6a66", "weather": ["mist", "drizzle"], "haze": 1.6 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 6, "row": 8 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Charcoal Clearing" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 32, "dy": 33 }
+  },
+  "objects": [
+    { "id": "charcoal-clearing-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 34 } },
+    { "id": "charcoal-clearing-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 25, "dy": 33 } },
+    { "id": "charcoal-clearing-barricade", "object": "barricade", "at": { "room": "ground", "dx": 39, "dy": 39 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

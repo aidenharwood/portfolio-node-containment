@@ -1,0 +1,34 @@
+{
+  "id": "spur-end",
+  "name": "Spur End",
+  "subtitle": "Hinterland, the Heights",
+  "tier": 19,
+  "region": "the-heights",
+  "condition": "breached",
+  "ambience": { "darkness": 0.5, "tint": "#2a3040", "fog": "#2a3044", "sky": "#4a5a80", "weather": ["drizzle", "mist"], "haze": 1.1 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 7, "row": 3, "split": true },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Spur End" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 34, "dy": 9 }
+  },
+  "objects": [
+    { "id": "spur-end-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 7 } },
+    { "id": "spur-end-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 34, "dy": 12 } },
+    { "id": "spur-end-barricade", "object": "barricade", "at": { "room": "ground", "dx": 29, "dy": 9 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

@@ -1,0 +1,34 @@
+{
+  "id": "moat-mire",
+  "name": "Moat Mire",
+  "subtitle": "Hinterland, the Drowned Quarter",
+  "tier": 25,
+  "region": "drowned-quarter",
+  "condition": "flooded",
+  "ambience": { "darkness": 0.66, "tint": "#16302e", "fog": "#10262a", "sky": "#24404a", "weather": ["rain", "mist"], "haze": 1.5 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 9, "row": 5, "split": true },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Moat Mire" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 45, "dy": 43 }
+  },
+  "objects": [
+    { "id": "moat-mire-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 41 } },
+    { "id": "moat-mire-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 45, "dy": 46 } },
+    { "id": "moat-mire-barricade", "object": "barricade", "at": { "room": "ground", "dx": 40, "dy": 43 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

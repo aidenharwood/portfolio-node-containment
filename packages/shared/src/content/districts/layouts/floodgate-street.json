@@ -1,0 +1,36 @@
+{
+  "id": "floodgate-street",
+  "name": "Floodgate Street",
+  "subtitle": "Hinterland, Old Town",
+  "tier": 21,
+  "region": "old-town",
+  "condition": "breached",
+  "ambience": { "darkness": 0.56, "tint": "#3a2c22", "fog": "#2e2620", "sky": "#4a3a3a", "weather": ["drizzle", "dust"], "haze": 1.2 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 8, "row": 6, "split": true },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Floodgate Street" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 35, "dy": 18 }
+  },
+  "objects": [
+    { "id": "floodgate-street-gate-leaf-1", "object": "floodgate-leaf", "at": { "room": "ground", "dx": 38, "dy": 41 }, "facing": "north" },
+    { "id": "floodgate-street-gate-leaf-0", "object": "floodgate-leaf", "at": { "room": "ground", "dx": 37, "dy": 41 }, "facing": "north" },
+    { "id": "floodgate-street-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 35, "dy": 16 } },
+    { "id": "floodgate-street-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 35, "dy": 21 } },
+    { "id": "floodgate-street-barricade", "object": "barricade", "at": { "room": "ground", "dx": 30, "dy": 18 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

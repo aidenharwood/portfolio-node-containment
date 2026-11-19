@@ -1,0 +1,34 @@
+{
+  "id": "harbour-steps",
+  "name": "Harbour Steps",
+  "subtitle": "Hinterland, the Old Shipyards",
+  "tier": 15,
+  "region": "old-shipyards",
+  "condition": "breached",
+  "ambience": { "darkness": 0.62, "tint": "#2e2622", "fog": "#1e2428", "sky": "#2e3444", "weather": ["rain", "mist"], "haze": 1.35 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 1, "row": 4 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Harbour Steps" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 28, "dy": 4 }
+  },
+  "objects": [
+    { "id": "harbour-steps-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 28, "dy": 6 } },
+    { "id": "harbour-steps-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 9, "dy": 4 } },
+    { "id": "harbour-steps-barricade", "object": "barricade", "at": { "room": "ground", "dx": 47, "dy": 4 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

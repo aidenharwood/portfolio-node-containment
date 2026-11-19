@@ -1,17 +1,14 @@
 import { anchorOf, type LevelDefinition, type LevelRecipe } from '../../world/level.ts';
-import { joinDistricts } from '../../world/levelPlan.ts';
-import { HOLLOW_BAY_DISTRICT_IDS } from '../districts/hollowBay.ts';
+import { joinDistricts, pinPlacements, placeLandSquares } from '../../world/levelPlan.ts';
+import { HINTERLAND_DISTRICT_IDS } from '../districts/hinterland.ts';
 import { SHIPPED_CONTEXT } from './shippedContext.ts';
 
-export const OVERWORLD_RECIPE: LevelRecipe = (context) => ({
-  id: 'overworld',
-  name: 'Hollow Bay',
-  kind: 'floor',
-  depth: 0,
-  capacity: 300,
-  spawn: { districtId: 'terminus-square', position: anchorOf(context, 'terminus-square', 'start') },
-  districts: joinDistricts(
-    ['terminus-square', 'tenements', 'market-row', 'canal-basin', 'laundry-gardens', 'the-cut', 'scrapyards', 'shipyard-fringe', 'cordon-gate', ...HOLLOW_BAY_DISTRICT_IDS].map((id) => context.districtOf(id)),
+const TERMINUS_SQUARE_ORIGIN = { x: 128, y: 320 };
+
+export const OVERWORLD_RECIPE: LevelRecipe = (context) => {
+  const land = context.landOf('hinterland');
+  const lowWard = joinDistricts(
+    ['terminus-square', 'tenements', 'market-row', 'canal-basin', 'laundry-gardens', 'the-cut', 'scrapyards', 'shipyard-fringe', 'cordon-gate'].map((id) => context.districtOf(id)),
     'terminus-square',
     [
       { districtId: 'tenements', exit: 'south', to: 'terminus-square', toExit: 'north' },
@@ -22,51 +19,25 @@ export const OVERWORLD_RECIPE: LevelRecipe = (context) => ({
       { districtId: 'scrapyards', exit: 'west', to: 'market-row', toExit: 'east' },
       { districtId: 'shipyard-fringe', exit: 'west', to: 'canal-basin', toExit: 'east' },
       { districtId: 'cordon-gate', exit: 'west', to: 'shipyard-fringe', toExit: 'east' },
-      { districtId: 'gatehouse-yard', exit: 'west', to: 'cordon-gate', toExit: 'east' },
-      { districtId: 'sluice-end', exit: 'north', to: 'the-cut', toExit: 'south' },
-      { districtId: 'shipwrights-row', exit: 'south', to: 'gatehouse-yard', toExit: 'north' },
-      { districtId: 'dry-dock-four', exit: 'west', to: 'gatehouse-yard', toExit: 'east' },
-      { districtId: 'salt-pans', exit: 'west', to: 'sluice-end', toExit: 'east' },
-      { districtId: 'stilt-town', exit: 'north', to: 'sluice-end', toExit: 'south' },
-      { districtId: 'incline-top', exit: 'south', to: 'shipwrights-row', toExit: 'north' },
-      { districtId: 'rope-walk', exit: 'west', to: 'shipwrights-row', toExit: 'east' },
-      { districtId: 'hull-graveyard', exit: 'west', to: 'dry-dock-four', toExit: 'east' },
-      { districtId: 'brinehouse', exit: 'west', to: 'salt-pans', toExit: 'east' },
-      { districtId: 'reedbeds', exit: 'north', to: 'salt-pans', toExit: 'south' },
-      { districtId: 'observatory-hill', exit: 'south', to: 'incline-top', toExit: 'north' },
-      { districtId: 'crescent-gardens', exit: 'west', to: 'incline-top', toExit: 'east' },
-      { districtId: 'engine-works', exit: 'west', to: 'rope-walk', toExit: 'east' },
-      { districtId: 'wreckers-spit', exit: 'north', to: 'brinehouse', toExit: 'south' },
-      { districtId: 'the-spire', exit: 'west', to: 'observatory-hill', toExit: 'east' },
-      { districtId: 'exchange-square', exit: 'west', to: 'crescent-gardens', toExit: 'east' },
-      { districtId: 'causeway-gate', exit: 'west', to: 'wreckers-spit', toExit: 'east' },
-      { districtId: 'magistrates-row', exit: 'west', to: 'the-spire', toExit: 'east' },
-      { districtId: 'viaduct-end', exit: 'west', to: 'exchange-square', toExit: 'east' },
-      { districtId: 'the-shambles', exit: 'west', to: 'causeway-gate', toExit: 'east' },
-      { districtId: 'almshouses', exit: 'north', to: 'causeway-gate', toExit: 'south' },
-      { districtId: 'gasworks', exit: 'west', to: 'viaduct-end', toExit: 'east' },
-      { districtId: 'rolling-mill', exit: 'north', to: 'viaduct-end', toExit: 'south' },
-      { districtId: 'bishops-wharf', exit: 'west', to: 'the-shambles', toExit: 'east' },
-      { districtId: 'cathedral-close', exit: 'north', to: 'the-shambles', toExit: 'south' },
-      { districtId: 'slag-hills', exit: 'west', to: 'gasworks', toExit: 'east' },
-      { districtId: 'bellows', exit: 'north', to: 'gasworks', toExit: 'south' },
-      { districtId: 'floodgate', exit: 'west', to: 'bishops-wharf', toExit: 'east' },
-      { districtId: 'gallows-hill', exit: 'north', to: 'bishops-wharf', toExit: 'south' },
-      { districtId: 'coal-staithes', exit: 'north', to: 'slag-hills', toExit: 'south' },
-      { districtId: 'sunken-arcade', exit: 'west', to: 'floodgate', toExit: 'east' },
-      { districtId: 'drowned-terraces', exit: 'north', to: 'floodgate', toExit: 'south' },
-      { districtId: 'keepers-row', exit: 'north', to: 'coal-staithes', toExit: 'south' },
-      { districtId: 'tide-steps', exit: 'west', to: 'sunken-arcade', toExit: 'east' },
-      { districtId: 'site-fathom', exit: 'north', to: 'sunken-arcade', toExit: 'south' },
-      { districtId: 'gull-cliffs', exit: 'north', to: 'keepers-row', toExit: 'south' },
-      { districtId: 'headland-road', exit: 'east', to: 'keepers-row', toExit: 'west' },
-      { districtId: 'seawall', exit: 'south', to: 'tide-steps', toExit: 'north' },
-      { districtId: 'breakwater', exit: 'north', to: 'tide-steps', toExit: 'south' },
-      { districtId: 'the-lantern', exit: 'east', to: 'gull-cliffs', toExit: 'west' },
-      { districtId: 'fog-signal', exit: 'east', to: 'seawall', toExit: 'west' },
     ],
-  ),
-  connectors: [],
-});
+  );
+  return {
+    id: 'overworld',
+    name: 'Hollow Bay',
+    kind: 'floor',
+    depth: 0,
+    capacity: 300,
+    spawn: { districtId: 'terminus-square', position: anchorOf(context, 'terminus-square', 'start') },
+    land,
+    districts: [
+      ...pinPlacements(lowWard, 'terminus-square', TERMINUS_SQUARE_ORIGIN),
+      ...placeLandSquares(
+        land,
+        HINTERLAND_DISTRICT_IDS.map((id) => context.districtOf(id)),
+      ),
+    ],
+    connectors: [],
+  };
+};
 
 export const OVERWORLD: LevelDefinition = OVERWORLD_RECIPE(SHIPPED_CONTEXT);

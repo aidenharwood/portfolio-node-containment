@@ -1,0 +1,34 @@
+{
+  "id": "deep-wood",
+  "name": "Deep Wood",
+  "subtitle": "Hinterland, the Tidemarsh",
+  "tier": 17,
+  "region": "tidemarsh",
+  "condition": "overgrown",
+  "ambience": { "darkness": 0.5, "tint": "#24342e", "fog": "#34443e", "sky": "#5a6a66", "weather": ["mist", "drizzle"], "haze": 1.6 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 6, "row": 7 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Deep Wood" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 32, "dy": 36 }
+  },
+  "objects": [
+    { "id": "deep-wood-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 36 } },
+    { "id": "deep-wood-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 41, "dy": 41 } },
+    { "id": "deep-wood-barricade", "object": "barricade", "at": { "room": "ground", "dx": 22, "dy": 44 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

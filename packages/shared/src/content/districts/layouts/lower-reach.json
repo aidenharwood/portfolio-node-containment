@@ -1,0 +1,34 @@
+{
+  "id": "lower-reach",
+  "name": "Lower Reach",
+  "subtitle": "Hinterland, the Tidemarsh",
+  "tier": 17,
+  "region": "tidemarsh",
+  "condition": "overgrown",
+  "ambience": { "darkness": 0.5, "tint": "#24342e", "fog": "#34443e", "sky": "#5a6a66", "weather": ["mist", "drizzle"], "haze": 1.6 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 4, "row": 6, "split": true },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Lower Reach" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 31, "dy": 48 }
+  },
+  "objects": [
+    { "id": "lower-reach-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 46 } },
+    { "id": "lower-reach-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 31, "dy": 51 } },
+    { "id": "lower-reach-barricade", "object": "barricade", "at": { "room": "ground", "dx": 26, "dy": 48 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

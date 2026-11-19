@@ -1,0 +1,34 @@
+{
+  "id": "drovers-rise",
+  "name": "Drovers’ Rise",
+  "subtitle": "Hinterland, the Old Shipyards",
+  "tier": 15,
+  "region": "old-shipyards",
+  "condition": "breached",
+  "ambience": { "darkness": 0.62, "tint": "#2e2622", "fog": "#1e2428", "sky": "#2e3444", "weather": ["rain", "mist"], "haze": 1.35 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 3, "row": 2 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Drovers’ Rise" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 31, "dy": 31 }
+  },
+  "objects": [
+    { "id": "drovers-rise-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 29 } },
+    { "id": "drovers-rise-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 31, "dy": 34 } },
+    { "id": "drovers-rise-barricade", "object": "barricade", "at": { "room": "ground", "dx": 26, "dy": 31 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

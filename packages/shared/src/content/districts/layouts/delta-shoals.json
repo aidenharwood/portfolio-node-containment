@@ -1,0 +1,34 @@
+{
+  "id": "delta-shoals",
+  "name": "Delta Shoals",
+  "subtitle": "Hinterland, the Tidemarsh",
+  "tier": 17,
+  "region": "tidemarsh",
+  "condition": "flooded",
+  "ambience": { "darkness": 0.5, "tint": "#24342e", "fog": "#34443e", "sky": "#5a6a66", "weather": ["mist", "drizzle"], "haze": 1.6 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 3, "row": 9 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Delta Shoals" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 31, "dy": 9 }
+  },
+  "objects": [
+    { "id": "delta-shoals-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 7 } },
+    { "id": "delta-shoals-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 31, "dy": 12 } },
+    { "id": "delta-shoals-barricade", "object": "barricade", "at": { "room": "ground", "dx": 26, "dy": 9 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

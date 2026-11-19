@@ -1,0 +1,34 @@
+{
+  "id": "burnt-shore",
+  "name": "Burnt Shore",
+  "subtitle": "Hinterland, the Blight",
+  "tier": 28,
+  "region": "the-blight",
+  "condition": "alien",
+  "ambience": { "darkness": 0.68, "tint": "#2c1e2e", "fog": "#2a1c2c", "sky": "#4a3450", "weather": ["ash", "dust"], "haze": 1.5 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 11, "row": 7 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Burnt Shore" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 25, "dy": 30 }
+  },
+  "objects": [
+    { "id": "burnt-shore-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 28 } },
+    { "id": "burnt-shore-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 25, "dy": 33 } },
+    { "id": "burnt-shore-barricade", "object": "barricade", "at": { "room": "ground", "dx": 20, "dy": 30 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

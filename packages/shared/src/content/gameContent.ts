@@ -25,8 +25,8 @@ import { buildLevelIndex, locate, type LevelIndex } from './levelIndex.ts';
 import { OVERWORLD } from './levels/overworld.ts';
 import { MERIDIAN_LEVELS } from './levels/siteMeridian.ts';
 import { SITE_MERIDIAN_DISTRICTS } from './districts/siteMeridian.ts';
-import { HOLLOW_BAY_DISTRICTS } from './districts/hollowBay.ts';
-import { HOLLOW_BAY_DIALOGUES, HOLLOW_BAY_NPCS, HOLLOW_BAY_OBJECTS, HOLLOW_BAY_REGIONS, HOLLOW_BAY_SHOPS } from './seed/hollowBay.ts';
+import { HINTERLAND_DISTRICTS } from './districts/hinterland.ts';
+import { HINTERLAND_DIALOGUES, HINTERLAND_NPCS, HINTERLAND_OBJECTS, HINTERLAND_REGIONS, HINTERLAND_SHOPS } from './seed/hinterland.ts';
 import { SITE_MERIDIAN_LIFTS } from './seed/siteMeridian.ts';
 import { CURRENCY_ITEMS } from './seed/items.ts';
 import { WARD_CREATURES } from './ward/creatures.ts';
@@ -82,8 +82,8 @@ function indexById<T extends { readonly id: string }>(entries: readonly T[]): Re
   return index;
 }
 
-const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([...LOW_WARD_DISTRICTS, ...SITE_MERIDIAN_DISTRICTS, ...HOLLOW_BAY_DISTRICTS]);
-const INSTALLED = buildInstallations([...SEED_OBJECTS, ...HOLLOW_BAY_OBJECTS, ...SITE_MERIDIAN_LIFTS, ...WARD_SPOTS, ...WARD_STATIONS, ...NOVICE_OBJECTS, ...SITE_OBJECTS, ...DEPTHS_OBJECTS]);
+const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([...LOW_WARD_DISTRICTS, ...SITE_MERIDIAN_DISTRICTS, ...HINTERLAND_DISTRICTS]);
+const INSTALLED = buildInstallations([...SEED_OBJECTS, ...HINTERLAND_OBJECTS, ...SITE_MERIDIAN_LIFTS, ...WARD_SPOTS, ...WARD_STATIONS, ...NOVICE_OBJECTS, ...SITE_OBJECTS, ...DEPTHS_OBJECTS]);
 const ASSEMBLY_INDEX: ReadonlyMap<AssemblyId, AssemblyDefinition> = indexById([...ASSEMBLIES, ...INSTALLED.assemblies]);
 const LEVEL_INDEX: LevelIndex = buildLevelIndex([OVERWORLD, ...MERIDIAN_LEVELS], DISTRICTS, ASSEMBLY_INDEX);
 
@@ -98,20 +98,20 @@ function placed(districtId: DistrictId, position: TilePoint): WorldLocation {
 export const GAME_CONTENT: GameContent = {
   items: indexById([...CURRENCY_ITEMS, ...WARD_MATERIALS, ...WARD_FOOD, ...WARD_KITS, ...WARD_GEAR, ...WARD_UNIQUES, ...MASTERY_MANTLES, ...NOVICE_ITEMS, ...SITE_ITEMS, ...DEPTHS_ITEMS]),
   renamedItems: RENAMED_WARD_ITEMS,
-  npcs: indexById([...SEED_NPCS, ...HOLLOW_BAY_NPCS]),
+  npcs: indexById([...SEED_NPCS, ...HINTERLAND_NPCS]),
   worldObjects: indexById(INSTALLED.objects),
   assemblies: ASSEMBLY_INDEX,
-  dialogues: indexById<DialogueDefinition>([...SEED_DIALOGUES.filter((dialogue) => !QUEST_DIALOGUES.some((override) => override.id === dialogue.id)), ...HOLLOW_BAY_DIALOGUES, ...QUEST_DIALOGUES]),
+  dialogues: indexById<DialogueDefinition>([...SEED_DIALOGUES.filter((dialogue) => !QUEST_DIALOGUES.some((override) => override.id === dialogue.id)), ...HINTERLAND_DIALOGUES, ...QUEST_DIALOGUES]),
   quests: indexById<QuestDefinition>([...WARD_QUESTS, ...NOVICE_QUESTS, ...SITE_QUESTS, ...DEPTHS_QUESTS]),
   questlines: indexById<QuestlineDefinition>(WARD_QUESTLINES),
   districts: DISTRICTS,
   levels: LEVEL_INDEX.levels,
   levelOfDistrict: LEVEL_INDEX.levelOfDistrict,
   lands: SHIPPED_LANDS,
-  regions: indexById([...SEED_REGIONS, ...HOLLOW_BAY_REGIONS]),
+  regions: indexById([...SEED_REGIONS, ...HINTERLAND_REGIONS]),
   tram: buildTramNetwork(TRAM_STATIONS, TRAM_LINES, DISTRICTS, LEVEL_INDEX),
   creatures: indexById<CreatureDefinition>([...WARD_CREATURES, ...NOVICE_CREATURES, ...SITE_CREATURES, ...DEPTHS_CREATURES]),
-  shops: indexById([...SEED_SHOPS, ...HOLLOW_BAY_SHOPS]),
+  shops: indexById([...SEED_SHOPS, ...HINTERLAND_SHOPS]),
   recipes: indexById<RecipeDefinition>([...WARD_RECIPES, ...NOVICE_RECIPES, ...SITE_RECIPES, ...DEPTHS_RECIPES]),
   contracts: indexById<ContractDefinition>(CONTRACTS),
   newCharacter: {

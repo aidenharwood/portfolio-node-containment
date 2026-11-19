@@ -130,3 +130,17 @@ test('the Low Ward squares are Low Ward land, met by other wards only at the Cor
   }
   assert.deepEqual([...exits.keys()].sort(), Object.keys(LOW_WARD_EXITS).sort());
 });
+
+test('the overworld is the Hinterland, with the Low Ward pinned so Terminus Square starts at 128,320', () => {
+  const overworld = GAME_CONTENT.levels.get('overworld');
+  assert.ok(overworld);
+  assert.equal(overworld.definition.land?.plan.id, 'hinterland');
+  for (const [districtId, origin] of Object.entries(LOW_WARD_SQUARES)) {
+    assert.deepEqual(overworld.definition.districts.find((placement) => placement.districtId === districtId)?.origin, origin, districtId);
+  }
+  for (const placement of overworld.definition.districts) {
+    const square = GAME_CONTENT.districts.get(placement.districtId)?.square;
+    if (square) assert.deepEqual(placement.origin, { x: square.column * 64, y: square.row * 64 }, placement.districtId);
+  }
+  for (const region of GAME_CONTENT.regions.values()) assert.equal(GAME_CONTENT.levelOfDistrict.get(region.hubDistrictId), 'overworld', region.id);
+});

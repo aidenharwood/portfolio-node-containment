@@ -1,0 +1,34 @@
+{
+  "id": "gallows-top",
+  "name": "Gallows Top",
+  "subtitle": "Hinterland, Old Town",
+  "tier": 21,
+  "region": "old-town",
+  "condition": "breached",
+  "ambience": { "darkness": 0.56, "tint": "#3a2c22", "fog": "#2e2620", "sky": "#4a3a3a", "weather": ["drizzle", "dust"], "haze": 1.2 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 9, "row": 3, "split": true },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Gallows Top" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 17, "dy": 60 }
+  },
+  "objects": [
+    { "id": "gallows-top-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 17, "dy": 58 } },
+    { "id": "gallows-top-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 22, "dy": 59 } },
+    { "id": "gallows-top-barricade", "object": "barricade", "at": { "room": "ground", "dx": 12, "dy": 59 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

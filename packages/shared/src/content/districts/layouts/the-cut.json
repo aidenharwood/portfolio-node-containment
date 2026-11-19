@@ -13,6 +13,7 @@
     { "kind": "exit", "id": "north", "room": "ground", "side": "north", "width": 63, "offset": 0, "gate": false },
     { "kind": "exit", "id": "west", "room": "ground", "side": "west", "width": 63, "offset": 0, "gate": false },
     { "kind": "patch", "rect": { "x": 8, "y": 28, "width": 55, "height": 6 }, "tile": "water" },
+    { "kind": "patch", "rect": { "x": 63, "y": 28, "width": 1, "height": 6 }, "tile": "water" },
     { "kind": "patch", "rect": { "x": 14, "y": 28, "width": 4, "height": 6 }, "tile": "asphalt" },
     { "kind": "patch", "rect": { "x": 48, "y": 28, "width": 4, "height": 6 }, "tile": "asphalt" },
     { "kind": "patch", "rect": { "x": 20, "y": 40, "width": 40, "height": 22 }, "tile": "gravel" },

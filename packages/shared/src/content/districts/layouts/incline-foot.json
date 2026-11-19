@@ -1,0 +1,36 @@
+{
+  "id": "incline-foot",
+  "name": "Incline Foot",
+  "subtitle": "Hinterland, the Old Shipyards",
+  "tier": 15,
+  "region": "old-shipyards",
+  "condition": "overgrown",
+  "ambience": { "darkness": 0.62, "tint": "#2e2622", "fog": "#1e2428", "sky": "#2e3444", "weather": ["rain", "mist"], "haze": 1.35 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 5, "row": 2, "split": true },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Incline Foot" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 30, "dy": 47 }
+  },
+  "objects": [
+    { "id": "incline-foot-gate-leaf-1", "object": "incline-gate-leaf", "at": { "room": "ground", "dx": 27, "dy": 29 }, "facing": "south" },
+    { "id": "incline-foot-gate-leaf-0", "object": "incline-gate-leaf", "at": { "room": "ground", "dx": 26, "dy": 29 }, "facing": "south" },
+    { "id": "incline-foot-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 45 } },
+    { "id": "incline-foot-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 30, "dy": 50 } },
+    { "id": "incline-foot-barricade", "object": "barricade", "at": { "room": "ground", "dx": 25, "dy": 47 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

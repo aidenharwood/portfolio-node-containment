@@ -1,0 +1,34 @@
+{
+  "id": "bay-shingle",
+  "name": "Bay Shingle",
+  "subtitle": "Hinterland, the Old Shipyards",
+  "tier": 15,
+  "region": "old-shipyards",
+  "condition": "breached",
+  "ambience": { "darkness": 0.62, "tint": "#2e2622", "fog": "#1e2428", "sky": "#2e3444", "weather": ["rain", "mist"], "haze": 1.35 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 0, "row": 4 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Bay Shingle" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 52, "dy": 4 }
+  },
+  "objects": [
+    { "id": "bay-shingle-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 54, "dy": 4 } },
+    { "id": "bay-shingle-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 35, "dy": 4 } },
+    { "id": "bay-shingle-barricade", "object": "barricade", "at": { "room": "ground", "dx": 52, "dy": 7 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

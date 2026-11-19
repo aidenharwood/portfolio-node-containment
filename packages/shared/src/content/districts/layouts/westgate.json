@@ -1,0 +1,55 @@
+{
+  "id": "westgate",
+  "name": "Westgate",
+  "subtitle": "Hinterland, Old Town",
+  "tier": 20,
+  "region": "old-town",
+  "condition": "breached",
+  "ambience": { "darkness": 0.56, "tint": "#3a2c22", "fog": "#2e2620", "sky": "#4a3a3a", "weather": ["drizzle", "dust"], "haze": 1.2 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 7, "row": 5, "split": true },
+  "steps": [
+    { "kind": "rise", "rect": { "x": 45, "y": 43, "width": 14, "height": 10 }, "height": 2 },
+    { "kind": "building", "id": "the-hostel", "rect": { "x": 46, "y": 44, "width": 12, "height": 8 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] }
+  ],
+  "tiles": [],
+  "areas": [
+    { "room": "the-hostel", "name": "The Hostel", "safe": true },
+    { "room": "ground", "name": "Westgate" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 55, "dy": 38 },
+    "outpost": { "room": "the-hostel", "dx": 5, "dy": 1 }
+  },
+  "objects": [
+    { "id": "westgate-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 55, "dy": 36 } },
+    { "id": "westgate-barricade", "object": "barricade", "at": { "room": "ground", "dx": 59, "dy": 33 } },
+    { "id": "causeway-gate-storage-locker-1", "object": "storage-locker", "at": { "room": "the-hostel", "dx": 10, "dy": 7 }, "facing": "north" },
+    { "id": "causeway-gate-contract-board-1", "object": "contract-board", "at": { "room": "the-hostel", "dx": 8, "dy": 7 }, "facing": "north" },
+    { "id": "causeway-gate-notice-board-1", "object": "notice-board", "at": { "room": "the-hostel", "dx": 6, "dy": 7 }, "facing": "north" },
+    { "id": "causeway-gate-shelving-1", "object": "shelving", "at": { "room": "the-hostel", "dx": 1, "dy": 7 }, "facing": "north" },
+    { "id": "causeway-gate-shelving-2", "object": "shelving", "at": { "room": "the-hostel", "dx": 2, "dy": 7 }, "facing": "north" },
+    { "id": "causeway-gate-shelving-3", "object": "shelving", "at": { "room": "the-hostel", "dx": 3, "dy": 7 }, "facing": "north" },
+    { "id": "causeway-gate-counter-1", "object": "counter", "at": { "room": "the-hostel", "dx": 3, "dy": 5 }, "facing": "north" },
+    { "id": "causeway-gate-counter-2", "object": "counter", "at": { "room": "the-hostel", "dx": 2, "dy": 5 }, "facing": "north" },
+    { "id": "causeway-gate-counter-3", "object": "counter", "at": { "room": "the-hostel", "dx": 1, "dy": 5 }, "facing": "north" },
+    { "id": "causeway-gate-market-mailbox-1", "object": "market-mailbox", "at": { "room": "the-hostel", "dx": 10, "dy": 4 }, "facing": "north" },
+    { "id": "causeway-gate-table-1", "object": "table", "at": { "room": "the-hostel", "dx": 8, "dy": 4 }, "facing": "north" },
+    { "id": "causeway-gate-chair-1", "object": "chair", "at": { "room": "the-hostel", "dx": 8, "dy": 3 } },
+    { "id": "causeway-gate-security-camera-1", "object": "security-camera", "at": { "room": "the-hostel", "dx": 0, "dy": 7 }, "facing": "north" },
+    { "id": "westgate-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 59, "dy": 39 } }
+  ],
+  "assemblies": [],
+  "npcs": [
+    { "id": "causeway-gate-sister-agathe", "npc": "sister-agathe", "at": { "room": "the-hostel", "dx": 2, "dy": 6 } }
+  ],
+  "creatures": [],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 },
+    "the-hostel": { "theme": "office", "also": ["shop"], "people": 0 }
+  },
+  "furnish": {}
+}
