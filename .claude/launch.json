@@ -23,6 +23,19 @@
       "port": 5174
     },
     {
+      "name": "gear-gallery",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "vite",
+        "C:/Users/aiden/Documents/portfolio/portfolio-node-containment-gear/packages/client",
+        "--port",
+        "5178",
+        "--strictPort"
+      ],
+      "cwd": "packages/client",
+      "port": 5178
+    },
+    {
       "name": "kit-preview",
       "runtimeExecutable": "node",
       "runtimeArgs": [

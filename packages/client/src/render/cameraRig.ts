@@ -24,6 +24,8 @@ export class CameraRig {
   private viewHeight = 1;
   private viewShift = 0;
   private desiredViewShift = 0;
+  private viewShiftX = 0;
+  private desiredViewShiftX = 0;
 
   get focusPoint(): Vector3 {
     return this.focus;
@@ -40,13 +42,14 @@ export class CameraRig {
     this.applyViewShift();
   }
 
-  shiftViewUp(pixels: number): void {
-    this.desiredViewShift = pixels;
+  shiftView(left: number, up: number): void {
+    this.desiredViewShiftX = left;
+    this.desiredViewShift = up;
   }
 
   private applyViewShift(): void {
-    if (Math.abs(this.viewShift) < 0.5) this.camera.clearViewOffset();
-    else this.camera.setViewOffset(this.viewWidth, this.viewHeight, 0, this.viewShift, this.viewWidth, this.viewHeight);
+    if (Math.abs(this.viewShift) < 0.5 && Math.abs(this.viewShiftX) < 0.5) this.camera.clearViewOffset();
+    else this.camera.setViewOffset(this.viewWidth, this.viewHeight, this.viewShiftX, this.viewShift, this.viewWidth, this.viewHeight);
     this.camera.updateProjectionMatrix();
   }
 
@@ -101,9 +104,11 @@ export class CameraRig {
     this.yaw += (this.desiredYaw - this.yaw) * orbit;
     this.pitch += (this.desiredPitch - this.pitch) * orbit;
     this.distance += (this.desiredDistance - this.distance) * orbit;
-    if (this.viewShift !== this.desiredViewShift) {
+    if (this.viewShift !== this.desiredViewShift || this.viewShiftX !== this.desiredViewShiftX) {
       const next = this.viewShift + (this.desiredViewShift - this.viewShift) * follow;
       this.viewShift = Math.abs(next - this.desiredViewShift) < 0.5 ? this.desiredViewShift : next;
+      const nextX = this.viewShiftX + (this.desiredViewShiftX - this.viewShiftX) * follow;
+      this.viewShiftX = Math.abs(nextX - this.desiredViewShiftX) < 0.5 ? this.desiredViewShiftX : nextX;
       this.applyViewShift();
     }
 

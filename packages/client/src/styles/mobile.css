@@ -321,8 +321,8 @@ body {
   }
 
   .hud-side:not(.collapsed) {
-    height: min(460px, calc(100% - 188px - 156px - var(--safe-top) - var(--safe-bottom)));
-    max-height: none;
+    height: auto;
+    max-height: min(460px, calc(100% - 188px - 156px - var(--safe-top) - var(--safe-bottom)));
   }
 
   .game-screen:has(.hud-side:not(.collapsed)) .hud-chat:not(.collapsed) {
@@ -344,8 +344,8 @@ body {
 
 @media (max-width: 760px) and (min-height: 521px) {
   .game-screen:has(.shop-window:not([hidden]), .storage-window:not([hidden]), .market-window:not([hidden]), .quest-info-window:not([hidden])) .hud-side:not(.collapsed) {
-    height: min(360px, calc(50% - 12px - var(--safe-bottom)));
-    max-height: calc(50% - 12px - var(--safe-bottom));
+    height: auto;
+    max-height: min(360px, calc(50% - 12px - var(--safe-bottom)));
   }
 }
 
@@ -783,6 +783,10 @@ body {
     display: none;
   }
 
+  .game-screen:has(.hud-dialogue:not([hidden])) .hud-top-right {
+    visibility: hidden;
+  }
+
   .objectives-list {
     max-height: none;
     overflow: visible;
@@ -1086,12 +1090,12 @@ body {
     flex-wrap: wrap;
   }
 
-  .crafting-actions > span {
+  .crafting-actions > :is(.crafting-blocker, .tab-hint) {
     flex: 1 1 100%;
   }
 
-  .game-screen:has(.skill-guide-window:not([hidden]), .quest-info-window:not([hidden]), .item-sources-window:not([hidden])) .hud-side .panel-body {
-    visibility: hidden;
+  .game-screen:has(.skill-guide-window:not([hidden]), .item-sources-window:not([hidden])) .hud-side .panel-body {
+    display: none;
   }
 }
 
@@ -1102,9 +1106,6 @@ body {
 
   .party-invite-text {
     flex: 1 1 0;
-    display: block;
-    white-space: nowrap;
-    text-overflow: ellipsis;
   }
 
   .game-screen:has(.hud-chat:not(.collapsed)) .party-invite {

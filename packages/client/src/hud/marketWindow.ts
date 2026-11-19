@@ -132,7 +132,7 @@ export class MarketWindow {
               role: 'tab',
               ariaSelected: String(this.tab === tab),
               onclick: () => this.switchTab(tab),
-            }, tab === 'orders' ? `${TAB_LABELS[tab]} (${this.orders.length}/${MARKET_ORDER_LIMIT})` : TAB_LABELS[tab]),
+            }, tab === 'orders' && this.orders.length > 0 ? `${TAB_LABELS[tab]} (${this.orders.length})` : TAB_LABELS[tab]),
           ),
         ),
         this.tab === 'orders' ? this.renderOrders() : this.renderTrade(this.tab, self, scrip),

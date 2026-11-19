@@ -16,6 +16,7 @@ export type ChatLine = {
   readonly text: string;
   readonly tone?: NoticeTone;
   readonly actions?: readonly ChatLineAction[];
+  readonly live?: () => boolean;
 };
 
 type Filter = 'all' | 'game' | 'chat' | 'party' | 'whisper';
@@ -38,10 +39,20 @@ const FILTERS: Readonly<Record<Filter, { readonly label: string; readonly shows:
 
 const FILTER_IDS = Object.keys(FILTERS) as Filter[];
 
+const liveActions = new WeakMap<HTMLElement, () => boolean>();
+
+const disableActions = (container: Element): void => {
+  container.querySelectorAll('button').forEach((button) => (button.disabled = true));
+};
+
 export class ChatLog {
   readonly element: HTMLElement;
   readonly toasts: HTMLElement;
   private readonly log: HTMLElement;
+  private stuckToEnd = true;
+  private readonly logObserver = new ResizeObserver(() => {
+    if (this.stuckToEnd) this.log.scrollTop = this.log.scrollHeight;
+  });
   private readonly input: HTMLInputElement;
   private readonly collapseToggle: HTMLButtonElement;
   private expandListener: (() => void) | null = null;
@@ -90,7 +101,12 @@ export class ChatLog {
 
     this.element = h('section', { className: 'hud-chat' }, h('div', { className: 'chat-panel panel' }, h('div', { className: 'chat-tabs', role: 'tablist' }, ...tabs, this.collapseToggle), this.log, form));
     this.setCollapsed(isCompactLayout());
+    this.log.addEventListener('scroll', () => {
+      this.stuckToEnd = this.isScrolledToEnd();
+    });
+    this.logObserver.observe(this.log);
     this.unsubscribers = [
+      social.onChange(() => this.refreshActions()),
       connection.on('chat.message', (message) => this.push(message)),
       connection.on('notice', ({ tone, text }) => this.push({ channel: 'notice', tone, text })),
       connection.on('encounter.phase', ({ announce }) => this.push({ channel: 'notice', tone: 'warning', text: announce })),
@@ -98,6 +114,7 @@ export class ChatLog {
       connection.on('party.invited', ({ inviterId, inviterName }) => this.push({
         channel: 'party',
         text: `${inviterName} invited you to their party.`,
+        live: () => social.pendingInvites.some((invite) => invite.inviterId === inviterId),
         actions: [
           { label: 'Accept', run: () => social.respond(inviterId, true) },
           { label: 'Decline', run: () => social.respond(inviterId, false) },
@@ -154,6 +171,14 @@ export class ChatLog {
 
   dispose(): void {
     this.unsubscribers.forEach((unsubscribe) => unsubscribe());
+    this.logObserver.disconnect();
+  }
+
+  private refreshActions(): void {
+    this.log.querySelectorAll<HTMLElement>('.chat-actions').forEach((actions) => {
+      const live = liveActions.get(actions);
+      if (live && !live()) disableActions(actions);
+    });
   }
 
   private run(command: ChatCommand): void {
@@ -223,12 +248,17 @@ function renderLine(line: ChatLine): HTMLElement {
     const button = h('button', { className: 'chat-action', type: 'button' }, action.label);
     button.onclick = () => {
       action.run();
-      button.parentElement?.querySelectorAll('button').forEach((sibling) => (sibling.disabled = true));
+      if (button.parentElement) disableActions(button.parentElement);
     };
     return button;
   });
+  const actionRow = actions && actions.length > 0 ? h('span', { className: 'chat-actions' }, ...actions) : null;
+  if (actionRow && line.live) {
+    liveActions.set(actionRow, line.live);
+    if (!line.live()) disableActions(actionRow);
+  }
   return h('p', { className: `chat-line channel-${line.channel}${line.tone ? ` tone-${line.tone}` : ''}` },
     author && h('span', { className: 'chat-author' }, author),
     line.text,
-    actions && actions.length > 0 && h('span', { className: 'chat-actions' }, ...actions));
+    actionRow);
 }

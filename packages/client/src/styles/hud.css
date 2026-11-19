@@ -391,9 +391,10 @@
   flex: 1 0 100%;
   order: 3;
   min-width: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   font-size: var(--text-label);
   color: var(--color-gold);
   text-transform: uppercase;
@@ -4457,8 +4458,7 @@
   .contract-window,
   .settings-window,
   .skill-guide-window,
-  .item-sources-window,
-  .quest-info-window {
+  .item-sources-window {
     top: var(--hud-inset);
     transform: translateX(-50%);
     max-height: calc((var(--hud-chat-top, 100vh) - 2 * var(--hud-inset)) / var(--ui-scale, 1));
@@ -4467,4 +4467,8 @@
   .crafting-window {
     height: calc((var(--hud-chat-top, 100vh) - 2 * var(--hud-inset)) / var(--ui-scale, 1));
   }
+}
+
+.market-tabs button {
+  white-space: nowrap;
 }
