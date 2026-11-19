@@ -1,6 +1,6 @@
 {
-  "id": "bay-shingle",
-  "name": "Bay Shingle",
+  "id": "fitting-out-piers",
+  "name": "Fitting-Out Piers",
   "subtitle": "Hinterland, the Old Shipyards",
   "tier": 15,
   "region": "old-shipyards",
@@ -11,15 +11,15 @@
   "steps": [],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Bay Shingle" }
+    { "room": "ground", "name": "Fitting-Out Piers" }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 52, "dy": 4 }
   },
   "objects": [
-    { "id": "bay-shingle-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 54, "dy": 4 } },
-    { "id": "bay-shingle-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 35, "dy": 4 } },
-    { "id": "bay-shingle-barricade", "object": "barricade", "at": { "room": "ground", "dx": 52, "dy": 7 } }
+    { "id": "fitting-out-piers-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 54, "dy": 4 } },
+    { "id": "fitting-out-piers-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 35, "dy": 4 } },
+    { "id": "fitting-out-piers-barricade", "object": "barricade", "at": { "room": "ground", "dx": 52, "dy": 7 } }
   ],
   "assemblies": [],
   "npcs": [],

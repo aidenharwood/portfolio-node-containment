@@ -8,7 +8,14 @@
   "ambience": { "darkness": 0.62, "tint": "#2e2622", "fog": "#1e2428", "sky": "#2e3444", "weather": ["rain", "mist"], "haze": 1.35 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 1, "row": 0 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 18, "y": 32, "width": 24, "height": 16 }, "height": 3, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 24, "y": 36, "width": 12, "height": 8 }, "height": 4, "shape": "round" },
+    { "kind": "patch", "rect": { "x": 54, "y": 40, "width": 3, "height": 2 }, "tile": "rock" },
+    { "kind": "patch", "rect": { "x": 8, "y": 52, "width": 2, "height": 2 }, "tile": "rock" },
+    { "kind": "patch", "rect": { "x": 51, "y": 53, "width": 3, "height": 2 }, "tile": "rock" },
+    { "kind": "patch", "rect": { "x": 55, "y": 55, "width": 2, "height": 2 }, "tile": "rock" }
+  ],
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Heather Top" }

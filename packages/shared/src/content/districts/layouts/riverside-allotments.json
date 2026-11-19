@@ -8,9 +8,20 @@
   "ambience": { "darkness": 0.62, "tint": "#2e2622", "fog": "#1e2428", "sky": "#2e3444", "weather": ["rain", "mist"], "haze": 1.35 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 6, "split": true },
-  "steps": [],
+  "steps": [
+    { "kind": "patch", "rect": { "x": 8, "y": 8, "width": 5, "height": 3 }, "tile": "soil" },
+    { "kind": "patch", "rect": { "x": 15, "y": 8, "width": 5, "height": 3 }, "tile": "soil" },
+    { "kind": "patch", "rect": { "x": 22, "y": 8, "width": 5, "height": 3 }, "tile": "soil" },
+    { "kind": "patch", "rect": { "x": 29, "y": 8, "width": 5, "height": 3 }, "tile": "soil" },
+    { "kind": "patch", "rect": { "x": 8, "y": 13, "width": 5, "height": 3 }, "tile": "soil" },
+    { "kind": "patch", "rect": { "x": 15, "y": 13, "width": 5, "height": 3 }, "tile": "soil" },
+    { "kind": "patch", "rect": { "x": 29, "y": 13, "width": 5, "height": 3 }, "tile": "soil" },
+    { "kind": "patch", "rect": { "x": 36, "y": 13, "width": 5, "height": 3 }, "tile": "soil" },
+    { "kind": "building", "id": "allotment-shed", "rect": { "x": 44, "y": 8, "width": 6, "height": 4 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2, "offset": 2 }] }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "allotment-shed", "name": "Allotment Shed" },
     { "room": "ground", "name": "Riverside Allotments" }
   ],
   "anchors": {
@@ -28,7 +39,8 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "allotment-shed": { "theme": "garden", "people": 0 }
   },
   "furnish": {}
 }

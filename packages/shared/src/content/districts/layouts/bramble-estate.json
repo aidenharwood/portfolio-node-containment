@@ -8,9 +8,27 @@
   "ambience": { "darkness": 0.62, "tint": "#2e2622", "fog": "#1e2428", "sky": "#2e3444", "weather": ["rain", "mist"], "haze": 1.35 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 3 },
-  "steps": [],
+  "steps": [
+    { "kind": "building", "id": "flats-1", "rect": { "x": 22, "y": 3, "width": 10, "height": 5 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2, "offset": 4 }] },
+    { "kind": "building", "id": "flats-2", "rect": { "x": 36, "y": 5, "width": 10, "height": 5 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2, "offset": 4 }] },
+    { "kind": "building", "id": "flats-3", "rect": { "x": 48, "y": 11, "width": 10, "height": 5 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2, "offset": 4 }] },
+    { "kind": "patch", "rect": { "x": 6, "y": 44, "width": 40, "height": 3 }, "tile": "asphalt" },
+    { "kind": "building", "id": "house-n-1", "rect": { "x": 12, "y": 37, "width": 6, "height": 5 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "house-n-2", "rect": { "x": 20, "y": 37, "width": 6, "height": 5 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "house-n-3", "rect": { "x": 28, "y": 37, "width": 6, "height": 5 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "house-n-4", "rect": { "x": 36, "y": 37, "width": 6, "height": 5 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "house-s-1", "rect": { "x": 10, "y": 49, "width": 6, "height": 5 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] },
+    { "kind": "building", "id": "house-s-2", "rect": { "x": 18, "y": 49, "width": 6, "height": 5 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] },
+    { "kind": "building", "id": "house-s-3", "rect": { "x": 26, "y": 49, "width": 6, "height": 5 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] },
+    { "kind": "building", "id": "house-s-4", "rect": { "x": 34, "y": 49, "width": 6, "height": 5 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 4, "y": 26, "width": 4, "height": 4 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 6, "y": 24, "width": 3, "height": 2 }, "tile": "trees" }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "flats-1", "name": "Bramble House" },
+    { "room": "flats-2", "name": "Hawthorn House" },
+    { "room": "flats-3", "name": "Sloe House" },
     { "room": "ground", "name": "Bramble Estate" }
   ],
   "anchors": {
@@ -28,7 +46,18 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "flats-1": { "theme": "home", "people": 0 },
+    "flats-2": { "theme": "home", "people": 0 },
+    "flats-3": { "theme": "home", "people": 0 },
+    "house-n-1": { "theme": "home", "people": 0 },
+    "house-n-2": { "theme": "home", "people": 0 },
+    "house-n-3": { "theme": "home", "people": 0 },
+    "house-n-4": { "theme": "home", "people": 0 },
+    "house-s-1": { "theme": "home", "people": 0 },
+    "house-s-2": { "theme": "home", "people": 0 },
+    "house-s-3": { "theme": "home", "people": 0 },
+    "house-s-4": { "theme": "home", "people": 0 }
   },
   "furnish": {}
 }

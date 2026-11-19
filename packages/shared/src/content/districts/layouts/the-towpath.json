@@ -8,17 +8,21 @@
   "ambience": { "darkness": 0.62, "tint": "#2e2622", "fog": "#1e2428", "sky": "#2e3444", "weather": ["rain", "mist"], "haze": 1.35 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 5, "row": 6, "split": true },
-  "steps": [],
+  "steps": [
+    { "kind": "patch", "rect": { "x": 0, "y": 21, "width": 64, "height": 2 }, "tile": "gravel" },
+    { "kind": "building", "id": "boathouse", "rect": { "x": 30, "y": 10, "width": 10, "height": 6 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "south", "width": 3, "offset": 3 }] }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "boathouse", "name": "Boathouse" },
     { "room": "ground", "name": "The Towpath" }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 31, "dy": 13 }
+    "start": { "room": "ground", "dx": 27, "dy": 9 }
   },
   "objects": [
-    { "id": "the-towpath-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 11 } },
-    { "id": "the-towpath-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 31, "dy": 16 } },
+    { "id": "the-towpath-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 7 } },
+    { "id": "the-towpath-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 29, "dy": 18 } },
     { "id": "the-towpath-barricade", "object": "barricade", "at": { "room": "ground", "dx": 26, "dy": 13 } }
   ],
   "assemblies": [],
@@ -28,7 +32,8 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "boathouse": { "theme": "freight", "people": 0 }
   },
   "furnish": {}
 }

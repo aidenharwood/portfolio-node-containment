@@ -8,7 +8,13 @@
   "ambience": { "darkness": 0.62, "tint": "#2e2622", "fog": "#1e2428", "sky": "#2e3444", "weather": ["rain", "mist"], "haze": 1.35 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 6, "row": 2, "split": true },
-  "steps": [],
+  "steps": [
+    { "kind": "patch", "rect": { "x": 2, "y": 44, "width": 26, "height": 2 }, "tile": "gravel" },
+    { "kind": "building", "id": "house-1", "rect": { "x": 4, "y": 48, "width": 5, "height": 4 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] },
+    { "kind": "building", "id": "house-2", "rect": { "x": 11, "y": 48, "width": 5, "height": 4 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] },
+    { "kind": "building", "id": "house-3", "rect": { "x": 18, "y": 48, "width": 5, "height": 4 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 34, "y": 52, "width": 4, "height": 3 }, "tile": "trees" }
+  ],
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Weed Lane" }
@@ -19,7 +25,7 @@
   "objects": [
     { "id": "weed-lane-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 26, "dy": 49 } },
     { "id": "weed-lane-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 26, "dy": 54 } },
-    { "id": "weed-lane-barricade", "object": "barricade", "at": { "room": "ground", "dx": 21, "dy": 51 } }
+    { "id": "weed-lane-barricade", "object": "barricade", "at": { "room": "ground", "dx": 18, "dy": 54 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -28,7 +34,10 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "house-1": { "theme": "home", "people": 0 },
+    "house-2": { "theme": "home", "people": 0 },
+    "house-3": { "theme": "home", "people": 0 }
   },
   "furnish": {}
 }

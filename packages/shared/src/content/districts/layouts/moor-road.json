@@ -8,7 +8,18 @@
   "ambience": { "darkness": 0.62, "tint": "#2e2622", "fog": "#1e2428", "sky": "#2e3444", "weather": ["rain", "mist"], "haze": 1.35 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 3, "row": 1 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 40, "y": 48, "width": 14, "height": 8 }, "height": 3, "shape": "round" },
+    { "kind": "patch", "rect": { "x": 0, "y": 42, "width": 22, "height": 2 }, "tile": "dirt" },
+    { "kind": "patch", "rect": { "x": 20, "y": 42, "width": 2, "height": 22 }, "tile": "dirt" },
+    { "kind": "patch", "rect": { "x": 30, "y": 14, "width": 10, "height": 1 }, "tile": "rock" },
+    { "kind": "patch", "rect": { "x": 30, "y": 23, "width": 10, "height": 1 }, "tile": "rock" },
+    { "kind": "patch", "rect": { "x": 30, "y": 15, "width": 1, "height": 8 }, "tile": "rock" },
+    { "kind": "patch", "rect": { "x": 39, "y": 15, "width": 1, "height": 3 }, "tile": "rock" },
+    { "kind": "patch", "rect": { "x": 39, "y": 20, "width": 1, "height": 3 }, "tile": "rock" },
+    { "kind": "patch", "rect": { "x": 7, "y": 26, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 9, "y": 24, "width": 3, "height": 2 }, "tile": "trees" }
+  ],
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Moor Road" }

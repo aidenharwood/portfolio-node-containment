@@ -53,7 +53,7 @@ import theLedge from './layouts/the-ledge.json' with { type: 'json' };
 import rustFlats from './layouts/rust-flats.json' with { type: 'json' };
 import ledgeTop from './layouts/ledge-top.json' with { type: 'json' };
 import scarFields from './layouts/scar-fields.json' with { type: 'json' };
-import bayShingle from './layouts/bay-shingle.json' with { type: 'json' };
+import fittingOutPiers from './layouts/fitting-out-piers.json' with { type: 'json' };
 import harbourSteps from './layouts/harbour-steps.json' with { type: 'json' };
 import wireFields from './layouts/wire-fields.json' with { type: 'json' };
 import knotweedPark from './layouts/knotweed-park.json' with { type: 'json' };
@@ -197,7 +197,7 @@ export const HINTERLAND_DISTRICTS = [
   buildDistrict(rustFlats, LAND),
   buildDistrict(ledgeTop, LAND),
   buildDistrict(scarFields, LAND),
-  buildDistrict(bayShingle, LAND),
+  buildDistrict(fittingOutPiers, LAND),
   buildDistrict(harbourSteps, LAND),
   buildDistrict(wireFields, LAND),
   buildDistrict(knotweedPark, LAND),

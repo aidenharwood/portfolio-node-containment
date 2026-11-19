@@ -8,7 +8,14 @@
   "ambience": { "darkness": 0.62, "tint": "#2e2622", "fog": "#1e2428", "sky": "#2e3444", "weather": ["rain", "mist"], "haze": 1.35 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 3, "row": 0, "split": true },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 4, "y": 42, "width": 10, "height": 8 }, "height": 3, "shape": "round" },
+    { "kind": "patch", "rect": { "x": 36, "y": 26, "width": 3, "height": 3 }, "tile": "rock" },
+    { "kind": "patch", "rect": { "x": 42, "y": 34, "width": 2, "height": 2 }, "tile": "rock" },
+    { "kind": "patch", "rect": { "x": 30, "y": 44, "width": 3, "height": 2 }, "tile": "rock" },
+    { "kind": "patch", "rect": { "x": 44, "y": 50, "width": 2, "height": 3 }, "tile": "rock" },
+    { "kind": "patch", "rect": { "x": 37, "y": 30, "width": 4, "height": 6 }, "tile": "gravel" }
+  ],
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Ridge Foot" }

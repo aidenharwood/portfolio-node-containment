@@ -8,18 +8,41 @@
   "ambience": { "darkness": 0.62, "tint": "#2e2622", "fog": "#1e2428", "sky": "#2e3444", "weather": ["rain", "mist"], "haze": 1.35 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 1, "row": 2 },
-  "steps": [],
+  "steps": [
+    { "kind": "patch", "rect": { "x": 0, "y": 42, "width": 25, "height": 5 }, "tile": "asphalt" },
+    { "kind": "patch", "rect": { "x": 10, "y": 0, "width": 5, "height": 64 }, "tile": "asphalt" },
+    { "kind": "patch", "rect": { "x": 20, "y": 8, "width": 28, "height": 20 }, "tile": "gravel" },
+    { "kind": "building", "id": "boiler-shop", "rect": { "x": 51, "y": 8, "width": 10, "height": 14 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "west", "width": 3, "offset": 5 }] },
+    { "kind": "building", "id": "smithy", "rect": { "x": 21, "y": 2, "width": 9, "height": 5 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "south", "width": 2, "offset": 3 }] },
+    { "kind": "building", "id": "chain-store", "rect": { "x": 34, "y": 2, "width": 9, "height": 5 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "south", "width": 2, "offset": 3 }] },
+    { "kind": "building", "id": "drawing-office", "rect": { "x": 18, "y": 31, "width": 8, "height": 6 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2, "offset": 3 }] },
+    { "kind": "building", "id": "timber-shed", "rect": { "x": 30, "y": 30, "width": 12, "height": 7 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "south", "width": 3, "offset": 4 }] },
+    { "kind": "building", "id": "rope-store", "rect": { "x": 2, "y": 10, "width": 6, "height": 9 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "east", "width": 2, "offset": 3 }] },
+    { "kind": "building", "id": "riggers-loft", "rect": { "x": 2, "y": 24, "width": 6, "height": 9 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "east", "width": 2, "offset": 3 }] },
+    { "kind": "building", "id": "gate-lodge", "rect": { "x": 16, "y": 50, "width": 8, "height": 6 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2, "offset": 3 }] },
+    { "kind": "building", "id": "chandlery", "rect": { "x": 2, "y": 50, "width": 6, "height": 8 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "east", "width": 2, "offset": 3 }] }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "boiler-shop", "name": "Boiler Shop" },
+    { "room": "smithy", "name": "Smithy" },
+    { "room": "drawing-office", "name": "Drawing Office" },
+    { "room": "timber-shed", "name": "Timber Shed" },
+    { "room": "riggers-loft", "name": "Riggers’ Loft" },
+    { "room": "gate-lodge", "name": "Gate Lodge" },
+    { "room": "chandlery", "name": "Chandlery" },
     { "room": "ground", "name": "Shipwrights’ Hard" }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 31, "dy": 31 }
+    "start": { "room": "ground", "dx": 27, "dy": 27 }
   },
   "objects": [
-    { "id": "shipwrights-hard-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 29 } },
-    { "id": "shipwrights-hard-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 31, "dy": 34 } },
-    { "id": "shipwrights-hard-barricade", "object": "barricade", "at": { "room": "ground", "dx": 26, "dy": 31 } }
+    { "id": "shipwrights-hard-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 27 } },
+    { "id": "shipwrights-hard-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 26, "dy": 39 } },
+    { "id": "shipwrights-hard-barricade", "object": "barricade", "at": { "room": "ground", "dx": 23, "dy": 28 } },
+    { "id": "shipwrights-hard-boiler-stack-1", "object": "boiler-stack", "at": { "room": "ground", "dx": 31, "dy": 15 } },
+    { "id": "shipwrights-hard-boiler-stack-2", "object": "boiler-stack", "at": { "room": "ground", "dx": 34, "dy": 17 } },
+    { "id": "shipwrights-hard-boiler-stack-3", "object": "boiler-stack", "at": { "room": "ground", "dx": 37, "dy": 15 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -28,7 +51,16 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "boiler-shop": { "theme": "industrial", "people": 0 },
+    "smithy": { "theme": "works", "people": 0 },
+    "chain-store": { "theme": "freight", "people": 0 },
+    "drawing-office": { "theme": "office", "people": 0 },
+    "timber-shed": { "theme": "freight", "people": 0 },
+    "rope-store": { "theme": "freight", "people": 0 },
+    "riggers-loft": { "theme": "works", "people": 0 },
+    "gate-lodge": { "theme": "office", "people": 0 },
+    "chandlery": { "theme": "shop", "people": 0 }
   },
   "furnish": {}
 }

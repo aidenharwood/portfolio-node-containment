@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { GAME_CONTENT } from '../src/content/gameContent.ts';
+import { LAYOUT_SOURCES } from '../src/content/districts/layouts/index.ts';
 import { findLandPlanIssues } from '../src/content/landIntegrity.ts';
 import { parseTileLayout } from '../src/world/district.ts';
 import { CARDINAL_OFFSETS, type TilePoint } from '../src/world/geometry.ts';
 import type { LandMap } from '../src/world/landPlan.ts';
+import { parseLayout } from '../src/world/layout.ts';
 import { isWalkableTile } from '../src/world/tiles.ts';
 
 const land = GAME_CONTENT.lands.get('hinterland') as LandMap;
@@ -143,4 +145,21 @@ test('the overworld is the Hinterland, with the Low Ward pinned so Terminus Squa
     if (square) assert.deepEqual(placement.origin, { x: square.column * 64, y: square.row * 64 }, placement.districtId);
   }
   for (const region of GAME_CONTENT.regions.values()) assert.equal(GAME_CONTENT.levelOfDistrict.get(region.hubDistrictId), 'overworld', region.id);
+});
+
+test('the Old Shipyards town squares, Site, outpost and Incline foot are blocked out round their landmarks', () => {
+  const landmarks: Readonly<Record<string, string>> = {
+    'slipway-row': 'beached-hull',
+    'shipwrights-hard': 'boiler-stack',
+    'graving-docks': 'dock-pump',
+    'dry-dock-four': 'gantry-crane',
+    'gatehouse-yard': 'flood-mast',
+    'incline-foot': 'incline-winder',
+  };
+  const town = ['slipway-row', 'shipwrights-hard', 'graving-docks', 'dry-dock-four'];
+  for (const [id, landmark] of Object.entries(landmarks)) {
+    const layout = parseLayout(LAYOUT_SOURCES[id]);
+    assert.ok(layout.objects.some((object) => object.object === landmark), `${id} has no ${landmark}`);
+    if (town.includes(id)) assert.ok(layout.steps.filter((step) => step.kind === 'building').length >= 4, `${id} has too few buildings for a town square`);
+  }
 });

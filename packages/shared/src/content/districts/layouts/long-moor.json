@@ -8,7 +8,16 @@
   "ambience": { "darkness": 0.62, "tint": "#2e2622", "fog": "#1e2428", "sky": "#2e3444", "weather": ["rain", "mist"], "haze": 1.35 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 2, "row": 1 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 8, "y": 22, "width": 46, "height": 9 }, "height": 3, "shape": "octagon" },
+    { "kind": "rise", "rect": { "x": 16, "y": 24, "width": 20, "height": 5 }, "height": 4, "shape": "octagon" },
+    { "kind": "patch", "rect": { "x": 0, "y": 48, "width": 30, "height": 2 }, "tile": "dirt" },
+    { "kind": "patch", "rect": { "x": 28, "y": 42, "width": 2, "height": 8 }, "tile": "dirt" },
+    { "kind": "patch", "rect": { "x": 28, "y": 42, "width": 36, "height": 2 }, "tile": "dirt" },
+    { "kind": "patch", "rect": { "x": 44, "y": 52, "width": 3, "height": 2 }, "tile": "rock" },
+    { "kind": "patch", "rect": { "x": 36, "y": 8, "width": 3, "height": 2 }, "tile": "rock" },
+    { "kind": "patch", "rect": { "x": 40, "y": 10, "width": 2, "height": 2 }, "tile": "rock" }
+  ],
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Long Moor" }

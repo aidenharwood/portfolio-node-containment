@@ -8,9 +8,14 @@
   "ambience": { "darkness": 0.62, "tint": "#2e2622", "fog": "#1e2428", "sky": "#2e3444", "weather": ["rain", "mist"], "haze": 1.35 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 5, "row": 2, "split": true },
-  "steps": [],
+  "steps": [
+    { "kind": "building", "id": "lower-station", "rect": { "x": 34, "y": 36, "width": 10, "height": 6 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "west", "width": 2, "offset": 2 }] },
+    { "kind": "patch", "rect": { "x": 8, "y": 46, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 48, "y": 52, "width": 5, "height": 3 }, "tile": "trees" }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "lower-station", "name": "Incline Lower Station" },
     { "room": "ground", "name": "Incline Foot" }
   ],
   "anchors": {
@@ -21,7 +26,8 @@
     { "id": "incline-foot-gate-leaf-0", "object": "incline-gate-leaf", "at": { "room": "ground", "dx": 26, "dy": 29 }, "facing": "south" },
     { "id": "incline-foot-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 45 } },
     { "id": "incline-foot-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 30, "dy": 50 } },
-    { "id": "incline-foot-barricade", "object": "barricade", "at": { "room": "ground", "dx": 25, "dy": 47 } }
+    { "id": "incline-foot-barricade", "object": "barricade", "at": { "room": "ground", "dx": 25, "dy": 47 } },
+    { "id": "incline-foot-incline-winder-1", "object": "incline-winder", "at": { "room": "ground", "dx": 18, "dy": 32 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -30,7 +36,8 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "lower-station": { "theme": "transit", "people": 0 }
   },
   "furnish": {}
 }

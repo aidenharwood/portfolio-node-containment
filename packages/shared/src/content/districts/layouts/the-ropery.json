@@ -8,18 +8,29 @@
   "ambience": { "darkness": 0.62, "tint": "#2e2622", "fog": "#1e2428", "sky": "#2e3444", "weather": ["rain", "mist"], "haze": 1.35 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 2, "row": 3 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 49, "y": 44, "width": 10, "height": 8 }, "height": 3, "shape": "round" },
+    { "kind": "building", "id": "ropewalk", "rect": { "x": 6, "y": 30, "width": 50, "height": 3 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "west", "width": 2, "offset": 0 }, { "side": "east", "width": 2, "offset": 1 }, { "side": "south", "width": 2, "offset": 24 }] },
+    { "kind": "building", "id": "hemp-store", "rect": { "x": 10, "y": 40, "width": 8, "height": 6 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "north", "width": 2, "offset": 3 }] },
+    { "kind": "building", "id": "ropery-office", "rect": { "x": 24, "y": 40, "width": 7, "height": 5 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2, "offset": 2 }] },
+    { "kind": "building", "id": "tar-house", "rect": { "x": 40, "y": 40, "width": 7, "height": 5 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "north", "width": 2, "offset": 2 }] },
+    { "kind": "patch", "rect": { "x": 4, "y": 26, "width": 54, "height": 2 }, "tile": "gravel" }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "ropewalk", "name": "The Ropewalk" },
+    { "room": "hemp-store", "name": "Hemp Store" },
+    { "room": "ropery-office", "name": "Ropery Office" },
+    { "room": "tar-house", "name": "Tar House" },
     { "room": "ground", "name": "The Ropery" }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 31, "dy": 31 }
+    "start": { "room": "ground", "dx": 27, "dy": 27 }
   },
   "objects": [
-    { "id": "the-ropery-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 29 } },
-    { "id": "the-ropery-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 31, "dy": 34 } },
-    { "id": "the-ropery-barricade", "object": "barricade", "at": { "room": "ground", "dx": 26, "dy": 31 } }
+    { "id": "the-ropery-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 27 } },
+    { "id": "the-ropery-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 30, "dy": 35 } },
+    { "id": "the-ropery-barricade", "object": "barricade", "at": { "room": "ground", "dx": 22, "dy": 27 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -28,7 +39,11 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "ropewalk": { "theme": "works", "people": 0 },
+    "hemp-store": { "theme": "freight", "people": 0 },
+    "ropery-office": { "theme": "office", "people": 0 },
+    "tar-house": { "theme": "works", "people": 0 }
   },
   "furnish": {}
 }

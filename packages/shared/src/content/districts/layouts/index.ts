@@ -3,7 +3,7 @@ import ashFells from './ash-fells.json' with { type: 'json' };
 import ashFellsEdge from './ash-fells-edge.json' with { type: 'json' };
 import ashMargin from './ash-margin.json' with { type: 'json' };
 import ashenCove from './ashen-cove.json' with { type: 'json' };
-import bayShingle from './bay-shingle.json' with { type: 'json' };
+import fittingOutPiers from './fitting-out-piers.json' with { type: 'json' };
 import beaconBend from './beacon-bend.json' with { type: 'json' };
 import belgraveTerrace from './belgrave-terrace.json' with { type: 'json' };
 import bellows from './bellows.json' with { type: 'json' };
@@ -150,7 +150,7 @@ export const LAYOUT_SOURCES: Readonly<Record<DistrictId, unknown>> = {
   'ash-fells-edge': ashFellsEdge,
   'ash-margin': ashMargin,
   'ashen-cove': ashenCove,
-  'bay-shingle': bayShingle,
+  'fitting-out-piers': fittingOutPiers,
   'beacon-bend': beaconBend,
   'belgrave-terrace': belgraveTerrace,
   bellows,

@@ -8,9 +8,17 @@
   "ambience": { "darkness": 0.62, "tint": "#2e2622", "fog": "#1e2428", "sky": "#2e3444", "weather": ["rain", "mist"], "haze": 1.35 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 7, "row": 5, "split": true },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 25, "y": 10, "width": 8, "height": 6 }, "height": 3, "shape": "octagon" },
+    { "kind": "building", "id": "gate-guardhouse", "rect": { "x": 28, "y": 40, "width": 6, "height": 4 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2, "offset": 2 }] },
+    { "kind": "patch", "rect": { "x": 6, "y": 48, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 16, "y": 54, "width": 5, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 12, "y": 16, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 14, "y": 14, "width": 3, "height": 2 }, "tile": "trees" }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "gate-guardhouse", "name": "West Gate Guardhouse" },
     { "room": "ground", "name": "West Gate Road" }
   ],
   "anchors": {
@@ -21,7 +29,8 @@
     { "id": "west-gate-road-gate-leaf-0", "object": "west-gate-leaf", "at": { "room": "ground", "dx": 42, "dy": 34 }, "facing": "west" },
     { "id": "west-gate-road-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 22, "dy": 28 } },
     { "id": "west-gate-road-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 22, "dy": 33 } },
-    { "id": "west-gate-road-barricade", "object": "barricade", "at": { "room": "ground", "dx": 27, "dy": 30 } }
+    { "id": "west-gate-road-barricade", "object": "barricade", "at": { "room": "ground", "dx": 27, "dy": 30 } },
+    { "id": "west-gate-road-flood-mast", "object": "flood-mast", "at": { "room": "ground", "dx": 34, "dy": 26 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -30,7 +39,8 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "gate-guardhouse": { "theme": "office", "people": 0 }
   },
   "furnish": {}
 }
