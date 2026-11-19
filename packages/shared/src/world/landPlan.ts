@@ -209,6 +209,29 @@ export function drawLand(source: LandPlan): LandMap {
   };
 }
 
+function squareChanged(before: LandMap, after: LandMap, column: number, row: number): boolean {
+  const { squareSize } = after.plan;
+  for (let y = row * squareSize; y < (row + 1) * squareSize; y++) {
+    for (let x = column * squareSize; x < (column + 1) * squareSize; x++) {
+      const point = { x, y };
+      if (before.tileAt(point) !== after.tileAt(point) || before.heightAt(point) !== after.heightAt(point) || before.wardAt(point) !== after.wardAt(point)) return true;
+    }
+  }
+  return false;
+}
+
+export function changedSquares(before: LandMap, after: LandMap): LandSquare[] {
+  const { squareSize, columns, rows } = after.plan;
+  const reshaped = before.plan.squareSize !== squareSize || before.plan.columns !== columns || before.plan.rows !== rows;
+  const changed: LandSquare[] = [];
+  for (let row = 0; row < rows; row++) {
+    for (let column = 0; column < columns; column++) {
+      if (reshaped || squareChanged(before, after, column, row)) changed.push({ column, row });
+    }
+  }
+  return changed;
+}
+
 export function cutSquare(land: LandMap, square: LandSquare, ward?: RegionId): BlueprintBase {
   const { id, squareSize, columns, rows } = land.plan;
   const { column, row } = square;

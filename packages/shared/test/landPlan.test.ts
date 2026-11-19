@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { cutSquare, drawLand, parseLandPlan, type LandStep } from '../src/index.ts';
+import { changedSquares, cutSquare, drawLand, parseLandPlan, type LandStep } from '../src/index.ts';
+import { FIXTURE_LAND, FIXTURE_LAND_PLAN } from './fixtures/world/wilds.ts';
 
 const land = (...steps: LandStep[]) =>
   drawLand({ id: 'test', squareSize: 8, columns: 2, rows: 1, steps: [{ kind: 'fill', shape: { kind: 'rect', rect: { x: 0, y: 0, width: 16, height: 8 } }, tile: 'grass' }, ...steps] });
@@ -173,5 +174,40 @@ describe('land plan', () => {
 
   test('drawLand checks its plan', () => {
     assert.throws(() => land({ kind: 'fill', shape: { kind: 'rect', rect: { x: 0.5, y: 0, width: 2, height: 2 } }, tile: 'water' }), /steps\[1\]\.shape/);
+  });
+});
+
+describe('changed squares', () => {
+  const redrawn = (...steps: LandStep[]) => drawLand({ ...FIXTURE_LAND_PLAN, steps: [...FIXTURE_LAND_PLAN.steps, ...steps] });
+
+  test('the same land changes no square', () => {
+    assert.deepEqual(changedSquares(FIXTURE_LAND, FIXTURE_LAND), []);
+    assert.deepEqual(changedSquares(FIXTURE_LAND, drawLand(FIXTURE_LAND_PLAN)), []);
+  });
+
+  test('a rise inside one square changes only that square', () => {
+    assert.deepEqual(changedSquares(FIXTURE_LAND, redrawn({ kind: 'rise', shape: { kind: 'rect', rect: { x: 70, y: 6, width: 8, height: 6 } }, height: 2 })), [{ column: 2, row: 0 }]);
+  });
+
+  test('a line across two squares changes both, west to east', () => {
+    const line = redrawn({ kind: 'line', points: [{ x: 10, y: 5 }, { x: 40, y: 5 }], width: 1, tile: 'water' });
+    assert.deepEqual(changedSquares(FIXTURE_LAND, line), [{ column: 0, row: 0 }, { column: 1, row: 0 }]);
+  });
+
+  test('a moved ward changes the squares whose wards changed', () => {
+    const steps = FIXTURE_LAND_PLAN.steps.map((step): LandStep => {
+      if (step.kind !== 'ward') return step;
+      return step.ward === 'fx-home'
+        ? { ...step, shape: { kind: 'rect', rect: { x: 0, y: 0, width: 40, height: 32 } } }
+        : { ...step, shape: { kind: 'rect', rect: { x: 40, y: 0, width: 88, height: 32 } } };
+    });
+    const moved = drawLand({ ...FIXTURE_LAND_PLAN, steps });
+    assert.equal(moved.tileAt({ x: 44, y: 10 }), FIXTURE_LAND.tileAt({ x: 44, y: 10 }));
+    assert.deepEqual(changedSquares(FIXTURE_LAND, moved), [{ column: 1, row: 0 }]);
+  });
+
+  test('a plan of another shape changes every square of the new plan', () => {
+    const wider = drawLand({ ...FIXTURE_LAND_PLAN, columns: 5 });
+    assert.deepEqual(changedSquares(FIXTURE_LAND, wider), [0, 1, 2, 3, 4].map((column) => ({ column, row: 0 })));
   });
 });

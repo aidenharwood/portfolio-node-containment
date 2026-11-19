@@ -335,6 +335,23 @@ describe('land squares', () => {
     assert.deepEqual(findLandIssues(FIXTURE_CONTENT), []);
   });
 
+  test('a foreign anchor is worked out again on new land, not served from the cache', () => {
+    const west = FIXTURE_WILDS_LAYOUTS.get('fx-wild-west');
+    const gate = FIXTURE_WILDS_LAYOUTS.get('fx-wild-gate-west');
+    assert.ok(west && gate);
+    const hut = { kind: 'building', id: 'west-hut', rect: { x: 4, y: 4, width: 6, height: 5 }, floor: 'boards', wall: 'cladding', doors: [{ side: 'south', width: 1, offset: 2 }] } as const;
+    const layouts = { 'fx-wild-west': { ...west, steps: [...west.steps, hut] } };
+    const recovering = { ...gate, recovery: { districtId: 'fx-wild-west', anchor: 'start' } };
+    const before = buildDistrict(recovering, FIXTURE_LAND, layouts);
+    assert.deepEqual(before.recovery, { districtId: 'fx-wild-west', position: { x: 8, y: 16 } });
+    assert.deepEqual(buildDistrict(recovering, FIXTURE_LAND, layouts).recovery, before.recovery);
+    const plan = FIXTURE_LAND.plan;
+    const sloped = drawLand({ ...plan, steps: [...plan.steps, { kind: 'rise', shape: { kind: 'rect', rect: { x: 6, y: 4, width: 2, height: 5 } }, height: 1 }] });
+    assert.throws(() => buildDistrict(recovering, sloped, layouts), /fx-wild-west: steps: .*does not stand on level ground/);
+    const fresh = drawLand(plan);
+    assert.deepEqual(buildDistrict(recovering, fresh, layouts).recovery, before.recovery);
+  });
+
   test('a recipe asks for its land by id', () => {
     assert.equal(FIXTURE_CONTEXT.landOf('fx-land'), FIXTURE_LAND);
     assert.equal(FIXTURE_CONTENT.lands.get('fx-land'), FIXTURE_LAND);

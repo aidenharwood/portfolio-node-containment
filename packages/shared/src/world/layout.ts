@@ -92,23 +92,43 @@ function drawLayout(layout: DistrictLayout, land?: LandMap): Blueprint {
   }
 }
 
-const foreignAnchors = new Map<string, TilePoint>();
+interface AnchorCache {
+  readonly plain: Map<string, TilePoint>;
+  readonly lands: WeakMap<LandMap, Map<string, TilePoint>>;
+}
 
-function foreignAnchor(districtId: string, name: string, path: string, land?: LandMap): TilePoint {
-  const key = `${land?.plan.id ?? ''}:${districtId}:${name}`;
-  const known = foreignAnchors.get(key);
+const anchorCaches = new WeakMap<object, AnchorCache>();
+
+function anchorCache(land: LandMap | undefined, layouts: Readonly<Record<string, unknown>>): Map<string, TilePoint> {
+  let caches = anchorCaches.get(layouts);
+  if (!caches) {
+    caches = { plain: new Map(), lands: new WeakMap() };
+    anchorCaches.set(layouts, caches);
+  }
+  if (!land) return caches.plain;
+  const known = caches.lands.get(land);
   if (known) return known;
-  const source = (LAYOUT_SOURCES as Readonly<Record<string, unknown>>)[districtId];
+  const fresh = new Map<string, TilePoint>();
+  caches.lands.set(land, fresh);
+  return fresh;
+}
+
+function foreignAnchor(districtId: string, name: string, path: string, land: LandMap | undefined, layouts: Readonly<Record<string, unknown>>): TilePoint {
+  const key = `${districtId}:${name}`;
+  const cache = anchorCache(land, layouts);
+  const known = cache.get(key);
+  if (known) return known;
+  const source = layouts[districtId];
   if (source === undefined) throw new Error(`${path}: district "${districtId}" has no layout`);
   const layout = parseLayout(source);
   const position = layout.anchors[name];
   if (!position) throw new Error(`${path}: district "${districtId}" has no anchor "${name}"`);
   const point = resolvePosition(drawLayout(layout, land), position, path);
-  foreignAnchors.set(key, point);
+  cache.set(key, point);
   return point;
 }
 
-export function buildDistrict(source: unknown, land?: LandMap): DistrictDefinition {
+export function buildDistrict(source: unknown, land?: LandMap, layouts: Readonly<Record<string, unknown>> = LAYOUT_SOURCES): DistrictDefinition {
   const layout = parseLayout(source);
   const id = layout.id;
   const plan = drawLayout(layout, land);
@@ -131,7 +151,7 @@ export function buildDistrict(source: unknown, land?: LandMap): DistrictDefiniti
 
   const recoveryPosition = (recovery: NonNullable<DistrictLayout['recovery']>): TilePoint => {
     if ('at' in recovery) return at(recovery.at, 'recovery.at');
-    if (recovery.districtId !== id) return foreignAnchor(recovery.districtId, recovery.anchor, `${id}: recovery.anchor`, land);
+    if (recovery.districtId !== id) return foreignAnchor(recovery.districtId, recovery.anchor, `${id}: recovery.anchor`, land, layouts);
     const own = anchors[recovery.anchor];
     if (!own) throw new Error(`${id}: recovery.anchor: this district has no anchor "${recovery.anchor}"`);
     return own;
