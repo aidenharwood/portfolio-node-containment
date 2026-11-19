@@ -18,7 +18,7 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
   let self: SelfState | null = null;
   const modeHint = h('span', { className: 'inventory-mode', hidden: true });
   const scrip = h('span', { className: 'scrip-amount' }, '0');
-  const used = h('span', { className: 'tab-hint' }, '');
+  const used = h('span', { className: 'tab-hint inventory-used' }, '');
   const grid = h('div', { className: 'inventory-grid' });
   const element = h('div', { className: 'tab-inventory tab-fit' },
     h('header', { className: 'tab-header' }, h('span', { className: 'scrip' }, 'Scrip ', scrip), modeHint, used),
@@ -53,13 +53,23 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
     return [...actions, ...lookups];
   };
 
+  const openMenuAt = (slot: HTMLElement, index: number, item: ItemDefinition) => {
+    const bounds = slot.getBoundingClientRect();
+    hideItemTooltip();
+    menu.open(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2, actionsFor(index, item), itemDetails(item));
+    slot.classList.add('selected');
+    menu.onClose(() => slot.classList.remove('selected'));
+  };
+
   const slots = Array.from({ length: INVENTORY_CAPACITY }, (_, index) => {
     const slot = h('div', { className: 'inventory-slot', draggable: true, tabIndex: 0, role: 'button', ariaLabel: `Empty slot ${index + 1}`, dataset: { index: String(index) } });
     slot.onclick = (event) => {
       const item = slotItem(index);
       const mode = modes.current;
-      if (item && mode) mode.primary(index, item, event.shiftKey);
-      else if (item) actionsFor(index, item).find((action) => action.verb !== 'Drop' && action.verb !== 'Destroy')?.run();
+      if (!item) return;
+      if (mode) mode.primary(index, item, event.shiftKey);
+      else if (event.pointerType === 'touch') openMenuAt(slot, index, item);
+      else actionsFor(index, item).find((action) => action.verb !== 'Drop' && action.verb !== 'Destroy')?.run();
     };
     slot.onkeydown = (event) => {
       const item = slotItem(index);
@@ -142,7 +152,7 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
         const item = stack ? GAME_CONTENT.items.get(stack.itemId) : undefined;
         if (stack) filled++;
         if (stack?.itemId === 'meridian-scrip') scripTotal += stack.quantity;
-        slot.className = `inventory-slot${item ? ` filled rarity-${item.rarity}` : ''}`;
+        slot.className = `inventory-slot${item ? ` filled rarity-${item.rarity}` : ''}${item && slot.classList.contains('selected') ? ' selected' : ''}`;
         slot.ariaLabel = item ? (stack && stack.quantity > 1 ? `${item.name} × ${stack.quantity}` : item.name) : `Empty slot ${index + 1}`;
         replaceChildren(
           slot,
@@ -151,7 +161,9 @@ export function createInventoryTab(connection: GameConnection, menu: ContextMenu
         );
       });
       scrip.textContent = scripTotal.toLocaleString();
-      used.textContent = `${filled} / ${INVENTORY_CAPACITY}`;
+      used.textContent = filled >= INVENTORY_CAPACITY ? `Bag full · ${filled} / ${INVENTORY_CAPACITY}` : `${filled} / ${INVENTORY_CAPACITY} slots`;
+      used.classList.toggle('full', filled >= INVENTORY_CAPACITY);
+      used.classList.toggle('nearly-full', filled < INVENTORY_CAPACITY && filled >= INVENTORY_CAPACITY - 3);
       paint();
     },
   };

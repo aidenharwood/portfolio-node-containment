@@ -6,6 +6,7 @@ import {
   objectiveCreatureIds,
   objectiveObjectIds,
   relativeThreat,
+  type ItemId,
   type NpcQuestMarker,
   type TilePoint,
   whisperPrefix,
@@ -149,6 +150,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   let clickOrigin: { clientX: number; clientY: number } | null = null;
 
   const examine = (text: string) => chat.push({ channel: 'examine', text });
+  const itemExaminer = { examine, sources: (itemId: ItemId) => itemSourcesWindow.show(itemId) };
   const actionContext = (): ActionContext => ({
     connection,
     selfEntityId: world.selfEntityId,
@@ -173,12 +175,15 @@ export function createGameScreen(app: AppNavigator): Screen {
 
   const worldMap = new WorldMap(connection, world, guidanceTracking);
   const tramRide = new TramRide(connection, world);
-  const settings = new SettingsWindow(gameSettings);
+  const settings = new SettingsWindow(gameSettings, {
+    leaveWorld: () => connection.send({ type: 'character.leaveWorld' }),
+    signOut: () => connection.send({ type: 'auth.logout' }),
+  });
   const minimap = new Minimap(world, walkTo, () => worldMap.toggle(), () => settings.toggle());
   const topRight = h('div', { className: 'hud-top-right' }, minimap.element, objectives.element);
   const sidePanel = new SidePanel([
-    createInventoryTab(connection, menu, { examine, sources: (itemId) => itemSourcesWindow.show(itemId) }, inventoryModes),
-    createEquipmentTab(connection, world),
+    createInventoryTab(connection, menu, itemExaminer, inventoryModes),
+    createEquipmentTab(connection, world, menu, itemExaminer),
     createSkillsTab((skill) => skillGuideWindow.show(skill)),
     createQuestsTab(menu, guidanceTracking, questInfo),
     createContractsTab(),
@@ -593,7 +598,7 @@ export function createGameScreen(app: AppNavigator): Screen {
   let requestedUiScale = 1;
   const applyUiScale = () => {
     const ceiling = Math.max(1, Math.min(window.innerHeight / UI_SCALE_REFERENCE_HEIGHT, isCompactLayout() ? COMPACT_UI_SCALE_MAX : UI_SCALE_CEILING));
-    element.style.setProperty('--ui-scale', String(Math.min(requestedUiScale, ceiling)));
+    document.documentElement.style.setProperty('--ui-scale', String(Math.min(requestedUiScale, ceiling)));
   };
 
   const compactLandscape = window.matchMedia(COMPACT_LANDSCAPE_QUERY);
@@ -671,6 +676,7 @@ export function createGameScreen(app: AppNavigator): Screen {
       compactLandscape.removeEventListener('change', fitHudColumns);
       window.clearTimeout(cameraHintTimer);
       chat.dispose();
+      document.documentElement.style.removeProperty('--ui-scale');
       combatOverlay.dispose();
       dialogue.dispose();
       shop.dispose();

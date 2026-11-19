@@ -20,6 +20,11 @@ export function clampToViewport(point: Point, size: Size, viewport: Size, margin
 export function placeInViewport(element: HTMLElement, x: number, y: number): void {
   const bounds = element.getBoundingClientRect();
   const placed = clampToViewport({ x, y }, bounds, { width: window.innerWidth, height: window.innerHeight });
-  element.style.left = `${placed.x}px`;
-  element.style.top = `${placed.y}px`;
+  setViewportPosition(element, placed);
+}
+
+export function setViewportPosition(element: HTMLElement, point: Point): void {
+  const zoom = (element as HTMLElement & { currentCSSZoom?: number }).currentCSSZoom ?? 1;
+  element.style.left = `${point.x / zoom}px`;
+  element.style.top = `${point.y / zoom}px`;
 }

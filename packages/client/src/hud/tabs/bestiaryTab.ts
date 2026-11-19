@@ -16,6 +16,7 @@ import {
   type SelfState,
 } from '@containment/shared';
 import { h, replaceChildren } from '../../ui/dom.ts';
+import { secondaryGesture } from '../../ui/viewport.ts';
 import type { PanelTab } from '../sidePanel.ts';
 
 const habitatsByCreature = (): ReadonlyMap<CreatureId, readonly string[]> => {
@@ -59,6 +60,7 @@ export function createBestiaryTab(): PanelTab {
   const renderEntry = (creature: CreatureDefinition) => {
     const known = studied.has(creature.id);
     const ready = (self?.profile.analysis ?? 0) >= creature.level;
+    const places = habitats.get(creature.id) ?? [];
     return h('button', {
       className: `bestiary-entry${known ? ' known' : ready ? ' ready' : ''}`,
       type: 'button',
@@ -66,7 +68,10 @@ export function createBestiaryTab(): PanelTab {
       title: known ? `View ${creature.name}` : ready ? 'Study this anomaly in the field to catalogue it.' : `Needs Analysis ${creature.level} to study.`,
       onclick: () => open(creature.id),
     },
-    h('span', { className: 'bestiary-entry-name' }, known ? creature.name : 'Uncatalogued specimen'),
+    h('span', { className: 'bestiary-entry-text' },
+      h('span', { className: 'bestiary-entry-name' }, known ? creature.name : 'Uncatalogued specimen'),
+      !known && places.length > 0 && h('span', { className: 'bestiary-entry-where' }, `Sighted in ${places.slice(0, 2).join(', ')}${places.length > 2 ? ` +${places.length - 2}` : ''}`),
+    ),
     h('span', { className: 'bestiary-entry-level' }, `Lv ${creature.level}`));
   };
 
@@ -74,7 +79,7 @@ export function createBestiaryTab(): PanelTab {
     replaceChildren(
       body,
       h('div', { className: 'bestiary-list' }, ...creatures.map(renderEntry)),
-      h('p', { className: 'tab-hint' }, 'Right-click an anomaly and choose Study to catalogue it. Studying needs Analysis at or above its level.'),
+      h('p', { className: 'tab-hint' }, `${secondaryGesture()} an anomaly and choose Study to catalogue it. Studying needs Analysis at or above its level.`),
     );
   };
 

@@ -22,6 +22,7 @@ export class ContextMenu {
   private lastPointerWasTouch = false;
   private highlighted: HTMLElement | null = null;
   private readonly itemActions = new Map<HTMLElement, MenuAction>();
+  private closeListener: (() => void) | null = null;
 
   constructor() {
     window.addEventListener('pointerdown', this.onPointerDown, true);
@@ -47,6 +48,7 @@ export class ContextMenu {
   }
 
   open(clientX: number, clientY: number, actions: readonly MenuAction[], touchDetails?: HTMLElement | null): void {
+    this.runCloseListener();
     this.itemActions.clear();
     this.highlighted = null;
     this.heldPointerId = this.touchesDown.size === 1 ? ([...this.touchesDown][0] ?? null) : null;
@@ -72,6 +74,16 @@ export class ContextMenu {
     placeInViewport(this.element, clientX - this.element.getBoundingClientRect().width / 2, clientY - 8);
   }
 
+  onClose(listener: () => void): void {
+    this.closeListener = listener;
+  }
+
+  private runCloseListener(): void {
+    const listener = this.closeListener;
+    this.closeListener = null;
+    listener?.();
+  }
+
   focusFirst(): void {
     this.element.querySelector<HTMLButtonElement>('.context-item')?.focus();
   }
@@ -81,6 +93,7 @@ export class ContextMenu {
     this.heldPointerId = null;
     this.highlight(null);
     this.element.hidden = true;
+    this.runCloseListener();
   }
 
   dispose(): void {

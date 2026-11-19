@@ -26,6 +26,7 @@ import type { GameConnection } from '../net/gameConnection.ts';
 import type { GuidanceTracking } from '../state/guidanceTracking.ts';
 import type { WorldState } from '../state/worldState.ts';
 import { h, replaceChildren } from '../ui/dom.ts';
+import { isCompactLayout } from '../ui/viewport.ts';
 import { drawPoiIcon, poiLegend } from './poiIcons.ts';
 
 const MAP_PADDING = 24;
@@ -77,6 +78,7 @@ const levelDepthLabel = (level: ResolvedLevel): string => (level.definition.kind
 export class WorldMap {
   readonly element = h('section', { className: 'world-map', hidden: true, role: 'dialog', ariaLabel: 'World map' });
   private readonly canvas = h('canvas', { className: 'world-map-canvas' });
+  private legendOpen = !isCompactLayout();
   private readonly connection: GameConnection;
   private readonly world: WorldState;
   private readonly questTracking: GuidanceTracking;
@@ -208,7 +210,7 @@ export class WorldMap {
             h('button', { type: 'button', ariaLabel: 'Zoom out', onclick: () => this.zoomBy(1 / ZOOM_STEP) }, '−'),
             h('button', { type: 'button', ariaLabel: 'Centre on you', title: 'Centre on you', onclick: () => this.recentre() }, '◎'),
           ),
-          poiLegend(this.legendKinds(shown)),
+          this.legend(shown),
         ),
         transit ? this.destinationList(boarding) : null,
       ),
@@ -224,6 +226,19 @@ export class WorldMap {
       .sort((a, b) => Number(b.kind === 'gathering') - Number(a.kind === 'gathering'));
     this.levelPoints.set(level.id, points);
     return points;
+  }
+
+  private legend(level: ResolvedLevel): HTMLElement | null {
+    const kinds = this.legendKinds(level);
+    if (kinds.length === 0) return null;
+    const legend = h('details', { className: 'map-legend-toggle', open: this.legendOpen },
+      h('summary', {}, 'Legend'),
+      poiLegend(kinds),
+    );
+    legend.addEventListener('toggle', () => {
+      this.legendOpen = legend.open;
+    });
+    return legend;
   }
 
   private legendKinds(level: ResolvedLevel): PointOfInterestKind[] {

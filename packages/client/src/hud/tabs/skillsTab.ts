@@ -13,6 +13,7 @@ import {
   type SkillId,
 } from '@containment/shared';
 import { h, replaceChildren } from '../../ui/dom.ts';
+import { placeInViewport, VIEWPORT_MARGIN } from '../../ui/placement.ts';
 import { skillIcon } from '../skillIcons.ts';
 import type { PanelTab } from '../sidePanel.ts';
 import { skillLayout } from './skillsLayout.ts';
@@ -60,17 +61,14 @@ export function createSkillsTab(openSkillGuide: (skill: SkillId) => void): Panel
   };
 
   const placeAt = (x: number, y: number) => {
-    const bounds = details.getBoundingClientRect();
-    details.style.left = `${Math.max(8, Math.min(x + 16, window.innerWidth - bounds.width - 8))}px`;
-    details.style.top = `${Math.max(8, Math.min(y + 16, window.innerHeight - bounds.height - 8))}px`;
+    placeInViewport(details, x + 16, y + 16);
   };
 
   const placeBeside = (anchor: HTMLElement) => {
     const anchorBounds = anchor.getBoundingClientRect();
     const bounds = details.getBoundingClientRect();
     const above = anchorBounds.top - bounds.height - 6;
-    details.style.left = `${Math.max(8, Math.min(anchorBounds.left + anchorBounds.width / 2 - bounds.width / 2, window.innerWidth - bounds.width - 8))}px`;
-    details.style.top = `${above >= 8 ? above : Math.min(anchorBounds.bottom + 6, window.innerHeight - bounds.height - 8)}px`;
+    placeInViewport(details, anchorBounds.left + anchorBounds.width / 2 - bounds.width / 2, above >= VIEWPORT_MARGIN ? above : anchorBounds.bottom + 6);
   };
 
   const show = (id: SkillId) => {

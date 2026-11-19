@@ -103,11 +103,16 @@ const percent = (value: number): string => `${Math.round(value * 100)}%`;
 
 const PRESET_CHOICES: readonly PresetChoice[] = [...GRAPHICS_PRESETS, 'custom'];
 
+export interface SessionActions {
+  leaveWorld(): void;
+  signOut(): void;
+}
+
 export class SettingsWindow {
   readonly element = h('section', { className: 'settings-window panel', hidden: true, role: 'dialog', ariaLabel: 'Settings' });
   private readonly unsubscribe: () => void;
 
-  constructor(store: SettingsStore) {
+  constructor(store: SettingsStore, session: SessionActions) {
     const preset = choiceRow('Quality preset', PRESET_CHOICES, PRESET_LABELS, (value) => {
       if (value !== 'custom') store.applyPreset(value);
     });
@@ -170,6 +175,9 @@ export class SettingsWindow {
       ),
       h('footer', { className: 'settings-footer' },
         h('button', { className: 'button ghost small', type: 'button', onclick: () => store.reset() }, 'Restore defaults'),
+        h('span', { className: 'settings-footer-gap' }),
+        h('button', { className: 'button ghost small', type: 'button', onclick: () => session.leaveWorld() }, 'Personnel files'),
+        h('button', { className: 'button ghost small', type: 'button', onclick: () => session.signOut() }, 'Sign out'),
       ),
     );
 

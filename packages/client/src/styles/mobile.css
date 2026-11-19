@@ -486,6 +486,8 @@ body {
 
   .roster-stats {
     grid-area: stats;
+    grid-template-columns: max-content max-content;
+    justify-content: start;
     margin: 4px 0 0;
   }
 
@@ -915,4 +917,57 @@ body {
   border-radius: 50%;
   background: var(--color-gold);
   box-shadow: 0 0 6px var(--color-gold);
+}
+
+@media (max-width: 760px) and (min-height: 521px) {
+  .settings-row:not(.settings-row-wide) {
+    flex-wrap: wrap;
+  }
+
+  .settings-slider {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  .settings-window {
+    width: calc(100% - 2 * var(--hud-inset) - var(--safe-left) - var(--safe-right));
+  }
+
+  .settings-body {
+    display: block;
+    columns: 2;
+    column-gap: 24px;
+  }
+
+  .settings-group {
+    break-inside: avoid;
+    margin-bottom: 12px;
+  }
+
+  .settings-group + .settings-group {
+    margin-top: 0;
+  }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  .context-menu:not([hidden]):has(.context-details) {
+    display: grid;
+    grid-template-columns: minmax(0, 230px) minmax(160px, auto);
+    align-content: start;
+  }
+
+  .context-menu:has(.context-details) > .context-details {
+    grid-column: 1;
+    grid-row: 1 / span 24;
+    width: auto;
+    min-width: 0;
+    border-bottom: none;
+    border-right: 1px solid var(--color-line);
+  }
+
+  .context-menu:has(.context-details) > :not(.context-details) {
+    grid-column: 2;
+  }
 }

@@ -150,7 +150,6 @@
   margin: 0 0 12px;
 }
 
-.field-hint,
 .form-hint {
   color: var(--color-text-faint);
   font-size: var(--text-label);

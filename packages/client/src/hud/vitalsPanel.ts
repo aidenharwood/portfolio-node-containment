@@ -16,6 +16,8 @@ export class VitalsPanel {
 
   update(world: WorldState): void {
     const vitals = world.selfVitals;
+    const alert = world.combatTargetId !== null || (vitals !== null && vitals.integrity < vitals.maxIntegrity);
+    this.element.classList.toggle('alert', alert);
     const selfSignature = vitals ? `${vitals.integrity}/${vitals.maxIntegrity}` : '';
     if (!vitals || selfSignature === this.selfSignature) return;
     this.selfSignature = selfSignature;
