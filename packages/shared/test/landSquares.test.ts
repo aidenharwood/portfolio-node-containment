@@ -1,8 +1,15 @@
 import assert from 'node:assert/strict';
-import { FIXTURE_CONTENT, FIXTURE_WILDS } from './fixtures/world/index.ts';
+import { FIXTURE_CONTENT, FIXTURE_CONTEXT, FIXTURE_LAND, FIXTURE_WILDS, FIXTURE_WILDS_IDS, FIXTURE_WILDS_LAYOUTS, wildsRecipe } from './fixtures/world/index.ts';
 import { describe, test } from 'node:test';
 import { findContentIssues } from '../src/content/contentIntegrity.ts';
-import { findTerrainSeamIssues } from '../src/content/worldDesignIntegrity.ts';
+import type { GameContent } from '../src/content/gameContent.ts';
+import { findLandIssues, findLandPlanIssues } from '../src/content/landIntegrity.ts';
+import { buildLevelIndex } from '../src/content/levelIndex.ts';
+import { findLevelIssues } from '../src/content/levelIntegrity.ts';
+import { findSealedWardIssues } from '../src/content/wardIntegrity.ts';
+import { findTerrainSeamIssues, findWorldDesignIssues } from '../src/content/worldDesignIntegrity.ts';
+import type { DistrictDefinition } from '../src/world/district.ts';
+import type { DistrictLayout } from '../src/world/layoutSchema.ts';
 import { decodeHeight } from '../src/world/blueprint.ts';
 import { buildDistrict, parseLayout } from '../src/world/layout.ts';
 import { drawLand, type LandMap } from '../src/world/landPlan.ts';
@@ -196,4 +203,89 @@ describe('land squares', () => {
     assert.ok(level);
     assert.deepEqual(findTerrainSeamIssues(level), []);
   });
+
+  test('the wilds are sealed and their land is whole', () => {
+    assert.deepEqual(findSealedWardIssues(FIXTURE_CONTENT), []);
+    assert.deepEqual(findLandIssues(FIXTURE_CONTENT), []);
+  });
+
+  test('a gate without its doors lets one ward into the other', () => {
+    const content = wildsWith((layout) => (layout.id === 'fx-wild-gate-east' ? { ...layout, objects: layout.objects.filter((object) => object.object !== 'vault-door') } : layout));
+    const issues = [...findSealedWardIssues(content), ...findLandIssues(content)];
+    assert.ok(
+      issues.some((issue) => issue.startsWith('level fx-wilds: wards fx-far and fx-home meet at')),
+      issues.join('\n'),
+    );
+    assert.ok(issues.includes('level fx-wilds: land gate "fx-wall-gate" has no door on its tiles'), issues.join('\n'));
+  });
+
+  test('land a split sibling leaves behind lies in no district', () => {
+    const issues = findLandIssues(wildsWith((layout) => layout, ['fx-wild-gate-east']));
+    assert.ok(
+      issues.some((issue) => /level fx-wilds: walkable land at \d+,\d+ lies in no district/.test(issue)),
+      issues.join('\n'),
+    );
+  });
+
+  test("a district on another ward's land is reported", () => {
+    const issues = findLandIssues(wildsWith((layout) => (layout.id === 'fx-wild-east' ? { ...layout, region: 'fx-home' } : layout)));
+    assert.ok(
+      issues.some((issue) => issue.startsWith('district fx-wild-east: its land at') && issue.endsWith('belongs to fx-far, not its region fx-home')),
+      issues.join('\n'),
+    );
+  });
+
+  test("painting into the sibling's half overlaps it", () => {
+    const patch = { kind: 'patch' as const, rect: { x: 14, y: 4, width: 4, height: 2 }, tile: 'asphalt' as const };
+    const issues = findLevelIssues(wildsWith((layout) => (layout.id === 'fx-wild-gate-west' ? { ...layout, steps: [...layout.steps, patch] } : layout)));
+    assert.ok(
+      issues.some((issue) => /placements "fx-wild-gate-\w+" and "fx-wild-gate-\w+" overlap/.test(issue)),
+      issues.join('\n'),
+    );
+  });
+
+  test('tier is walked across land squares', () => {
+    const tiers: Readonly<Record<string, number>> = { 'fx-wild-gate-east': 3, 'fx-wild-east': 2 };
+    const issues = findWorldDesignIssues(wildsWith((layout) => ({ ...layout, tier: tiers[layout.id] ?? layout.tier })));
+    assert.ok(
+      issues.some((issue) => issue.startsWith('district fx-wild-east: tier 2 lies beyond tier 3')),
+      issues.join('\n'),
+    );
+  });
+
+  test('walkable land at the plan edge, and a gate inside one ward, are reported', () => {
+    const edge = drawLand({
+      id: 'edge',
+      squareSize: 8,
+      columns: 1,
+      rows: 1,
+      steps: [{ kind: 'fill', shape: { kind: 'rect', rect: { x: 0, y: 2, width: 8, height: 4 } }, tile: 'grass' }],
+    });
+    assert.deepEqual(findLandPlanIssues(edge), ['land edge: walkable land at 0,2 meets the edge of the plan']);
+    const inside = drawLand({
+      id: 'inside',
+      squareSize: 8,
+      columns: 1,
+      rows: 1,
+      steps: [
+        { kind: 'fill', shape: { kind: 'rect', rect: { x: 1, y: 1, width: 6, height: 6 } }, tile: 'grass' },
+        { kind: 'gate', id: 'lone-gate', rect: { x: 3, y: 3, width: 1, height: 2 }, tile: 'door' },
+        { kind: 'ward', shape: { kind: 'rect', rect: { x: 0, y: 0, width: 8, height: 8 } }, ward: 'only-ward' },
+      ],
+    });
+    assert.deepEqual(findLandPlanIssues(inside), ['land inside: gate "lone-gate" does not join two wards']);
+  });
 });
+
+function wildsWith(change: (layout: DistrictLayout) => DistrictLayout, drop: readonly string[] = []): GameContent {
+  const districts = new Map<string, DistrictDefinition>();
+  for (const [id, layout] of FIXTURE_WILDS_LAYOUTS) {
+    if (!drop.includes(id)) districts.set(id, buildDistrict(change(layout), FIXTURE_LAND));
+  }
+  const level = wildsRecipe(FIXTURE_WILDS_IDS.filter((id) => !drop.includes(id)))({
+    ...FIXTURE_CONTEXT,
+    districtOf: (id) => districts.get(id) ?? FIXTURE_CONTEXT.districtOf(id),
+  });
+  const { levels, levelOfDistrict } = buildLevelIndex([level], districts, FIXTURE_CONTENT.assemblies);
+  return { ...FIXTURE_CONTENT, districts, levels, levelOfDistrict };
+}
