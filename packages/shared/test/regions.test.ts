@@ -19,7 +19,7 @@ describe('regions', () => {
     assert.deepEqual(findRegionIssues(FIXTURE_CONTENT), []);
     assert.equal(homeRegionOf(FIXTURE_CONTENT), 'fx-home');
     const far = [...FIXTURE_CONTENT.districts.values()].filter((district) => district.region === 'fx-far').map((district) => district.id);
-    assert.deepEqual(far, ['fx-outpost']);
+    assert.deepEqual(far, ['fx-outpost', 'fx-wild-gate-east', 'fx-wild-east']);
     assert.equal(FIXTURE_CONTENT.levelOfDistrict.get('fx-outpost'), 'fx-floor');
   });
 

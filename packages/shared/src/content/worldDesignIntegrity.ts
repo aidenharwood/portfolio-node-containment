@@ -3,6 +3,7 @@ import { isSafeIn, parseTileLayout, type DistrictDefinition, type ObjectPlacemen
 import type { WorldObjectDefinition } from '../world/entities.ts';
 import { isWallFixture, objectFootprintTiles } from '../world/footprint.ts';
 import { CARDINAL_OFFSETS, chebyshevDistance, rectContains, tileKey, type Facing, type TilePoint } from '../world/geometry.ts';
+import type { LandMap } from '../world/landPlan.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
 import { CLIFF_DROP, TILE_KINDS } from '../world/tiles.ts';
 import type { GameContent } from './gameContent.ts';
@@ -37,6 +38,7 @@ function findExitIssues(district: DistrictDefinition, level: ResolvedLevel, repo
   for (const [exitId, exit] of exits) {
     if (!exit.gate && exit.tiles.length < MIN_EXIT_WIDTH) report(`exit "${exitId}" is ${exit.tiles.length} wide; open exits need ${MIN_EXIT_WIDTH}`);
   }
+  if (district.square) return;
   if (level.definition.districts.length > 1 && exits.length < 2 && !district.deadEnd && !district.reachedOnlyByTram) {
     report(`has ${exits.length} exit(s); a district needs two ways in unless it is a dead end`);
   }
@@ -73,14 +75,21 @@ function findTrackIssues(content: GameContent, district: DistrictDefinition, lay
   }
 }
 
+function isBareLand(land: LandMap | undefined, point: TilePoint): boolean {
+  if (!land || point.x < 0 || point.y < 0 || point.x >= land.width || point.y >= land.height) return false;
+  return !TILE_KINDS[land.tileAt(point)].walkable;
+}
+
 function findSeamIssues(level: ResolvedLevel, rebuilt: ReadonlySet<DistrictId>, issues: string[]): void {
   const openToVoid = new Map<DistrictId, TilePoint>();
   const { layout } = level;
+  const { land } = level.definition;
+  const opensOntoVoid = (point: TilePoint): boolean => layout.tileAt(point) === 'void' && !isBareLand(land, point);
   for (let y = 0; y < layout.height; y++) {
     for (let x = 0; x < layout.width; x++) {
       const districtId = layout.districtAt({ x, y });
       if (districtId === undefined || !rebuilt.has(districtId) || openToVoid.has(districtId) || !isWalkableTile(layout, { x, y })) continue;
-      if (CARDINAL_OFFSETS.some((offset) => layout.tileAt({ x: x + offset.x, y: y + offset.y }) === 'void')) openToVoid.set(districtId, { x, y });
+      if (CARDINAL_OFFSETS.some((offset) => opensOntoVoid({ x: x + offset.x, y: y + offset.y }))) openToVoid.set(districtId, { x, y });
     }
   }
   for (const [districtId, point] of openToVoid) {

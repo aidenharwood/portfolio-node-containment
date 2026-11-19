@@ -83,15 +83,16 @@ function gridOf(content: GameContent, level: ResolvedLevel): WalkabilityGrid {
   return withOpenDoors(grid, level.layout, doorTilesOf(level.objects, definitionOf), () => true);
 }
 
-function unreachedIn(rect: TileRect, grid: WalkabilityGrid, anchors: readonly TilePoint[]): TilePoint[] {
-  const walkable = tilesOf(rect).filter((point) => grid.isWalkable(point));
+function unreachedIn(rect: TileRect, grid: WalkabilityGrid, anchors: readonly TilePoint[], owns: (point: TilePoint) => boolean): TilePoint[] {
+  const inRoom = (point: TilePoint): boolean => rectContains(rect, point) && owns(point);
+  const walkable = tilesOf(rect).filter((point) => owns(point) && grid.isWalkable(point));
   const entrances = walkable.filter((point) =>
     CARDINAL_OFFSETS.some((offset) => {
       const outside = { x: point.x + offset.x, y: point.y + offset.y };
-      return !rectContains(rect, outside) && grid.isWalkable(outside);
+      return !inRoom(outside) && grid.isWalkable(outside);
     }),
   );
-  const seeds = [...entrances, ...anchors.filter((point) => rectContains(rect, point) && grid.isWalkable(point))];
+  const seeds = [...entrances, ...anchors.filter((point) => inRoom(point) && grid.isWalkable(point))];
   if (seeds.length === 0 && walkable[0]) seeds.push(walkable[0]);
   const seen = new Set(seeds.map(tileKey));
   const queue = [...seeds];
@@ -99,7 +100,7 @@ function unreachedIn(rect: TileRect, grid: WalkabilityGrid, anchors: readonly Ti
     const here = queue[index] as TilePoint;
     for (const offset of CARDINAL_OFFSETS) {
       const next = { x: here.x + offset.x, y: here.y + offset.y };
-      if (!rectContains(rect, next) || seen.has(tileKey(next)) || !grid.isWalkable(next)) continue;
+      if (!inRoom(next) || seen.has(tileKey(next)) || !grid.isWalkable(next)) continue;
       seen.add(tileKey(next));
       queue.push(next);
     }
@@ -114,8 +115,9 @@ function findReachabilityIssues(content: GameContent, level: ResolvedLevel, issu
     if (!district?.rooms) continue;
     const { origin } = placement;
     const anchors = Object.values(district.anchors ?? {}).map((point) => ({ x: point.x + origin.x, y: point.y + origin.y }));
+    const owns = (point: TilePoint): boolean => level.layout.districtAt(point) === placement.districtId;
     for (const [room, local] of Object.entries(district.rooms)) {
-      const unreached = unreachedIn({ ...local, x: local.x + origin.x, y: local.y + origin.y }, grid, anchors);
+      const unreached = unreachedIn({ ...local, x: local.x + origin.x, y: local.y + origin.y }, grid, anchors, owns);
       const first = unreached[0];
       if (first) {
         issues.push(

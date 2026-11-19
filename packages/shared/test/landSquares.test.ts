@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
-import './fixtures/world/index.ts';
+import { FIXTURE_CONTENT, FIXTURE_WILDS } from './fixtures/world/index.ts';
 import { describe, test } from 'node:test';
+import { findContentIssues } from '../src/content/contentIntegrity.ts';
+import { findTerrainSeamIssues } from '../src/content/worldDesignIntegrity.ts';
 import { decodeHeight } from '../src/world/blueprint.ts';
 import { buildDistrict, parseLayout } from '../src/world/layout.ts';
 import { drawLand, type LandMap } from '../src/world/landPlan.ts';
@@ -168,5 +170,30 @@ describe('land squares', () => {
       { districtId: 'b', origin: { x: 192, y: 320 } },
     ]);
     assert.throws(() => pinPlacements(placements, 'z', { x: 0, y: 0 }), /pinPlacements was not given district "z"\./);
+  });
+
+  test('the wilds are placed by grid', () => {
+    assert.deepEqual(
+      FIXTURE_WILDS.districts.map((placement) => placement.origin),
+      [
+        { x: 0, y: 0 },
+        { x: 32, y: 0 },
+        { x: 32, y: 0 },
+        { x: 64, y: 0 },
+      ],
+    );
+  });
+
+  test('the wilds raise no content issues', () => {
+    assert.deepEqual(
+      findContentIssues(FIXTURE_CONTENT).filter((issue) => issue.includes('fx-wild') || issue.includes('fx-wilds')),
+      [],
+    );
+  });
+
+  test('the wilds seam by construction', () => {
+    const level = FIXTURE_CONTENT.levels.get('fx-wilds');
+    assert.ok(level);
+    assert.deepEqual(findTerrainSeamIssues(level), []);
   });
 });
