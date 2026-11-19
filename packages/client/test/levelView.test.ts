@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import type { ResolvedLevel } from '@containment/shared';
-import { FIXTURE_CONTENT as GAME_CONTENT } from '@containment/shared/fixtures';
-import { districtAtLevelTile, levelIssues, levelPlan } from '../src/editor/levelView.ts';
+import { resolveLevel, type ResolvedLevel } from '@containment/shared';
+import { FIXTURE_CONTENT as GAME_CONTENT, FIXTURE_WILDS } from '@containment/shared/fixtures';
+import { districtAtLevelTile, levelIssues, levelPlan, tileImageOf } from '../src/editor/levelView.ts';
+import { tileColor } from '../src/editor/planCanvas.ts';
 
 const level = GAME_CONTENT.levels.get('fx-floor') as ResolvedLevel;
 const placed = (id: string) => level.districts.find((each) => each.districtId === id)?.rect ?? { x: NaN, y: NaN, width: 0, height: 0 };
@@ -38,4 +39,27 @@ test('the level plan outlines every district and offsets its marks', () => {
 test('district issues are moved into level coordinates', () => {
   const issues = levelIssues(GAME_CONTENT, level, ['district fx-hub: something at 3,4', 'district fx-arena: elsewhere at 1,1', 'level fx-floor: seam at 60,20']);
   assert.deepEqual(issues.map((issue) => issue.tile), [{ x: placed('fx-hub').x + 3, y: placed('fx-hub').y + 4 }, { x: 60, y: 20 }]);
+});
+
+test('the level plan outlines each half of a split square by the tiles it owns', () => {
+  const wilds = GAME_CONTENT.levels.get('fx-wilds') as ResolvedLevel;
+  const outlines = levelPlan(GAME_CONTENT, wilds, ['rooms']).filter((shape) => shape.kind === 'room' && shape.color === '#ffd23f');
+  const outline = (name: string) => outlines.find((shape) => shape.label === name);
+  const west = outline('Test Gate West');
+  const east = outline('Test Gate East');
+  assert.ok(west && east);
+  assert.ok(west.x + west.width <= east.x);
+});
+
+test('the tile image of a level with land paints the land no district owns', () => {
+  const definition = { ...FIXTURE_WILDS, districts: FIXTURE_WILDS.districts.filter((placed) => placed.districtId !== 'fx-wild-east') };
+  const level = resolveLevel(definition, GAME_CONTENT.districts, GAME_CONTENT.assemblies);
+  const point = { x: 120, y: 16 };
+  assert.equal(level.layout.tileAt(point), 'void');
+  assert.equal(level.scene.tileAt(point), 'water');
+  const image = tileImageOf(level);
+  assert.equal(image.width, 128);
+  const at = (point.y * image.width + point.x) * 4;
+  const colour = tileColor('water');
+  assert.deepEqual([...image.pixels.slice(at, at + 3)], [parseInt(colour.slice(1, 3), 16), parseInt(colour.slice(3, 5), 16), parseInt(colour.slice(5, 7), 16)]);
 });

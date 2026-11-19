@@ -1,5 +1,5 @@
 import { heightShade, shadeHex } from '../hud/heightShade.ts';
-import { rectContains, type DistrictId, type GameContent, type PlanIssue, type ResolvedLevel, type TilePoint } from '@containment/shared';
+import { footprintsOf, rectContains, type DistrictId, type GameContent, type PlanIssue, type ResolvedLevel, type TilePoint } from '@containment/shared';
 import { planDrawList, tileColor, type PlanShape } from './planCanvas.ts';
 import type { PlanLayer } from './viewState.ts';
 
@@ -25,10 +25,11 @@ export function originOf(level: ResolvedLevel, districtId: DistrictId): TilePoin
 export function levelPlan(content: GameContent, level: ResolvedLevel, layers: readonly PlanLayer[], issues: readonly PlanIssue[] = []): PlanShape[] {
   const shapes: PlanShape[] = [];
   const withoutTiles = layers.filter((layer) => layer !== 'tiles' && layer !== 'issues');
+  const footprints = footprintsOf(level);
   for (const placed of level.districts) {
     const { x, y } = placed.rect;
     for (const shape of planDrawList(content, placed.districtId, withoutTiles)) shapes.push({ ...shape, x: shape.x + x, y: shape.y + y });
-    if (layers.includes('rooms')) shapes.push({ kind: 'room', ...placed.rect, color: OUTLINE, label: content.districts.get(placed.districtId)?.name ?? placed.districtId });
+    if (layers.includes('rooms')) shapes.push({ kind: 'room', ...(footprints.get(placed.districtId)?.bounds ?? placed.rect), color: OUTLINE, label: content.districts.get(placed.districtId)?.name ?? placed.districtId });
   }
   if (layers.includes('issues')) for (const issue of issues) if (issue.tile) shapes.push({ kind: 'issue', ...issue.tile, width: 1, height: 1, color: '#ff3b3b', label: issue.message });
   return shapes;
@@ -62,12 +63,13 @@ export interface TileImage {
 }
 
 export function tileImageOf(level: ResolvedLevel): TileImage {
-  const { width, height } = level.layout;
+  const { scene } = level;
+  const { width, height } = scene;
   const pixels = new Uint8ClampedArray(width * height * 4);
   const cache = new Map<string, readonly [number, number, number]>();
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      const colour = shadeHex(tileColor(level.layout.tileAt({ x, y })), heightShade(level.layout, x, y));
+      const colour = shadeHex(tileColor(scene.tileAt({ x, y })), heightShade(scene, x, y));
       let rgb = cache.get(colour);
       if (!rgb) {
         rgb = [parseInt(colour.slice(1, 3), 16), parseInt(colour.slice(3, 5), 16), parseInt(colour.slice(5, 7), 16)];

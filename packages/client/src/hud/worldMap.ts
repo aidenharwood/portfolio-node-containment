@@ -27,6 +27,7 @@ import type { GuidanceTracking } from '../state/guidanceTracking.ts';
 import type { WorldState } from '../state/worldState.ts';
 import { h, replaceChildren } from '../ui/dom.ts';
 import { isCompactLayout } from '../ui/viewport.ts';
+import { districtLabels, regionLabels } from './mapLabels.ts';
 import { drawPoiIcon, poiLegend } from './poiIcons.ts';
 
 const MAP_PADDING = 24;
@@ -331,7 +332,7 @@ export class WorldMap {
   private fitScale(level: ResolvedLevel): number {
     const width = this.canvas.clientWidth;
     const height = this.canvas.clientHeight;
-    return Math.max(0.5, Math.min((width - MAP_PADDING * 2) / level.layout.width, (height - MAP_PADDING * 2) / level.layout.height));
+    return Math.max(0.5, Math.min((width - MAP_PADDING * 2) / level.scene.width, (height - MAP_PADDING * 2) / level.scene.height));
   }
 
   private currentView(): MapView | null {
@@ -345,8 +346,8 @@ export class WorldMap {
     const zoomed = scale > fit;
     this.view = {
       scale,
-      centreX: zoomed && onLevel ? self.to.x + 0.5 : level.layout.width / 2,
-      centreY: zoomed && onLevel ? self.to.y + 0.5 : level.layout.height / 2,
+      centreX: zoomed && onLevel ? self.to.x + 0.5 : level.scene.width / 2,
+      centreY: zoomed && onLevel ? self.to.y + 0.5 : level.scene.height / 2,
     };
     return this.view;
   }
@@ -355,8 +356,9 @@ export class WorldMap {
     view.scale = Math.min(MAX_SCALE, Math.max(this.fitScale(level), view.scale));
     const halfWidth = (this.canvas.clientWidth / 2 - MAP_PADDING) / view.scale;
     const halfHeight = (this.canvas.clientHeight / 2 - MAP_PADDING) / view.scale;
-    view.centreX = level.layout.width <= 2 * halfWidth ? level.layout.width / 2 : Math.min(level.layout.width - halfWidth, Math.max(halfWidth, view.centreX));
-    view.centreY = level.layout.height <= 2 * halfHeight ? level.layout.height / 2 : Math.min(level.layout.height - halfHeight, Math.max(halfHeight, view.centreY));
+    const { width, height } = level.scene;
+    view.centreX = width <= 2 * halfWidth ? width / 2 : Math.min(width - halfWidth, Math.max(halfWidth, view.centreX));
+    view.centreY = height <= 2 * halfHeight ? height / 2 : Math.min(height - halfHeight, Math.max(halfHeight, view.centreY));
   }
 
   private frameOf(view: MapView): MapFrame {
@@ -514,16 +516,17 @@ export class WorldMap {
     const height = this.canvas.clientHeight;
     const minX = Math.max(0, Math.floor(-frame.offsetX / frame.scale));
     const minY = Math.max(0, Math.floor(-frame.offsetY / frame.scale));
-    const maxX = Math.min(level.layout.width, Math.ceil((width - frame.offsetX) / frame.scale));
-    const maxY = Math.min(level.layout.height, Math.ceil((height - frame.offsetY) / frame.scale));
+    const { scene } = level;
+    const maxX = Math.min(scene.width, Math.ceil((width - frame.offsetX) / frame.scale));
+    const maxY = Math.min(scene.height, Math.ceil((height - frame.offsetY) / frame.scale));
     for (let y = minY; y < maxY; y++) {
       for (let x = minX; x < maxX; x++) {
-        const kind = level.layout.tileAt({ x, y });
+        const kind = scene.tileAt({ x, y });
         if (kind === 'void') continue;
         const district = level.layout.districtAt({ x, y });
         const target = district !== undefined && objectives.has(district);
         const base = kind === 'coolant' ? '#1f5f7a' : kind === 'track' ? '#2a2420' : kind === 'door' ? '#2f5a6a' : kind === 'cliff' ? '#6a6258' : TILE_KINDS[kind].walkable ? (target ? '#3d3216' : '#1c2a33') : target ? '#7a5a22' : '#40525e';
-        context.fillStyle = shadeHex(base, heightShade(level.layout, x, y));
+        context.fillStyle = shadeHex(base, heightShade(scene, x, y));
         context.fillRect(frame.offsetX + x * frame.scale, frame.offsetY + y * frame.scale, size, size);
       }
     }
@@ -531,24 +534,13 @@ export class WorldMap {
 
   private paintRegionLabels(context: CanvasRenderingContext2D, level: ResolvedLevel, frame: MapFrame): void {
     if (frame.scale >= 3) return;
-    const bounds = new Map<string, { minX: number; minY: number; maxX: number }>();
-    for (const { districtId, rect } of level.districts) {
-      const region = GAME_CONTENT.districts.get(districtId)?.region;
-      if (region === undefined) continue;
-      const known = bounds.get(region);
-      bounds.set(region, {
-        minX: Math.min(known?.minX ?? rect.x, rect.x),
-        minY: Math.min(known?.minY ?? rect.y, rect.y),
-        maxX: Math.max(known?.maxX ?? rect.x + rect.width, rect.x + rect.width),
-      });
-    }
     context.textAlign = 'center';
     context.textBaseline = 'top';
     context.font = '700 15px "Chakra Petch", sans-serif';
     context.fillStyle = 'rgba(159, 179, 190, 0.55)';
-    for (const [regionId, box] of bounds) {
+    for (const { regionId, x, y } of regionLabels(level, GAME_CONTENT)) {
       const name = (GAME_CONTENT.regions.get(regionId)?.name ?? regionId).toUpperCase().split('').join(' ');
-      context.fillText(name, frame.offsetX + ((box.minX + box.maxX) / 2) * frame.scale, frame.offsetY + box.minY * frame.scale - 22);
+      context.fillText(name, frame.offsetX + x * frame.scale, frame.offsetY + y * frame.scale - 22);
     }
   }
 
@@ -556,11 +548,11 @@ export class WorldMap {
     context.textAlign = 'center';
     context.textBaseline = 'middle';
     const detailed = frame.scale >= 3;
-    for (const { districtId, rect } of level.districts) {
+    for (const { districtId, at, bounds: rect } of districtLabels(level)) {
       const district = GAME_CONTENT.districts.get(districtId);
       if (!district) continue;
-            const x = frame.offsetX + (rect.x + rect.width / 2) * frame.scale;
-      const y = frame.offsetY + (rect.y + rect.height / 2) * frame.scale;
+      const x = frame.offsetX + (at.x + 0.5) * frame.scale;
+      const y = frame.offsetY + (at.y + 0.5) * frame.scale;
       const target = objectives.has(districtId);
       if (target) {
         context.strokeStyle = OBJECTIVE_COLOR;
