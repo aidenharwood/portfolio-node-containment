@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { chunkOf } from '@containment/shared';
-import { FIXTURE_CONTENT as GAME_CONTENT } from '@containment/shared/fixtures';
-import { previewZone } from '../src/editor/previewLevel.ts';
+import { buildDistrict, chunkOf, type DistrictLayout } from '@containment/shared';
+import { FIXTURE_CONTENT as GAME_CONTENT, FIXTURE_CONTEXT, FIXTURE_LAND, FIXTURE_LEVEL_RECIPES, FIXTURE_WILDS_LAYOUTS } from '@containment/shared/fixtures';
+import { contentWith } from '../src/editor/contentWith.ts';
+import { previewZone, zoneOfLevel } from '../src/editor/previewLevel.ts';
 import { chunkSignature, objectChanges } from '../src/render/world/chunkSignature.ts';
 import { LevelScene } from '../src/render/world/levelScene.ts';
 import { planWallLighting } from '../src/render/world/wallLights.ts';
@@ -62,5 +63,28 @@ test('an editable scene swaps a moved object in place without rebuilding its chu
     scene.dispose();
   } finally {
     globalThis.requestAnimationFrame = frame;
+  }
+});
+
+test('a chunk wholly in the margin keeps its signature through a district edit elsewhere', () => {
+  const layout = FIXTURE_WILDS_LAYOUTS.get('fx-wild-east') as DistrictLayout;
+  const changed: DistrictLayout = {
+    ...layout,
+    tiles: [...layout.tiles, { x: 5, y: 5, tile: 'brick' }],
+    objects: [...layout.objects, { id: 'wild-east-extra-crate', object: 'crate', at: { room: 'ground', dx: 4, dy: 4 } }],
+  };
+  const edited = contentWith(GAME_CONTENT, new Map([['fx-wild-east', { layout: changed, district: buildDistrict(changed, FIXTURE_LAND) }]]), FIXTURE_LEVEL_RECIPES, FIXTURE_CONTEXT.hollowOf);
+  const before = zoneOfLevel(GAME_CONTENT, GAME_CONTENT.levels.get('fx-wilds') as never);
+  const after = zoneOfLevel(edited, edited.levels.get('fx-wilds') as never);
+  const signatureOf = (zone: ActiveZone, coord: { cx: number; cy: number }) => chunkSignature(zone, coord, planWallLighting(zone));
+  const edit = { cx: 2, cy: 0 };
+  assert.notEqual(signatureOf(before, edit).tiles, signatureOf(after, edit).tiles);
+  for (const margin of [{ cx: -1, cy: 0 }, { cx: -1, cy: -1 }, { cx: 0, cy: 1 }]) {
+    const a = signatureOf(before, margin);
+    const b = signatureOf(after, margin);
+    assert.ok(a.tiles.length > 0);
+    assert.equal(a.tiles, b.tiles);
+    assert.equal(a.settle, b.settle);
+    assert.deepEqual(objectChanges(a, b), { removed: [], added: [] });
   }
 });

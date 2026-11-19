@@ -195,8 +195,8 @@ export class GuidanceRoute {
       const regions = this.regionsOf(levelId);
       return regions !== undefined && regionsReaching(regions, goal).has(here);
     });
-    const district = zone.layout.districtAt(origin);
-    const nearby = sameRegion.filter((goal) => zone.layout.districtAt(goal.point) === district);
+    const district = zone.definition.layout.districtAt(origin);
+    const nearby = sameRegion.filter((goal) => zone.definition.layout.districtAt(goal.point) === district);
     const tried = new Set<RouteGoal>();
     for (const candidates of [nearby, sameRegion]) {
       const path = this.nearestPath(origin, candidates, previousGoal, tried);

@@ -33,7 +33,7 @@ export class SkyMask {
       for (let column = 0; column < SKY_MASK_SIZE; column++) {
         point.x = this.originX + column;
         point.y = this.originZ + row;
-        this.data[row * SKY_MASK_SIZE + column] = isOutdoorFloor(level.layout.tileAt(point)) ? 255 : 0;
+        this.data[row * SKY_MASK_SIZE + column] = isOutdoorFloor(level.scene.tileAt(point)) ? 255 : 0;
       }
     }
     this.texture.needsUpdate = true;

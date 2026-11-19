@@ -21,8 +21,8 @@ import {
   type CreatureId,
   type TilePoint,
   type DistrictDefinition,
-  type LevelLayout,
   type ResolvedLevel,
+  type SceneLayout,
   type ProjectileKind,
   type WeaponKind,
   type CombatStyle,
@@ -82,7 +82,7 @@ export interface ClientHazard {
 
 export interface ActiveZone {
   readonly definition: ResolvedLevel;
-  readonly layout: LevelLayout;
+  readonly layout: SceneLayout;
   readonly grid: WalkabilityGrid;
 }
 
@@ -250,7 +250,7 @@ export class WorldState {
 
   currentDistrict(): DistrictDefinition | undefined {
     const position = this.selfEntity?.to;
-    const districtId = position && this.zone?.layout.districtAt(position);
+    const districtId = position && this.zone?.definition.layout.districtAt(position);
     return districtId ? GAME_CONTENT.districts.get(districtId) : undefined;
   }
 
@@ -378,7 +378,7 @@ export class WorldState {
     const definitionOf = (objectId: string) => GAME_CONTENT.worldObjects.get(objectId);
     const baseGrid = createObjectWalkabilityGrid(definition.layout, definition.objects, definitionOf);
     const grid = withOpenDoors(baseGrid, definition.layout, doorTilesOf(definition.objects, definitionOf), (objectId) => this.openDoors.has(objectId));
-    this.zone = { definition, layout: definition.layout, grid };
+    this.zone = { definition, layout: definition.scene, grid };
     this.selfEntityId = message.selfEntityId;
     this.tickMs = message.tickMs;
     this.tickClock.reset(message.tickMs);

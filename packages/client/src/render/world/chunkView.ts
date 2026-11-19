@@ -87,11 +87,12 @@ const GLOW_MAX_RADIUS = 3.2;
 const FACING_TOWARD_WALL_YAW: Readonly<Record<Facing, number>> = { north: 0, south: Math.PI, west: Math.PI / 2, east: -Math.PI / 2 };
 
 export function chunkRegion(chunk: ChunkCoord, zone: ActiveZone): TileRect | null {
-  const x = chunk.cx * CHUNK_SIZE;
-  const y = chunk.cy * CHUNK_SIZE;
-  const width = Math.min(CHUNK_SIZE, zone.layout.width - x);
-  const height = Math.min(CHUNK_SIZE, zone.layout.height - y);
-  if (chunk.cx < 0 || chunk.cy < 0 || width <= 0 || height <= 0) return null;
+  const { bounds } = zone.layout;
+  const x = Math.max(chunk.cx * CHUNK_SIZE, bounds.x);
+  const y = Math.max(chunk.cy * CHUNK_SIZE, bounds.y);
+  const width = Math.min((chunk.cx + 1) * CHUNK_SIZE, bounds.x + bounds.width) - x;
+  const height = Math.min((chunk.cy + 1) * CHUNK_SIZE, bounds.y + bounds.height) - y;
+  if (width <= 0 || height <= 0) return null;
   return { x, y, width, height };
 }
 

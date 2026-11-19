@@ -29,7 +29,7 @@ const doorGroupOf = (view: ObjectView): string => assemblyInstanceOf(view.instan
 const FADE_RADIUS = 1.4;
 const FADE_REACH = 7;
 const DEPLETED_HEIGHT = 0.35;
-const BUILD_RADIUS = 1;
+export const BUILD_RADIUS = 1;
 const RETAIN_RADIUS = 2;
 const BUILD_BUDGET_MS = 5;
 const SETTLE_DELAY_MS = 300;

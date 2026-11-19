@@ -26,9 +26,9 @@ export function previewLevel(content: GameContent, districtId: DistrictId): Reso
 
 export function previewZone(content: GameContent, districtId: DistrictId): ActiveZone {
   const definition = previewLevel(content, districtId);
-  return { definition, layout: definition.layout, grid: createObjectWalkabilityGrid(definition.layout, definition.objects, (objectId) => content.worldObjects.get(objectId)) };
+  return { definition, layout: definition.scene, grid: createObjectWalkabilityGrid(definition.layout, definition.objects, (objectId) => content.worldObjects.get(objectId)) };
 }
 
 export function zoneOfLevel(content: GameContent, definition: ResolvedLevel): ActiveZone {
-  return { definition, layout: definition.layout, grid: createObjectWalkabilityGrid(definition.layout, definition.objects, (objectId) => content.worldObjects.get(objectId)) };
+  return { definition, layout: definition.scene, grid: createObjectWalkabilityGrid(definition.layout, definition.objects, (objectId) => content.worldObjects.get(objectId)) };
 }
