@@ -3,6 +3,7 @@ import type { DistrictExit, ExitSide } from './blueprint.ts';
 import type { DistrictDefinition } from './district.ts';
 import type { TilePoint } from './geometry.ts';
 import type { DistrictPlacement } from './level.ts';
+import type { LandMap } from './landPlan.ts';
 
 export interface DistrictJoin {
   readonly districtId: DistrictId;
@@ -75,4 +76,33 @@ export function joinDistricts(
   const minX = Math.min(...[...origins.values()].map((origin) => origin.x));
   const minY = Math.min(...[...origins.values()].map((origin) => origin.y));
   return [...origins].map(([districtId, origin]) => ({ districtId, origin: { x: origin.x - minX + margin.x, y: origin.y - minY + margin.y } }));
+}
+
+export function placeLandSquares(land: LandMap, districts: readonly DistrictDefinition[]): DistrictPlacement[] {
+  const { squareSize, columns, rows } = land.plan;
+  const holders = new Map<string, DistrictDefinition[]>();
+  const placements: DistrictPlacement[] = [];
+  for (const district of districts) {
+    const square = district.square;
+    if (!square) throw new Error(`District "${district.id}" names no square.`);
+    if (square.column < 0 || square.row < 0 || square.column >= columns || square.row >= rows) {
+      throw new Error(`District "${district.id}" names square ${square.column},${square.row}, outside the ${columns}x${rows} land plan.`);
+    }
+    const key = `${square.column},${square.row}`;
+    const held = holders.get(key) ?? [];
+    const other = held.find((holder) => !holder.square?.split || !square.split);
+    if (other) throw new Error(`Square ${key} holds "${other.id}" and "${district.id}"; districts that share a square are split.`);
+    held.push(district);
+    holders.set(key, held);
+    placements.push({ districtId: district.id, origin: { x: square.column * squareSize, y: square.row * squareSize } });
+  }
+  return placements;
+}
+
+export function pinPlacements(placements: readonly DistrictPlacement[], districtId: DistrictId, origin: TilePoint): DistrictPlacement[] {
+  const anchor = placements.find((placement) => placement.districtId === districtId);
+  if (!anchor) throw new Error(`pinPlacements was not given district "${districtId}".`);
+  const dx = origin.x - anchor.origin.x;
+  const dy = origin.y - anchor.origin.y;
+  return placements.map((placement) => ({ districtId: placement.districtId, origin: { x: placement.origin.x + dx, y: placement.origin.y + dy } }));
 }

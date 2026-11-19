@@ -1,6 +1,7 @@
 import type { ConnectorId, DistrictId, LevelId } from '../ids.ts';
 import type { DistrictDefinition, ZoneAmbience, ZoneLight } from './district.ts';
 import type { TilePoint } from './geometry.ts';
+import type { LandMap } from './landPlan.ts';
 
 export interface LevelContext {
   districtOf(id: DistrictId): DistrictDefinition;
@@ -38,6 +39,7 @@ export interface LevelDefinition {
   readonly connectors: readonly ConnectorDefinition[];
   readonly spawn: { readonly districtId: DistrictId; readonly position: TilePoint };
   readonly capacity?: number;
+  readonly land?: LandMap;
 }
 
 export const visitedLevelFlag = (levelId: LevelId): string => `visited:${levelId}`;

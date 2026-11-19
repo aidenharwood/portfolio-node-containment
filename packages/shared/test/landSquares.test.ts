@@ -4,6 +4,7 @@ import { describe, test } from 'node:test';
 import { decodeHeight } from '../src/world/blueprint.ts';
 import { buildDistrict, parseLayout } from '../src/world/layout.ts';
 import { drawLand, type LandMap } from '../src/world/landPlan.ts';
+import { pinPlacements, placeLandSquares } from '../src/world/levelPlan.ts';
 import { printLayout } from '../src/world/printLayout.ts';
 import { MAP_LEGEND } from '../src/world/tiles.ts';
 
@@ -131,5 +132,41 @@ describe('land squares', () => {
 
   test('printLayout writes the square after the size', () => {
     assert.match(printLayout(parseLayout(landLayout())), /"size": .*\n  "square": \{ "column": 1, "row": 0 \}/);
+  });
+
+  test('land squares are placed by their square', () => {
+    const land = map();
+    const a = buildDistrict(landLayout({ id: 'a', square: { column: 0, row: 0 }, region: 'west-ward' }), land);
+    const b = buildDistrict(landLayout({ id: 'b', square: { column: 1, row: 0, split: true } }), land);
+    const c = buildDistrict(landLayout({ id: 'c', square: { column: 1, row: 0, split: true } }), land);
+    assert.deepEqual(placeLandSquares(land, [a, b, c]), [
+      { districtId: 'a', origin: { x: 0, y: 0 } },
+      { districtId: 'b', origin: { x: 16, y: 0 } },
+      { districtId: 'c', origin: { x: 16, y: 0 } },
+    ]);
+  });
+
+  test('placing refuses a district with no square, a square off the plan, and an unsplit pair', () => {
+    const land = map();
+    const a = buildDistrict(landLayout({ id: 'a', square: { column: 0, row: 0 }, region: 'west-ward' }), land);
+    const b = buildDistrict(landLayout({ id: 'b', square: { column: 1, row: 0 } }), land);
+    const c = buildDistrict(landLayout({ id: 'c', square: { column: 1, row: 0, split: true } }), land);
+    const off = { ...b, id: 'off', square: { column: 2, row: 0 } };
+    const bare = { ...a, id: 'bare', square: undefined };
+    assert.throws(() => placeLandSquares(land, [bare]), /District "bare" names no square\./);
+    assert.throws(() => placeLandSquares(land, [off]), /District "off" names square 2,0, outside the 2x1 land plan\./);
+    assert.throws(() => placeLandSquares(land, [b, c]), /Square 1,0 holds "b" and "c"; districts that share a square are split\./);
+  });
+
+  test('pinning moves a joined set onto land coordinates', () => {
+    const placements = [
+      { districtId: 'a', origin: { x: 0, y: 0 } },
+      { districtId: 'b', origin: { x: 64, y: 0 } },
+    ];
+    assert.deepEqual(pinPlacements(placements, 'a', { x: 128, y: 320 }), [
+      { districtId: 'a', origin: { x: 128, y: 320 } },
+      { districtId: 'b', origin: { x: 192, y: 320 } },
+    ]);
+    assert.throws(() => pinPlacements(placements, 'z', { x: 0, y: 0 }), /pinPlacements was not given district "z"\./);
   });
 });
