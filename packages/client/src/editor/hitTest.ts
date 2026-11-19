@@ -95,7 +95,7 @@ export function hitsAt(layout: DistrictLayout, district: DistrictDefinition, til
   const steps: Hit[] = layout.steps.flatMap((step, index): Hit[] => {
     if (step.kind === 'link') return (plan.links[`${step.from}>${step.to}`] ?? []).some((linked) => same(linked, tile)) ? [{ kind: 'step', index }] : [];
     if (step.kind === 'exit') return (plan.exits[step.id]?.tiles ?? []).some((exitTile) => same(exitTile, tile)) ? [{ kind: 'step', index }] : [];
-    if (step.kind === 'patch' || step.kind === 'hollow') return rectContains(step.rect, tile) ? [{ kind: 'step', index }] : [];
+    if (step.kind === 'patch' || step.kind === 'hollow' || step.kind === 'rise' || step.kind === 'ramp') return rectContains(step.rect, tile) ? [{ kind: 'step', index }] : [];
     if (step.kind === 'track') return trackBed(step.points).some((bed) => rectContains(bed, tile)) ? [{ kind: 'step', index }] : [];
     if (step.kind === 'pillars') {
       const rect = plan.rooms[step.room];

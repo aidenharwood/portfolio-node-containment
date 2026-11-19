@@ -1,3 +1,4 @@
+import { heightShade, shadeHex } from './heightShade.ts';
 import { GAME_CONTENT, mapScenery, pointsOfInterest, TILE_KINDS, type Facing, type MapSceneryKind, type PointOfInterest, type TilePoint } from '@containment/shared';
 import type { WorldState } from '../state/worldState.ts';
 import { h } from '../ui/dom.ts';
@@ -29,6 +30,7 @@ const TILE_COLORS: Partial<Record<string, string>> = {
   ceramic: '#5a666c',
   boards: '#4a3a2a',
   track: '#2a2420',
+  cliff: '#6a6258',
 };
 
 const SCENERY_COLORS: Readonly<Record<MapSceneryKind, string>> = {
@@ -131,7 +133,7 @@ export class Minimap {
       for (let x = 0; x < zone.layout.width; x++) {
         const kind = zone.layout.tileAt({ x, y });
         if (kind === 'void') continue;
-        context.fillStyle = TILE_COLORS[kind] ?? (TILE_KINDS[kind].walkable ? '#1f2d36' : '#0b1014');
+        context.fillStyle = shadeHex(TILE_COLORS[kind] ?? (TILE_KINDS[kind].walkable ? '#1f2d36' : '#0b1014'), heightShade(zone.layout, x, y));
         context.fillRect(x * BASE_PIXELS_PER_TILE, y * BASE_PIXELS_PER_TILE, BASE_PIXELS_PER_TILE, BASE_PIXELS_PER_TILE);
       }
     }

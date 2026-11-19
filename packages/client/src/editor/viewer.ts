@@ -3,6 +3,7 @@ import {
   GAME_CONTENT,
   issuesFromMessages,
   LAYOUT_CHOICES,
+  MAX_TERRAIN_HEIGHT,
   LAYOUT_SOURCES,
   type DistrictId,
   type GameContent,
@@ -17,7 +18,7 @@ import type { ActiveZone } from '../state/worldState.ts';
 import { contentWith, type EditedDistrict } from './contentWith.ts';
 import { EditorDocument } from './document.ts';
 import { EditController, type PaletteEntry } from './editController.ts';
-import { addEntry } from './edits.ts';
+import { addEntry, type HeightMode } from './edits.ts';
 import { boundsOf, hitsAt } from './hitTest.ts';
 import { footprintOf, modelOf } from './itemModels.ts';
 import { districtAtLevelTile, levelIssues, levelPlan, originOf, tileImageOf } from './levelView.ts';
@@ -94,8 +95,9 @@ function start(root: HTMLElement, services: ViewerServices): void {
     select: { label: 'Select', key: 'V', tip: 'Click to pick things on the plan, drag to move them' },
     paint: { label: 'Paint', key: 'B', tip: 'Drag across the plan to paint floor tiles' },
     erase: { label: 'Erase', key: 'E', tip: 'Drag across the plan to remove painted tiles' },
+    height: { label: 'Height', key: 'H', tip: 'Drag across the plan to raise, lower or level the ground' },
   } as const;
-  const toolButtons = (['select', 'paint', 'erase'] as const).map((tool) => {
+  const toolButtons = (['select', 'paint', 'erase', 'height'] as const).map((tool) => {
     const info = TOOL_INFO[tool];
     const button = element('button', { type: 'button', 'data-tool': tool, title: `${info.tip} (${info.key})` });
     button.append(info.label, element('kbd', {}, info.key));
@@ -115,6 +117,25 @@ function start(root: HTMLElement, services: ViewerServices): void {
     refreshEditing();
   });
   brushLabel.append('Tile', brush);
+  const heightLabel = element('label', { class: 'brush' });
+  const heightMode = element('select', { 'aria-label': 'Height brush' });
+  heightMode.append(
+    element('option', { value: 'raise' }, 'Raise one step'),
+    element('option', { value: 'lower' }, 'Lower one step'),
+    element('option', { value: 'level' }, 'Level to step'),
+    element('option', { value: 'reset' }, 'Reset to the steps'),
+  );
+  const heightLevel = element('input', { type: 'number', min: '0', max: String(MAX_TERRAIN_HEIGHT), step: '1', value: '1', 'aria-label': 'Step to level to' });
+  heightMode.addEventListener('change', () => {
+    controller.heightMode = heightMode.value as HeightMode;
+    refreshEditing();
+  });
+  heightLevel.addEventListener('change', () => {
+    controller.heightLevel = Math.max(0, Math.min(MAX_TERRAIN_HEIGHT, Math.round(Number(heightLevel.value) || 0)));
+    heightLevel.value = String(controller.heightLevel);
+    refreshEditing();
+  });
+  heightLabel.append('Ground', heightMode, heightLevel);
   const separator = (): HTMLElement => element('span', { class: 'separator', 'aria-hidden': 'true' });
   const undo = element('button', { type: 'button', title: 'Undo the last change (Ctrl+Z)' }, 'Undo');
   const redo = element('button', { type: 'button', title: 'Redo what you undid (Ctrl+Shift+Z or Ctrl+Y)' }, 'Redo');
@@ -122,7 +143,7 @@ function start(root: HTMLElement, services: ViewerServices): void {
   const save = element('button', { type: 'button', class: 'save', title: 'Write your changes to the layout files (Ctrl+S)' }, 'Save');
   const dirty = element('span', { class: 'dirty', role: 'status' });
   const banner = element('div', { class: 'banner', role: 'status', 'aria-live': 'polite' });
-  tools.append(...toolButtons, brushLabel, separator(), undo, redo, separator(), check, save, dirty, banner);
+  tools.append(...toolButtons, brushLabel, heightLabel, separator(), undo, redo, separator(), check, save, dirty, banner);
 
   const help = element('dialog', { class: 'help', 'aria-label': 'Editor help' });
   const helpClose = element('button', { type: 'button', class: 'help-close', 'aria-label': 'Close help' }, 'Close');
@@ -148,6 +169,7 @@ function start(root: HTMLElement, services: ViewerServices): void {
       ['V', 'Select and move'],
       ['B', 'Paint floor tiles'],
       ['E', 'Erase painted tiles'],
+      ['H', 'Raise, lower or level the ground; a drop of two steps becomes cliff'],
       ['/', 'Search things to add'],
     ]),
     helpSection('Selection', [
@@ -342,7 +364,7 @@ function start(root: HTMLElement, services: ViewerServices): void {
   preview3d.setEditPointer(null);
   const editPointer3d: EditPointer = {
     down: (tile, event) => {
-      if (controller.tool === 'paint' || controller.tool === 'erase') return editDown(tile, modifiersOf(event));
+      if (controller.tool === 'paint' || controller.tool === 'erase' || controller.tool === 'height') return editDown(tile, modifiersOf(event));
       if (controller.tool !== 'select') return false;
       const found = localOf(tile);
       if (!found) return false;
@@ -500,6 +522,8 @@ function start(root: HTMLElement, services: ViewerServices): void {
     for (const button of toolButtons) button.setAttribute('aria-pressed', String(controller.tool === button.dataset.tool));
     views.dataset.tool = controller.tool;
     brushLabel.hidden = controller.tool !== 'paint';
+    heightLabel.hidden = controller.tool !== 'height';
+    heightLevel.hidden = controller.heightMode !== 'level';
     palette.setActive(controller.tool === 'add' ? controller.pending : null);
     undo.disabled = !editorDocument.canUndo();
     redo.disabled = !editorDocument.canRedo();
@@ -516,6 +540,7 @@ function start(root: HTMLElement, services: ViewerServices): void {
       if (controller.tool === 'add' && controller.pending) return `Click the plan to place ${controller.pending.name ?? controller.pending.label}. Shift+click to place more; Esc to stop.`;
       if (controller.tool === 'paint') return `Drag across the plan to paint ${brush.value}. Ctrl+Z undoes a whole stroke.`;
       if (controller.tool === 'erase') return 'Drag across the plan to remove painted tiles.';
+      if (controller.tool === 'height') return 'Drag across the plan to change the ground. Walkable ground two steps above its neighbour becomes cliff. Ctrl+Z undoes a whole stroke.';
       const where = inLevel() ? ` Editing ${districtName(controller.district)}; clicks pick the district under the pointer.` : '';
       if (controller.selection) return `Drag or use the arrow keys to move it. R rotates, Ctrl+D duplicates, Delete removes, Esc deselects.${where}`;
       return `Click anything on the plan to select it, or pick something to add from the panel on the right.${where}`;

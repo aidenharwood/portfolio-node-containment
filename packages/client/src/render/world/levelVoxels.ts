@@ -1,9 +1,9 @@
 import { isBuildingWall, isOutdoorFloor, TILE_KINDS, tileKey, type DecalCell, type TileKindId, type TileLayout, type TileRect, type WallMaterialId } from '@containment/shared';
-import { DenseVolume } from '../voxel/denseVolume.ts';
+import { DenseVolume, RaisedCanvas, type VoxelCanvas } from '../voxel/denseVolume.ts';
 import { darken, jitter, lighten, mix, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE, VOXEL_GLASS, VOXEL_SOLID } from '../voxel/voxelKinds.ts';
 import { decalColor } from './floorDecals.ts';
-import { FLOOR_LAYERS, TILE_RESOLUTION, WALL_LAYERS, ZONE_VOLUME_HEIGHT } from './worldScale.ts';
+import { FLOOR_LAYERS, STEP_VOXELS, TILE_RESOLUTION, WALL_LAYERS, ZONE_VOLUME_HEIGHT } from './worldScale.ts';
 
 const R = TILE_RESOLUTION;
 const SUBFLOOR = 0;
@@ -104,35 +104,112 @@ export type Side = 'north' | 'south' | 'east' | 'west';
 
 const isWallKind = (kind: TileKindId): boolean => TILE_KINDS[kind].structure === 'wall';
 
+export const tileBase = (layout: TileLayout, tx: number, ty: number): number => layout.heightAt({ x: tx, y: ty }) * STEP_VOXELS;
+
+export function regionTop(layout: TileLayout, region: TileRect): number {
+  let top = 0;
+  for (let ty = region.y - 1; ty <= region.y + region.height; ty++) {
+    for (let tx = region.x - 1; tx <= region.x + region.width; tx++) top = Math.max(top, tileBase(layout, tx, ty));
+  }
+  return top;
+}
+
 export function buildTileVolume(layout: TileLayout, region: TileRect): DenseVolume {
-  const volume = createTileVolume(region);
+  const volume = createTileVolume(region, layout);
   paintTileRows(volume, layout, region, region.y - 1, region.y + region.height + 1);
   return volume;
 }
 
-export function createTileVolume(region: TileRect): DenseVolume {
-  return new DenseVolume((region.width + 2) * R, ZONE_VOLUME_HEIGHT, (region.height + 2) * R, (region.x - 1) * R, (region.y - 1) * R);
+export function createTileVolume(region: TileRect, layout: TileLayout): DenseVolume {
+  return new DenseVolume((region.width + 2) * R, ZONE_VOLUME_HEIGHT + regionTop(layout, region), (region.height + 2) * R, (region.x - 1) * R, (region.y - 1) * R);
 }
 
 type DecalMap = ReadonlyMap<string, readonly DecalCell[]>;
 
 export function paintTileRows(volume: DenseVolume, layout: TileLayout, region: TileRect, fromRow: number, toRow: number, decals?: DecalMap): DenseVolume {
+  const canvas = new RaisedCanvas(volume);
   for (let ty = Math.max(fromRow, region.y - 1); ty < Math.min(toRow, region.y + region.height + 1); ty++) {
     for (let tx = region.x - 1; tx < region.x + region.width + 1; tx++) {
       const kind = layout.tileAt({ x: tx, y: ty });
       if (kind === 'void') continue;
-      if (isBuildingWall(kind)) paintWall(volume, layout, tx, ty, kind);
-      else if (kind === 'rock') paintRock(volume, layout, tx, ty);
-      else if (kind === 'trees') paintTrees(volume, tx, ty);
-      else if (kind === 'fence') paintFence(volume, layout, tx, ty);
-      else if (kind === 'barrier') paintBarrier(volume, layout, tx, ty);
-      else if (kind === 'glass') paintGlass(volume, tx, ty);
-      else if (kind === 'track') paintTrack(volume, trackAxis(layout, tx, ty), tx, ty);
-      else paintFloor(volume, kind, tx, ty, kind === 'door' ? doorAxis(layout, tx, ty) : 'x', decals?.get(tileKey({ x: tx, y: ty })), seamsOf(layout, kind, tx, ty), blendNeighborsOf(layout, kind, tx, ty), wallsBeside(layout, tx, ty), kerbsOf(layout, kind, tx, ty));
-      if (kind === 'door') paintLintel(volume, layout, tx, ty);
+      const base = tileBase(layout, tx, ty);
+      canvas.lift = base;
+      if (isBuildingWall(kind)) paintWall(canvas, layout, tx, ty, kind);
+      else if (kind === 'rock') paintRock(canvas, layout, tx, ty);
+      else if (kind === 'cliff') paintCliff(canvas, tx, ty);
+      else if (kind === 'trees') paintTrees(canvas, tx, ty);
+      else if (kind === 'fence') paintFence(canvas, layout, tx, ty);
+      else if (kind === 'barrier') paintBarrier(canvas, layout, tx, ty);
+      else if (kind === 'glass') paintGlass(canvas, tx, ty);
+      else if (kind === 'track') paintTrack(canvas, trackAxis(layout, tx, ty), tx, ty);
+      else paintFloor(canvas, kind, tx, ty, kind === 'door' ? doorAxis(layout, tx, ty) : 'x', decals?.get(tileKey({ x: tx, y: ty })), seamsOf(layout, kind, tx, ty), blendNeighborsOf(layout, kind, tx, ty), wallsBeside(layout, tx, ty), kerbsOf(layout, kind, tx, ty));
+      if (kind === 'door') paintLintel(canvas, layout, tx, ty);
+      if (base > 0) paintEarth(volume, layout, kind, tx, ty, base);
     }
   }
   return volume;
+}
+
+const AROUND: readonly (readonly [number, number])[] = [
+  [-1, -1],
+  [0, -1],
+  [1, -1],
+  [-1, 0],
+  [1, 0],
+  [-1, 1],
+  [0, 1],
+  [1, 1],
+];
+
+const SOD: ReadonlySet<TileKindId> = new Set<TileKindId>(['grass', 'dirt', 'soil', 'gravel', 'trees', 'water', 'coolant', 'track']);
+
+function rockColor(vx: number, vy: number, vz: number): number {
+  const strata = smoothNoise(vx + vy * 3, vz - vy * 2, 4, 103);
+  const color = strata > 0.66 ? COLORS.rockLight : strata < 0.3 ? COLORS.rockDark : COLORS.rock;
+  return jitter(color, 0.05, noise3(vx, vy, vz, 109));
+}
+
+function earthColor(kind: TileKindId, vx: number, vy: number, vz: number, depth: number): number {
+  if (kind === 'cliff' || kind === 'rock') return rockColor(vx, vy, vz);
+  if (SOD.has(kind)) {
+    if (depth === 0) return jitter(kind === 'grass' ? darken(COLORS.grass, 0.25) : COLORS.dirtDark, 0.06, noise3(vx, vy, vz, 151));
+    const band = smoothNoise(vx * 0.5 + vy * 2, vz * 0.5 - vy, 3, 157);
+    return jitter(band > 0.6 ? COLORS.dirt : band < 0.28 ? COLORS.soilDark : COLORS.dirtDark, 0.07, noise3(vx, vy, vz, 163));
+  }
+  const course = Math.floor(vy / 2);
+  const joint = vy % 2 === 0 || (vx + vz + (course % 2) * 3) % 6 === 0;
+  return jitter(joint ? COLORS.pavingJoint : COLORS.kerb, 0.04, noise3(vx, vy, vz, 167));
+}
+
+function paintEarth(volume: DenseVolume, layout: TileLayout, kind: TileKindId, tx: number, ty: number, base: number): void {
+  let bottom = base;
+  for (const [dx, dy] of AROUND) {
+    const beside = layout.tileAt({ x: tx + dx, y: ty + dy });
+    bottom = Math.min(bottom, beside === 'void' ? 0 : tileBase(layout, tx + dx, ty + dy));
+  }
+  for (let lz = 0; lz < R; lz++) {
+    for (let lx = 0; lx < R; lx++) {
+      const vx = tx * R + lx;
+      const vz = ty * R + lz;
+      if (volume.kindAt(vx, base + SUBFLOOR, vz) === VOXEL_SOLID && volume.colorAt(vx, base + SUBFLOOR, vz) === COLORS.subfloor) {
+        volume.set(vx, base + SUBFLOOR, vz, earthColor(kind, vx, base + SUBFLOOR, vz, 0));
+      }
+      for (let vy = bottom; vy < base; vy++) volume.set(vx, vy, vz, earthColor(kind, vx, vy, vz, base - 1 - vy + 1));
+    }
+  }
+}
+
+function paintCliff(volume: VoxelCanvas, tx: number, ty: number): void {
+  for (let lz = 0; lz < R; lz++) {
+    for (let lx = 0; lx < R; lx++) {
+      const vx = tx * R + lx;
+      const vz = ty * R + lz;
+      volume.set(vx, SUBFLOOR, vz, rockColor(vx, SUBFLOOR, vz));
+      volume.set(vx, FLOOR, vz, noise3(vx, vz, 0, 131) > 0.7 ? COLORS.moss : rockColor(vx, FLOOR, vz));
+      const lip = smoothNoise(vx, vz, 3, 137) > 0.6 ? (noise3(vx, vz, 1, 139) > 0.6 ? 2 : 1) : 0;
+      for (let h = 0; h < lip; h++) volume.set(vx, FLOOR_LAYERS + h, vz, h === lip - 1 && noise3(vx, vz, h, 141) > 0.6 ? COLORS.moss : rockColor(vx, FLOOR_LAYERS + h, vz));
+    }
+  }
 }
 
 const SURFACES: ReadonlySet<TileKindId> = new Set<TileKindId>(['plating', 'concrete', 'rust', 'carpet', 'terrazzo', 'ceramic', 'boards', 'soil', 'grate']);
@@ -265,7 +342,7 @@ function weathered(color: number, kind: TileKindId, vx: number, vz: number, lx: 
   return shaded;
 }
 
-function paintFloor(volume: DenseVolume, kind: TileKindId, tx: number, ty: number, axis: Axis, cells?: readonly DecalCell[], seams?: Seams | null, blendNeighbors: readonly BlendNeighbor[] = [], walls: Seams | null = null, kerbs: Seams | null = null): void {
+function paintFloor(volume: VoxelCanvas, kind: TileKindId, tx: number, ty: number, axis: Axis, cells?: readonly DecalCell[], seams?: Seams | null, blendNeighbors: readonly BlendNeighbor[] = [], walls: Seams | null = null, kerbs: Seams | null = null): void {
   const tile: FloorTile = { tx, ty, tone: noise3(tx, ty, 0, 11), axis };
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
@@ -555,7 +632,7 @@ function interiorVoxel(material: WallMaterialId, h: number, u: number, grain: nu
   return { color: darken(jitter(FACADE.plaster, 0.03, grain), u === 0 ? 0.12 : 0) };
 }
 
-function paintWall(volume: DenseVolume, layout: TileLayout, tx: number, ty: number, material: WallMaterialId): void {
+function paintWall(volume: VoxelCanvas, layout: TileLayout, tx: number, ty: number, material: WallMaterialId): void {
   const open = openSides(layout, tx, ty);
   const palette = MATERIAL[material];
   const outdoors = new Set([...open].filter((side) => facesOutdoors(layout, tx, ty, side)));
@@ -604,7 +681,7 @@ function paintWall(volume: DenseVolume, layout: TileLayout, tx: number, ty: numb
 
 const isOutdoorGround = (kind: TileKindId): boolean => kind !== 'water' && isOutdoorFloor(kind);
 
-function paintGround(volume: DenseVolume, tx: number, ty: number, color: number, salt: number): void {
+function paintGround(volume: VoxelCanvas, tx: number, ty: number, color: number, salt: number): void {
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
       const vx = tx * R + lx;
@@ -615,7 +692,7 @@ function paintGround(volume: DenseVolume, tx: number, ty: number, color: number,
   }
 }
 
-function paintRock(volume: DenseVolume, layout: TileLayout, tx: number, ty: number): void {
+function paintRock(volume: VoxelCanvas, layout: TileLayout, tx: number, ty: number): void {
   paintGround(volume, tx, ty, COLORS.rockDark, 97);
   const open = openSides(layout, tx, ty);
   for (let lz = 0; lz < R; lz++) {
@@ -635,7 +712,7 @@ function paintRock(volume: DenseVolume, layout: TileLayout, tx: number, ty: numb
   }
 }
 
-function paintTrees(volume: DenseVolume, tx: number, ty: number): void {
+function paintTrees(volume: VoxelCanvas, tx: number, ty: number): void {
   paintGround(volume, tx, ty, COLORS.needles, 113);
   const trunkX = 2 + Math.floor(noise3(tx, ty, 0, 127) * 4);
   const trunkZ = 2 + Math.floor(noise3(tx, ty, 1, 127) * 4);
@@ -661,7 +738,7 @@ function paintTrees(volume: DenseVolume, tx: number, ty: number): void {
   }
 }
 
-function paintBarrier(volume: DenseVolume, layout: TileLayout, tx: number, ty: number): void {
+function paintBarrier(volume: VoxelCanvas, layout: TileLayout, tx: number, ty: number): void {
   paintGround(volume, tx, ty, COLORS.barrierDark, 151);
   const open = openSides(layout, tx, ty);
   const lamp = noise3(tx, ty, 0, 157) > 0.7;
@@ -703,7 +780,7 @@ function fenceAxis(layout: TileLayout, tx: number, ty: number): Axis {
   return isFence(tx - 1, ty) || isFence(tx + 1, ty) ? 'x' : 'y';
 }
 
-function paintFence(volume: DenseVolume, layout: TileLayout, tx: number, ty: number): void {
+function paintFence(volume: VoxelCanvas, layout: TileLayout, tx: number, ty: number): void {
   const beside = [layout.tileAt({ x: tx, y: ty - 1 }), layout.tileAt({ x: tx, y: ty + 1 }), layout.tileAt({ x: tx - 1, y: ty }), layout.tileAt({ x: tx + 1, y: ty })];
   const ground = beside.find(isOutdoorGround);
   for (let lz = 0; lz < R; lz++) {
@@ -747,7 +824,7 @@ function trackVoxel(along: number, across: number, grain: number): number | null
   return null;
 }
 
-function paintTrackVoxel(volume: DenseVolume, vx: number, vz: number, along: number, across: number): void {
+function paintTrackVoxel(volume: VoxelCanvas, vx: number, vz: number, along: number, across: number): void {
   const grain = noise3(vx, FLOOR, vz, 17);
   volume.set(vx, SUBFLOOR, vz, grain > 0.7 ? COLORS.ballastStone : jitter(COLORS.ballast, 0.05, grain));
   const surface = trackVoxel(along, across, grain);
@@ -755,7 +832,7 @@ function paintTrackVoxel(volume: DenseVolume, vx: number, vz: number, along: num
   else volume.set(vx, FLOOR, vz, surface);
 }
 
-function paintTrack(volume: DenseVolume, axis: Axis, tx: number, ty: number): void {
+function paintTrack(volume: VoxelCanvas, axis: Axis, tx: number, ty: number): void {
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
       paintTrackVoxel(volume, tx * R + lx, ty * R + lz, axis === 'x' ? lx : lz, axis === 'x' ? lz : lx);
@@ -773,7 +850,7 @@ function tunnelSides(layout: TileLayout, tx: number, ty: number): Side[] {
   return sides.filter(([, x, y, axis]) => layout.tileAt({ x, y }) === 'track' && trackAxis(layout, x, y) === axis).map(([side]) => side);
 }
 
-function paintTunnel(volume: DenseVolume, side: Side, tx: number, ty: number): void {
+function paintTunnel(volume: VoxelCanvas, side: Side, tx: number, ty: number): void {
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
       const depth = side === 'north' ? lz : side === 'south' ? R - 1 - lz : side === 'west' ? lx : R - 1 - lx;
@@ -809,7 +886,7 @@ function inwardStep(side: Side): [number, number] {
 }
 
 function paintWallFace(
-  volume: DenseVolume,
+  volume: VoxelCanvas,
   vx: number,
   vy: number,
   vz: number,
@@ -847,7 +924,7 @@ function paintWallFace(
   volume.set(vx, vy, vz, darken(jitter(COLORS.wallBody, 0.025, grain), seam));
 }
 
-function paintGlass(volume: DenseVolume, tx: number, ty: number): void {
+function paintGlass(volume: VoxelCanvas, tx: number, ty: number): void {
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
       const vx = tx * R + lx;
@@ -864,7 +941,7 @@ function paintGlass(volume: DenseVolume, tx: number, ty: number): void {
   }
 }
 
-function paintLintel(volume: DenseVolume, layout: TileLayout, tx: number, ty: number): void {
+function paintLintel(volume: VoxelCanvas, layout: TileLayout, tx: number, ty: number): void {
   const alongX = doorwayRunsAlongX(layout, tx, ty);
   for (let along = 0; along < R; along++) {
     for (let across = 3; across <= 4; across++) {

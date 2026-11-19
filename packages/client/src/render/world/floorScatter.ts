@@ -1,4 +1,6 @@
 import { tileKey, type DecalCell, type FloorDecalKind, type TileKindId, type TileLayout, type TilePoint, type TileRect } from '@containment/shared';
+import { groundAt } from './ground.ts';
+import { MODEL_VOXEL_SIZE } from './worldScale.ts';
 import { darken, jitter, lighten, noise3 } from '../voxel/palette.ts';
 import { decalBlocksScatter } from './floorDecals.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
@@ -44,42 +46,42 @@ function piecesFor(palette: ScatterPalette, cells: readonly DecalCell[] | undefi
 
 const pick = <T>(list: readonly T[], roll: number): T => list[Math.min(list.length - 1, Math.floor(roll * list.length))] as T;
 
-function paintPiece(model: VoxelModel, piece: ScatterPiece, x: number, z: number, palette: ScatterPalette, seed: number): void {
+function paintPiece(model: VoxelModel, piece: ScatterPiece, x: number, y: number, z: number, palette: ScatterPalette, seed: number): void {
   const roll = noise3(x, 5, z, seed);
   const color = jitter(pick(palette.pebbles, roll), 0.06, noise3(x, 1, z, seed));
   switch (piece) {
     case 'pebble':
-      model.set(x, 0, z, color);
-      if (roll > 0.5) model.set(x + 1, 0, z, darken(color, 0.12));
+      model.set(x, y, z, color);
+      if (roll > 0.5) model.set(x + 1, y, z, darken(color, 0.12));
       return;
     case 'stone':
-      model.fill(x, 0, z, x + 1, 0, z + 1, (vx, _y, vz) => (noise3(vx, 2, vz, seed) > 0.2 ? jitter(color, 0.08, noise3(vx, 3, vz, seed)) : null));
-      model.set(x, 1, z, lighten(color, 0.12));
+      model.fill(x, y, z, x + 1, y, z + 1, (vx, _y, vz) => (noise3(vx, 2, vz, seed) > 0.2 ? jitter(color, 0.08, noise3(vx, 3, vz, seed)) : null));
+      model.set(x, y + 1, z, lighten(color, 0.12));
       return;
     case 'grit':
       for (let index = 0; index < 3; index++) {
         const dx = Math.round((noise3(x, index, z, seed + 3) - 0.5) * 4);
         const dz = Math.round((noise3(z, index, x, seed + 7) - 0.5) * 4);
-        model.set(x + dx, 0, z + dz, pick(palette.grit, noise3(dx, index, dz, seed)));
+        model.set(x + dx, y, z + dz, pick(palette.grit, noise3(dx, index, dz, seed)));
       }
       return;
     case 'flake':
-      if (roll > 0.5) model.fill(x, 0, z, x + 2, 0, z, color);
-      else model.fill(x, 0, z, x, 0, z + 2, color);
+      if (roll > 0.5) model.fill(x, y, z, x + 2, y, z, color);
+      else model.fill(x, y, z, x, y, z + 2, color);
       return;
     case 'bolt':
-      model.set(x, 0, z, 0x9aa4aa).set(x, 1, z, 0x6f7a80);
+      model.set(x, y, z, 0x9aa4aa).set(x, y + 1, z, 0x6f7a80);
       return;
     case 'shard':
-      model.fill(x, 0, z, x + 2, 0, z + 1, (vx, _y, vz) => ((vx - x + vz - z) % 3 === 0 ? null : lighten(color, 0.08)));
+      model.fill(x, y, z, x + 2, y, z + 1, (vx, _y, vz) => ((vx - x + vz - z) % 3 === 0 ? null : lighten(color, 0.08)));
       return;
     case 'leaf':
-      model.fill(x, 0, z, x + 1, 0, z, roll > 0.5 ? 0x5a8a3a : 0x7a6a2a).set(x + 2, 0, z + 1, 0x4f7a32);
+      model.fill(x, y, z, x + 1, y, z, roll > 0.5 ? 0x5a8a3a : 0x7a6a2a).set(x + 2, y, z + 1, 0x4f7a32);
       return;
     case 'tuft': {
       const green = roll > 0.6 ? 0x6fae48 : 0x4f8a3a;
-      model.set(x, 0, z, green).set(x, 1, z, lighten(green, 0.1)).set(x + 1, 0, z, green);
-      if (roll > 0.3) model.set(x - 1, 1, z + 1, green).set(x, 2, z, lighten(green, 0.2));
+      model.set(x, y, z, green).set(x, y + 1, z, lighten(green, 0.1)).set(x + 1, y, z, green);
+      if (roll > 0.3) model.set(x - 1, y + 1, z + 1, green).set(x, y + 2, z, lighten(green, 0.2));
       return;
     }
   }
@@ -93,6 +95,7 @@ export function buildFloorScatter(layout: TileLayout, region: TileRect, isOccupi
       const cells = decals?.get(tileKey({ x: tx, y: ty }));
       if (!palette || isOccupied({ x: tx, y: ty }) || decalBlocksScatter(cells)) continue;
       const pieces = piecesFor(palette, cells);
+      const lift = Math.round(groundAt(layout, tx, ty) / MODEL_VOXEL_SIZE);
       if (noise3(tx, ty, 0, 91) > palette.density) continue;
       const count = 1 + Math.floor(noise3(tx, ty, 1, 92) * 2);
       for (let index = 0; index < count; index++) {
@@ -100,7 +103,7 @@ export function buildFloorScatter(layout: TileLayout, region: TileRect, isOccupi
         const lx = Math.floor(noise3(tx, index, ty, 93) * (VOXELS_PER_TILE - EDGE_MARGIN * 2 - 3)) + EDGE_MARGIN - HALF;
         const lz = Math.floor(noise3(ty, index, tx, 94) * (VOXELS_PER_TILE - EDGE_MARGIN * 2 - 3)) + EDGE_MARGIN - HALF;
         const piece = pick(pieces, noise3(tx, ty, index, 95));
-        paintPiece(model, piece, tx * VOXELS_PER_TILE + lx, ty * VOXELS_PER_TILE + lz, palette, seed);
+        paintPiece(model, piece, tx * VOXELS_PER_TILE + lx, lift, ty * VOXELS_PER_TILE + lz, palette, seed);
       }
     }
   }

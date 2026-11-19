@@ -56,7 +56,7 @@ export class GroundItemLayer {
   private readonly ownedHalo = new MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: 0.5, blending: AdditiveBlending, depthWrite: false, toneMapped: false, fog: false });
   private readonly publicHalo = new MeshBasicMaterial({ color: 0x4fd8ff, transparent: true, opacity: 0.4, blending: AdditiveBlending, depthWrite: false, toneMapped: false, fog: false });
 
-  sync(items: ReadonlyMap<string, GroundItemSnapshot>): void {
+  sync(items: ReadonlyMap<string, GroundItemSnapshot>, ground: (x: number, y: number) => number = () => 0): void {
     for (const [id, view] of this.views) {
       if (items.has(id)) continue;
       view.group.removeFromParent();
@@ -72,7 +72,7 @@ export class GroundItemLayer {
       perTile.set(tileKey, slot + 1);
       const angle = slot * 2.4;
       const offset = slot === 0 ? 0 : STACK_SPREAD;
-      view.group.position.set(item.position.x + Math.cos(angle) * offset, 0, item.position.y + Math.sin(angle) * offset);
+      view.group.position.set(item.position.x + Math.cos(angle) * offset, ground(item.position.x, item.position.y), item.position.y + Math.sin(angle) * offset);
       view.halo.material = item.owned ? this.ownedHalo : this.publicHalo;
     }
   }

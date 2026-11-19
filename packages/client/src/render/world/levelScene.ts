@@ -265,7 +265,7 @@ export class LevelScene {
   }
 
   private slideDoor(view: ObjectView, doors: DoorView, nearDoors: ReadonlySet<string>): void {
-    const target = nearDoors.has(doorGroupOf(view)) && doors.open.has(doorKeyOf(view.definition)) ? -view.height - 0.05 : 0;
+    const target = nearDoors.has(doorGroupOf(view)) && doors.open.has(doorKeyOf(view.definition)) ? view.ground - view.height - 0.05 : view.ground;
     view.group.position.y += (target - view.group.position.y) * 0.14;
   }
 

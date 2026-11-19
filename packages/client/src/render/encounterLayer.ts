@@ -39,11 +39,11 @@ export class EncounterLayer {
     this.mesh.count = 0;
   }
 
-  update(telegraphs: Iterable<ClientTelegraph>, hazards: Iterable<ClientHazard>, now: number): void {
+  update(telegraphs: Iterable<ClientTelegraph>, hazards: Iterable<ClientHazard>, now: number, ground: (x: number, y: number) => number = () => 0): void {
     let index = 0;
     const place = (x: number, y: number, color: number, strength: number, lift: number) => {
       if (index >= MAX_TILES) return;
-      this.placement.position.set(x, TILE_HEIGHT + lift, y);
+      this.placement.position.set(x, ground(x, y) + TILE_HEIGHT + lift, y);
       this.placement.scale.setScalar(1);
       this.placement.updateMatrix();
       this.mesh.setMatrixAt(index, this.placement.matrix);

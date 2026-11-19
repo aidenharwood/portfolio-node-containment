@@ -1,9 +1,9 @@
 import { drawBlueprint, resolvePosition, tileKey, type DistrictId, type TileKindId, type TilePoint, type TileRect } from '@containment/shared';
 import type { EditorDocument } from './document.ts';
-import { addEntry, deleteEntry, deleteStep, duplicateEntry, editStep, eraseTiles, moveEntry, moveRoom, paintTiles, resizeRoom, rotateEntry, type Collection, type EditResult } from './edits.ts';
+import { addEntry, deleteEntry, deleteStep, duplicateEntry, editStep, eraseTiles, moveEntry, moveRoom, paintHeights, paintTiles, resizeRoom, rotateEntry, type Collection, type EditResult, type HeightMode } from './edits.ts';
 import { hitsAt, type Hit } from './hitTest.ts';
 
-export type Tool = 'select' | 'paint' | 'erase' | 'add';
+export type Tool = 'select' | 'paint' | 'erase' | 'height' | 'add';
 
 export interface PaletteEntry {
   readonly collection: Collection;
@@ -39,13 +39,17 @@ const ARROWS: Readonly<Record<string, TilePoint>> = {
   arrowdown: { x: 0, y: 1 },
 };
 
-const TOOL_KEYS: Readonly<Record<string, Tool>> = { v: 'select', b: 'paint', e: 'erase' };
+const TOOL_KEYS: Readonly<Record<string, Tool>> = { v: 'select', b: 'paint', e: 'erase', h: 'height' };
+
+const STROKE_TOOLS: ReadonlySet<Tool> = new Set<Tool>(['paint', 'erase', 'height']);
 
 const sameHit = (a: Hit | null, b: Hit): boolean => a !== null && JSON.stringify(a) === JSON.stringify(b);
 
 export class EditController {
   tool: Tool = 'select';
   brush: TileKindId = 'hazard';
+  heightMode: HeightMode = 'raise';
+  heightLevel = 1;
   selection: Hit | null = null;
   status = '';
   pending: PaletteEntry | null = null;
@@ -100,7 +104,7 @@ export class EditController {
   }
 
   pointerDown(tile: TilePoint, modifiers: Modifiers): void {
-    if (this.tool === 'paint' || this.tool === 'erase') {
+    if (STROKE_TOOLS.has(this.tool)) {
       this.drag = { mode: 'stroke', tiles: new Map([[tileKey(tile), tile]]) };
       return;
     }
@@ -156,7 +160,8 @@ export class EditController {
       drag.tiles.set(tileKey(tile), tile);
       const tiles = [...drag.tiles.values()];
       const brush = this.brush;
-      this.apply((layout) => (this.tool === 'erase' ? eraseTiles(layout, tiles) : paintTiles(layout, tiles, brush)));
+      const { heightMode, heightLevel } = this;
+      this.apply((layout) => (this.tool === 'height' ? paintHeights(layout, tiles, heightMode, heightLevel) : this.tool === 'erase' ? eraseTiles(layout, tiles) : paintTiles(layout, tiles, brush)));
       this.changed();
       return;
     }
@@ -271,7 +276,7 @@ export class EditController {
       return { mode: 'room', room: hit.room, rect, from: tile, edges: hit.kind === 'dressing' ? NO_EDGES : edges };
     }
     const step = layout.steps[hit.index];
-    if (step && (step.kind === 'patch' || step.kind === 'hollow')) return { mode: 'step', index: hit.index, rect: step.rect, from: tile };
+    if (step && (step.kind === 'patch' || step.kind === 'hollow' || step.kind === 'rise' || step.kind === 'ramp')) return { mode: 'step', index: hit.index, rect: step.rect, from: tile };
     return null;
   }
 

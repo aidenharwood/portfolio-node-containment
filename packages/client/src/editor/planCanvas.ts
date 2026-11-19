@@ -1,3 +1,4 @@
+import { heightShade, shadeHex } from '../hud/heightShade.ts';
 import { parseTileLayout, planMarks, TILE_KINDS, type DistrictId, type Facing, type GameContent, type PlanIssue, type PlanMarkKind, type TilePoint, type TileKindId } from '@containment/shared';
 import { DECAL_KIND_COLORS } from '../render/world/floorDecals.ts';
 import type { PlanLayer } from './viewState.ts';
@@ -45,6 +46,7 @@ export const tileColor = (kind: TileKindId): string => {
   if (kind === 'door') return '#b8932a';
   if (kind === 'track') return '#4a3a2a';
   if (kind === 'hazard') return '#6f6420';
+  if (kind === 'cliff') return '#6a6258';
   const definition = TILE_KINDS[kind];
   if (!definition.walkable) return definition.structure === 'wall' ? '#3a4652' : '#14303a';
   return '#1b2830';
@@ -58,9 +60,9 @@ export function planDrawList(content: GameContent, districtId: DistrictId, layer
   const on = new Set(layers);
   const shapes: PlanShape[] = [];
   if (on.has('tiles')) {
-    const layout = parseTileLayout(district.map);
+    const layout = parseTileLayout(district.map, district.heights);
     for (let y = 0; y < layout.height; y++) {
-      for (let x = 0; x < layout.width; x++) shapes.push({ kind: 'tile', x, y, width: 1, height: 1, color: tileColor(layout.tileAt({ x, y })) });
+      for (let x = 0; x < layout.width; x++) shapes.push({ kind: 'tile', x, y, width: 1, height: 1, color: shadeHex(tileColor(layout.tileAt({ x, y })), heightShade(layout, x, y)) });
     }
   }
   if (on.has('decals')) {

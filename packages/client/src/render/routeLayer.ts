@@ -40,8 +40,8 @@ export class RouteLayer {
     this.mesh.count = 0;
   }
 
-  update(path: readonly TilePoint[], time: number): void {
-    if (path !== this.path) this.place(path);
+  update(path: readonly TilePoint[], time: number, ground: (x: number, y: number) => number = () => 0): void {
+    if (path !== this.path) this.place(path, ground);
     const count = this.mesh.count;
     for (let index = 0; index < count; index++) {
       const wave = 0.5 + 0.5 * Math.sin((index / WAVE_LENGTH) * Math.PI * 2 - time * WAVE_SPEED);
@@ -52,13 +52,13 @@ export class RouteLayer {
     if (this.mesh.instanceColor) this.mesh.instanceColor.needsUpdate = true;
   }
 
-  private place(path: readonly TilePoint[]): void {
+  private place(path: readonly TilePoint[], ground: (x: number, y: number) => number): void {
     this.path = path;
     const count = Math.min(MAX_CHEVRONS, Math.max(0, path.length - 1));
     for (let index = 0; index < count; index++) {
       const from = path[index] as TilePoint;
       const to = path[index + 1] as TilePoint;
-      this.placement.position.set((from.x + to.x) / 2, ROUTE_HEIGHT, (from.y + to.y) / 2);
+      this.placement.position.set((from.x + to.x) / 2, ROUTE_HEIGHT + Math.max(ground(from.x, from.y), ground(to.x, to.y)), (from.y + to.y) / 2);
       this.placement.rotation.set(0, Math.atan2(-(to.x - from.x), -(to.y - from.y)), 0);
       this.placement.updateMatrix();
       this.mesh.setMatrixAt(index, this.placement.matrix);

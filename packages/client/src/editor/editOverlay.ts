@@ -38,13 +38,16 @@ export class EditOverlay {
     this.root.add(this.selection, this.ghostFloor, this.ghostOutline, this.ghostModelHolder);
   }
 
+  ground: (x: number, y: number) => number = () => 0;
+
   showSelection(box: OverlayBox | null, tall: boolean): void {
     this.selection.visible = box !== null;
     if (!box) return;
     const height = tall ? 1.6 : 0.12;
     this.selection.scale.set(box.width + 0.08, height, box.height + 0.08);
-    this.selection.position.set(box.x + (box.width - 1) / 2, height / 2, box.y + (box.height - 1) / 2);
-    this.selectionTop = height;
+    const lift = this.ground(box.x, box.y);
+    this.selection.position.set(box.x + (box.width - 1) / 2, lift + height / 2, box.y + (box.height - 1) / 2);
+    this.selectionTop = lift + height;
   }
 
   selectionAnchor(): { x: number; y: number; z: number } | null {
@@ -62,16 +65,17 @@ export class EditOverlay {
     this.ghostFloorMaterial.color.setHex(colour);
     this.ghostOutlineMaterial.color.setHex(colour);
     this.ghostFloor.scale.set(box.width, 1, box.height);
-    this.ghostFloor.position.set(box.x + (box.width - 1) / 2, 0.04, box.y + (box.height - 1) / 2);
+    const lift = this.ground(box.x, box.y);
+    this.ghostFloor.position.set(box.x + (box.width - 1) / 2, lift + 0.04, box.y + (box.height - 1) / 2);
     this.ghostOutline.scale.set(box.width, 1.4, box.height);
-    this.ghostOutline.position.set(box.x + (box.width - 1) / 2, 0.7, box.y + (box.height - 1) / 2);
+    this.ghostOutline.position.set(box.x + (box.width - 1) / 2, lift + 0.7, box.y + (box.height - 1) / 2);
     if (model && model.key !== this.ghostKey) {
       this.ghostKey = model.key;
       this.ghostModelHolder.clear();
       const built = model.build();
       if (built) this.ghostModelHolder.add(built);
     }
-    this.ghostModelHolder.position.set(box.x, 0, box.y);
+    this.ghostModelHolder.position.set(box.x, lift, box.y);
   }
 
   dispose(): void {

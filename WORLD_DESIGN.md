@@ -3,6 +3,8 @@
 Read this before adding or changing a district, a level or anything placed in one. It applies to humans and AI agents alike. Every district in the game follows these rules; there is no exemption list. The rules marked **checked** are enforced by `findWorldDesignIssues` (`packages/shared/src/content/worldDesignIntegrity.ts`), which runs inside `findContentIssues`: the server will not boot and `npm test` fails when one is broken. The rest is judgement, and reviewers hold changes to it.
 
 > **Status:** the world is an open city (`docs/superpowers/specs/2026-11-14-first-region-design.md`). The Low Ward is built and peopled: nine open squares from Terminus Square out to the Cordon gate, and three levels below Site Meridian (Intake, the Secure Wing and the Vault) reached by the headhouse lift. Beyond the Cordon, the rest of Hollow Bay is blocked out to `docs/superpowers/specs/2026-11-18-hollow-bay-atlas.md`: seven wards of six squares ringing the bay, each with an outpost and a Site compound, joined by gated crossings. Their people, quests, creatures, gathering spots and Site levels come ward by ward.
+>
+> **Next:** the owner has chosen to re-plan everything beyond the Cordon as towns standing in a reclaimed landscape, the Hinterland, with ground that rises and falls (`docs/superpowers/specs/2026-11-19-hinterland-and-terrain-design.md`). Terraced ground is built (see Terrain below). Until the Hinterland atlas lands, the Wards section describes the block-out as it stands.
 
 ## What the world should feel like
 
@@ -34,6 +36,17 @@ Hollow Bay is **a city you can walk across in any direction**, the way you can i
     - **Decals** paint the floor: inlays, mosaics, rugs, runners, lane paint and hazard paint come with prefabs, and anything else (wear, scorch, moss, salt crust) is placed by hand in the layout's `decals`. They lie on walkable floor only and change nothing in play.
     - **Condition** labels how far a district has decayed (`pristine`, `worn`, `breached`, `overgrown`, `flooded`, `alien`, `uncanny`): the Low Ward is worn, the Shipyard Fringe breached, and the deep levels under Site Meridian alien. It adds nothing by itself; show it with what you place, such as barricades, rubble, sandbags and toppled furniture. An `uncanny` pocket mirrors its original strictly and gets it quietly wrong, with benches facing the wall and bookcases turned around.
 7. **Ids are forever.** Do not rename an area, an instance id or a district: saves, quests and flags refer to them.
+
+### Terrain
+
+Ground rises in whole steps, from step 0 (sea level, and every level below ground) to step 15. One step is half a tile; a four-step cliff stands as tall as a building wall. Height shapes where you can walk and what you can see past; it adds nothing in combat.
+
+- **Raise ground with steps.** `rise` (a rect, round or octagon at one height) and `ramp` (a rect that climbs one step at a time towards a side) go after the ground room and before roads and buildings, and later steps win. The editor's height brush (H) raises, lowers, levels or resets single tiles and writes the layout's `heights`. Never type a height map.
+- **Never draw cliffs.** Walkable ground two or more steps above a walkable neighbour, diagonals included, becomes `cliff`: not walkable, a wall for line of sight, drawn as bare rock down to the ground below. So two walkable tiles that touch never differ by more than one step.
+- **Plan the way up.** Every raised area people should reach needs a ramp or a run of one-step terraces from the ground around it. Use cliffs on purpose, to wall off a plateau, frame a view or hold back the next area.
+- **Doorways never become cliff.** A door, exit or link tile with a drop of two steps beside it stops the blueprint drawing and names the tile. **Checked.**
+- **Buildings stand level.** Every interior tile of a `building` step has one height. **Checked.**
+- **Seams match.** Across a seam between districts, walkable ground that touches differs by at most one step (`findTerrainSeamIssues`). **Checked.**
 
 ### Furnishing
 

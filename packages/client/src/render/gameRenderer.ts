@@ -27,6 +27,7 @@ import { WeatherLayer } from './world/weatherLayer.ts';
 import { SkyMask } from './world/skyMask.ts';
 import { setFieldSkyMask } from './voxel/fieldLights.ts';
 import { objectModelOrigin } from './world/chunkView.ts';
+import { groundAt, rayGround } from './world/ground.ts';
 
 export interface RenderOverlay {
   readonly hover: PickTarget | null;
@@ -44,6 +45,10 @@ export interface ScreenAnchor {
   readonly visible: boolean;
 }
 
+const GROUND_EASE = 14;
+const FOCUS_HEIGHT = 0.8;
+const GROUND_SNAP = 2;
+
 interface EntityView {
   readonly rig: EntityRig;
   readonly character: CharacterRig | null;
@@ -57,6 +62,7 @@ interface EntityView {
   flashing: boolean;
   shattered: boolean;
   workAt: number;
+  ground: number;
 }
 
 interface PendingHit {
@@ -205,7 +211,7 @@ export class GameRenderer {
     this.look.resetLights();
 
     const start = this.world.selfEntity?.to ?? active.definition.spawn;
-    this.cameraRig.follow(new Vector3(start.x, 0.8, start.y));
+    this.cameraRig.follow(new Vector3(start.x, 0.8 + this.groundOf(start.x, start.y), start.y));
     this.cameraRig.snapToFocus();
     this.zone.stream(start);
     this.ambienceTile = null;
@@ -223,7 +229,7 @@ export class GameRenderer {
 
     this.world.settle(now);
     this.syncEntities(now, delta, overlay);
-    this.groundItems.sync(this.world.groundItems);
+    this.groundItems.sync(this.world.groundItems, this.groundOfTile);
     this.resolveHits(now);
     this.resolveChips(now);
     this.projectiles.update(now);
@@ -232,9 +238,10 @@ export class GameRenderer {
     const self = this.world.selfEntity;
     if (self) {
       const position = this.world.renderPosition(self, now);
-      this.cameraRig.follow(new Vector3(position.x, 0.8, position.y));
+      const lift = this.entities.get(self.id)?.ground ?? this.groundOf(position.x, position.y);
+      this.cameraRig.follow(new Vector3(position.x, 0.8 + lift, position.y));
       this.selfRing.visible = true;
-      this.selfRing.position.set(position.x, 0.02, position.y);
+      this.selfRing.position.set(position.x, lift + 0.02, position.y);
     } else {
       this.selfRing.visible = false;
     }
@@ -261,13 +268,14 @@ export class GameRenderer {
       sources: this.zone.lights,
       pixelRatio: this.look.renderer.getPixelRatio(),
       viewportHeight: this.look.renderer.domElement.height,
+      ground: focus.y - FOCUS_HEIGHT,
     });
     this.look.flash = this.weather.flash;
     this.updateHover(overlay.hover, now);
     this.updateClickMarker(overlay.clickMarker, now);
     this.updateBeacons(overlay.objectiveBeacons, time);
-    this.route.update(overlay.guidanceRoute, time);
-    this.encounters.update(this.world.telegraphs.values(), this.world.hazards.values(), now);
+    this.route.update(overlay.guidanceRoute, time, this.groundOfTile);
+    this.encounters.update(this.world.telegraphs.values(), this.world.hazards.values(), now, this.groundOfTile);
 
     this.look.render(this.cameraRig.camera, delta);
   }
@@ -287,7 +295,7 @@ export class GameRenderer {
       ...[...this.zone.objects.values()].filter((view) => view.definition.interactions.length > 0).map((view) => view.group),
       ...this.groundItems.pickables(),
     ];
-    const groundPoint = this.raycaster.ray.intersectPlane(this.groundPlane, new Vector3());
+    const groundPoint = this.groundHit();
     const groundDistance = groundPoint ? groundPoint.distanceTo(this.raycaster.ray.origin) : Infinity;
     const targets: PickTarget[] = [];
     const add = (target: PickTarget) => {
@@ -335,12 +343,12 @@ export class GameRenderer {
       const entity = this.world.entities.get(id);
       if (!entity || id === this.world.selfEntityId || entity.dyingAt !== null) continue;
       const position = this.world.bodyPosition(entity, now);
-      consider({ kind: 'entity', entity }, new Vector3(position.x, 0, position.y), view.rig.height * view.scale);
+      consider({ kind: 'entity', entity }, new Vector3(position.x, view.ground, position.y), view.rig.height * view.scale);
     }
     for (const view of this.zone.objects.values()) {
       if (view.definition.interactions.length === 0) continue;
       const origin = view.group.getWorldPosition(new Vector3());
-      consider({ kind: 'object', instanceId: view.instanceId, placement: view.placement, definition: view.definition }, origin.setY(0), Math.max(0.5, view.height));
+      consider({ kind: 'object', instanceId: view.instanceId, placement: view.placement, definition: view.definition }, origin.setY(view.ground), Math.max(0.5, view.height));
     }
     return best;
   }
@@ -353,7 +361,7 @@ export class GameRenderer {
     const view = this.zone?.objects.get(instanceId);
     if (!view) return null;
     const position = view.group.getWorldPosition(new Vector3());
-    return this.project(position.setY(view.height + extraHeight));
+    return this.project(position.setY(view.ground + view.height + extraHeight));
   }
 
   anchorFor(entityId: EntityId, now: number, extraHeight = 0.25): ScreenAnchor | null {
@@ -361,7 +369,7 @@ export class GameRenderer {
     const entity = this.world.entities.get(entityId);
     if (!view || !entity) return null;
     const position = this.world.bodyPosition(entity, now);
-    return this.project(new Vector3(position.x, view.rig.height * view.scale + extraHeight, position.y));
+    return this.project(new Vector3(position.x, view.ground + view.rig.height * view.scale + extraHeight, position.y));
   }
 
   dispose(): void {
@@ -394,10 +402,11 @@ export class GameRenderer {
     const targetView = this.entities.get(target.id);
     const attackerHeight = attackerView ? attackerView.rig.height * attackerView.scale : 1.2;
     const targetHeight = targetView ? targetView.rig.height * targetView.scale : 1.2;
-    const from = new Vector3(muzzle.x, attackerHeight * 0.55, muzzle.y);
-    const to = new Vector3(impact.x, targetHeight * 0.55, impact.y);
+    const attackerGround = attackerView?.ground ?? this.groundOf(muzzle.x, muzzle.y);
+    const from = new Vector3(muzzle.x, attackerGround + attackerHeight * 0.55, muzzle.y);
+    const to = new Vector3(impact.x, (targetView?.ground ?? this.groundOf(impact.x, impact.y)) + targetHeight * 0.55, impact.y);
     if (!attackerView?.rig.muzzle?.(from)) {
-      from.set(muzzle.x, attackerHeight * 0.55, muzzle.y);
+      from.set(muzzle.x, attackerGround + attackerHeight * 0.55, muzzle.y);
       if (attacker.kind !== 'creature') from.lerp(to, Math.min(0.45, MUZZLE_REACH / Math.max(0.001, from.distanceTo(to))));
     }
     this.projectiles.launch(event.projectile, from, to, this.projectileColor(attacker), now, Math.max(1, event.impactAt - now));
@@ -454,7 +463,9 @@ export class GameRenderer {
         view.flashing = flashing;
         setVoxelObjectFlash(view.rig.root, flashing);
       }
-      view.rig.root.position.set(position.x, 0, position.y);
+      const lift = this.groundOf(position.x, position.y);
+      view.ground = Number.isNaN(view.ground) || Math.abs(lift - view.ground) > GROUND_SNAP ? lift : view.ground + (lift - view.ground) * Math.min(1, delta * GROUND_EASE);
+      view.rig.root.position.set(position.x, view.ground, position.y);
 
       const dx = entity.motion.to.x - entity.motion.from.x;
       const dz = entity.motion.to.y - entity.motion.from.y;
@@ -478,13 +489,13 @@ export class GameRenderer {
       if (entity.contained) {
         view.rig.root.rotation.y += dying * dying * 9;
         view.rig.root.scale.setScalar(view.scale * Math.max(0.01, 1 - dying));
-        view.rig.root.position.y = dying * 0.6;
+        view.rig.root.position.y = view.ground + dying * 0.6;
         this.updateContainmentField(view, dying);
         if (dying < 1) this.containmentMotes(view);
       } else {
         view.rig.root.scale.setScalar(view.shattered ? 0 : view.scale);
         view.rig.root.rotation.z = view.rig.airborne ? 0 : -dying * 1.4;
-        view.rig.root.position.y = view.rig.airborne ? 0 : -dying * 0.15;
+        view.rig.root.position.y = view.ground + (view.rig.airborne ? 0 : -dying * 0.15);
       }
       if (view.rig.spirit && !entity.contained && dying > SPIRIT_SQUASH_FROM && !view.shattered) view.rig.root.scale.y = view.scale * Math.max(0.05, 1 - (dying - SPIRIT_SQUASH_FROM) / (1 - SPIRIT_SQUASH_FROM));
       if (dying >= 1 && !view.shattered && entity.kind === 'creature') this.shatter(view, entity.contained);
@@ -528,7 +539,7 @@ export class GameRenderer {
     const to = this.world.bodyPosition(target, now);
     const toward = new Vector3(from.x - to.x, 0, from.y - to.y);
     if (toward.lengthSq() > 1e-6) toward.normalize();
-    const at = new Vector3(to.x, targetView.rig.height * targetView.scale * 0.55, to.y).addScaledVector(toward, 0.25);
+    const at = new Vector3(to.x, targetView.ground + targetView.rig.height * targetView.scale * 0.55, to.y).addScaledVector(toward, 0.25);
     if (event.outcome === 'miss') this.particles.emit('puff', at, { color: MISS_PUFF });
     else this.particles.emit('sparks', at, { color: attacker.kind === 'creature' ? HIT_SPARK : this.weaponGlow(attacker.id), direction: toward });
   }
@@ -617,18 +628,18 @@ export class GameRenderer {
     const feet = view.rig.root.getWorldPosition(new Vector3());
     if (cue === 'levelUp') {
       for (let n = 0; n < 4; n++) this.particles.emit('motes', feet.clone().add(new Vector3(0, 0.2 + n * 0.3, 0)), { color: LEVEL_GOLD, count: 10 });
-      this.particles.emit('ring', feet.clone().setY(0.05), { color: LEVEL_GOLD, count: 16 });
+      this.particles.emit('ring', feet.clone().setY(view.ground + 0.05), { color: LEVEL_GOLD, count: 16 });
       return;
     }
     if (cue === 'heal') {
-      this.particles.emit('motes', feet.clone().setY(0.4), { color: HEAL_GREEN, count: 10 });
+      this.particles.emit('motes', feet.clone().setY(view.ground + 0.4), { color: HEAL_GREEN, count: 10 });
       return;
     }
     if (this.world.isMoving(entity, now)) return;
     view.workAt = now;
     const position = instanceId ? this.objectPosition(instanceId) : null;
     const colors = (instanceId ? this.objectPalette(instanceId) : null) ?? [DEPLETION_DUST];
-    this.pendingChips.push({ at: now + WORK_CONTACT * WORK_MS, position: position ?? feet.clone().setY(0.5), colors });
+    this.pendingChips.push({ at: now + WORK_CONTACT * WORK_MS, position: position ?? feet.clone().setY(view.ground + 0.5), colors });
   }
 
   private resolveChips(now: number): void {
@@ -657,7 +668,7 @@ export class GameRenderer {
 
   private objectPosition(instanceId: string): Vector3 | null {
     const view = this.zone?.objects.get(instanceId);
-    return view ? view.group.getWorldPosition(new Vector3()).setY(0.4) : null;
+    return view ? view.group.getWorldPosition(new Vector3()).setY(view.ground + 0.4) : null;
   }
 
   private updateContainmentField(view: EntityView, progress: number): void {
@@ -690,7 +701,7 @@ export class GameRenderer {
     rig.root.scale.setScalar(scale);
     const shadow = createContactShadow();
     rig.root.add(shadow);
-    const view: EntityView = { rig, character, gear: entity.gear, yaw: FACING_YAW[entity.facing], marker: null, markerKind: null, scale, shadow, last: null, flashing: false, shattered: false, workAt: -Infinity };
+    const view: EntityView = { rig, character, gear: entity.gear, yaw: FACING_YAW[entity.facing], marker: null, markerKind: null, scale, shadow, last: null, flashing: false, shattered: false, workAt: -Infinity, ground: Number.NaN };
     this.entities.set(entity.id, view);
     return view;
   }
@@ -717,6 +728,19 @@ export class GameRenderer {
     return isTarget ? 'target' : null;
   }
 
+  private readonly groundOfTile = (x: number, y: number): number => this.groundOf(x, y);
+
+  private groundOf(x: number, y: number): number {
+    const layout = this.world.zone?.layout;
+    return layout ? groundAt(layout, x, y) : 0;
+  }
+
+  private groundHit(): Vector3 | null {
+    const layout = this.world.zone?.layout;
+    if (!layout) return this.raycaster.ray.intersectPlane(this.groundPlane, new Vector3());
+    return rayGround(layout, this.raycaster.ray.origin, this.raycaster.ray.direction, new Vector3());
+  }
+
   private updateBeacons(points: readonly TilePoint[], time: number): void {
     while (this.beacons.length < points.length) {
       const beacon = createAreaBeacon();
@@ -727,7 +751,7 @@ export class GameRenderer {
       const point = points[index];
       beacon.visible = point !== undefined;
       if (!point) return;
-      beacon.position.set(point.x, 0.03, point.y);
+      beacon.position.set(point.x, this.groundOf(point.x, point.y) + 0.03, point.y);
       const pulse = 1 + Math.sin(time * 2.4 + index) * 0.08;
       beacon.scale.set(pulse, 1, pulse);
       beacon.rotation.y = time * 0.6;
@@ -754,20 +778,20 @@ export class GameRenderer {
     if (!hover) return;
     if (hover.kind === 'entity') {
       const position = this.world.bodyPosition(hover.entity, now);
-      ring.position.set(position.x, 0.025, position.y);
+      ring.position.set(position.x, (this.entities.get(hover.entity.id)?.ground ?? this.groundOf(position.x, position.y)) + 0.025, position.y);
       ring.scale.setScalar(this.world.bodySize(hover.entity));
       ring.visible = hover.entity.id !== this.world.selfEntityId;
     } else if (hover.kind === 'groundItem') {
-      ring.position.set(hover.item.position.x, 0.025, hover.item.position.y);
+      ring.position.set(hover.item.position.x, this.groundOf(hover.item.position.x, hover.item.position.y) + 0.025, hover.item.position.y);
       ring.scale.setScalar(0.7);
       ring.visible = true;
     } else if (hover.kind === 'object') {
       const origin = objectModelOrigin(hover.placement, hover.definition);
-      ring.position.set(origin.x, 0.025, origin.z);
+      ring.position.set(origin.x, this.groundOf(hover.placement.position.x, hover.placement.position.y) + 0.025, origin.z);
       ring.scale.setScalar(1.45 * (hover.definition.modelScale ?? 1));
       ring.visible = true;
     } else {
-      ring.position.set(hover.tile.x, 0.025, hover.tile.y);
+      ring.position.set(hover.tile.x, this.groundOf(hover.tile.x, hover.tile.y) + 0.025, hover.tile.y);
       ring.scale.setScalar(0.8);
       ring.visible = true;
     }
@@ -778,7 +802,7 @@ export class GameRenderer {
     const age = marker ? (now - marker.startedAt) / 600 : 1;
     this.click.group.visible = age < 1;
     if (!marker || age >= 1) return;
-    this.click.group.position.set(marker.tile.x, 0.04, marker.tile.y);
+    this.click.group.position.set(marker.tile.x, this.groundOf(marker.tile.x, marker.tile.y) + 0.04, marker.tile.y);
     this.click.group.scale.setScalar(1 + age * 0.6);
     this.click.material.color.setHex(marker.tone === 'walk' ? 0xffd23f : 0xff5e3a);
     this.click.material.opacity = 1 - age;

@@ -2,6 +2,7 @@ import { InstancedMesh, Matrix4, MeshBasicMaterial, PlaneGeometry, Quaternion, V
 
 export interface Footprint {
   readonly x: number;
+  readonly y: number;
   readonly z: number;
   readonly width: number;
   readonly depth: number;
@@ -27,7 +28,7 @@ export function createFootprintShadows(footprints: readonly Footprint[]): Instan
   const scale = new Vector3();
   footprints.forEach((footprint, index) => {
     MARGINS.forEach((margin, step) => {
-      matrix.compose(position.set(footprint.x, LIFT, footprint.z), FLAT, scale.set(footprint.width + 2 * margin, footprint.depth + 2 * margin, 1));
+      matrix.compose(position.set(footprint.x, footprint.y + LIFT, footprint.z), FLAT, scale.set(footprint.width + 2 * margin, footprint.depth + 2 * margin, 1));
       mesh.setMatrixAt(index * MARGINS.length + step, matrix);
     });
   });

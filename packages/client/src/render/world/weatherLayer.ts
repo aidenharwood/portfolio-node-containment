@@ -46,6 +46,7 @@ export interface WeatherFrame {
   readonly sources: readonly LightSource[];
   readonly pixelRatio: number;
   readonly viewportHeight: number;
+  readonly ground?: number;
 }
 
 interface Pass {
@@ -332,7 +333,7 @@ class Motes implements WeatherSystem {
     if (emitters && this.candidates.length > 0 && Math.random() < emitters.fraction) {
       const source = this.candidates[Math.floor(Math.random() * this.candidates.length)]!;
       this.positions[base] = source.position.x + (Math.random() * 2 - 1) * emitters.spread;
-      this.positions[base + 1] = MathUtils.clamp(source.position.y + emitters.lift, floor, ceiling);
+      this.positions[base + 1] = MathUtils.clamp(source.position.y - (pass.frame.ground ?? 0) + emitters.lift, floor, ceiling);
       this.positions[base + 2] = source.position.z + (Math.random() * 2 - 1) * emitters.spread;
       return;
     }
@@ -469,6 +470,7 @@ export class WeatherLayer {
 
   update(frame: WeatherFrame): void {
     const { ambience, enabled, focus, camera, time } = frame;
+    this.root.position.y = frame.ground ?? 0;
     const distance = camera.distanceTo(focus);
     const zoom = distance / DEFAULT_DISTANCE;
     const pass: Pass = {

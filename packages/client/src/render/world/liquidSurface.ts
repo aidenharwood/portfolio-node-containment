@@ -1,6 +1,7 @@
 import { BufferGeometry, Color, DoubleSide, Float32BufferAttribute, Mesh, MeshStandardMaterial } from 'three';
 import type { TileLayout, TileRect } from '@containment/shared';
 import { receiveFieldLights } from '../voxel/fieldLights.ts';
+import { STEP_HEIGHT } from './worldScale.ts';
 
 
 const VERTEX_DECLARATIONS = `
@@ -127,7 +128,7 @@ export class LiquidSurface {
         const base = positions.length / 3;
         const corners: [number, number][] = [[0, 0], [1, 0], [1, 1], [0, 1]];
         for (const [u, v] of corners) {
-          positions.push(x - 0.5 + u, palette.level, y - 0.5 + v);
+          positions.push(x - 0.5 + u, palette.level + layout.heightAt({ x, y }) * STEP_HEIGHT, y - 0.5 + v);
           locals.push(u, v);
           edges.push(...flags);
         }

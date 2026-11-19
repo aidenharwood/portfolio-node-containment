@@ -18,14 +18,14 @@ export class ActorLayer {
   readonly root = new Group();
   private actors = new Map<string, Actor>();
 
-  show(specs: readonly ActorSpec[]): void {
+  show(specs: readonly ActorSpec[], ground: (x: number, y: number) => number = () => 0): void {
     const next = new Map<string, Actor>();
     for (const spec of specs) {
       const look = lookOf(spec);
       const existing = this.actors.get(spec.id);
       const actor = existing && existing.look === look ? existing : { rig: rigOf(spec), seed: spec.id.length, look };
       if (actor !== existing) this.root.add(actor.rig.root);
-      actor.rig.root.position.set(spec.position.x, 0, spec.position.y);
+      actor.rig.root.position.set(spec.position.x, ground(spec.position.x, spec.position.y), spec.position.y);
       next.set(spec.id, actor);
     }
     for (const [id, actor] of this.actors) if (next.get(id) !== actor) this.root.remove(actor.rig.root);

@@ -3,6 +3,7 @@ import {
   drawBlueprint,
   GAME_CONTENT,
   MAP_LEGEND,
+  MAX_TERRAIN_HEIGHT,
   positionAt,
   resolvePosition,
   TILE_KINDS,
@@ -51,7 +52,7 @@ const checked = (layout: DistrictLayout): EditResult => {
 
 const copy = (layout: DistrictLayout): Mutable<DistrictLayout> & Record<string, unknown> => structuredClone(layout) as Mutable<DistrictLayout> & Record<string, unknown>;
 
-const planOf = (layout: DistrictLayout): Blueprint => drawBlueprint(layout.size, layout.steps, layout.tiles);
+const planOf = (layout: DistrictLayout): Blueprint => drawBlueprint(layout.size, layout.steps, layout.tiles, layout.heights ?? []);
 
 const listOf = (layout: Record<string, unknown>, collection: Collection): AnyEntry[] => layout[collection] as AnyEntry[];
 
@@ -223,6 +224,23 @@ export function paintTiles(layout: DistrictLayout, tiles: readonly TilePoint[], 
   const keys = new Set(wanted.map(tileKey));
   const next = copy(layout);
   next.tiles = [...layout.tiles.filter((painted) => !keys.has(tileKey(painted))), ...wanted.map((point) => ({ x: point.x, y: point.y, tile }))];
+  return checked(next);
+}
+
+export type HeightMode = 'raise' | 'lower' | 'level' | 'reset';
+
+export function paintHeights(layout: DistrictLayout, tiles: readonly TilePoint[], mode: HeightMode, level: number): EditResult {
+  const wanted = tiles.filter((point) => inside(layout, point));
+  if (wanted.length === 0) return refuse('Nothing there can be raised or lowered.');
+  const keys = new Set(wanted.map(tileKey));
+  const kept = (layout.heights ?? []).filter((painted) => !keys.has(tileKey(painted)));
+  const plan = planOf(layout);
+  const target = (point: TilePoint): number => (mode === 'level' ? level : plan.heightAt(point) + (mode === 'raise' ? 1 : -1));
+  const painted = mode === 'reset' ? [] : wanted.map((point) => ({ x: point.x, y: point.y, height: Math.max(0, Math.min(MAX_TERRAIN_HEIGHT, target(point))) }));
+  const next = copy(layout);
+  const heights = [...kept, ...painted];
+  if (heights.length > 0) next.heights = heights;
+  else delete next.heights;
   return checked(next);
 }
 

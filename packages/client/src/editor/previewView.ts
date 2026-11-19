@@ -7,6 +7,7 @@ import { EditOverlay } from './editOverlay.ts';
 import { actorsOf } from './actorSpecs.ts';
 import { createBlendedAmbience, sampleAmbience } from '../render/world/ambienceBlend.ts';
 import { LevelScene, type StreamReach } from '../render/world/levelScene.ts';
+import { groundAt, rayGround } from '../render/world/ground.ts';
 import type { ActiveZone } from '../state/worldState.ts';
 
 export interface CameraState {
@@ -92,7 +93,8 @@ export class PreviewView {
       this.level.dispose();
     }
     this.zone = zone;
-    this.actors.show(actorsOf(GAME_CONTENT, zone.definition));
+    this.overlay.ground = (x, y) => groundAt(zone.layout, x, y);
+    this.actors.show(actorsOf(GAME_CONTENT, zone.definition), this.overlay.ground);
     this.level = new LevelScene(zone, { editable: true });
     this.scene.add(this.level.root);
     this.sceneLook.resetLights();
@@ -120,7 +122,8 @@ export class PreviewView {
       return false;
     }
     this.zone = zone;
-    this.actors.show(actorsOf(GAME_CONTENT, zone.definition));
+    this.overlay.ground = (x, y) => groundAt(zone.layout, x, y);
+    this.actors.show(actorsOf(GAME_CONTENT, zone.definition), this.overlay.ground);
     level.patch(zone);
     return true;
   }
@@ -173,7 +176,7 @@ export class PreviewView {
     if (rect.width === 0 || rect.height === 0) return null;
     const pointer = new Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
     this.raycaster.setFromCamera(pointer, this.camera);
-    const hit = this.raycaster.ray.intersectPlane(GROUND, new Vector3());
+    const hit = this.zone ? rayGround(this.zone.layout, this.raycaster.ray.origin, this.raycaster.ray.direction, new Vector3()) : this.raycaster.ray.intersectPlane(GROUND, new Vector3());
     return hit ? { x: Math.round(hit.x), y: Math.round(hit.z) } : null;
   }
 

@@ -1,6 +1,36 @@
 import { VOXEL_EMPTY, VOXEL_SOLID, type VoxelKind, type VoxelSource } from './voxelKinds.ts';
 
-export class DenseVolume implements VoxelSource {
+export interface VoxelCanvas extends VoxelSource {
+  set(x: number, y: number, z: number, color: number, kind?: VoxelKind): void;
+  clear(x: number, y: number, z: number): void;
+}
+
+export class RaisedCanvas implements VoxelCanvas {
+  lift = 0;
+  private readonly target: VoxelCanvas;
+
+  constructor(target: VoxelCanvas) {
+    this.target = target;
+  }
+
+  set(x: number, y: number, z: number, color: number, kind: VoxelKind = VOXEL_SOLID): void {
+    this.target.set(x, y + this.lift, z, color, kind);
+  }
+
+  clear(x: number, y: number, z: number): void {
+    this.target.clear(x, y + this.lift, z);
+  }
+
+  kindAt(x: number, y: number, z: number): number {
+    return this.target.kindAt(x, y + this.lift, z);
+  }
+
+  colorAt(x: number, y: number, z: number): number {
+    return this.target.colorAt(x, y + this.lift, z);
+  }
+}
+
+export class DenseVolume implements VoxelCanvas {
   readonly width: number;
   readonly height: number;
   readonly depth: number;

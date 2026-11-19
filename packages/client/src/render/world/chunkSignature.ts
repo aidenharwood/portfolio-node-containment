@@ -24,6 +24,7 @@ export function chunkSignature(zone: ActiveZone, coord: ChunkCoord, lighting: Wa
     let row = '';
     for (let x = region.x - TILE_MARGIN; x < region.x + region.width + TILE_MARGIN; x++) {
       row += zone.layout.tileAt({ x, y });
+      row += zone.layout.heightAt({ x, y }).toString(36);
       row += ',';
       const cells = decals.get(tileKey({ x, y }));
       if (cells) row += JSON.stringify(cells);

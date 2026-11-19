@@ -19,7 +19,7 @@ import { Box3, BoxGeometry, Color, Group, Matrix4, Mesh, MeshBasicMaterial, Quat
 import type { ActiveZone } from '../../state/worldState.ts';
 import { buildObjectModel, type AnimatedPart } from '../models/objectModels.ts';
 import { hex } from '../voxel/palette.ts';
-import { VOXEL_EMISSIVE, type VoxelBounds } from '../voxel/voxelKinds.ts';
+import { VOXEL_EMISSIVE, VOXEL_EMPTY, type VoxelBounds, type VoxelSource } from '../voxel/voxelKinds.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 import { mergeVoxelGeometries, type VoxelGeometryPart } from '../voxel/mergeVoxelGeometry.ts';
 import { meshVoxels, type VoxelMeshes } from '../voxel/voxelMesher.ts';
@@ -31,8 +31,9 @@ import { LiquidSurface, WATER_PALETTE } from './liquidSurface.ts';
 import { decalsForLevel } from './floorDecals.ts';
 import { BEAM_GEOMETRY, createLightBeam } from './lightBeams.ts';
 import { buildFloorScatter } from './floorScatter.ts';
-import { createTileVolume, paintTileRows } from './levelVoxels.ts';
-import { MODEL_VOXEL_SIZE, TILE_RESOLUTION, ZONE_MESH_ORIGIN, ZONE_VOLUME_HEIGHT, ZONE_VOXEL_SIZE } from './worldScale.ts';
+import { groundAt } from './ground.ts';
+import { createTileVolume, paintTileRows, regionTop, tileBase } from './levelVoxels.ts';
+import { FLOOR_LAYERS, MODEL_VOXEL_SIZE, TILE_RESOLUTION, ZONE_MESH_ORIGIN, ZONE_VOLUME_HEIGHT, ZONE_VOXEL_SIZE } from './worldScale.ts';
 
 export interface LightSource {
   readonly position: Vector3;
@@ -57,6 +58,7 @@ export interface ObjectView {
   readonly group: Group;
   readonly objectiveRing: Mesh;
   readonly height: number;
+  readonly ground: number;
   readonly animated: readonly { readonly part: Object3D; readonly spec: AnimatedPart }[];
   readonly seed: number;
 }
@@ -195,9 +197,11 @@ export class ChunkView {
   private readonly separateObjects: boolean;
   private readonly objectLights = new Map<InstanceId, LightSource[]>();
   private readonly footprints: Footprint[] = [];
+  private readonly layout: ActiveZone['layout'];
 
   constructor(zone: ActiveZone, region: TileRect, contents: ChunkContents, ringMaterial: Material, options: { readonly separateObjects?: boolean; readonly content?: GameContent } = {}) {
     this.content = options.content ?? GAME_CONTENT;
+    this.layout = zone.layout;
     this.ringMaterial = ringMaterial;
     this.region = region;
     this.separateObjects = options.separateObjects ?? false;
@@ -214,7 +218,7 @@ export class ChunkView {
       }
       contents.fills.forEach(({ position, light }, index) => {
         this.lights.push({
-          position: new Vector3(position.x, FILL_LIGHT_HEIGHT, position.y),
+          position: new Vector3(position.x, FILL_LIGHT_HEIGHT + groundAt(this.layout, position.x, position.y), position.y),
           color: hex(light.color),
           intensity: light.intensity,
           radius: light.radius,
@@ -270,22 +274,33 @@ export class ChunkView {
   private planStructure(zone: ActiveZone, region: TileRect, occupied: ReadonlySet<string>): void {
     const { layout } = zone;
     const decals = decalsForLevel(zone.definition);
-    const volume = createTileVolume(region);
+    const volume = createTileVolume(region, layout);
     const meshOptions = { voxelSize: ZONE_VOXEL_SIZE, origin: ZONE_MESH_ORIGIN };
     const R = TILE_RESOLUTION;
     const lastRow = region.y + region.height;
+    const groundTop = regionTop(layout, region) + FLOOR_LAYERS;
+    const span = region.width + 2;
+    const tops = new Int16Array(span * (region.height + 2));
+    for (let ty = region.y - 1; ty <= lastRow; ty++) {
+      for (let tx = region.x - 1; tx <= region.x + region.width; tx++) tops[(ty - region.y + 1) * span + tx - region.x + 1] = tileBase(layout, tx, ty) + FLOOR_LAYERS;
+    }
+    const topAt = (vx: number, vz: number): number => tops[(Math.floor(vz / R) - region.y + 1) * span + Math.floor(vx / R) - region.x + 1] ?? FLOOR_LAYERS;
+    const ground: VoxelSource = {
+      kindAt: (x, y, z) => (y < topAt(x, z) ? volume.kindAt(x, y, z) : VOXEL_EMPTY),
+      colorAt: (x, y, z) => volume.colorAt(x, y, z),
+    };
     for (let row = region.y - 1; row <= lastRow; row += STRIP_ROWS) {
       this.steps.push(() => paintTileRows(volume, layout, region, row, row + STRIP_ROWS, decals));
     }
     const floorClip = {
       min: [region.x * R, 0, region.y * R] as const,
-      max: [(region.x + region.width) * R, 2, lastRow * R] as const,
+      max: [(region.x + region.width) * R, groundTop, lastRow * R] as const,
     };
     for (let row = region.y; row < lastRow; row += STRIP_ROWS) {
       const strip = { x: region.x, y: row, width: region.width, height: Math.min(STRIP_ROWS, lastRow - row) };
       this.steps.push(() => {
-        const bounds = { min: [floorClip.min[0], 0, strip.y * R] as const, max: [floorClip.max[0], 2, (strip.y + strip.height) * R] as const };
-        const floor = createVoxelObject(meshVoxels(volume, bounds, { ...meshOptions, clipBounds: floorClip }), { castShadow: false });
+        const bounds = { min: [floorClip.min[0], 0, strip.y * R] as const, max: [floorClip.max[0], groundTop, (strip.y + strip.height) * R] as const };
+        const floor = createVoxelObject(meshVoxels(ground, bounds, { ...meshOptions, clipBounds: floorClip }), { castShadow: false });
         floor.name = 'floor';
         this.root.add(floor);
       });
@@ -306,9 +321,10 @@ export class ChunkView {
         for (let tx = region.x; tx < region.x + region.width; tx++) {
           const kind = layout.tileAt({ x: tx, y: ty });
           if (TILE_KINDS[kind].structure !== 'wall' && kind !== 'door') continue;
+          const base = tileBase(layout, tx, ty);
           const bounds = {
-            min: [tx * R, 2, ty * R] as const,
-            max: [(tx + 1) * R, ZONE_VOLUME_HEIGHT, (ty + 1) * R] as const,
+            min: [tx * R, base + FLOOR_LAYERS, ty * R] as const,
+            max: [(tx + 1) * R, base + ZONE_VOLUME_HEIGHT, (ty + 1) * R] as const,
           };
           const meshes = meshVoxels(volume, bounds, meshOptions);
           if (!meshes.solid && !meshes.emissive && !meshes.glass) continue;
@@ -355,17 +371,18 @@ export class ChunkView {
     const parts = objectMeshesFor(definition.model, seed % MODEL_VARIANTS);
     const scale = definition.modelScale ?? 1;
     const origin = objectModelOrigin(placement, definition);
+    const ground = groundAt(this.layout, placement.position.x, placement.position.y);
     const lightsBefore = this.lights.length;
-    this.addObjectLight(definition, placement, origin, parts, `${definition.model}:${seed % MODEL_VARIANTS}`, scale, seed);
+    this.addObjectLight(definition, placement, origin, ground, parts, `${definition.model}:${seed % MODEL_VARIANTS}`, scale, seed);
     if (this.lights.length > lightsBefore) this.objectLights.set(placement.instanceId, this.lights.slice(lightsBefore));
-    this.addFootprint(definition, parts, placement, origin, scale);
+    this.addFootprint(definition, parts, placement, origin, ground, scale);
     if (!this.separateObjects && isStaticDecor(definition, parts)) {
-      this.addDecor(parts.base, placement, definition, origin, scale);
+      this.addDecor(parts.base, placement, definition, origin, ground, scale);
       return;
     }
 
     const group = new Group();
-    group.position.set(origin.x, 0, origin.z);
+    group.position.set(origin.x, ground, origin.z);
     group.scale.setScalar(scale);
     group.rotation.y = OBJECT_FACING_YAW[placement.facing ?? 'south'];
     group.add(createVoxelObject(parts.base));
@@ -380,11 +397,11 @@ export class ChunkView {
 
     const objectiveRing = new Mesh(OBJECTIVE_RING_GEOMETRY, this.ringMaterial);
     objectiveRing.rotation.x = -Math.PI / 2;
-    objectiveRing.position.set(origin.x, 0.02, origin.z);
+    objectiveRing.position.set(origin.x, ground + 0.02, origin.z);
     objectiveRing.visible = false;
 
     this.root.add(group, objectiveRing);
-    this.objects.push({ instanceId: placement.instanceId, placement, definition, group, objectiveRing, height, animated, seed });
+    this.objects.push({ instanceId: placement.instanceId, placement, definition, group, objectiveRing, height, ground, animated, seed });
   }
 
   private pickProxy(definition: WorldObjectDefinition, height: number, scale: number): Mesh {
@@ -395,7 +412,7 @@ export class ChunkView {
     return proxy;
   }
 
-  private addFootprint(definition: WorldObjectDefinition, parts: ObjectMeshes, placement: ObjectPlacement, origin: { x: number; z: number }, scale: number): void {
+  private addFootprint(definition: WorldObjectDefinition, parts: ObjectMeshes, placement: ObjectPlacement, origin: { x: number; z: number }, ground: number, scale: number): void {
     const box = parts.footing;
     if (!box || definition.door || parts.heightVoxels < SHADOW_MIN_VOXELS) return;
     const yaw = OBJECT_FACING_YAW[placement.facing ?? 'south'];
@@ -404,14 +421,14 @@ export class ChunkView {
     const across = (box.max[0] - box.min[0]) * size;
     const along = (box.max[2] - box.min[2]) * size;
     const turned = Math.abs(Math.sin(yaw)) > 0.5;
-    this.footprints.push({ x: origin.x + centre.x, z: origin.z + centre.z, width: turned ? along : across, depth: turned ? across : along });
+    this.footprints.push({ x: origin.x + centre.x, y: ground, z: origin.z + centre.z, width: turned ? along : across, depth: turned ? across : along });
   }
 
-  private addObjectLight(definition: WorldObjectDefinition, placement: ObjectPlacement, origin: { x: number; z: number }, parts: ObjectMeshes, cacheKey: string, scale: number, seed: number): void {
+  private addObjectLight(definition: WorldObjectDefinition, placement: ObjectPlacement, origin: { x: number; z: number }, ground: number, parts: ObjectMeshes, cacheKey: string, scale: number, seed: number): void {
     const glow = glowOf(cacheKey, parts);
     if (!definition.light && !glow) return;
     const local = glow ? glow.centre.clone() : new Vector3(0, parts.heightVoxels * MODEL_VOXEL_SIZE + 0.2, 0);
-    const position = local.multiplyScalar(scale).applyAxisAngle(UP, OBJECT_FACING_YAW[placement.facing ?? 'south']).add(new Vector3(origin.x, 0, origin.z));
+    const position = local.multiplyScalar(scale).applyAxisAngle(UP, OBJECT_FACING_YAW[placement.facing ?? 'south']).add(new Vector3(origin.x, ground, origin.z));
     if (definition.light) {
       this.lights.push({ position, color: hex(definition.light.color), intensity: definition.light.intensity, radius: definition.light.radius, flicker: definition.light.flicker ?? false, seed });
       if (definition.light.beam) this.root.add(createLightBeam(position, hex(definition.light.color), definition.light.beam));
@@ -420,9 +437,9 @@ export class ChunkView {
     }
   }
 
-  private addDecor(meshes: VoxelMeshes, placement: ObjectPlacement, definition: WorldObjectDefinition, origin: { x: number; z: number }, scale: number): void {
+  private addDecor(meshes: VoxelMeshes, placement: ObjectPlacement, definition: WorldObjectDefinition, origin: { x: number; z: number }, ground: number, scale: number): void {
     const transform = new Matrix4().compose(
-      new Vector3(origin.x, 0, origin.z),
+      new Vector3(origin.x, ground, origin.z),
       new Quaternion().setFromAxisAngle(UP, OBJECT_FACING_YAW[placement.facing ?? 'south']),
       new Vector3(scale, scale, scale),
     );
@@ -463,13 +480,14 @@ export class ChunkView {
 
   private addSconce(spot: SconceSpot): void {
     const meshes = sconceMeshes(spot.failing);
-    const transform = new Matrix4().compose(new Vector3(spot.floor.x, 0, spot.floor.y), new Quaternion().setFromAxisAngle(UP, FACING_TOWARD_WALL_YAW[spot.facing]), new Vector3(1, 1, 1));
+    const ground = groundAt(this.layout, spot.floor.x, spot.floor.y);
+    const transform = new Matrix4().compose(new Vector3(spot.floor.x, ground, spot.floor.y), new Quaternion().setFromAxisAngle(UP, FACING_TOWARD_WALL_YAW[spot.facing]), new Vector3(1, 1, 1));
     const placed = (geometry: BufferGeometry | null) => geometry?.clone().applyMatrix4(transform) ?? null;
     this.fixturePieces.push({ tile: spot.wall, meshes: { solid: placed(meshes.solid), emissive: placed(meshes.emissive), glass: placed(meshes.glass) } });
     const step = FACING_STEP[spot.facing];
     const reach = 0.5 - SCONCE_LIGHT_OFFSET;
     this.lights.push({
-      position: new Vector3(spot.floor.x + step.x * reach, SCONCE_LIGHT_HEIGHT, spot.floor.y + step.y * reach),
+      position: new Vector3(spot.floor.x + step.x * reach, SCONCE_LIGHT_HEIGHT + ground, spot.floor.y + step.y * reach),
       color: spot.color ?? (spot.failing ? FAILING_LIGHT_COLOR : SCONCE_LIGHT_COLOR),
       intensity: spot.intensity,
       radius: spot.radius,
