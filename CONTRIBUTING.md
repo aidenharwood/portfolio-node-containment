@@ -96,6 +96,16 @@ Read `WORLD_DESIGN.md` first: it holds the rules, and `findWorldDesignIssues` en
    - **Across levels:** use an object whose interaction has conditions and a `teleport` effect, or a tram line. A teleport targets `{ districtId, position }`, with the position read from the destination's `anchors`.
 9. Build and tune it in the editor: `npm run dev`, open `/editor.html?district=<district>`, press Edit, and drag, rotate, add from the palette, paint tiles, place furniture and set each room's dressing. `Ctrl+S` saves through the dev server, which refuses a layout that does not load and writes the canonical file; Check runs every content check against your edits. Then look at it: `npm run plan -- <district>` in a terminal, or `npm run dev` and open `/editor.html?district=<district>` for the plan, the 3D view and its issues. Run `npm test`. `findLevelIssues` flags overlaps, walkable tiles nothing can reach, duplicate instance ids, and spawns, teleports or recoveries on unwalkable tiles; `findWorldDesignIssues` flags the rest.
 
+### Cut a land square
+
+Overworld ground beyond the districts is cut from a land plan (`shared/src/content/land/<id>.json`, `world/landPlan.ts`) instead of drawn by blueprint. Read `WORLD_DESIGN.md` (Authoring, rule 7a) first.
+
+1. Draw the land in the editor: `npm run dev`, open `/editor.html?land=<id>` (or a level that uses it), press Edit and pick the land tool (L). Choose the brush's step (`fill`, `line`, `rise`, `ramp`, `ward`, `gate`), shape, tile, height or ward, and draw on the plan; Select picks and reshapes steps and vertices. Undo is shared with district edits. `Ctrl+S` saves through `POST /__editor/land/:id`, which refuses a plan that breaks any square already cut from it. A new plan also needs an entry in `LAND_SOURCES` (`content/land/index.ts`).
+2. Write the square's layout, `content/districts/layouts/<district-id>.json`, with `"square": { "column": c, "row": r }` (add `"split": true` and one district per ward where a ward border crosses the square). The square's tiles are its base, under a `ground` room covering the whole square; draw the district's own steps on top. A land square has no `exit` steps: it meets its neighbours across the land itself.
+3. Load it with `buildDistrict(layout, land)`, passing the land the level reads, and register it as for any district (tier, region, `DISTRICTS`).
+4. In the level recipe, ask for the plan with `context.landOf(<id>)`, set it as the level's `land`, and place the square districts with `placeLandSquares(land, districts)`; use `pinPlacements` to keep a district at a fixed origin. Square `(c, r)` sits at `c × squareSize, r × squareSize` in level coordinates.
+5. Run `npm test`. `findLandIssues` checks the plan and every square cut from it, and `findSealedWardIssues` checks that each ward is closed except at its gates.
+
 ### Add a pocket dimension
 
 1. Build its district and a level file with `kind: 'pocket'`, then register both in `gameContent.ts`.

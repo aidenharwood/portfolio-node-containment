@@ -36,6 +36,9 @@ Hollow Bay is **a city you can walk across in any direction**, the way you can i
     - **Decals** paint the floor: inlays, mosaics, rugs, runners, lane paint and hazard paint come with prefabs, and anything else (wear, scorch, moss, salt crust) is placed by hand in the layout's `decals`. They lie on walkable floor only and change nothing in play.
     - **Condition** labels how far a district has decayed (`pristine`, `worn`, `breached`, `overgrown`, `flooded`, `alien`, `uncanny`): the Low Ward is worn, the Shipyard Fringe breached, and the deep levels under Site Meridian alien. It adds nothing by itself; show it with what you place, such as barricades, rubble, sandbags and toppled furniture. An `uncanny` pocket mirrors its original strictly and gets it quietly wrong, with benches facing the wall and bookcases turned around.
 7. **Ids are forever.** Do not rename an area, an instance id or a district: saves, quests and flags refer to them.
+7a. **Land is drawn, never typed.** Overworld ground beyond the districts is a land plan, `content/land/<id>.json`, drawn in the editor's land layer (`/editor.html?land=<id>`, tool L) and saved from there. Never type tiles or heights into a plan, and never hand-edit its coordinates in bulk; the save writes the canonical form and refuses a plan that breaks a square cut from it.
+    - **Close every edge of the plan with land that matches what lies beyond it.** Past each edge the game repeats the edge tile and its height for one chunk, so sea at the edge reads as open sea, and fells or mountains at the edge read as fells or mountains going on. Walkable land never touches the plan's edge (**checked**, `findLandPlanIssues`).
+    - **Land in no ward is scenery.** Sea, rock and anything no district is cut from are drawn but never walked on; land whose ward matches neither half of a split square is reported if it is walkable (**checked**, `findLandIssues`).
 
 ### Terrain
 
