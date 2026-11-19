@@ -4,6 +4,7 @@ import {
   buildLevelIndex,
   createObjectWalkabilityGrid,
   createWalkabilityGrid,
+  doorTilesOf,
   findLevelIssues,
   locate,
   tileKey,
@@ -12,6 +13,7 @@ import {
   type LevelDefinition,
   type TilePoint,
   type WorldObjectDefinition,
+  withOpenDoors,
 } from '../src/index.ts';
 import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
 
@@ -74,7 +76,9 @@ const level = (districts: LevelDefinition['districts']): LevelDefinition => ({
 function reachableFrom(content: GameContent, levelId: string, start: TilePoint): Set<string> {
   const resolved = content.levels.get(levelId);
   assert.ok(resolved);
-  const grid = createObjectWalkabilityGrid(resolved.layout, resolved.objects, (objectId) => content.worldObjects.get(objectId));
+  const definitionOf = (objectId: string) => content.worldObjects.get(objectId);
+  const opensForEveryone = (objectId: string) => definitionOf(objectId)?.door?.conditions.length === 0;
+  const grid = withOpenDoors(createObjectWalkabilityGrid(resolved.layout, resolved.objects, definitionOf), resolved.layout, doorTilesOf(resolved.objects, definitionOf), opensForEveryone);
   const seen = new Set<string>();
   const queue = [start];
   while (queue.length > 0) {

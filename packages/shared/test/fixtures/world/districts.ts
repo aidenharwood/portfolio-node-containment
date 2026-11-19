@@ -19,6 +19,7 @@ const AMBIENCE = { darkness: 0.3, tint: '#2a2632', fog: '#3a3444', sky: '#5e5470
 const room = (id: string, x: number, y: number, width: number, height: number, floor = 'concrete') => ({ kind: 'room', id, rect: { x, y, width, height }, floor, shape: 'rect' });
 const link = (from: string, to: string, width: number, floor = 'door') => ({ kind: 'link', from, to, width, floor });
 const exit = (id: string, roomId: string, side: string) => ({ kind: 'exit', id, room: roomId, side, width: 9, offset: 1, gate: false });
+const gate = (id: string, roomId: string, side: string) => ({ kind: 'exit', id, room: roomId, side, width: 2, offset: 4, gate: true, floor: 'door' });
 const patch = (x: number, y: number, width: number, height: number, tile: string) => ({ kind: 'patch', rect: { x, y, width, height }, tile });
 const track = (width: number) => ({ kind: 'track', points: [{ x: 0, y: 28 }, { x: width - 2, y: 28 }] });
 const at = (roomId: string, dx: number, dy: number) => ({ room: roomId, dx, dy });
@@ -104,7 +105,7 @@ export const FIXTURE_FIELD = build({
     link('lane', 'vault', 2),
     link('lane', 'range', 3),
     exit('west', 'lane', 'west'),
-    exit('east', 'lane', 'east'),
+    gate('east', 'lane', 'east'),
   ],
   ...empty,
   areas: [
@@ -129,6 +130,8 @@ export const FIXTURE_FIELD = build({
     object('range-scrap', 'scrap-heap', 'range', 9, 7),
     { id: 'vault-door-a', object: 'vault-door', at: { link: ['lane', 'vault'], index: 0 } },
     { id: 'vault-door-b', object: 'vault-door', at: { link: ['lane', 'vault'], index: 1 } },
+    { id: 'field-ward-gate-a', object: 'ward-gate', at: { exit: 'east', index: 0 }, facing: 'west' },
+    { id: 'field-ward-gate-b', object: 'ward-gate', at: { exit: 'east', index: 1 }, facing: 'west' },
   ],
   assemblies: [],
   npcs: [],
@@ -167,7 +170,7 @@ export const FIXTURE_OUTPOST = build({
     track(30),
     patch(2, 27, 12, 1, 'hazard'),
     link('post', 'tram-terminal', 3),
-    exit('west', 'post', 'west'),
+    gate('west', 'post', 'west'),
   ],
   ...empty,
   areas: [

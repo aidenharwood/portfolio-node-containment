@@ -71,6 +71,14 @@ export const FIXTURE_OBJECTS: readonly WorldObjectDefinition[] = [
     interactions: [{ verb: 'Open', failureText: 'The vault door is locked.', effects: [{ type: 'notify', text: 'The vault door opens.' }] }],
   },
   {
+    id: 'ward-gate',
+    name: 'Ward Gate',
+    examine: 'A test gate between two wards.',
+    ...placeholder,
+    door: { conditions: [] },
+    interactions: [{ verb: 'Open', effects: [{ type: 'notify', text: 'The ward gate opens.' }] }],
+  },
+  {
     id: 'vault-terminal',
     name: 'Vault Terminal',
     examine: 'A test terminal holding the field log.',
