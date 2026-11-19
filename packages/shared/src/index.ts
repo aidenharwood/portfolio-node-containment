@@ -68,6 +68,7 @@ export * from './world/tiles.ts';
 export * from './world/chunks.ts';
 export * from './world/blueprint.ts';
 export * from './world/landPlan.ts';
+export * from './world/landScene.ts';
 export * from './world/landSchema.ts';
 export * from './world/layoutSchema.ts';
 export * from './world/layoutPosition.ts';

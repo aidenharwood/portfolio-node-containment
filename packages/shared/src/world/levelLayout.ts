@@ -13,6 +13,7 @@ import {
 } from './district.ts';
 import type { FloorDecal } from './decals.ts';
 import type { TilePoint, TileRect } from './geometry.ts';
+import { sceneOf, type SceneLayout } from './landScene.ts';
 import type { LevelDefinition } from './level.ts';
 import type { TileKindId } from './tiles.ts';
 
@@ -37,6 +38,7 @@ export interface ResolvedLevel {
   readonly id: LevelId;
   readonly name: string;
   readonly layout: LevelLayout;
+  readonly scene: SceneLayout;
   readonly spawn: TilePoint;
   readonly capacity?: number;
   readonly ambience: ZoneAmbience;
@@ -160,6 +162,7 @@ export function resolveLevel(
     id: level.id,
     name: level.name,
     layout,
+    scene: sceneOf(layout, level.land),
     spawn: layout.toLevelPoint(level.spawn.districtId, level.spawn.position),
     ...(level.capacity === undefined ? {} : { capacity: level.capacity }),
     ambience,
