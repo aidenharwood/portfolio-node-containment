@@ -10,7 +10,10 @@ import {
   type DistrictDefinition,
   type DistrictLayout,
   type GameContent,
+  type LandPlan,
+  type LandStep,
   type TilePoint,
+  type TileRect,
 } from '@containment/shared';
 import type { EntryRef } from './edits.ts';
 
@@ -18,7 +21,9 @@ export type Hit =
   | { readonly kind: 'entry'; readonly ref: EntryRef }
   | { readonly kind: 'step'; readonly index: number }
   | { readonly kind: 'room'; readonly room: string }
-  | { readonly kind: 'dressing'; readonly room: string };
+  | { readonly kind: 'dressing'; readonly room: string }
+  | { readonly kind: 'landStep'; readonly index: number }
+  | { readonly kind: 'landVertex'; readonly index: number; readonly vertex: number };
 
 const same = (a: TilePoint, b: TilePoint): boolean => a.x === b.x && a.y === b.y;
 
@@ -131,7 +136,78 @@ const boxOf = (tiles: readonly TilePoint[]): Bounds | null => {
   return { x, y, width: Math.max(...xs) - x + 1, height: Math.max(...ys) - y + 1 };
 };
 
+export function landPointsOf(step: LandStep): { readonly kind: 'polygon' | 'line'; readonly points: readonly TilePoint[] } | null {
+  if (step.kind === 'line') return { kind: 'line', points: step.points };
+  if ((step.kind === 'fill' || step.kind === 'rise' || step.kind === 'ward') && step.shape.kind === 'polygon') return { kind: 'polygon', points: step.shape.points };
+  return null;
+}
+
+export function landRectOf(step: LandStep): TileRect | null {
+  if (step.kind === 'ramp' || step.kind === 'gate') return step.rect;
+  if (step.kind !== 'line' && step.shape.kind !== 'polygon') return step.shape.rect;
+  return null;
+}
+
+export function landStepBounds(step: LandStep): Bounds {
+  const rect = landRectOf(step);
+  if (rect) return rect;
+  const found = landPointsOf(step);
+  const points = found?.points ?? [];
+  const xs = points.map((point) => point.x);
+  const ys = points.map((point) => point.y);
+  const x = Math.min(...xs);
+  const y = Math.min(...ys);
+  const extra = found?.kind === 'line' ? 1 : 0;
+  return { x, y, width: Math.max(1, Math.max(...xs) - x + extra), height: Math.max(1, Math.max(...ys) - y + extra) };
+}
+
+export function segmentDistance(point: { readonly x: number; readonly y: number }, a: TilePoint, b: TilePoint): number {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const length = dx * dx + dy * dy;
+  const along = length === 0 ? 0 : Math.max(0, Math.min(1, ((point.x - a.x) * dx + (point.y - a.y) * dy) / length));
+  return Math.hypot(point.x - (a.x + along * dx), point.y - (a.y + along * dy));
+}
+
+const insidePolygon = (points: readonly TilePoint[], x: number, y: number): boolean => {
+  let inside = false;
+  for (let index = 0, previous = points.length - 1; index < points.length; previous = index++) {
+    const a = points[index] as TilePoint;
+    const b = points[previous] as TilePoint;
+    if (a.y > y !== b.y > y && x < ((b.x - a.x) * (y - a.y)) / (b.y - a.y) + a.x) inside = !inside;
+  }
+  return inside;
+};
+
+export function landStepCovers(step: LandStep, tile: TilePoint): boolean {
+  const rect = landRectOf(step);
+  if (rect) return rectContains(rect, tile);
+  if (step.kind === 'line') {
+    const centre = { x: tile.x, y: tile.y };
+    for (let index = 1; index < step.points.length; index++) {
+      if (segmentDistance(centre, step.points[index - 1] as TilePoint, step.points[index] as TilePoint) <= step.width / 2 + 0.5) return true;
+    }
+    return false;
+  }
+  const points = landPointsOf(step)?.points ?? [];
+  return insidePolygon(points, tile.x + 0.5, tile.y + 0.5);
+}
+
+export function landHitsAt(plan: LandPlan, tile: TilePoint): Hit[] {
+  const vertices: Hit[] = [];
+  const bodies: Hit[] = [];
+  for (let index = plan.steps.length - 1; index >= 0; index--) {
+    const step = plan.steps[index] as LandStep;
+    (landPointsOf(step)?.points ?? []).forEach((point, vertex) => {
+      if (same(point, tile)) vertices.push({ kind: 'landVertex', index, vertex });
+    });
+    if (landStepCovers(step, tile)) bodies.push({ kind: 'landStep', index });
+  }
+  return [...vertices, ...bodies];
+}
+
 export function boundsOf(layout: DistrictLayout, district: DistrictDefinition, hit: Hit, content: GameContent = GAME_CONTENT): Bounds | null {
+  if (hit.kind === 'landStep' || hit.kind === 'landVertex') return null;
   const plan = drawBlueprint(layout.size, layout.steps, layout.tiles);
   if (hit.kind === 'room' || hit.kind === 'dressing') return plan.rooms[hit.room] ?? null;
   if (hit.kind === 'step') {

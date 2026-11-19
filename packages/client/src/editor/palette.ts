@@ -1,5 +1,5 @@
 import { LAYOUT_CHOICES, PREFABS, type GameContent } from '@containment/shared';
-import type { PaletteEntry } from './editController.ts';
+import { landBrushClicks, type LandBrush, type PaletteEntry } from './editController.ts';
 import type { Collection } from './edits.ts';
 import { requestThumbnail } from './thumbnails.ts';
 
@@ -46,6 +46,118 @@ export function searchPalette(entries: readonly PaletteEntry[], query: string, g
       return words.every((word) => haystack.includes(word));
     })
     .slice(0, RESULT_LIMIT);
+}
+
+const LAND_STEP_KINDS: readonly LandBrush['step'][] = ['fill', 'line', 'rise', 'ramp', 'ward', 'gate'];
+const LAND_SHAPES: readonly LandBrush['shape'][] = ['polygon', 'rect', 'round', 'octagon'];
+
+export function landBrushFields(brush: LandBrush): readonly (keyof LandBrush)[] {
+  const shaped = brush.step === 'fill' || brush.step === 'rise' || brush.step === 'ward';
+  return [
+    'step',
+    ...(shaped ? (['shape'] as const) : []),
+    ...(brush.step === 'fill' || brush.step === 'line' || brush.step === 'gate' ? (['tile'] as const) : []),
+    ...(brush.step === 'rise' || brush.step === 'ramp' ? (['height'] as const) : []),
+    ...(brush.step === 'line' ? (['width'] as const) : []),
+    ...(brush.step === 'ward' ? (['ward'] as const) : []),
+    ...(brush.step === 'ramp' ? (['side'] as const) : []),
+    ...(brush.step === 'gate' ? (['gate'] as const) : []),
+  ];
+}
+
+export function landBrushHint(brush: LandBrush): string {
+  return landBrushClicks(brush)
+    ? 'Click the plan to add points, then press Enter or double-click to finish. Esc cancels.'
+    : 'Drag a rectangle on the plan to draw it.';
+}
+
+export class LandPalette {
+  readonly root = document.createElement('section');
+  private readonly inputs = new Map<keyof LandBrush, HTMLInputElement | HTMLSelectElement>();
+  private readonly labels = new Map<keyof LandBrush, HTMLLabelElement>();
+  private brush: LandBrush;
+  private readonly onChange: (brush: LandBrush) => void;
+
+  constructor(content: GameContent, brush: LandBrush, onChange: (brush: LandBrush) => void) {
+    this.onChange = onChange;
+    const regions = [...content.regions.keys()];
+    this.brush = brush.ward === '' && regions[0] ? { ...brush, ward: regions[0] } : brush;
+    this.root.className = 'palette land-palette';
+    const heading = document.createElement('h2');
+    heading.textContent = 'Draw land';
+    this.root.append(heading);
+    const select = (name: keyof LandBrush, title: string, choices: readonly string[]): void => {
+      const input = document.createElement('select');
+      for (const choice of choices) {
+        const option = document.createElement('option');
+        option.value = choice;
+        option.textContent = choice;
+        input.append(option);
+      }
+      this.add(name, title, input);
+    };
+    const number = (name: keyof LandBrush, title: string, min: number, step: number): void => {
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.min = String(min);
+      input.step = String(step);
+      this.add(name, title, input);
+    };
+    select('step', 'Step', LAND_STEP_KINDS);
+    select('shape', 'Shape', LAND_SHAPES);
+    select('tile', 'Tile', LAYOUT_CHOICES.tiles);
+    number('height', 'Height', 0, 1);
+    number('width', 'Width (odd)', 1, 2);
+    select('ward', 'Ward', regions);
+    select('side', 'Ramp rises toward', LAYOUT_CHOICES.facings);
+    const gate = document.createElement('input');
+    gate.type = 'text';
+    this.add('gate', 'Gate id', gate);
+    this.hint.className = 'hint';
+    this.root.append(this.hint);
+    this.sync();
+    if (this.brush !== brush) onChange(this.brush);
+  }
+
+  private readonly hint = document.createElement('p');
+
+  current(): LandBrush {
+    return this.brush;
+  }
+
+  private add(name: keyof LandBrush, title: string, input: HTMLInputElement | HTMLSelectElement): void {
+    const label = document.createElement('label');
+    label.className = 'field';
+    const span = document.createElement('span');
+    span.textContent = title;
+    label.append(span, input);
+    input.addEventListener('change', () => this.read(name, input.value));
+    this.inputs.set(name, input);
+    this.labels.set(name, label);
+    this.root.append(label);
+  }
+
+  private read(name: keyof LandBrush, raw: string): void {
+    let value: string | number = raw;
+    if (name === 'height') value = Math.max(0, Math.min(15, Math.round(Number(raw) || 0)));
+    if (name === 'width') {
+      const whole = Math.max(1, Math.round(Number(raw) || 1));
+      value = whole % 2 === 1 ? whole : whole + 1;
+    }
+    this.brush = { ...this.brush, [name]: value };
+    this.sync();
+    this.onChange(this.brush);
+  }
+
+  private sync(): void {
+    const shown = new Set(landBrushFields(this.brush));
+    for (const [name, input] of this.inputs) {
+      input.value = String(this.brush[name]);
+      const label = this.labels.get(name);
+      if (label) label.hidden = !shown.has(name);
+    }
+    this.hint.textContent = landBrushHint(this.brush);
+  }
 }
 
 export class Palette {

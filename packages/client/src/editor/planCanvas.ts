@@ -120,6 +120,7 @@ export class PlanCanvas {
   private highlight: TilePoint | null = null;
   private selectionRect: TileBox | null = null;
   private ghostRect: TileBox | null = null;
+  private path: { readonly points: readonly { readonly x: number; readonly y: number }[]; readonly closed: boolean } | null = null;
   private editing = false;
   private tiles: HTMLCanvasElement | null = null;
   private editPointer = false;
@@ -211,6 +212,15 @@ export class PlanCanvas {
     this.selectionRect = rect;
     this.ghostRect = ghost;
     this.draw();
+  }
+
+  showPath(points: readonly { readonly x: number; readonly y: number }[] | null, closed = false): void {
+    this.path = points && points.length > 0 ? { points, closed } : null;
+    this.draw();
+  }
+
+  onDoubleClick(listener: () => void): void {
+    this.canvas.addEventListener('dblclick', () => listener());
   }
 
   onHover(listener: (tile: TilePoint) => void): void {
@@ -369,6 +379,19 @@ export class PlanCanvas {
       context.setLineDash([4, 3]);
       context.strokeRect(this.ghostRect.x * s, this.ghostRect.y * s, this.ghostRect.width * s, this.ghostRect.height * s);
       context.setLineDash([]);
+    }
+    if (this.path) {
+      context.strokeStyle = '#ffffff';
+      context.fillStyle = '#ffffff';
+      context.setLineDash([5, 3]);
+      context.lineWidth = 1.5;
+      context.beginPath();
+      this.path.points.forEach((point, index) => (index === 0 ? context.moveTo(point.x * s, point.y * s) : context.lineTo(point.x * s, point.y * s)));
+      if (this.path.closed) context.closePath();
+      context.stroke();
+      context.setLineDash([]);
+      context.lineWidth = 1;
+      for (const point of this.path.points) context.fillRect(point.x * s - 2, point.y * s - 2, 4, 4);
     }
     if (this.highlight) {
       context.strokeStyle = '#ffffff';

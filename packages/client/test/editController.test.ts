@@ -1,8 +1,8 @@
-import { FIXTURE_CONTENT } from '@containment/shared/fixtures';
+import { FIXTURE_CONTENT, FIXTURE_LAND, FIXTURE_LAYOUT_SOURCES, FIXTURE_WILDS_LAYOUTS } from '@containment/shared/fixtures';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { resolvePosition, drawBlueprint, type DistrictLayout } from '@containment/shared';
+import { resolvePosition, drawBlueprint, type DistrictLayout, type LandStep } from '@containment/shared';
 import { EditorDocument } from '../src/editor/document.ts';
 import { EditController } from '../src/editor/editController.ts';
 import { addStep } from '../src/editor/edits.ts';
@@ -150,4 +150,102 @@ test('V, B and E pick the select, paint and erase tools', () => {
   assert.equal(controller.tool, 'erase');
   assert.equal(controller.key('v', {}), true);
   assert.equal(controller.tool, 'select');
+});
+
+const LAND = 'fx-land';
+
+const landSetup = (only = true) => {
+  const document = new EditorDocument({ ...FIXTURE_LAYOUT_SOURCES, ...Object.fromEntries(FIXTURE_WILDS_LAYOUTS) }, FIXTURE_CONTENT, { [LAND]: FIXTURE_LAND.plan });
+  const controller = new EditController(document, 'fx-hub');
+  controller.setLand(LAND, only);
+  return { document, controller };
+};
+
+const click = (controller: EditController, tile: { x: number; y: number }) => {
+  controller.pointerDown(tile, {});
+  controller.pointerUp(tile);
+};
+
+const lastStep = (document: EditorDocument): LandStep | undefined => document.landPlan(LAND).steps.at(-1);
+
+test('three clicks and Enter add a polygon fill with those corners and the brush tile', () => {
+  const { document, controller } = landSetup();
+  assert.equal(controller.key('l', {}), true);
+  controller.landBrush = { ...controller.landBrush, step: 'fill', shape: 'polygon', tile: 'rock' };
+  const corners = [{ x: 100, y: 4 }, { x: 120, y: 4 }, { x: 110, y: 20 }];
+  for (const corner of corners) click(controller, corner);
+  assert.equal(controller.key('Enter', {}), true);
+  assert.deepEqual(lastStep(document), { kind: 'fill', shape: { kind: 'polygon', points: corners }, tile: 'rock' });
+  assert.equal(document.landPlan(LAND).steps.length, FIXTURE_LAND.plan.steps.length + 1);
+  assert.equal(controller.landDraft, null);
+});
+
+test('two clicks and Enter with width 3 add a line', () => {
+  const { document, controller } = landSetup();
+  controller.tool = 'land';
+  controller.landBrush = { ...controller.landBrush, step: 'line', width: 3, tile: 'water' };
+  click(controller, { x: 100, y: 4 });
+  click(controller, { x: 100, y: 24 });
+  controller.key('Enter', {});
+  assert.deepEqual(lastStep(document), { kind: 'line', points: [{ x: 100, y: 4 }, { x: 100, y: 24 }], width: 3, tile: 'water' });
+});
+
+test('a drag adds a round rise with the dragged rect and the brush height', () => {
+  const { document, controller } = landSetup();
+  controller.tool = 'land';
+  controller.landBrush = { ...controller.landBrush, step: 'rise', shape: 'round', height: 2 };
+  drag(controller, { x: 110, y: 20 }, { x: 100, y: 10 });
+  assert.deepEqual(lastStep(document), { kind: 'rise', shape: { kind: 'round', rect: { x: 100, y: 10, width: 11, height: 11 } }, height: 2 });
+});
+
+test('Escape after two clicks adds nothing', () => {
+  const { document, controller } = landSetup();
+  controller.tool = 'land';
+  click(controller, { x: 100, y: 4 });
+  click(controller, { x: 120, y: 4 });
+  controller.key('Escape', {});
+  controller.key('Enter', {});
+  assert.equal(document.landPlan(LAND).steps.length, FIXTURE_LAND.plan.steps.length);
+  assert.equal(document.canUndo(), false);
+});
+
+test('dragging a selected polygon vertex moves only that vertex in one undo step', () => {
+  const { document, controller } = landSetup();
+  const before = document.landPlan(LAND);
+  controller.select({ kind: 'landStep', index: 1 });
+  drag(controller, { x: 40, y: 2 }, { x: 42, y: 4 });
+  const step = document.landPlan(LAND).steps[1];
+  const old = before.steps[1];
+  assert.ok(step?.kind === 'fill' && step.shape.kind === 'polygon' && old?.kind === 'fill' && old.shape.kind === 'polygon');
+  assert.deepEqual(step.shape.points, old.shape.points.map((point, index) => (index === 1 ? { x: 42, y: 4 } : point)));
+  assert.deepEqual(document.landPlan(LAND).steps.filter((_, index) => index !== 1), before.steps.filter((_, index) => index !== 1));
+  document.undo();
+  assert.deepEqual(document.landPlan(LAND), before);
+  assert.equal(document.canUndo(), false);
+});
+
+test('a click selects the topmost step and changing its tile in the panel replaces it', () => {
+  const { document, controller } = landSetup();
+  click(controller, { x: 110, y: 4 });
+  assert.deepEqual(controller.selection, { kind: 'landStep', index: 6 });
+  controller.select({ kind: 'landStep', index: 0 });
+  const step = document.landPlan(LAND).steps[0];
+  assert.ok(step?.kind === 'fill');
+  assert.equal(controller.editLandStep(0, { ...step, tile: 'rock' }).ok, true);
+  assert.deepEqual(document.landPlan(LAND).steps[0], { ...step, tile: 'rock' });
+});
+
+test('in a district scope L does not pick the land tool', () => {
+  const { controller } = setup();
+  assert.equal(controller.key('l', {}), false);
+  assert.equal(controller.tool, 'select');
+});
+
+test('a refused land edit says why', () => {
+  const { document, controller } = landSetup();
+  controller.tool = 'land';
+  controller.landBrush = { ...controller.landBrush, step: 'gate', gate: 'fx-wall-gate' };
+  drag(controller, { x: 100, y: 4 }, { x: 101, y: 4 });
+  assert.equal(document.landPlan(LAND).steps.length, FIXTURE_LAND.plan.steps.length);
+  assert.match(controller.status, /named twice/);
 });

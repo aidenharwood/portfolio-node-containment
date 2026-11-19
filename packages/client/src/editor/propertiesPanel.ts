@@ -1,4 +1,4 @@
-import { LAYOUT_CHOICES, PREFABS, type BlueprintStep, type DistrictLayout, type GameContent } from '@containment/shared';
+import { LAYOUT_CHOICES, PREFABS, type BlueprintStep, type DistrictLayout, type GameContent, type LandPlan, type LandStep, type TileRect } from '@containment/shared';
 import type { EditController } from './editController.ts';
 import { deleteEntry, deleteStep, duplicateEntry, editStep, resizeRoom, rotateEntry, setDressing, setField, type EditResult, type RoomDressingEntry } from './edits.ts';
 
@@ -38,6 +38,42 @@ const describePosition = (at: unknown): string => {
   return `At ${JSON.stringify(at)}.`;
 };
 
+type LandFieldKind = 'number' | 'text' | 'tile' | 'side' | 'ward';
+
+const LAND_FIELDS: Readonly<Record<LandStep['kind'], Readonly<Record<string, LandFieldKind>>>> = {
+  fill: { tile: 'tile' },
+  line: { tile: 'tile', width: 'number' },
+  rise: { height: 'number' },
+  ramp: { side: 'side', from: 'number', to: 'number' },
+  ward: { ward: 'ward' },
+  gate: { id: 'text', tile: 'tile' },
+};
+
+const cornersOf = (rect: TileRect) => [
+  { x: rect.x, y: rect.y },
+  { x: rect.x + rect.width, y: rect.y },
+  { x: rect.x + rect.width, y: rect.y + rect.height },
+  { x: rect.x, y: rect.y + rect.height },
+];
+
+const boxOfPoints = (points: readonly { readonly x: number; readonly y: number }[]): TileRect => {
+  if (points.length === 0) return { x: 0, y: 0, width: 1, height: 1 };
+  const xs = points.map((point) => point.x);
+  const ys = points.map((point) => point.y);
+  const x = Math.min(...xs);
+  const y = Math.min(...ys);
+  return { x, y, width: Math.max(1, Math.max(...xs) - x), height: Math.max(1, Math.max(...ys) - y) };
+};
+
+export function landStepName(step: LandStep): string {
+  if (step.kind === 'fill') return 'fill ' + step.tile + ' (' + step.shape.kind + ')';
+  if (step.kind === 'line') return 'line ' + step.tile + ' ×' + step.width;
+  if (step.kind === 'rise') return 'rise to ' + step.height + ' (' + step.shape.kind + ')';
+  if (step.kind === 'ramp') return 'ramp ' + step.from + '→' + step.to + ' ' + step.side;
+  if (step.kind === 'ward') return 'ward ' + step.ward + ' (' + step.shape.kind + ')';
+  return 'gate ' + step.id;
+}
+
 export class PropertiesPanel {
   readonly root = element('section', { class: 'properties', 'aria-label': 'Properties' });
   private readonly content: GameContent;
@@ -62,16 +98,22 @@ export class PropertiesPanel {
   }
 
   private shownLayout: DistrictLayout | null = null;
+  private shownLand: LandPlan | null = null;
   private shownSelection = '';
 
-  render(layout: DistrictLayout): void {
+  render(layout: DistrictLayout, land: LandPlan | null = null): void {
     const selectionKey = JSON.stringify(this.controller.selection);
-    if (layout === this.shownLayout && selectionKey === this.shownSelection) return;
+    if (layout === this.shownLayout && land === this.shownLand && selectionKey === this.shownSelection) return;
     this.shownLayout = layout;
+    this.shownLand = land;
     this.shownSelection = selectionKey;
     const keep = [...this.root.querySelectorAll('datalist')];
     this.root.replaceChildren(...keep);
     const selection = this.controller.selection;
+    if (land && (this.controller.onlyLand || selection?.kind === 'landStep' || selection?.kind === 'landVertex')) {
+      this.renderLand(land, selection?.kind === 'landStep' || selection?.kind === 'landVertex' ? selection.index : null);
+      return;
+    }
     if (!selection) {
       this.root.append(element('h2', {}, 'Nothing selected'));
       const steps = element('ol', { class: 'hint steps' });
@@ -86,7 +128,90 @@ export class PropertiesPanel {
     }
     if (selection.kind === 'entry') this.renderEntry(layout, selection.ref);
     else if (selection.kind === 'step') this.renderStep(layout, selection.index);
-    else this.renderRoom(layout, selection.room, selection.kind === 'dressing');
+    else if (selection.kind === 'room' || selection.kind === 'dressing') this.renderRoom(layout, selection.room, selection.kind === 'dressing');
+  }
+
+  private renderLand(plan: LandPlan, index: number | null): void {
+    const step = index === null ? undefined : plan.steps[index];
+    if (step && index !== null) {
+      this.root.append(element('h2', {}, 'Land step ' + index + ' · ' + step.kind));
+      const record = step as unknown as Record<string, unknown>;
+      const replace = (next: LandStep) => this.controller.editLandStep(index, next);
+      const fields = LAND_FIELDS[step.kind] ?? {};
+      for (const [field, kind] of Object.entries(fields)) {
+        const choices = kind === 'tile' ? { choices: LAYOUT_CHOICES.tiles } : kind === 'side' ? { choices: LAYOUT_CHOICES.facings } : kind === 'ward' ? { suggest: [...this.content.regions.keys()] } : kind;
+        this.root.append(this.landField(field, choices, record[field], (value) => replace({ ...step, [field]: value } as LandStep)));
+      }
+      const rect: TileRect | null = step.kind === 'ramp' || step.kind === 'gate' ? step.rect : step.kind !== 'line' && step.shape.kind !== 'polygon' ? step.shape.rect : null;
+      if (step.kind !== 'line' && step.kind !== 'ramp' && step.kind !== 'gate') {
+        this.root.append(
+          this.landField('shape', { choices: ['polygon', 'rect', 'round', 'octagon'] }, step.shape.kind, (value) => {
+            if (value === step.shape.kind) return { ok: true, plan };
+            const box = rect ?? boxOfPoints(step.shape.kind === 'polygon' ? step.shape.points : []);
+            const shape = value === 'polygon' ? { kind: 'polygon' as const, points: cornersOf(box) } : { kind: value as 'rect' | 'round' | 'octagon', rect: box };
+            return replace({ ...step, shape } as LandStep);
+          }),
+        );
+      }
+      if (rect) {
+        for (const side of ['x', 'y', 'width', 'height'] as const) {
+          this.root.append(
+            this.landField(side, 'number', rect[side], (value) => {
+              const next = { ...rect, [side]: value };
+              if (step.kind === 'ramp' || step.kind === 'gate') return replace({ ...step, rect: next });
+              if (step.kind === 'line' || step.shape.kind === 'polygon') return { ok: true, plan };
+              return replace({ ...step, shape: { kind: step.shape.kind, rect: next } });
+            }),
+          );
+        }
+      }
+    } else this.root.append(element('h2', {}, 'Land · ' + plan.id), element('p', { class: 'hint' }, 'Click land on the plan to select a step, or pick the Land tool (L) to draw a new one. Later steps paint over earlier ones.'));
+    this.root.append(element('h3', {}, 'Steps'));
+    const list = element('ol', { class: 'land-steps', start: '0' });
+    plan.steps.forEach((each, at) => {
+      const item = element('li');
+      if (at === index) item.setAttribute('aria-current', 'true');
+      const pick = element('button', { type: 'button', title: 'Select this step' }, landStepName(each));
+      pick.addEventListener('click', () => this.controller.select({ kind: 'landStep', index: at }));
+      const up = element('button', { type: 'button', title: 'Draw it earlier', 'aria-label': 'Move up' }, '↑');
+      up.disabled = at === 0;
+      up.addEventListener('click', () => this.controller.moveLandStep(at, at - 1));
+      const down = element('button', { type: 'button', title: 'Draw it later', 'aria-label': 'Move down' }, '↓');
+      down.disabled = at === plan.steps.length - 1;
+      down.addEventListener('click', () => this.controller.moveLandStep(at, at + 1));
+      const remove = element('button', { type: 'button', title: 'Remove this step', 'aria-label': 'Remove' }, '×');
+      remove.addEventListener('click', () => this.controller.removeLandStep(at));
+      item.append(pick, up, down, remove);
+      list.append(item);
+    });
+    this.root.append(list);
+  }
+
+  private landField(name: string, kind: FieldKind, value: unknown, change: (value: unknown) => unknown): HTMLElement {
+    const label = element('label', { class: 'field' });
+    label.append(element('span', {}, name));
+    let input: HTMLInputElement | HTMLSelectElement;
+    if (typeof kind === 'object' && 'choices' in kind) {
+      input = element('select');
+      input.append(...kind.choices.map((choice) => element('option', { value: choice }, choice)));
+    } else {
+      input = element('input', { type: kind === 'number' ? 'number' : 'text', step: '1' });
+      if (typeof kind === 'object') {
+        const id = 'suggest-land-' + name;
+        if (!this.root.querySelector('#' + id)) {
+          const list = element('datalist', { id });
+          list.append(...kind.suggest.map((each) => element('option', { value: each })));
+          this.root.append(list);
+        }
+        input.setAttribute('list', id);
+      }
+    }
+    input.value = value === undefined || value === null ? '' : String(value);
+    input.addEventListener('change', () => {
+      change(kind === 'number' ? Number(input.value) : input.value);
+    });
+    label.append(input);
+    return label;
   }
 
   private renderEntry(layout: DistrictLayout, ref: Parameters<typeof setField>[1]): void {

@@ -20,10 +20,10 @@ import { contentWith, type EditedDistrict } from './contentWith.ts';
 import { EditorDocument } from './document.ts';
 import { EditController, type PaletteEntry } from './editController.ts';
 import { addEntry, type HeightMode } from './edits.ts';
-import { boundsOf, hitsAt } from './hitTest.ts';
+import { boundsOf, hitsAt, landHitsAt, landPointsOf, landStepBounds } from './hitTest.ts';
 import { footprintOf, modelOf } from './itemModels.ts';
 import { districtAtLevelTile, levelIssues, levelPlan, originOf, tileImageOf } from './levelView.ts';
-import { Palette, paletteEntries } from './palette.ts';
+import { LandPalette, landBrushHint, Palette, paletteEntries } from './palette.ts';
 import { PlanCanvas, planDrawList, type PlanShape } from './planCanvas.ts';
 import { landLevel, previewZone, zoneOfLevel } from './previewLevel.ts';
 import { PreviewView, type EditPointer } from './previewView.ts';
@@ -103,8 +103,9 @@ function start(root: HTMLElement, services: ViewerServices): void {
     paint: { label: 'Paint', key: 'B', tip: 'Drag across the plan to paint floor tiles' },
     erase: { label: 'Erase', key: 'E', tip: 'Drag across the plan to remove painted tiles' },
     height: { label: 'Height', key: 'H', tip: 'Drag across the plan to raise, lower or level the ground' },
+    land: { label: 'Land', key: 'L', tip: 'Draw land plan steps: click points for polygons and lines, drag for rectangles' },
   } as const;
-  const toolButtons = (['select', 'paint', 'erase', 'height'] as const).map((tool) => {
+  const toolButtons = (['select', 'paint', 'erase', 'height', 'land'] as const).map((tool) => {
     const info = TOOL_INFO[tool];
     const button = element('button', { type: 'button', 'data-tool': tool, title: `${info.tip} (${info.key})` });
     button.append(info.label, element('kbd', {}, info.key));
@@ -177,6 +178,7 @@ function start(root: HTMLElement, services: ViewerServices): void {
       ['B', 'Paint floor tiles'],
       ['E', 'Erase painted tiles'],
       ['H', 'Raise, lower or level the ground; a drop of two steps becomes cliff'],
+      ['L', 'Draw land, in a land or a level with land'],
       ['/', 'Search things to add'],
     ]),
     helpSection('Selection', [
@@ -187,6 +189,13 @@ function start(root: HTMLElement, services: ViewerServices): void {
       ['Delete', 'Remove'],
       ['Esc', 'Deselect or stop placing'],
       ['Shift+click', 'Keep placing the same thing'],
+    ]),
+    helpSection('Land', [
+      ['Click, Enter', 'Add polygon or line points, then finish (or double-click)'],
+      ['Drag', 'Draw a rectangle, round or octagon shape, a ramp or a gate'],
+      ['Drag a point', 'Move one point of the selected step'],
+      ['Alt+click', 'Add a point on the nearest edge of the selected step'],
+      ['Delete', 'Remove the selected point or step'],
     ]),
     helpSection('General', [
       ['Ctrl+Z', 'Undo'],
@@ -238,7 +247,13 @@ function start(root: HTMLElement, services: ViewerServices): void {
       if (!entry) showPlacement(null, null);
     },
   );
-  side.append(palette.root, properties.root);
+  const landPalette = new LandPalette(base, controller.landBrush, (brush) => {
+    controller.landBrush = brush;
+    controller.landDraft = null;
+    refreshEditing();
+  });
+  controller.landBrush = landPalette.current();
+  side.append(palette.root, landPalette.root, properties.root);
 
   const previewControls = element('div', { class: 'preview-controls' });
   const gameAngle = element('button', { type: 'button' }, 'Game angle');
@@ -331,9 +346,27 @@ function start(root: HTMLElement, services: ViewerServices): void {
     const found = districtAtLevelTile(wholeNow(), level, tile);
     return found ? { districtId: found.districtId, local: found.local } : null;
   };
-  const modifiersOf = (event?: { shiftKey: boolean; ctrlKey: boolean; metaKey?: boolean }) => ({ shift: event?.shiftKey ?? false, ctrl: (event?.ctrlKey ?? false) || (event?.metaKey ?? false) });
-  const editDown = (tile: TilePoint, modifiers: { shift: boolean; ctrl: boolean }): boolean => {
+  const modifiersOf = (event?: { shiftKey: boolean; ctrlKey: boolean; metaKey?: boolean; altKey?: boolean }) => ({ shift: event?.shiftKey ?? false, ctrl: (event?.ctrlKey ?? false) || (event?.metaKey ?? false), alt: event?.altKey ?? false });
+  const landSelected = (): boolean => controller.selection?.kind === 'landStep' || controller.selection?.kind === 'landVertex';
+  const editDown = (tile: TilePoint, modifiers: { shift: boolean; ctrl: boolean; alt?: boolean }): boolean => {
+    if (controller.tool === 'land' || (controller.tool === 'select' && controller.onlyLand)) {
+      pointerOrigin = ORIGIN;
+      controller.pointerDown(tile, modifiers);
+      return true;
+    }
     const found = localOf(tile);
+    const landPlan = controller.tool === 'select' && state.layers.includes('land') ? controller.landPlan() : null;
+    const selection = controller.selection;
+    const onSelectedLand =
+      landPlan !== null &&
+      selection !== null &&
+      (selection.kind === 'landStep' || selection.kind === 'landVertex') &&
+      (modifiers.alt === true || landHitsAt(landPlan, tile).some((hit) => hit.kind === 'landVertex' && hit.index === selection.index));
+    if (landPlan && (onSelectedLand || !found)) {
+      pointerOrigin = ORIGIN;
+      controller.selectLand(tile, modifiers);
+      return true;
+    }
     if (!found) return false;
     const level = levelNow();
     if (level) controller.setDistrict(found.districtId);
@@ -346,6 +379,9 @@ function start(root: HTMLElement, services: ViewerServices): void {
   plan.onPointer('down', (tile, event) => void editDown(tile, modifiersOf(event)));
   plan.onPointer('move', editMove);
   plan.onPointer('up', editUp);
+  plan.onDoubleClick(() => {
+    if (editing && controller.landDraft) controller.key('Enter', {});
+  });
 
   let hoverGhost: { readonly box: { x: number; y: number; width: number; height: number }; readonly ok: boolean; readonly entry: PaletteEntry } | null = null;
   let placeProblem = '';
@@ -379,7 +415,7 @@ function start(root: HTMLElement, services: ViewerServices): void {
   preview3d.setEditPointer(null);
   const editPointer3d: EditPointer = {
     down: (tile, event) => {
-      if (controller.tool === 'paint' || controller.tool === 'erase' || controller.tool === 'height') return editDown(tile, modifiersOf(event));
+      if (controller.tool === 'paint' || controller.tool === 'erase' || controller.tool === 'height' || controller.tool === 'land' || controller.onlyLand) return editDown(tile, modifiersOf(event));
       if (controller.tool !== 'select') return false;
       const found = localOf(tile);
       if (!found) return false;
@@ -535,10 +571,12 @@ function start(root: HTMLElement, services: ViewerServices): void {
     views.dataset.editing = String(editing);
     plan.setEditing(editing);
     for (const button of toolButtons) {
-      button.setAttribute('aria-pressed', String(controller.tool === button.dataset.tool));
-      button.hidden = inLand();
+      const tool = button.dataset.tool;
+      button.setAttribute('aria-pressed', String(controller.tool === tool));
+      button.hidden = tool === 'land' ? controller.land === null : inLand() && tool !== 'select';
     }
-    if (inLand()) side.hidden = true;
+    palette.root.hidden = inLand() || controller.tool === 'land';
+    landPalette.root.hidden = controller.tool !== 'land';
     views.dataset.tool = controller.tool;
     brushLabel.hidden = controller.tool !== 'paint';
     heightLabel.hidden = controller.tool !== 'height';
@@ -560,6 +598,9 @@ function start(root: HTMLElement, services: ViewerServices): void {
       if (controller.tool === 'paint') return `Drag across the plan to paint ${brush.value}. Ctrl+Z undoes a whole stroke.`;
       if (controller.tool === 'erase') return 'Drag across the plan to remove painted tiles.';
       if (controller.tool === 'height') return 'Drag across the plan to change the ground. Walkable ground two steps above its neighbour becomes cliff. Ctrl+Z undoes a whole stroke.';
+      if (controller.tool === 'land') return landBrushHint(controller.landBrush) + (controller.landDraft ? ' ' + controller.landDraft.length + ' point' + (controller.landDraft.length === 1 ? '' : 's') + ' so far.' : '');
+      if (landSelected()) return 'Drag the step or one of its points to reshape it. Alt+click adds a point, Delete removes the point or step, arrow keys nudge it.';
+      if (controller.onlyLand) return 'Click land on the plan to select a step, or press L to draw a new one.';
       const where = inLevel() ? ` Editing ${districtName(controller.district)}; clicks pick the district under the pointer.` : '';
       if (controller.selection) return `Drag or use the arrow keys to move it. R rotates, Ctrl+D duplicates, Delete removes, Esc deselects.${where}`;
       return `Click anything on the plan to select it, or pick something to add from the panel on the right.${where}`;
@@ -568,8 +609,20 @@ function start(root: HTMLElement, services: ViewerServices): void {
     banner.dataset.kind = problem ? 'error' : notice ? 'ok' : '';
     const layout = editorDocument.layout(controller.district);
     const district = editorDocument.district(controller.district);
-    const origin = editOrigin();
-    const local = editing && controller.selection ? boundsOf(layout, district, controller.selection) : null;
+    const landPlan = controller.landPlan();
+    const landWork = controller.tool === 'land' || landSelected();
+    const origin = landWork ? ORIGIN : editOrigin();
+    const selected = controller.selection;
+    const landStep = landPlan && selected && (selected.kind === 'landStep' || selected.kind === 'landVertex') ? landPlan.steps[selected.index] : undefined;
+    const landBox = landStep && selected ? (selected.kind === 'landVertex' ? { ...(landPointsOf(landStep)?.points[selected.vertex] ?? { x: 0, y: 0 }), width: 1, height: 1 } : landStepBounds(landStep)) : null;
+    const local = editing && selected ? (landBox ?? boundsOf(layout, district, selected)) : null;
+    const draftPoints = controller.landDraft;
+    const brushLine = controller.landBrush.step === 'line';
+    const selectedPoints = landStep ? landPointsOf(landStep) : null;
+    const pathOf = (points: readonly TilePoint[], line: boolean) => points.map((point) => (line ? { x: point.x + 0.5, y: point.y + 0.5 } : point));
+    const path = editing && draftPoints ? { points: pathOf(draftPoints, brushLine), closed: false } : editing && selectedPoints ? { points: pathOf(selectedPoints.points, selectedPoints.kind === 'line'), closed: selectedPoints.kind === 'polygon' } : null;
+    plan.showPath(path?.points ?? null, path?.closed);
+    preview3d.overlay.showPath(path?.points ?? null, path?.closed);
     const shift = <T extends { x: number; y: number }>(box: T | null): T | null => (box ? { ...box, x: box.x + origin.x, y: box.y + origin.y } : null);
     plan.showSelection(shift(local), shift(controller.ghost));
     preview3d.setEditPointer(editing ? editPointer3d : null);
@@ -587,7 +640,7 @@ function start(root: HTMLElement, services: ViewerServices): void {
       banner.textContent = placeProblem ? `Can't place ${name} here: ${placeProblem.replace(/^Cannot place there: /, '')}` : catalogueDrag ? `Drop to place ${name}.` : `Click to place ${name}. Shift+click to place more; Esc to stop.`;
       banner.dataset.kind = placeProblem ? 'error' : '';
     }
-    properties.render(layout);
+    properties.render(layout, landPlan);
   };
 
   let shownScope = '';
@@ -609,6 +662,8 @@ function start(root: HTMLElement, services: ViewerServices): void {
   function render(): void {
     history.replaceState(null, '', writeViewState(state));
     const level = levelNow();
+    const landId = state.level ? level?.definition.land?.plan.id : state.land;
+    controller.setLand(landId !== undefined && lands.has(landId) ? landId : null, inLand());
     scopeSelect.value = state.level ? LEVEL_PREFIX + state.level : state.land ? LAND_PREFIX + state.land : state.district;
     const district = districtNow();
     roomSelect.hidden = Boolean(level);

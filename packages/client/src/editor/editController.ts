@@ -1,9 +1,23 @@
-import { drawBlueprint, resolvePosition, tileKey, type DistrictId, type TileKindId, type TilePoint, type TileRect } from '@containment/shared';
+import { drawBlueprint, resolvePosition, tileKey, type DistrictId, type ExitSide, type LandPlan, type LandShape, type LandStep, type RegionId, type RoomShape, type TileKindId, type TilePoint, type TileRect } from '@containment/shared';
 import type { EditorDocument } from './document.ts';
+import { addStep as addLandStep, insertVertex, moveStep as moveLandStep, moveStepBy, moveVertex, removeStep as removeLandStep, removeVertex, replaceStep, resizeStep, type LandEditResult } from './landEdits.ts';
 import { addEntry, deleteEntry, deleteStep, duplicateEntry, editStep, eraseTiles, moveEntry, moveRoom, paintHeights, paintTiles, resizeRoom, rotateEntry, type Collection, type EditResult, type HeightMode } from './edits.ts';
-import { hitsAt, type Hit } from './hitTest.ts';
+import { hitsAt, landHitsAt, landPointsOf, landRectOf, landStepBounds, landStepCovers, segmentDistance, type Hit } from './hitTest.ts';
 
-export type Tool = 'select' | 'paint' | 'erase' | 'height' | 'add';
+export type Tool = 'select' | 'paint' | 'erase' | 'height' | 'add' | 'land';
+
+export interface LandBrush {
+  readonly step: LandStep['kind'];
+  readonly shape: 'polygon' | RoomShape;
+  readonly tile: TileKindId;
+  readonly height: number;
+  readonly width: number;
+  readonly ward: RegionId;
+  readonly side: ExitSide;
+  readonly gate: string;
+}
+
+export const DEFAULT_LAND_BRUSH: LandBrush = { step: 'fill', shape: 'polygon', tile: 'grass', height: 1, width: 1, ward: '', side: 'north', gate: 'gate' };
 
 export interface PaletteEntry {
   readonly collection: Collection;
@@ -15,13 +29,17 @@ export interface PaletteEntry {
 export interface Modifiers {
   readonly ctrl?: boolean;
   readonly shift?: boolean;
+  readonly alt?: boolean;
 }
 
 type Drag =
   | { readonly mode: 'entry'; readonly hit: Extract<Hit, { kind: 'entry' }>; readonly origin: TilePoint; readonly from: TilePoint }
   | { readonly mode: 'room'; readonly room: string; readonly rect: TileRect; readonly from: TilePoint; readonly edges: Edges }
   | { readonly mode: 'step'; readonly index: number; readonly rect: TileRect; readonly from: TilePoint }
-  | { readonly mode: 'stroke'; readonly tiles: Map<string, TilePoint> };
+  | { readonly mode: 'stroke'; readonly tiles: Map<string, TilePoint> }
+  | { readonly mode: 'landRect'; readonly from: TilePoint }
+  | { readonly mode: 'landVertex'; readonly index: number; readonly vertex: number; readonly from: TilePoint }
+  | { readonly mode: 'landStep'; readonly index: number; readonly box: TileRect; readonly from: TilePoint; readonly edges: Edges };
 
 interface Edges {
   readonly left: boolean;
@@ -39,7 +57,25 @@ const ARROWS: Readonly<Record<string, TilePoint>> = {
   arrowdown: { x: 0, y: 1 },
 };
 
-const TOOL_KEYS: Readonly<Record<string, Tool>> = { v: 'select', b: 'paint', e: 'erase', h: 'height' };
+const TOOL_KEYS: Readonly<Record<string, Tool>> = { v: 'select', b: 'paint', e: 'erase', h: 'height', l: 'land' };
+
+const rectBetween = (a: TilePoint, b: TilePoint): TileRect => ({ x: Math.min(a.x, b.x), y: Math.min(a.y, b.y), width: Math.abs(a.x - b.x) + 1, height: Math.abs(a.y - b.y) + 1 });
+
+const isLandHit = (hit: Hit | null): hit is Extract<Hit, { kind: 'landStep' | 'landVertex' }> => hit !== null && (hit.kind === 'landStep' || hit.kind === 'landVertex');
+
+export function landBrushClicks(brush: LandBrush): boolean {
+  return brush.step === 'line' || ((brush.step === 'fill' || brush.step === 'rise' || brush.step === 'ward') && brush.shape === 'polygon');
+}
+
+export function landStepOf(brush: LandBrush, points: readonly TilePoint[], rect: TileRect): LandStep {
+  const shape: LandShape = brush.shape === 'polygon' ? { kind: 'polygon', points } : { kind: brush.shape, rect };
+  if (brush.step === 'line') return { kind: 'line', points, width: brush.width, tile: brush.tile };
+  if (brush.step === 'rise') return { kind: 'rise', shape, height: brush.height };
+  if (brush.step === 'ward') return { kind: 'ward', shape, ward: brush.ward };
+  if (brush.step === 'ramp') return { kind: 'ramp', rect, side: brush.side, from: 0, to: brush.height };
+  if (brush.step === 'gate') return { kind: 'gate', id: brush.gate, rect, tile: brush.tile };
+  return { kind: 'fill', shape, tile: brush.tile };
+}
 
 const STROKE_TOOLS: ReadonlySet<Tool> = new Set<Tool>(['paint', 'erase', 'height']);
 
@@ -54,6 +90,11 @@ export class EditController {
   status = '';
   pending: PaletteEntry | null = null;
   ghost: TileRect | null = null;
+  landBrush: LandBrush = DEFAULT_LAND_BRUSH;
+  landDraft: readonly TilePoint[] | null = null;
+  private landId: string | null = null;
+  private landOnly = false;
+  private landPress: Hit[] = [];
   private districtId: DistrictId;
   private readonly document: EditorDocument;
   private drag: Drag | null = null;
@@ -88,6 +129,123 @@ export class EditController {
     return this.document.layout(this.districtId);
   }
 
+  get land(): string | null {
+    return this.landId;
+  }
+
+  get onlyLand(): boolean {
+    return this.landOnly;
+  }
+
+  setLand(id: string | null, only = false): void {
+    if (id === this.landId && only === this.landOnly) return;
+    this.landId = id;
+    this.landOnly = id !== null && only;
+    this.landDraft = null;
+    if (isLandHit(this.selection)) this.selection = null;
+    if (this.landOnly && this.tool !== 'land') this.tool = 'select';
+    if (!id && this.tool === 'land') this.tool = 'select';
+    this.changed();
+  }
+
+  landPlan(): LandPlan | null {
+    return this.landId === null ? null : this.document.landPlan(this.landId);
+  }
+
+  applyLand(edit: (plan: LandPlan) => LandEditResult): LandEditResult {
+    if (this.landId === null) return { ok: false, error: 'There is no land here.' };
+    const result = this.document.applyLand(this.landId, edit);
+    this.status = result.ok ? '' : result.error;
+    return result;
+  }
+
+  editLandStep(index: number, step: LandStep): LandEditResult {
+    const result = this.applyLand((plan) => replaceStep(plan, index, step));
+    this.changed();
+    return result;
+  }
+
+  moveLandStep(from: number, to: number): LandEditResult {
+    const result = this.applyLand((plan) => moveLandStep(plan, from, to));
+    if (result.ok) this.selection = { kind: 'landStep', index: to };
+    this.changed();
+    return result;
+  }
+
+  removeLandStep(index: number): LandEditResult {
+    const result = this.applyLand((plan) => removeLandStep(plan, index));
+    if (result.ok) this.selection = null;
+    this.changed();
+    return result;
+  }
+
+  finishLandDraft(): boolean {
+    const draft = this.landDraft;
+    if (!draft) return false;
+    this.landDraft = null;
+    const points = draft.filter((point, index) => index === 0 || point.x !== draft[index - 1]?.x || point.y !== draft[index - 1]?.y);
+    const polygon = this.landBrush.step !== 'line';
+    if (points.length < (polygon ? 3 : 2)) {
+      this.status = polygon ? 'A polygon needs at least 3 points.' : 'A line needs at least 2 points.';
+      this.changed();
+      return true;
+    }
+    const result = this.applyLand((plan) => addLandStep(plan, landStepOf(this.landBrush, points, landStepBounds({ kind: 'line', points, width: 1, tile: 'grass' }))));
+    if (result.ok) this.selection = { kind: 'landStep', index: result.plan.steps.length - 1 };
+    this.changed();
+    return true;
+  }
+
+  selectLand(tile: TilePoint, modifiers: Modifiers): void {
+    const plan = this.landPlan();
+    if (!plan) return;
+    this.moved = false;
+    const selected = isLandHit(this.selection) ? this.selection.index : -1;
+    const selectedStep = plan.steps[selected];
+    if (modifiers.alt && selectedStep) {
+      const found = landPointsOf(selectedStep);
+      if (found) {
+        const count = found.kind === 'polygon' ? found.points.length : found.points.length - 1;
+        let best = 0;
+        let distance = Infinity;
+        for (let edge = 0; edge < count; edge++) {
+          const here = segmentDistance(tile, found.points[edge] as TilePoint, found.points[(edge + 1) % found.points.length] as TilePoint);
+          if (here < distance) {
+            distance = here;
+            best = edge;
+          }
+        }
+        const result = this.applyLand((current) => insertVertex(current, selected, best, tile));
+        if (result.ok) this.selection = { kind: 'landVertex', index: selected, vertex: best + 1 };
+        this.changed();
+        return;
+      }
+    }
+    const hits = landHitsAt(plan, tile);
+    const bodies = hits.filter((hit) => hit.kind === 'landStep');
+    this.landPress = bodies;
+    const vertex = hits.find((hit) => hit.kind === 'landVertex' && hit.index === selected);
+    if (vertex && vertex.kind === 'landVertex') {
+      this.selection = vertex;
+      this.pressKept = false;
+      this.drag = { mode: 'landVertex', index: vertex.index, vertex: vertex.vertex, from: tile };
+    } else if (selectedStep && landStepCovers(selectedStep, tile)) {
+      this.selection = { kind: 'landStep', index: selected };
+      this.pressKept = true;
+      const box = landStepBounds(selectedStep);
+      const rect = landRectOf(selectedStep);
+      const edges: Edges = rect
+        ? { left: tile.x === rect.x, right: tile.x === rect.x + rect.width - 1, top: tile.y === rect.y, bottom: tile.y === rect.y + rect.height - 1 }
+        : NO_EDGES;
+      this.drag = { mode: 'landStep', index: selected, box, from: tile, edges };
+    } else {
+      this.selection = bodies[0] ?? null;
+      this.pressKept = false;
+      this.drag = null;
+    }
+    this.changed();
+  }
+
   setPending(entry: PaletteEntry | null): void {
     this.pending = entry;
     this.tool = entry ? 'add' : 'select';
@@ -104,6 +262,22 @@ export class EditController {
   }
 
   pointerDown(tile: TilePoint, modifiers: Modifiers): void {
+    if (this.tool === 'land') {
+      if (this.landId === null) return;
+      if (landBrushClicks(this.landBrush)) {
+        this.landDraft = [...(this.landDraft ?? []), tile];
+        this.changed();
+        return;
+      }
+      this.drag = { mode: 'landRect', from: tile };
+      this.ghost = rectBetween(tile, tile);
+      this.changed();
+      return;
+    }
+    if (this.tool === 'select' && this.landOnly) {
+      this.selectLand(tile, modifiers);
+      return;
+    }
     if (STROKE_TOOLS.has(this.tool)) {
       this.drag = { mode: 'stroke', tiles: new Map([[tileKey(tile), tile]]) };
       return;
@@ -145,7 +319,10 @@ export class EditController {
     }
     const dx = tile.x - drag.from.x;
     const dy = tile.y - drag.from.y;
-    if (drag.mode === 'entry') this.ghost = { x: drag.origin.x + dx, y: drag.origin.y + dy, width: 1, height: 1 };
+    if (drag.mode === 'landRect') this.ghost = rectBetween(drag.from, tile);
+    else if (drag.mode === 'landVertex') this.ghost = { x: tile.x, y: tile.y, width: 1, height: 1 };
+    else if (drag.mode === 'landStep') this.ghost = this.resized(drag.box, drag.edges, dx, dy);
+    else if (drag.mode === 'entry') this.ghost = { x: drag.origin.x + dx, y: drag.origin.y + dy, width: 1, height: 1 };
     else if (drag.mode === 'room') this.ghost = this.resized(drag.rect, drag.edges, dx, dy);
     else this.ghost = { ...drag.rect, x: drag.rect.x + dx, y: drag.rect.y + dy };
     this.changed();
@@ -165,8 +342,24 @@ export class EditController {
       this.changed();
       return;
     }
+    if (drag.mode === 'landRect') {
+      const rect = rectBetween(drag.from, tile);
+      const result = this.applyLand((plan) => addLandStep(plan, landStepOf(this.landBrush, [], rect)));
+      if (result.ok) this.selection = { kind: 'landStep', index: result.plan.steps.length - 1 };
+      this.changed();
+      return;
+    }
     const dx = tile.x - drag.from.x;
     const dy = tile.y - drag.from.y;
+    if (drag.mode === 'landVertex' || drag.mode === 'landStep') {
+      if (dx === 0 && dy === 0) {
+        if (this.pressKept && !this.moved) this.cycleLand();
+      } else if (drag.mode === 'landVertex') this.applyLand((plan) => moveVertex(plan, drag.index, drag.vertex, tile));
+      else if (drag.edges === NO_EDGES || (!drag.edges.left && !drag.edges.right && !drag.edges.top && !drag.edges.bottom)) this.applyLand((plan) => moveStepBy(plan, drag.index, { x: dx, y: dy }));
+      else this.applyLand((plan) => resizeStep(plan, drag.index, this.resized(drag.box, drag.edges, dx, dy)));
+      this.changed();
+      return;
+    }
     if (dx === 0 && dy === 0) {
       if (this.pressKept && !this.moved) this.cycle();
       this.changed();
@@ -190,13 +383,18 @@ export class EditController {
       return true;
     }
     if (modifiers.ctrl && lower === 'y') return this.key('z', { ctrl: true, shift: true });
+    if (lower === 'enter' && this.landDraft) return this.finishLandDraft();
     if (lower === 'escape') {
       this.selection = null;
+      this.landDraft = null;
       this.setPending(null);
       return true;
     }
     const tool = TOOL_KEYS[lower];
     if (tool && !modifiers.ctrl) {
+      if (tool === 'land' && this.landId === null) return false;
+      if (tool !== 'land' && tool !== 'select' && this.landOnly) return false;
+      this.landDraft = null;
       this.pending = null;
       this.tool = tool;
       this.changed();
@@ -204,6 +402,7 @@ export class EditController {
     }
     const selection = this.selection;
     if (!selection) return false;
+    if (selection.kind === 'landStep' || selection.kind === 'landVertex') return this.landKey(selection, lower);
     const arrow = ARROWS[lower];
     if (arrow) {
       if (!this.nudge(selection, arrow)) return false;
@@ -241,11 +440,32 @@ export class EditController {
 
   private nudge(selection: Hit, by: TilePoint): boolean {
     const drag = this.dragFor(selection, { x: 0, y: 0 });
-    if (!drag || drag.mode === 'stroke') return false;
+    if (!drag || (drag.mode !== 'entry' && drag.mode !== 'room' && drag.mode !== 'step')) return false;
     if (drag.mode === 'entry') this.apply((layout) => moveEntry(layout, drag.hit.ref, { x: drag.origin.x + by.x, y: drag.origin.y + by.y }));
     else if (drag.mode === 'room') this.apply((layout) => moveRoom(layout, drag.room, { x: drag.rect.x + by.x, y: drag.rect.y + by.y }));
     else this.apply((layout) => editStep(layout, drag.index, { rect: { ...drag.rect, x: drag.rect.x + by.x, y: drag.rect.y + by.y } }));
     return true;
+  }
+
+  private landKey(selection: Extract<Hit, { kind: 'landStep' | 'landVertex' }>, lower: string): boolean {
+    const arrow = ARROWS[lower];
+    if (arrow) {
+      this.applyLand((plan) => moveStepBy(plan, selection.index, arrow));
+      this.changed();
+      return true;
+    }
+    if (lower !== 'delete' && lower !== 'backspace') return false;
+    if (selection.kind === 'landVertex') {
+      if (this.applyLand((plan) => removeVertex(plan, selection.index, selection.vertex)).ok) this.selection = { kind: 'landStep', index: selection.index };
+    } else if (this.applyLand((plan) => removeLandStep(plan, selection.index)).ok) this.selection = null;
+    this.changed();
+    return true;
+  }
+
+  private cycleLand(): void {
+    const hits = this.landPress;
+    const current = hits.findIndex((hit) => sameHit(this.selection, hit));
+    this.selection = hits[(current + 1) % hits.length] ?? this.selection;
   }
 
   private cycle(): void {
@@ -255,6 +475,7 @@ export class EditController {
   }
 
   private dragFor(hit: Hit, tile: TilePoint): Drag | null {
+    if (hit.kind === 'landStep' || hit.kind === 'landVertex') return null;
     const layout = this.document.layout(this.districtId);
     if (hit.kind === 'entry') {
       const ref = hit.ref;

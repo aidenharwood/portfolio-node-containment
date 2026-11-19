@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { parseLayout, type DistrictDefinition } from '@containment/shared';
-import { FIXTURE_CONTENT, FIXTURE_LAYOUT_SOURCES } from '@containment/shared/fixtures';
-import { hitsAt } from '../src/editor/hitTest.ts';
+import { FIXTURE_CONTENT, FIXTURE_LAND, FIXTURE_LAYOUT_SOURCES } from '@containment/shared/fixtures';
+import { hitsAt, landHitsAt } from '../src/editor/hitTest.ts';
 
 const hub = FIXTURE_CONTENT.districts.get('fx-hub') as DistrictDefinition;
 const layout = parseLayout(FIXTURE_LAYOUT_SOURCES['fx-hub']);
@@ -45,4 +45,20 @@ test('an npc placed in the layout selects its entry', () => {
   const handler = hub.npcs.find((npc) => npc.instanceId === 'hub-handler');
   assert.ok(handler);
   assert.deepEqual(hit(handler.position)[0], { kind: 'entry', ref: { collection: 'npcs', index: layout.npcs.findIndex((entry) => entry.id === 'hub-handler') } });
+});
+
+test('land hits list later steps first', () => {
+  const hits = landHitsAt(FIXTURE_LAND.plan, { x: 30, y: 15 });
+  assert.deepEqual(hits, [5, 2, 1, 0].map((index) => ({ kind: 'landStep', index })));
+});
+
+test('a land vertex comes before the step bodies under it', () => {
+  const hits = landHitsAt(FIXTURE_LAND.plan, { x: 40, y: 2 });
+  assert.deepEqual(hits[0], { kind: 'landVertex', index: 1, vertex: 1 });
+  assert.ok(hits.slice(1).every((hit) => hit.kind === 'landStep'));
+});
+
+test('a line is hit along its width', () => {
+  assert.ok(landHitsAt(FIXTURE_LAND.plan, { x: 48, y: 10 }).some((hit) => hit.kind === 'landStep' && hit.index === 3));
+  assert.ok(!landHitsAt(FIXTURE_LAND.plan, { x: 50, y: 10 }).some((hit) => hit.kind === 'landStep' && hit.index === 3));
 });

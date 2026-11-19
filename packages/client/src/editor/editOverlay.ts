@@ -1,4 +1,4 @@
-import { BoxGeometry, EdgesGeometry, Group, LineBasicMaterial, LineSegments, Mesh, MeshBasicMaterial, PlaneGeometry, type Object3D } from 'three';
+import { BoxGeometry, BufferGeometry, EdgesGeometry, Float32BufferAttribute, Group, Line, LineBasicMaterial, LineLoop, LineSegments, Mesh, MeshBasicMaterial, PlaneGeometry, type Object3D } from 'three';
 
 export interface OverlayBox {
   readonly x: number;
@@ -21,6 +21,8 @@ export class EditOverlay {
   private readonly ghostOutlineMaterial = new LineBasicMaterial({ color: VALID, toneMapped: false, depthTest: false, transparent: true });
   private readonly ghostModelHolder = new Group();
   private ghostKey = '';
+  private readonly pathMaterial = new LineBasicMaterial({ color: 0xffffff, toneMapped: false, depthTest: false, transparent: true });
+  private readonly pathHolder = new Group();
   private selectionTop = 0;
 
   constructor() {
@@ -35,7 +37,7 @@ export class EditOverlay {
     this.ghostOutline = new LineSegments(unitBox, this.ghostOutlineMaterial);
     this.ghostOutline.renderOrder = 10;
     this.ghostOutline.visible = false;
-    this.root.add(this.selection, this.ghostFloor, this.ghostOutline, this.ghostModelHolder);
+    this.root.add(this.selection, this.ghostFloor, this.ghostOutline, this.ghostModelHolder, this.pathHolder);
   }
 
   ground: (x: number, y: number) => number = () => 0;
@@ -78,7 +80,21 @@ export class EditOverlay {
     this.ghostModelHolder.position.set(box.x, lift, box.y);
   }
 
+  showPath(points: readonly { readonly x: number; readonly y: number }[] | null, closed = false): void {
+    for (const child of this.pathHolder.children) (child as Line).geometry.dispose();
+    this.pathHolder.clear();
+    if (!points || points.length < 2) return;
+    const positions = points.flatMap((point) => [point.x - 0.5, this.ground(Math.floor(point.x), Math.floor(point.y)) + 0.1, point.y - 0.5]);
+    const geometry = new BufferGeometry();
+    geometry.setAttribute('position', new Float32BufferAttribute(positions, 3));
+    const line = closed ? new LineLoop(geometry, this.pathMaterial) : new Line(geometry, this.pathMaterial);
+    line.renderOrder = 10;
+    this.pathHolder.add(line);
+  }
+
   dispose(): void {
+    this.showPath(null);
+    this.pathMaterial.dispose();
     this.selection.geometry.dispose();
     this.ghostFloor.geometry.dispose();
     this.selectionMaterial.dispose();
