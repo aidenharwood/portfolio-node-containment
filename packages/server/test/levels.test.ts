@@ -3,6 +3,7 @@ import { describe, test } from 'node:test';
 import { createDefaultDraft, type CharacterRecord, type TilePoint } from '@containment/shared';
 import { createCharacterRecord } from '../src/characters/characterFactory.ts';
 import { CharacterRepository } from '../src/characters/characterRepository.ts';
+import { LevelInstance } from '../src/world/levelInstance.ts';
 import { openDatabase } from '../src/persistence/database.ts';
 import { restoreLocation, storeLocation } from '../src/characters/storedLocation.ts';
 import { anchor, anchorPoint, at, CONTENT, createHarness, inRoom, levelPoint, type Harness, localInRoom } from './support/testHarness.ts';
@@ -119,5 +120,15 @@ describe('levels', () => {
     assert.equal(harness.player.levelId, 'fx-depths');
     harness.interactWithObject('arena-lift');
     assert.equal(harness.player.levelId, 'fx-floor');
+  });
+});
+
+describe('split squares', () => {
+  test('a split square gives each tile only its own district\'s areas', () => {
+    const level = new LevelInstance(CONTENT.levels.get('fx-wilds')!, CONTENT, 0);
+    assert.deepEqual(level.areasAt({ x: 52, y: 10 }).map((area) => area.districtId), ['fx-wild-gate-east']);
+    assert.equal(level.isSafe({ x: 40, y: 10 }), true);
+    assert.equal(level.isSafe({ x: 52, y: 10 }), false);
+    assert.ok(level.creatureGrid.isWalkable({ x: 52, y: 10 }));
   });
 });

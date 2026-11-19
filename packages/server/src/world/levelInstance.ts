@@ -276,11 +276,12 @@ export class LevelInstance {
   }
 
   areasAt(point: TilePoint): ResolvedArea[] {
-    return this.definition.areas.filter((area) => rectContains(area.rect, point));
+    const districtId = this.layout.districtAt(point);
+    return this.definition.areas.filter((area) => area.districtId === districtId && rectContains(area.rect, point));
   }
 
   isSafe(point: TilePoint): boolean {
-    return isSafeIn(this.definition.areas, point);
+    return isSafeIn(this.areasAt(point), point);
   }
 
   gridWithDoors(openDoors: ReadonlySet<WorldObjectId>): WalkabilityGrid {
