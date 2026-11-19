@@ -6,6 +6,7 @@ import type { DressingTheme, PrefabRole } from '../content/prefabs/types.ts';
 import type { AssemblyPlacement } from './assemblies.ts';
 import type { FloorDecal } from './decals.ts';
 import { decodeHeight, type DistrictExit } from './blueprint.ts';
+import type { LandSquare } from './landPlan.ts';
 import type { WorldObjectDefinition } from './entities.ts';
 import type { WeatherKind } from './weather.ts';
 import { objectFootprintTiles } from './footprint.ts';
@@ -82,6 +83,7 @@ export interface DistrictDefinition {
   readonly tier: number;
   readonly condition?: Condition;
   readonly region: RegionId;
+  readonly square?: LandSquare;
   readonly reachedOnlyByTram?: boolean;
   readonly deadEnd?: boolean;
   readonly rooms?: Readonly<Record<string, TileRect>>;

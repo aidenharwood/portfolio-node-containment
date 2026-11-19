@@ -1,9 +1,10 @@
 import { furnish } from '../content/districts/furnish.ts';
 import { setPiece, type SetPiece } from '../content/districts/setPiece.ts';
-import { drawBlueprint, type Blueprint } from './blueprint.ts';
+import { drawBlueprint, type Blueprint, type BlueprintBase } from './blueprint.ts';
 import type { AreaDefinition, DistrictDefinition } from './district.ts';
 import { tileKey, type TilePoint } from './geometry.ts';
 import { LAYOUT_SOURCES } from '../content/districts/layouts/index.ts';
+import { cutSquare, LAND_GROUND_ROOM, type LandMap } from './landPlan.ts';
 import { resolvePosition } from './layoutPosition.ts';
 import { DISTRICT_LAYOUT_SCHEMA, type DistrictLayout, type LayoutPosition } from './layoutSchema.ts';
 import { describeIssue } from './schemaIssues.ts';
@@ -25,9 +26,13 @@ function checkGeometry(layout: DistrictLayout): void {
     throw new Error(`${id}: ${path}: ${reason}`);
   };
   const outside = (x: number, y: number): boolean => x < 0 || y < 0 || x >= size.width || y >= size.height;
-  const rooms = new Set<string>();
+  const rooms = new Set<string>(layout.square ? [LAND_GROUND_ROOM] : []);
   layout.steps.forEach((step, index) => {
     const path = `steps[${index}]`;
+    if (layout.square && step.kind === 'exit') fail(path, 'a land square takes its edges from the land; it has no exits');
+    if (layout.square && (step.kind === 'room' || step.kind === 'building') && step.id === LAND_GROUND_ROOM) {
+      fail(`${path}.id`, `room "${LAND_GROUND_ROOM}" is the land square's own ground`);
+    }
     const needRoom = (field: string, room: string): void => {
       if (!rooms.has(room)) fail(`${path}.${field}`, `room "${room}" is not drawn by an earlier step`);
     };
@@ -49,11 +54,25 @@ function checkGeometry(layout: DistrictLayout): void {
   });
 }
 
-function drawLayout(layout: DistrictLayout): Blueprint {
+function squareBase(layout: DistrictLayout, land: LandMap | undefined): BlueprintBase | undefined {
+  const { id, size, square } = layout;
+  if (!square) return undefined;
+  if (!land) throw new Error(`${id}: square: a land square needs the land plan`);
+  const { squareSize } = land.plan;
+  if (size.width !== squareSize || size.height !== squareSize) throw new Error(`${id}: size: a land square is ${squareSize}x${squareSize}`);
+  try {
+    return cutSquare(land, square, square.split ? layout.region : undefined);
+  } catch (error) {
+    throw new Error(`${id}: square: ${(error as Error).message}`);
+  }
+}
+
+function drawLayout(layout: DistrictLayout, land?: LandMap): Blueprint {
+  const base = squareBase(layout, land);
   checkGeometry(layout);
   let plan: Blueprint;
   try {
-    plan = drawBlueprint(layout.size, layout.steps);
+    plan = drawBlueprint(layout.size, layout.steps, [], [], base);
   } catch (error) {
     throw new Error(`${layout.id}: steps: ${(error as Error).message}`);
   }
@@ -67,7 +86,7 @@ function drawLayout(layout: DistrictLayout): Blueprint {
   const heights = layout.heights ?? [];
   if (layout.tiles.length === 0 && heights.length === 0) return plan;
   try {
-    return drawBlueprint(layout.size, layout.steps, layout.tiles, heights);
+    return drawBlueprint(layout.size, layout.steps, layout.tiles, heights, base);
   } catch (error) {
     throw new Error(`${layout.id}: ${(error as Error).message}`);
   }
@@ -75,8 +94,8 @@ function drawLayout(layout: DistrictLayout): Blueprint {
 
 const foreignAnchors = new Map<string, TilePoint>();
 
-function foreignAnchor(districtId: string, name: string, path: string): TilePoint {
-  const key = `${districtId}:${name}`;
+function foreignAnchor(districtId: string, name: string, path: string, land?: LandMap): TilePoint {
+  const key = `${land?.plan.id ?? ''}:${districtId}:${name}`;
   const known = foreignAnchors.get(key);
   if (known) return known;
   const source = (LAYOUT_SOURCES as Readonly<Record<string, unknown>>)[districtId];
@@ -84,16 +103,20 @@ function foreignAnchor(districtId: string, name: string, path: string): TilePoin
   const layout = parseLayout(source);
   const position = layout.anchors[name];
   if (!position) throw new Error(`${path}: district "${districtId}" has no anchor "${name}"`);
-  const point = resolvePosition(drawLayout(layout), position, path);
+  const point = resolvePosition(drawLayout(layout, land), position, path);
   foreignAnchors.set(key, point);
   return point;
 }
 
-export function buildDistrict(source: unknown): DistrictDefinition {
+export function buildDistrict(source: unknown, land?: LandMap): DistrictDefinition {
   const layout = parseLayout(source);
   const id = layout.id;
-  const plan = drawLayout(layout);
-  const at = (position: LayoutPosition, path: string): TilePoint => resolvePosition(plan, position, `${id}: ${path}`);
+  const plan = drawLayout(layout, land);
+  const at = (position: LayoutPosition, path: string): TilePoint => {
+    const point = resolvePosition(plan, position, `${id}: ${path}`);
+    if (layout.square && plan.map[point.y]?.[point.x] === ' ') throw new Error(`${id}: ${path}: ${point.x},${point.y} is not this square's land`);
+    return point;
+  };
 
   const areas: AreaDefinition[] = layout.areas.map((area, index) => {
     const options = { ...(area.safe === undefined ? {} : { safe: area.safe }), ...(area.multiCombat === undefined ? {} : { multiCombat: area.multiCombat }) };
@@ -108,7 +131,7 @@ export function buildDistrict(source: unknown): DistrictDefinition {
 
   const recoveryPosition = (recovery: NonNullable<DistrictLayout['recovery']>): TilePoint => {
     if ('at' in recovery) return at(recovery.at, 'recovery.at');
-    if (recovery.districtId !== id) return foreignAnchor(recovery.districtId, recovery.anchor, `${id}: recovery.anchor`);
+    if (recovery.districtId !== id) return foreignAnchor(recovery.districtId, recovery.anchor, `${id}: recovery.anchor`, land);
     const own = anchors[recovery.anchor];
     if (!own) throw new Error(`${id}: recovery.anchor: this district has no anchor "${recovery.anchor}"`);
     return own;
@@ -130,6 +153,7 @@ export function buildDistrict(source: unknown): DistrictDefinition {
     tier: layout.tier,
     ...(layout.condition === undefined ? {} : { condition: layout.condition }),
     region: layout.region,
+    ...(layout.square === undefined ? {} : { square: layout.square }),
     ...(layout.reachedOnlyByTram === undefined ? {} : { reachedOnlyByTram: layout.reachedOnlyByTram }),
     ...(layout.deadEnd === undefined ? {} : { deadEnd: layout.deadEnd }),
     ambience: layout.ambience,
