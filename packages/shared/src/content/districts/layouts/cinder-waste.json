@@ -8,7 +8,40 @@
   "ambience": { "darkness": 0.68, "tint": "#2c1e2e", "fog": "#2a1c2c", "sky": "#4a3450", "weather": ["ash", "dust"], "haze": 1.5 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 11, "row": 2 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 29, "y": 47, "width": 16, "height": 9 }, "height": 7, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 32, "y": 49, "width": 10, "height": 4 }, "height": 8, "shape": "octagon" },
+    { "kind": "rise", "rect": { "x": 4, "y": 17, "width": 12, "height": 11 }, "height": 7, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 6, "y": 19, "width": 8, "height": 6 }, "height": 8, "shape": "round" },
+    { "kind": "patch", "rect": { "x": 18, "y": 15, "width": 2, "height": 2 }, "tile": "rust" },
+    { "kind": "patch", "rect": { "x": 20, "y": 17, "width": 2, "height": 2 }, "tile": "rust" },
+    { "kind": "patch", "rect": { "x": 22, "y": 20, "width": 2, "height": 2 }, "tile": "rust" },
+    { "kind": "patch", "rect": { "x": 23, "y": 22, "width": 2, "height": 2 }, "tile": "rust" },
+    { "kind": "patch", "rect": { "x": 25, "y": 24, "width": 3, "height": 2 }, "tile": "rust" },
+    { "kind": "patch", "rect": { "x": 26, "y": 27, "width": 3, "height": 2 }, "tile": "rust" },
+    { "kind": "patch", "rect": { "x": 29, "y": 29, "width": 4, "height": 2 }, "tile": "rust" },
+    { "kind": "patch", "rect": { "x": 21, "y": 48, "width": 2, "height": 2 }, "tile": "rust" },
+    { "kind": "patch", "rect": { "x": 23, "y": 51, "width": 2, "height": 3 }, "tile": "rust" },
+    { "kind": "patch", "rect": { "x": 25, "y": 53, "width": 2, "height": 2 }, "tile": "rust" },
+    { "kind": "patch", "rect": { "x": 29, "y": 37, "width": 6, "height": 5 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 29, "y": 36, "width": 2, "height": 1 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 5, "y": 31, "width": 6, "height": 6 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 8, "y": 30, "width": 4, "height": 1 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 4, "y": 30, "width": 5, "height": 1 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 6, "y": 54, "width": 6, "height": 4 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 9, "y": 58, "width": 3, "height": 1 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 8, "y": 58, "width": 4, "height": 1 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 8, "y": 53, "width": 4, "height": 1 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 19, "y": 56, "width": 6, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 22, "y": 55, "width": 3, "height": 1 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 20, "y": 59, "width": 5, "height": 1 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 37, "y": 56, "width": 5, "height": 2 }, "tile": "coolant" },
+    { "kind": "patch", "rect": { "x": 40, "y": 55, "width": 3, "height": 1 }, "tile": "coolant" },
+    { "kind": "patch", "rect": { "x": 22, "y": 17, "width": 3, "height": 4 }, "tile": "coolant" },
+    { "kind": "patch", "rect": { "x": 23, "y": 21, "width": 2, "height": 1 }, "tile": "coolant" },
+    { "kind": "patch", "rect": { "x": 25, "y": 27, "width": 1, "height": 2 }, "tile": "glass" },
+    { "kind": "patch", "rect": { "x": 27, "y": 28, "width": 1, "height": 1 }, "tile": "glass" }
+  ],
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Cinder Waste" }
@@ -19,13 +52,24 @@
   "objects": [
     { "id": "cinder-waste-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 21, "dy": 38 } },
     { "id": "cinder-waste-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 21, "dy": 43 } },
-    { "id": "cinder-waste-barricade", "object": "barricade", "at": { "room": "ground", "dx": 16, "dy": 40 } }
+    { "id": "cinder-waste-barricade", "object": "barricade", "at": { "room": "ground", "dx": 16, "dy": 40 } },
+    { "id": "cinder-waste-pylon-1", "object": "blight-pylon", "at": { "room": "ground", "dx": 37, "dy": 51 } },
+    { "id": "cinder-waste-pylon-2", "object": "blight-pylon", "at": { "room": "ground", "dx": 10, "dy": 22 } },
+    { "id": "cinder-waste-car-3", "object": "parked-car", "at": { "room": "ground", "dx": 25, "dy": 50 }, "facing": "north" },
+    { "id": "cinder-waste-wreck-4", "object": "scrap-heap", "at": { "room": "ground", "dx": 41, "dy": 43 } },
+    { "id": "cinder-waste-vent-5", "object": "steam-vent", "at": { "room": "ground", "dx": 42, "dy": 51 } },
+    { "id": "cinder-waste-vent-6", "object": "steam-vent", "at": { "room": "ground", "dx": 34, "dy": 50 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [],
   "lights": [],
-  "decals": [],
+  "decals": [
+    { "kind": "scorch", "at": { "room": "ground", "dx": 16, "dy": 31 }, "width": 4, "height": 4 },
+    { "kind": "cracks", "at": { "room": "ground", "dx": 47, "dy": 55 }, "width": 4, "height": 5 },
+    { "kind": "scorch", "at": { "room": "ground", "dx": 9, "dy": 46 }, "width": 4, "height": 4 },
+    { "kind": "alien-vein", "at": { "room": "ground", "dx": 18, "dy": 31 }, "width": 5, "height": 5 }
+  ],
   "setPieces": [],
   "dressing": {
     "ground": { "theme": "street", "people": 0 }

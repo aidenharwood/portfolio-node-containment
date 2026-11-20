@@ -8,7 +8,10 @@
   "ambience": { "darkness": 0.68, "tint": "#2c1e2e", "fog": "#2a1c2c", "sky": "#4a3450", "weather": ["ash", "dust"], "haze": 1.5 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 11, "row": 8 },
-  "steps": [],
+  "steps": [
+    { "kind": "patch", "rect": { "x": 28, "y": 8, "width": 7, "height": 4 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 30, "y": 12, "width": 5, "height": 1 }, "tile": "trees" }
+  ],
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Ashen Cove" }
@@ -19,7 +22,8 @@
   "objects": [
     { "id": "ashen-cove-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 21, "dy": 5 } },
     { "id": "ashen-cove-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 21, "dy": 10 } },
-    { "id": "ashen-cove-barricade", "object": "barricade", "at": { "room": "ground", "dx": 16, "dy": 7 } }
+    { "id": "ashen-cove-barricade", "object": "barricade", "at": { "room": "ground", "dx": 16, "dy": 7 } },
+    { "id": "ashen-cove-car-1", "object": "parked-car", "at": { "room": "ground", "dx": 8, "dy": 5 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],

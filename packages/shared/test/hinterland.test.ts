@@ -390,3 +390,59 @@ test('the Lantern is the keepers\' hamlet at the root of the spit and the lit li
   const seawall = parseLayout(LAYOUT_SOURCES['seawall-path']);
   assert.ok(seawall.steps.some((step) => step.kind === 'building' && step.id === 'seawall-steps-house'), 'the seawall path has no steps house');
 });
+
+test('the Blight is wild land gone wrong round the crater lake, with the rim camp just inside the rim gate and the rim kept clear', () => {
+  const ward = ['ash-margin', 'ash-fells-edge', 'cinder-waste', 'rust-flats', 'scar-fields', 'rim-camp', 'the-crater', 'glass-moor', 'crater-south', 'the-sores', 'ash-fells', 'dead-orchard', 'burnt-shore', 'blight-shore', 'ashen-cove'];
+  const count = { pylons: 0, wrecks: 0, stands: 0, pools: 0, rises: 0 };
+  for (const id of ward) {
+    const layout = parseLayout(LAYOUT_SOURCES[id]);
+    assert.ok(layout.square, id);
+    assert.equal(layout.region, 'the-blight', id);
+    assert.equal(layout.tier, 28, id);
+    assert.equal(layout.condition, 'alien', id);
+    assert.ok(layout.objects.some((object) => object.object === 'street-lamp'), `${id} is unlit`);
+    const origin = { x: layout.square.column * 64, y: layout.square.row * 64 };
+    count.pylons += layout.objects.filter((object) => object.object === 'blight-pylon').length;
+    count.wrecks += layout.objects.filter((object) => object.object === 'scrap-heap' || object.object === 'parked-car').length;
+    count.stands += layout.steps.filter((step) => step.kind === 'patch' && step.tile === 'trees').length;
+    count.pools += layout.steps.filter((step) => step.kind === 'patch' && step.tile === 'coolant').length;
+    count.rises += layout.steps.filter((step) => step.kind === 'rise').length;
+    for (const step of layout.steps) {
+      if (step.kind !== 'patch' && step.kind !== 'rise' && step.kind !== 'building') continue;
+      for (let y = step.rect.y - 1; y <= step.rect.y + step.rect.height; y++) {
+        for (let x = step.rect.x - 1; x <= step.rect.x + step.rect.width; x++) {
+          assert.notEqual(land.tileAt({ x: origin.x + x, y: origin.y + y }), 'gravel', `${id}: ${step.kind} touches the crater rim`);
+        }
+      }
+    }
+    for (const object of layout.objects) {
+      if (!('room' in object.at) || object.at.room !== 'ground') continue;
+      assert.notEqual(land.tileAt({ x: origin.x + object.at.dx, y: origin.y + object.at.dy }), 'gravel', `${object.id} stands on the crater rim`);
+    }
+    let open = 0;
+    for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) if (land.wardAt({ x: origin.x + x, y: origin.y + y }) === 'the-blight' && walkable({ x: origin.x + x, y: origin.y + y }) && land.tileAt({ x: origin.x + x, y: origin.y + y }) !== 'gravel') open++;
+    if (open > 1500) {
+      assert.ok(layout.steps.filter((step) => step.kind === 'patch' && (step.tile === 'trees' || step.tile === 'coolant' || step.tile === 'glass')).length >= 3, `${id} is an open field`);
+      assert.ok(layout.steps.some((step) => step.kind === 'rise'), `${id} is flat`);
+    }
+  }
+  assert.ok(count.pylons >= 10, `the Blight has only ${count.pylons} broken pylons`);
+  assert.ok(count.wrecks >= 10, `the Blight has only ${count.wrecks} wrecks`);
+  assert.ok(count.stands >= 15, `the Blight has only ${count.stands} dead stands`);
+  assert.ok(count.pools >= 12, `the Blight has only ${count.pools} glassy pools`);
+  assert.ok(count.rises >= 12, `the Blight has only ${count.rises} rises`);
+  const camp = parseLayout(LAYOUT_SOURCES['rim-camp']);
+  assert.ok(camp.square);
+  const outpost = camp.anchors.outpost;
+  assert.ok(outpost && 'room' in outpost, 'the rim camp has no outpost anchor');
+  assert.equal(outpost.room, 'rim-camp-post');
+  const buildings = camp.steps.filter((step) => step.kind === 'building');
+  assert.ok(buildings.length >= 3, 'the rim camp has too few buildings');
+  const post = buildings.find((step) => step.id === 'rim-camp-post');
+  assert.ok(post, 'the rim camp has no post');
+  const gate = { x: 662 - camp.square.column * 64, y: 297 - camp.square.row * 64 };
+  assert.ok(Math.abs(post.rect.x - gate.x) + Math.abs(post.rect.y - gate.y) <= 24, 'the rim camp post is not by the rim gate');
+  assert.ok(camp.objects.some((object) => object.object === 'rim-searchlight'), 'the rim camp has no searchlight on the lake');
+  assert.ok(GAME_CONTENT.worldObjects.get('rim-searchlight')?.light, 'the searchlight is not lit');
+  assert.ok(!GAME_CONTENT.levels.has('the-hollow'), 'the Hollow is reserved');
+});
