@@ -2,6 +2,8 @@
 
 Follows `2026-11-14-first-region-design.md` and `2026-11-14-phase-4-people-quests-items.md`. The Low Ward is built and peopled, and its story ends when the Warden falls and the Cordon gate is ordered open. Skills now run to 200, but content stops at 55. This plan lays out the rest of the city, the Sites in it and what each part carries, from 55 to 200. The empty world it describes is built; the people, quests, creatures and items are the work that follows. Every name is a placeholder the owner can replace.
 
+> **Partly replaced (2026-11-20).** The city diagram below, the ward tables under Wards and the Gated crossings table are replaced by `2026-11-19-hinterland-atlas-design.md`: the overworld beyond the Cordon is now the Hinterland, one land plan of eight sealed wards. The Sites, the tier ladder and the chapters here still hold, with the story changes that spec lists.
+
 ## The city in one sentence
 
 Hollow Bay is a ring of wards around a bay: the north shore climbs east from the Cordon gate, the south shore runs east from a sluice gate at the Cut, both meet at the Lantern on the headland, and the Hollow lies under the water.
@@ -84,18 +86,20 @@ The Heart ends with the hatch under the Warden holding and Mercer's orders: open
 
 | Chapter | Ward | Levels | Outline |
 | ------- | ---- | ------ | ------- |
-| **Gate Duty** | Old Shipyards | 55–75 | Open the Cordon gate and hold the far yard. Forward Post Four is Mercer's. Site Caisson was abandoned mid-shift with the caisson half open; something walked out of Dry Dock Four towards the city. At the bottom of the Sump is a hatch exactly like the one under the Warden. Reward: orders for the sluice gate. |
+| **Gate Duty** | Old Shipyards | 55–75 | Open the Cordon gate and hold the crossroads outside it, by Forward Post Four, which is Mercer's. Site Caisson was abandoned mid-shift with the caisson half open; something walked out of Dry Dock Four towards the city. At the bottom of the Sump is a hatch exactly like the one under the Warden. Reward: orders for the sluice gate. |
 | **Low Water** | Tidemarsh | 75–95 | The marsh folk never left. The Brinehouse grows what it was meant to hold, and the salt pans crystallise around anything that stands still. The Cisterns' records name the Spire as the Site that ordered the others built. Reward: a pass for the Incline. |
 | **Head Office** | the Heights | 95–115 | Up the funicular to the Directorate's own headquarters. The Spire's records show the Sites were sited before the anomalies came: someone knew where the shafts would open. Reward: the Causeway gate. |
 | **Reliquary** | Old Town | 115–135 | The cathedral built over its shaft centuries before the Directorate, and the Ossuary still keeps the old rites as procedure. The thing they kept is gone, and the rites were a seal. Reward: Ironside's viaduct. |
 | **Load Bearing** | Ironside | 135–155 | Bellows powered every seal in the city until it went dark. Turn it back on, and learn what it has been feeding. Reward: the floodgate. |
 | **Fathom** | Drowned Quarter | 155–175 | Site Fathom went under with its ward and its staff kept working. Down the diving bell into a Site that is still running shifts. Reward: both roads to the Lantern. |
-| **Last Light** | the Lantern | 175–195 | The Lantern's light keeps the bay asleep, and the keeper is dying. Every Site's lowest hatch opens at once. |
+| **Last Light** | the Lantern | 175–195 | The Lantern's lens is turned inland, and its light keeps the crater asleep; the keeper is dying. Every Site's lowest hatch opens at once. Reward: `ward-open:the-blight`, the crater rim gate. |
 | **Hollow Bay** | the Hollow | 195–200 | Down through the hatches into the Hollow, and the thing every Site was built to keep in. The finale needs level 200 in one combat skill. |
 
 Each ward also gets four to six side quests from its residents, a novice-style errand for each of its focus skills, and one early boss of its own, as the Low Ward has Lost Cat and The Drowned Lamp. Quest points gate each chapter's last step, as they gate The Heart.
 
 ## Wards
+
+> **Replaced.** The squares, ids and tiers in the ward tables below are the old block-out's. The Hinterland atlas spec's Wards and Crossings sections hold the current ones.
 
 Every ward has an outpost square with a safe outpost building (storage locker, quartermaster, exchange post and contract board), a Site square, filler squares no quest sends you to, and gathering spots for its focus skills on the hostile ground. The outposts and Site compounds are built; their shelves, people and creatures are not.
 
@@ -191,6 +195,8 @@ The headland at the mouth of the bay, reached from both shores.
 | `fog-signal` | 27 | The fog signal station on the point |
 
 ## Gated crossings
+
+> **Replaced.** The Hinterland's crossings are land gates; see the Crossings table in `2026-11-19-hinterland-atlas-design.md`.
 
 Every crossing between wards is a two-wide Directorate gate whose leaves are one door object, so it opens for a player once and stays open.
 

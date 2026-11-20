@@ -2,20 +2,23 @@
 
 Read this before adding or changing a district, a level or anything placed in one. It applies to humans and AI agents alike. Every district in the game follows these rules; there is no exemption list. The rules marked **checked** are enforced by `findWorldDesignIssues` (`packages/shared/src/content/worldDesignIntegrity.ts`), which runs inside `findContentIssues`: the server will not boot and `npm test` fails when one is broken. The rest is judgement, and reviewers hold changes to it.
 
-> **Status:** the world is an open city (`docs/superpowers/specs/2026-11-14-first-region-design.md`). The Low Ward is built and peopled: nine open squares from Terminus Square out to the Cordon gate, and three levels below Site Meridian (Intake, the Secure Wing and the Vault) reached by the headhouse lift. Beyond the Cordon, the rest of Hollow Bay is blocked out to `docs/superpowers/specs/2026-11-18-hollow-bay-atlas.md`: seven wards of six squares ringing the bay, each with an outpost and a Site compound, joined by gated crossings. Their people, quests, creatures, gathering spots and Site levels come ward by ward.
+> **Status:** the overworld is the Hinterland (`docs/superpowers/specs/2026-11-19-hinterland-atlas-design.md`): one land plan, `content/land/hinterland.json`, 768 × 640 tiles, with the Low Ward pinned into it so Terminus Square starts at 128, 320. The Low Ward is built and peopled: nine open squares from Terminus Square out to the Cordon gate, and three levels below Site Meridian (Intake, the Secure Wing and the Vault) reached by the headhouse lift. Beyond the Cordon, 132 land squares are cut from the plan into eight sealed wards, each blocked out with its town, Site compound, outpost and crossings, and closed in play behind its gates. Their people, quests, creatures, gathering spots and Site levels come ward by ward.
 >
-> **Next:** the owner has chosen to re-plan everything beyond the Cordon as towns standing in a reclaimed landscape, the Hinterland, with ground that rises and falls (`docs/superpowers/specs/2026-11-19-hinterland-and-terrain-design.md`). Terraced ground is built (see Terrain below). Until the Hinterland atlas lands, the Wards section describes the block-out as it stands.
+> **Next:** walk the land in a live game (build order step 5 of the atlas spec), then the far view (step 6), which draws low-detail land and landmark silhouettes beyond the built chunks so the sightlines work.
 
 ## What the world should feel like
 
-Hollow Bay is **a city you can walk across in any direction**, the way you can in RuneScape. The overworld is not a set of rooms joined by corridors: it is open ground, with roads, squares, yards and parks, and buildings standing in it. You go indoors by walking through a building's door. You go down by taking a lift or stair inside a facility.
+Hollow Bay is **towns standing in a reclaimed landscape that you can walk across in any direction**, the way you can in RuneScape. The Low Ward is a dense port town where a river meets a small bay. Beyond the Cordon the anomalies let the city go wild: moor, overgrown suburbs, a great wood, marsh, a ridge, mountains and the Blight, with towns of very different sizes standing in that land and roads that fork at crossroads and loop. You go indoors by walking through a building's door. You go down by taking a lift or stair inside a facility.
 
-- **Open ground first.** Each overworld district is one wide square of open ground, and neighbouring squares join along their whole shared edge, so you can't tell where one district ends and the next begins. Walls exist only around buildings and at the edge of the playable map.
+- **Open ground first.** The overworld is not a set of rooms joined by corridors. It is open ground, with roads, squares, yards, fields and woods, and buildings standing in it. Walls exist only around buildings, along town walls and Directorate compounds, and at the edge of the playable map.
+- **The land is one place.** Coasts, the river, ridges, cliffs, roads and ward borders cross square edges freely. Nobody should be able to tell where one 64 × 64 square ends and the next begins; reviewers look at the assembled map with the grid hidden, and land that follows square edges is redrawn.
+- **Towns differ in size.** A town is anything from a hamlet of six cottages to a walled city of three squares. The ground between towns is wild land, broken up with cover, rises and paths so no stretch reads as a flat field.
+- **Height shapes the land.** Ridges, cliffs, plateaus and ledges decide where you can walk and what you can see past (see Terrain). Plan the sightlines: from the crossroads you see Old Town's wall, the Spire and Ironside's stacks; from the ridge you look down on the river and the walled town.
 - **Buildings stand in the ground.** A building is a small walled interior with doors onto the ground around it: a shop, a home, a pub, a gatehouse. Interiors are small and full; the ground outside is wide.
 - **Underground is enclosed.** Facility levels below the street are rooms joined by links, as before, and get more enclosed and more dangerous the deeper you go.
-- **Filler is content.** Roughly half of a district's ground is space no quest sends you to: back alleys, yards, parks, quays. It carries props, light, people and the odd gathering spot.
-- **Coherent shape.** Every region has a plan you can describe in one sentence. New districts extend that plan.
-- **Landmarks.** Each district has one thing you can see from a distance and won't find anywhere else, such as the station clock or the washing-line courtyard, so players can find their way without the map.
+- **Filler is content.** Most of the land is ground no quest sends you to: moor, woods, marsh, back lanes, yards and quays. It carries props, light, people and the odd gathering spot.
+- **Coherent shape.** The whole land has a plan you can describe in one sentence (the atlas spec's), and every ward has its own. New ground extends that plan.
+- **Landmarks.** Every town square has one thing you can see from a distance and won't find anywhere else, such as the station clock, the Ironside stacks or the drowned belfry, so players can find their way without the map. On the Low Ward's blueprint squares that means one per square. On land squares it means one per town, Site or outpost square, standing as a `focal` set-piece; wild squares need none, because the land itself (the ridge, the falls, the crater) is what you steer by there.
 
 ## Rules
 
@@ -127,6 +130,7 @@ The rest is judgement, and reviewers hold it:
 | Place | Shapes and floors | Landmark |
 | ----- | ----------------- | -------- |
 | Overworld squares | 64×64 open ground, `paving` base, `asphalt` roads, `gravel` yards, `grass` parks | One per square, such as the station clock |
+| Land squares | Cut from the land plan: its cover (`grass`, `dirt`, `trees`, `water`, `soil`, `rust`, `gravel`) under the square's own roads, yards and buildings | One per town, Site or outpost square, as a `focal` set-piece; wild squares steer by the land |
 | City buildings | Small walled interiors in `brick`, `blockwork` or `cladding`; `boards` for homes, shops and pubs, `terrazzo` for public halls | Shop signs and awnings outside |
 | Directorate buildings | Directorate panel walls (`wall`), `plating` floors, an orange band outside | The Directorate sign |
 | Directorate compounds | A `building` with an outdoor floor and `edge: "barrier"`: a walled yard with a gate, Directorate buildings standing inside it | The Site Meridian headframe |
@@ -143,21 +147,38 @@ The rest is judgement, and reviewers hold it:
 
 ## Wards
 
-Hollow Bay is a ring of wards around a bay. The Low Ward is on the west shore; the north shore (the Old Shipyards, the Heights, Ironside) runs east from the Cordon gate, the south shore (the Tidemarsh, Old Town, the Drowned Quarter) runs east from the sluice gate at the foot of the Cut, and both meet at the Lantern on the headland. The bay itself has no squares.
+Beyond the Cordon the overworld is the Hinterland, eight wards in one land plan (`docs/superpowers/specs/2026-11-19-hinterland-atlas-design.md`). The Low Ward is a port on the west coast; the Old Shipyards hold the north-west coast, the moor and the crossroads outside the Cordon; Tidemarsh the delta and the Great Wood on the south coast; the Heights the ridge to the north; Old Town the walled city astride the river in the valley; Ironside the falls under the north-east mountains; the Drowned Quarter the south-east coast; the Lantern the spit and the Blight road on its ledge; and the Blight the wild east round the crater lake.
 
-- **A ward is a region.** Its squares join along whole edges like the Low Ward's. Squares of different wards that touch keep their edges, so the only way between wards is a gate.
-- **Gates join wards.** Each crossing is a two-wide `gate` exit with two leaves of one door object on its tiles, set in the edge of the gentler ward. The Cordon gate opens when The Heart is done; every other gate opens on the flag `ward-open:<region>`, which the content of the ward before it grants. Until then the ward is drawn and walkable in the editor, and closed in play.
-- **Every ward has** an outpost square (a safe building with a storage locker, a quartermaster, an exchange mailbox and a contract board), a Site square (a Directorate compound with a headhouse whose lift will lead to the Site's levels, a holding block and the ward's landmark), and filler squares.
-- **Tier only rises.** A ward's gate squares and Site compound take its lower tier and its far squares the higher one, so each square has a gentler neighbour on the way in.
+| Ward | Tiers | Squares | Outpost (hub) | Site square |
+| - | - | - | - | - |
+| Old Shipyards | 14–15 | 36 | Forward Post Four, `gatehouse-yard` | `dry-dock-four` |
+| Tidemarsh | 16–17 | 26 | Tide Station, `tide-station` | `brinehouse` |
+| the Heights | 18–19 | 14 | Upper Station, `upper-station` | `the-spire` |
+| Old Town | 20–21 | 9 | The Hostel, `westgate` | `cathedral-close` |
+| Ironside | 22–23 | 8 | Shift House, `railhead` | `bellows` |
+| Drowned Quarter | 24–25 | 9 | The Roost, `the-roost` | `site-fathom` |
+| the Lantern | 26–27 | 15 | Keepers' Post, `keepers-hamlet` | `the-lantern` |
+| the Blight | 28 | 15 | Rim Camp, `rim-camp` | the Hollow, reserved |
+
+- **A ward is a region.** Every land square belongs to the ward the land plan's `ward` steps give its tiles. A square crossed by a ward border is `split`, one district per ward, each keeping only its own ward's tiles.
+- **Wards are sealed by land.** Sea, the river, the creek, cliffs, Old Town's wall and the mountains close each ward. Every gap is a land gate: a `gate` step in the plan, two tiles across and two deep, whose door tiles hold two leaves of one door object. The Cordon gate opens when The Heart is done; every other gate opens on the flag `ward-open:<region>`, which the chapter before it grants. Old Town's west gate and causeway open together, and so do the Lantern's seawall and Blight road. Until then the ward is drawn and walkable in the editor, and closed in play. **Checked** (`findSealedWardIssues`).
+- **Every ward has** an outpost (a safe building with a storage locker, a quartermaster, an exchange mailbox and a contract board), a Site compound (a Directorate compound with a headhouse whose lift will lead to the Site's levels, a holding block and the Site's landmark), a town or hamlet, and wild land. The Blight has no town; its Site is the Hollow beneath the crater lake.
+- **Tier only rises.** Squares touching a ward's entry gate take its lower tier and the rest its higher one, so each square has a gentler neighbour on the way in.
+
+**Where per-square rules change for land squares.** The rules written for the Low Ward's blueprint squares bend in three places on land:
+
+- **Edges.** A land square has no `exit` steps and no two-ways-in rule (rule 8). Its edges are the land's: walkable land meets walkable land across a seam, and sea or rock with no district is scenery, not a seam.
+- **Landmarks.** One per town, Site or outpost square rather than one per square, standing as a `focal` set-piece named in `furnish.landmarks` (see What the world should feel like).
+- **Ward edges.** Squares of different wards that touch do not keep a fence between them. The land seals the ward, and a gate is a gap in that land with a door in it, not a two-wide `gate` exit in a square's edge.
 
 ## Reserved ground
 
-- **Under the bay:** the Hollow, reached only from the lowest level of every Site.
+- **Under the crater lake:** the Hollow, the Blight's Site and the finale's ground. How the finale enters it (the Sites' lowest hatches, the lake, or both) is the finale's plan to decide. No level is built for it, and nothing else may take its id, `the-hollow`.
 - **Each Site's levels:** the headhouse lifts in the seven new Site compounds are dormant until their levels are built.
 
 ## Adding a district
 
-1. Decide where it attaches on the level's plan, and which exits it needs. Check its tier against rule 13.
+1. Decide where it attaches on the level's plan, and which exits it needs. Check its tier against rule 13. A land square instead names its `square` and draws on the land cut from it, with no exits; change the land itself in the land layer, never by typing it.
 2. Write its layout file, `content/districts/layouts/<district-id>.json`, and a `content/districts/<name>.ts` that loads it with `buildDistrict`.
 3. Give it at least one landmark, at least one filler room, and props in every room.
 4. Attach it in the level file with `joinDistricts`, and attach filler districts so it has two ways in.

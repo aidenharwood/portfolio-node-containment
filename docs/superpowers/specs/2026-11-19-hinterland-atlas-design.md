@@ -131,8 +131,8 @@ Nothing far away is drawn yet. The far view (Build order, step 6) is what lets p
 
 ### Story changes
 
-- **Gate Duty:** "hold the far yard" becomes holding the crossroads outside the Cordon, where Forward Post Four stands.
-- **Last Light:** the Lantern's lens is turned inland. Its light keeps the crater asleep rather than the bay. The chapter's reward also opens the crater rim.
+- **Gate Duty:** "hold the far yard" becomes holding the crossroads outside the Cordon by Forward Post Four, the outpost in `gatehouse-yard`. Its reward still grants `ward-open:tidemarsh`.
+- **Last Light:** the Lantern's lens is turned inland. Its light keeps the crater asleep rather than the bay. The chapter's reward grants `ward-open:the-blight`, which opens the crater rim gate. Nothing in content grants that flag yet; the quest itself is not written.
 - **Hollow Bay (the finale):** the Hollow lies beneath the crater lake in the Blight rather than under the bay. How the finale enters it, whether through the Sites' lowest hatches, the lake, or both, is decided in the finale's own plan.
 
 Every other chapter's outline and order is unchanged.
