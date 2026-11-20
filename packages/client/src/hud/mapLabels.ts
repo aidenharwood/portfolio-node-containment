@@ -25,16 +25,17 @@ export function districtLabels(level: LabelledLevel): DistrictLabel[] {
 }
 
 export function regionLabels(level: LabelledLevel, content: Pick<GameContent, 'districts'>): RegionLabel[] {
-  const boxes = new Map<RegionId, { minX: number; minY: number; maxX: number }>();
-  for (const { districtId, bounds } of districtLabels(level)) {
-    const regionId = content.districts.get(districtId)?.region;
+  const members = new Map<RegionId, DistrictLabel[]>();
+  for (const label of districtLabels(level)) {
+    const regionId = content.districts.get(label.districtId)?.region;
     if (regionId === undefined) continue;
-    const known = boxes.get(regionId);
-    boxes.set(regionId, {
-      minX: Math.min(known?.minX ?? bounds.x, bounds.x),
-      minY: Math.min(known?.minY ?? bounds.y, bounds.y),
-      maxX: Math.max(known?.maxX ?? bounds.x + bounds.width, bounds.x + bounds.width),
-    });
+    members.set(regionId, [...(members.get(regionId) ?? []), label]);
   }
-  return [...boxes].map(([regionId, box]) => ({ regionId, x: (box.minX + box.maxX) / 2, y: box.minY }));
+  return [...members].map(([regionId, labels]) => {
+    const area = labels.reduce((sum, { bounds }) => sum + bounds.width * bounds.height, 0);
+    const meanX = labels.reduce((sum, { bounds }) => sum + (bounds.x + bounds.width / 2) * bounds.width * bounds.height, 0) / area;
+    const meanY = labels.reduce((sum, { bounds }) => sum + (bounds.y + bounds.height / 2) * bounds.width * bounds.height, 0) / area;
+    const nearest = labels.reduce((best, label) => (Math.hypot(label.at.x - meanX, label.at.y - meanY) < Math.hypot(best.at.x - meanX, best.at.y - meanY) ? label : best));
+    return { regionId, x: nearest.at.x + 0.5, y: nearest.at.y + 0.5 };
+  });
 }

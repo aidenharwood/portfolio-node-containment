@@ -21,7 +21,7 @@ test('the two halves of a split square are labelled on their own walkable tiles'
   assert.ok(west.bounds.x + west.bounds.width <= east.bounds.x);
 });
 
-test('each region gets one label, at the top centre of its districts', () => {
+test('each region gets one label, at the district nearest its middle', () => {
   const labels = regionLabels(wilds, FIXTURE_CONTENT);
   const home = labels.filter((label) => label.regionId === 'fx-home');
   const far = labels.filter((label) => label.regionId === 'fx-far');

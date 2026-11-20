@@ -27,7 +27,7 @@ import type { GuidanceTracking } from '../state/guidanceTracking.ts';
 import type { WorldState } from '../state/worldState.ts';
 import { h, replaceChildren } from '../ui/dom.ts';
 import { isCompactLayout } from '../ui/viewport.ts';
-import { districtLabels, regionLabels } from './mapLabels.ts';
+import { districtLabels, regionLabels, type DistrictLabel, type RegionLabel } from './mapLabels.ts';
 import { drawPoiIcon, poiLegend } from './poiIcons.ts';
 
 const MAP_PADDING = 24;
@@ -96,6 +96,8 @@ export class WorldMap {
   private lastPointerType = 'mouse';
   private paintQueued = false;
   private readonly levelPoints = new Map<LevelId, readonly PointOfInterest[]>();
+  private readonly levelLabels = new Map<LevelId, { readonly districts: readonly DistrictLabel[]; readonly regions: readonly RegionLabel[] }>();
+  private tileCache:{ readonly key: string; readonly image: HTMLCanvasElement } | null = null;
 
   constructor(connection: GameConnection, world: WorldState, questTracking: GuidanceTracking) {
     this.connection = connection;
@@ -493,8 +495,10 @@ export class WorldMap {
     const width = this.canvas.clientWidth;
     const height = this.canvas.clientHeight;
     const ratio = Math.min(window.devicePixelRatio || 1, 2);
-    this.canvas.width = Math.round(width * ratio);
-    this.canvas.height = Math.round(height * ratio);
+    const pixelWidth = Math.round(width * ratio);
+    const pixelHeight = Math.round(height * ratio);
+    if (this.canvas.width !== pixelWidth) this.canvas.width = pixelWidth;
+    if (this.canvas.height !== pixelHeight) this.canvas.height = pixelHeight;
     const context = this.canvas.getContext('2d') as CanvasRenderingContext2D;
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
     context.clearRect(0, 0, width, height);
@@ -502,83 +506,96 @@ export class WorldMap {
     const frame = this.frameOf(view);
     const objectives = this.objectiveDistrictIds();
     this.paintTiles(context, level, objectives, frame);
-    this.paintRegionLabels(context, level, frame);
-    this.paintDistrictLabels(context, level, objectives, frame);
+    this.paintObjectiveOutlines(context, level, objectives, frame);
     const transit = this.mode === 'transit';
     this.paintPointsOfInterest(context, level, frame, transit);
+    this.paintSettlementLabels(context, level, frame);
     this.stationHits = transit ? this.paintNetwork(context, level, this.boardingStation(), frame) : [];
     this.paintSelf(context, level, frame);
   }
 
   private paintTiles(context: CanvasRenderingContext2D, level: ResolvedLevel, objectives: ReadonlySet<DistrictId>, frame: MapFrame): void {
-    const size = Math.max(1, frame.scale) + 0.5;
-    const width = this.canvas.clientWidth;
-    const height = this.canvas.clientHeight;
+    const image = this.tileImage(level, objectives);
+    const { scene } = level;
     const minX = Math.max(0, Math.floor(-frame.offsetX / frame.scale));
     const minY = Math.max(0, Math.floor(-frame.offsetY / frame.scale));
+    const maxX = Math.min(scene.width, Math.ceil((this.canvas.clientWidth - frame.offsetX) / frame.scale));
+    const maxY = Math.min(scene.height, Math.ceil((this.canvas.clientHeight - frame.offsetY) / frame.scale));
+    if (maxX <= minX || maxY <= minY) return;
+    context.imageSmoothingEnabled = false;
+    context.drawImage(image, minX, minY, maxX - minX, maxY - minY, frame.offsetX + minX * frame.scale, frame.offsetY + minY * frame.scale, (maxX - minX) * frame.scale, (maxY - minY) * frame.scale);
+  }
+
+  private tileImage(level: ResolvedLevel, objectives: ReadonlySet<DistrictId>): HTMLCanvasElement {
+    const key = `${level.id}|${[...objectives].filter((id) => level.districts.some(({ districtId }) => districtId === id)).sort().join(',')}`;
+    if (this.tileCache?.key === key) return this.tileCache.image;
     const { scene } = level;
-    const maxX = Math.min(scene.width, Math.ceil((width - frame.offsetX) / frame.scale));
-    const maxY = Math.min(scene.height, Math.ceil((height - frame.offsetY) / frame.scale));
-    for (let y = minY; y < maxY; y++) {
-      for (let x = minX; x < maxX; x++) {
+    const image = h('canvas', {});
+    image.width = scene.width;
+    image.height = scene.height;
+    const context = image.getContext('2d') as CanvasRenderingContext2D;
+    const pixels = context.createImageData(scene.width, scene.height);
+    const colors = new Map<string, readonly [number, number, number]>();
+    for (let y = 0; y < scene.height; y++) {
+      for (let x = 0; x < scene.width; x++) {
         const kind = scene.tileAt({ x, y });
         if (kind === 'void') continue;
         const district = level.layout.districtAt({ x, y });
         const target = district !== undefined && objectives.has(district);
         const base = kind === 'coolant' ? '#1f5f7a' : kind === 'track' ? '#2a2420' : kind === 'door' ? '#2f5a6a' : kind === 'cliff' ? '#6a6258' : TILE_KINDS[kind].walkable ? (target ? '#3d3216' : '#1c2a33') : target ? '#7a5a22' : '#40525e';
-        context.fillStyle = shadeHex(base, heightShade(scene, x, y));
-        context.fillRect(frame.offsetX + x * frame.scale, frame.offsetY + y * frame.scale, size, size);
+        const hex = shadeHex(base, heightShade(scene, x, y));
+        let rgb = colors.get(hex);
+        if (!rgb) {
+          const value = Number.parseInt(hex.slice(1), 16);
+          rgb = [(value >> 16) & 255, (value >> 8) & 255, value & 255];
+          colors.set(hex, rgb);
+        }
+        const index = (y * scene.width + x) * 4;
+        pixels.data[index] = rgb[0];
+        pixels.data[index + 1] = rgb[1];
+        pixels.data[index + 2] = rgb[2];
+        pixels.data[index + 3] = 255;
       }
     }
+    context.putImageData(pixels, 0, 0);
+    this.tileCache = { key, image };
+    return image;
   }
 
-  private paintRegionLabels(context: CanvasRenderingContext2D, level: ResolvedLevel, frame: MapFrame): void {
-    if (frame.scale >= 3) return;
-    context.textAlign = 'center';
-    context.textBaseline = 'top';
-    context.font = '700 15px "Chakra Petch", sans-serif';
-    context.fillStyle = 'rgba(159, 179, 190, 0.55)';
-    for (const { regionId, x, y } of regionLabels(level, GAME_CONTENT)) {
-      const name = (GAME_CONTENT.regions.get(regionId)?.name ?? regionId).toUpperCase().split('').join(' ');
-      context.fillText(name, frame.offsetX + x * frame.scale, frame.offsetY + y * frame.scale - 22);
-    }
+  private labelsOf(level: ResolvedLevel): { readonly districts: readonly DistrictLabel[]; readonly regions: readonly RegionLabel[] } {
+    const cached = this.levelLabels.get(level.id);
+    if (cached) return cached;
+    const labels = { districts: districtLabels(level), regions: regionLabels(level, GAME_CONTENT) };
+    this.levelLabels.set(level.id, labels);
+    return labels;
   }
 
-  private paintDistrictLabels(context: CanvasRenderingContext2D, level: ResolvedLevel, objectives: ReadonlySet<DistrictId>, frame: MapFrame): void {
+  private paintSettlementLabels(context: CanvasRenderingContext2D, level: ResolvedLevel, frame: MapFrame): void {
     context.textAlign = 'center';
     context.textBaseline = 'middle';
-    const detailed = frame.scale >= 3;
-    for (const { districtId, at, bounds: rect } of districtLabels(level)) {
-      const district = GAME_CONTENT.districts.get(districtId);
-      if (!district) continue;
-      const x = frame.offsetX + (at.x + 0.5) * frame.scale;
-      const y = frame.offsetY + (at.y + 0.5) * frame.scale;
-      const target = objectives.has(districtId);
-      if (target) {
-        context.strokeStyle = OBJECTIVE_COLOR;
-        context.lineWidth = 2;
-        context.setLineDash([5, 4]);
-        context.strokeRect(frame.offsetX + rect.x * frame.scale, frame.offsetY + rect.y * frame.scale, rect.width * frame.scale, rect.height * frame.scale);
-        context.setLineDash([]);
-      }
-      if (rect.width * frame.scale < 36) continue;
-      context.font = `700 ${detailed ? 14 : 12}px "Chakra Petch", sans-serif`;
-      const name = district.name.toUpperCase();
-      const labelWidth = context.measureText(name).width + 14;
-      const labelHeight = detailed ? (target ? 46 : 34) : 20;
+    context.font = '700 14px "Chakra Petch", sans-serif';
+    for (const { regionId, x, y } of this.labelsOf(level).regions) {
+      const name = (GAME_CONTENT.regions.get(regionId)?.name ?? regionId).toUpperCase();
+      const labelX = frame.offsetX + x * frame.scale;
+      const labelY = frame.offsetY + y * frame.scale;
+      const labelWidth = context.measureText(name).width + 16;
       context.fillStyle = 'rgba(3, 8, 11, 0.8)';
-      context.fillRect(x - labelWidth / 2, y - labelHeight / 2, labelWidth, labelHeight);
-      context.fillStyle = target ? OBJECTIVE_COLOR : '#e8f4f8';
-      context.fillText(name, x, detailed ? y - labelHeight / 2 + 10 : y);
-      if (!detailed) continue;
-      context.font = '500 11px "IBM Plex Mono", monospace';
-      context.fillStyle = '#9fb3be';
-      context.fillText(`Tier ${district.tier}`, x, y - labelHeight / 2 + 24);
-      if (target) {
-        context.fillStyle = OBJECTIVE_COLOR;
-        context.fillText('Tracked objective', x, y - labelHeight / 2 + 37);
-      }
+      context.fillRect(labelX - labelWidth / 2, labelY - 11, labelWidth, 22);
+      context.fillStyle = '#e8f4f8';
+      context.fillText(name, labelX, labelY);
     }
+  }
+
+  private paintObjectiveOutlines(context: CanvasRenderingContext2D, level: ResolvedLevel, objectives: ReadonlySet<DistrictId>, frame: MapFrame): void {
+    if (objectives.size === 0) return;
+    context.strokeStyle = OBJECTIVE_COLOR;
+    context.lineWidth = 2;
+    context.setLineDash([5, 4]);
+    for (const { districtId, bounds: rect } of this.labelsOf(level).districts) {
+      if (!objectives.has(districtId)) continue;
+      context.strokeRect(frame.offsetX + rect.x * frame.scale, frame.offsetY + rect.y * frame.scale, rect.width * frame.scale, rect.height * frame.scale);
+    }
+    context.setLineDash([]);
   }
 
   private paintPointsOfInterest(context: CanvasRenderingContext2D, level: ResolvedLevel, frame: MapFrame, transit: boolean): void {

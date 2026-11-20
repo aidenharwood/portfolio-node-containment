@@ -34,7 +34,12 @@ const OFFSCREEN_MARGIN = 60;
 const onScreen = (anchor: { x: number; y: number; visible: boolean } | null): boolean =>
   anchor !== null && anchor.visible && anchor.x > -OFFSCREEN_MARGIN && anchor.y > -OFFSCREEN_MARGIN && anchor.x < window.innerWidth + OFFSCREEN_MARGIN && anchor.y < window.innerHeight + OFFSCREEN_MARGIN;
 
-const healthState = (ratio: number): string => (ratio > 0.5 ? 'healthy' : ratio > 0.25 ? 'wounded' : 'critical');
+const COMBAT_LINGER_MS = 6000;
+
+const inCombat = (entity: ClientEntity, world: WorldState, now: number): boolean =>
+  now - entity.lastCombatAt < COMBAT_LINGER_MS || entity.id === world.combatTargetId || (entity.id === world.selfEntityId && world.combatTargetId !== null);
+
+const healthState =(ratio: number): string => (ratio > 0.5 ? 'healthy' : ratio > 0.25 ? 'wounded' : 'critical');
 
 export class CombatOverlay {
   readonly element = h('div', { className: 'combat-layer' });
@@ -83,7 +88,7 @@ export class CombatOverlay {
   private updateEntityBars(world: WorldState, renderer: GameRenderer, now: number): void {
     const visible = new Set<EntityId>();
     for (const entity of world.entities.values()) {
-      if (!entity.vitals || entity.dyingAt !== null) continue;
+      if (!entity.vitals || entity.dyingAt !== null || !inCombat(entity, world, now)) continue;
       const anchor = renderer.anchorFor(entity.id, now, ENTITY_BAR_LIFT);
       if (!anchor || !onScreen(anchor)) continue;
       visible.add(entity.id);
