@@ -300,3 +300,46 @@ test('Ironside is industry at the falls, with the Bellows compound, Shift House 
   assert.ok(outpost && 'room' in outpost, 'Railhead has no outpost anchor');
   assert.equal(outpost.room, 'shift-house');
 });
+
+test('the Drowned Quarter is half-sunk streets on boardwalks round Site Fathom\'s derrick and the Roost, with the seawall gate and the view to the Lantern open, each round its landmark', () => {
+  const landmarks: Readonly<Record<string, string>> = {
+    'site-fathom': 'bell-derrick',
+    'the-roost': 'drowned-belfry',
+  };
+  const wild = ['floodgate-moor', 'gibbet-moor', 'saltmoor', 'sunk-lane'];
+  for (const id of [...Object.keys(landmarks), ...wild, 'moat-mire', 'creek-moor', 'creek-mud']) {
+    const layout = parseLayout(LAYOUT_SOURCES[id]);
+    assert.ok(layout.square, id);
+    assert.equal(layout.region, 'drowned-quarter', id);
+    const landmark = landmarks[id];
+    if (landmark === undefined) continue;
+    assert.ok(layout.objects.some((object) => object.object === landmark), `${id} has no ${landmark}`);
+    assert.ok(layout.steps.filter((step) => step.kind === 'building').length >= 6, `${id} has too few buildings for a town square`);
+    const flooded = layout.steps.filter((step) => step.kind === 'patch' && step.tile === 'water');
+    assert.ok(flooded.length >= 2, `${id} has too few flooded streets`);
+    const overlaps = (a: { readonly x: number; readonly y: number; readonly width: number; readonly height: number }, b: typeof a): boolean =>
+      a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
+    const walks = layout.steps.filter((step) => step.kind === 'patch' && step.tile === 'boards' && flooded.some((water) => water.kind === 'patch' && overlaps(water.rect, step.rect)));
+    assert.ok(walks.length >= 3, `${id} has too few boardwalks over its flooded streets`);
+  }
+  for (const id of wild) {
+    const layout = parseLayout(LAYOUT_SOURCES[id]);
+    assert.ok(layout.steps.some((step) => step.kind === 'rise'), `${id} is a flat field`);
+    assert.ok(layout.steps.some((step) => step.kind === 'patch' && step.tile === 'trees'), `${id} has no cover`);
+  }
+  const fathom = parseLayout(LAYOUT_SOURCES['site-fathom']);
+  for (const room of ['fathom-yard', 'fathom-headhouse', 'fathom-holding']) {
+    assert.ok(fathom.steps.some((step) => step.kind === 'building' && step.id === room), `Site Fathom has no ${room}`);
+  }
+  for (const object of ['fathom-lift', 'diving-bell']) assert.ok(fathom.objects.some((placed) => placed.object === object), `Site Fathom has no ${object}`);
+  const roost = parseLayout(LAYOUT_SOURCES['the-roost']);
+  const outpost = roost.anchors.outpost;
+  assert.ok(outpost && 'room' in outpost, 'the Roost has no outpost anchor');
+  assert.equal(outpost.room, 'the-roost');
+  assert.ok(roost.steps.some((step) => step.kind === 'building' && step.id === 'seawall-lodge'), 'the seawall gate has no lodge');
+  assert.equal(roost.objects.filter((object) => object.object === 'seawall-gate-leaf').length, 2);
+  for (const step of roost.steps) {
+    if (step.kind !== 'building') continue;
+    assert.ok(step.rect.x + step.rect.width <= 32 || step.rect.y + step.rect.height <= 18, `${step.id} stands between the Roost and the Lantern`);
+  }
+});
