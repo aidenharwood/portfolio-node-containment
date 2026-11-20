@@ -42,7 +42,6 @@
     { "id": "upper-station-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 7 } },
     { "id": "upper-station-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 50, "dy": 11 } },
     { "id": "upper-station-barricade", "object": "barricade", "at": { "room": "ground", "dx": 22, "dy": 20 } },
-    { "id": "upper-station-incline-sheave-1", "object": "incline-sheave", "at": { "room": "ground", "dx": 32, "dy": 24 } },
     { "id": "upper-station-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 22 } },
     { "id": "upper-station-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 6 } }
   ],
@@ -53,10 +52,12 @@
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "upper-station-landmark", "prefab": "landmark-incline-sheave", "at": { "room": "ground", "dx": 32, "dy": 24 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
     "upper-station": { "theme": "office", "also": ["shop"], "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

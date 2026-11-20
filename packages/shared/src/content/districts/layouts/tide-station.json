@@ -48,7 +48,6 @@
     { "id": "sluice-end-table-1", "object": "table", "at": { "room": "tide-station", "dx": 8, "dy": 4 }, "facing": "north" },
     { "id": "sluice-end-chair-1", "object": "chair", "at": { "room": "tide-station", "dx": 8, "dy": 3 } },
     { "id": "sluice-end-security-camera-1", "object": "security-camera", "at": { "room": "tide-station", "dx": 0, "dy": 7 }, "facing": "north" },
-    { "id": "tide-station-tide-gauge-1", "object": "tide-gauge", "at": { "room": "ground", "dx": 36, "dy": 17 } },
     { "id": "tide-station-checkpoint-barrier-1", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 27, "dy": 4 } },
     { "id": "tide-station-flood-mast-1", "object": "flood-mast", "at": { "room": "ground", "dx": 25, "dy": 6 } }
   ],
@@ -59,11 +58,13 @@
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "tide-station-landmark", "prefab": "landmark-tide-gauge", "at": { "room": "ground", "dx": 36, "dy": 17 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
     "tide-station": { "theme": "office", "also": ["shop"], "people": 0 },
     "gauge-house": { "theme": "office", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

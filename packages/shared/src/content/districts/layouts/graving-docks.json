@@ -37,7 +37,6 @@
     { "id": "graving-docks-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 27 } },
     { "id": "graving-docks-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 30, "dy": 32 } },
     { "id": "graving-docks-barricade", "object": "barricade", "at": { "room": "ground", "dx": 28, "dy": 28 } },
-    { "id": "graving-docks-dock-pump-1", "object": "dock-pump", "at": { "room": "ground", "dx": 33, "dy": 25 } },
     { "id": "graving-docks-lock-gate-1", "object": "lock-gate", "at": { "room": "ground", "dx": 37, "dy": 26 } },
     { "id": "graving-docks-lock-gate-2", "object": "lock-gate", "at": { "room": "ground", "dx": 39, "dy": 26 } }
   ],
@@ -46,7 +45,9 @@
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "graving-docks-landmark", "prefab": "landmark-dock-pump", "at": { "room": "ground", "dx": 33, "dy": 25 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
     "dock-office": { "theme": "office", "people": 0 },
@@ -57,5 +58,5 @@
     "winch-house": { "theme": "works", "people": 0 },
     "slip-hut": { "theme": "office", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

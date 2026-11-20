@@ -19,7 +19,6 @@
     "start": { "room": "ground", "dx": 22, "dy": 62 }
   },
   "objects": [
-    { "id": "gallows-top-gallows", "object": "gallows", "at": { "room": "ground", "dx": 17, "dy": 57 } },
     { "id": "gallows-top-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 61 } },
     { "id": "gallows-top-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 14, "dy": 61 } },
     { "id": "gallows-top-barricade", "object": "barricade", "at": { "room": "ground", "dx": 20, "dy": 61 } }
@@ -29,9 +28,11 @@
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "gallows-top-landmark", "prefab": "landmark-gallows", "at": { "room": "ground", "dx": 17, "dy": 57 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

@@ -29,7 +29,6 @@
     "start": { "room": "ground", "dx": 19, "dy": 35 }
   },
   "objects": [
-    { "id": "east-wall-town-pump", "object": "town-pump", "at": { "room": "ground", "dx": 6, "dy": 43 } },
     { "id": "east-wall-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 15, "dy": 38 } },
     { "id": "east-wall-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 9, "dy": 32 } },
     { "id": "east-wall-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 15, "dy": 4 } },
@@ -59,7 +58,9 @@
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "east-wall-landmark", "prefab": "landmark-town-pump", "at": { "room": "ground", "dx": 6, "dy": 43 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
     "market-inn": { "theme": "canteen", "people": 0 },
@@ -67,5 +68,5 @@
     "corn-exchange": { "theme": "civic", "people": 0 },
     "butchers-row": { "theme": "shop", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

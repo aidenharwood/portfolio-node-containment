@@ -26,18 +26,19 @@
     { "id": "incline-foot-gate-leaf-0", "object": "incline-gate-leaf", "at": { "room": "ground", "dx": 26, "dy": 29 }, "facing": "south" },
     { "id": "incline-foot-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 45 } },
     { "id": "incline-foot-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 30, "dy": 50 } },
-    { "id": "incline-foot-barricade", "object": "barricade", "at": { "room": "ground", "dx": 25, "dy": 47 } },
-    { "id": "incline-foot-incline-winder-1", "object": "incline-winder", "at": { "room": "ground", "dx": 18, "dy": 32 } }
+    { "id": "incline-foot-barricade", "object": "barricade", "at": { "room": "ground", "dx": 25, "dy": 47 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "incline-foot-landmark", "prefab": "landmark-incline-winder", "at": { "room": "ground", "dx": 18, "dy": 32 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
     "lower-station": { "theme": "transit", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

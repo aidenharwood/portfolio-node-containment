@@ -33,7 +33,6 @@
     "start": { "room": "ground", "dx": 22, "dy": 34 }
   },
   "objects": [
-    { "id": "gallows-green-gibbet", "object": "gibbet", "at": { "room": "ground", "dx": 10, "dy": 22 } },
     { "id": "gallows-green-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 8, "dy": 62 } },
     { "id": "gallows-green-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 25, "dy": 45 } },
     { "id": "gallows-green-barricade", "object": "barricade", "at": { "room": "ground", "dx": 19, "dy": 49 } },
@@ -46,10 +45,12 @@
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "gallows-green-landmark", "prefab": "landmark-gibbet", "at": { "room": "ground", "dx": 10, "dy": 22 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
     "hangmans-lodge": { "theme": "home", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

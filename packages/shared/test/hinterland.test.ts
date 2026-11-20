@@ -147,6 +147,54 @@ test('the overworld is the Hinterland, with the Low Ward pinned so Terminus Squa
   for (const region of GAME_CONTENT.regions.values()) assert.equal(GAME_CONTENT.levelOfDistrict.get(region.hubDistrictId), 'overworld', region.id);
 });
 
+const TOWN_LANDMARKS: Readonly<Record<string, { readonly room: string; readonly object: string }>> = {
+  'slipway-row': { room: 'ground', object: 'yard-crane' },
+  'shipwrights-hard': { room: 'ground', object: 'boiler-stack' },
+  'graving-docks': { room: 'ground', object: 'dock-pump' },
+  'incline-foot': { room: 'ground', object: 'incline-winder' },
+  stiltholm: { room: 'ground', object: 'tide-bell' },
+  'tide-station': { room: 'ground', object: 'tide-gauge' },
+  uptown: { room: 'ground', object: 'exchange-clock' },
+  'north-parade': { room: 'ground', object: 'ridge-beacon' },
+  'crescent-walk': { room: 'ground', object: 'crescent-screen' },
+  'upper-station': { room: 'ground', object: 'incline-sheave' },
+  westgate: { room: 'ground', object: 'gate-clock' },
+  wallside: { room: 'ground', object: 'wall-tower' },
+  'east-wall': { room: 'ground', object: 'town-pump' },
+  'floodgate-street': { room: 'ground', object: 'floodgate-winch' },
+  'moat-bank': { room: 'ground', object: 'tannery-stack' },
+  'water-gate': { room: 'ground', object: 'wharf-crane' },
+  'gallows-green': { room: 'ground', object: 'gibbet' },
+  'gallows-top': { room: 'ground', object: 'gallows' },
+  'furnace-row': { room: 'ground', object: 'ironside-stack' },
+  railhead: { room: 'ground', object: 'coaling-gantry' },
+  'the-falls': { room: 'ground', object: 'penstock-gate' },
+  'site-fathom': { room: 'fathom-yard', object: 'bell-derrick' },
+  'the-roost': { room: 'ground', object: 'drowned-belfry' },
+  'keepers-hamlet': { room: 'ground', object: 'fog-bell' },
+  'rim-camp': { room: 'ground', object: 'rim-searchlight' },
+};
+
+const stands = (districtId: string, objectId: string): boolean => GAME_CONTENT.districts.get(districtId)?.objects.some((object) => object.objectId === objectId) ?? false;
+
+test('every Hinterland town landmark stands as a focal set-piece in a room named in its square\'s landmarks', () => {
+  for (const [id, { room, object }] of Object.entries(TOWN_LANDMARKS)) {
+    const district = GAME_CONTENT.districts.get(id);
+    assert.ok(district, id);
+    assert.ok(district.landmarks?.includes(room), `${id} does not name ${room} as a landmark room`);
+    const logged = district.dressingLog?.find((entry) => entry.room === room)?.setPieces ?? [];
+    assert.ok(logged.some((piece) => piece.roles.includes('focal')), `${id} has no focal set-piece in ${room}`);
+    const rect = district.rooms?.[room];
+    assert.ok(rect, `${id} has no room ${room}`);
+    const layout = parseLayout(LAYOUT_SOURCES[id]);
+    assert.ok(!layout.objects.some((placed) => placed.object === object), `${id} still places its ${object} as a plain object`);
+    assert.ok(
+      district.objects.some((placed) => placed.objectId === object && placed.instanceId.includes('/') && placed.position.x >= rect.x && placed.position.y >= rect.y && placed.position.x < rect.x + rect.width && placed.position.y < rect.y + rect.height),
+      `${id} has no ${object} set in ${room}`,
+    );
+  }
+});
+
 test('the Old Shipyards town squares, Site, outpost and Incline foot are blocked out round their landmarks', () => {
   const landmarks: Readonly<Record<string, string>> = {
     'slipway-row': 'beached-hull',
@@ -159,7 +207,7 @@ test('the Old Shipyards town squares, Site, outpost and Incline foot are blocked
   const town = ['slipway-row', 'shipwrights-hard', 'graving-docks', 'dry-dock-four'];
   for (const [id, landmark] of Object.entries(landmarks)) {
     const layout = parseLayout(LAYOUT_SOURCES[id]);
-    assert.ok(layout.objects.some((object) => object.object === landmark), `${id} has no ${landmark}`);
+    assert.ok(stands(id, landmark), `${id} has no ${landmark}`);
     if (town.includes(id)) assert.ok(layout.steps.filter((step) => step.kind === 'building').length >= 4, `${id} has too few buildings for a town square`);
   }
 });
@@ -173,7 +221,7 @@ test('Tidemarsh has a stilt village, its Site on piles, an outpost by the sluice
   };
   for (const [id, landmark] of Object.entries(landmarks)) {
     const layout = parseLayout(LAYOUT_SOURCES[id]);
-    assert.ok(layout.objects.some((object) => object.object === landmark), `${id} has no ${landmark}`);
+    assert.ok(stands(id, landmark), `${id} has no ${landmark}`);
   }
   const village = parseLayout(LAYOUT_SOURCES.stiltholm);
   assert.ok(village.steps.filter((step) => step.kind === 'building').length >= 8, 'Stiltholm has too few buildings for a village');
@@ -192,7 +240,7 @@ test('the Heights have an uptown on the ridge, the Spire, Upper Station at the I
   const town = ['north-parade', 'crescent-walk', 'uptown'];
   for (const [id, landmark] of Object.entries(landmarks)) {
     const layout = parseLayout(LAYOUT_SOURCES[id]);
-    assert.ok(layout.objects.some((object) => object.object === landmark), `${id} has no ${landmark}`);
+    assert.ok(stands(id, landmark), `${id} has no ${landmark}`);
     if (town.includes(id)) assert.ok(layout.steps.filter((step) => step.kind === 'building').length >= 6, `${id} has too few buildings for a town square`);
   }
 });
@@ -231,7 +279,7 @@ test('Old Town is a walled city astride the river round its cathedral, with the 
     const layout = parseLayout(LAYOUT_SOURCES[id]);
     assert.ok(layout.square, id);
     assert.equal(layout.region, 'old-town', id);
-    assert.ok(layout.objects.some((object) => object.object === landmark), `${id} has no ${landmark}`);
+    assert.ok(stands(id, landmark), `${id} has no ${landmark}`);
     if (town.includes(id)) assert.ok(layout.steps.filter((step) => step.kind === 'building').length >= 4, `${id} has too few buildings for a town square`);
     const origin = { x: layout.square.column * 64, y: layout.square.row * 64 };
     for (const step of layout.steps) {
@@ -269,7 +317,7 @@ test('Ironside is industry at the falls, with the Bellows compound, Shift House 
     assert.ok(layout.square, id);
     assert.equal(layout.region, 'ironside', id);
     const landmark = landmarks[id];
-    if (landmark) assert.ok(layout.objects.some((object) => object.object === landmark), `${id} has no ${landmark}`);
+    if (landmark) assert.ok(stands(id, landmark), `${id} has no ${landmark}`);
     if (town.includes(id)) assert.ok(layout.steps.filter((step) => step.kind === 'building').length >= 4, `${id} has too few buildings for a town square`);
     const origin = { x: layout.square.column * 64, y: layout.square.row * 64 };
     for (const step of layout.steps) {
@@ -282,8 +330,7 @@ test('Ironside is industry at the falls, with the Bellows compound, Shift House 
     }
   }
   assert.ok(bridges >= 2, `Ironside has ${bridges} bridges over the river`);
-  const furnaceRow = parseLayout(LAYOUT_SOURCES['furnace-row']);
-  assert.ok(furnaceRow.objects.filter((object) => object.object === 'ironside-stack').length >= 3, 'Furnace Row has too few stacks');
+  assert.ok((GAME_CONTENT.districts.get('furnace-row')?.objects.filter((object) => object.objectId === 'ironside-stack').length ?? 0) >= 3, 'Furnace Row has too few stacks');
   const stack = GAME_CONTENT.worldObjects.get('ironside-stack');
   assert.ok(stack, 'the Ironside stack is not defined');
   for (const object of GAME_CONTENT.worldObjects.values()) {
@@ -313,7 +360,7 @@ test('the Drowned Quarter is half-sunk streets on boardwalks round Site Fathom\'
     assert.equal(layout.region, 'drowned-quarter', id);
     const landmark = landmarks[id];
     if (landmark === undefined) continue;
-    assert.ok(layout.objects.some((object) => object.object === landmark), `${id} has no ${landmark}`);
+    assert.ok(stands(id, landmark), `${id} has no ${landmark}`);
     assert.ok(layout.steps.filter((step) => step.kind === 'building').length >= 6, `${id} has too few buildings for a town square`);
     const flooded = layout.steps.filter((step) => step.kind === 'patch' && step.tile === 'water');
     assert.ok(flooded.length >= 2, `${id} has too few flooded streets`);
@@ -370,7 +417,7 @@ test('the Lantern is the keepers\' hamlet at the root of the spit and the lit li
   assert.ok(waystations >= 6, `the Blight road has only ${waystations} waystations`);
   assert.ok(milestones >= 4, `the Blight road has only ${milestones} milestones`);
   const hamlet = parseLayout(LAYOUT_SOURCES['keepers-hamlet']);
-  assert.ok(hamlet.objects.some((object) => object.object === 'fog-bell'), 'the hamlet has no fog bell');
+  assert.ok(stands('keepers-hamlet', 'fog-bell'), 'the hamlet has no fog bell');
   assert.ok(hamlet.steps.filter((step) => step.kind === 'building').length >= 6, 'the hamlet has too few buildings');
   const outpost = hamlet.anchors.outpost;
   assert.ok(outpost && 'room' in outpost, 'the hamlet has no outpost anchor');
@@ -415,9 +462,9 @@ test('the Blight is wild land gone wrong round the crater lake, with the rim cam
         }
       }
     }
-    for (const object of layout.objects) {
+    for (const object of [...layout.objects, ...layout.setPieces]) {
       if (!('room' in object.at) || object.at.room !== 'ground') continue;
-      assert.notEqual(land.tileAt({ x: origin.x + object.at.dx, y: origin.y + object.at.dy }), 'gravel', `${object.id} stands on the crater rim`);
+      assert.notEqual(land.tileAt({ x: origin.x + object.at.dx, y: origin.y + object.at.dy }), 'gravel', `${'id' in object ? object.id : object.prefab} stands on the crater rim`);
     }
     let open = 0;
     for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) if (land.wardAt({ x: origin.x + x, y: origin.y + y }) === 'the-blight' && walkable({ x: origin.x + x, y: origin.y + y }) && land.tileAt({ x: origin.x + x, y: origin.y + y }) !== 'gravel') open++;
@@ -442,7 +489,7 @@ test('the Blight is wild land gone wrong round the crater lake, with the rim cam
   assert.ok(post, 'the rim camp has no post');
   const gate = { x: 662 - camp.square.column * 64, y: 297 - camp.square.row * 64 };
   assert.ok(Math.abs(post.rect.x - gate.x) + Math.abs(post.rect.y - gate.y) <= 24, 'the rim camp post is not by the rim gate');
-  assert.ok(camp.objects.some((object) => object.object === 'rim-searchlight'), 'the rim camp has no searchlight on the lake');
+  assert.ok(stands('rim-camp', 'rim-searchlight'), 'the rim camp has no searchlight on the lake');
   assert.ok(GAME_CONTENT.worldObjects.get('rim-searchlight')?.light, 'the searchlight is not lit');
   assert.ok(!GAME_CONTENT.levels.has('the-hollow'), 'the Hollow is reserved');
 });

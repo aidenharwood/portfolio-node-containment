@@ -57,7 +57,6 @@
     { "id": "floodgate-table-1", "object": "table", "at": { "room": "the-roost", "dx": 8, "dy": 4 }, "facing": "north" },
     { "id": "floodgate-chair-1", "object": "chair", "at": { "room": "the-roost", "dx": 8, "dy": 3 } },
     { "id": "floodgate-security-camera-1", "object": "security-camera", "at": { "room": "the-roost", "dx": 0, "dy": 7 }, "facing": "north" },
-    { "id": "the-roost-drowned-belfry-1", "object": "drowned-belfry", "at": { "room": "ground", "dx": 12, "dy": 49 } },
     { "id": "the-roost-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 17, "dy": 26 } },
     { "id": "the-roost-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 9, "dy": 13 } },
     { "id": "the-roost-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 19 } },
@@ -80,7 +79,9 @@
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "the-roost-landmark", "prefab": "landmark-drowned-belfry", "at": { "room": "ground", "dx": 12, "dy": 49 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
     "the-roost": { "theme": "office", "also": ["shop"], "people": 0 },
@@ -92,5 +93,5 @@
     "sunk-house": { "theme": "home", "people": 0 },
     "seawall-lodge": { "theme": "office", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

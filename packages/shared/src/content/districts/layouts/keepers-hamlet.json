@@ -47,7 +47,6 @@
     { "id": "keepers-row-table-1", "object": "table", "at": { "room": "keepers-post", "dx": 8, "dy": 4 }, "facing": "north" },
     { "id": "keepers-row-chair-1", "object": "chair", "at": { "room": "keepers-post", "dx": 8, "dy": 3 } },
     { "id": "keepers-row-security-camera-1", "object": "security-camera", "at": { "room": "keepers-post", "dx": 0, "dy": 7 }, "facing": "north" },
-    { "id": "keepers-hamlet-fog-bell-1", "object": "fog-bell", "at": { "room": "ground", "dx": 6, "dy": 21 } },
     { "id": "keepers-hamlet-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 18 } },
     { "id": "keepers-hamlet-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 16, "dy": 30 } },
     { "id": "keepers-hamlet-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 9 } },
@@ -81,7 +80,9 @@
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "keepers-hamlet-landmark", "prefab": "landmark-fog-bell", "at": { "room": "ground", "dx": 6, "dy": 21 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
     "keepers-post": { "theme": "office", "also": ["shop"], "people": 0 },
@@ -92,5 +93,5 @@
     "the-wick": { "theme": "canteen", "people": 0 },
     "keepers-chapel": { "theme": "chapel", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

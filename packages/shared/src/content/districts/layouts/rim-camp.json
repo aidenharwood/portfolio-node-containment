@@ -51,8 +51,6 @@
     { "id": "rim-camp-barricade", "object": "barricade", "at": { "room": "ground", "dx": 19, "dy": 37 } },
     { "id": "rim-camp-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 22, "dy": 18 } },
     { "id": "rim-camp-barricade-3", "object": "barricade", "at": { "room": "ground", "dx": 22, "dy": 27 } },
-    { "id": "rim-camp-rim-searchlight-1", "object": "rim-searchlight", "at": { "room": "ground", "dx": 22, "dy": 20 } },
-    { "id": "rim-camp-rim-searchlight-2", "object": "rim-searchlight", "at": { "room": "ground", "dx": 26, "dy": 11 } },
     { "id": "rim-camp-flood-mast-1", "object": "flood-mast", "at": { "room": "ground", "dx": 21, "dy": 24 } },
     { "id": "rim-camp-checkpoint-barrier-1", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 19, "dy": 38 } },
     { "id": "rim-camp-blight-pylon-1", "object": "blight-pylon", "at": { "room": "ground", "dx": 16, "dy": 52 } },
@@ -65,12 +63,14 @@
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "rim-camp-landmark", "prefab": "landmark-rim-searchlights", "at": { "room": "ground", "dx": 22, "dy": 11 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
     "rim-camp-post": { "theme": "office", "also": ["shop"], "people": 0 },
     "rim-camp-stores": { "theme": "works", "people": 0 },
     "rim-camp-bunks": { "theme": "camp", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

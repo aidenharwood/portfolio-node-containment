@@ -37,15 +37,16 @@
     { "id": "slipway-row-barricade", "object": "barricade", "at": { "room": "ground", "dx": 28, "dy": 26 } },
     { "id": "slipway-row-mooring-post-1", "object": "mooring-post", "at": { "room": "ground", "dx": 19, "dy": 15 } },
     { "id": "slipway-row-mooring-post-2", "object": "mooring-post", "at": { "room": "ground", "dx": 19, "dy": 17 } },
-    { "id": "slipway-row-beached-hull-1", "object": "beached-hull", "at": { "room": "ground", "dx": 21, "dy": 15 } },
-    { "id": "slipway-row-yard-crane-1", "object": "yard-crane", "at": { "room": "ground", "dx": 29, "dy": 15 } }
+    { "id": "slipway-row-beached-hull-1", "object": "beached-hull", "at": { "room": "ground", "dx": 21, "dy": 15 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "slipway-row-landmark", "prefab": "landmark-yard-crane", "at": { "room": "ground", "dx": 29, "dy": 15 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
     "mould-loft": { "theme": "works", "people": 0 },
@@ -56,5 +57,5 @@
     "yard-canteen": { "theme": "canteen", "people": 0 },
     "ruin-1": { "theme": "freight", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

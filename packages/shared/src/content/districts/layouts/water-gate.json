@@ -17,7 +17,6 @@
     "start": { "room": "ground", "dx": 55, "dy": 4 }
   },
   "objects": [
-    { "id": "water-gate-wharf-crane", "object": "wharf-crane", "at": { "room": "ground", "dx": 53, "dy": 1 } },
     { "id": "water-gate-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 50, "dy": 3 } },
     { "id": "water-gate-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 59, "dy": 0 } },
     { "id": "water-gate-barricade", "object": "barricade", "at": { "room": "ground", "dx": 51, "dy": 6 } },
@@ -28,9 +27,11 @@
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "water-gate-landmark", "prefab": "landmark-wharf-crane", "at": { "room": "ground", "dx": 53, "dy": 1 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

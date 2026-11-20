@@ -33,7 +33,6 @@
   "objects": [
     { "id": "floodgate-street-gate-leaf-1", "object": "floodgate-leaf", "at": { "room": "ground", "dx": 38, "dy": 41 }, "facing": "north" },
     { "id": "floodgate-street-gate-leaf-0", "object": "floodgate-leaf", "at": { "room": "ground", "dx": 37, "dy": 41 }, "facing": "north" },
-    { "id": "floodgate-street-floodgate-winch", "object": "floodgate-winch", "at": { "room": "ground", "dx": 46, "dy": 29 } },
     { "id": "floodgate-street-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 27 } },
     { "id": "floodgate-street-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 27 } },
     { "id": "floodgate-street-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 6 } },
@@ -65,7 +64,9 @@
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "floodgate-street-landmark", "prefab": "landmark-floodgate-winch", "at": { "room": "ground", "dx": 46, "dy": 29 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
     "guildhall": { "theme": "civic", "people": 0 },
@@ -73,5 +74,5 @@
     "winding-house": { "theme": "works", "people": 0 },
     "floodgate-office": { "theme": "office", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

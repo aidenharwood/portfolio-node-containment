@@ -37,7 +37,6 @@
     { "id": "north-parade-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 33 } },
     { "id": "north-parade-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 29, "dy": 40 } },
     { "id": "north-parade-barricade", "object": "barricade", "at": { "room": "ground", "dx": 56, "dy": 36 } },
-    { "id": "north-parade-ridge-beacon-1", "object": "ridge-beacon", "at": { "room": "ground", "dx": 41, "dy": 10 } },
     { "id": "north-parade-street-bench-1", "object": "street-bench", "at": { "room": "ground", "dx": 46, "dy": 11 }, "facing": "west" },
     { "id": "north-parade-street-bench-2", "object": "street-bench", "at": { "room": "ground", "dx": 38, "dy": 12 }, "facing": "east" },
     { "id": "north-parade-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 52, "dy": 33 } },
@@ -52,7 +51,9 @@
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "north-parade-landmark", "prefab": "landmark-ridge-beacon", "at": { "room": "ground", "dx": 41, "dy": 10 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
     "parade-chapel": { "theme": "chapel", "people": 0 },
@@ -62,5 +63,5 @@
     "parade-house-2": { "theme": "home", "people": 0 },
     "parade-house-3": { "theme": "home", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

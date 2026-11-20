@@ -47,7 +47,6 @@
     { "id": "stiltholm-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 19, "dy": 15 } },
     { "id": "stiltholm-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 31, "dy": 24 } },
     { "id": "stiltholm-barricade", "object": "barricade", "at": { "room": "ground", "dx": 58, "dy": 23 } },
-    { "id": "stiltholm-tide-bell-1", "object": "tide-bell", "at": { "room": "ground", "dx": 26, "dy": 22 } },
     { "id": "stiltholm-street-bench-1", "object": "street-bench", "at": { "room": "ground", "dx": 26, "dy": 25 }, "facing": "north" },
     { "id": "stiltholm-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 15 } },
     { "id": "stiltholm-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 19, "dy": 26 } },
@@ -63,7 +62,9 @@
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "stiltholm-landmark", "prefab": "landmark-tide-bell", "at": { "room": "ground", "dx": 26, "dy": 22 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
     "net-loft": { "theme": "home", "people": 0 },
@@ -80,5 +81,5 @@
     "stilt-row": { "theme": "home", "people": 0 },
     "boat-house": { "theme": "home", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

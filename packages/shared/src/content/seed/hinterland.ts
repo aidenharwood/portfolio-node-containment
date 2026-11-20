@@ -7,6 +7,7 @@ import type { NpcDefinition, WorldObjectDefinition } from '../../world/entities.
 import type { RegionDefinition } from '../../world/region.ts';
 import type { FurnishingKit } from '../furnishingKit.ts';
 import type { FurnishingProfile } from '../furnishingCatalogue.ts';
+import { prefab, type Prefab } from '../prefabs/types.ts';
 
 type Prop = Pick<WorldObjectDefinition, 'id' | 'name' | 'examine' | 'model'> & Partial<Pick<WorldObjectDefinition, 'footprint' | 'light' | 'modelScale'>> & { readonly furnishing: FurnishingProfile };
 
@@ -108,9 +109,39 @@ export const HINTERLAND_OBJECTS: readonly WorldObjectDefinition[] = [
   siteLift('lantern-lift', 'Lantern'),
 ];
 
+const landmark = (objectId: string): Prefab => prefab(`landmark-${objectId}`, ['focal'], [[0, 0, objectId]]);
+
+export const HINTERLAND_LANDMARK_PREFABS: readonly Prefab[] = [
+  landmark('yard-crane'),
+  landmark('dock-pump'),
+  landmark('incline-winder'),
+  landmark('tide-bell'),
+  landmark('tide-gauge'),
+  landmark('exchange-clock'),
+  landmark('ridge-beacon'),
+  landmark('crescent-screen'),
+  landmark('incline-sheave'),
+  landmark('gate-clock'),
+  landmark('wall-tower'),
+  landmark('town-pump'),
+  landmark('floodgate-winch'),
+  landmark('tannery-stack'),
+  landmark('wharf-crane'),
+  landmark('gibbet'),
+  landmark('gallows'),
+  landmark('coaling-gantry'),
+  landmark('penstock-gate'),
+  landmark('bell-derrick'),
+  landmark('drowned-belfry'),
+  landmark('fog-bell'),
+  prefab('landmark-boiler-stacks', ['focal'], [[0, 0, 'boiler-stack'], [3, 2, 'boiler-stack'], [6, 0, 'boiler-stack']]),
+  prefab('landmark-ironside-stacks', ['focal'], [[0, 0, 'ironside-stack'], [0, 11, 'ironside-stack'], [10, 11, 'ironside-stack']]),
+  prefab('landmark-rim-searchlights', ['focal'], [[4, 0, 'rim-searchlight'], [0, 9, 'rim-searchlight']]),
+];
+
 export const HINTERLAND_KIT: FurnishingKit = {
   objects: HINTERLAND_OBJECTS,
-  prefabs: [],
+  prefabs: HINTERLAND_LANDMARK_PREFABS,
   signatures: {},
 };
 

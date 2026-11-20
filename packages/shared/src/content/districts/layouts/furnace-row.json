@@ -38,9 +38,6 @@
   "objects": [
     { "id": "furnace-row-gate-leaf-1", "object": "headland-gate-leaf", "at": { "room": "ground", "dx": 33, "dy": 50 }, "facing": "north" },
     { "id": "furnace-row-gate-leaf-0", "object": "headland-gate-leaf", "at": { "room": "ground", "dx": 32, "dy": 50 }, "facing": "north" },
-    { "id": "furnace-row-ironside-stack-1", "object": "ironside-stack", "at": { "room": "ground", "dx": 26, "dy": 4 } },
-    { "id": "furnace-row-ironside-stack-2", "object": "ironside-stack", "at": { "room": "ground", "dx": 26, "dy": 15 } },
-    { "id": "furnace-row-ironside-stack-3", "object": "ironside-stack", "at": { "room": "ground", "dx": 36, "dy": 15 } },
     { "id": "furnace-row-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 2 } },
     { "id": "furnace-row-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 35, "dy": 26 } },
     { "id": "furnace-row-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 45 } },
@@ -87,7 +84,9 @@
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "furnace-row-landmark", "prefab": "landmark-ironside-stacks", "at": { "room": "ground", "dx": 26, "dy": 4 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
     "blast-furnace-shed": { "theme": "works", "people": 0 },
@@ -98,5 +97,5 @@
     "ore-bins": { "theme": "freight", "people": 0 },
     "gate-lodge": { "theme": "office", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

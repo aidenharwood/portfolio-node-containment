@@ -25,7 +25,6 @@
     "start": { "room": "ground", "dx": 30, "dy": 60 }
   },
   "objects": [
-    { "id": "the-falls-penstock-gate-1", "object": "penstock-gate", "at": { "room": "ground", "dx": 11, "dy": 46 } },
     { "id": "the-falls-flood-mast-1", "object": "flood-mast", "at": { "room": "ground", "dx": 15, "dy": 44 } },
     { "id": "the-falls-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 12, "dy": 54 } },
     { "id": "the-falls-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 27, "dy": 61 } },
@@ -40,10 +39,12 @@
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "the-falls-landmark", "prefab": "landmark-penstock-gate", "at": { "room": "ground", "dx": 11, "dy": 46 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
     "intake-house": { "theme": "works", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

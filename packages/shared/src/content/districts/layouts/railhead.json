@@ -44,7 +44,6 @@
     { "id": "railhead-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 14, "dy": 15 } },
     { "id": "railhead-barricade", "object": "barricade", "at": { "room": "ground", "dx": 20, "dy": 14 } },
     { "id": "railhead-flood-mast-1", "object": "flood-mast", "at": { "room": "ground", "dx": 12, "dy": 14 } },
-    { "id": "railhead-coaling-gantry-1", "object": "coaling-gantry", "at": { "room": "ground", "dx": 41, "dy": 38 } },
     { "id": "railhead-magnet-crane-1", "object": "magnet-crane", "at": { "room": "ground", "dx": 51, "dy": 1 } },
     { "id": "railhead-utility-pole-1", "object": "utility-pole", "at": { "room": "ground", "dx": 39, "dy": 58 } },
     { "id": "railhead-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 45, "dy": 43 } },
@@ -90,7 +89,9 @@
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "railhead-landmark", "prefab": "landmark-coaling-gantry", "at": { "room": "ground", "dx": 41, "dy": 38 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
     "signal-box": { "theme": "works", "people": 0 },
@@ -100,5 +101,5 @@
     "wagon-works": { "theme": "works", "people": 0 },
     "enginemens-bothy": { "theme": "home", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

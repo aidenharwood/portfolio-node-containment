@@ -38,7 +38,6 @@
     { "id": "crescent-walk-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 27 } },
     { "id": "crescent-walk-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 20, "dy": 33 } },
     { "id": "crescent-walk-barricade", "object": "barricade", "at": { "room": "ground", "dx": 62, "dy": 30 } },
-    { "id": "crescent-walk-crescent-screen-1", "object": "crescent-screen", "at": { "room": "ground", "dx": 45, "dy": 23 } },
     { "id": "crescent-walk-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 11 } },
     { "id": "crescent-walk-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 52, "dy": 34 } },
     { "id": "crescent-walk-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 17, "dy": 40 } },
@@ -52,7 +51,9 @@
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "crescent-walk-landmark", "prefab": "landmark-crescent-screen", "at": { "room": "ground", "dx": 45, "dy": 23 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
     "crescent-one": { "theme": "home", "people": 0 },
@@ -64,5 +65,5 @@
     "crescent-terrace-2": { "theme": "home", "people": 0 },
     "the-belvedere-inn": { "theme": "canteen", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

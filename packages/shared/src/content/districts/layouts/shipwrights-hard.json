@@ -39,17 +39,16 @@
   "objects": [
     { "id": "shipwrights-hard-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 27 } },
     { "id": "shipwrights-hard-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 26, "dy": 39 } },
-    { "id": "shipwrights-hard-barricade", "object": "barricade", "at": { "room": "ground", "dx": 23, "dy": 28 } },
-    { "id": "shipwrights-hard-boiler-stack-1", "object": "boiler-stack", "at": { "room": "ground", "dx": 31, "dy": 15 } },
-    { "id": "shipwrights-hard-boiler-stack-2", "object": "boiler-stack", "at": { "room": "ground", "dx": 34, "dy": 17 } },
-    { "id": "shipwrights-hard-boiler-stack-3", "object": "boiler-stack", "at": { "room": "ground", "dx": 37, "dy": 15 } }
+    { "id": "shipwrights-hard-barricade", "object": "barricade", "at": { "room": "ground", "dx": 23, "dy": 28 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "shipwrights-hard-landmark", "prefab": "landmark-boiler-stacks", "at": { "room": "ground", "dx": 31, "dy": 15 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
     "boiler-shop": { "theme": "industrial", "people": 0 },
@@ -62,5 +61,5 @@
     "gate-lodge": { "theme": "office", "people": 0 },
     "chandlery": { "theme": "shop", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

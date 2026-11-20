@@ -41,7 +41,6 @@
     { "id": "uptown-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 18, "dy": 27 } },
     { "id": "uptown-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 10, "dy": 33 } },
     { "id": "uptown-barricade", "object": "barricade", "at": { "room": "ground", "dx": 36, "dy": 30 } },
-    { "id": "uptown-exchange-clock-1", "object": "exchange-clock", "at": { "room": "ground", "dx": 31, "dy": 18 } },
     { "id": "uptown-street-bench-1", "object": "street-bench", "at": { "room": "ground", "dx": 28, "dy": 18 }, "facing": "east" },
     { "id": "uptown-street-bench-2", "object": "street-bench", "at": { "room": "ground", "dx": 35, "dy": 18 }, "facing": "west" },
     { "id": "uptown-litter-bin-1", "object": "litter-bin", "at": { "room": "ground", "dx": 28, "dy": 20 } },
@@ -61,7 +60,9 @@
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "uptown-landmark", "prefab": "landmark-exchange-clock", "at": { "room": "ground", "dx": 31, "dy": 18 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
     "exchange-hall": { "theme": "civic", "people": 0 },
@@ -74,5 +75,5 @@
     "uptown-house-1": { "theme": "home", "people": 0 },
     "uptown-house-2": { "theme": "home", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

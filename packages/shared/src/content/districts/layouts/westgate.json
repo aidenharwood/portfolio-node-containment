@@ -41,7 +41,6 @@
     { "id": "causeway-gate-table-1", "object": "table", "at": { "room": "the-hostel", "dx": 8, "dy": 4 }, "facing": "north" },
     { "id": "causeway-gate-chair-1", "object": "chair", "at": { "room": "the-hostel", "dx": 8, "dy": 3 } },
     { "id": "causeway-gate-security-camera-1", "object": "security-camera", "at": { "room": "the-hostel", "dx": 0, "dy": 7 }, "facing": "north" },
-    { "id": "westgate-gate-clock", "object": "gate-clock", "at": { "room": "ground", "dx": 55, "dy": 39 } },
     { "id": "westgate-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 53, "dy": 39 } },
     { "id": "westgate-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 63, "dy": 32 } },
     { "id": "westgate-barricade", "object": "barricade", "at": { "room": "ground", "dx": 60, "dy": 41 } },
@@ -66,7 +65,9 @@
   "creatures": [],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "westgate-landmark", "prefab": "landmark-gate-clock", "at": { "room": "ground", "dx": 55, "dy": 39 }, "facing": "south" }
+  ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
     "west-gate-guardhouse": { "theme": "office", "people": 0 },
@@ -74,5 +75,5 @@
     "pilgrims-rest": { "theme": "dormitory", "people": 0 },
     "almonry": { "theme": "office", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

@@ -7,7 +7,7 @@ import type { LevelContext, LevelDefinition, LevelRecipe, WorldLocation } from '
 import type { DistrictDefinition } from '../../../src/world/district.ts';
 import type { LandMap } from '../../../src/world/landPlan.ts';
 import { FIXTURE_CREATURES } from './creatures.ts';
-import { KIT_OBJECTS } from './furnishing.ts';
+import { KIT_OBJECTS, SHIPPED_LANDMARK_OBJECTS } from './furnishing.ts';
 import { FIXTURE_LAYOUTS, FIXTURE_ARENA, FIXTURE_FIELD, FIXTURE_HUB, FIXTURE_HUB_ANCHORS, FIXTURE_ISLAND, FIXTURE_ISLAND_ANCHORS, FIXTURE_OUTPOST, FIXTURE_OUTPOST_ANCHORS } from './districts.ts';
 import { FIXTURE_ITEMS } from './items.ts';
 import { FIXTURE_ASSEMBLIES, FIXTURE_OBJECTS } from './objects.ts';
@@ -86,7 +86,7 @@ export const FIXTURE_DEPTHS: LevelDefinition = DEPTHS_RECIPE(FIXTURE_CONTEXT);
 export const FIXTURE_WILDS: LevelDefinition = WILDS_RECIPE(FIXTURE_CONTEXT);
 export const FIXTURE_LEVEL_RECIPES: ReadonlyMap<string, LevelRecipe> = new Map([['fx-floor', FLOOR_RECIPE], ['fx-depths', DEPTHS_RECIPE], ['fx-wilds', WILDS_RECIPE]]);
 export const FIXTURE_LAYOUT_SOURCES: Readonly<Record<string, unknown>> = Object.fromEntries(FIXTURE_LAYOUTS);
-const INSTALLED = buildInstallations([...FIXTURE_OBJECTS, ...KIT_OBJECTS]);
+const INSTALLED = buildInstallations([...FIXTURE_OBJECTS, ...KIT_OBJECTS, ...SHIPPED_LANDMARK_OBJECTS]);
 const ASSEMBLIES = indexById([...FIXTURE_ASSEMBLIES, ...INSTALLED.assemblies]);
 const LEVELS = buildLevelIndex([FIXTURE_FLOOR, FIXTURE_DEPTHS, FIXTURE_WILDS], DISTRICTS, ASSEMBLIES);
 
