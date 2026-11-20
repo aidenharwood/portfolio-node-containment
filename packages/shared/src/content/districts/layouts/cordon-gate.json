@@ -9,6 +9,12 @@
   "size": { "width": 64, "height": 64 },
   "steps": [
     { "kind": "room", "id": "ground", "rect": { "x": 0, "y": 1, "width": 63, "height": 62 }, "floor": "gravel", "shape": "rect", "edge": "barrier" },
+    { "kind": "rise", "rect": { "x": 13, "y": 32, "width": 23, "height": 14 }, "height": 1 },
+    { "kind": "rise", "rect": { "x": 39, "y": 49, "width": 14, "height": 11 }, "height": 1 },
+    { "kind": "rise", "rect": { "x": 20, "y": 16, "width": 20, "height": 13 }, "height": 1 },
+    { "kind": "rise", "rect": { "x": 43, "y": 30, "width": 11, "height": 15 }, "height": 1 },
+    { "kind": "rise", "rect": { "x": 45, "y": 10, "width": 12, "height": 12 }, "height": 1 },
+    { "kind": "rise", "rect": { "x": 7, "y": 8, "width": 10, "height": 13 }, "height": 1 },
     { "kind": "exit", "id": "west", "room": "ground", "side": "west", "width": 62, "offset": 0, "gate": false },
     { "kind": "exit", "id": "east", "room": "ground", "side": "east", "width": 2, "offset": 30, "gate": true, "floor": "door" },
     { "kind": "patch", "rect": { "x": 0, "y": 28, "width": 63, "height": 6 }, "tile": "asphalt" },

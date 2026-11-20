@@ -10,6 +10,7 @@
   "square": { "column": 0, "row": 3 },
   "steps": [
     { "kind": "rise", "rect": { "x": 37, "y": 7, "width": 26, "height": 23 }, "height": 2 },
+    { "kind": "rise", "rect": { "x": 19, "y": 33, "width": 22, "height": 10 }, "height": 3 },
     { "kind": "building", "id": "site-caisson", "rect": { "x": 38, "y": 8, "width": 24, "height": 21 }, "floor": "asphalt", "wall": "wall", "edge": "barrier", "doors": [{ "side": "south", "width": 4 }] },
     { "kind": "building", "id": "caisson-headhouse", "rect": { "x": 40, "y": 10, "width": 8, "height": 6 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "caisson-holding", "rect": { "x": 51, "y": 10, "width": 9, "height": 6 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },

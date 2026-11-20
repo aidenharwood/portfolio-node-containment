@@ -9,6 +9,8 @@
   "size": { "width": 64, "height": 64 },
   "steps": [
     { "kind": "room", "id": "ground", "rect": { "x": 0, "y": 1, "width": 64, "height": 63 }, "floor": "paving", "shape": "rect", "edge": "barrier" },
+    { "kind": "rise", "rect": { "x": 18, "y": 36, "width": 29, "height": 12 }, "height": 1 },
+    { "kind": "rise", "rect": { "x": 40, "y": 22, "width": 20, "height": 11 }, "height": 1 },
     { "kind": "exit", "id": "east", "room": "ground", "side": "east", "width": 63, "offset": 0, "gate": false },
     { "kind": "exit", "id": "south", "room": "ground", "side": "south", "width": 64, "offset": 0, "gate": false },
     { "kind": "exit", "id": "west", "room": "ground", "side": "west", "width": 63, "offset": 0, "gate": false },

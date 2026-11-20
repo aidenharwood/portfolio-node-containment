@@ -12,6 +12,7 @@
     { "kind": "patch", "rect": { "x": 15, "y": 7, "width": 17, "height": 1 }, "tile": "gravel" },
     { "kind": "patch", "rect": { "x": 33, "y": 1, "width": 4, "height": 5 }, "tile": "trees" },
     { "kind": "rise", "rect": { "x": 20, "y": 25, "width": 14, "height": 10 }, "height": 4 },
+    { "kind": "rise", "rect": { "x": 3, "y": 26, "width": 13, "height": 10 }, "height": 5 },
     { "kind": "building", "id": "keepers-post", "rect": { "x": 21, "y": 26, "width": 12, "height": 8 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] },
     { "kind": "building", "id": "oil-store", "rect": { "x": 2, "y": 11, "width": 7, "height": 5 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "keepers-row-1", "rect": { "x": 18, "y": 2, "width": 5, "height": 4 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },

@@ -9,6 +9,9 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 3 },
   "steps": [
+    { "kind": "rise", "rect": { "x": 13, "y": 11, "width": 21, "height": 10 }, "height": 3 },
+    { "kind": "rise", "rect": { "x": 7, "y": 25, "width": 33, "height": 10 }, "height": 3 },
+    { "kind": "rise", "rect": { "x": 48, "y": 31, "width": 12, "height": 16 }, "height": 3 },
     { "kind": "building", "id": "flats-1", "rect": { "x": 22, "y": 3, "width": 10, "height": 5 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2, "offset": 4 }] },
     { "kind": "building", "id": "flats-2", "rect": { "x": 36, "y": 5, "width": 10, "height": 5 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2, "offset": 4 }] },
     { "kind": "building", "id": "flats-3", "rect": { "x": 48, "y": 11, "width": 10, "height": 5 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2, "offset": 4 }] },

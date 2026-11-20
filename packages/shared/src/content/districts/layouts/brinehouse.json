@@ -17,6 +17,7 @@
     { "kind": "rise", "rect": { "x": 50, "y": 39, "width": 3, "height": 3 }, "height": 2, "shape": "round" },
     { "kind": "rise", "rect": { "x": 48, "y": 50, "width": 7, "height": 7 }, "height": 1, "shape": "round" },
     { "kind": "rise", "rect": { "x": 50, "y": 52, "width": 3, "height": 3 }, "height": 2, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 32, "y": 8, "width": 26, "height": 11 }, "height": 1 },
     { "kind": "patch", "rect": { "x": 0, "y": 21, "width": 46, "height": 4 }, "tile": "water" },
     { "kind": "patch", "rect": { "x": 43, "y": 21, "width": 3, "height": 43 }, "tile": "water" },
     { "kind": "patch", "rect": { "x": 7, "y": 10, "width": 3, "height": 2 }, "tile": "trees" },
