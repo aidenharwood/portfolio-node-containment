@@ -8,18 +8,24 @@
   "ambience": { "darkness": 0.58, "tint": "#26303a", "fog": "#2a3440", "sky": "#3e4a5e", "weather": ["mist", "drizzle"], "haze": 1.7 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 10, "row": 5, "split": true },
-  "steps": [],
+  "steps": [
+    { "kind": "patch", "rect": { "x": 6, "y": 10, "width": 4, "height": 5 }, "tile": "trees" }
+  ],
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Beacon Bend" }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 6, "dy": 33 }
+    "start": { "room": "ground", "dx": 4, "dy": 33 }
   },
   "objects": [
-    { "id": "beacon-bend-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 6, "dy": 31 } },
-    { "id": "beacon-bend-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 6, "dy": 36 } },
-    { "id": "beacon-bend-barricade", "object": "barricade", "at": { "room": "ground", "dx": 9, "dy": 27 } }
+    { "id": "beacon-bend-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 2, "dy": 6 } },
+    { "id": "beacon-bend-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 3, "dy": 50 } },
+    { "id": "beacon-bend-flood-mast-1", "object": "flood-mast", "at": { "room": "ground", "dx": 7, "dy": 30 } },
+    { "id": "beacon-bend-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 8, "dy": 32 } },
+    { "id": "beacon-bend-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 6, "dy": 32 } },
+    { "id": "beacon-bend-barricade", "object": "barricade", "at": { "room": "ground", "dx": 11, "dy": 22 } },
+    { "id": "beacon-bend-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 11, "dy": 42 } }
   ],
   "assemblies": [],
   "npcs": [],

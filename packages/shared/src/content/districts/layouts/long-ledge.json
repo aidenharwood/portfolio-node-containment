@@ -8,18 +8,28 @@
   "ambience": { "darkness": 0.58, "tint": "#26303a", "fog": "#2a3440", "sky": "#3e4a5e", "weather": ["mist", "drizzle"], "haze": 1.7 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 9, "row": 5, "split": true },
-  "steps": [],
+  "steps": [
+    { "kind": "patch", "rect": { "x": 52, "y": 4, "width": 4, "height": 5 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 55, "y": 44, "width": 4, "height": 6 }, "tile": "trees" },
+    { "kind": "building", "id": "long-ledge-shelter", "rect": { "x": 54, "y": 17, "width": 5, "height": 4 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "east", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "long-ledge-shelter", "name": "Halfway Shelter" },
     { "room": "ground", "name": "Long Ledge" }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 58, "dy": 28 }
+    "start": { "room": "ground", "dx": 60, "dy": 28 }
   },
   "objects": [
-    { "id": "long-ledge-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 58, "dy": 26 } },
-    { "id": "long-ledge-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 58, "dy": 31 } },
-    { "id": "long-ledge-barricade", "object": "barricade", "at": { "room": "ground", "dx": 58, "dy": 21 } }
+    { "id": "long-ledge-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 60, "dy": 6 } },
+    { "id": "long-ledge-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 61, "dy": 32 } },
+    { "id": "long-ledge-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 61, "dy": 52 } },
+    { "id": "long-ledge-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 60, "dy": 24 } },
+    { "id": "long-ledge-barricade", "object": "barricade", "at": { "room": "ground", "dx": 56, "dy": 36 } },
+    { "id": "long-ledge-ledge-milestone-1", "object": "ledge-milestone", "at": { "room": "ground", "dx": 60, "dy": 40 } },
+    { "id": "long-ledge-burn-barrel-2", "object": "burn-barrel", "at": { "room": "long-ledge-shelter", "dx": 2, "dy": 1 } },
+    { "id": "long-ledge-storage-locker-1", "object": "storage-locker", "at": { "room": "long-ledge-shelter", "dx": 0, "dy": 0 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -28,7 +38,8 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "long-ledge-shelter": { "theme": "camp", "people": 0 }
   },
   "furnish": {}
 }

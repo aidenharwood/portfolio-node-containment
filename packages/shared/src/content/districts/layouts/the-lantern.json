@@ -9,10 +9,9 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 11, "row": 9 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 13, "y": 22, "width": 26, "height": 24 }, "height": 4 },
-    { "kind": "building", "id": "lantern-precinct", "rect": { "x": 14, "y": 23, "width": 24, "height": 22 }, "floor": "asphalt", "wall": "wall", "edge": "barrier", "doors": [{ "side": "north", "width": 4 }, { "side": "west", "width": 4 }, { "side": "east", "width": 4 }, { "side": "south", "width": 4 }] },
-    { "kind": "building", "id": "lantern-headhouse", "rect": { "x": 17, "y": 26, "width": 8, "height": 6 }, "floor": "plating", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "building", "id": "lens-store", "rect": { "x": 26, "y": 35, "width": 10, "height": 7 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "north", "width": 2 }] }
+    { "kind": "building", "id": "lantern-precinct", "rect": { "x": 13, "y": 28, "width": 22, "height": 16 }, "floor": "asphalt", "wall": "wall", "edge": "barrier", "doors": [{ "side": "north", "width": 4 }, { "side": "west", "width": 4 }, { "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "lantern-headhouse", "rect": { "x": 15, "y": 30, "width": 8, "height": 5 }, "floor": "plating", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "lens-store", "rect": { "x": 27, "y": 30, "width": 6, "height": 5 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
   ],
   "tiles": [],
   "areas": [
@@ -22,32 +21,38 @@
     { "room": "ground", "name": "The Lantern" }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 11, "dy": 31 }
+    "start": { "room": "ground", "dx": 8, "dy": 30 }
   },
   "objects": [
-    { "id": "the-lantern-lighthouse-1", "object": "lighthouse", "at": { "room": "lantern-precinct", "dx": 16, "dy": 3 } },
+    { "id": "the-lantern-lighthouse-1", "object": "lighthouse", "at": { "room": "lantern-precinct", "dx": 10, "dy": 11 }, "facing": "north" },
     { "id": "the-lantern-directorate-sign-1", "object": "directorate-sign", "at": { "room": "lantern-precinct", "dx": 1, "dy": 0 } },
-    { "id": "the-lantern-street-lamp-1", "object": "street-lamp", "at": { "room": "lantern-precinct", "dx": 21, "dy": 2 } },
-    { "id": "the-lantern-flood-mast-1", "object": "flood-mast", "at": { "room": "lantern-precinct", "dx": 14, "dy": 8 } },
-    { "id": "the-lantern-checkpoint-barrier-1", "object": "checkpoint-barrier", "at": { "room": "lantern-precinct", "dx": 5, "dy": 14 } },
-    { "id": "the-lantern-barricade-1", "object": "barricade", "at": { "room": "lantern-precinct", "dx": 3, "dy": 18 } },
+    { "id": "the-lantern-street-lamp-1", "object": "street-lamp", "at": { "room": "lantern-precinct", "dx": 20, "dy": 9 } },
+    { "id": "the-lantern-flood-mast-1", "object": "flood-mast", "at": { "room": "lantern-precinct", "dx": 2, "dy": 14 } },
+    { "id": "the-lantern-flood-mast-2", "object": "flood-mast", "at": { "room": "lantern-precinct", "dx": 19, "dy": 14 } },
+    { "id": "the-lantern-checkpoint-barrier-1", "object": "checkpoint-barrier", "at": { "room": "lantern-precinct", "dx": 3, "dy": 10 } },
+    { "id": "the-lantern-barricade-1", "object": "barricade", "at": { "room": "lantern-precinct", "dx": 16, "dy": 13 } },
     { "id": "the-lantern-lantern-lift-1", "object": "lantern-lift", "at": { "room": "lantern-headhouse", "dx": 4, "dy": 0 } },
     { "id": "the-lantern-notice-board-1", "object": "notice-board", "at": { "room": "lantern-headhouse", "dx": 1, "dy": 0 } },
     { "id": "the-lantern-security-camera-1", "object": "security-camera", "at": { "room": "lantern-headhouse", "dx": 7, "dy": 0 } },
     { "id": "the-lantern-street-bench-1", "object": "street-bench", "at": { "room": "lantern-headhouse", "dx": 1, "dy": 2 }, "facing": "east" },
-    { "id": "the-lantern-containment-cell-1", "object": "containment-cell", "at": { "room": "lens-store", "dx": 7, "dy": 4 }, "facing": "north" },
-    { "id": "the-lantern-containment-cell-2", "object": "containment-cell", "at": { "room": "lens-store", "dx": 1, "dy": 4 }, "facing": "north" },
-    { "id": "the-lantern-keycard-reader-1", "object": "keycard-reader", "at": { "room": "lens-store", "dx": 4, "dy": 6 }, "facing": "north" },
-    { "id": "the-lantern-security-camera-2", "object": "security-camera", "at": { "room": "lens-store", "dx": 0, "dy": 6 }, "facing": "north" },
-    { "id": "the-lantern-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 9, "dy": 31 } },
-    { "id": "the-lantern-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 9, "dy": 26 } },
-    { "id": "the-lantern-barricade", "object": "barricade", "at": { "room": "ground", "dx": 4, "dy": 27 } }
+    { "id": "the-lantern-containment-cell-1", "object": "containment-cell", "at": { "room": "lens-store", "dx": 0, "dy": 1 } },
+    { "id": "the-lantern-containment-cell-2", "object": "containment-cell", "at": { "room": "lens-store", "dx": 4, "dy": 1 } },
+    { "id": "the-lantern-keycard-reader-1", "object": "keycard-reader", "at": { "room": "lens-store", "dx": 2, "dy": 0 } },
+    { "id": "the-lantern-security-camera-2", "object": "security-camera", "at": { "room": "lens-store", "dx": 5, "dy": 0 } },
+    { "id": "the-lantern-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 5, "dy": 12 } },
+    { "id": "the-lantern-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 19 } },
+    { "id": "the-lantern-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 9, "dy": 33 } },
+    { "id": "the-lantern-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 4, "dy": 30 } },
+    { "id": "the-lantern-barricade", "object": "barricade", "at": { "room": "ground", "dx": 6, "dy": 26 } },
+    { "id": "the-lantern-mooring-post-1", "object": "mooring-post", "at": { "room": "ground", "dx": 30, "dy": 22 } },
+    { "id": "the-lantern-street-bench-2", "object": "street-bench", "at": { "room": "ground", "dx": 36, "dy": 30 }, "facing": "east" },
+    { "id": "the-lantern-mooring-post-2", "object": "mooring-post", "at": { "room": "ground", "dx": 24, "dy": 48 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [],
   "lights": [
-    { "at": { "room": "lantern-precinct", "dx": 17, "dy": 6 }, "radius": 6, "color": "#fff2c8", "intensity": 0.8 }
+    { "at": { "room": "lantern-precinct", "dx": 11, "dy": 12 }, "radius": 8, "color": "#fff2c8", "intensity": 1 }
   ],
   "decals": [],
   "setPieces": [],

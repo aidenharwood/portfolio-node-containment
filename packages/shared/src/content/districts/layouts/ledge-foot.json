@@ -18,7 +18,7 @@
   },
   "objects": [
     { "id": "ledge-foot-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 59, "dy": 16 } },
-    { "id": "ledge-foot-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 59, "dy": 11 } },
+    { "id": "ledge-foot-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 60, "dy": 40 } },
     { "id": "ledge-foot-barricade", "object": "barricade", "at": { "room": "ground", "dx": 59, "dy": 6 } }
   ],
   "assemblies": [],

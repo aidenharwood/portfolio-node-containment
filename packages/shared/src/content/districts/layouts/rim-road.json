@@ -8,9 +8,12 @@
   "ambience": { "darkness": 0.58, "tint": "#26303a", "fog": "#2a3440", "sky": "#3e4a5e", "weather": ["mist", "drizzle"], "haze": 1.7 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 10, "row": 4, "split": true },
-  "steps": [],
+  "steps": [
+    { "kind": "building", "id": "rim-gate-lodge", "rect": { "x": 3, "y": 50, "width": 4, "height": 4 }, "floor": "concrete", "wall": "blockwork", "doors": [{ "side": "north", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "rim-gate-lodge", "name": "Rim Gate Lodge" },
     { "room": "ground", "name": "Rim Road" }
   ],
   "anchors": {
@@ -20,8 +23,13 @@
     { "id": "rim-road-gate-leaf-1", "object": "crater-rim-gate-leaf", "at": { "room": "ground", "dx": 22, "dy": 42 }, "facing": "west" },
     { "id": "rim-road-gate-leaf-0", "object": "crater-rim-gate-leaf", "at": { "room": "ground", "dx": 22, "dy": 41 }, "facing": "west" },
     { "id": "rim-road-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 6, "dy": 32 } },
-    { "id": "rim-road-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 6, "dy": 37 } },
-    { "id": "rim-road-barricade", "object": "barricade", "at": { "room": "ground", "dx": 6, "dy": 27 } }
+    { "id": "rim-road-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 9, "dy": 46 } },
+    { "id": "rim-road-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 8, "dy": 47 } },
+    { "id": "rim-road-barricade", "object": "barricade", "at": { "room": "ground", "dx": 6, "dy": 27 } },
+    { "id": "rim-road-flood-mast-1", "object": "flood-mast", "at": { "room": "ground", "dx": 9, "dy": 38 } },
+    { "id": "rim-road-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 5, "dy": 47 } },
+    { "id": "rim-road-table-1", "object": "table", "at": { "room": "rim-gate-lodge", "dx": 1, "dy": 2 } },
+    { "id": "rim-road-chair-1", "object": "chair", "at": { "room": "rim-gate-lodge", "dx": 1, "dy": 3 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],
@@ -30,7 +38,8 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "rim-gate-lodge": { "theme": "office", "people": 0 }
   },
   "furnish": {}
 }

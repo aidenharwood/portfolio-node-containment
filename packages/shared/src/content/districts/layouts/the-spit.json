@@ -8,18 +8,27 @@
   "ambience": { "darkness": 0.58, "tint": "#26303a", "fog": "#2a3440", "sky": "#3e4a5e", "weather": ["mist", "drizzle"], "haze": 1.7 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 10, "row": 9 },
-  "steps": [],
+  "steps": [
+    { "kind": "building", "id": "spit-hut", "rect": { "x": 40, "y": 4, "width": 5, "height": 3 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "east", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "spit-hut", "name": "Spit Hut" },
     { "room": "ground", "name": "The Spit" }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 51, "dy": 10 }
+    "start": { "room": "ground", "dx": 52, "dy": 12 }
   },
   "objects": [
-    { "id": "the-spit-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 51, "dy": 8 } },
-    { "id": "the-spit-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 51, "dy": 13 } },
-    { "id": "the-spit-barricade", "object": "barricade", "at": { "room": "ground", "dx": 46, "dy": 10 } }
+    { "id": "the-spit-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 1 } },
+    { "id": "the-spit-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 55, "dy": 10 } },
+    { "id": "the-spit-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 61, "dy": 17 } },
+    { "id": "the-spit-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 48, "dy": 9 } },
+    { "id": "the-spit-barricade", "object": "barricade", "at": { "room": "ground", "dx": 40, "dy": 9 } },
+    { "id": "the-spit-mooring-post-1", "object": "mooring-post", "at": { "room": "ground", "dx": 36, "dy": 6 } },
+    { "id": "the-spit-reed-bed-1", "object": "reed-bed", "at": { "room": "ground", "dx": 52, "dy": 18 } },
+    { "id": "the-spit-street-bench-1", "object": "street-bench", "at": { "room": "ground", "dx": 58, "dy": 20 }, "facing": "south" },
+    { "id": "the-spit-storage-locker-1", "object": "storage-locker", "at": { "room": "spit-hut", "dx": 0, "dy": 0 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -28,7 +37,8 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "spit-hut": { "theme": "camp", "people": 0 }
   },
   "furnish": {}
 }

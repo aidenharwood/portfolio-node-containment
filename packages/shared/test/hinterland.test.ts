@@ -343,3 +343,50 @@ test('the Drowned Quarter is half-sunk streets on boardwalks round Site Fathom\'
     assert.ok(step.rect.x + step.rect.width <= 32 || step.rect.y + step.rect.height <= 18, `${step.id} stands between the Roost and the Lantern`);
   }
 });
+
+test('the Lantern is the keepers\' hamlet at the root of the spit and the lit lighthouse at its tip, reached by the seawall path and by the Blight road on its ledge, with waystations along the road', () => {
+  const ledge = ['ledge-gate', 'the-ledge', 'ledge-top', 'gallows-drop', 'rim-road', 'long-ledge', 'beacon-bend', 'ledge-foot', 'watch-road', 'sea-road'];
+  const ward = [...ledge, 'hamlet-lane', 'seawall-path', 'keepers-hamlet', 'the-spit', 'the-lantern'];
+  for (const id of ward) {
+    const layout = parseLayout(LAYOUT_SOURCES[id]);
+    assert.ok(layout.square, id);
+    assert.equal(layout.region, 'the-lantern', id);
+    assert.ok(layout.objects.some((object) => object.object === 'street-lamp'), `${id} is unlit`);
+  }
+  let waystations = 0;
+  let milestones = 0;
+  for (const id of ledge) {
+    const layout = parseLayout(LAYOUT_SOURCES[id]);
+    assert.ok(layout.square, id);
+    const origin = { x: layout.square.column * 64, y: layout.square.row * 64 };
+    waystations += layout.steps.filter((step) => step.kind === 'building').length;
+    milestones += layout.objects.filter((object) => object.object === 'ledge-milestone').length;
+    for (const object of layout.objects) {
+      if (!('room' in object.at) || object.at.room !== 'ground') continue;
+      const tile = land.tileAt({ x: origin.x + object.at.dx, y: origin.y + object.at.dy });
+      assert.notEqual(tile, 'gravel', `${object.id} stands in the Blight road`);
+    }
+  }
+  assert.ok(waystations >= 6, `the Blight road has only ${waystations} waystations`);
+  assert.ok(milestones >= 4, `the Blight road has only ${milestones} milestones`);
+  const hamlet = parseLayout(LAYOUT_SOURCES['keepers-hamlet']);
+  assert.ok(hamlet.objects.some((object) => object.object === 'fog-bell'), 'the hamlet has no fog bell');
+  assert.ok(hamlet.steps.filter((step) => step.kind === 'building').length >= 6, 'the hamlet has too few buildings');
+  const outpost = hamlet.anchors.outpost;
+  assert.ok(outpost && 'room' in outpost, 'the hamlet has no outpost anchor');
+  assert.equal(outpost.room, 'keepers-post');
+  const lantern = parseLayout(LAYOUT_SOURCES['the-lantern']);
+  for (const room of ['lantern-precinct', 'lantern-headhouse', 'lens-store']) {
+    assert.ok(lantern.steps.some((step) => step.kind === 'building' && step.id === room), `the Lantern has no ${room}`);
+  }
+  const lighthouse = lantern.objects.find((object) => object.object === 'lighthouse');
+  assert.ok(lighthouse && 'room' in lighthouse.at, 'the Lantern has no lighthouse');
+  assert.equal(lighthouse.at.room, 'lantern-precinct');
+  assert.ok(GAME_CONTENT.worldObjects.get('lighthouse')?.light, 'the lighthouse is not lit');
+  assert.ok(lantern.objects.some((object) => object.object === 'lantern-lift'), 'the Lantern lift is missing');
+  const rim = parseLayout(LAYOUT_SOURCES['rim-road']);
+  assert.equal(rim.objects.filter((object) => object.object === 'crater-rim-gate-leaf').length, 2);
+  assert.ok(rim.steps.some((step) => step.kind === 'building' && step.id === 'rim-gate-lodge'), 'the rim gate has no lodge');
+  const seawall = parseLayout(LAYOUT_SOURCES['seawall-path']);
+  assert.ok(seawall.steps.some((step) => step.kind === 'building' && step.id === 'seawall-steps-house'), 'the seawall path has no steps house');
+});

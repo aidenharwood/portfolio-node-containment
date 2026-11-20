@@ -8,18 +8,40 @@
   "ambience": { "darkness": 0.58, "tint": "#26303a", "fog": "#2a3440", "sky": "#3e4a5e", "weather": ["mist", "drizzle"], "haze": 1.7 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 9, "row": 3, "split": true },
-  "steps": [],
+  "steps": [
+    { "kind": "patch", "rect": { "x": 23, "y": 7, "width": 16, "height": 3 }, "tile": "dirt" },
+    { "kind": "patch", "rect": { "x": 46, "y": 30, "width": 4, "height": 5 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 59, "y": 40, "width": 4, "height": 6 }, "tile": "trees" },
+    { "kind": "building", "id": "carters-halt", "rect": { "x": 24, "y": 1, "width": 8, "height": 5 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "east", "width": 2 }] },
+    { "kind": "building", "id": "carters-stable", "rect": { "x": 36, "y": 1, "width": 3, "height": 4 }, "floor": "concrete", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "carters-halt", "name": "Carters' Halt" },
+    { "room": "carters-stable", "name": "Carters’ Stable" },
     { "room": "ground", "name": "The Ledge" }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 51, "dy": 29 }
+    "start": { "room": "ground", "dx": 51, "dy": 20 }
   },
   "objects": [
-    { "id": "the-ledge-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 51, "dy": 27 } },
-    { "id": "the-ledge-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 51, "dy": 32 } },
-    { "id": "the-ledge-barricade", "object": "barricade", "at": { "room": "ground", "dx": 56, "dy": 29 } }
+    { "id": "the-ledge-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 8 } },
+    { "id": "the-ledge-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 49, "dy": 16 } },
+    { "id": "the-ledge-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 53, "dy": 32 } },
+    { "id": "the-ledge-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 56, "dy": 48 } },
+    { "id": "the-ledge-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 28, "dy": 8 } },
+    { "id": "the-ledge-street-bench-1", "object": "street-bench", "at": { "room": "ground", "dx": 31, "dy": 8 }, "facing": "north" },
+    { "id": "the-ledge-scrap-heap-1", "object": "scrap-heap", "at": { "room": "ground", "dx": 24, "dy": 8 } },
+    { "id": "the-ledge-barricade", "object": "barricade", "at": { "room": "ground", "dx": 62, "dy": 22 } },
+    { "id": "the-ledge-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 62, "dy": 52 } },
+    { "id": "the-ledge-ledge-milestone-1", "object": "ledge-milestone", "at": { "room": "ground", "dx": 58, "dy": 24 } },
+    { "id": "the-ledge-washing-line-1", "object": "washing-line", "at": { "room": "ground", "dx": 41, "dy": 2 } },
+    { "id": "the-ledge-table-1", "object": "table", "at": { "room": "carters-halt", "dx": 2, "dy": 1 } },
+    { "id": "the-ledge-table-2", "object": "table", "at": { "room": "carters-halt", "dx": 5, "dy": 1 } },
+    { "id": "the-ledge-chair-1", "object": "chair", "at": { "room": "carters-halt", "dx": 2, "dy": 2 }, "facing": "north" },
+    { "id": "the-ledge-chair-2", "object": "chair", "at": { "room": "carters-halt", "dx": 5, "dy": 2 }, "facing": "north" },
+    { "id": "the-ledge-counter-1", "object": "counter", "at": { "room": "carters-halt", "dx": 1, "dy": 4 } },
+    { "id": "the-ledge-shelving-1", "object": "shelving", "at": { "room": "carters-stable", "dx": 0, "dy": 0 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -28,7 +50,9 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "carters-halt": { "theme": "canteen", "people": 0 },
+    "carters-stable": { "theme": "freight", "people": 0 }
   },
   "furnish": {}
 }

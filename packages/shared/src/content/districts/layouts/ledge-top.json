@@ -19,7 +19,7 @@
   "objects": [
     { "id": "ledge-top-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 4, "dy": 47 } },
     { "id": "ledge-top-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 4, "dy": 52 } },
-    { "id": "ledge-top-barricade", "object": "barricade", "at": { "room": "ground", "dx": 4, "dy": 57 } }
+    { "id": "ledge-top-barricade", "object": "barricade", "at": { "room": "ground", "dx": 6, "dy": 58 } }
   ],
   "assemblies": [],
   "npcs": [],
