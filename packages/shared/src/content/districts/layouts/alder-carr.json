@@ -8,9 +8,25 @@
   "ambience": { "darkness": 0.5, "tint": "#24342e", "fog": "#34443e", "sky": "#5a6a66", "weather": ["mist", "drizzle"], "haze": 1.6 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 8 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 19, "y": 19, "width": 9, "height": 7 }, "height": 1, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 30, "y": 44, "width": 9, "height": 7 }, "height": 1, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 8, "y": 56, "width": 7, "height": 5 }, "height": 1, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 51, "y": 40, "width": 8, "height": 7 }, "height": 1 },
+    { "kind": "patch", "rect": { "x": 22, "y": 21, "width": 3, "height": 2 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 33, "y": 46, "width": 3, "height": 2 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 40, "y": 10, "width": 5, "height": 4 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 10, "y": 36, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 46, "y": 52, "width": 5, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 37, "y": 29, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 20, "y": 34, "width": 5, "height": 3 }, "tile": "water" },
+    { "kind": "patch", "rect": { "x": 26, "y": 4, "width": 2, "height": 45 }, "tile": "dirt" },
+    { "kind": "patch", "rect": { "x": 26, "y": 54, "width": 2, "height": 7 }, "tile": "dirt" },
+    { "kind": "building", "id": "carr-keepers-hut", "rect": { "x": 52, "y": 41, "width": 6, "height": 5 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "west", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "carr-keepers-hut", "name": "Carr Keeper's Hut" },
     { "room": "ground", "name": "Alder Carr" }
   ],
   "anchors": {
@@ -28,7 +44,8 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "carr-keepers-hut": { "theme": "camp", "people": 0 }
   },
   "furnish": {}
 }

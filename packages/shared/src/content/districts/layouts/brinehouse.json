@@ -10,7 +10,14 @@
   "square": { "column": 2, "row": 7 },
   "steps": [
     { "kind": "rise", "rect": { "x": 1, "y": 25, "width": 42, "height": 38 }, "height": 0 },
-    { "kind": "building", "id": "brinehouse-station", "rect": { "x": 2, "y": 26, "width": 40, "height": 36 }, "floor": "gravel", "wall": "wall", "edge": "barrier", "doors": [{ "side": "west", "width": 4 }, { "side": "south", "width": 4 }] },
+    { "kind": "rise", "rect": { "x": 4, "y": 8, "width": 8, "height": 6 }, "height": 1, "shape": "round" },
+    { "kind": "patch", "rect": { "x": 0, "y": 21, "width": 46, "height": 4 }, "tile": "water" },
+    { "kind": "patch", "rect": { "x": 43, "y": 21, "width": 3, "height": 43 }, "tile": "water" },
+    { "kind": "patch", "rect": { "x": 7, "y": 10, "width": 3, "height": 2 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 54, "y": 8, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 57, "y": 26, "width": 3, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 22, "y": 10, "width": 4, "height": 2 }, "tile": "trees" },
+    { "kind": "building", "id": "brinehouse-station", "rect": { "x": 2, "y": 26, "width": 40, "height": 36 }, "floor": "plating", "wall": "wall", "edge": "barrier", "doors": [{ "side": "west", "width": 4 }, { "side": "south", "width": 4 }] },
     { "kind": "building", "id": "brine-headhouse", "rect": { "x": 4, "y": 28, "width": 8, "height": 6 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "brine-labs", "rect": { "x": 24, "y": 28, "width": 14, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "quarantine-ward", "rect": { "x": 24, "y": 50, "width": 14, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "north", "width": 2 }] },
@@ -26,7 +33,7 @@
     { "room": "ground", "name": "The Brinehouse" }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 31, "dy": 23 }
+    "start": { "room": "ground", "dx": 40, "dy": 14 }
   },
   "objects": [
     { "id": "brinehouse-brinehouse-lift-1", "object": "brinehouse-lift", "at": { "room": "brine-headhouse", "dx": 4, "dy": 0 } },
@@ -60,9 +67,12 @@
     { "id": "brinehouse-directorate-sign-1", "object": "directorate-sign", "at": { "room": "brinehouse-station", "dx": 1, "dy": 0 } },
     { "id": "brinehouse-barricade-1", "object": "barricade", "at": { "room": "brinehouse-station", "dx": 16, "dy": 25 } },
     { "id": "brinehouse-barricade-2", "object": "barricade", "at": { "room": "brinehouse-station", "dx": 34, "dy": 15 } },
-    { "id": "brinehouse-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 21 } },
-    { "id": "brinehouse-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 36, "dy": 21 } },
-    { "id": "brinehouse-barricade", "object": "barricade", "at": { "room": "ground", "dx": 26, "dy": 20 } }
+    { "id": "brinehouse-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 12 } },
+    { "id": "brinehouse-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 44, "dy": 14 } },
+    { "id": "brinehouse-barricade", "object": "barricade", "at": { "room": "ground", "dx": 34, "dy": 16 } },
+    { "id": "brinehouse-mooring-post-1", "object": "mooring-post", "at": { "room": "ground", "dx": 26, "dy": 20 } },
+    { "id": "brinehouse-mooring-post-2", "object": "mooring-post", "at": { "room": "ground", "dx": 30, "dy": 20 } },
+    { "id": "brinehouse-mooring-post-3", "object": "mooring-post", "at": { "room": "ground", "dx": 34, "dy": 20 } }
   ],
   "assemblies": [],
   "npcs": [],

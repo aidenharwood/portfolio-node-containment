@@ -78,7 +78,7 @@ import craterSouth from './layouts/crater-south.json' with { type: 'json' };
 import riversideAllotments from './layouts/riverside-allotments.json' with { type: 'json' };
 import lowerReach from './layouts/lower-reach.json' with { type: 'json' };
 import theTowpath from './layouts/the-towpath.json' with { type: 'json' };
-import woodBank from './layouts/wood-bank.json' with { type: 'json' };
+import kingfisherBank from './layouts/kingfisher-bank.json' with { type: 'json' };
 import ferrySteps from './layouts/ferry-steps.json' with { type: 'json' };
 import elderBank from './layouts/elder-bank.json' with { type: 'json' };
 import millRace from './layouts/mill-race.json' with { type: 'json' };
@@ -101,7 +101,7 @@ import withyBeds from './layouts/withy-beds.json' with { type: 'json' };
 import oakhanger from './layouts/oakhanger.json' with { type: 'json' };
 import deepWood from './layouts/deep-wood.json' with { type: 'json' };
 import creekMoor from './layouts/creek-moor.json' with { type: 'json' };
-import creekside from './layouts/creekside.json' with { type: 'json' };
+import otterholt from './layouts/otterholt.json' with { type: 'json' };
 import gibbetMoor from './layouts/gibbet-moor.json' with { type: 'json' };
 import sunkLane from './layouts/sunk-lane.json' with { type: 'json' };
 import seaRoad from './layouts/sea-road.json' with { type: 'json' };
@@ -222,7 +222,7 @@ export const HINTERLAND_DISTRICTS = [
   buildDistrict(riversideAllotments, LAND),
   buildDistrict(lowerReach, LAND),
   buildDistrict(theTowpath, LAND),
-  buildDistrict(woodBank, LAND),
+  buildDistrict(kingfisherBank, LAND),
   buildDistrict(ferrySteps, LAND),
   buildDistrict(elderBank, LAND),
   buildDistrict(millRace, LAND),
@@ -245,7 +245,7 @@ export const HINTERLAND_DISTRICTS = [
   buildDistrict(oakhanger, LAND),
   buildDistrict(deepWood, LAND),
   buildDistrict(creekMoor, LAND),
-  buildDistrict(creekside, LAND),
+  buildDistrict(otterholt, LAND),
   buildDistrict(gibbetMoor, LAND),
   buildDistrict(sunkLane, LAND),
   buildDistrict(seaRoad, LAND),

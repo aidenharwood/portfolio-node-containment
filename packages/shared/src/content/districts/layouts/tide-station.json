@@ -9,13 +9,23 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 3, "row": 7 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 26, "y": 9, "width": 14, "height": 10 }, "height": 0 },
-    { "kind": "building", "id": "tide-station", "rect": { "x": 27, "y": 10, "width": 12, "height": 8 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "north", "width": 2 }] }
+    { "kind": "rise", "rect": { "x": 39, "y": 9, "width": 14, "height": 10 }, "height": 0 },
+    { "kind": "rise", "rect": { "x": 51, "y": 41, "width": 9, "height": 7 }, "height": 1, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 52, "y": 24, "width": 7, "height": 6 }, "height": 1, "shape": "round" },
+    { "kind": "patch", "rect": { "x": 54, "y": 43, "width": 3, "height": 2 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 56, "y": 10, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 40, "y": 52, "width": 5, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 8, "y": 44, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 25, "y": 53, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 58, "y": 54, "width": 3, "height": 3 }, "tile": "water" },
+    { "kind": "building", "id": "tide-station", "rect": { "x": 40, "y": 10, "width": 12, "height": 8 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "west", "width": 2, "offset": 2 }] },
+    { "kind": "building", "id": "gauge-house", "rect": { "x": 12, "y": 25, "width": 6, "height": 4 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "east", "width": 2 }] }
   ],
   "tiles": [],
   "areas": [
     { "room": "tide-station", "name": "Tide Station", "safe": true },
-    { "room": "ground", "name": "Tide Station" }
+    { "room": "gauge-house", "name": "Gauge House" },
+    { "room": "ground", "name": "Sluice Foot" }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 32, "dy": 32 },
@@ -37,7 +47,10 @@
     { "id": "sluice-end-market-mailbox-1", "object": "market-mailbox", "at": { "room": "tide-station", "dx": 10, "dy": 4 }, "facing": "north" },
     { "id": "sluice-end-table-1", "object": "table", "at": { "room": "tide-station", "dx": 8, "dy": 4 }, "facing": "north" },
     { "id": "sluice-end-chair-1", "object": "chair", "at": { "room": "tide-station", "dx": 8, "dy": 3 } },
-    { "id": "sluice-end-security-camera-1", "object": "security-camera", "at": { "room": "tide-station", "dx": 0, "dy": 7 }, "facing": "north" }
+    { "id": "sluice-end-security-camera-1", "object": "security-camera", "at": { "room": "tide-station", "dx": 0, "dy": 7 }, "facing": "north" },
+    { "id": "tide-station-tide-gauge-1", "object": "tide-gauge", "at": { "room": "ground", "dx": 36, "dy": 17 } },
+    { "id": "tide-station-checkpoint-barrier-1", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 27, "dy": 4 } },
+    { "id": "tide-station-flood-mast-1", "object": "flood-mast", "at": { "room": "ground", "dx": 25, "dy": 6 } }
   ],
   "assemblies": [],
   "npcs": [
@@ -49,7 +62,8 @@
   "setPieces": [],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
-    "tide-station": { "theme": "office", "also": ["shop"], "people": 0 }
+    "tide-station": { "theme": "office", "also": ["shop"], "people": 0 },
+    "gauge-house": { "theme": "office", "people": 0 }
   },
   "furnish": {}
 }

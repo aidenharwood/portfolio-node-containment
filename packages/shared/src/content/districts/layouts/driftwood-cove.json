@@ -19,7 +19,8 @@
   "objects": [
     { "id": "driftwood-cove-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 4 } },
     { "id": "driftwood-cove-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 22, "dy": 8 } },
-    { "id": "driftwood-cove-barricade", "object": "barricade", "at": { "room": "ground", "dx": 30, "dy": 6 } }
+    { "id": "driftwood-cove-barricade", "object": "barricade", "at": { "room": "ground", "dx": 30, "dy": 6 } },
+    { "id": "driftwood-cove-beached-hull-1", "object": "beached-hull", "at": { "room": "ground", "dx": 18, "dy": 4 } }
   ],
   "assemblies": [],
   "npcs": [],

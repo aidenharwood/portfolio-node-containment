@@ -163,3 +163,19 @@ test('the Old Shipyards town squares, Site, outpost and Incline foot are blocked
     if (town.includes(id)) assert.ok(layout.steps.filter((step) => step.kind === 'building').length >= 4, `${id} has too few buildings for a town square`);
   }
 });
+
+test('Tidemarsh has a stilt village, its Site on piles, an outpost by the sluice and the causeway, each round its landmark', () => {
+  const landmarks: Readonly<Record<string, string>> = {
+    stiltholm: 'tide-bell',
+    'tide-station': 'tide-gauge',
+    brinehouse: 'windpump',
+    'causeway-end': 'causeway-gate-leaf',
+  };
+  for (const [id, landmark] of Object.entries(landmarks)) {
+    const layout = parseLayout(LAYOUT_SOURCES[id]);
+    assert.ok(layout.objects.some((object) => object.object === landmark), `${id} has no ${landmark}`);
+  }
+  const village = parseLayout(LAYOUT_SOURCES.stiltholm);
+  assert.ok(village.steps.filter((step) => step.kind === 'building').length >= 8, 'Stiltholm has too few buildings for a village');
+  assert.ok(village.steps.some((step) => step.kind === 'patch' && step.tile === 'boards'), 'Stiltholm has no boardwalks');
+});

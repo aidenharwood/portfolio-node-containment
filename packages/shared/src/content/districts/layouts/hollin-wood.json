@@ -8,7 +8,12 @@
   "ambience": { "darkness": 0.5, "tint": "#24342e", "fog": "#34443e", "sky": "#5a6a66", "weather": ["mist", "drizzle"], "haze": 1.6 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 5, "row": 8 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 35, "y": 28, "width": 8, "height": 6 }, "height": 2, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 48, "y": 10, "width": 7, "height": 6 }, "height": 2, "shape": "round" },
+    { "kind": "patch", "rect": { "x": 38, "y": 30, "width": 3, "height": 2 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 34, "y": 0, "width": 2, "height": 64 }, "tile": "dirt" }
+  ],
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Hollin Wood" }

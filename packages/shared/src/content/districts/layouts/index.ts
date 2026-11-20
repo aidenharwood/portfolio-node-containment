@@ -25,7 +25,7 @@ import craterSouth from './crater-south.json' with { type: 'json' };
 import creekHead from './creek-head.json' with { type: 'json' };
 import creekMoor from './creek-moor.json' with { type: 'json' };
 import creekMud from './creek-mud.json' with { type: 'json' };
-import creekside from './creekside.json' with { type: 'json' };
+import otterholt from './otterholt.json' with { type: 'json' };
 import crescentWalk from './crescent-walk.json' with { type: 'json' };
 import deadOrchard from './dead-orchard.json' with { type: 'json' };
 import deepWood from './deep-wood.json' with { type: 'json' };
@@ -140,7 +140,7 @@ import westGateRoad from './west-gate-road.json' with { type: 'json' };
 import westgate from './westgate.json' with { type: 'json' };
 import wireFields from './wire-fields.json' with { type: 'json' };
 import withyBeds from './withy-beds.json' with { type: 'json' };
-import woodBank from './wood-bank.json' with { type: 'json' };
+import kingfisherBank from './kingfisher-bank.json' with { type: 'json' };
 import woodsEnd from './woods-end.json' with { type: 'json' };
 import type { DistrictId } from '../../../ids.ts';
 
@@ -172,7 +172,7 @@ export const LAYOUT_SOURCES: Readonly<Record<DistrictId, unknown>> = {
   'creek-head': creekHead,
   'creek-moor': creekMoor,
   'creek-mud': creekMud,
-  creekside,
+  otterholt,
   'crescent-walk': crescentWalk,
   'dead-orchard': deadOrchard,
   'deep-wood': deepWood,
@@ -287,6 +287,6 @@ export const LAYOUT_SOURCES: Readonly<Record<DistrictId, unknown>> = {
   westgate,
   'wire-fields': wireFields,
   'withy-beds': withyBeds,
-  'wood-bank': woodBank,
+  'kingfisher-bank': kingfisherBank,
   'woods-end': woodsEnd,
 };

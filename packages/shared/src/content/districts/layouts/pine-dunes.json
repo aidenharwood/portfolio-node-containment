@@ -8,7 +8,10 @@
   "ambience": { "darkness": 0.5, "tint": "#24342e", "fog": "#34443e", "sky": "#5a6a66", "weather": ["mist", "drizzle"], "haze": 1.6 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 5, "row": 9 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 19, "y": 5, "width": 8, "height": 5 }, "height": 2, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 40, "y": 8, "width": 7, "height": 5 }, "height": 2, "shape": "round" }
+  ],
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Pine Dunes" }

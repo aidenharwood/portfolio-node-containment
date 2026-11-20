@@ -8,9 +8,18 @@
   "ambience": { "darkness": 0.5, "tint": "#24342e", "fog": "#34443e", "sky": "#5a6a66", "weather": ["mist", "drizzle"], "haze": 1.6 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 7 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 14, "y": 48, "width": 8, "height": 6 }, "height": 1, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 48, "y": 14, "width": 7, "height": 6 }, "height": 2, "shape": "round" },
+    { "kind": "patch", "rect": { "x": 8, "y": 14, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 36, "y": 46, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 20, "y": 58, "width": 5, "height": 2 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 28, "y": 58, "width": 5, "height": 2 }, "tile": "trees" },
+    { "kind": "building", "id": "withy-shed", "rect": { "x": 30, "y": 8, "width": 6, "height": 4 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "withy-shed", "name": "Withy Shed" },
     { "room": "ground", "name": "Withy Beds" }
   ],
   "anchors": {
@@ -28,7 +37,8 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "withy-shed": { "theme": "camp", "people": 0 }
   },
   "furnish": {}
 }

@@ -8,7 +8,10 @@
   "ambience": { "darkness": 0.5, "tint": "#24342e", "fog": "#34443e", "sky": "#5a6a66", "weather": ["mist", "drizzle"], "haze": 1.6 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 0, "row": 7 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 52, "y": 50, "width": 6, "height": 5 }, "height": 1, "shape": "round" },
+    { "kind": "patch", "rect": { "x": 56, "y": 36, "width": 3, "height": 3 }, "tile": "trees" }
+  ],
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Mudflats" }

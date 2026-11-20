@@ -8,7 +8,10 @@
   "ambience": { "darkness": 0.5, "tint": "#24342e", "fog": "#34443e", "sky": "#5a6a66", "weather": ["mist", "drizzle"], "haze": 1.6 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 6, "split": true },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 30, "y": 40, "width": 7, "height": 5 }, "height": 2, "shape": "round" },
+    { "kind": "patch", "rect": { "x": 38, "y": 48, "width": 4, "height": 3 }, "tile": "trees" }
+  ],
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Lower Reach" }
