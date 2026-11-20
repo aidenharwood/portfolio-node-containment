@@ -11,7 +11,9 @@ import type { TilePoint } from '../../world/geometry.ts';
 import { CANAL_BASIN, THE_CUT } from '../districts/lowWard.ts';
 import { gear } from '../gearItem.ts';
 import { DRESSING_THEMES } from '../prefabs/types.ts';
-import { questPay, styleExperiencePay, styleQuestPay } from './questPay.ts';
+import { questPay, styleExperiencePay, styleQuestPay } from '../catalog/questPay.ts';
+import { beast, killExperience, standardIntegrity } from '../catalog/creatureKit.ts';
+import { bye, combineDialogues, questObject, questTalk as kitQuestTalk, say, shop, type QuestTalk } from '../catalog/dialogueKit.ts';
 import { TUTORIAL_QUEST_ID } from './quests.ts';
 
 const anchor = (district: { readonly id: string; readonly anchors?: Readonly<Record<string, TilePoint>> }, name: string): TilePoint => {
@@ -49,83 +51,11 @@ export const NOVICE_ITEMS: readonly ItemDefinition[] = [
     maxStack: 10,
     value: 5,
   },
-  gear({ id: 'eelskin-hood', name: 'Eelskin Hood', examine: 'A hood cut from one enormous eel. It is still slightly slippery.', rarity: 'restricted', icon: 'hood', slot: 'head', stats: { deflection: 5, armor: 2, accuracy: 1 }, requires: { marksmanship: 5 }, visual: { primary: '#3a4c4c', secondary: '#3a5a4a', motif: 'skirmisher' }, value: 120, unique: true }),
-  gear({ id: 'crawler-shell', name: 'Crawler Shell', examine: 'The back plate of a scrap crawler, strapped on. It used to be a car door.', rarity: 'restricted', icon: 'vest', slot: 'torso', stats: { armor: 14, deflection: 5, hazardShielding: 2 }, requires: { closeQuarters: 10 }, visual: { primary: '#6a4a3a', secondary: '#3a3f44', motif: 'bulwark' }, value: 300, unique: true }),
-  gear({ id: 'rustling-core', name: 'Rustling Core', examine: 'The amber light from inside a rustling. It whispers about metal.', rarity: 'classified', icon: 'implant', slot: 'implant', stats: { focus: 6, cognitiveWard: 4 }, requires: { psionics: 12 }, visual: { primary: '#5a4a2a', secondary: '#3a2a10', emissive: '#e8a21c' }, value: 400, unique: true }),
-  gear({ id: 'lamplighter-lantern', name: "Lamplighter's Lantern", examine: 'A small lantern that lights itself when something is watching.', rarity: 'classified', icon: 'lantern', slot: 'utility', stats: { insight: 3, cognitiveWard: 3, focus: 2 }, requires: { psionics: 8 }, visual: { primary: '#5a5e62', secondary: '#9ab0b8', emissive: '#ffb35a' }, value: 350, unique: true }),
 ];
 
 export const NOVICE_RECIPES: readonly RecipeDefinition[] = [
   { id: 'fabricator:valve-part', station: 'fabricator', skill: 'engineering', level: 1, inputs: [{ itemId: 'scrap-plating', count: 1 }], output: { itemId: 'valve-part', count: 1 }, experience: 10, ticks: 4 },
 ];
-
-interface Beast {
-  readonly id: string;
-  readonly name: string;
-  readonly examine: string;
-  readonly model: CreatureDefinition['model'];
-  readonly level: number;
-  readonly style?: CreatureDefinition['attack']['style'];
-  readonly aggressive?: boolean;
-  readonly wander?: number;
-  readonly loot: CreatureDefinition['loot'];
-  readonly containment?: CreatureDefinition['containment'];
-  readonly designation?: string;
-  readonly integrity?: number;
-  readonly accuracy?: number;
-  readonly defence?: number;
-  readonly range?: number;
-  readonly projectile?: CreatureDefinition['attack']['projectile'];
-  readonly guard?: GearMotif;
-}
-
-const KILL_BONUS_LEVEL_CAP = 16;
-
-const VETERAN_LEVEL = 14;
-
-const VETERAN_LEVEL_CAP = 44;
-
-const THREAT_LEVEL = 28;
-
-const THREAT_ACCURACY_PER_LEVEL: Readonly<Record<CreatureDefinition['attack']['style'], number>> = { melee: 5, ranged: 2.5, psionic: 1.5 };
-
-const THREAT_DEFENCE_PER_LEVEL = 2;
-
-const THREAT_INTEGRITY_PER_LEVEL = 2;
-
-const THREAT_EXPERIENCE_PER_LEVEL = 0.035;
-
-const threatLevels = (level: number): number => Math.max(0, level - THREAT_LEVEL);
-
-export const standardIntegrity = (level: number): number => level * 3 + 4 + THREAT_INTEGRITY_PER_LEVEL * threatLevels(level);
-
-export const killExperience = (level: number, integrity = standardIntegrity(level)): number =>
-  Math.round(
-    (level * 6 + 2 * Math.min(level, KILL_BONUS_LEVEL_CAP) ** 2 + 8 * Math.max(0, Math.min(level, VETERAN_LEVEL_CAP) - VETERAN_LEVEL) ** 2) *
-      (1 + THREAT_EXPERIENCE_PER_LEVEL * threatLevels(level)) *
-      (integrity / standardIntegrity(level)),
-  );
-
-export const beast = (spec: Beast, style = spec.style ?? 'melee', threat = threatLevels(spec.level), integrity = spec.integrity ?? standardIntegrity(spec.level)): CreatureDefinition => ({
-  id: spec.id,
-  name: spec.name,
-  ...(spec.designation ? { designation: spec.designation } : {}),
-  examine: spec.examine,
-  model: spec.model,
-  level: spec.level,
-  integrity,
-  defence: spec.defence ?? Math.round(spec.level * 0.6) + THREAT_DEFENCE_PER_LEVEL * threat,
-  attack: { style, accuracy: spec.accuracy ?? Math.round(spec.level * 0.6) + 1 + Math.round(THREAT_ACCURACY_PER_LEVEL[style] * threat), maxHit: 1 + Math.floor(spec.level / 4), range: spec.range ?? 1, speedTicks: 4, ...(spec.projectile ? { projectile: spec.projectile } : {}) },
-  ...(spec.guard ? { guard: spec.guard } : {}),
-  ...(spec.aggressive ? { aggressive: true } : {}),
-  aggroRadius: spec.aggressive ? 3 : 0,
-  leashRadius: 7,
-  wanderRadius: spec.wander ?? 3,
-  respawnTicks: 30 + spec.level * 3,
-  experience: killExperience(spec.level, integrity),
-  loot: spec.loot,
-  ...(spec.containment ? { containment: spec.containment } : {}),
-});
 
 export const NOVICE_CREATURES: readonly CreatureDefinition[] = [
   beast({
@@ -216,26 +146,6 @@ export const NOVICE_CREATURES: readonly CreatureDefinition[] = [
 
 const active = (questId: string, stepId?: string): Condition => ({ type: 'questActive', questId, ...(stepId ? { stepId } : {}) });
 const completed = (questId: string): Condition => ({ type: 'questCompleted', questId });
-
-export const questObject = (
-  id: string,
-  name: string,
-  examine: string,
-  model: WorldObjectDefinition['model'],
-  verb: string,
-  conditions: readonly Condition[],
-  failureText: string,
-  effects: readonly GameEffect[],
-  blocksMovement = true,
-): WorldObjectDefinition => ({
-  id,
-  name,
-  examine,
-  model,
-  blocksMovement,
-  furnishing: { mount: 'free', homes: DRESSING_THEMES },
-  interactions: [{ verb, conditions, failureText, effects }],
-});
 
 export const NOVICE_OBJECTS: readonly WorldObjectDefinition[] = [
   questObject('bed-six', 'Bed Six', 'The leaves have five fingers. They are waving. There is no wind.', 'allotmentBed', 'Uproot', [active('bed-six', 'uproot')], 'Agnes has told everyone not to touch bed six.', [{ type: 'giveItem', itemId: 'hand-leaf' }, { type: 'grantExperience', skill: 'biochemistry', amount: 40 }]),
@@ -353,78 +263,8 @@ export const NOVICE_QUESTS: readonly QuestDefinition[] = [
   }),
 ];
 
-const say = (text: string, next: string | null = null): DialogueNode => ({ speaker: 'npc', text, next });
-const bye: DialogueOption = { text: 'Goodbye.', next: null };
-const shop = (shopId: string): DialogueOption => ({ text: 'Show me what you have.', effects: [{ type: 'openShop', shopId }], next: null });
-
-interface Hand {
-  readonly stepId: string;
-  readonly text: string;
-  readonly option: string;
-  readonly items: readonly string[];
-  readonly signal: string;
-  readonly thanks: string;
-}
-
-export interface QuestTalk {
-  readonly npc: string;
-  readonly questId: string;
-  readonly offer?: { readonly text: string; readonly accept: string; readonly requires?: readonly string[]; readonly conditions?: readonly Condition[]; readonly notReady?: string };
-  readonly waiting: string;
-  readonly hand?: Hand;
-  readonly report?: { readonly stepId: string; readonly text: string };
-  readonly notes?: readonly { readonly stepId: string; readonly text: string }[];
-  readonly done: string;
-  readonly chat: string;
-  readonly chatOptions?: readonly DialogueOption[];
-}
-
-export function questTalk(talk: QuestTalk): DialogueDefinition {
-  const extra = talk.chatOptions ?? [];
-  const nodes: Record<string, DialogueNode> = {
-    waiting: say(talk.waiting),
-    done: { speaker: 'npc', text: talk.done, options: [...extra, bye] },
-    chat: { speaker: 'npc', text: talk.chat, options: [...extra, bye] },
-  };
-  const entries: { node: string; conditions?: readonly Condition[] }[] = [];
-  if (talk.report) {
-    nodes.report = say(talk.report.text);
-    entries.push({ node: 'report', conditions: [active(talk.questId, talk.report.stepId)] });
-  }
-  if (talk.hand) {
-    const hand = talk.hand;
-    nodes.hand = {
-      speaker: 'npc',
-      text: hand.text,
-      options: [
-        {
-          text: hand.option,
-          conditions: hand.items.map((itemId): Condition => ({ type: 'hasItem', itemId })),
-          effects: [...hand.items.map((itemId): GameEffect => ({ type: 'takeItem', itemId })), { type: 'emitSignal', signal: hand.signal }],
-          next: 'thanks',
-        },
-        { text: 'Not yet.', next: null },
-      ],
-    };
-    nodes.thanks = say(hand.thanks);
-    entries.push({ node: 'hand', conditions: [active(talk.questId, hand.stepId)] });
-  }
-  if (talk.offer) {
-    nodes.offer = { speaker: 'npc', text: talk.offer.text, options: [{ text: talk.offer.accept, effects: [{ type: 'startQuest', questId: talk.questId }], next: null }, { text: 'Not now.', next: null }] };
-    const ready: Condition[] = [...(talk.offer.requires ?? [TUTORIAL_QUEST_ID]).map(completed), { type: 'questNotStarted', questId: talk.questId }];
-    entries.push({ node: 'offer', conditions: [...ready, ...(talk.offer.conditions ?? [])] });
-    if (talk.offer.notReady && talk.offer.conditions) {
-      nodes['not-ready'] = say(talk.offer.notReady);
-      entries.push({ node: 'not-ready', conditions: ready });
-    }
-  }
-  for (const note of talk.notes ?? []) {
-    nodes[`note-${note.stepId}`] = say(note.text);
-    entries.push({ node: `note-${note.stepId}`, conditions: [active(talk.questId, note.stepId)] });
-  }
-  if (talk.waiting) entries.push({ node: 'waiting', conditions: [active(talk.questId)] });
-  entries.push({ node: 'done', conditions: [completed(talk.questId)] }, { node: 'chat' });
-  return { id: talk.npc, entries, nodes };
+export function questTalk(talk: QuestTalk) {
+  return kitQuestTalk(talk, [TUTORIAL_QUEST_ID]);
 }
 
 export const NOVICE_DIALOGUES: readonly DialogueDefinition[] = [
@@ -507,39 +347,6 @@ export const NOVICE_DIALOGUES: readonly DialogueDefinition[] = [
   }),
 ];
 
-type Entry = DialogueDefinition['entries'][number];
 
-const rank = (entry: Entry): number => {
-  const types = (entry.conditions ?? []).map((condition) => condition.type);
-  if (types.includes('questActive')) return 0;
-  if (types.includes('questNotStarted')) return 1;
-  if (types.length > 0) return 2;
-  return 3;
-};
+export { beast, combineDialogues, killExperience, questObject, standardIntegrity };
 
-export function combineDialogues(dialogues: readonly DialogueDefinition[]): DialogueDefinition[] {
-  const byId = new Map<string, DialogueDefinition[]>();
-  for (const dialogue of dialogues) byId.set(dialogue.id, [...(byId.get(dialogue.id) ?? []), dialogue]);
-  return [...byId.entries()].map(([id, group]) => {
-    if (group.length === 1) return group[0] as DialogueDefinition;
-    const nodes: Record<string, DialogueNode> = {};
-    const ranked: { readonly entry: Entry; readonly rank: number; readonly order: number }[] = [];
-    group.forEach((dialogue, index) => {
-      const rename = (node: string | null | undefined): string | null | undefined => (node === null || node === undefined ? node : `q${index}-${node}`);
-      for (const [name, node] of Object.entries(dialogue.nodes)) {
-        nodes[`q${index}-${name}`] = {
-          ...node,
-          ...(node.next !== undefined ? { next: rename(node.next) ?? null } : {}),
-          ...(node.options ? { options: node.options.map((option) => ({ ...option, next: rename(option.next) ?? null })) } : {}),
-        };
-      }
-      for (const entry of dialogue.entries) {
-        const entryRank = rank(entry);
-        if (entryRank === 3 && index < group.length - 1) continue;
-        ranked.push({ entry: { ...entry, node: `q${index}-${entry.node}` }, rank: entryRank, order: entryRank === 2 ? -index : index });
-      }
-    });
-    ranked.sort((a, b) => a.rank - b.rank || a.order - b.order);
-    return { id, entries: ranked.map((item) => item.entry), nodes };
-  });
-}

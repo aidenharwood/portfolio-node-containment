@@ -3,7 +3,7 @@ import secure from './layouts/meridian-secure.json' with { type: 'json' };
 import vault from './layouts/meridian-vault.json' with { type: 'json' };
 import { anchorsOf, buildDistrict } from '../../world/layout.ts';
 import { registerFurnishingKit } from '../furnishingKit.ts';
-import { CITY_KIT } from '../seed/cityKit.ts';
+import { CITY_KIT } from '../catalog/cityKit.ts';
 
 registerFurnishingKit(CITY_KIT);
 

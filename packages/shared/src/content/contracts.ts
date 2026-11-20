@@ -3,7 +3,7 @@ import { COMMENDATION_ITEM_ID, type ContractCadence, type ContractDefinition, ty
 import { TIER_LEVEL_FLOORS } from '../crafting/tiers.ts';
 import { CURRENCY_ITEM_ID } from '../economy/shop.ts';
 import type { Condition } from '../rules/conditions.ts';
-import { WARD_RECIPES } from './ward/items.ts';
+import { WARD_RECIPES } from './catalog/items.ts';
 import { TUTORIAL_QUEST_ID } from './ward/quests.ts';
 
 interface ContractDraft {

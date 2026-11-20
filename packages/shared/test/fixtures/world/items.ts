@@ -1,6 +1,6 @@
 import { boostTicksForMinutes } from '../../../src/character/boosts.ts';
 import type { ItemDefinition } from '../../../src/gear/items.ts';
-import { MASTERY_MANTLES } from '../../../src/content/ward/mastery.ts';
+import { MASTERY_MANTLES } from '../../../src/content/catalog/mastery.ts';
 
 export const FIXTURE_ITEMS: readonly ItemDefinition[] = [
   ...MASTERY_MANTLES,

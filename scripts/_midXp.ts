@@ -4,7 +4,7 @@ import { creatureAttackProfile, defenceAgainst, hitChance, playerAttackProfile, 
 import { creatureDefence } from '../packages/shared/src/combat/study.ts';
 import { equipmentStats } from '../packages/shared/src/gear/equipment.ts';
 import { GAME_CONTENT, tierForLevel } from '../packages/shared/src/index.ts';
-import { MATERIAL_LADDER } from '../packages/shared/src/content/ward/items.ts';
+import { MATERIAL_LADDER } from '../packages/shared/src/content/catalog/items.ts';
 const formula = (globalThis as any).process.argv[2] ?? 'cur';
 const bonus = (c: any): number => {
   const L = c.level;

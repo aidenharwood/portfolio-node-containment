@@ -133,7 +133,7 @@ import theLantern from './layouts/the-lantern.json' with { type: 'json' };
 import { buildDistrict } from '../../world/layout.ts';
 import { registerFurnishingKit } from '../furnishingKit.ts';
 import { landFrom, SHIPPED_LANDS } from '../land/index.ts';
-import { CITY_KIT } from '../seed/cityKit.ts';
+import { CITY_KIT } from '../catalog/cityKit.ts';
 import { HINTERLAND_KIT } from '../seed/hinterland.ts';
 
 registerFurnishingKit(CITY_KIT);

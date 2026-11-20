@@ -9,15 +9,11 @@ import type { GameEffect } from '../../rules/effects.ts';
 import type { WorldObjectDefinition } from '../../world/entities.ts';
 import { gear } from '../gearItem.ts';
 import { beast, questObject, questTalk } from './novice.ts';
-import { questPay } from './questPay.ts';
+import { questPay } from '../catalog/questPay.ts';
 
 export const SITE_ITEMS: readonly ItemDefinition[] = [
   { id: 'steel-ledger', name: "Quill's Ledger", examine: 'Delivery ledgers from the year the Site was built. Ten times more steel came in than the Site has above ground.', category: 'quest', rarity: 'issued', icon: 'datapad', iconColors: ['#8a6a42', '#d8d0b8'], maxStack: 1, value: 0 },
   { id: 'dead-band-receiver', name: 'Dead-band Receiver', examine: "Sefa's design, your hands. It hisses until you point it at the Site, then it breathes.", category: 'quest', rarity: 'issued', icon: 'scanner', iconColors: ['#3a3f44', '#4fe3ff'], maxStack: 1, value: 0 },
-  gear({ id: 'moth-wing-cloak', name: 'Moth-wing Cloak', examine: 'A short cloak of moth-lantern wing. It glows when you are frightened.', rarity: 'classified', icon: 'cape', slot: 'back', stats: { cognitiveWard: 8, focus: 3, insight: 2 }, requires: { psionics: 10 }, visual: { primary: '#8a7a5a', secondary: '#4a3a2a', emissive: '#ffd08a', motif: 'warden' }, value: 500, unique: true }),
-  gear({ id: 'glass-eye', name: 'Glass Eye', examine: "A glass hound's eye on a strap. You see a little further through it, and a little wrong.", rarity: 'classified', icon: 'visor', slot: 'eyes', stats: { accuracy: 6, insight: 3 }, requires: { marksmanship: 20 }, visual: { primary: '#9fd6e6', secondary: '#3a4a52', emissive: '#e8a21c' }, value: 700, unique: true }),
-  gear({ id: 'knocker-fist', name: "Knocker's Fist", examine: 'One claw of a hull knocker, hollowed and worn as a gauntlet. It wants to knock.', rarity: 'classified', icon: 'gloves', slot: 'hands', stats: { armor: 10, power: 6 }, requires: { closeQuarters: 25 }, visual: { primary: '#3a4a52', secondary: '#8a4a2a', motif: 'bulwark' }, value: 900, unique: true }),
-  gear({ id: 'wraith-shroud', name: 'Wraith Shroud', examine: 'Wet weed that never dries, cut from a tide wraith. Things look past you in it.', rarity: 'anomalous', icon: 'cape', slot: 'back', stats: { deflection: 12, cognitiveWard: 8, accuracy: 4 }, requires: { marksmanship: 30 }, visual: { primary: '#3f6a54', secondary: '#14241c', emissive: '#c79bff', motif: 'skirmisher' }, value: 1200, unique: true }),
 ];
 
 export const SITE_RECIPES: readonly RecipeDefinition[] = [

@@ -28,11 +28,12 @@ import { SITE_MERIDIAN_DISTRICTS } from './districts/siteMeridian.ts';
 import { HINTERLAND_DISTRICTS } from './districts/hinterland.ts';
 import { HINTERLAND_DIALOGUES, HINTERLAND_NPCS, HINTERLAND_OBJECTS, HINTERLAND_REGIONS, HINTERLAND_SHOPS } from './seed/hinterland.ts';
 import { SITE_MERIDIAN_LIFTS } from './seed/siteMeridian.ts';
-import { CURRENCY_ITEMS } from './seed/items.ts';
+import { CURRENCY_ITEMS } from './catalog/currency.ts';
+import { CREATURE_UNIQUES, FIELD_GEAR, FIELD_GEAR_RECIPES } from './catalog/uniques.ts';
 import { WARD_CREATURES } from './ward/creatures.ts';
-import { MASTERY_MANTLES } from './ward/mastery.ts';
-import { RENAMED_WARD_ITEMS, WARD_FOOD, WARD_GEAR, WARD_KITS, WARD_MATERIALS, WARD_RECIPES, WARD_UNIQUES } from './ward/items.ts';
-import { WARD_SPOTS, WARD_STATIONS } from './ward/objects.ts';
+import { MASTERY_MANTLES } from './catalog/mastery.ts';
+import { RENAMED_WARD_ITEMS, WARD_FOOD, WARD_GEAR, WARD_KITS, WARD_MATERIALS, WARD_RECIPES, WARD_UNIQUES } from './catalog/items.ts';
+import { WARD_SPOTS, WARD_STATIONS } from './catalog/nodes.ts';
 import { TUTORIAL_QUEST_ID, WARD_DIALOGUES, WARD_QUESTLINES, WARD_QUESTS } from './ward/quests.ts';
 import { SITE_CREATURES, SITE_DIALOGUES, SITE_ITEMS, SITE_OBJECTS, SITE_QUESTS, SITE_RECIPES } from './ward/site.ts';
 import { DEPTHS_CREATURES, DEPTHS_DIALOGUES, DEPTHS_ITEMS, DEPTHS_OBJECTS, DEPTHS_QUESTS, DEPTHS_RECIPES } from './ward/depths.ts';
@@ -96,7 +97,7 @@ function placed(districtId: DistrictId, position: TilePoint): WorldLocation {
 }
 
 export const GAME_CONTENT: GameContent = {
-  items: indexById([...CURRENCY_ITEMS, ...WARD_MATERIALS, ...WARD_FOOD, ...WARD_KITS, ...WARD_GEAR, ...WARD_UNIQUES, ...MASTERY_MANTLES, ...NOVICE_ITEMS, ...SITE_ITEMS, ...DEPTHS_ITEMS]),
+  items: indexById([...CURRENCY_ITEMS, ...WARD_MATERIALS, ...WARD_FOOD, ...WARD_KITS, ...WARD_GEAR, ...WARD_UNIQUES, ...MASTERY_MANTLES, ...CREATURE_UNIQUES, ...FIELD_GEAR, ...NOVICE_ITEMS, ...SITE_ITEMS, ...DEPTHS_ITEMS]),
   renamedItems: RENAMED_WARD_ITEMS,
   npcs: indexById([...SEED_NPCS, ...HINTERLAND_NPCS]),
   worldObjects: indexById(INSTALLED.objects),
@@ -112,7 +113,7 @@ export const GAME_CONTENT: GameContent = {
   tram: buildTramNetwork(TRAM_STATIONS, TRAM_LINES, DISTRICTS, LEVEL_INDEX),
   creatures: indexById<CreatureDefinition>([...WARD_CREATURES, ...NOVICE_CREATURES, ...SITE_CREATURES, ...DEPTHS_CREATURES]),
   shops: indexById([...SEED_SHOPS, ...HINTERLAND_SHOPS]),
-  recipes: indexById<RecipeDefinition>([...WARD_RECIPES, ...NOVICE_RECIPES, ...SITE_RECIPES, ...DEPTHS_RECIPES]),
+  recipes: indexById<RecipeDefinition>([...WARD_RECIPES, ...FIELD_GEAR_RECIPES, ...NOVICE_RECIPES, ...SITE_RECIPES, ...DEPTHS_RECIPES]),
   contracts: indexById<ContractDefinition>(CONTRACTS),
   newCharacter: {
     startingLocation: placed(TERMINUS_SQUARE.id, TERMINUS_SQUARE_ANCHORS.start),

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { findContentIssues, GAME_CONTENT } from '../src/index.ts';
-import { ladderWeaponId, MATERIAL_LADDER } from '../src/content/ward/items.ts';
+import { ladderWeaponId, MATERIAL_LADDER } from '../src/content/catalog/items.ts';
 
 test('the shipped world passes every content check', () => {
   assert.deepEqual(findContentIssues(GAME_CONTENT), []);

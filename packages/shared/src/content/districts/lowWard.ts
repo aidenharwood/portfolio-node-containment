@@ -9,7 +9,7 @@ import shipyardFringe from './layouts/shipyard-fringe.json' with { type: 'json' 
 import cordonGate from './layouts/cordon-gate.json' with { type: 'json' };
 import { anchorsOf, buildDistrict } from '../../world/layout.ts';
 import { registerFurnishingKit } from '../furnishingKit.ts';
-import { CITY_KIT } from '../seed/cityKit.ts';
+import { CITY_KIT } from '../catalog/cityKit.ts';
 
 registerFurnishingKit(CITY_KIT);
 

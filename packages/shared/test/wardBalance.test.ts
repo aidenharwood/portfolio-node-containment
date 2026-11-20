@@ -9,7 +9,7 @@ import { COMBAT_STYLE_INFO, WEAPON_KIND_INFO, styleBeating, type WeaponKind } fr
 import { equipmentStats, type EquipmentState } from '../src/gear/equipment.ts';
 import { GAME_CONTENT, containmentExperience, containmentLevelFor, objectiveDistricts, realignedProgress, tierForLevel, type ItemDefinition } from '../src/index.ts';
 import { gatheringSourcesOf } from '../src/content/craftingIntegrity.ts';
-import { ladderArmourId, ladderWeaponId, MATERIAL_LADDER } from '../src/content/ward/items.ts';
+import { ladderArmourId, ladderWeaponId, MATERIAL_LADDER } from '../src/content/catalog/items.ts';
 import { standardIntegrity } from '../src/content/ward/novice.ts';
 
 const statTotal = (item: ItemDefinition | undefined): number => Object.values(item?.equipment?.stats ?? {}).reduce((sum, value) => sum + (value ?? 0), 0);

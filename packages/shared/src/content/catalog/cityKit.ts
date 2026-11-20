@@ -1,5 +1,5 @@
 import { DRESSING_THEMES } from '../prefabs/types.ts';
-import { ALLOTMENT_HARVEST, SCRAP_HEAP_SALVAGE } from '../ward/objects.ts';
+import { ALLOTMENT_HARVEST, SCRAP_HEAP_SALVAGE } from './nodes.ts';
 import type { WorldObjectDefinition } from '../../world/entities.ts';
 import type { FurnishingProfile } from '../furnishingCatalogue.ts';
 import type { FurnishingKit } from '../furnishingKit.ts';
