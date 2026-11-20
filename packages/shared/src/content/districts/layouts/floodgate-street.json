@@ -8,20 +8,57 @@
   "ambience": { "darkness": 0.56, "tint": "#3a2c22", "fog": "#2e2620", "sky": "#4a3a3a", "weather": ["drizzle", "dust"], "haze": 1.2 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 8, "row": 6, "split": true },
-  "steps": [],
+  "steps": [
+    { "kind": "patch", "rect": { "x": 41, "y": 0, "width": 5, "height": 21 }, "tile": "asphalt" },
+    { "kind": "patch", "rect": { "x": 8, "y": 21, "width": 38, "height": 5 }, "tile": "asphalt" },
+    { "kind": "patch", "rect": { "x": 39, "y": 26, "width": 5, "height": 9 }, "tile": "asphalt" },
+    { "kind": "patch", "rect": { "x": 8, "y": 0, "width": 5, "height": 12 }, "tile": "boards" },
+    { "kind": "patch", "rect": { "x": 8, "y": 12, "width": 5, "height": 9 }, "tile": "asphalt" },
+    { "kind": "building", "id": "guildhall", "rect": { "x": 19, "y": 5, "width": 17, "height": 12 }, "floor": "terrazzo", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "floodgate-inn", "rect": { "x": 48, "y": 3, "width": 12, "height": 10 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "west", "width": 2 }] },
+    { "kind": "building", "id": "winding-house", "rect": { "x": 22, "y": 28, "width": 12, "height": 6 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] },
+    { "kind": "building", "id": "floodgate-office", "rect": { "x": 50, "y": 18, "width": 10, "height": 8 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "west", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "guildhall", "name": "Guildhall" },
+    { "room": "floodgate-inn", "name": "The Floodgate Inn" },
+    { "room": "winding-house", "name": "Winding House" },
+    { "room": "floodgate-office", "name": "Floodgate Office" },
     { "room": "ground", "name": "Floodgate Street" }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 35, "dy": 18 }
+    "start": { "room": "ground", "dx": 43, "dy": 16 }
   },
   "objects": [
     { "id": "floodgate-street-gate-leaf-1", "object": "floodgate-leaf", "at": { "room": "ground", "dx": 38, "dy": 41 }, "facing": "north" },
     { "id": "floodgate-street-gate-leaf-0", "object": "floodgate-leaf", "at": { "room": "ground", "dx": 37, "dy": 41 }, "facing": "north" },
-    { "id": "floodgate-street-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 35, "dy": 16 } },
-    { "id": "floodgate-street-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 35, "dy": 21 } },
-    { "id": "floodgate-street-barricade", "object": "barricade", "at": { "room": "ground", "dx": 30, "dy": 18 } }
+    { "id": "floodgate-street-floodgate-winch", "object": "floodgate-winch", "at": { "room": "ground", "dx": 46, "dy": 29 } },
+    { "id": "floodgate-street-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 27 } },
+    { "id": "floodgate-street-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 27 } },
+    { "id": "floodgate-street-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 6 } },
+    { "id": "floodgate-street-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 36, "dy": 32 } },
+    { "id": "floodgate-street-barricade", "object": "barricade", "at": { "room": "ground", "dx": 54, "dy": 29 } },
+    { "id": "floodgate-street-mooring-post-1", "object": "mooring-post", "at": { "room": "ground", "dx": 15, "dy": 5 } },
+    { "id": "floodgate-street-street-tree-1", "object": "street-tree", "at": { "room": "ground", "dx": 15, "dy": 13 } },
+    { "id": "floodgate-street-street-tree-2", "object": "street-tree", "at": { "room": "ground", "dx": 61, "dy": 15 } },
+    { "id": "floodgate-street-table-1", "object": "table", "at": { "room": "guildhall", "dx": 4, "dy": 4 } },
+    { "id": "floodgate-street-table-2", "object": "table", "at": { "room": "guildhall", "dx": 5, "dy": 4 } },
+    { "id": "floodgate-street-table-3", "object": "table", "at": { "room": "guildhall", "dx": 6, "dy": 4 } },
+    { "id": "floodgate-street-table-4", "object": "table", "at": { "room": "guildhall", "dx": 10, "dy": 4 } },
+    { "id": "floodgate-street-table-5", "object": "table", "at": { "room": "guildhall", "dx": 11, "dy": 4 } },
+    { "id": "floodgate-street-table-6", "object": "table", "at": { "room": "guildhall", "dx": 12, "dy": 4 } },
+    { "id": "floodgate-street-counter-1", "object": "counter", "at": { "room": "guildhall", "dx": 8, "dy": 9 } },
+    { "id": "floodgate-street-litter-bin-1", "object": "litter-bin", "at": { "room": "guildhall", "dx": 1, "dy": 1 } },
+    { "id": "floodgate-street-notice-board-1", "object": "notice-board", "at": { "room": "guildhall", "dx": 8, "dy": 0 } },
+    { "id": "floodgate-street-table-7", "object": "table", "at": { "room": "floodgate-inn", "dx": 3, "dy": 3 } },
+    { "id": "floodgate-street-table-8", "object": "table", "at": { "room": "floodgate-inn", "dx": 3, "dy": 6 } },
+    { "id": "floodgate-street-table-9", "object": "table", "at": { "room": "floodgate-inn", "dx": 7, "dy": 3 } },
+    { "id": "floodgate-street-table-10", "object": "table", "at": { "room": "floodgate-inn", "dx": 7, "dy": 6 } },
+    { "id": "floodgate-street-counter-2", "object": "counter", "at": { "room": "floodgate-inn", "dx": 10, "dy": 1 } },
+    { "id": "floodgate-street-counter-3", "object": "counter", "at": { "room": "winding-house", "dx": 5, "dy": 2 } },
+    { "id": "floodgate-street-table-11", "object": "table", "at": { "room": "winding-house", "dx": 2, "dy": 2 } },
+    { "id": "floodgate-street-table-12", "object": "table", "at": { "room": "floodgate-office", "dx": 4, "dy": 3 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -30,7 +67,11 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "guildhall": { "theme": "civic", "people": 0 },
+    "floodgate-inn": { "theme": "canteen", "people": 0 },
+    "winding-house": { "theme": "works", "people": 0 },
+    "floodgate-office": { "theme": "office", "people": 0 }
   },
   "furnish": {}
 }

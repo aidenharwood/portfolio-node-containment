@@ -212,3 +212,45 @@ test('nothing built on the ridge edge stands within six tiles of the drop, so th
     }
   }
 });
+
+test('Old Town is a walled city astride the river round its cathedral, with the Hostel inside the west gate and Gallows Hill outside the east wall, each round its landmark', () => {
+  const landmarks: Readonly<Record<string, string>> = {
+    westgate: 'gate-clock',
+    'cathedral-close': 'bell-tower',
+    wallside: 'wall-tower',
+    'east-wall': 'town-pump',
+    'floodgate-street': 'floodgate-winch',
+    'moat-bank': 'tannery-stack',
+    'water-gate': 'wharf-crane',
+    'gallows-green': 'gibbet',
+    'gallows-top': 'gallows',
+  };
+  const town = ['westgate', 'cathedral-close', 'east-wall', 'floodgate-street'];
+  let bridges = 0;
+  for (const [id, landmark] of Object.entries(landmarks)) {
+    const layout = parseLayout(LAYOUT_SOURCES[id]);
+    assert.ok(layout.square, id);
+    assert.equal(layout.region, 'old-town', id);
+    assert.ok(layout.objects.some((object) => object.object === landmark), `${id} has no ${landmark}`);
+    if (town.includes(id)) assert.ok(layout.steps.filter((step) => step.kind === 'building').length >= 4, `${id} has too few buildings for a town square`);
+    const origin = { x: layout.square.column * 64, y: layout.square.row * 64 };
+    for (const step of layout.steps) {
+      if (step.kind !== 'patch' || step.tile !== 'boards') continue;
+      let water = false;
+      for (let y = step.rect.y; y < step.rect.y + step.rect.height; y++) {
+        for (let x = step.rect.x; x < step.rect.x + step.rect.width; x++) if (land.tileAt({ x: origin.x + x, y: origin.y + y }) === 'water') water = true;
+      }
+      if (water) bridges++;
+    }
+  }
+  assert.ok(bridges >= 3, `Old Town has ${bridges} bridge spans over the river`);
+  const close = parseLayout(LAYOUT_SOURCES['cathedral-close']);
+  for (const room of ['cathedral-precinct', 'hollow-bay-cathedral', 'ossuary-stair', 'ossuary-holding']) {
+    assert.ok(close.steps.some((step) => step.kind === 'building' && step.id === room), `Cathedral Close has no ${room}`);
+  }
+  assert.ok(close.objects.some((object) => object.object === 'ossuary-lift'), 'the Ossuary lift is missing');
+  const westgate = parseLayout(LAYOUT_SOURCES.westgate);
+  const outpost = westgate.anchors.outpost;
+  assert.ok(outpost && 'room' in outpost, 'Westgate has no outpost anchor');
+  assert.equal(outpost.room, 'the-hostel');
+});

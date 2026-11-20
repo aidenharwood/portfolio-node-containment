@@ -8,18 +8,30 @@
   "ambience": { "darkness": 0.56, "tint": "#3a2c22", "fog": "#2e2620", "sky": "#4a3a3a", "weather": ["drizzle", "dust"], "haze": 1.2 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 9, "row": 6, "split": true },
-  "steps": [],
+  "steps": [
+    { "kind": "building", "id": "the-tannery", "rect": { "x": 3, "y": 2, "width": 12, "height": 9 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "west", "width": 2 }] },
+    { "kind": "building", "id": "dyers-cottages", "rect": { "x": 3, "y": 15, "width": 10, "height": 6 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "west", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "the-tannery", "name": "The Tannery" },
+    { "room": "dyers-cottages", "name": "Dyers' Cottages" },
     { "room": "ground", "name": "Moat Bank" }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 11, "dy": 12 }
+    "start": { "room": "ground", "dx": 21, "dy": 10 }
   },
   "objects": [
-    { "id": "moat-bank-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 10 } },
-    { "id": "moat-bank-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 11, "dy": 15 } },
-    { "id": "moat-bank-barricade", "object": "barricade", "at": { "room": "ground", "dx": 6, "dy": 12 } }
+    { "id": "moat-bank-tannery-stack", "object": "tannery-stack", "at": { "room": "ground", "dx": 18, "dy": 6 } },
+    { "id": "moat-bank-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 1, "dy": 13 } },
+    { "id": "moat-bank-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 17, "dy": 12 } },
+    { "id": "moat-bank-barricade", "object": "barricade", "at": { "room": "ground", "dx": 16, "dy": 18 } },
+    { "id": "moat-bank-scrap-heap-1", "object": "scrap-heap", "at": { "room": "ground", "dx": 19, "dy": 1 } },
+    { "id": "moat-bank-table-1", "object": "table", "at": { "room": "the-tannery", "dx": 3, "dy": 3 } },
+    { "id": "moat-bank-scrap-heap-2", "object": "scrap-heap", "at": { "room": "the-tannery", "dx": 8, "dy": 5 } },
+    { "id": "moat-bank-bed-1", "object": "bed", "at": { "room": "dyers-cottages", "dx": 3, "dy": 0 } },
+    { "id": "moat-bank-bed-2", "object": "bed", "at": { "room": "dyers-cottages", "dx": 5, "dy": 0 } },
+    { "id": "moat-bank-bed-3", "object": "bed", "at": { "room": "dyers-cottages", "dx": 7, "dy": 0 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -28,7 +40,9 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "the-tannery": { "theme": "works", "people": 0 },
+    "dyers-cottages": { "theme": "dormitory", "people": 0 }
   },
   "furnish": {}
 }

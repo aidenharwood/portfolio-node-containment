@@ -8,18 +8,29 @@
   "ambience": { "darkness": 0.56, "tint": "#3a2c22", "fog": "#2e2620", "sky": "#4a3a3a", "weather": ["drizzle", "dust"], "haze": 1.2 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 8, "row": 4, "split": true },
-  "steps": [],
+  "steps": [
+    { "kind": "building", "id": "wall-street-house", "rect": { "x": 18, "y": 58, "width": 10, "height": 4 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "river-gate-house", "rect": { "x": 48, "y": 57, "width": 9, "height": 5 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "wall-street-house", "name": "Wall Street" },
+    { "room": "river-gate-house", "name": "River Gate House" },
     { "room": "ground", "name": "Wallside" }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 44, "dy": 53 }
+    "start": { "room": "ground", "dx": 13, "dy": 62 }
   },
   "objects": [
-    { "id": "wallside-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 55 } },
-    { "id": "wallside-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 51, "dy": 56 } },
-    { "id": "wallside-barricade", "object": "barricade", "at": { "room": "ground", "dx": 55, "dy": 59 } }
+    { "id": "wallside-wall-tower", "object": "wall-tower", "at": { "room": "ground", "dx": 30, "dy": 52 } },
+    { "id": "wallside-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 16, "dy": 63 } },
+    { "id": "wallside-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 9, "dy": 63 } },
+    { "id": "wallside-barricade", "object": "barricade", "at": { "room": "ground", "dx": 61, "dy": 61 } },
+    { "id": "wallside-mooring-post-1", "object": "mooring-post", "at": { "room": "ground", "dx": 34, "dy": 60 } },
+    { "id": "wallside-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 63 } },
+    { "id": "wallside-bed-1", "object": "bed", "at": { "room": "wall-street-house", "dx": 1, "dy": 0 } },
+    { "id": "wallside-bed-2", "object": "bed", "at": { "room": "wall-street-house", "dx": 8, "dy": 0 } },
+    { "id": "wallside-table-1", "object": "table", "at": { "room": "river-gate-house", "dx": 2, "dy": 1 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -28,7 +39,9 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "wall-street-house": { "theme": "dormitory", "people": 0 },
+    "river-gate-house": { "theme": "office", "people": 0 }
   },
   "furnish": {}
 }
