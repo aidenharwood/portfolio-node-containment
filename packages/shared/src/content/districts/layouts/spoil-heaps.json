@@ -5,7 +5,7 @@
   "tier": 23,
   "region": "ironside",
   "condition": "breached",
-  "ambience": { "darkness": 0.64, "tint": "#3a2418", "fog": "#2a1c16", "sky": "#5a3a30", "weather": ["embers", "ash"], "haze": 1.4 },
+  "ambience": { "darkness": 0.3, "tint": "#5e4c3e", "fog": "#b0a69a", "sky": "#b4bcc6", "weather": ["embers"], "haze": 0.95 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 10, "row": 1 },
   "steps": [

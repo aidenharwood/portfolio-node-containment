@@ -5,7 +5,7 @@
   "tier": 17,
   "region": "tidemarsh",
   "condition": "overgrown",
-  "ambience": { "darkness": 0.5, "tint": "#24342e", "fog": "#34443e", "sky": "#5a6a66", "weather": ["mist", "drizzle"], "haze": 1.6 },
+  "ambience": { "darkness": 0.24, "tint": "#4e5e4c", "fog": "#b6cac0", "sky": "#a2cbd4", "weather": ["mist"], "haze": 0.85 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 6, "split": true },
   "steps": [

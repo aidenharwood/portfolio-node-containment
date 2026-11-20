@@ -5,7 +5,7 @@
   "tier": 15,
   "region": "old-shipyards",
   "condition": "overgrown",
-  "ambience": { "darkness": 0.62, "tint": "#2e2622", "fog": "#1e2428", "sky": "#2e3444", "weather": ["rain", "mist"], "haze": 1.35 },
+  "ambience": { "darkness": 0.24, "tint": "#5c5650", "fog": "#aebfca", "sky": "#94bde0", "haze": 0.8 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 8, "row": 4, "split": true },
   "steps": [

@@ -5,7 +5,7 @@
   "tier": 25,
   "region": "drowned-quarter",
   "condition": "flooded",
-  "ambience": { "darkness": 0.66, "tint": "#16302e", "fog": "#10262a", "sky": "#24404a", "weather": ["rain", "mist"], "haze": 1.5 },
+  "ambience": { "darkness": 0.26, "tint": "#405c5a", "fog": "#aac6ca", "sky": "#8ac0d2", "haze": 0.85 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 7, "row": 7, "split": true },
   "steps": [],

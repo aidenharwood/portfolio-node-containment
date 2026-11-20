@@ -5,7 +5,7 @@
   "tier": 19,
   "region": "the-heights",
   "condition": "breached",
-  "ambience": { "darkness": 0.5, "tint": "#2a3040", "fog": "#2a3044", "sky": "#4a5a80", "weather": ["drizzle", "mist"], "haze": 1.1 },
+  "ambience": { "darkness": 0.2, "tint": "#555d6c", "fog": "#bcd2e6", "sky": "#8cc2ee", "haze": 0.7 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 7, "row": 2 },
   "steps": [

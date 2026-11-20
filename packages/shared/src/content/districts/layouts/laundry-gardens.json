@@ -5,7 +5,7 @@
   "tier": 1,
   "region": "low-ward",
   "condition": "worn",
-  "ambience": { "darkness": 0.5, "tint": "#24332a", "fog": "#22302a", "sky": "#3a3a52", "weather": ["drizzle", "mist"], "haze": 1.1 },
+  "ambience": { "darkness": 0.23, "tint": "#40473c", "fog": "#7a898e", "sky": "#7a95b5", "haze": 0.85 },
   "size": { "width": 64, "height": 64 },
   "steps": [
     { "kind": "room", "id": "ground", "rect": { "x": 1, "y": 0, "width": 63, "height": 63 }, "floor": "paving", "shape": "rect", "edge": "fence" },

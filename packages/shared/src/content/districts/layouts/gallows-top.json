@@ -5,7 +5,7 @@
   "tier": 21,
   "region": "old-town",
   "condition": "breached",
-  "ambience": { "darkness": 0.56, "tint": "#3a2c22", "fog": "#2e2620", "sky": "#4a3a3a", "weather": ["drizzle", "dust"], "haze": 1.2 },
+  "ambience": { "darkness": 0.22, "tint": "#625444", "fog": "#c8c2b4", "sky": "#a6c4e2", "haze": 0.75 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 9, "row": 3, "split": true },
   "steps": [

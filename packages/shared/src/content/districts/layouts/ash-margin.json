@@ -5,7 +5,7 @@
   "tier": 28,
   "region": "the-blight",
   "condition": "alien",
-  "ambience": { "darkness": 0.68, "tint": "#2c1e2e", "fog": "#2a1c2c", "sky": "#4a3450", "weather": ["ash", "dust"], "haze": 1.5 },
+  "ambience": { "darkness": 0.36, "tint": "#4c3c50", "fog": "#a494aa", "sky": "#b29cba", "weather": ["dust"], "haze": 1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 9, "row": 2, "split": true },
   "steps": [],
