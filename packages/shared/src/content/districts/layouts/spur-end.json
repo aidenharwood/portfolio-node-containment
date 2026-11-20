@@ -8,7 +8,10 @@
   "ambience": { "darkness": 0.5, "tint": "#2a3040", "fog": "#2a3044", "sky": "#4a5a80", "weather": ["drizzle", "mist"], "haze": 1.1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 7, "row": 3, "split": true },
-  "steps": [],
+  "steps": [
+    { "kind": "patch", "rect": { "x": 18, "y": 0, "width": 4, "height": 11 }, "tile": "dirt" },
+    { "kind": "patch", "rect": { "x": 40, "y": 4, "width": 3, "height": 3 }, "tile": "trees" }
+  ],
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Spur End" }
@@ -19,7 +22,9 @@
   "objects": [
     { "id": "spur-end-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 7 } },
     { "id": "spur-end-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 34, "dy": 12 } },
-    { "id": "spur-end-barricade", "object": "barricade", "at": { "room": "ground", "dx": 29, "dy": 9 } }
+    { "id": "spur-end-barricade", "object": "barricade", "at": { "room": "ground", "dx": 29, "dy": 9 } },
+    { "id": "spur-end-street-bench-1", "object": "street-bench", "at": { "room": "ground", "dx": 30, "dy": 18 }, "facing": "south" },
+    { "id": "spur-end-street-bench-2", "object": "street-bench", "at": { "room": "ground", "dx": 36, "dy": 18 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [],

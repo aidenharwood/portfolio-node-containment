@@ -8,7 +8,7 @@ import type { RegionDefinition } from '../../world/region.ts';
 import type { FurnishingKit } from '../furnishingKit.ts';
 import type { FurnishingProfile } from '../furnishingCatalogue.ts';
 
-type Prop = Pick<WorldObjectDefinition, 'id' | 'name' | 'examine' | 'model'> & Partial<Pick<WorldObjectDefinition, 'footprint' | 'light'>> & { readonly furnishing: FurnishingProfile };
+type Prop = Pick<WorldObjectDefinition, 'id' | 'name' | 'examine' | 'model'> & Partial<Pick<WorldObjectDefinition, 'footprint' | 'light' | 'modelScale'>> & { readonly furnishing: FurnishingProfile };
 
 const prop = (definition: Prop): WorldObjectDefinition => ({ blocksMovement: true, interactions: [], ...definition });
 
@@ -55,6 +55,10 @@ export const HINTERLAND_OBJECTS: readonly WorldObjectDefinition[] = [
   prop({ id: 'incline-winder', name: 'Incline Winding Gear', examine: 'The wheel that hauls the Incline’s cars up the bluff. The cable runs up into the dark.', model: 'headframe', footprint: { width: 2, height: 2 }, furnishing: { mount: 'free', homes: LANDMARK_HOMES } }),
   prop({ id: 'tide-bell', name: 'Tide Bell', examine: 'The village bell on its stilt frame over the staithe. They ring it when the water comes up faster than the tide.', model: 'bellTower', footprint: { width: 2, height: 2 }, furnishing: { mount: 'free', homes: LANDMARK_HOMES } }),
   prop({ id: 'tide-gauge', name: 'Tide Gauge', examine: 'A painted tide board on a post, with a float clock above it. The station logs it every hour, and it has never once agreed with the tables.', model: 'clockTower', footprint: { width: 2, height: 2 }, furnishing: { mount: 'free', homes: LANDMARK_HOMES } }),
+  prop({ id: 'exchange-clock', name: 'Exchange Clock', examine: 'The clock over Exchange Square, gilt going green. It still strikes the opening bell for a market nobody comes to.', model: 'clockTower', footprint: { width: 2, height: 2 }, light: { radius: 6, color: '#ffe2a8', intensity: 1 }, furnishing: { mount: 'free', homes: LANDMARK_HOMES } }),
+  prop({ id: 'ridge-beacon', name: 'Ridge Beacon', examine: 'The old fire beacon at the head of the parade, given a lamp and a Directorate lens. From down in the valley it is the first light you see.', model: 'lighthouse', footprint: { width: 3, height: 3 }, light: { radius: 7, color: '#ffb35a', intensity: 0.9 }, furnishing: { mount: 'free', homes: LANDMARK_HOMES } }),
+  prop({ id: 'crescent-screen', name: 'Crescent Screen', examine: 'A Directorate screen on a mast over the crescent. It cycles the curfew hours to an empty street.', model: 'holoBillboard', modelScale: 2, footprint: { width: 2, height: 2 }, light: { radius: 5, color: '#8ad8ff', intensity: 0.8 }, furnishing: { mount: 'free', homes: LANDMARK_HOMES } }),
+  prop({ id: 'incline-sheave', name: 'Incline Sheave', examine: 'The great wheel at the top of the Incline. The cable runs over it and straight down the cliff to the valley.', model: 'headframe', footprint: { width: 2, height: 2 }, furnishing: { mount: 'free', homes: LANDMARK_HOMES } }),
   prop({ id: 'windpump', name: 'Windpump', examine: 'A lattice tower and a wheel of tin sails. It pumps brine whether or not the wind blows.', model: 'windpump', footprint: { width: 2, height: 2 }, furnishing: { mount: 'free', homes: LANDMARK_HOMES } }),
   prop({ id: 'directorate-spire', name: 'The Spire', examine: 'Directorate headquarters. Forty floors of panel and glass, and every window lit.', model: 'directorateSpire', footprint: { width: 3, height: 3 }, light: { radius: 6, color: '#ffb35a', intensity: 0.7 }, furnishing: { mount: 'free', homes: LANDMARK_HOMES } }),
   prop({ id: 'bell-tower', name: 'Bell Tower', examine: 'The cathedral tower. The bell rings the hours, and a thirteenth some nights.', model: 'bellTower', footprint: { width: 2, height: 2 }, furnishing: { mount: 'free', homes: [...LANDMARK_HOMES, 'civic', 'chapel'] } }),

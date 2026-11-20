@@ -8,18 +8,34 @@
   "ambience": { "darkness": 0.5, "tint": "#2a3040", "fog": "#2a3044", "sky": "#4a5a80", "weather": ["drizzle", "mist"], "haze": 1.1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 2, "split": true },
-  "steps": [],
+  "steps": [
+    { "kind": "patch", "rect": { "x": 14, "y": 0, "width": 3, "height": 9 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 14, "y": 8, "width": 20, "height": 3 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 30, "y": 10, "width": 3, "height": 8 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 28, "y": 16, "width": 16, "height": 4 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 34, "y": 9, "width": 16, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 40, "y": 3, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 50, "y": 12, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 22, "y": 13, "width": 3, "height": 2 }, "tile": "trees" },
+    { "kind": "rise", "rect": { "x": 54, "y": 2, "width": 8, "height": 8 }, "height": 7, "shape": "round" },
+    { "kind": "building", "id": "garden-pavilion", "rect": { "x": 46, "y": 4, "width": 6, "height": 4 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "garden-pavilion", "name": "Garden Pavilion" },
     { "room": "ground", "name": "Cliff Gardens" }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 37, "dy": 11 }
+    "start": { "room": "ground", "dx": 31, "dy": 13 }
   },
   "objects": [
-    { "id": "cliff-gardens-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 9 } },
-    { "id": "cliff-gardens-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 37, "dy": 14 } },
-    { "id": "cliff-gardens-barricade", "object": "barricade", "at": { "room": "ground", "dx": 32, "dy": 11 } }
+    { "id": "cliff-gardens-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 33, "dy": 12 } },
+    { "id": "cliff-gardens-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 55, "dy": 18 } },
+    { "id": "cliff-gardens-barricade", "object": "barricade", "at": { "room": "ground", "dx": 8, "dy": 4 } },
+    { "id": "cliff-gardens-street-bench-1", "object": "street-bench", "at": { "room": "ground", "dx": 31, "dy": 19 }, "facing": "south" },
+    { "id": "cliff-gardens-street-bench-2", "object": "street-bench", "at": { "room": "ground", "dx": 38, "dy": 19 }, "facing": "south" },
+    { "id": "cliff-gardens-street-tree-1", "object": "street-tree", "at": { "room": "ground", "dx": 27, "dy": 7 } },
+    { "id": "cliff-gardens-street-tree-2", "object": "street-tree", "at": { "room": "ground", "dx": 20, "dy": 12 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -28,7 +44,8 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "garden-pavilion": { "theme": "garden", "people": 0 }
   },
   "furnish": {}
 }

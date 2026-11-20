@@ -8,18 +8,53 @@
   "ambience": { "darkness": 0.5, "tint": "#2a3040", "fog": "#2a3044", "sky": "#4a5a80", "weather": ["drizzle", "mist"], "haze": 1.1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 5, "row": 1 },
-  "steps": [],
+  "steps": [
+    { "kind": "patch", "rect": { "x": 24, "y": 0, "width": 17, "height": 48 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 19, "y": 0, "width": 5, "height": 64 }, "tile": "asphalt" },
+    { "kind": "patch", "rect": { "x": 41, "y": 0, "width": 5, "height": 29 }, "tile": "asphalt" },
+    { "kind": "patch", "rect": { "x": 0, "y": 28, "width": 64, "height": 5 }, "tile": "asphalt" },
+    { "kind": "building", "id": "exchange-hall", "rect": { "x": 26, "y": 2, "width": 13, "height": 8 }, "floor": "terrazzo", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "counting-house", "rect": { "x": 3, "y": 3, "width": 13, "height": 7 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "east", "width": 2 }] },
+    { "kind": "building", "id": "assembly-rooms", "rect": { "x": 3, "y": 14, "width": 13, "height": 10 }, "floor": "terrazzo", "wall": "brick", "doors": [{ "side": "east", "width": 2 }] },
+    { "kind": "building", "id": "grand-hotel", "rect": { "x": 48, "y": 3, "width": 13, "height": 10 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "west", "width": 2 }] },
+    { "kind": "building", "id": "uptown-arcade", "rect": { "x": 48, "y": 17, "width": 13, "height": 8 }, "floor": "terrazzo", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "playhouse", "rect": { "x": 26, "y": 36, "width": 13, "height": 11 }, "floor": "terrazzo", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] },
+    { "kind": "building", "id": "tea-rooms", "rect": { "x": 45, "y": 36, "width": 8, "height": 6 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] },
+    { "kind": "building", "id": "uptown-house-1", "rect": { "x": 3, "y": 36, "width": 6, "height": 7 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] },
+    { "kind": "building", "id": "uptown-house-2", "rect": { "x": 11, "y": 36, "width": 6, "height": 7 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "exchange-hall", "name": "Exchange Hall" },
+    { "room": "counting-house", "name": "Counting House" },
+    { "room": "assembly-rooms", "name": "Assembly Rooms" },
+    { "room": "grand-hotel", "name": "Grand Hotel" },
+    { "room": "uptown-arcade", "name": "Uptown Arcade" },
+    { "room": "playhouse", "name": "The Playhouse" },
+    { "room": "tea-rooms", "name": "Tea Rooms" },
     { "room": "ground", "name": "Uptown" }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 31, "dy": 31 }
+    "start": { "room": "ground", "dx": 32, "dy": 30 }
   },
   "objects": [
-    { "id": "uptown-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 29 } },
-    { "id": "uptown-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 31, "dy": 34 } },
-    { "id": "uptown-barricade", "object": "barricade", "at": { "room": "ground", "dx": 26, "dy": 31 } }
+    { "id": "uptown-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 18, "dy": 27 } },
+    { "id": "uptown-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 10, "dy": 33 } },
+    { "id": "uptown-barricade", "object": "barricade", "at": { "room": "ground", "dx": 36, "dy": 30 } },
+    { "id": "uptown-exchange-clock-1", "object": "exchange-clock", "at": { "room": "ground", "dx": 31, "dy": 18 } },
+    { "id": "uptown-street-bench-1", "object": "street-bench", "at": { "room": "ground", "dx": 28, "dy": 18 }, "facing": "east" },
+    { "id": "uptown-street-bench-2", "object": "street-bench", "at": { "room": "ground", "dx": 35, "dy": 18 }, "facing": "west" },
+    { "id": "uptown-litter-bin-1", "object": "litter-bin", "at": { "room": "ground", "dx": 28, "dy": 20 } },
+    { "id": "uptown-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 25 } },
+    { "id": "uptown-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 25 } },
+    { "id": "uptown-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 47, "dy": 34 } },
+    { "id": "uptown-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 18, "dy": 50 } },
+    { "id": "uptown-market-stall-1", "object": "market-stall", "at": { "room": "uptown-arcade", "dx": 2, "dy": 2 } },
+    { "id": "uptown-market-stall-2", "object": "market-stall", "at": { "room": "uptown-arcade", "dx": 6, "dy": 2 } },
+    { "id": "uptown-market-stall-3", "object": "market-stall", "at": { "room": "uptown-arcade", "dx": 10, "dy": 2 } },
+    { "id": "uptown-parked-car-1", "object": "parked-car", "at": { "room": "ground", "dx": 56, "dy": 30 } },
+    { "id": "uptown-street-tree-1", "object": "street-tree", "at": { "room": "ground", "dx": 30, "dy": 50 } },
+    { "id": "uptown-street-tree-2", "object": "street-tree", "at": { "room": "ground", "dx": 36, "dy": 50 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -28,7 +63,16 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "exchange-hall": { "theme": "civic", "people": 0 },
+    "counting-house": { "theme": "office", "people": 0 },
+    "assembly-rooms": { "theme": "civic", "people": 0 },
+    "grand-hotel": { "theme": "dormitory", "people": 0 },
+    "uptown-arcade": { "theme": "shop", "people": 0 },
+    "playhouse": { "theme": "civic", "people": 0 },
+    "tea-rooms": { "theme": "canteen", "people": 0 },
+    "uptown-house-1": { "theme": "home", "people": 0 },
+    "uptown-house-2": { "theme": "home", "people": 0 }
   },
   "furnish": {}
 }

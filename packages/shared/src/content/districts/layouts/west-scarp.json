@@ -1,6 +1,6 @@
 {
-  "id": "ridge-west-end",
-  "name": "Ridge West End",
+  "id": "west-scarp",
+  "name": "West Scarp",
   "subtitle": "Hinterland, the Heights",
   "tier": 19,
   "region": "the-heights",
@@ -8,18 +8,20 @@
   "ambience": { "darkness": 0.5, "tint": "#2a3040", "fog": "#2a3044", "sky": "#4a5a80", "weather": ["drizzle", "mist"], "haze": 1.1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 3, "row": 0, "split": true },
-  "steps": [],
+  "steps": [
+    { "kind": "patch", "rect": { "x": 60, "y": 40, "width": 3, "height": 3 }, "tile": "trees" }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Ridge West End" }
+    { "room": "ground", "name": "West Scarp" }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 59, "dy": 31 }
   },
   "objects": [
-    { "id": "ridge-west-end-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 59, "dy": 29 } },
-    { "id": "ridge-west-end-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 59, "dy": 24 } },
-    { "id": "ridge-west-end-barricade", "object": "barricade", "at": { "room": "ground", "dx": 59, "dy": 34 } }
+    { "id": "west-scarp-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 59, "dy": 29 } },
+    { "id": "west-scarp-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 59, "dy": 24 } },
+    { "id": "west-scarp-barricade", "object": "barricade", "at": { "room": "ground", "dx": 59, "dy": 34 } }
   ],
   "assemblies": [],
   "npcs": [],

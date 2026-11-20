@@ -179,3 +179,36 @@ test('Tidemarsh has a stilt village, its Site on piles, an outpost by the sluice
   assert.ok(village.steps.filter((step) => step.kind === 'building').length >= 8, 'Stiltholm has too few buildings for a village');
   assert.ok(village.steps.some((step) => step.kind === 'patch' && step.tile === 'boards'), 'Stiltholm has no boardwalks');
 });
+
+test('the Heights have an uptown on the ridge, the Spire, Upper Station at the Incline top and the viaduct end, each round its landmark', () => {
+  const landmarks: Readonly<Record<string, string>> = {
+    'north-parade': 'ridge-beacon',
+    'crescent-walk': 'crescent-screen',
+    uptown: 'exchange-clock',
+    'the-spire': 'directorate-spire',
+    'upper-station': 'incline-sheave',
+    'railway-cutting': 'viaduct-gate-leaf',
+  };
+  const town = ['north-parade', 'crescent-walk', 'uptown'];
+  for (const [id, landmark] of Object.entries(landmarks)) {
+    const layout = parseLayout(LAYOUT_SOURCES[id]);
+    assert.ok(layout.objects.some((object) => object.object === landmark), `${id} has no ${landmark}`);
+    if (town.includes(id)) assert.ok(layout.steps.filter((step) => step.kind === 'building').length >= 6, `${id} has too few buildings for a town square`);
+  }
+});
+
+test('nothing built on the ridge edge stands within six tiles of the drop, so the view to the river stays open', () => {
+  for (const id of ['cliff-gardens', 'upper-station', 'belgrave-terrace']) {
+    const layout = parseLayout(LAYOUT_SOURCES[id]);
+    assert.ok(layout.square, id);
+    const origin = { x: layout.square.column * 64, y: layout.square.row * 64 };
+    for (const step of layout.steps) {
+      if (step.kind !== 'building') continue;
+      for (let y = step.rect.y - 7; y <= step.rect.y + step.rect.height + 6; y++) {
+        for (let x = step.rect.x - 7; x <= step.rect.x + step.rect.width + 6; x++) {
+          assert.ok(land.heightAt({ x: origin.x + x, y: origin.y + y }) >= 6, `${id} building ${step.id} stands near the drop at ${x},${y}`);
+        }
+      }
+    }
+  }
+});

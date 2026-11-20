@@ -10,10 +10,16 @@
   "square": { "column": 5, "row": 0 },
   "steps": [
     { "kind": "rise", "rect": { "x": 25, "y": 27, "width": 38, "height": 25 }, "height": 6 },
+    { "kind": "patch", "rect": { "x": 0, "y": 34, "width": 24, "height": 5 }, "tile": "asphalt" },
+    { "kind": "patch", "rect": { "x": 19, "y": 34, "width": 5, "height": 30 }, "tile": "asphalt" },
+    { "kind": "patch", "rect": { "x": 41, "y": 52, "width": 5, "height": 12 }, "tile": "asphalt" },
     { "kind": "building", "id": "spire-precinct", "rect": { "x": 26, "y": 28, "width": 36, "height": 23 }, "floor": "paving", "wall": "wall", "edge": "barrier", "doors": [{ "side": "south", "width": 4 }] },
     { "kind": "building", "id": "spire-lobby", "rect": { "x": 28, "y": 30, "width": 10, "height": 6 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "spire-holding", "rect": { "x": 50, "y": 30, "width": 10, "height": 7 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "building", "id": "spire-headhouse", "rect": { "x": 28, "y": 41, "width": 8, "height": 6 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "east", "width": 2 }] }
+    { "kind": "building", "id": "spire-headhouse", "rect": { "x": 28, "y": 41, "width": 8, "height": 6 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "east", "width": 2 }] },
+    { "kind": "building", "id": "permit-office", "rect": { "x": 3, "y": 22, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "spire-flats", "rect": { "x": 3, "y": 42, "width": 12, "height": 11 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "east", "width": 2 }] },
+    { "kind": "building", "id": "guard-post", "rect": { "x": 50, "y": 55, "width": 6, "height": 5 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "west", "width": 2 }] }
   ],
   "tiles": [],
   "areas": [
@@ -21,6 +27,7 @@
     { "room": "spire-lobby", "name": "Spire Lobby", "safe": true },
     { "room": "spire-holding", "name": "Spire Holding", "safe": false },
     { "room": "spire-headhouse", "name": "Spire Headhouse", "safe": true },
+    { "room": "permit-office", "name": "Permit Office" },
     { "room": "ground", "name": "The Spire" }
   ],
   "anchors": {
@@ -50,9 +57,12 @@
     { "id": "the-spire-directorate-sign-1", "object": "directorate-sign", "at": { "room": "spire-precinct", "dx": 1, "dy": 0 } },
     { "id": "the-spire-barricade-1", "object": "barricade", "at": { "room": "spire-precinct", "dx": 18, "dy": 16 } },
     { "id": "the-spire-barricade-2", "object": "barricade", "at": { "room": "spire-precinct", "dx": 12, "dy": 12 } },
-    { "id": "the-spire-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 21, "dy": 37 } },
-    { "id": "the-spire-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 21, "dy": 32 } },
-    { "id": "the-spire-barricade", "object": "barricade", "at": { "room": "ground", "dx": 21, "dy": 42 } }
+    { "id": "the-spire-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 18, "dy": 33 } },
+    { "id": "the-spire-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 26, "dy": 58 } },
+    { "id": "the-spire-barricade", "object": "barricade", "at": { "room": "ground", "dx": 43, "dy": 60 } },
+    { "id": "the-spire-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 53 } },
+    { "id": "the-spire-flood-mast-2", "object": "flood-mast", "at": { "room": "ground", "dx": 47, "dy": 53 } },
+    { "id": "the-spire-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 24, "dy": 46 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -67,7 +77,10 @@
     "spire-precinct": { "theme": "containment", "people": 0 },
     "spire-lobby": { "theme": "office", "people": 0 },
     "spire-holding": { "theme": "containment", "people": 0 },
-    "spire-headhouse": { "theme": "transit", "people": 0 }
+    "spire-headhouse": { "theme": "transit", "people": 0 },
+    "permit-office": { "theme": "office", "people": 0 },
+    "spire-flats": { "theme": "dormitory", "people": 0 },
+    "guard-post": { "theme": "office", "people": 0 }
   },
   "furnish": {}
 }

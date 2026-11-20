@@ -90,7 +90,7 @@ import railwayCutting from './railway-cutting.json' with { type: 'json' };
 import reedChannels from './reed-channels.json' with { type: 'json' };
 import ridgeFoot from './ridge-foot.json' with { type: 'json' };
 import ridgeShadow from './ridge-shadow.json' with { type: 'json' };
-import ridgeWestEnd from './ridge-west-end.json' with { type: 'json' };
+import westScarp from './west-scarp.json' with { type: 'json' };
 import rimCamp from './rim-camp.json' with { type: 'json' };
 import rimRoad from './rim-road.json' with { type: 'json' };
 import riversideAllotments from './riverside-allotments.json' with { type: 'json' };
@@ -130,7 +130,7 @@ import tideStation from './tide-station.json' with { type: 'json' };
 import upperStation from './upper-station.json' with { type: 'json' };
 import uptown from './uptown.json' with { type: 'json' };
 import valleyRoad from './valley-road.json' with { type: 'json' };
-import viaductApproach from './viaduct-approach.json' with { type: 'json' };
+import highCommon from './high-common.json' with { type: 'json' };
 import wallDitch from './wall-ditch.json' with { type: 'json' };
 import wallside from './wallside.json' with { type: 'json' };
 import watchRoad from './watch-road.json' with { type: 'json' };
@@ -237,7 +237,7 @@ export const LAYOUT_SOURCES: Readonly<Record<DistrictId, unknown>> = {
   'reed-channels': reedChannels,
   'ridge-foot': ridgeFoot,
   'ridge-shadow': ridgeShadow,
-  'ridge-west-end': ridgeWestEnd,
+  'west-scarp': westScarp,
   'rim-camp': rimCamp,
   'rim-road': rimRoad,
   'riverside-allotments': riversideAllotments,
@@ -277,7 +277,7 @@ export const LAYOUT_SOURCES: Readonly<Record<DistrictId, unknown>> = {
   'upper-station': upperStation,
   uptown,
   'valley-road': valleyRoad,
-  'viaduct-approach': viaductApproach,
+  'high-common': highCommon,
   'wall-ditch': wallDitch,
   wallside,
   'watch-road': watchRoad,

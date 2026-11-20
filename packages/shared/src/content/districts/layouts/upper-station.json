@@ -9,16 +9,20 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 5, "row": 2, "split": true },
   "steps": [
-    { "kind": "rise", "rect": { "x": 19, "y": 12, "width": 14, "height": 10 }, "height": 6 },
-    { "kind": "building", "id": "upper-station", "rect": { "x": 20, "y": 13, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "north", "width": 2 }] }
+    { "kind": "patch", "rect": { "x": 19, "y": 0, "width": 5, "height": 6 }, "tile": "asphalt" },
+    { "kind": "patch", "rect": { "x": 24, "y": 2, "width": 40, "height": 4 }, "tile": "asphalt" },
+    { "kind": "patch", "rect": { "x": 26, "y": 6, "width": 3, "height": 22 }, "tile": "gravel" },
+    { "kind": "building", "id": "upper-station", "rect": { "x": 32, "y": 9, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "north", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 52, "y": 14, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "rise", "rect": { "x": 8, "y": 6, "width": 9, "height": 9 }, "height": 7, "shape": "round" }
   ],
   "tiles": [],
   "areas": [
     { "room": "upper-station", "name": "Upper Station", "safe": true },
-    { "room": "ground", "name": "Upper Station" }
+    { "room": "ground", "name": "Incline Top" }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 34, "dy": 14 },
+    "start": { "room": "ground", "dx": 27, "dy": 10 },
     "outpost": { "room": "upper-station", "dx": 5, "dy": 1 }
   },
   "objects": [
@@ -35,9 +39,12 @@
     { "id": "incline-top-table-1", "object": "table", "at": { "room": "upper-station", "dx": 8, "dy": 4 }, "facing": "north" },
     { "id": "incline-top-chair-1", "object": "chair", "at": { "room": "upper-station", "dx": 8, "dy": 3 } },
     { "id": "incline-top-security-camera-1", "object": "security-camera", "at": { "room": "upper-station", "dx": 0, "dy": 7 }, "facing": "north" },
-    { "id": "upper-station-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 14 } },
-    { "id": "upper-station-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 36, "dy": 9 } },
-    { "id": "upper-station-barricade", "object": "barricade", "at": { "room": "ground", "dx": 36, "dy": 19 } }
+    { "id": "upper-station-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 7 } },
+    { "id": "upper-station-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 50, "dy": 11 } },
+    { "id": "upper-station-barricade", "object": "barricade", "at": { "room": "ground", "dx": 22, "dy": 20 } },
+    { "id": "upper-station-incline-sheave-1", "object": "incline-sheave", "at": { "room": "ground", "dx": 32, "dy": 24 } },
+    { "id": "upper-station-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 22 } },
+    { "id": "upper-station-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 6 } }
   ],
   "assemblies": [],
   "npcs": [

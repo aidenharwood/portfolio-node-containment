@@ -8,18 +8,36 @@
   "ambience": { "darkness": 0.5, "tint": "#2a3040", "fog": "#2a3044", "sky": "#4a5a80", "weather": ["drizzle", "mist"], "haze": 1.1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 6, "row": 1 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 54, "y": 28, "width": 9, "height": 9 }, "height": 7, "shape": "round" },
+    { "kind": "patch", "rect": { "x": 56, "y": 10, "width": 4, "height": 4 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 52, "y": 22, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 0, "y": 28, "width": 41, "height": 5 }, "tile": "asphalt" },
+    { "kind": "patch", "rect": { "x": 36, "y": 0, "width": 5, "height": 33 }, "tile": "asphalt" },
+    { "kind": "patch", "rect": { "x": 41, "y": 29, "width": 9, "height": 3 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 47, "y": 31, "width": 4, "height": 10 }, "tile": "gravel" },
+    { "kind": "building", "id": "museum", "rect": { "x": 4, "y": 14, "width": 13, "height": 11 }, "floor": "terrazzo", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "green-villa-1", "rect": { "x": 22, "y": 16, "width": 7, "height": 7 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "green-villa-2", "rect": { "x": 4, "y": 37, "width": 7, "height": 7 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] },
+    { "kind": "building", "id": "green-villa-3", "rect": { "x": 15, "y": 37, "width": 7, "height": 7 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] },
+    { "kind": "building", "id": "observatory", "rect": { "x": 45, "y": 42, "width": 9, "height": 9 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "north", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "museum", "name": "Ridge Museum" },
+    { "room": "observatory", "name": "The Observatory" },
     { "room": "ground", "name": "Observatory Green" }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 31, "dy": 31 }
+    "start": { "room": "ground", "dx": 30, "dy": 30 }
   },
   "objects": [
-    { "id": "observatory-green-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 29 } },
-    { "id": "observatory-green-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 31, "dy": 34 } },
-    { "id": "observatory-green-barricade", "object": "barricade", "at": { "room": "ground", "dx": 26, "dy": 31 } }
+    { "id": "observatory-green-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 35, "dy": 27 } },
+    { "id": "observatory-green-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 30, "dy": 35 } },
+    { "id": "observatory-green-barricade", "object": "barricade", "at": { "room": "ground", "dx": 12, "dy": 30 } },
+    { "id": "observatory-green-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 32 } },
+    { "id": "observatory-green-street-bench-1", "object": "street-bench", "at": { "room": "ground", "dx": 52, "dy": 38 }, "facing": "south" },
+    { "id": "observatory-green-street-bench-2", "object": "street-bench", "at": { "room": "ground", "dx": 42, "dy": 38 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [],
@@ -28,7 +46,12 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "museum": { "theme": "civic", "people": 0 },
+    "green-villa-1": { "theme": "home", "people": 0 },
+    "green-villa-2": { "theme": "home", "people": 0 },
+    "green-villa-3": { "theme": "home", "people": 0 },
+    "observatory": { "theme": "archive", "people": 0 }
   },
   "furnish": {}
 }

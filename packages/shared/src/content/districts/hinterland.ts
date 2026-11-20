@@ -2,11 +2,11 @@ import gullScar from './layouts/gull-scar.json' with { type: 'json' };
 import heatherTop from './layouts/heather-top.json' with { type: 'json' };
 import cairnMoor from './layouts/cairn-moor.json' with { type: 'json' };
 import ridgeFoot from './layouts/ridge-foot.json' with { type: 'json' };
-import ridgeWestEnd from './layouts/ridge-west-end.json' with { type: 'json' };
+import westScarp from './layouts/west-scarp.json' with { type: 'json' };
 import northParade from './layouts/north-parade.json' with { type: 'json' };
 import theSpire from './layouts/the-spire.json' with { type: 'json' };
 import belvedere from './layouts/belvedere.json' with { type: 'json' };
-import viaductApproach from './layouts/viaduct-approach.json' with { type: 'json' };
+import highCommon from './layouts/high-common.json' with { type: 'json' };
 import mountainFoot from './layouts/mountain-foot.json' with { type: 'json' };
 import theFalls from './layouts/the-falls.json' with { type: 'json' };
 import saltcote from './layouts/saltcote.json' with { type: 'json' };
@@ -146,11 +146,11 @@ export const HINTERLAND_DISTRICTS = [
   buildDistrict(heatherTop, LAND),
   buildDistrict(cairnMoor, LAND),
   buildDistrict(ridgeFoot, LAND),
-  buildDistrict(ridgeWestEnd, LAND),
+  buildDistrict(westScarp, LAND),
   buildDistrict(northParade, LAND),
   buildDistrict(theSpire, LAND),
   buildDistrict(belvedere, LAND),
-  buildDistrict(viaductApproach, LAND),
+  buildDistrict(highCommon, LAND),
   buildDistrict(mountainFoot, LAND),
   buildDistrict(theFalls, LAND),
   buildDistrict(saltcote, LAND),

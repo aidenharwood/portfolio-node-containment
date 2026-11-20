@@ -8,18 +8,30 @@
   "ambience": { "darkness": 0.5, "tint": "#2a3040", "fog": "#2a3044", "sky": "#4a5a80", "weather": ["drizzle", "mist"], "haze": 1.1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 6, "row": 2, "split": true },
-  "steps": [],
+  "steps": [
+    { "kind": "patch", "rect": { "x": 0, "y": 2, "width": 52, "height": 4 }, "tile": "asphalt" },
+    { "kind": "rise", "rect": { "x": 50, "y": 18, "width": 9, "height": 9 }, "height": 7, "shape": "round" },
+    { "kind": "patch", "rect": { "x": 8, "y": 22, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 52, "y": 32, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "building", "id": "belgrave-one", "rect": { "x": 3, "y": 8, "width": 7, "height": 6 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] },
+    { "kind": "building", "id": "belgrave-two", "rect": { "x": 13, "y": 8, "width": 7, "height": 6 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] },
+    { "kind": "building", "id": "belgrave-three", "rect": { "x": 23, "y": 8, "width": 7, "height": 6 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] },
+    { "kind": "building", "id": "belgrave-four", "rect": { "x": 43, "y": 8, "width": 7, "height": 6 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Belgrave Terrace" }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 32, "dy": 20 }
+    "start": { "room": "ground", "dx": 32, "dy": 4 }
   },
   "objects": [
-    { "id": "belgrave-terrace-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 20 } },
-    { "id": "belgrave-terrace-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 32, "dy": 15 } },
-    { "id": "belgrave-terrace-barricade", "object": "barricade", "at": { "room": "ground", "dx": 30, "dy": 25 } }
+    { "id": "belgrave-terrace-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 6 } },
+    { "id": "belgrave-terrace-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 40, "dy": 30 } },
+    { "id": "belgrave-terrace-barricade", "object": "barricade", "at": { "room": "ground", "dx": 56, "dy": 4 } },
+    { "id": "belgrave-terrace-street-bench-1", "object": "street-bench", "at": { "room": "ground", "dx": 30, "dy": 30 }, "facing": "south" },
+    { "id": "belgrave-terrace-street-bench-2", "object": "street-bench", "at": { "room": "ground", "dx": 46, "dy": 36 }, "facing": "south" },
+    { "id": "belgrave-terrace-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 6 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -28,7 +40,11 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "belgrave-one": { "theme": "home", "people": 0 },
+    "belgrave-two": { "theme": "home", "people": 0 },
+    "belgrave-three": { "theme": "home", "people": 0 },
+    "belgrave-four": { "theme": "home", "people": 0 }
   },
   "furnish": {}
 }

@@ -8,18 +8,37 @@
   "ambience": { "darkness": 0.5, "tint": "#2a3040", "fog": "#2a3044", "sky": "#4a5a80", "weather": ["drizzle", "mist"], "haze": 1.1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 6, "row": 0 },
-  "steps": [],
+  "steps": [
+    { "kind": "patch", "rect": { "x": 4, "y": 31, "width": 50, "height": 4 }, "tile": "asphalt" },
+    { "kind": "patch", "rect": { "x": 36, "y": 35, "width": 5, "height": 29 }, "tile": "asphalt" },
+    { "kind": "patch", "rect": { "x": 6, "y": 40, "width": 24, "height": 5 }, "tile": "grass" },
+    { "kind": "patch", "rect": { "x": 12, "y": 41, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 22, "y": 40, "width": 3, "height": 3 }, "tile": "trees" },
+    { "kind": "rise", "rect": { "x": 55, "y": 36, "width": 8, "height": 8 }, "height": 7, "shape": "round" },
+    { "kind": "patch", "rect": { "x": 56, "y": 22, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "building", "id": "ridge-station", "rect": { "x": 20, "y": 47, "width": 14, "height": 9 }, "floor": "terrazzo", "wall": "brick", "doors": [{ "side": "east", "width": 3 }] },
+    { "kind": "building", "id": "goods-shed", "rect": { "x": 44, "y": 48, "width": 9, "height": 8 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "south", "width": 3 }] },
+    { "kind": "building", "id": "belvedere-villa-1", "rect": { "x": 10, "y": 20, "width": 7, "height": 7 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "belvedere-villa-2", "rect": { "x": 22, "y": 20, "width": 7, "height": 7 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "belvedere-lodge", "rect": { "x": 40, "y": 20, "width": 8, "height": 7 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "ridge-station", "name": "Ridge Station" },
+    { "room": "goods-shed", "name": "Goods Shed" },
     { "room": "ground", "name": "Belvedere" }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 32, "dy": 39 }
+    "start": { "room": "ground", "dx": 38, "dy": 40 }
   },
   "objects": [
-    { "id": "belvedere-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 37 } },
-    { "id": "belvedere-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 32, "dy": 42 } },
-    { "id": "belvedere-barricade", "object": "barricade", "at": { "room": "ground", "dx": 27, "dy": 39 } }
+    { "id": "belvedere-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 35, "dy": 36 } },
+    { "id": "belvedere-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 42, "dy": 60 } },
+    { "id": "belvedere-barricade", "object": "barricade", "at": { "room": "ground", "dx": 50, "dy": 33 } },
+    { "id": "belvedere-street-bench-1", "object": "street-bench", "at": { "room": "ground", "dx": 30, "dy": 15 }, "facing": "north" },
+    { "id": "belvedere-street-bench-2", "object": "street-bench", "at": { "room": "ground", "dx": 36, "dy": 15 }, "facing": "north" },
+    { "id": "belvedere-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 20, "dy": 30 } },
+    { "id": "belvedere-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 35, "dy": 58 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -28,7 +47,12 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "ridge-station": { "theme": "transit", "people": 0 },
+    "goods-shed": { "theme": "freight", "people": 0 },
+    "belvedere-villa-1": { "theme": "home", "people": 0 },
+    "belvedere-villa-2": { "theme": "home", "people": 0 },
+    "belvedere-lodge": { "theme": "home", "people": 0 }
   },
   "furnish": {}
 }

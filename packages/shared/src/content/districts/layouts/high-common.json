@@ -1,0 +1,40 @@
+{
+  "id": "high-common",
+  "name": "High Common",
+  "subtitle": "Hinterland, the Heights",
+  "tier": 19,
+  "region": "the-heights",
+  "condition": "breached",
+  "ambience": { "darkness": 0.5, "tint": "#2a3040", "fog": "#2a3044", "sky": "#4a5a80", "weather": ["drizzle", "mist"], "haze": 1.1 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 7, "row": 0 },
+  "steps": [
+    { "kind": "patch", "rect": { "x": 24, "y": 12, "width": 3, "height": 52 }, "tile": "dirt" },
+    { "kind": "rise", "rect": { "x": 12, "y": 20, "width": 10, "height": 9 }, "height": 7, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 38, "y": 34, "width": 10, "height": 9 }, "height": 7, "shape": "round" },
+    { "kind": "patch", "rect": { "x": 6, "y": 40, "width": 4, "height": 4 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 44, "y": 16, "width": 4, "height": 3 }, "tile": "trees" }
+  ],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "High Common" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 28, "dy": 36 }
+  },
+  "objects": [
+    { "id": "high-common-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 28, "dy": 34 } },
+    { "id": "high-common-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 28, "dy": 39 } },
+    { "id": "high-common-barricade", "object": "barricade", "at": { "room": "ground", "dx": 23, "dy": 36 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

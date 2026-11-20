@@ -8,18 +8,44 @@
   "ambience": { "darkness": 0.5, "tint": "#2a3040", "fog": "#2a3044", "sky": "#4a5a80", "weather": ["drizzle", "mist"], "haze": 1.1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 0 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 6, "y": 28, "width": 9, "height": 9 }, "height": 7, "shape": "round" },
+    { "kind": "patch", "rect": { "x": 0, "y": 35, "width": 28, "height": 3 }, "tile": "dirt" },
+    { "kind": "patch", "rect": { "x": 14, "y": 44, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 4, "y": 23, "width": 4, "height": 3 }, "tile": "trees" },
+    { "kind": "patch", "rect": { "x": 38, "y": 9, "width": 10, "height": 5 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 40, "y": 14, "width": 5, "height": 50 }, "tile": "asphalt" },
+    { "kind": "patch", "rect": { "x": 28, "y": 34, "width": 36, "height": 5 }, "tile": "asphalt" },
+    { "kind": "building", "id": "parade-chapel", "rect": { "x": 31, "y": 21, "width": 7, "height": 11 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "east", "width": 2 }] },
+    { "kind": "building", "id": "athenaeum", "rect": { "x": 47, "y": 19, "width": 12, "height": 12 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "west", "width": 2 }] },
+    { "kind": "building", "id": "parade-club", "rect": { "x": 47, "y": 42, "width": 13, "height": 10 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] },
+    { "kind": "building", "id": "parade-house-1", "rect": { "x": 47, "y": 56, "width": 7, "height": 6 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "west", "width": 2 }] },
+    { "kind": "building", "id": "parade-house-2", "rect": { "x": 32, "y": 42, "width": 5, "height": 7 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "east", "width": 2 }] },
+    { "kind": "building", "id": "parade-house-3", "rect": { "x": 32, "y": 53, "width": 5, "height": 7 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "east", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "parade-chapel", "name": "Parade Chapel" },
+    { "room": "athenaeum", "name": "The Athenaeum" },
+    { "room": "parade-club", "name": "Parade Club" },
     { "room": "ground", "name": "North Parade" }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 33, "dy": 36 }
+    "start": { "room": "ground", "dx": 42, "dy": 36 }
   },
   "objects": [
-    { "id": "north-parade-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 33, "dy": 34 } },
-    { "id": "north-parade-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 33, "dy": 39 } },
-    { "id": "north-parade-barricade", "object": "barricade", "at": { "room": "ground", "dx": 28, "dy": 36 } }
+    { "id": "north-parade-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 33 } },
+    { "id": "north-parade-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 29, "dy": 40 } },
+    { "id": "north-parade-barricade", "object": "barricade", "at": { "room": "ground", "dx": 56, "dy": 36 } },
+    { "id": "north-parade-ridge-beacon-1", "object": "ridge-beacon", "at": { "room": "ground", "dx": 41, "dy": 10 } },
+    { "id": "north-parade-street-bench-1", "object": "street-bench", "at": { "room": "ground", "dx": 46, "dy": 11 }, "facing": "west" },
+    { "id": "north-parade-street-bench-2", "object": "street-bench", "at": { "room": "ground", "dx": 38, "dy": 12 }, "facing": "east" },
+    { "id": "north-parade-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 52, "dy": 33 } },
+    { "id": "north-parade-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 52 } },
+    { "id": "north-parade-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 20 } },
+    { "id": "north-parade-street-tree-1", "object": "street-tree", "at": { "room": "ground", "dx": 27, "dy": 32 } },
+    { "id": "north-parade-street-tree-2", "object": "street-tree", "at": { "room": "ground", "dx": 27, "dy": 40 } },
+    { "id": "north-parade-parked-car-1", "object": "parked-car", "at": { "room": "ground", "dx": 58, "dy": 40 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -28,7 +54,13 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "parade-chapel": { "theme": "chapel", "people": 0 },
+    "athenaeum": { "theme": "archive", "people": 0 },
+    "parade-club": { "theme": "canteen", "people": 0 },
+    "parade-house-1": { "theme": "home", "people": 0 },
+    "parade-house-2": { "theme": "home", "people": 0 },
+    "parade-house-3": { "theme": "home", "people": 0 }
   },
   "furnish": {}
 }
