@@ -275,8 +275,8 @@ export const DEPTHS_DIALOGUES: readonly DialogueDefinition[] = [
     questId: 'the-heart',
     report: { stepId: 'mercer', text: 'You. Orders came down an hour ago, with your name on them. The Cordon gate is to be opened. Whatever is under the Site has a way out, and the Directorate wants to find the other end of it before it does. When the gate opens, you go first.' },
     waiting: '',
-    done: 'The gate stays shut until the order comes through. When it does, you go first.',
-    chat: "The Cordon gate stays shut. Beyond it is the Old Shipyards, and beyond that, nobody's sure.",
+    done: 'The gate is open. Whatever is out there, you go first.',
+    chat: "The Cordon gate's open. Beyond it is the Old Shipyards, and beyond that, New Meridian.",
   }),
   questTalk({
     npc: 'hetty-graves',

@@ -452,7 +452,7 @@ const RESIDENTS: readonly Resident[] = [
     title: 'Cordon post commander',
     examine: 'Has watched one gate for six years and has not once seen it open.',
     appearance: look('female', '#8a6048', 'braids', '#1a1410', { augment: 'ocularImplant' }),
-    says: "The Cordon gate stays shut. Beyond it is the Old Shipyards, and beyond that, nobody's sure. When the Directorate wants it opened, I'll hear first. You'll hear second.",
+    says: "The Cordon gate's open, for all the good it does anyone. Beyond it is the Old Shipyards, and beyond that, New Meridian. Go armed.",
   },
   {
     id: 'ward-commuter',

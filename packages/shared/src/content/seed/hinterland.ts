@@ -1,7 +1,6 @@
 import type { CharacterAppearance } from '../../character/appearance.ts';
 import type { DialogueDefinition } from '../../dialogue/dialogue.ts';
 import type { ShopDefinition } from '../../economy/shop.ts';
-import type { RegionId } from '../../ids.ts';
 import type { Condition } from '../../rules/conditions.ts';
 import type { NpcDefinition, WorldObjectDefinition } from '../../world/entities.ts';
 import type { RegionDefinition } from '../../world/region.ts';
@@ -15,8 +14,6 @@ const prop = (definition: Prop): WorldObjectDefinition => ({ blocksMovement: tru
 
 const LANDMARK_HOMES = ['street', 'containment', 'industrial', 'freight', 'works'] as const;
 
-export const WARD_OPEN_FLAG = (region: RegionId): string => `ward-open:${region}`;
-
 const gate = (id: string, name: string, examine: string, conditions: readonly Condition[], lockedText: string, openedText: string): WorldObjectDefinition => ({
   id,
   name,
@@ -27,14 +24,14 @@ const gate = (id: string, name: string, examine: string, conditions: readonly Co
   interactions: [{ verb: 'Open', failureText: lockedText, effects: [{ type: 'notify', text: openedText }] }],
 });
 
-const wardGate = (id: string, name: string, examine: string, region: RegionId, openedText: string): WorldObjectDefinition =>
-  gate(id, name, examine, [{ type: 'hasFlag', flag: WARD_OPEN_FLAG(region) }], 'Sealed from both sides. The Directorate has not ordered this gate opened.', openedText);
+const wardGate = (id: string, name: string, examine: string, openedText: string): WorldObjectDefinition =>
+  gate(id, name, examine, [], 'It will not budge.', openedText);
 
 const siteLift = (id: string, site: string): WorldObjectDefinition =>
   prop({
     id,
     name: 'Lift',
-    examine: `The ${site} lift. The cage is somewhere far below, and nobody has called it up since the ward was sealed.`,
+    examine: `The ${site} lift. The cage is somewhere far below, and nobody has called it up in years.`,
     model: 'liftDoor',
     furnishing: { mount: 'wall', homes: ['containment', 'transit', 'office'] },
   });
@@ -86,20 +83,20 @@ export const HINTERLAND_OBJECTS: readonly WorldObjectDefinition[] = [
   gate(
     'cordon-gate-leaf',
     'Cordon Gate',
-    'The Directorate gate in the Cordon wall. The red lamp has not gone out since the day it shut.',
-    [{ type: 'questCompleted', questId: 'the-heart' }],
-    'Sealed. Lieutenant Mercer has the only orders that would open it, and nobody has given them yet.',
+    'The Directorate gate in the Cordon wall, chained open. The red lamp over it still burns.',
+    [],
+    'It will not budge.',
     'The gate grinds open on six years of rust. Beyond it, the Old Shipyards.',
   ),
-  wardGate('sluice-gate-leaf', 'Sluice Gate', 'A Directorate gate in the old sluice at the foot of the Cut. Marsh water seeps under it.', 'tidemarsh', 'The sluice gate lifts. The Tidemarsh smells of salt and something sweet.'),
-  wardGate('incline-gate-leaf', 'Incline Gate', 'The gate at the foot of the Incline, the funicular up the bluff to the Heights.', 'the-heights', 'The Incline gate opens. Up the bluff, every window in the Heights is lit.'),
-  wardGate('west-gate-leaf', 'West Gate', 'Old Town’s land gate, with a Directorate gate hung inside the old one. The cathedral tower stands over the wall.', 'old-town', 'The west gate opens. The cathedral bell starts ringing, and does not stop.'),
-  wardGate('causeway-gate-leaf', 'Causeway Gate', 'The Directorate gate across the causeway into Old Town. The old town walls stand behind it.', 'old-town', 'The causeway gate opens. The cathedral bell starts ringing, and does not stop.'),
-  wardGate('viaduct-gate-leaf', 'Viaduct Gate', 'A gate where the railway viaduct crosses from the Heights into Ironside. The rails are warm.', 'ironside', 'The viaduct gate opens. Ironside is quiet, which it never was.'),
-  wardGate('floodgate-leaf', 'Floodgate', 'A floodgate the Directorate turned into a wall. The water on the far side is higher than the water on this side.', 'drowned-quarter', 'The floodgate opens. The water does not come through. It waits.'),
-  wardGate('headland-gate-leaf', 'Blight Road Gate', 'Ironside’s south gate, onto the road along the Blight’s edge. Past it, the Lantern.', 'the-lantern', 'The Blight road gate opens. The Lantern turns, and its beam passes over you.'),
-  wardGate('seawall-gate-leaf', 'Seawall Gate', 'A gate in the seawall steps, rusted to the colour of the bay.', 'the-lantern', 'The seawall gate opens. Gulls, and the smell of lamp oil.'),
-  wardGate('crater-rim-gate-leaf', 'Crater Rim Gate', 'A Directorate gate across the gap in the crater’s rim. The lake below it is very still.', 'the-blight', 'The rim gate opens. Below, the crater lake does not ripple.'),
+  wardGate('sluice-gate-leaf', 'Sluice Gate', 'A Directorate gate in the old sluice at the foot of the Cut. Marsh water seeps under it.', 'The sluice gate lifts. The Tidemarsh smells of salt and something sweet.'),
+  wardGate('incline-gate-leaf', 'Incline Gate', 'The gate at the foot of the Incline, the funicular up the bluff to the Heights.', 'The Incline gate opens. Up the bluff, every window in the Heights is lit.'),
+  wardGate('west-gate-leaf', 'West Gate', 'Old Town’s land gate, with a Directorate gate hung inside the old one. The cathedral tower stands over the wall.', 'The west gate opens. The cathedral bell starts ringing, and does not stop.'),
+  wardGate('causeway-gate-leaf', 'Causeway Gate', 'The Directorate gate across the causeway into Old Town. The old town walls stand behind it.', 'The causeway gate opens. The cathedral bell starts ringing, and does not stop.'),
+  wardGate('viaduct-gate-leaf', 'Viaduct Gate', 'A gate where the railway viaduct crosses from the Heights into Ironside. The rails are warm.', 'The viaduct gate opens. Ironside is quiet, which it never was.'),
+  wardGate('floodgate-leaf', 'Floodgate', 'A floodgate the Directorate turned into a wall. The water on the far side is higher than the water on this side.', 'The floodgate opens. The water does not come through. It waits.'),
+  wardGate('headland-gate-leaf', 'Blight Road Gate', 'Ironside’s south gate, onto the road along the Blight’s edge. Past it, the Lantern.', 'The Blight road gate opens. The Lantern turns, and its beam passes over you.'),
+  wardGate('seawall-gate-leaf', 'Seawall Gate', 'A gate in the seawall steps, rusted to the colour of the bay.', 'The seawall gate opens. Gulls, and the smell of lamp oil.'),
+  wardGate('crater-rim-gate-leaf', 'Crater Rim Gate', 'A Directorate gate across the gap in the crater’s rim. The lake below it is very still.', 'The rim gate opens. Below, the crater lake does not ripple.'),
   siteLift('caisson-lift', 'Site Caisson'),
   siteLift('brinehouse-lift', 'Brinehouse'),
   siteLift('spire-lift', 'Spire'),
