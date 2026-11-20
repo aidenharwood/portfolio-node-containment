@@ -9,6 +9,10 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 9, "row": 4, "split": true },
   "steps": [
+    { "kind": "rise", "rect": { "x": 49, "y": 13, "width": 7, "height": 7 }, "height": 5, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 51, "y": 15, "width": 3, "height": 3 }, "height": 6, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 48, "y": 44, "width": 7, "height": 7 }, "height": 5, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 50, "y": 46, "width": 3, "height": 3 }, "height": 6, "shape": "round" },
     { "kind": "patch", "rect": { "x": 46, "y": 14, "width": 5, "height": 6 }, "tile": "trees" },
     { "kind": "patch", "rect": { "x": 48, "y": 50, "width": 6, "height": 5 }, "tile": "trees" },
     { "kind": "building", "id": "junction-house", "rect": { "x": 50, "y": 34, "width": 6, "height": 5 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "east", "width": 2 }] }

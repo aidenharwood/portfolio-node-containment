@@ -10,6 +10,12 @@
   "square": { "column": 8, "row": 3 },
   "steps": [
     { "kind": "rise", "rect": { "x": 2, "y": 48, "width": 8, "height": 8 }, "height": 3, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 15, "y": 44, "width": 7, "height": 7 }, "height": 3, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 17, "y": 46, "width": 3, "height": 3 }, "height": 4, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 11, "y": 26, "width": 7, "height": 7 }, "height": 3, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 13, "y": 28, "width": 3, "height": 3 }, "height": 4, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 13, "y": 12, "width": 7, "height": 7 }, "height": 3, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 15, "y": 14, "width": 3, "height": 3 }, "height": 4, "shape": "round" },
     { "kind": "patch", "rect": { "x": 6, "y": 20, "width": 3, "height": 2 }, "tile": "rock" },
     { "kind": "patch", "rect": { "x": 12, "y": 40, "width": 2, "height": 3 }, "tile": "rock" }
   ],

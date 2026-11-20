@@ -10,6 +10,10 @@
   "square": { "column": 7, "row": 7, "split": true },
   "steps": [
     { "kind": "rise", "rect": { "x": 36, "y": 44, "width": 7, "height": 6 }, "height": 2, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 6, "y": 35, "width": 17, "height": 15 }, "height": 2, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 9, "y": 37, "width": 11, "height": 11 }, "height": 3, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 11, "y": 39, "width": 7, "height": 7 }, "height": 4, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 13, "y": 41, "width": 3, "height": 3 }, "height": 5, "shape": "round" },
     { "kind": "patch", "rect": { "x": 8, "y": 24, "width": 4, "height": 3 }, "tile": "trees" },
     { "kind": "patch", "rect": { "x": 0, "y": 24, "width": 41, "height": 2 }, "tile": "dirt" }
   ],

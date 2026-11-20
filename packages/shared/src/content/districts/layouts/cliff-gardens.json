@@ -18,6 +18,10 @@
     { "kind": "patch", "rect": { "x": 50, "y": 12, "width": 4, "height": 3 }, "tile": "trees" },
     { "kind": "patch", "rect": { "x": 22, "y": 13, "width": 3, "height": 2 }, "tile": "trees" },
     { "kind": "rise", "rect": { "x": 54, "y": 2, "width": 8, "height": 8 }, "height": 7, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 45, "y": 11, "width": 7, "height": 7 }, "height": 7, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 47, "y": 13, "width": 3, "height": 3 }, "height": 8, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 22, "y": 14, "width": 7, "height": 7 }, "height": 7, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 24, "y": 16, "width": 3, "height": 3 }, "height": 8, "shape": "round" },
     { "kind": "building", "id": "garden-pavilion", "rect": { "x": 46, "y": 4, "width": 6, "height": 4 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] }
   ],
   "tiles": [],

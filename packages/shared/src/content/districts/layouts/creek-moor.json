@@ -8,7 +8,10 @@
   "ambience": { "darkness": 0.26, "tint": "#405c5a", "fog": "#aac6ca", "sky": "#8ac0d2", "haze": 0.85 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 7, "row": 7, "split": true },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 50, "y": 30, "width": 7, "height": 7 }, "height": 2, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 52, "y": 32, "width": 3, "height": 3 }, "height": 3, "shape": "round" }
+  ],
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Creek Moor" }

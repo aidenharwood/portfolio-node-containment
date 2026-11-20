@@ -9,6 +9,8 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 9 },
   "steps": [
+    { "kind": "rise", "rect": { "x": 40, "y": 7, "width": 7, "height": 7 }, "height": 3, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 42, "y": 9, "width": 3, "height": 3 }, "height": 4, "shape": "round" },
     { "kind": "patch", "rect": { "x": 34, "y": 7, "width": 10, "height": 2 }, "tile": "gravel" },
     { "kind": "patch", "rect": { "x": 39, "y": 5, "width": 3, "height": 2 }, "tile": "gravel" }
   ],

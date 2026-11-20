@@ -11,6 +11,9 @@
   "steps": [
     { "kind": "patch", "rect": { "x": 0, "y": 2, "width": 52, "height": 4 }, "tile": "asphalt" },
     { "kind": "rise", "rect": { "x": 50, "y": 18, "width": 9, "height": 9 }, "height": 7, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 10, "y": 21, "width": 13, "height": 13 }, "height": 7, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 11, "y": 23, "width": 11, "height": 9 }, "height": 8, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 14, "y": 25, "width": 5, "height": 5 }, "height": 9, "shape": "round" },
     { "kind": "patch", "rect": { "x": 8, "y": 22, "width": 4, "height": 3 }, "tile": "trees" },
     { "kind": "patch", "rect": { "x": 52, "y": 32, "width": 4, "height": 3 }, "tile": "trees" },
     { "kind": "building", "id": "belgrave-one", "rect": { "x": 3, "y": 8, "width": 7, "height": 6 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] },

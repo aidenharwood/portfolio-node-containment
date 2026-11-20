@@ -10,6 +10,9 @@
   "square": { "column": 7, "row": 3, "split": true },
   "steps": [
     { "kind": "rise", "rect": { "x": 44, "y": 24, "width": 12, "height": 10 }, "height": 3, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 42, "y": 36, "width": 15, "height": 15 }, "height": 3, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 45, "y": 38, "width": 9, "height": 11 }, "height": 4, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 46, "y": 40, "width": 7, "height": 7 }, "height": 5, "shape": "round" },
     { "kind": "patch", "rect": { "x": 4, "y": 31, "width": 36, "height": 3 }, "tile": "asphalt" },
     { "kind": "building", "id": "house-n-1", "rect": { "x": 4, "y": 25, "width": 6, "height": 5 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "house-n-2", "rect": { "x": 12, "y": 25, "width": 6, "height": 5 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },

@@ -9,6 +9,8 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 0, "row": 2 },
   "steps": [
+    { "kind": "rise", "rect": { "x": 32, "y": 13, "width": 7, "height": 7 }, "height": 3, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 34, "y": 15, "width": 3, "height": 3 }, "height": 4, "shape": "round" },
     { "kind": "patch", "rect": { "x": 18, "y": 42, "width": 46, "height": 5 }, "tile": "asphalt" },
     { "kind": "patch", "rect": { "x": 16, "y": 12, "width": 24, "height": 10 }, "tile": "gravel" },
     { "kind": "building", "id": "mould-loft", "rect": { "x": 24, "y": 29, "width": 16, "height": 9 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "south", "width": 3, "offset": 6 }] },

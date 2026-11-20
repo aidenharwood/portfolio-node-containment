@@ -14,6 +14,8 @@
     { "kind": "patch", "rect": { "x": 28, "y": 56, "width": 10, "height": 6 }, "tile": "dirt" },
     { "kind": "patch", "rect": { "x": 48, "y": 46, "width": 10, "height": 5 }, "tile": "dirt" },
     { "kind": "rise", "rect": { "x": 36, "y": 46, "width": 8, "height": 5 }, "height": 5, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 50, "y": 49, "width": 7, "height": 7 }, "height": 5, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 52, "y": 51, "width": 3, "height": 3 }, "height": 6, "shape": "round" },
     { "kind": "patch", "rect": { "x": 44, "y": 52, "width": 3, "height": 2 }, "tile": "rock" },
     { "kind": "patch", "rect": { "x": 56, "y": 57, "width": 2, "height": 3 }, "tile": "rock" },
     { "kind": "patch", "rect": { "x": 30, "y": 52, "width": 2, "height": 2 }, "tile": "rock" },

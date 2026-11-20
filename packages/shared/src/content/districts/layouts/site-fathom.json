@@ -39,6 +39,8 @@
     { "kind": "building", "id": "shore-row-2", "rect": { "x": 12, "y": 38, "width": 6, "height": 5 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "north", "width": 2 }] },
     { "kind": "building", "id": "salt-store", "rect": { "x": 21, "y": 38, "width": 4, "height": 5 }, "floor": "concrete", "wall": "cladding", "doors": [{ "side": "north", "width": 2 }] },
     { "kind": "rise", "rect": { "x": 28, "y": 33, "width": 34, "height": 27 }, "height": 1 },
+    { "kind": "rise", "rect": { "x": 11, "y": 48, "width": 7, "height": 7 }, "height": 2, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 13, "y": 50, "width": 3, "height": 3 }, "height": 3, "shape": "round" },
     { "kind": "building", "id": "fathom-yard", "rect": { "x": 29, "y": 34, "width": 32, "height": 25 }, "floor": "asphalt", "wall": "wall", "edge": "barrier", "doors": [{ "side": "north", "width": 4 }, { "side": "west", "width": 4 }] },
     { "kind": "building", "id": "fathom-headhouse", "rect": { "x": 31, "y": 36, "width": 8, "height": 6 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "fathom-holding", "rect": { "x": 50, "y": 36, "width": 10, "height": 7 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },

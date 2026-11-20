@@ -11,6 +11,9 @@
   "steps": [
     { "kind": "rise", "rect": { "x": 14, "y": 48, "width": 8, "height": 6 }, "height": 1, "shape": "round" },
     { "kind": "rise", "rect": { "x": 48, "y": 14, "width": 7, "height": 6 }, "height": 2, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 40, "y": 37, "width": 15, "height": 15 }, "height": 2, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 43, "y": 39, "width": 9, "height": 11 }, "height": 3, "shape": "round" },
+    { "kind": "rise", "rect": { "x": 44, "y": 41, "width": 7, "height": 7 }, "height": 4, "shape": "round" },
     { "kind": "patch", "rect": { "x": 8, "y": 14, "width": 4, "height": 3 }, "tile": "trees" },
     { "kind": "patch", "rect": { "x": 36, "y": 46, "width": 4, "height": 3 }, "tile": "trees" },
     { "kind": "patch", "rect": { "x": 20, "y": 58, "width": 5, "height": 2 }, "tile": "trees" },
