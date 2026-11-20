@@ -254,3 +254,49 @@ test('Old Town is a walled city astride the river round its cathedral, with the 
   assert.ok(outpost && 'room' in outpost, 'Westgate has no outpost anchor');
   assert.equal(outpost.room, 'the-hostel');
 });
+
+test('Ironside is industry at the falls, with the Bellows compound, Shift House at the viaduct end and its stacks over Furnace Row, each round its landmark', () => {
+  const landmarks: Readonly<Record<string, string>> = {
+    railhead: 'coaling-gantry',
+    bellows: 'cooling-tower',
+    'furnace-row': 'ironside-stack',
+    'the-falls': 'penstock-gate',
+  };
+  const town = ['railhead', 'bellows', 'furnace-row'];
+  let bridges = 0;
+  for (const id of [...Object.keys(landmarks), 'mountain-foot', 'gorge-top', 'spoil-heaps', 'slag-gate']) {
+    const layout = parseLayout(LAYOUT_SOURCES[id]);
+    assert.ok(layout.square, id);
+    assert.equal(layout.region, 'ironside', id);
+    const landmark = landmarks[id];
+    if (landmark) assert.ok(layout.objects.some((object) => object.object === landmark), `${id} has no ${landmark}`);
+    if (town.includes(id)) assert.ok(layout.steps.filter((step) => step.kind === 'building').length >= 4, `${id} has too few buildings for a town square`);
+    const origin = { x: layout.square.column * 64, y: layout.square.row * 64 };
+    for (const step of layout.steps) {
+      if (step.kind !== 'patch' || step.tile !== 'boards') continue;
+      let water = false;
+      for (let y = step.rect.y; y < step.rect.y + step.rect.height; y++) {
+        for (let x = step.rect.x; x < step.rect.x + step.rect.width; x++) if (land.tileAt({ x: origin.x + x, y: origin.y + y }) === 'water') water = true;
+      }
+      if (water) bridges++;
+    }
+  }
+  assert.ok(bridges >= 2, `Ironside has ${bridges} bridges over the river`);
+  const furnaceRow = parseLayout(LAYOUT_SOURCES['furnace-row']);
+  assert.ok(furnaceRow.objects.filter((object) => object.object === 'ironside-stack').length >= 3, 'Furnace Row has too few stacks');
+  const stack = GAME_CONTENT.worldObjects.get('ironside-stack');
+  assert.ok(stack, 'the Ironside stack is not defined');
+  for (const object of GAME_CONTENT.worldObjects.values()) {
+    if (object.id !== 'ironside-stack') assert.ok((object.modelScale ?? 1) < (stack.modelScale ?? 1) || object.model !== 'chimney', `${object.id} stands as tall as the Ironside stacks`);
+  }
+  assert.ok((stack.modelScale ?? 1) >= 2.5, 'the Ironside stacks are too short to be seen from the crossroads');
+  const bellows = parseLayout(LAYOUT_SOURCES.bellows);
+  for (const room of ['bellows-station', 'turbine-hall', 'bellows-control']) {
+    assert.ok(bellows.steps.some((step) => step.kind === 'building' && step.id === room), `Bellows has no ${room}`);
+  }
+  assert.ok(bellows.objects.some((object) => object.object === 'bellows-lift'), 'the Bellows lift is missing');
+  const railhead = parseLayout(LAYOUT_SOURCES.railhead);
+  const outpost = railhead.anchors.outpost;
+  assert.ok(outpost && 'room' in outpost, 'Railhead has no outpost anchor');
+  assert.equal(outpost.room, 'shift-house');
+});

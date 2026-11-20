@@ -8,18 +8,32 @@
   "ambience": { "darkness": 0.64, "tint": "#3a2418", "fog": "#2a1c16", "sky": "#5a3a30", "weather": ["embers", "ash"], "haze": 1.4 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 9, "row": 0 },
-  "steps": [],
+  "steps": [
+    { "kind": "patch", "rect": { "x": 0, "y": 57, "width": 9, "height": 3 }, "tile": "boards" },
+    { "kind": "patch", "rect": { "x": 9, "y": 56, "width": 5, "height": 8 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 26, "y": 50, "width": 20, "height": 14 }, "tile": "dirt" },
+    { "kind": "rise", "rect": { "x": 34, "y": 52, "width": 10, "height": 6 }, "height": 5, "shape": "round" },
+    { "kind": "patch", "rect": { "x": 50, "y": 56, "width": 6, "height": 4 }, "tile": "rock" },
+    { "kind": "building", "id": "intake-house", "rect": { "x": 14, "y": 50, "width": 10, "height": 6 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
+    { "room": "intake-house", "name": "Bellows Intake" },
     { "room": "ground", "name": "The Falls" }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 31, "dy": 55 }
+    "start": { "room": "ground", "dx": 30, "dy": 60 }
   },
   "objects": [
-    { "id": "the-falls-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 53 } },
-    { "id": "the-falls-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 31, "dy": 58 } },
-    { "id": "the-falls-barricade", "object": "barricade", "at": { "room": "ground", "dx": 26, "dy": 55 } }
+    { "id": "the-falls-penstock-gate-1", "object": "penstock-gate", "at": { "room": "ground", "dx": 11, "dy": 46 } },
+    { "id": "the-falls-flood-mast-1", "object": "flood-mast", "at": { "room": "ground", "dx": 15, "dy": 44 } },
+    { "id": "the-falls-street-lamp", "object": "street-lamp", "at": { "room": "ground", "dx": 12, "dy": 54 } },
+    { "id": "the-falls-burn-barrel", "object": "burn-barrel", "at": { "room": "ground", "dx": 27, "dy": 61 } },
+    { "id": "the-falls-barricade", "object": "barricade", "at": { "room": "ground", "dx": 22, "dy": 60 } },
+    { "id": "the-falls-shelving-1", "object": "shelving", "at": { "room": "intake-house", "dx": 1, "dy": 0 } },
+    { "id": "the-falls-shelving-2", "object": "shelving", "at": { "room": "intake-house", "dx": 2, "dy": 0 } },
+    { "id": "the-falls-table-1", "object": "table", "at": { "room": "intake-house", "dx": 6, "dy": 2 } },
+    { "id": "the-falls-chair-1", "object": "chair", "at": { "room": "intake-house", "dx": 6, "dy": 3 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],
@@ -28,7 +42,8 @@
   "decals": [],
   "setPieces": [],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "intake-house": { "theme": "works", "people": 0 }
   },
   "furnish": {}
 }

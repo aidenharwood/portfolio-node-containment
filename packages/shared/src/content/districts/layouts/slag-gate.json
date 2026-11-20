@@ -8,7 +8,9 @@
   "ambience": { "darkness": 0.64, "tint": "#3a2418", "fog": "#2a1c16", "sky": "#5a3a30", "weather": ["embers", "ash"], "haze": 1.4 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 10, "row": 2, "split": true },
-  "steps": [],
+  "steps": [
+    { "kind": "patch", "rect": { "x": 0, "y": 0, "width": 4, "height": 13 }, "tile": "gravel" }
+  ],
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Slag Gate" }
