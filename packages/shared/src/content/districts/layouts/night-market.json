@@ -1,0 +1,53 @@
+{
+  "id": "night-market",
+  "name": "Night Market",
+  "subtitle": "The Span, Halcyon",
+  "tier": 7,
+  "region": "halcyon",
+  "condition": "worn",
+  "ambience": { "darkness": 0.58, "tint": "#3a2448", "fog": "#1e1430", "sky": "#2a1838", "weather": ["rain"], "haze": 1.3 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 8, "row": 5 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Night Market" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 31, "dy": 10 }
+  },
+  "objects": [
+    { "id": "night-market-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 4 } },
+    { "id": "night-market-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 54, "dy": 21 } },
+    { "id": "night-market-litter-bin-2", "object": "litter-bin", "at": { "room": "ground", "dx": 58, "dy": 34 } },
+    { "id": "night-market-food-stall-3", "object": "food-stall", "at": { "room": "ground", "dx": 52, "dy": 14 } },
+    { "id": "night-market-holo-billboard-4", "object": "holo-billboard", "at": { "room": "ground", "dx": 52, "dy": 28 } },
+    { "id": "night-market-litter-bin-5", "object": "litter-bin", "at": { "room": "ground", "dx": 21, "dy": 31 } },
+    { "id": "night-market-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 22, "dy": 38 } },
+    { "id": "night-market-halcyon-south-gate-leaf-0", "object": "halcyon-south-gate-leaf", "at": { "room": "ground", "dx": 63, "dy": 6 }, "facing": "east" },
+    { "id": "night-market-halcyon-south-gate-leaf-1", "object": "halcyon-south-gate-leaf", "at": { "room": "ground", "dx": 63, "dy": 7 }, "facing": "east" },
+    { "id": "night-market-culture-bench-10", "object": "culture-bench", "at": { "room": "ground", "dx": 47, "dy": 35 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "night-market-ad-wraith-0", "creature": "ad-wraith", "at": { "room": "ground", "dx": 20, "dy": 7 } },
+    { "id": "night-market-glass-hound-1", "creature": "glass-hound", "at": { "room": "ground", "dx": 30, "dy": 21 } },
+    { "id": "night-market-alley-crawler-2", "creature": "alley-crawler", "at": { "room": "ground", "dx": 27, "dy": 34 } },
+    { "id": "night-market-ad-wraith-3", "creature": "ad-wraith", "at": { "room": "ground", "dx": 6, "dy": 21 } },
+    { "id": "night-market-glass-hound-4", "creature": "glass-hound", "at": { "room": "ground", "dx": 17, "dy": 44 } },
+    { "id": "night-market-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 25, "dy": 23 } },
+    { "id": "night-market-ad-wraith-6", "creature": "ad-wraith", "at": { "room": "ground", "dx": 29, "dy": 16 } },
+    { "id": "night-market-glass-hound-7", "creature": "glass-hound", "at": { "room": "ground", "dx": 13, "dy": 28 } },
+    { "id": "night-market-alley-crawler-8", "creature": "alley-crawler", "at": { "room": "ground", "dx": 26, "dy": 12 } },
+    { "id": "night-market-ad-wraith-9", "creature": "ad-wraith", "at": { "room": "ground", "dx": 45, "dy": 14 } },
+    { "id": "night-market-glass-hound-10", "creature": "glass-hound", "at": { "room": "ground", "dx": 13, "dy": 39 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

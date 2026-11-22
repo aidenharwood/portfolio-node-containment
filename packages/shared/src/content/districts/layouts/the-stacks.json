@@ -1,0 +1,58 @@
+{
+  "id": "the-stacks",
+  "name": "The Stacks",
+  "subtitle": "The Span, Halcyon",
+  "tier": 7,
+  "region": "halcyon",
+  "condition": "worn",
+  "ambience": { "darkness": 0.58, "tint": "#3a2448", "fog": "#1e1430", "sky": "#2a1838", "weather": ["rain"], "haze": 1.3 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 8, "row": 1 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "The Stacks" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 11, "dy": 43 }
+  },
+  "objects": [
+    { "id": "the-stacks-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 49 } },
+    { "id": "the-stacks-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 14 } },
+    { "id": "the-stacks-steam-vent-2", "object": "steam-vent", "at": { "room": "ground", "dx": 46, "dy": 29 } },
+    { "id": "the-stacks-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 50, "dy": 56 } },
+    { "id": "the-stacks-holo-billboard-4", "object": "holo-billboard", "at": { "room": "ground", "dx": 8, "dy": 6 } },
+    { "id": "the-stacks-holo-billboard-5", "object": "holo-billboard", "at": { "room": "ground", "dx": 27, "dy": 28 } },
+    { "id": "the-stacks-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 53, "dy": 15 } },
+    { "id": "the-stacks-halcyon-north-gate-leaf-0", "object": "halcyon-north-gate-leaf", "at": { "room": "ground", "dx": 63, "dy": 12 }, "facing": "east" },
+    { "id": "the-stacks-halcyon-north-gate-leaf-1", "object": "halcyon-north-gate-leaf", "at": { "room": "ground", "dx": 63, "dy": 13 }, "facing": "east" },
+    { "id": "the-stacks-amber-trace-11", "object": "amber-trace", "at": { "room": "ground", "dx": 6, "dy": 50 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "the-stacks-ad-wraith-0", "creature": "ad-wraith", "at": { "room": "ground", "dx": 19, "dy": 52 } },
+    { "id": "the-stacks-glass-hound-1", "creature": "glass-hound", "at": { "room": "ground", "dx": 18, "dy": 42 } },
+    { "id": "the-stacks-alley-crawler-2", "creature": "alley-crawler", "at": { "room": "ground", "dx": 37, "dy": 33 } },
+    { "id": "the-stacks-ad-wraith-3", "creature": "ad-wraith", "at": { "room": "ground", "dx": 20, "dy": 29 } },
+    { "id": "the-stacks-glass-hound-4", "creature": "glass-hound", "at": { "room": "ground", "dx": 57, "dy": 58 } },
+    { "id": "the-stacks-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 22, "dy": 39 } },
+    { "id": "the-stacks-ad-wraith-6", "creature": "ad-wraith", "at": { "room": "ground", "dx": 49, "dy": 10 } },
+    { "id": "the-stacks-glass-hound-7", "creature": "glass-hound", "at": { "room": "ground", "dx": 48, "dy": 44 } },
+    { "id": "the-stacks-alley-crawler-8", "creature": "alley-crawler", "at": { "room": "ground", "dx": 16, "dy": 34 } },
+    { "id": "the-stacks-ad-wraith-9", "creature": "ad-wraith", "at": { "room": "ground", "dx": 45, "dy": 17 } },
+    { "id": "the-stacks-glass-hound-10", "creature": "glass-hound", "at": { "room": "ground", "dx": 47, "dy": 50 } },
+    { "id": "the-stacks-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 24, "dy": 45 } },
+    { "id": "the-stacks-ad-wraith-12", "creature": "ad-wraith", "at": { "room": "ground", "dx": 18, "dy": 7 } },
+    { "id": "the-stacks-glass-hound-13", "creature": "glass-hound", "at": { "room": "ground", "dx": 28, "dy": 49 } },
+    { "id": "the-stacks-alley-crawler-14", "creature": "alley-crawler", "at": { "room": "ground", "dx": 30, "dy": 41 } },
+    { "id": "the-stacks-ad-wraith-15", "creature": "ad-wraith", "at": { "room": "ground", "dx": 57, "dy": 49 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

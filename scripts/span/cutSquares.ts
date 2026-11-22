@@ -1,0 +1,358 @@
+import { readdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import landSource from '../../packages/shared/src/content/land/the-span.json' with { type: 'json' };
+import { drawLand, type LandMap } from '../../packages/shared/src/world/landPlan.ts';
+import { parseLandPlan } from '../../packages/shared/src/world/landSchema.ts';
+import { DISTRICT_LAYOUT_SCHEMA, type DistrictLayout } from '../../packages/shared/src/world/layoutSchema.ts';
+import { printLayout } from '../../packages/shared/src/world/printLayout.ts';
+import { buildDistrict } from '../../packages/shared/src/world/layout.ts';
+import { parseTileLayout } from '../../packages/shared/src/world/district.ts';
+import { TILE_KINDS, type TileKindId } from '../../packages/shared/src/world/tiles.ts';
+import { registerFurnishingKit } from '../../packages/shared/src/content/furnishingKit.ts';
+import { CITY_KIT } from '../../packages/shared/src/content/catalog/cityKit.ts';
+import { LANDMARK_KIT } from '../../packages/shared/src/content/catalog/landmarks.ts';
+import { SPAN_KIT, seamLeafOf } from '../../packages/shared/src/content/span/objects.ts';
+import { COLUMN_TIERS, GATES, padOf, PLACES, random, REGIONS, SQUARE, regionAt } from './atlas.ts';
+import { PLACE_SPECS, type BuildingSpec, type PlaceSquare } from './places.ts';
+import { recipeOf } from './recipes.ts';
+import { BELOW } from './below.ts';
+import { EXTRAS as SPINWARD_EXTRAS } from './extras/spinward.ts';
+import { EXTRAS as FAR_SPAN_EXTRAS } from './extras/farSpan.ts';
+import { SPINWARD_OBJECTS } from '../../packages/shared/src/content/span/quests/spinward.ts';
+import { FAR_SPAN_OBJECTS } from '../../packages/shared/src/content/span/quests/farSpan.ts';
+import { DRESSING_THEMES } from '../../packages/shared/src/content/prefabs/types.ts';
+
+registerFurnishingKit({ objects: [...SPINWARD_OBJECTS, ...FAR_SPAN_OBJECTS].map((object) => ({ ...object, furnishing: object.furnishing ?? { mount: 'free', homes: DRESSING_THEMES } })), prefabs: [], signatures: {} });
+const EXTRAS: Readonly<Record<string, readonly string[]>> = Object.fromEntries([...new Set([...Object.keys(SPINWARD_EXTRAS), ...Object.keys(FAR_SPAN_EXTRAS)])].map((key) => [key, [...(SPINWARD_EXTRAS[key] ?? []), ...(FAR_SPAN_EXTRAS[key] ?? [])]]));
+import { SPAN_CREATURES } from '../../packages/shared/src/content/span/creatures.ts';
+import { WARD_SPOTS } from '../../packages/shared/src/content/catalog/nodes.ts';
+import { CITY_KIT_OBJECTS } from '../../packages/shared/src/content/catalog/cityKit.ts';
+
+registerFurnishingKit(CITY_KIT);
+registerFurnishingKit(LANDMARK_KIT);
+registerFurnishingKit(SPAN_KIT);
+
+const OUT = join(import.meta.dirname, '../../packages/shared/src/content/districts/layouts');
+const land: LandMap = drawLand(parseLandPlan(landSource));
+
+type Placement = { id: string; object: string; at: { room: string; dx: number; dy: number }; facing?: 'north' | 'east' | 'south' | 'west' };
+
+const AMBIENCE: Readonly<Record<string, DistrictLayout['ambience']>> = {
+  'kestrel-reach': { darkness: 0.16, tint: '#e8eef4', fog: '#c8d8e8', sky: '#9fc8f0', weather: ['mist'], haze: 0.7 },
+  'harrow-terraces': { darkness: 0.2, tint: '#e4dcb8', fog: '#d8d0a8', sky: '#b8d8c0', weather: ['dust'], haze: 0.8 },
+  halcyon: { darkness: 0.58, tint: '#3a2448', fog: '#1e1430', sky: '#2a1838', weather: ['rain'], haze: 1.3 },
+  wreckfield: { darkness: 0.4, tint: '#5a3a28', fog: '#4a3424', sky: '#8a6a50', weather: ['dust', 'embers'], haze: 1.2 },
+  'glass-steppe': { darkness: 0.36, tint: '#3c3a5a', fog: '#4a4670', sky: '#7a74b0', weather: ['spores'], haze: 1.1 },
+  'the-spindle': { darkness: 0.62, tint: '#1a2a3a', fog: '#0c1824', sky: '#1a3048', weather: ['sparks'], haze: 1.4 },
+};
+
+const CONDITION: Readonly<Record<string, NonNullable<DistrictLayout['condition']>>> = {
+  'kestrel-reach': 'pristine',
+  'harrow-terraces': 'overgrown',
+  halcyon: 'worn',
+  wreckfield: 'breached',
+  'glass-steppe': 'alien',
+  'the-spindle': 'alien',
+};
+
+const WILD_NAMES: Readonly<Record<string, readonly string[]>> = {
+  'kestrel-reach': ['Antispinward Wall', 'Kestrel Lawns', 'Drill Field', 'Signal Hill', 'Kestrel Lake', 'Range Road', 'Seam Wood', 'Rim Meadow', 'White Gate', 'Parade Ground', 'Lower Lawns', 'Firing Line', 'Quiet Field', 'Lakeside', 'Kestrel Rim'],
+  'harrow-terraces': ['Top Terrace', 'Wheat Steps', 'Sluice Row', 'Windpump Rise', 'Barley Steps', 'Low Furrows', 'Seed Fields', 'Tithe Barns', 'Drovers Way', 'Mill Steps', 'Harrow Downs', 'Bramble Steps', 'Haycut', 'Spill Meadows', 'Fallow Rows', 'Orchard Edge'],
+  halcyon: ['Arcade Mile', 'Combine Blocks', 'The Overpass', 'Undertow', 'Canal Ward', 'The Stacks', 'Holo Gardens', 'Sprawl North', 'Sprawl South', 'Brightside', 'Gallowglass Fence', 'Signal Street', 'Night Market'],
+  wreckfield: ['Hull Shadow', 'The Bow', 'Scrap Sea', 'Bilge Flats', 'Keel Road', 'Engine Field', 'Rivet Dunes', 'Slag Plain', 'Tallow Approach', 'Reactor Scar', 'Cargo Spill', 'Hatch Fields', 'Wreck Rim', 'Gantry Flats', 'Sternward'],
+  'glass-steppe': ['Glass Flats', 'Pylon Walk', 'Hymn Road', 'Vesper Approach', 'Prism Fields', 'Silent Rise', 'Shard Moor', 'Glass Rim', 'The Lens', 'Choir Road'],
+  'the-spindle': ['Null Approach', 'Coolant Flats', 'Needle Foot', 'Grate Fields', 'Final Seam', 'Spindle Rim', 'Plating Road', 'The Terminus', 'Last Light'],
+};
+
+const PROPS: Readonly<Record<string, readonly string[]>> = {
+  'kestrel-reach': ['street-tree', 'bollard', 'flood-mast', 'litter-bin', 'street-tree', 'checkpoint-barrier'],
+  'harrow-terraces': ['windpump', 'washing-line', 'utility-pole', 'burn-barrel', 'street-tree', 'barricade'],
+  halcyon: ['holo-billboard', 'food-stall', 'parked-car', 'steam-vent', 'bollard', 'litter-bin', 'utility-pole'],
+  wreckfield: ['burn-barrel', 'barricade', 'utility-pole', 'magnet-crane', 'burn-barrel', 'parked-car'],
+  'glass-steppe': ['precursor-pylon', 'ledge-milestone', 'barricade', 'flood-mast', 'burn-barrel'],
+  'the-spindle': ['flood-mast', 'checkpoint-barrier', 'barricade', 'precursor-pylon', 'steam-vent'],
+};
+
+const CREATURES_BY_TIER: Readonly<Record<number, readonly string[]>> = {
+  1: ['lawn-rat', 'courtyard-gull'],
+  2: ['feral-hound', 'grounds-mite', 'lawn-rat'],
+  3: ['furrow-eel', 'crop-magpie'],
+  4: ['seed-mite', 'scarecoat', 'crop-magpie'],
+  5: ['thornback', 'seed-mite'],
+  6: ['neon-moth', 'alley-crawler'],
+  7: ['ad-wraith', 'glass-hound', 'alley-crawler'],
+  8: ['rustling', 'hull-knocker'],
+  9: ['bilge-wraith', 'rustling', 'hull-knocker'],
+  10: ['prism-hound', 'glass-stalker'],
+  11: ['choir-echo', 'red-twin', 'glass-stalker'],
+  12: ['null-echo', 'cell-breaker'],
+  13: ['null-stalker', 'null-echo', 'cell-breaker'],
+};
+
+const LARGE = new Set(['hull-knocker']);
+
+const NODES_BY_TIER: Readonly<Record<number, readonly string[]>> = {
+  1: ['scrap-pile', 'faint-trace', 'allotment-bed', 'eel-trap'],
+  2: ['cable-drum', 'scrap-pile', 'faint-trace', 'eel-trap'],
+  3: ['dredge-spot', 'reed-bed', 'culvert-trace', 'cable-drum'],
+  4: ['lock-gear', 'reed-bed', 'culvert-trace', 'dredge-spot'],
+  5: ['lock-gear', 'dredge-spot', 'reed-bed', 'culvert-trace'],
+  6: ['scrap-heap', 'culture-bench', 'amber-trace'],
+  7: ['crusher-housing', 'scrap-heap', 'culture-bench', 'amber-trace'],
+  8: ['wreck-plate', 'tide-weed', 'hull-trace', 'crusher-housing'],
+  9: ['rivet-seam', 'wreck-plate', 'tide-weed', 'hull-trace'],
+  10: ['directorate-salvage', 'red-moss', 'red-trace', 'sprung-cell-door'],
+  11: ['sprung-cell-door', 'directorate-salvage', 'red-moss', 'red-trace'],
+  12: ['vault-residue', 'vault-bloom', 'vault-trace', 'sprung-cell-door'],
+  13: ['vault-residue', 'vault-bloom', 'vault-trace'],
+};
+
+const FOOTPRINTS: Readonly<Record<string, readonly [number, number]>> = {
+  'food-stall': [2, 1], 'parked-car': [2, 1], 'magnet-crane': [2, 2], 'scrap-heap': [2, 2], windpump: [2, 2], dumpster: [2, 1], 'market-stall': [2, 1],
+};
+
+const kebab = (name: string): string => name.toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+interface Cut {
+  readonly column: number;
+  readonly row: number;
+  readonly region: string;
+  readonly walkable: number;
+}
+
+function cuts(): Cut[] {
+  const out: Cut[] = [];
+  for (let row = 0; row < land.plan.rows; row++) {
+    for (let column = 0; column < land.plan.columns; column++) {
+      let count = 0;
+      const wards = new Set<string>();
+      for (let y = 0; y < SQUARE; y++) for (let x = 0; x < SQUARE; x++) {
+        const point = { x: column * SQUARE + x, y: row * SQUARE + y };
+        if (!TILE_KINDS[land.tileAt(point)].walkable) continue;
+        count++;
+        wards.add(land.wardAt(point) ?? 'none');
+      }
+      if (count === 0) continue;
+      if (wards.size !== 1) throw new Error('square ' + column + ',' + row + ' crosses wards ' + [...wards].join(' '));
+      if (count < 40) throw new Error('square ' + column + ',' + row + ' is a sliver of ' + count + ' tiles');
+      out.push({ column, row, region: [...wards][0]!, walkable: count });
+    }
+  }
+  return out;
+}
+
+const all = cuts();
+const nameIndex = new Map<string, number>();
+const usedIds = new Set<string>();
+
+function nameFor(cut: Cut, place: PlaceSquare | undefined): { id: string; name: string } {
+  if (place) return { id: place.id, name: place.name };
+  const pool = WILD_NAMES[cut.region] ?? ['Wilds'];
+  for (;;) {
+    const index = nameIndex.get(cut.region) ?? 0;
+    nameIndex.set(cut.region, index + 1);
+    const base = pool[index % pool.length]!;
+    const name = index < pool.length ? base : base + ' ' + ['II', 'III', 'IV', 'V'][Math.floor(index / pool.length) - 1];
+    const id = kebab(name);
+    if (!usedIds.has(id)) return { id, name };
+  }
+}
+
+function layoutFor(cut: Cut): DistrictLayout {
+  const key = cut.column + ',' + cut.row;
+  const place = PLACE_SPECS[key];
+  const { id, name } = nameFor(cut, place);
+  usedIds.add(id);
+  const tier = COLUMN_TIERS[cut.column]!;
+  const region = REGIONS.find((entry) => entry.id === cut.region)!;
+  const next = random(cut.column * 977 + cut.row * 131 + 7);
+  const steps: DistrictLayout['steps'] = [];
+  const dressing: DistrictLayout['dressing'] = { ground: { theme: 'street', people: 0 } };
+  const areas: DistrictLayout['areas'] = [];
+  const objects: Placement[] = [];
+  const npcs: DistrictLayout['npcs'] = [];
+  const creatures: DistrictLayout['creatures'] = [];
+  const setPieces: DistrictLayout['setPieces'] = [];
+  const anchors: DistrictLayout['anchors'] = {};
+  const buildings: BuildingSpec[] = place?.buildings ?? [];
+  for (const building of buildings) {
+    steps.push({ kind: 'building', id: building.id, rect: { x: building.x, y: building.y, width: building.w, height: building.h }, floor: building.floor, wall: building.wall, ...(building.edge ? { edge: building.edge } : {}), doors: [{ side: building.door ?? 'south', width: 2 }] });
+    areas.push({ room: building.id, name: building.name, ...(building.safe ? { safe: true } : { safe: false }), ...(building.multiCombat ? { multiCombat: true } : {}) });
+    dressing[building.id] = { theme: building.theme, ...(building.also ? { also: building.also } : {}), people: 0 };
+    const recipe = recipeOf(building);
+    recipe.objects.forEach((object, index) => objects.push({ id: building.id + '-' + object.object + '-' + index, object: object.object, at: { room: building.id, dx: object.dx, dy: object.dy }, ...(object.facing ? { facing: object.facing } : {}) }));
+    recipe.npcs.forEach((npc) => npcs.push({ id: building.id + '-' + npc.npc, npc: npc.npc, at: { room: building.id, dx: npc.dx, dy: npc.dy } }));
+    recipe.creatures.forEach((creature, index) => creatures.push({ id: building.id + '-' + creature.creature + '-' + index, creature: creature.creature, at: { room: building.id, dx: creature.dx, dy: creature.dy } }));
+    for (const [anchor, at] of Object.entries(recipe.anchors)) anchors[anchor] = { room: building.id, dx: at.dx, dy: at.dy };
+  }
+  const groundSafe = place?.groundSafe ?? false;
+  areas.unshift({ room: 'ground', name, ...(groundSafe ? { safe: true } : {}) });
+
+  const base: DistrictLayout = DISTRICT_LAYOUT_SCHEMA.parse({
+    id,
+    name,
+    subtitle: place?.subtitle ?? 'The Span, ' + region.name,
+    tier,
+    region: cut.region,
+    condition: place?.condition ?? CONDITION[cut.region],
+    ambience: AMBIENCE[cut.region],
+    size: { width: SQUARE, height: SQUARE },
+    square: { column: cut.column, row: cut.row },
+    steps,
+    tiles: [],
+    areas,
+    anchors: { start: { room: 'ground', dx: 32, dy: 32 } },
+    objects: [],
+    assemblies: [],
+    npcs: [],
+    creatures: [],
+    lights: [],
+    decals: [],
+    setPieces: [],
+    dressing,
+    furnish: {},
+  });
+  const map = parseTileLayout(buildDistrictMap(base));
+  const inBuilding = (x: number, y: number): boolean => buildings.some((b) => x >= b.x - 1 && y >= b.y - 1 && x <= b.x + b.w && y <= b.y + b.h);
+  const doorTiles = buildings.map((b) => ({ x: b.x + Math.floor((b.w - 2) / 2) + 0.5, y: (b.door ?? 'south') === 'south' ? b.y + b.h : b.y - 1 }));
+  const gateTiles = GATES.map((gate) => ({ x: gate.seam - cut.column * SQUARE, y: gate.y - cut.row * SQUARE }));
+  const walkableAt = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < SQUARE && y < SQUARE && TILE_KINDS[map.tileAt({ x, y })].walkable && map.tileAt({ x, y }) !== 'door';
+  const taken: { x: number; y: number; r: number }[] = [];
+  const clear = (x: number, y: number, w: number, h: number, ring: number): boolean => {
+    for (let dy = -ring; dy < h + ring; dy++) for (let dx = -ring; dx < w + ring; dx++) {
+      if (!walkableAt(x + dx, y + dy) || inBuilding(x + dx, y + dy)) return false;
+    }
+    if (doorTiles.some((door) => Math.abs(door.x - x) < 5 && Math.abs(door.y - y) < 5)) return false;
+    if (gateTiles.some((gate) => Math.abs(gate.x - x) < 9 && Math.abs(gate.y - y) < 9)) return false;
+    if (x < 3 || y < 3 || x + w > SQUARE - 3 || y + h > SQUARE - 3) return false;
+    return true;
+  };
+  const free = (x: number, y: number, spacing: number): boolean => taken.every((other) => Math.hypot(other.x - x, other.y - y) >= Math.max(spacing, other.r));
+  const pick = (w: number, h: number, ring: number, spacing: number, near?: { x: number; y: number; r: number }): { x: number; y: number } | undefined => {
+    for (let attempt = 0; attempt < 600; attempt++) {
+      const x = near ? Math.round(near.x + (next() * 2 - 1) * near.r) : 3 + Math.floor(next() * (SQUARE - 6));
+      const y = near ? Math.round(near.y + (next() * 2 - 1) * near.r) : 3 + Math.floor(next() * (SQUARE - 6));
+      if (!clear(x, y, w, h, ring) || !free(x, y, spacing)) continue;
+      return { x, y };
+    }
+    return undefined;
+  };
+  const putObject = (object: string, spacing: number, facing?: Placement['facing'], near?: { x: number; y: number; r: number }): boolean => {
+    const [w, h] = FOOTPRINTS[object] ?? [1, 1];
+    const spot = pick(w, h, 2, spacing, near);
+    if (!spot) return false;
+    taken.push({ ...spot, r: spacing });
+    objects.push({ id: id + '-' + object + '-' + objects.length, object, at: { room: 'ground', dx: spot.x, dy: spot.y }, ...(facing ? { facing } : {}) });
+    return true;
+  };
+
+  for (const building of buildings) taken.push({ x: building.x + building.w / 2, y: building.y + building.h / 2, r: Math.max(building.w, building.h) / 2 + 2 });
+
+  if (place?.landmark) {
+    const spot = place.landmark.at;
+    setPieces.push({ id: id + '-landmark', prefab: place.landmark.prefab, at: { room: 'ground', dx: spot.x, dy: spot.y }, facing: 'south' });
+    taken.push({ x: spot.x + 1, y: spot.y + 1, r: 5 });
+  }
+
+  const lampCount = place ? 4 : 2;
+  let lamps = 0;
+  for (let attempt = 0; attempt < 10 && lamps < lampCount; attempt++) if (putObject('street-lamp', 7)) lamps++;
+  if (lamps === 0) throw new Error(id + ': nowhere to stand a street lamp');
+  const props = PROPS[cut.region] ?? [];
+  const propCount = place ? 6 : 4;
+  for (let index = 0; index < propCount; index++) putObject(props[Math.floor(next() * props.length)]!, 6);
+  putObject('barricade', 6);
+  if (place?.groundSafe || cut.region === 'kestrel-reach') for (let index = 0; index < (place ? 3 : 1); index++) putObject('street-bench', 6, 'south');
+
+  for (const gate of GATES) {
+    const gx = gate.seam - 1 - cut.column * SQUARE;
+    const gy = gate.y - cut.row * SQUARE;
+    if (gx < 0 || gy < 0 || gx >= SQUARE || gy >= SQUARE) continue;
+    objects.push({ id: id + '-' + gate.id + '-leaf-0', object: seamLeafOf(gate.id), at: { room: 'ground', dx: gx, dy: gy }, facing: 'east' });
+    objects.push({ id: id + '-' + gate.id + '-leaf-1', object: seamLeafOf(gate.id), at: { room: 'ground', dx: gx, dy: gy + 1 }, facing: 'east' });
+  }
+
+  for (const extra of EXTRAS[id] ?? []) if (!putObject(extra, 5)) throw new Error(id + ': nowhere to stand ' + extra);
+
+  const hostileGround = !groundSafe;
+  if (hostileGround && (place?.wildlife ?? true)) {
+    const nodeKinds = NODES_BY_TIER[tier] ?? [];
+    const nodeCount = place ? 2 : 3;
+    for (let index = 0; index < nodeCount; index++) putObject(nodeKinds[(index + cut.row + cut.column) % nodeKinds.length]!, 6);
+    let hostileTiles = 0;
+    for (let y = 0; y < SQUARE; y++) for (let x = 0; x < SQUARE; x++) if (walkableAt(x, y) && !inBuilding(x, y)) hostileTiles++;
+    const pool = place?.creatures ?? CREATURES_BY_TIER[tier] ?? [];
+    const target = Math.max(0, Math.round((hostileTiles * (place ? 4 : 4.5)) / 1000));
+    let placed = 0;
+    for (let index = 0; index < target * 3 && placed < target; index++) {
+      const creature = pool[placed % pool.length]!;
+      const size = LARGE.has(creature) ? 2 : 1;
+      const spot = pick(size, size, 1, 5);
+      if (!spot) continue;
+      taken.push({ ...spot, r: 5 });
+      creatures.push({ id: id + '-' + creature + '-' + placed, creature, at: { room: 'ground', dx: spot.x, dy: spot.y } });
+      placed++;
+    }
+  }
+
+  const startSpot = place?.start ?? pick(1, 1, 1, 2);
+  if (!startSpot) throw new Error(id + ': no start tile');
+  anchors.start = { room: 'ground', dx: startSpot.x, dy: startSpot.y };
+  for (const [anchor, at] of Object.entries(place?.anchors ?? {})) anchors[anchor] = { room: 'ground', dx: at.x, dy: at.y };
+
+  return DISTRICT_LAYOUT_SCHEMA.parse({
+    ...base,
+    anchors,
+    objects,
+    npcs,
+    creatures,
+    setPieces,
+    furnish: place?.landmark ? { landmarks: ['ground'] } : {},
+  });
+}
+
+function buildDistrictMap(layout: DistrictLayout): readonly string[] {
+  return buildDistrict(layout, land, {}).map;
+}
+
+const NODE_LEVEL = new Map<string, number>([...WARD_SPOTS, ...CITY_KIT_OBJECTS].flatMap((object) => object.interactions.flatMap((interaction) => (interaction.gather ? [[object.id, interaction.gather.level] as const] : []))));
+const CREATURE = new Map(SPAN_CREATURES.map((creature) => [creature.id, creature]));
+
+function safeNodes(layout: DistrictLayout, onLand: boolean): DistrictLayout {
+  const district = buildDistrict(layout, onLand ? land : undefined, {});
+  const unsafe = new Set<string>();
+  for (const object of district.objects) {
+    const level = NODE_LEVEL.get(object.objectId);
+    if (level === undefined) continue;
+    for (const placement of district.creatures ?? []) {
+      const creature = CREATURE.get(placement.creatureId);
+      if (!creature?.aggressive || creature.level <= level + 5) continue;
+      const reach = creature.aggroRadius + creature.attack.range + creature.wanderRadius + 2;
+      if (Math.max(Math.abs(object.position.x - placement.position.x), Math.abs(object.position.y - placement.position.y)) <= reach) unsafe.add(object.instanceId);
+    }
+  }
+  return { ...layout, objects: layout.objects.filter((object) => !unsafe.has(object.id)) };
+}
+
+for (const file of readdirSync(OUT)) if (file.endsWith('.json')) unlinkSync(join(OUT, file));
+const written: { id: string; kind: 'square' | 'below' }[] = [];
+for (const cut of all) {
+  const layout = safeNodes(layoutFor(cut), true);
+  writeFileSync(join(OUT, layout.id + '.json'), printLayout(layout));
+  written.push({ id: layout.id, kind: 'square' });
+}
+for (const source of BELOW) {
+  const layout = safeNodes(DISTRICT_LAYOUT_SCHEMA.parse(source), false);
+  writeFileSync(join(OUT, layout.id + '.json'), printLayout(layout));
+  written.push({ id: layout.id, kind: 'below' });
+}
+
+const camel = (id: string): string => id.replace(/-([a-z0-9])/g, (_, letter: string) => letter.toUpperCase()).replace(/^([0-9])/, '_$1');
+const imports = written.map((entry) => "import " + camel(entry.id) + " from './" + entry.id + ".json' with { type: 'json' };").join('\n');
+writeFileSync(join(OUT, 'index.ts'), "import type { DistrictId } from '../../../ids.ts';\n" + imports + '\n\nexport const LAYOUT_SOURCES: Readonly<Record<DistrictId, unknown>> = {\n' + written.map((entry) => "  '" + entry.id + "': " + camel(entry.id) + ',').join('\n') + '\n};\n\nexport const SQUARE_LAYOUT_IDS: readonly DistrictId[] = [\n' + written.filter((entry) => entry.kind === 'square').map((entry) => "  '" + entry.id + "',").join('\n') + '\n];\n\nexport const BELOW_LAYOUT_IDS: readonly DistrictId[] = [\n' + written.filter((entry) => entry.kind === 'below').map((entry) => "  '" + entry.id + "',").join('\n') + '\n];\n');
+console.log(written.length + ' layouts: ' + written.map((entry) => entry.id).join(' '));
+void readFileSync;
+void regionAt;
+void PLACES;
+void padOf;
+void ({} as TileKindId);

@@ -1,0 +1,92 @@
+{
+  "id": "null-below",
+  "name": "Null Below",
+  "subtitle": "Site Null, B1 · Inverted",
+  "tier": 13,
+  "region": "the-spindle",
+  "condition": "uncanny",
+  "ambience": { "darkness": 0.9, "tint": "#1a2230", "fog": "#06080e", "fixtures": "failing", "weather": ["spores"], "haze": 1.3 },
+  "size": { "width": 80, "height": 64 },
+  "steps": [
+    { "kind": "room", "id": "landing", "rect": { "x": 4, "y": 25, "width": 12, "height": 12 }, "floor": "plating", "shape": "rect" },
+    { "kind": "room", "id": "chamber-b", "rect": { "x": 24, "y": 25, "width": 14, "height": 12 }, "floor": "concrete", "shape": "round" },
+    { "kind": "room", "id": "chamber-a", "rect": { "x": 24, "y": 6, "width": 14, "height": 14 }, "floor": "concrete", "shape": "round" },
+    { "kind": "room", "id": "chamber-c", "rect": { "x": 24, "y": 44, "width": 14, "height": 14 }, "floor": "concrete", "shape": "round" },
+    { "kind": "room", "id": "heart", "rect": { "x": 50, "y": 14, "width": 26, "height": 36 }, "floor": "concrete", "shape": "round" },
+    { "kind": "link", "from": "landing", "to": "chamber-b", "width": 3, "floor": "plating" },
+    { "kind": "link", "from": "chamber-b", "to": "chamber-a", "width": 3, "floor": "plating" },
+    { "kind": "link", "from": "chamber-b", "to": "chamber-c", "width": 3, "floor": "plating" },
+    { "kind": "link", "from": "chamber-a", "to": "heart", "width": 3, "floor": "plating", "offset": 1 },
+    { "kind": "link", "from": "chamber-c", "to": "heart", "width": 3, "floor": "plating", "offset": 1 }
+  ],
+  "tiles": [],
+  "areas": [
+    { "room": "landing", "name": "Null Landing", "safe": true },
+    { "room": "chamber-b", "name": "The Waiting Room", "safe": false },
+    { "room": "chamber-a", "name": "North Ward", "safe": false },
+    { "room": "chamber-c", "name": "South Ward", "safe": false },
+    { "room": "heart", "name": "The Review", "safe": false, "multiCombat": true }
+  ],
+  "anchors": {
+    "arrival": { "room": "landing", "dx": 5, "dy": 2 }
+  },
+  "objects": [
+    { "id": "null-below-lift-up", "object": "null-lift-up", "at": { "room": "landing", "dx": 5, "dy": 0 } },
+    { "id": "null-below-mv-b-barricade", "object": "barricade", "at": { "room": "chamber-b", "dx": 6, "dy": 3 } },
+    { "id": "null-below-mv-b-cell", "object": "secure-cell", "at": { "room": "chamber-b", "dx": 7, "dy": 7 } },
+    { "id": "null-below-mv-a-cell", "object": "secure-cell", "at": { "room": "chamber-a", "dx": 7, "dy": 6 } },
+    { "id": "null-below-mv-a-barricade", "object": "barricade", "at": { "room": "chamber-a", "dx": 3, "dy": 9 } },
+    { "id": "null-below-mv-a-bench", "object": "lab-bench", "at": { "room": "chamber-a", "dx": 10, "dy": 3 } },
+    { "id": "null-below-mv-c-cell", "object": "secure-cell", "at": { "room": "chamber-c", "dx": 7, "dy": 6 } },
+    { "id": "null-below-mv-c-barricade", "object": "barricade", "at": { "room": "chamber-c", "dx": 3, "dy": 3 } },
+    { "id": "null-below-mv-c-bench", "object": "lab-bench", "at": { "room": "chamber-c", "dx": 10, "dy": 10 } },
+    { "id": "null-below-mv-heart-cell-a", "object": "secure-cell", "at": { "room": "heart", "dx": 8, "dy": 12 } },
+    { "id": "null-below-mv-heart-cell-b", "object": "secure-cell", "at": { "room": "heart", "dx": 18, "dy": 24 } },
+    { "id": "null-below-mv-heart-barricade", "object": "barricade", "at": { "room": "heart", "dx": 6, "dy": 20 } },
+    { "id": "null-below-mv-residue-0", "object": "vault-residue", "at": { "room": "chamber-b", "dx": 2, "dy": 6 } },
+    { "id": "null-below-mv-residue-1", "object": "vault-residue", "at": { "room": "heart", "dx": 10, "dy": 6 } },
+    { "id": "null-below-mv-bloom-0", "object": "vault-bloom", "at": { "room": "chamber-a", "dx": 6, "dy": 2 } },
+    { "id": "null-below-mv-bloom-1", "object": "vault-bloom", "at": { "room": "chamber-c", "dx": 12, "dy": 7 } },
+    { "id": "null-below-mv-vault-trace-1", "object": "vault-trace", "at": { "room": "chamber-c", "dx": 1, "dy": 8 } },
+    { "id": "null-below-sealed-hatch", "object": "null-console", "at": { "room": "heart", "dx": 13, "dy": 23 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "null-below-0", "creature": "null-echo", "at": { "room": "chamber-a", "dx": 4, "dy": 9 } },
+    { "id": "null-below-1", "creature": "null-echo", "at": { "room": "chamber-a", "dx": 11, "dy": 8 } },
+    { "id": "null-below-2", "creature": "null-echo", "at": { "room": "chamber-b", "dx": 10, "dy": 8 } },
+    { "id": "null-below-3", "creature": "null-echo", "at": { "room": "chamber-c", "dx": 5, "dy": 8 } },
+    { "id": "null-below-4", "creature": "null-echo", "at": { "room": "chamber-c", "dx": 10, "dy": 4 } },
+    { "id": "null-below-5", "creature": "null-echo", "at": { "room": "heart", "dx": 10, "dy": 28 } },
+    { "id": "null-below-6", "creature": "warden-of-null", "at": { "room": "heart", "dx": 13, "dy": 18 } }
+  ],
+  "lights": [
+    { "at": { "room": "heart", "dx": 10, "dy": 20 }, "radius": 4, "color": "#4fd8ff", "intensity": 0.9 },
+    { "at": { "room": "heart", "dx": 16, "dy": 20 }, "radius": 4, "color": "#4fd8ff", "intensity": 0.9 },
+    { "at": { "room": "heart", "dx": 10, "dy": 26 }, "radius": 4, "color": "#4fd8ff", "intensity": 0.9 },
+    { "at": { "room": "heart", "dx": 16, "dy": 26 }, "radius": 4, "color": "#4fd8ff", "intensity": 0.9 },
+    { "at": { "room": "heart", "dx": 13, "dy": 8 }, "radius": 6, "color": "#9a3fd8", "intensity": 0.8 },
+    { "at": { "room": "chamber-a", "dx": 7, "dy": 3 }, "radius": 5, "color": "#9a3fd8", "intensity": 0.7 },
+    { "at": { "room": "chamber-b", "dx": 7, "dy": 3 }, "radius": 5, "color": "#9a3fd8", "intensity": 0.7 },
+    { "at": { "room": "chamber-c", "dx": 7, "dy": 3 }, "radius": 5, "color": "#9a3fd8", "intensity": 0.7 },
+    { "at": { "room": "heart", "dx": 13, "dy": 18 }, "radius": 5, "color": "#7fd8ff", "intensity": 0.9 }
+  ],
+  "decals": [
+    { "kind": "alien-vein", "at": { "room": "heart", "dx": 10, "dy": 20 }, "width": 7, "height": 7 },
+    { "kind": "alien-vein", "at": { "room": "heart", "dx": 4, "dy": 4 }, "width": 6, "height": 8 },
+    { "kind": "cracks", "at": { "room": "heart", "dx": 17, "dy": 25 }, "width": 4, "height": 4 },
+    { "kind": "alien-vein", "at": { "room": "chamber-a", "dx": 2, "dy": 2 }, "width": 5, "height": 5 },
+    { "kind": "alien-vein", "at": { "room": "chamber-c", "dx": 6, "dy": 6 }, "width": 4, "height": 4 },
+    { "kind": "cracks", "at": { "room": "chamber-b", "dx": 2, "dy": 6 }, "width": 5, "height": 4 }
+  ],
+  "setPieces": [],
+  "dressing": {
+    "landing": { "theme": "transit", "people": 0 },
+    "chamber-b": { "theme": "containment", "people": 0 },
+    "chamber-a": { "theme": "containment", "people": 0 },
+    "chamber-c": { "theme": "containment", "people": 0 },
+    "heart": { "theme": "containment", "people": 0 }
+  },
+  "furnish": {}
+}

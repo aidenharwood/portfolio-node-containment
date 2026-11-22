@@ -318,7 +318,7 @@ describe('land squares', () => {
   });
 
   test('the shipped land plans are content and are clean', () => {
-    assert.ok(GAME_CONTENT.lands.has('hinterland'));
+    assert.ok(GAME_CONTENT.lands.has('the-span'));
     assert.deepEqual(findLandIssues(GAME_CONTENT), []);
   });
 

@@ -1,0 +1,57 @@
+{
+  "id": "spindle-rim",
+  "name": "Spindle Rim",
+  "subtitle": "The Span, the Spindle",
+  "tier": 13,
+  "region": "the-spindle",
+  "condition": "alien",
+  "ambience": { "darkness": 0.62, "tint": "#1a2a3a", "fog": "#0c1824", "sky": "#1a3048", "weather": ["sparks"], "haze": 1.4 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 15, "row": 3 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Spindle Rim" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 8, "dy": 41 }
+  },
+  "objects": [
+    { "id": "spindle-rim-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 47 } },
+    { "id": "spindle-rim-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 24 } },
+    { "id": "spindle-rim-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 15, "dy": 11 } },
+    { "id": "spindle-rim-flood-mast-3", "object": "flood-mast", "at": { "room": "ground", "dx": 35, "dy": 58 } },
+    { "id": "spindle-rim-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 44, "dy": 28 } },
+    { "id": "spindle-rim-flood-mast-5", "object": "flood-mast", "at": { "room": "ground", "dx": 8, "dy": 56 } },
+    { "id": "spindle-rim-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 17, "dy": 48 } },
+    { "id": "spindle-rim-vault-residue-7", "object": "vault-residue", "at": { "room": "ground", "dx": 28, "dy": 54 } },
+    { "id": "spindle-rim-vault-bloom-8", "object": "vault-bloom", "at": { "room": "ground", "dx": 29, "dy": 4 } },
+    { "id": "spindle-rim-vault-trace-9", "object": "vault-trace", "at": { "room": "ground", "dx": 14, "dy": 59 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "spindle-rim-null-stalker-0", "creature": "null-stalker", "at": { "room": "ground", "dx": 49, "dy": 35 } },
+    { "id": "spindle-rim-null-echo-1", "creature": "null-echo", "at": { "room": "ground", "dx": 15, "dy": 25 } },
+    { "id": "spindle-rim-cell-breaker-2", "creature": "cell-breaker", "at": { "room": "ground", "dx": 9, "dy": 24 } },
+    { "id": "spindle-rim-null-stalker-3", "creature": "null-stalker", "at": { "room": "ground", "dx": 15, "dy": 40 } },
+    { "id": "spindle-rim-null-echo-4", "creature": "null-echo", "at": { "room": "ground", "dx": 30, "dy": 32 } },
+    { "id": "spindle-rim-cell-breaker-5", "creature": "cell-breaker", "at": { "room": "ground", "dx": 23, "dy": 43 } },
+    { "id": "spindle-rim-null-stalker-6", "creature": "null-stalker", "at": { "room": "ground", "dx": 50, "dy": 54 } },
+    { "id": "spindle-rim-null-echo-7", "creature": "null-echo", "at": { "room": "ground", "dx": 51, "dy": 30 } },
+    { "id": "spindle-rim-cell-breaker-8", "creature": "cell-breaker", "at": { "room": "ground", "dx": 19, "dy": 32 } },
+    { "id": "spindle-rim-null-stalker-9", "creature": "null-stalker", "at": { "room": "ground", "dx": 36, "dy": 31 } },
+    { "id": "spindle-rim-null-echo-10", "creature": "null-echo", "at": { "room": "ground", "dx": 3, "dy": 41 } },
+    { "id": "spindle-rim-cell-breaker-11", "creature": "cell-breaker", "at": { "room": "ground", "dx": 26, "dy": 25 } },
+    { "id": "spindle-rim-null-stalker-12", "creature": "null-stalker", "at": { "room": "ground", "dx": 39, "dy": 36 } },
+    { "id": "spindle-rim-null-echo-13", "creature": "null-echo", "at": { "room": "ground", "dx": 46, "dy": 60 } },
+    { "id": "spindle-rim-cell-breaker-14", "creature": "cell-breaker", "at": { "room": "ground", "dx": 29, "dy": 12 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

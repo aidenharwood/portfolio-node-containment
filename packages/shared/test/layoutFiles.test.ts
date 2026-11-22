@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { GAME_CONTENT } from '../src/index.ts';
+import { GAME_CONTENT, LAYOUT_SOURCES } from '../src/index.ts';
 import { parseLayout } from '../src/world/layout.ts';
 import { printLayout } from '../src/world/printLayout.ts';
 
@@ -21,8 +21,7 @@ test('every layout file names its own district and is printed canonically', () =
   }
 });
 
-test('every district module builds from its layout file', () => {
-  const modules = readdirSync(new URL('../src/content/districts/', import.meta.url)).filter((name) => name.endsWith('.ts'));
-  const calls = modules.flatMap((name) => readFileSync(new URL(`../src/content/districts/${name}`, import.meta.url), 'utf8').match(/buildDistrict\(\w+(?:, \w+)?\)/g) ?? []);
-  assert.equal(calls.length, GAME_CONTENT.districts.size);
+test('every district is built from its layout file', () => {
+  for (const id of GAME_CONTENT.districts.keys()) assert.ok(LAYOUT_SOURCES[id], `${id} has no layout source`);
+  assert.equal(Object.keys(LAYOUT_SOURCES).length, GAME_CONTENT.districts.size);
 });

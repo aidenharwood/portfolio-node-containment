@@ -1,0 +1,54 @@
+{
+  "id": "gallowglass-fence",
+  "name": "Gallowglass Fence",
+  "subtitle": "The Span, Halcyon",
+  "tier": 6,
+  "region": "halcyon",
+  "condition": "worn",
+  "ambience": { "darkness": 0.58, "tint": "#3a2448", "fog": "#1e1430", "sky": "#2a1838", "weather": ["rain"], "haze": 1.3 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 6, "row": 5 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Gallowglass Fence" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 43, "dy": 44 }
+  },
+  "objects": [
+    { "id": "gallowglass-fence-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 19 } },
+    { "id": "gallowglass-fence-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 49, "dy": 37 } },
+    { "id": "gallowglass-fence-parked-car-2", "object": "parked-car", "at": { "room": "ground", "dx": 11, "dy": 15 } },
+    { "id": "gallowglass-fence-steam-vent-3", "object": "steam-vent", "at": { "room": "ground", "dx": 11, "dy": 45 } },
+    { "id": "gallowglass-fence-steam-vent-4", "object": "steam-vent", "at": { "room": "ground", "dx": 12, "dy": 9 } },
+    { "id": "gallowglass-fence-food-stall-5", "object": "food-stall", "at": { "room": "ground", "dx": 53, "dy": 29 } },
+    { "id": "gallowglass-fence-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 30, "dy": 40 } },
+    { "id": "gallowglass-fence-amber-trace-7", "object": "amber-trace", "at": { "room": "ground", "dx": 15, "dy": 34 } },
+    { "id": "gallowglass-fence-scrap-heap-8", "object": "scrap-heap", "at": { "room": "ground", "dx": 16, "dy": 21 } },
+    { "id": "gallowglass-fence-culture-bench-9", "object": "culture-bench", "at": { "room": "ground", "dx": 54, "dy": 7 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "gallowglass-fence-neon-moth-0", "creature": "neon-moth", "at": { "room": "ground", "dx": 37, "dy": 9 } },
+    { "id": "gallowglass-fence-alley-crawler-1", "creature": "alley-crawler", "at": { "room": "ground", "dx": 38, "dy": 15 } },
+    { "id": "gallowglass-fence-neon-moth-2", "creature": "neon-moth", "at": { "room": "ground", "dx": 41, "dy": 39 } },
+    { "id": "gallowglass-fence-alley-crawler-3", "creature": "alley-crawler", "at": { "room": "ground", "dx": 54, "dy": 19 } },
+    { "id": "gallowglass-fence-neon-moth-4", "creature": "neon-moth", "at": { "room": "ground", "dx": 24, "dy": 28 } },
+    { "id": "gallowglass-fence-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 22, "dy": 18 } },
+    { "id": "gallowglass-fence-neon-moth-6", "creature": "neon-moth", "at": { "room": "ground", "dx": 6, "dy": 31 } },
+    { "id": "gallowglass-fence-alley-crawler-7", "creature": "alley-crawler", "at": { "room": "ground", "dx": 59, "dy": 34 } },
+    { "id": "gallowglass-fence-neon-moth-8", "creature": "neon-moth", "at": { "room": "ground", "dx": 42, "dy": 7 } },
+    { "id": "gallowglass-fence-alley-crawler-9", "creature": "alley-crawler", "at": { "room": "ground", "dx": 38, "dy": 24 } },
+    { "id": "gallowglass-fence-neon-moth-10", "creature": "neon-moth", "at": { "room": "ground", "dx": 22, "dy": 36 } },
+    { "id": "gallowglass-fence-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 29, "dy": 27 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

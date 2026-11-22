@@ -1,0 +1,58 @@
+{
+  "id": "hatch-fields",
+  "name": "Hatch Fields",
+  "subtitle": "The Span, the Wreckfield",
+  "tier": 8,
+  "region": "wreckfield",
+  "condition": "breached",
+  "ambience": { "darkness": 0.4, "tint": "#5a3a28", "fog": "#4a3424", "sky": "#8a6a50", "weather": ["dust", "embers"], "haze": 1.2 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 9, "row": 4 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Hatch Fields" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 49, "dy": 50 }
+  },
+  "objects": [
+    { "id": "hatch-fields-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 13, "dy": 38 } },
+    { "id": "hatch-fields-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 37 } },
+    { "id": "hatch-fields-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 14, "dy": 10 } },
+    { "id": "hatch-fields-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 42, "dy": 59 } },
+    { "id": "hatch-fields-utility-pole-4", "object": "utility-pole", "at": { "room": "ground", "dx": 42, "dy": 12 } },
+    { "id": "hatch-fields-burn-barrel-5", "object": "burn-barrel", "at": { "room": "ground", "dx": 35, "dy": 45 } },
+    { "id": "hatch-fields-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 48, "dy": 8 } },
+    { "id": "hatch-fields-tide-weed-7", "object": "tide-weed", "at": { "room": "ground", "dx": 35, "dy": 16 } },
+    { "id": "hatch-fields-hull-trace-8", "object": "hull-trace", "at": { "room": "ground", "dx": 31, "dy": 4 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "hatch-fields-rustling-0", "creature": "rustling", "at": { "room": "ground", "dx": 21, "dy": 17 } },
+    { "id": "hatch-fields-hull-knocker-1", "creature": "hull-knocker", "at": { "room": "ground", "dx": 48, "dy": 19 } },
+    { "id": "hatch-fields-rustling-2", "creature": "rustling", "at": { "room": "ground", "dx": 45, "dy": 34 } },
+    { "id": "hatch-fields-hull-knocker-3", "creature": "hull-knocker", "at": { "room": "ground", "dx": 24, "dy": 44 } },
+    { "id": "hatch-fields-rustling-4", "creature": "rustling", "at": { "room": "ground", "dx": 33, "dy": 59 } },
+    { "id": "hatch-fields-hull-knocker-5", "creature": "hull-knocker", "at": { "room": "ground", "dx": 53, "dy": 24 } },
+    { "id": "hatch-fields-rustling-6", "creature": "rustling", "at": { "room": "ground", "dx": 29, "dy": 46 } },
+    { "id": "hatch-fields-hull-knocker-7", "creature": "hull-knocker", "at": { "room": "ground", "dx": 54, "dy": 50 } },
+    { "id": "hatch-fields-rustling-8", "creature": "rustling", "at": { "room": "ground", "dx": 54, "dy": 10 } },
+    { "id": "hatch-fields-hull-knocker-9", "creature": "hull-knocker", "at": { "room": "ground", "dx": 6, "dy": 9 } },
+    { "id": "hatch-fields-rustling-10", "creature": "rustling", "at": { "room": "ground", "dx": 18, "dy": 44 } },
+    { "id": "hatch-fields-hull-knocker-11", "creature": "hull-knocker", "at": { "room": "ground", "dx": 22, "dy": 30 } },
+    { "id": "hatch-fields-rustling-12", "creature": "rustling", "at": { "room": "ground", "dx": 43, "dy": 51 } },
+    { "id": "hatch-fields-hull-knocker-13", "creature": "hull-knocker", "at": { "room": "ground", "dx": 5, "dy": 3 } },
+    { "id": "hatch-fields-rustling-14", "creature": "rustling", "at": { "room": "ground", "dx": 50, "dy": 44 } },
+    { "id": "hatch-fields-hull-knocker-15", "creature": "hull-knocker", "at": { "room": "ground", "dx": 25, "dy": 5 } },
+    { "id": "hatch-fields-rustling-16", "creature": "rustling", "at": { "room": "ground", "dx": 58, "dy": 5 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

@@ -18,27 +18,26 @@ import type { ResolvedLevel } from '../world/levelLayout.ts';
 import type { RegionDefinition } from '../world/region.ts';
 import type { TramNetwork } from '../world/tram.ts';
 import { ASSEMBLIES } from './assemblies.ts';
-import { LOW_WARD_DISTRICTS, TERMINUS_SQUARE, TERMINUS_SQUARE_ANCHORS } from './districts/lowWard.ts';
 import { buildInstallations } from './installations.ts';
 import { SHIPPED_LANDS } from './land/index.ts';
 import { buildLevelIndex, locate, type LevelIndex } from './levelIndex.ts';
-import { OVERWORLD } from './levels/overworld.ts';
-import { MERIDIAN_LEVELS } from './levels/siteMeridian.ts';
-import { SITE_MERIDIAN_DISTRICTS } from './districts/siteMeridian.ts';
-import { HINTERLAND_DISTRICTS } from './districts/hinterland.ts';
-import { HINTERLAND_DIALOGUES, HINTERLAND_NPCS, HINTERLAND_OBJECTS, HINTERLAND_REGIONS, HINTERLAND_SHOPS } from './seed/hinterland.ts';
-import { SITE_MERIDIAN_LIFTS } from './seed/siteMeridian.ts';
+import { OVERWORLD, SPAWN_DISTRICT_ID } from './levels/overworld.ts';
+import { BELOW_LEVELS } from './levels/below.ts';
 import { CURRENCY_ITEMS } from './catalog/currency.ts';
 import { CREATURE_UNIQUES, FIELD_GEAR, FIELD_GEAR_RECIPES } from './catalog/uniques.ts';
-import { WARD_CREATURES } from './ward/creatures.ts';
 import { MASTERY_MANTLES } from './catalog/mastery.ts';
 import { RENAMED_WARD_ITEMS, WARD_FOOD, WARD_GEAR, WARD_KITS, WARD_MATERIALS, WARD_RECIPES, WARD_UNIQUES } from './catalog/items.ts';
 import { WARD_SPOTS, WARD_STATIONS } from './catalog/nodes.ts';
-import { TUTORIAL_QUEST_ID, WARD_DIALOGUES, WARD_QUESTLINES, WARD_QUESTS } from './ward/quests.ts';
-import { SITE_CREATURES, SITE_DIALOGUES, SITE_ITEMS, SITE_OBJECTS, SITE_QUESTS, SITE_RECIPES } from './ward/site.ts';
-import { DEPTHS_CREATURES, DEPTHS_DIALOGUES, DEPTHS_ITEMS, DEPTHS_OBJECTS, DEPTHS_QUESTS, DEPTHS_RECIPES } from './ward/depths.ts';
-import { combineDialogues, NOVICE_CREATURES, NOVICE_DIALOGUES, NOVICE_ITEMS, NOVICE_OBJECTS, NOVICE_QUESTS, NOVICE_RECIPES } from './ward/novice.ts';
-import { SEED_DIALOGUES, SEED_NPCS, SEED_OBJECTS, SEED_REGIONS, SEED_SHOPS } from './seed/lowWard.ts';
+import { CITY_KIT_OBJECTS } from './catalog/cityKit.ts';
+import { LANDMARK_OBJECTS } from './catalog/landmarks.ts';
+import { STORAGE_LOCKER } from './catalog/services.ts';
+import { combineDialogues } from './catalog/dialogueKit.ts';
+import { SPAN_CREATURES } from './span/creatures.ts';
+import { SPAN_DISTRICTS } from './span/districts.ts';
+import { SPAN_LIFTS, SPAN_RELICS } from './span/lifts.ts';
+import { SPAN_KIT } from './span/objects.ts';
+import { SPAN_BASE_DIALOGUES, SPAN_NPCS, SPAN_REGIONS, SPAN_SHOPS } from './span/people.ts';
+import { SPAN_QUESTS, SPAN_QUESTLINES, SPAN_QUEST_DIALOGUES, SPAN_QUEST_ITEMS, SPAN_QUEST_OBJECTS, SPAN_QUEST_RECIPES, TUTORIAL_QUEST_ID } from './span/quests/index.ts';
 import { CONTRACTS } from './contracts.ts';
 import { buildTramNetwork, TRAM_LINES, TRAM_STATIONS } from './tramNetwork.ts';
 
@@ -83,12 +82,10 @@ function indexById<T extends { readonly id: string }>(entries: readonly T[]): Re
   return index;
 }
 
-const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById([...LOW_WARD_DISTRICTS, ...SITE_MERIDIAN_DISTRICTS, ...HINTERLAND_DISTRICTS]);
-const INSTALLED = buildInstallations([...SEED_OBJECTS, ...HINTERLAND_OBJECTS, ...SITE_MERIDIAN_LIFTS, ...WARD_SPOTS, ...WARD_STATIONS, ...NOVICE_OBJECTS, ...SITE_OBJECTS, ...DEPTHS_OBJECTS]);
+const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById(SPAN_DISTRICTS);
+const INSTALLED = buildInstallations([STORAGE_LOCKER, ...CITY_KIT_OBJECTS, ...LANDMARK_OBJECTS, ...SPAN_KIT.objects, ...SPAN_LIFTS, ...SPAN_RELICS, ...WARD_SPOTS, ...WARD_STATIONS, ...SPAN_QUEST_OBJECTS]);
 const ASSEMBLY_INDEX: ReadonlyMap<AssemblyId, AssemblyDefinition> = indexById([...ASSEMBLIES, ...INSTALLED.assemblies]);
-const LEVEL_INDEX: LevelIndex = buildLevelIndex([OVERWORLD, ...MERIDIAN_LEVELS], DISTRICTS, ASSEMBLY_INDEX);
-
-const QUEST_DIALOGUES = combineDialogues([...WARD_DIALOGUES, ...NOVICE_DIALOGUES, ...SITE_DIALOGUES, ...DEPTHS_DIALOGUES]);
+const LEVEL_INDEX: LevelIndex = buildLevelIndex([OVERWORLD, ...BELOW_LEVELS], DISTRICTS, ASSEMBLY_INDEX);
 
 function placed(districtId: DistrictId, position: TilePoint): WorldLocation {
   const location = locate(LEVEL_INDEX, districtId, position);
@@ -96,28 +93,30 @@ function placed(districtId: DistrictId, position: TilePoint): WorldLocation {
   return location;
 }
 
+const START = DISTRICTS.get(SPAWN_DISTRICT_ID)?.anchors?.start as TilePoint;
+
 export const GAME_CONTENT: GameContent = {
-  items: indexById([...CURRENCY_ITEMS, ...WARD_MATERIALS, ...WARD_FOOD, ...WARD_KITS, ...WARD_GEAR, ...WARD_UNIQUES, ...MASTERY_MANTLES, ...CREATURE_UNIQUES, ...FIELD_GEAR, ...NOVICE_ITEMS, ...SITE_ITEMS, ...DEPTHS_ITEMS]),
+  items: indexById([...CURRENCY_ITEMS, ...WARD_MATERIALS, ...WARD_FOOD, ...WARD_KITS, ...WARD_GEAR, ...WARD_UNIQUES, ...MASTERY_MANTLES, ...CREATURE_UNIQUES, ...FIELD_GEAR, ...SPAN_QUEST_ITEMS]),
   renamedItems: RENAMED_WARD_ITEMS,
-  npcs: indexById([...SEED_NPCS, ...HINTERLAND_NPCS]),
+  npcs: indexById(SPAN_NPCS),
   worldObjects: indexById(INSTALLED.objects),
   assemblies: ASSEMBLY_INDEX,
-  dialogues: indexById<DialogueDefinition>([...SEED_DIALOGUES.filter((dialogue) => !QUEST_DIALOGUES.some((override) => override.id === dialogue.id)), ...HINTERLAND_DIALOGUES, ...QUEST_DIALOGUES]),
-  quests: indexById<QuestDefinition>([...WARD_QUESTS, ...NOVICE_QUESTS, ...SITE_QUESTS, ...DEPTHS_QUESTS]),
-  questlines: indexById<QuestlineDefinition>(WARD_QUESTLINES),
+  dialogues: indexById<DialogueDefinition>(combineDialogues([...SPAN_BASE_DIALOGUES, ...SPAN_QUEST_DIALOGUES])),
+  quests: indexById<QuestDefinition>(SPAN_QUESTS),
+  questlines: indexById<QuestlineDefinition>(SPAN_QUESTLINES),
   districts: DISTRICTS,
   levels: LEVEL_INDEX.levels,
   levelOfDistrict: LEVEL_INDEX.levelOfDistrict,
   lands: SHIPPED_LANDS,
-  regions: indexById([...SEED_REGIONS, ...HINTERLAND_REGIONS]),
+  regions: indexById(SPAN_REGIONS),
   tram: buildTramNetwork(TRAM_STATIONS, TRAM_LINES, DISTRICTS, LEVEL_INDEX),
-  creatures: indexById<CreatureDefinition>([...WARD_CREATURES, ...NOVICE_CREATURES, ...SITE_CREATURES, ...DEPTHS_CREATURES]),
-  shops: indexById([...SEED_SHOPS, ...HINTERLAND_SHOPS]),
-  recipes: indexById<RecipeDefinition>([...WARD_RECIPES, ...FIELD_GEAR_RECIPES, ...NOVICE_RECIPES, ...SITE_RECIPES, ...DEPTHS_RECIPES]),
+  creatures: indexById<CreatureDefinition>(SPAN_CREATURES),
+  shops: indexById(SPAN_SHOPS),
+  recipes: indexById<RecipeDefinition>([...WARD_RECIPES, ...FIELD_GEAR_RECIPES, ...SPAN_QUEST_RECIPES]),
   contracts: indexById<ContractDefinition>(CONTRACTS),
   newCharacter: {
-    startingLocation: placed(TERMINUS_SQUARE.id, TERMINUS_SQUARE_ANCHORS.start),
-    trainingLocation: placed(TERMINUS_SQUARE.id, TERMINUS_SQUARE_ANCHORS.start),
+    startingLocation: placed(SPAWN_DISTRICT_ID, START),
+    trainingLocation: placed(SPAWN_DISTRICT_ID, START),
     startingQuestId: TUTORIAL_QUEST_ID,
     kit: STANDARD_ISSUE_KIT,
   },

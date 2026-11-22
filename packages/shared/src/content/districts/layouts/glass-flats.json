@@ -1,0 +1,55 @@
+{
+  "id": "glass-flats",
+  "name": "Glass Flats",
+  "subtitle": "The Span, the Glass Steppe",
+  "tier": 10,
+  "region": "glass-steppe",
+  "condition": "alien",
+  "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 12, "row": 0 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Glass Flats" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 37, "dy": 55 }
+  },
+  "objects": [
+    { "id": "glass-flats-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 20, "dy": 17 } },
+    { "id": "glass-flats-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 58 } },
+    { "id": "glass-flats-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 14, "dy": 41 } },
+    { "id": "glass-flats-barricade-3", "object": "barricade", "at": { "room": "ground", "dx": 56, "dy": 19 } },
+    { "id": "glass-flats-ledge-milestone-4", "object": "ledge-milestone", "at": { "room": "ground", "dx": 7, "dy": 52 } },
+    { "id": "glass-flats-flood-mast-5", "object": "flood-mast", "at": { "room": "ground", "dx": 17, "dy": 35 } },
+    { "id": "glass-flats-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 11, "dy": 35 } },
+    { "id": "glass-flats-directorate-salvage-7", "object": "directorate-salvage", "at": { "room": "ground", "dx": 20, "dy": 29 } },
+    { "id": "glass-flats-red-moss-8", "object": "red-moss", "at": { "room": "ground", "dx": 32, "dy": 41 } },
+    { "id": "glass-flats-red-trace-9", "object": "red-trace", "at": { "room": "ground", "dx": 28, "dy": 23 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "glass-flats-prism-hound-0", "creature": "prism-hound", "at": { "room": "ground", "dx": 36, "dy": 50 } },
+    { "id": "glass-flats-glass-stalker-1", "creature": "glass-stalker", "at": { "room": "ground", "dx": 39, "dy": 16 } },
+    { "id": "glass-flats-prism-hound-2", "creature": "prism-hound", "at": { "room": "ground", "dx": 46, "dy": 39 } },
+    { "id": "glass-flats-glass-stalker-3", "creature": "glass-stalker", "at": { "room": "ground", "dx": 28, "dy": 54 } },
+    { "id": "glass-flats-prism-hound-4", "creature": "prism-hound", "at": { "room": "ground", "dx": 28, "dy": 32 } },
+    { "id": "glass-flats-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 6, "dy": 31 } },
+    { "id": "glass-flats-prism-hound-6", "creature": "prism-hound", "at": { "room": "ground", "dx": 15, "dy": 53 } },
+    { "id": "glass-flats-glass-stalker-7", "creature": "glass-stalker", "at": { "room": "ground", "dx": 40, "dy": 44 } },
+    { "id": "glass-flats-prism-hound-8", "creature": "prism-hound", "at": { "room": "ground", "dx": 42, "dy": 29 } },
+    { "id": "glass-flats-glass-stalker-9", "creature": "glass-stalker", "at": { "room": "ground", "dx": 60, "dy": 37 } },
+    { "id": "glass-flats-prism-hound-10", "creature": "prism-hound", "at": { "room": "ground", "dx": 26, "dy": 47 } },
+    { "id": "glass-flats-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 55, "dy": 31 } },
+    { "id": "glass-flats-prism-hound-12", "creature": "prism-hound", "at": { "room": "ground", "dx": 10, "dy": 25 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

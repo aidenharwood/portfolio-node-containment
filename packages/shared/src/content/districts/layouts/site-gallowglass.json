@@ -1,0 +1,95 @@
+{
+  "id": "site-gallowglass",
+  "name": "Site Gallowglass",
+  "subtitle": "Halcyon · SC-III · Breached",
+  "tier": 7,
+  "region": "halcyon",
+  "condition": "breached",
+  "ambience": { "darkness": 0.58, "tint": "#3a2448", "fog": "#1e1430", "sky": "#2a1838", "weather": ["rain"], "haze": 1.3 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 8, "row": 2 },
+  "steps": [
+    { "kind": "building", "id": "gallowglass-headhouse", "rect": { "x": 9, "y": 10, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "gallowglass-holding", "rect": { "x": 25, "y": 10, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "gallowglass-lab", "rect": { "x": 41, "y": 10, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Site Gallowglass" },
+    { "room": "gallowglass-headhouse", "name": "Gallowglass Headhouse", "safe": true },
+    { "room": "gallowglass-holding", "name": "Gallowglass Holding", "safe": false },
+    { "room": "gallowglass-lab", "name": "Gallowglass Lab", "safe": false }
+  ],
+  "anchors": {
+    "lift-arrival": { "room": "gallowglass-headhouse", "dx": 5, "dy": 2 },
+    "start": { "room": "ground", "dx": 44, "dy": 38 }
+  },
+  "objects": [
+    { "id": "gallowglass-headhouse-gallowglass-lift-down-0", "object": "gallowglass-lift-down", "at": { "room": "gallowglass-headhouse", "dx": 5, "dy": 0 }, "facing": "south" },
+    { "id": "gallowglass-headhouse-notice-board-1", "object": "notice-board", "at": { "room": "gallowglass-headhouse", "dx": 2, "dy": 0 }, "facing": "south" },
+    { "id": "gallowglass-headhouse-vending-machine-2", "object": "vending-machine", "at": { "room": "gallowglass-headhouse", "dx": 8, "dy": 0 }, "facing": "south" },
+    { "id": "gallowglass-headhouse-security-camera-3", "object": "security-camera", "at": { "room": "gallowglass-headhouse", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "gallowglass-headhouse-street-bench-4", "object": "street-bench", "at": { "room": "gallowglass-headhouse", "dx": 2, "dy": 4 }, "facing": "north" },
+    { "id": "gallowglass-headhouse-table-5", "object": "table", "at": { "room": "gallowglass-headhouse", "dx": 9, "dy": 3 } },
+    { "id": "gallowglass-headhouse-chair-6", "object": "chair", "at": { "room": "gallowglass-headhouse", "dx": 9, "dy": 2 }, "facing": "south" },
+    { "id": "gallowglass-holding-secure-cell-0", "object": "secure-cell", "at": { "room": "gallowglass-holding", "dx": 1, "dy": 1 } },
+    { "id": "gallowglass-holding-secure-cell-1", "object": "secure-cell", "at": { "room": "gallowglass-holding", "dx": 4, "dy": 1 } },
+    { "id": "gallowglass-holding-secure-cell-2", "object": "secure-cell", "at": { "room": "gallowglass-holding", "dx": 7, "dy": 1 } },
+    { "id": "gallowglass-holding-keycard-reader-3", "object": "keycard-reader", "at": { "room": "gallowglass-holding", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "gallowglass-holding-security-camera-4", "object": "security-camera", "at": { "room": "gallowglass-holding", "dx": 0, "dy": 0 }, "facing": "south" },
+    { "id": "gallowglass-holding-lab-bench-5", "object": "lab-bench", "at": { "room": "gallowglass-holding", "dx": 10, "dy": 4 } },
+    { "id": "gallowglass-lab-lab-bench-0", "object": "lab-bench", "at": { "room": "gallowglass-lab", "dx": 2, "dy": 3 } },
+    { "id": "gallowglass-lab-lab-bench-1", "object": "lab-bench", "at": { "room": "gallowglass-lab", "dx": 3, "dy": 3 } },
+    { "id": "gallowglass-lab-lab-bench-2", "object": "lab-bench", "at": { "room": "gallowglass-lab", "dx": 4, "dy": 3 } },
+    { "id": "gallowglass-lab-lab-bench-3", "object": "lab-bench", "at": { "room": "gallowglass-lab", "dx": 5, "dy": 3 } },
+    { "id": "gallowglass-lab-shelving-4", "object": "shelving", "at": { "room": "gallowglass-lab", "dx": 9, "dy": 0 }, "facing": "south" },
+    { "id": "gallowglass-lab-shelving-5", "object": "shelving", "at": { "room": "gallowglass-lab", "dx": 10, "dy": 0 }, "facing": "south" },
+    { "id": "gallowglass-lab-shelving-6", "object": "shelving", "at": { "room": "gallowglass-lab", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "site-gallowglass-street-lamp-22", "object": "street-lamp", "at": { "room": "ground", "dx": 12, "dy": 55 } },
+    { "id": "site-gallowglass-street-lamp-23", "object": "street-lamp", "at": { "room": "ground", "dx": 23, "dy": 44 } },
+    { "id": "site-gallowglass-street-lamp-24", "object": "street-lamp", "at": { "room": "ground", "dx": 12, "dy": 31 } },
+    { "id": "site-gallowglass-street-lamp-25", "object": "street-lamp", "at": { "room": "ground", "dx": 16, "dy": 44 } },
+    { "id": "site-gallowglass-parked-car-26", "object": "parked-car", "at": { "room": "ground", "dx": 43, "dy": 29 } },
+    { "id": "site-gallowglass-parked-car-27", "object": "parked-car", "at": { "room": "ground", "dx": 33, "dy": 55 } },
+    { "id": "site-gallowglass-litter-bin-28", "object": "litter-bin", "at": { "room": "ground", "dx": 50, "dy": 54 } },
+    { "id": "site-gallowglass-bollard-29", "object": "bollard", "at": { "room": "ground", "dx": 58, "dy": 31 } },
+    { "id": "site-gallowglass-litter-bin-30", "object": "litter-bin", "at": { "room": "ground", "dx": 58, "dy": 14 } },
+    { "id": "site-gallowglass-bollard-31", "object": "bollard", "at": { "room": "ground", "dx": 45, "dy": 45 } },
+    { "id": "site-gallowglass-barricade-32", "object": "barricade", "at": { "room": "ground", "dx": 57, "dy": 49 } }
+  ],
+  "assemblies": [],
+  "npcs": [
+    { "id": "gallowglass-headhouse-agent-mercer", "npc": "agent-mercer", "at": { "room": "gallowglass-headhouse", "dx": 8, "dy": 5 } }
+  ],
+  "creatures": [
+    { "id": "gallowglass-holding-glass-hound-0", "creature": "glass-hound", "at": { "room": "gallowglass-holding", "dx": 2, "dy": 5 } },
+    { "id": "gallowglass-holding-ad-wraith-1", "creature": "ad-wraith", "at": { "room": "gallowglass-holding", "dx": 9, "dy": 6 } },
+    { "id": "gallowglass-lab-neon-moth-0", "creature": "neon-moth", "at": { "room": "gallowglass-lab", "dx": 8, "dy": 5 } },
+    { "id": "site-gallowglass-glass-hound-0", "creature": "glass-hound", "at": { "room": "ground", "dx": 52, "dy": 23 } },
+    { "id": "site-gallowglass-ad-wraith-1", "creature": "ad-wraith", "at": { "room": "ground", "dx": 3, "dy": 21 } },
+    { "id": "site-gallowglass-alley-crawler-2", "creature": "alley-crawler", "at": { "room": "ground", "dx": 30, "dy": 39 } },
+    { "id": "site-gallowglass-glass-hound-3", "creature": "glass-hound", "at": { "room": "ground", "dx": 3, "dy": 49 } },
+    { "id": "site-gallowglass-ad-wraith-4", "creature": "ad-wraith", "at": { "room": "ground", "dx": 27, "dy": 50 } },
+    { "id": "site-gallowglass-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 12, "dy": 5 } },
+    { "id": "site-gallowglass-glass-hound-6", "creature": "glass-hound", "at": { "room": "ground", "dx": 56, "dy": 20 } },
+    { "id": "site-gallowglass-ad-wraith-7", "creature": "ad-wraith", "at": { "room": "ground", "dx": 29, "dy": 60 } },
+    { "id": "site-gallowglass-alley-crawler-8", "creature": "alley-crawler", "at": { "room": "ground", "dx": 40, "dy": 57 } },
+    { "id": "site-gallowglass-glass-hound-9", "creature": "glass-hound", "at": { "room": "ground", "dx": 50, "dy": 29 } },
+    { "id": "site-gallowglass-ad-wraith-10", "creature": "ad-wraith", "at": { "room": "ground", "dx": 5, "dy": 28 } },
+    { "id": "site-gallowglass-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 50, "dy": 36 } },
+    { "id": "site-gallowglass-glass-hound-12", "creature": "glass-hound", "at": { "room": "ground", "dx": 43, "dy": 23 } },
+    { "id": "site-gallowglass-ad-wraith-13", "creature": "ad-wraith", "at": { "room": "ground", "dx": 32, "dy": 6 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [
+    { "id": "site-gallowglass-landmark", "prefab": "landmark-gallowglass-headframe", "at": { "room": "ground", "dx": 30, "dy": 33 }, "facing": "south" }
+  ],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 },
+    "gallowglass-headhouse": { "theme": "transit", "people": 0 },
+    "gallowglass-holding": { "theme": "containment", "people": 0 },
+    "gallowglass-lab": { "theme": "lab", "people": 0 }
+  },
+  "furnish": { "landmarks": ["ground"] }
+}

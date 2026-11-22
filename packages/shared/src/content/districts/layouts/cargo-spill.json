@@ -1,0 +1,60 @@
+{
+  "id": "cargo-spill",
+  "name": "Cargo Spill",
+  "subtitle": "The Span, the Wreckfield",
+  "tier": 9,
+  "region": "wreckfield",
+  "condition": "breached",
+  "ambience": { "darkness": 0.4, "tint": "#5a3a28", "fog": "#4a3424", "sky": "#8a6a50", "weather": ["dust", "embers"], "haze": 1.2 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 11, "row": 3 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Cargo Spill" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 33, "dy": 8 }
+  },
+  "objects": [
+    { "id": "cargo-spill-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 38 } },
+    { "id": "cargo-spill-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 50 } },
+    { "id": "cargo-spill-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 24, "dy": 45 } },
+    { "id": "cargo-spill-burn-barrel-3", "object": "burn-barrel", "at": { "room": "ground", "dx": 28, "dy": 3 } },
+    { "id": "cargo-spill-utility-pole-4", "object": "utility-pole", "at": { "room": "ground", "dx": 49, "dy": 35 } },
+    { "id": "cargo-spill-parked-car-5", "object": "parked-car", "at": { "room": "ground", "dx": 41, "dy": 8 } },
+    { "id": "cargo-spill-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 54, "dy": 26 } },
+    { "id": "cargo-spill-wreck-gate-leaf-0", "object": "wreck-gate-leaf", "at": { "room": "ground", "dx": 63, "dy": 44 }, "facing": "east" },
+    { "id": "cargo-spill-wreck-gate-leaf-1", "object": "wreck-gate-leaf", "at": { "room": "ground", "dx": 63, "dy": 45 }, "facing": "east" },
+    { "id": "cargo-spill-rivet-seam-11", "object": "rivet-seam", "at": { "room": "ground", "dx": 54, "dy": 5 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "cargo-spill-bilge-wraith-0", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 26, "dy": 13 } },
+    { "id": "cargo-spill-rustling-1", "creature": "rustling", "at": { "room": "ground", "dx": 4, "dy": 19 } },
+    { "id": "cargo-spill-hull-knocker-2", "creature": "hull-knocker", "at": { "room": "ground", "dx": 51, "dy": 54 } },
+    { "id": "cargo-spill-bilge-wraith-3", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 5, "dy": 8 } },
+    { "id": "cargo-spill-rustling-4", "creature": "rustling", "at": { "room": "ground", "dx": 12, "dy": 49 } },
+    { "id": "cargo-spill-hull-knocker-5", "creature": "hull-knocker", "at": { "room": "ground", "dx": 17, "dy": 24 } },
+    { "id": "cargo-spill-bilge-wraith-6", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 6, "dy": 13 } },
+    { "id": "cargo-spill-rustling-7", "creature": "rustling", "at": { "room": "ground", "dx": 20, "dy": 60 } },
+    { "id": "cargo-spill-hull-knocker-8", "creature": "hull-knocker", "at": { "room": "ground", "dx": 44, "dy": 57 } },
+    { "id": "cargo-spill-bilge-wraith-9", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 39, "dy": 59 } },
+    { "id": "cargo-spill-rustling-10", "creature": "rustling", "at": { "room": "ground", "dx": 53, "dy": 15 } },
+    { "id": "cargo-spill-hull-knocker-11", "creature": "hull-knocker", "at": { "room": "ground", "dx": 27, "dy": 26 } },
+    { "id": "cargo-spill-bilge-wraith-12", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 26, "dy": 56 } },
+    { "id": "cargo-spill-rustling-13", "creature": "rustling", "at": { "room": "ground", "dx": 48, "dy": 10 } },
+    { "id": "cargo-spill-hull-knocker-14", "creature": "hull-knocker", "at": { "room": "ground", "dx": 15, "dy": 4 } },
+    { "id": "cargo-spill-bilge-wraith-15", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 15, "dy": 37 } },
+    { "id": "cargo-spill-rustling-16", "creature": "rustling", "at": { "room": "ground", "dx": 24, "dy": 21 } },
+    { "id": "cargo-spill-hull-knocker-17", "creature": "hull-knocker", "at": { "room": "ground", "dx": 12, "dy": 21 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

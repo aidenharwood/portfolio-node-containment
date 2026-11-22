@@ -6,11 +6,11 @@ import { prefab, type Prefab } from '../prefabs/types.ts';
 
 type Prop = Pick<WorldObjectDefinition, 'id' | 'name' | 'examine' | 'model'> & Partial<Pick<WorldObjectDefinition, 'footprint' | 'light' | 'modelScale'>> & { readonly furnishing: FurnishingProfile };
 
-const prop = (definition: Prop): WorldObjectDefinition => ({ blocksMovement: true, interactions: [], ...definition });
+export const prop = (definition: Prop): WorldObjectDefinition => ({ blocksMovement: true, interactions: [], ...definition });
 
-const LANDMARK_HOMES = ['street', 'containment', 'industrial', 'freight', 'works'] as const;
+export const LANDMARK_HOMES = ['street', 'containment', 'industrial', 'freight', 'works'] as const;
 
-const gate = (id: string, name: string, examine: string, conditions: readonly Condition[], lockedText: string, openedText: string): WorldObjectDefinition => ({
+export const gate = (id: string, name: string, examine: string, conditions: readonly Condition[], lockedText: string, openedText: string): WorldObjectDefinition => ({
   id,
   name,
   examine,
@@ -102,7 +102,7 @@ export const LANDMARK_OBJECTS: readonly WorldObjectDefinition[] = [
   siteLift('lantern-lift', 'Lantern'),
 ];
 
-const landmark = (objectId: string): Prefab => prefab(`landmark-${objectId}`, ['focal'], [[0, 0, objectId]]);
+export const landmark = (objectId: string): Prefab => prefab(`landmark-${objectId}`, ['focal'], [[0, 0, objectId]]);
 
 export const LANDMARK_PREFABS: readonly Prefab[] = [
   landmark('yard-crane'),

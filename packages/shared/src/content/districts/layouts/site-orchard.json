@@ -1,0 +1,101 @@
+{
+  "id": "site-orchard",
+  "name": "Site Orchard",
+  "subtitle": "Harrow Terraces · SC-II · Strained",
+  "tier": 4,
+  "region": "harrow-terraces",
+  "condition": "overgrown",
+  "ambience": { "darkness": 0.2, "tint": "#e4dcb8", "fog": "#d8d0a8", "sky": "#b8d8c0", "weather": ["dust"], "haze": 0.8 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 4, "row": 0 },
+  "steps": [
+    { "kind": "building", "id": "orchard-gatehouse", "rect": { "x": 9, "y": 31, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "orchard-lab", "rect": { "x": 25, "y": 31, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "seed-vault", "rect": { "x": 41, "y": 31, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "orchard-rows", "rect": { "x": 9, "y": 43, "width": 30, "height": 13 }, "floor": "soil", "wall": "wall", "edge": "fence", "doors": [{ "side": "north", "width": 2 }] }
+  ],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Site Orchard" },
+    { "room": "orchard-gatehouse", "name": "Orchard Gatehouse", "safe": true },
+    { "room": "orchard-lab", "name": "Orchard Laboratory", "safe": true },
+    { "room": "seed-vault", "name": "Seed Vault", "safe": false },
+    { "room": "orchard-rows", "name": "The Mother Rows", "safe": false, "multiCombat": true }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 49, "dy": 27 }
+  },
+  "objects": [
+    { "id": "orchard-gatehouse-shelving-0", "object": "shelving", "at": { "room": "orchard-gatehouse", "dx": 1, "dy": 0 }, "facing": "south" },
+    { "id": "orchard-gatehouse-shelving-1", "object": "shelving", "at": { "room": "orchard-gatehouse", "dx": 2, "dy": 0 }, "facing": "south" },
+    { "id": "orchard-gatehouse-notice-board-2", "object": "notice-board", "at": { "room": "orchard-gatehouse", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "orchard-gatehouse-storage-locker-3", "object": "storage-locker", "at": { "room": "orchard-gatehouse", "dx": 9, "dy": 0 }, "facing": "south" },
+    { "id": "orchard-gatehouse-security-camera-4", "object": "security-camera", "at": { "room": "orchard-gatehouse", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "orchard-gatehouse-table-5", "object": "table", "at": { "room": "orchard-gatehouse", "dx": 3, "dy": 3 } },
+    { "id": "orchard-gatehouse-table-6", "object": "table", "at": { "room": "orchard-gatehouse", "dx": 4, "dy": 3 } },
+    { "id": "orchard-gatehouse-chair-7", "object": "chair", "at": { "room": "orchard-gatehouse", "dx": 3, "dy": 2 }, "facing": "south" },
+    { "id": "orchard-gatehouse-chair-8", "object": "chair", "at": { "room": "orchard-gatehouse", "dx": 4, "dy": 2 }, "facing": "south" },
+    { "id": "orchard-lab-lab-bench-0", "object": "lab-bench", "at": { "room": "orchard-lab", "dx": 2, "dy": 3 } },
+    { "id": "orchard-lab-lab-bench-1", "object": "lab-bench", "at": { "room": "orchard-lab", "dx": 3, "dy": 3 } },
+    { "id": "orchard-lab-lab-bench-2", "object": "lab-bench", "at": { "room": "orchard-lab", "dx": 4, "dy": 3 } },
+    { "id": "orchard-lab-lab-bench-3", "object": "lab-bench", "at": { "room": "orchard-lab", "dx": 5, "dy": 3 } },
+    { "id": "orchard-lab-shelving-4", "object": "shelving", "at": { "room": "orchard-lab", "dx": 9, "dy": 0 }, "facing": "south" },
+    { "id": "orchard-lab-shelving-5", "object": "shelving", "at": { "room": "orchard-lab", "dx": 10, "dy": 0 }, "facing": "south" },
+    { "id": "orchard-lab-shelving-6", "object": "shelving", "at": { "room": "orchard-lab", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "seed-vault-containment-cell-0", "object": "containment-cell", "at": { "room": "seed-vault", "dx": 1, "dy": 1 } },
+    { "id": "seed-vault-containment-cell-1", "object": "containment-cell", "at": { "room": "seed-vault", "dx": 4, "dy": 1 } },
+    { "id": "seed-vault-containment-cell-2", "object": "containment-cell", "at": { "room": "seed-vault", "dx": 7, "dy": 1 } },
+    { "id": "seed-vault-keycard-reader-3", "object": "keycard-reader", "at": { "room": "seed-vault", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "seed-vault-security-camera-4", "object": "security-camera", "at": { "room": "seed-vault", "dx": 0, "dy": 0 }, "facing": "south" },
+    { "id": "seed-vault-lab-bench-5", "object": "lab-bench", "at": { "room": "seed-vault", "dx": 10, "dy": 4 } },
+    { "id": "orchard-rows-street-lamp-0", "object": "street-lamp", "at": { "room": "orchard-rows", "dx": 1, "dy": 1 } },
+    { "id": "orchard-rows-street-lamp-1", "object": "street-lamp", "at": { "room": "orchard-rows", "dx": 28, "dy": 11 } },
+    { "id": "orchard-rows-flood-mast-2", "object": "flood-mast", "at": { "room": "orchard-rows", "dx": 28, "dy": 1 } },
+    { "id": "orchard-rows-barricade-3", "object": "barricade", "at": { "room": "orchard-rows", "dx": 19, "dy": 10 } },
+    { "id": "orchard-rows-barricade-4", "object": "barricade", "at": { "room": "orchard-rows", "dx": 3, "dy": 10 } },
+    { "id": "site-orchard-street-lamp-27", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 54 } },
+    { "id": "site-orchard-street-lamp-28", "object": "street-lamp", "at": { "room": "ground", "dx": 60, "dy": 57 } },
+    { "id": "site-orchard-street-lamp-29", "object": "street-lamp", "at": { "room": "ground", "dx": 56, "dy": 33 } },
+    { "id": "site-orchard-street-lamp-30", "object": "street-lamp", "at": { "room": "ground", "dx": 55, "dy": 44 } },
+    { "id": "site-orchard-washing-line-31", "object": "washing-line", "at": { "room": "ground", "dx": 56, "dy": 18 } },
+    { "id": "site-orchard-barricade-32", "object": "barricade", "at": { "room": "ground", "dx": 49, "dy": 21 } },
+    { "id": "site-orchard-utility-pole-33", "object": "utility-pole", "at": { "room": "ground", "dx": 3, "dy": 60 } },
+    { "id": "site-orchard-utility-pole-34", "object": "utility-pole", "at": { "room": "ground", "dx": 5, "dy": 35 } },
+    { "id": "site-orchard-barricade-35", "object": "barricade", "at": { "room": "ground", "dx": 52, "dy": 59 } },
+    { "id": "site-orchard-washing-line-36", "object": "washing-line", "at": { "room": "ground", "dx": 55, "dy": 51 } },
+    { "id": "site-orchard-barricade-37", "object": "barricade", "at": { "room": "ground", "dx": 17, "dy": 27 } },
+    { "id": "site-orchard-lock-gear-38", "object": "lock-gear", "at": { "room": "ground", "dx": 4, "dy": 29 } },
+    { "id": "site-orchard-reed-bed-39", "object": "reed-bed", "at": { "room": "ground", "dx": 5, "dy": 51 } }
+  ],
+  "assemblies": [],
+  "npcs": [
+    { "id": "orchard-gatehouse-corporal-fenn", "npc": "corporal-fenn", "at": { "room": "orchard-gatehouse", "dx": 8, "dy": 3 } },
+    { "id": "orchard-lab-dr-kessel", "npc": "dr-kessel", "at": { "room": "orchard-lab", "dx": 7, "dy": 2 } }
+  ],
+  "creatures": [
+    { "id": "seed-vault-scarecoat-0", "creature": "scarecoat", "at": { "room": "seed-vault", "dx": 2, "dy": 5 } },
+    { "id": "seed-vault-seed-mite-1", "creature": "seed-mite", "at": { "room": "seed-vault", "dx": 9, "dy": 6 } },
+    { "id": "orchard-rows-orchard-keeper-0", "creature": "orchard-keeper", "at": { "room": "orchard-rows", "dx": 5, "dy": 4 } },
+    { "id": "orchard-rows-seed-mite-1", "creature": "seed-mite", "at": { "room": "orchard-rows", "dx": 11, "dy": 4 } },
+    { "id": "site-orchard-scarecoat-0", "creature": "scarecoat", "at": { "room": "ground", "dx": 56, "dy": 26 } },
+    { "id": "site-orchard-seed-mite-1", "creature": "seed-mite", "at": { "room": "ground", "dx": 6, "dy": 42 } },
+    { "id": "site-orchard-scarecoat-2", "creature": "scarecoat", "at": { "room": "ground", "dx": 10, "dy": 27 } },
+    { "id": "site-orchard-seed-mite-3", "creature": "seed-mite", "at": { "room": "ground", "dx": 42, "dy": 28 } },
+    { "id": "site-orchard-scarecoat-4", "creature": "scarecoat", "at": { "room": "ground", "dx": 30, "dy": 27 } },
+    { "id": "site-orchard-seed-mite-5", "creature": "seed-mite", "at": { "room": "ground", "dx": 33, "dy": 22 } },
+    { "id": "site-orchard-scarecoat-6", "creature": "scarecoat", "at": { "room": "ground", "dx": 39, "dy": 20 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [
+    { "id": "site-orchard-landmark", "prefab": "landmark-orchard-gantry", "at": { "room": "ground", "dx": 45, "dy": 46 }, "facing": "south" }
+  ],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 },
+    "orchard-gatehouse": { "theme": "office", "people": 0 },
+    "orchard-lab": { "theme": "lab", "people": 0 },
+    "seed-vault": { "theme": "containment", "people": 0 },
+    "orchard-rows": { "theme": "street", "people": 0 }
+  },
+  "furnish": { "landmarks": ["ground"] }
+}

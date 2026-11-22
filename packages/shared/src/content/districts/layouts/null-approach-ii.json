@@ -1,0 +1,49 @@
+{
+  "id": "null-approach-ii",
+  "name": "Null Approach II",
+  "subtitle": "The Span, the Spindle",
+  "tier": 13,
+  "region": "the-spindle",
+  "condition": "alien",
+  "ambience": { "darkness": 0.62, "tint": "#1a2a3a", "fog": "#0c1824", "sky": "#1a3048", "weather": ["sparks"], "haze": 1.4 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 15, "row": 5 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Null Approach II" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 31, "dy": 7 }
+  },
+  "objects": [
+    { "id": "null-approach-ii-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 13 } },
+    { "id": "null-approach-ii-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 14 } },
+    { "id": "null-approach-ii-steam-vent-2", "object": "steam-vent", "at": { "room": "ground", "dx": 25, "dy": 18 } },
+    { "id": "null-approach-ii-barricade-3", "object": "barricade", "at": { "room": "ground", "dx": 41, "dy": 5 } },
+    { "id": "null-approach-ii-checkpoint-barrier-4", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 46, "dy": 39 } },
+    { "id": "null-approach-ii-precursor-pylon-5", "object": "precursor-pylon", "at": { "room": "ground", "dx": 6, "dy": 43 } },
+    { "id": "null-approach-ii-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 18, "dy": 25 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "null-approach-ii-null-stalker-0", "creature": "null-stalker", "at": { "room": "ground", "dx": 6, "dy": 29 } },
+    { "id": "null-approach-ii-null-echo-1", "creature": "null-echo", "at": { "room": "ground", "dx": 27, "dy": 38 } },
+    { "id": "null-approach-ii-cell-breaker-2", "creature": "cell-breaker", "at": { "room": "ground", "dx": 33, "dy": 25 } },
+    { "id": "null-approach-ii-null-stalker-3", "creature": "null-stalker", "at": { "room": "ground", "dx": 45, "dy": 26 } },
+    { "id": "null-approach-ii-null-echo-4", "creature": "null-echo", "at": { "room": "ground", "dx": 33, "dy": 32 } },
+    { "id": "null-approach-ii-cell-breaker-5", "creature": "cell-breaker", "at": { "room": "ground", "dx": 34, "dy": 40 } },
+    { "id": "null-approach-ii-null-stalker-6", "creature": "null-stalker", "at": { "room": "ground", "dx": 17, "dy": 41 } },
+    { "id": "null-approach-ii-null-echo-7", "creature": "null-echo", "at": { "room": "ground", "dx": 7, "dy": 8 } },
+    { "id": "null-approach-ii-cell-breaker-8", "creature": "cell-breaker", "at": { "room": "ground", "dx": 44, "dy": 31 } },
+    { "id": "null-approach-ii-null-stalker-9", "creature": "null-stalker", "at": { "room": "ground", "dx": 12, "dy": 5 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

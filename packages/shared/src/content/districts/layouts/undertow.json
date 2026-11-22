@@ -1,0 +1,58 @@
+{
+  "id": "undertow",
+  "name": "Undertow",
+  "subtitle": "The Span, Halcyon",
+  "tier": 6,
+  "region": "halcyon",
+  "condition": "worn",
+  "ambience": { "darkness": 0.58, "tint": "#3a2448", "fog": "#1e1430", "sky": "#2a1838", "weather": ["rain"], "haze": 1.3 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 6, "row": 1 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Undertow" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 56, "dy": 55 }
+  },
+  "objects": [
+    { "id": "undertow-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 18 } },
+    { "id": "undertow-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 57, "dy": 14 } },
+    { "id": "undertow-bollard-2", "object": "bollard", "at": { "room": "ground", "dx": 45, "dy": 7 } },
+    { "id": "undertow-holo-billboard-3", "object": "holo-billboard", "at": { "room": "ground", "dx": 31, "dy": 15 } },
+    { "id": "undertow-utility-pole-4", "object": "utility-pole", "at": { "room": "ground", "dx": 47, "dy": 57 } },
+    { "id": "undertow-food-stall-5", "object": "food-stall", "at": { "room": "ground", "dx": 44, "dy": 29 } },
+    { "id": "undertow-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 52, "dy": 29 } },
+    { "id": "undertow-culture-bench-7", "object": "culture-bench", "at": { "room": "ground", "dx": 54, "dy": 43 } },
+    { "id": "undertow-amber-trace-8", "object": "amber-trace", "at": { "room": "ground", "dx": 26, "dy": 44 } },
+    { "id": "undertow-scrap-heap-9", "object": "scrap-heap", "at": { "room": "ground", "dx": 6, "dy": 18 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "undertow-neon-moth-0", "creature": "neon-moth", "at": { "room": "ground", "dx": 58, "dy": 35 } },
+    { "id": "undertow-alley-crawler-1", "creature": "alley-crawler", "at": { "room": "ground", "dx": 49, "dy": 12 } },
+    { "id": "undertow-neon-moth-2", "creature": "neon-moth", "at": { "room": "ground", "dx": 17, "dy": 43 } },
+    { "id": "undertow-alley-crawler-3", "creature": "alley-crawler", "at": { "room": "ground", "dx": 45, "dy": 49 } },
+    { "id": "undertow-neon-moth-4", "creature": "neon-moth", "at": { "room": "ground", "dx": 35, "dy": 48 } },
+    { "id": "undertow-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 15, "dy": 37 } },
+    { "id": "undertow-neon-moth-6", "creature": "neon-moth", "at": { "room": "ground", "dx": 35, "dy": 24 } },
+    { "id": "undertow-alley-crawler-7", "creature": "alley-crawler", "at": { "room": "ground", "dx": 31, "dy": 60 } },
+    { "id": "undertow-neon-moth-8", "creature": "neon-moth", "at": { "room": "ground", "dx": 27, "dy": 10 } },
+    { "id": "undertow-alley-crawler-9", "creature": "alley-crawler", "at": { "room": "ground", "dx": 15, "dy": 25 } },
+    { "id": "undertow-neon-moth-10", "creature": "neon-moth", "at": { "room": "ground", "dx": 50, "dy": 35 } },
+    { "id": "undertow-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 13, "dy": 60 } },
+    { "id": "undertow-neon-moth-12", "creature": "neon-moth", "at": { "room": "ground", "dx": 5, "dy": 54 } },
+    { "id": "undertow-alley-crawler-13", "creature": "alley-crawler", "at": { "room": "ground", "dx": 52, "dy": 50 } },
+    { "id": "undertow-neon-moth-14", "creature": "neon-moth", "at": { "room": "ground", "dx": 8, "dy": 7 } },
+    { "id": "undertow-alley-crawler-15", "creature": "alley-crawler", "at": { "room": "ground", "dx": 17, "dy": 30 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

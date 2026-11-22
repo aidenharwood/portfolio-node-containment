@@ -1,292 +1,307 @@
-import alderCarr from './alder-carr.json' with { type: 'json' };
-import ashFells from './ash-fells.json' with { type: 'json' };
-import ashFellsEdge from './ash-fells-edge.json' with { type: 'json' };
-import ashMargin from './ash-margin.json' with { type: 'json' };
-import ashenCove from './ashen-cove.json' with { type: 'json' };
-import fittingOutPiers from './fitting-out-piers.json' with { type: 'json' };
-import beaconBend from './beacon-bend.json' with { type: 'json' };
-import belgraveTerrace from './belgrave-terrace.json' with { type: 'json' };
-import bellows from './bellows.json' with { type: 'json' };
-import belvedere from './belvedere.json' with { type: 'json' };
-import bindweedRow from './bindweed-row.json' with { type: 'json' };
-import blightShore from './blight-shore.json' with { type: 'json' };
-import brambleEstate from './bramble-estate.json' with { type: 'json' };
-import brinehouse from './brinehouse.json' with { type: 'json' };
-import burntShore from './burnt-shore.json' with { type: 'json' };
-import cairnMoor from './cairn-moor.json' with { type: 'json' };
-import canalBasin from './canal-basin.json' with { type: 'json' };
-import cathedralClose from './cathedral-close.json' with { type: 'json' };
-import causewayEnd from './causeway-end.json' with { type: 'json' };
-import charcoalClearing from './charcoal-clearing.json' with { type: 'json' };
-import cinderWaste from './cinder-waste.json' with { type: 'json' };
-import cliffGardens from './cliff-gardens.json' with { type: 'json' };
-import cordonGate from './cordon-gate.json' with { type: 'json' };
-import craterSouth from './crater-south.json' with { type: 'json' };
-import creekHead from './creek-head.json' with { type: 'json' };
-import creekMoor from './creek-moor.json' with { type: 'json' };
-import creekMud from './creek-mud.json' with { type: 'json' };
-import otterholt from './otterholt.json' with { type: 'json' };
-import crescentWalk from './crescent-walk.json' with { type: 'json' };
-import deadOrchard from './dead-orchard.json' with { type: 'json' };
-import deepWood from './deep-wood.json' with { type: 'json' };
-import deltaMouth from './delta-mouth.json' with { type: 'json' };
-import deltaShoals from './delta-shoals.json' with { type: 'json' };
-import driftwoodCove from './driftwood-cove.json' with { type: 'json' };
-import droversRise from './drovers-rise.json' with { type: 'json' };
-import dryDockFour from './dry-dock-four.json' with { type: 'json' };
-import eastWall from './east-wall.json' with { type: 'json' };
-import eelWeirs from './eel-weirs.json' with { type: 'json' };
-import elderBank from './elder-bank.json' with { type: 'json' };
-import fallenTerraces from './fallen-terraces.json' with { type: 'json' };
-import ferrySteps from './ferry-steps.json' with { type: 'json' };
-import floodgateMoor from './floodgate-moor.json' with { type: 'json' };
-import floodgateStreet from './floodgate-street.json' with { type: 'json' };
-import furnaceRow from './furnace-row.json' with { type: 'json' };
-import gallowsDrop from './gallows-drop.json' with { type: 'json' };
-import gallowsGreen from './gallows-green.json' with { type: 'json' };
-import gallowsTop from './gallows-top.json' with { type: 'json' };
-import gatehouseYard from './gatehouse-yard.json' with { type: 'json' };
-import gibbetMoor from './gibbet-moor.json' with { type: 'json' };
-import glassMoor from './glass-moor.json' with { type: 'json' };
-import gorgeHead from './gorge-head.json' with { type: 'json' };
-import gorgeTop from './gorge-top.json' with { type: 'json' };
-import gravingDocks from './graving-docks.json' with { type: 'json' };
-import gullScar from './gull-scar.json' with { type: 'json' };
-import hamletLane from './hamlet-lane.json' with { type: 'json' };
-import harbourSteps from './harbour-steps.json' with { type: 'json' };
-import heatherTop from './heather-top.json' with { type: 'json' };
-import hollinWood from './hollin-wood.json' with { type: 'json' };
-import inclineFoot from './incline-foot.json' with { type: 'json' };
-import ivyCrescent from './ivy-crescent.json' with { type: 'json' };
-import keepersHamlet from './keepers-hamlet.json' with { type: 'json' };
-import knotweedPark from './knotweed-park.json' with { type: 'json' };
-import laundryGardens from './laundry-gardens.json' with { type: 'json' };
-import ledgeFoot from './ledge-foot.json' with { type: 'json' };
-import ledgeGate from './ledge-gate.json' with { type: 'json' };
-import ledgeTop from './ledge-top.json' with { type: 'json' };
-import longLedge from './long-ledge.json' with { type: 'json' };
-import longMoor from './long-moor.json' with { type: 'json' };
-import longStrand from './long-strand.json' with { type: 'json' };
-import lowerReach from './lower-reach.json' with { type: 'json' };
-import marketRow from './market-row.json' with { type: 'json' };
-import meridianIntake from './meridian-intake.json' with { type: 'json' };
-import meridianSecure from './meridian-secure.json' with { type: 'json' };
-import meridianVault from './meridian-vault.json' with { type: 'json' };
-import millRace from './mill-race.json' with { type: 'json' };
-import moatBank from './moat-bank.json' with { type: 'json' };
-import moatMire from './moat-mire.json' with { type: 'json' };
-import moorEdge from './moor-edge.json' with { type: 'json' };
-import moorGate from './moor-gate.json' with { type: 'json' };
-import moorRoad from './moor-road.json' with { type: 'json' };
-import mountainFoot from './mountain-foot.json' with { type: 'json' };
-import mudflats from './mudflats.json' with { type: 'json' };
-import northParade from './north-parade.json' with { type: 'json' };
-import oakhanger from './oakhanger.json' with { type: 'json' };
-import observatoryGreen from './observatory-green.json' with { type: 'json' };
-import peatHags from './peat-hags.json' with { type: 'json' };
-import pineDunes from './pine-dunes.json' with { type: 'json' };
-import railhead from './railhead.json' with { type: 'json' };
-import railwayCutting from './railway-cutting.json' with { type: 'json' };
-import reedChannels from './reed-channels.json' with { type: 'json' };
-import ridgeFoot from './ridge-foot.json' with { type: 'json' };
-import ridgeShadow from './ridge-shadow.json' with { type: 'json' };
-import westScarp from './west-scarp.json' with { type: 'json' };
-import rimCamp from './rim-camp.json' with { type: 'json' };
-import rimRoad from './rim-road.json' with { type: 'json' };
-import riversideAllotments from './riverside-allotments.json' with { type: 'json' };
-import rustFlats from './rust-flats.json' with { type: 'json' };
-import saltcote from './saltcote.json' with { type: 'json' };
-import saltmoor from './saltmoor.json' with { type: 'json' };
-import sandbar from './sandbar.json' with { type: 'json' };
-import scarFields from './scar-fields.json' with { type: 'json' };
-import scrapyards from './scrapyards.json' with { type: 'json' };
-import seaRoad from './sea-road.json' with { type: 'json' };
-import seawallPath from './seawall-path.json' with { type: 'json' };
-import shellBeach from './shell-beach.json' with { type: 'json' };
-import shipwrightsHard from './shipwrights-hard.json' with { type: 'json' };
-import shipyardFringe from './shipyard-fringe.json' with { type: 'json' };
-import siteFathom from './site-fathom.json' with { type: 'json' };
-import slagGate from './slag-gate.json' with { type: 'json' };
-import slipwayRow from './slipway-row.json' with { type: 'json' };
-import spoilHeaps from './spoil-heaps.json' with { type: 'json' };
-import spurEnd from './spur-end.json' with { type: 'json' };
-import spurRoad from './spur-road.json' with { type: 'json' };
-import stiltholm from './stiltholm.json' with { type: 'json' };
-import sunkLane from './sunk-lane.json' with { type: 'json' };
-import tenements from './tenements.json' with { type: 'json' };
-import terminusSquare from './terminus-square.json' with { type: 'json' };
-import theCrater from './the-crater.json' with { type: 'json' };
-import theCut from './the-cut.json' with { type: 'json' };
-import theFalls from './the-falls.json' with { type: 'json' };
-import theLantern from './the-lantern.json' with { type: 'json' };
-import theLedge from './the-ledge.json' with { type: 'json' };
-import theRoost from './the-roost.json' with { type: 'json' };
-import theRopery from './the-ropery.json' with { type: 'json' };
-import theSores from './the-sores.json' with { type: 'json' };
-import theSpire from './the-spire.json' with { type: 'json' };
-import theSpit from './the-spit.json' with { type: 'json' };
-import theTowpath from './the-towpath.json' with { type: 'json' };
-import tideStation from './tide-station.json' with { type: 'json' };
-import upperStation from './upper-station.json' with { type: 'json' };
-import uptown from './uptown.json' with { type: 'json' };
-import valleyRoad from './valley-road.json' with { type: 'json' };
-import highCommon from './high-common.json' with { type: 'json' };
-import wallDitch from './wall-ditch.json' with { type: 'json' };
-import wallside from './wallside.json' with { type: 'json' };
-import watchRoad from './watch-road.json' with { type: 'json' };
-import waterGate from './water-gate.json' with { type: 'json' };
-import weedLane from './weed-lane.json' with { type: 'json' };
-import westGateRoad from './west-gate-road.json' with { type: 'json' };
-import westgate from './westgate.json' with { type: 'json' };
-import wireFields from './wire-fields.json' with { type: 'json' };
-import withyBeds from './withy-beds.json' with { type: 'json' };
-import kingfisherBank from './kingfisher-bank.json' with { type: 'json' };
-import woodsEnd from './woods-end.json' with { type: 'json' };
 import type { DistrictId } from '../../../ids.ts';
+import antispinwardWall from './antispinward-wall.json' with { type: 'json' };
+import kestrelLawns from './kestrel-lawns.json' with { type: 'json' };
+import drillField from './drill-field.json' with { type: 'json' };
+import topTerrace from './top-terrace.json' with { type: 'json' };
+import siteOrchard from './site-orchard.json' with { type: 'json' };
+import wheatSteps from './wheat-steps.json' with { type: 'json' };
+import arcadeMile from './arcade-mile.json' with { type: 'json' };
+import combineBlocks from './combine-blocks.json' with { type: 'json' };
+import theOverpass from './the-overpass.json' with { type: 'json' };
+import hullShadow from './hull-shadow.json' with { type: 'json' };
+import theBow from './the-bow.json' with { type: 'json' };
+import scrapSea from './scrap-sea.json' with { type: 'json' };
+import glassFlats from './glass-flats.json' with { type: 'json' };
+import pylonWalk from './pylon-walk.json' with { type: 'json' };
+import nullApproach from './null-approach.json' with { type: 'json' };
+import coolantFlats from './coolant-flats.json' with { type: 'json' };
+import signalHill from './signal-hill.json' with { type: 'json' };
+import kestrelLake from './kestrel-lake.json' with { type: 'json' };
+import rangeRoad from './range-road.json' with { type: 'json' };
+import sluiceRow from './sluice-row.json' with { type: 'json' };
+import windpumpRise from './windpump-rise.json' with { type: 'json' };
+import barleySteps from './barley-steps.json' with { type: 'json' };
+import undertow from './undertow.json' with { type: 'json' };
+import canalWard from './canal-ward.json' with { type: 'json' };
+import theStacks from './the-stacks.json' with { type: 'json' };
+import bilgeFlats from './bilge-flats.json' with { type: 'json' };
+import keelRoad from './keel-road.json' with { type: 'json' };
+import engineField from './engine-field.json' with { type: 'json' };
+import hymnRoad from './hymn-road.json' with { type: 'json' };
+import vesperApproach from './vesper-approach.json' with { type: 'json' };
+import needleFoot from './needle-foot.json' with { type: 'json' };
+import grateFields from './grate-fields.json' with { type: 'json' };
+import seamWood from './seam-wood.json' with { type: 'json' };
+import siteKestrel from './site-kestrel.json' with { type: 'json' };
+import rimMeadow from './rim-meadow.json' with { type: 'json' };
+import lowFurrows from './low-furrows.json' with { type: 'json' };
+import seedFields from './seed-fields.json' with { type: 'json' };
+import titheBarns from './tithe-barns.json' with { type: 'json' };
+import spirePlaza from './spire-plaza.json' with { type: 'json' };
+import ninthStreet from './ninth-street.json' with { type: 'json' };
+import siteGallowglass from './site-gallowglass.json' with { type: 'json' };
+import rivetDunes from './rivet-dunes.json' with { type: 'json' };
+import slagPlain from './slag-plain.json' with { type: 'json' };
+import tallowApproach from './tallow-approach.json' with { type: 'json' };
+import theChoir from './the-choir.json' with { type: 'json' };
+import prismFields from './prism-fields.json' with { type: 'json' };
+import finalSeam from './final-seam.json' with { type: 'json' };
+import siteNull from './site-null.json' with { type: 'json' };
+import recruitLines from './recruit-lines.json' with { type: 'json' };
+import kestrelCommons from './kestrel-commons.json' with { type: 'json' };
+import whiteGate from './white-gate.json' with { type: 'json' };
+import droversWay from './drovers-way.json' with { type: 'json' };
+import harrowgate from './harrowgate.json' with { type: 'json' };
+import millSteps from './mill-steps.json' with { type: 'json' };
+import glasshouseAlley from './glasshouse-alley.json' with { type: 'json' };
+import neonRow from './neon-row.json' with { type: 'json' };
+import holoGardens from './holo-gardens.json' with { type: 'json' };
+import rustwater from './rustwater.json' with { type: 'json' };
+import reactorScar from './reactor-scar.json' with { type: 'json' };
+import cargoSpill from './cargo-spill.json' with { type: 'json' };
+import silentRise from './silent-rise.json' with { type: 'json' };
+import shardMoor from './shard-moor.json' with { type: 'json' };
+import lastPost from './last-post.json' with { type: 'json' };
+import spindleRim from './spindle-rim.json' with { type: 'json' };
+import paradeGround from './parade-ground.json' with { type: 'json' };
+import lowerLawns from './lower-lawns.json' with { type: 'json' };
+import firingLine from './firing-line.json' with { type: 'json' };
+import harrowDowns from './harrow-downs.json' with { type: 'json' };
+import harrowLanes from './harrow-lanes.json' with { type: 'json' };
+import brambleSteps from './bramble-steps.json' with { type: 'json' };
+import sprawlNorth from './sprawl-north.json' with { type: 'json' };
+import sprawlSouth from './sprawl-south.json' with { type: 'json' };
+import brightside from './brightside.json' with { type: 'json' };
+import hatchFields from './hatch-fields.json' with { type: 'json' };
+import wreckRim from './wreck-rim.json' with { type: 'json' };
+import siteTallow from './site-tallow.json' with { type: 'json' };
+import glassRim from './glass-rim.json' with { type: 'json' };
+import siteVesper from './site-vesper.json' with { type: 'json' };
+import platingRoad from './plating-road.json' with { type: 'json' };
+import theTerminus from './the-terminus.json' with { type: 'json' };
+import quietField from './quiet-field.json' with { type: 'json' };
+import lakeside from './lakeside.json' with { type: 'json' };
+import kestrelRim from './kestrel-rim.json' with { type: 'json' };
+import haycut from './haycut.json' with { type: 'json' };
+import spillMeadows from './spill-meadows.json' with { type: 'json' };
+import fallowRows from './fallow-rows.json' with { type: 'json' };
+import gallowglassFence from './gallowglass-fence.json' with { type: 'json' };
+import signalStreet from './signal-street.json' with { type: 'json' };
+import nightMarket from './night-market.json' with { type: 'json' };
+import gantryFlats from './gantry-flats.json' with { type: 'json' };
+import sternward from './sternward.json' with { type: 'json' };
+import hullShadowIi from './hull-shadow-ii.json' with { type: 'json' };
+import theLens from './the-lens.json' with { type: 'json' };
+import choirRoad from './choir-road.json' with { type: 'json' };
+import lastLight from './last-light.json' with { type: 'json' };
+import nullApproachIi from './null-approach-ii.json' with { type: 'json' };
+import kestrelIntake from './kestrel-intake.json' with { type: 'json' };
+import gallowglassUndercity from './gallowglass-undercity.json' with { type: 'json' };
+import nullBelow from './null-below.json' with { type: 'json' };
 
 export const LAYOUT_SOURCES: Readonly<Record<DistrictId, unknown>> = {
-  'alder-carr': alderCarr,
-  'ash-fells': ashFells,
-  'ash-fells-edge': ashFellsEdge,
-  'ash-margin': ashMargin,
-  'ashen-cove': ashenCove,
-  'fitting-out-piers': fittingOutPiers,
-  'beacon-bend': beaconBend,
-  'belgrave-terrace': belgraveTerrace,
-  bellows,
-  belvedere,
-  'bindweed-row': bindweedRow,
-  'blight-shore': blightShore,
-  'bramble-estate': brambleEstate,
-  brinehouse,
-  'burnt-shore': burntShore,
-  'cairn-moor': cairnMoor,
-  'canal-basin': canalBasin,
-  'cathedral-close': cathedralClose,
-  'causeway-end': causewayEnd,
-  'charcoal-clearing': charcoalClearing,
-  'cinder-waste': cinderWaste,
-  'cliff-gardens': cliffGardens,
-  'cordon-gate': cordonGate,
-  'crater-south': craterSouth,
-  'creek-head': creekHead,
-  'creek-moor': creekMoor,
-  'creek-mud': creekMud,
-  otterholt,
-  'crescent-walk': crescentWalk,
-  'dead-orchard': deadOrchard,
-  'deep-wood': deepWood,
-  'delta-mouth': deltaMouth,
-  'delta-shoals': deltaShoals,
-  'driftwood-cove': driftwoodCove,
-  'drovers-rise': droversRise,
-  'dry-dock-four': dryDockFour,
-  'east-wall': eastWall,
-  'eel-weirs': eelWeirs,
-  'elder-bank': elderBank,
-  'fallen-terraces': fallenTerraces,
-  'ferry-steps': ferrySteps,
-  'floodgate-moor': floodgateMoor,
-  'floodgate-street': floodgateStreet,
-  'furnace-row': furnaceRow,
-  'gallows-drop': gallowsDrop,
-  'gallows-green': gallowsGreen,
-  'gallows-top': gallowsTop,
-  'gatehouse-yard': gatehouseYard,
-  'gibbet-moor': gibbetMoor,
-  'glass-moor': glassMoor,
-  'gorge-head': gorgeHead,
-  'gorge-top': gorgeTop,
-  'graving-docks': gravingDocks,
-  'gull-scar': gullScar,
-  'hamlet-lane': hamletLane,
-  'harbour-steps': harbourSteps,
-  'heather-top': heatherTop,
-  'hollin-wood': hollinWood,
-  'incline-foot': inclineFoot,
-  'ivy-crescent': ivyCrescent,
-  'keepers-hamlet': keepersHamlet,
-  'knotweed-park': knotweedPark,
-  'laundry-gardens': laundryGardens,
-  'ledge-foot': ledgeFoot,
-  'ledge-gate': ledgeGate,
-  'ledge-top': ledgeTop,
-  'long-ledge': longLedge,
-  'long-moor': longMoor,
-  'long-strand': longStrand,
-  'lower-reach': lowerReach,
-  'market-row': marketRow,
-  'meridian-intake': meridianIntake,
-  'meridian-secure': meridianSecure,
-  'meridian-vault': meridianVault,
-  'mill-race': millRace,
-  'moat-bank': moatBank,
-  'moat-mire': moatMire,
-  'moor-edge': moorEdge,
-  'moor-gate': moorGate,
-  'moor-road': moorRoad,
-  'mountain-foot': mountainFoot,
-  mudflats,
-  'north-parade': northParade,
-  oakhanger,
-  'observatory-green': observatoryGreen,
-  'peat-hags': peatHags,
-  'pine-dunes': pineDunes,
-  railhead,
-  'railway-cutting': railwayCutting,
-  'reed-channels': reedChannels,
-  'ridge-foot': ridgeFoot,
-  'ridge-shadow': ridgeShadow,
-  'west-scarp': westScarp,
-  'rim-camp': rimCamp,
-  'rim-road': rimRoad,
-  'riverside-allotments': riversideAllotments,
-  'rust-flats': rustFlats,
-  saltcote,
-  saltmoor,
-  sandbar,
-  'scar-fields': scarFields,
-  scrapyards,
-  'sea-road': seaRoad,
-  'seawall-path': seawallPath,
-  'shell-beach': shellBeach,
-  'shipwrights-hard': shipwrightsHard,
-  'shipyard-fringe': shipyardFringe,
-  'site-fathom': siteFathom,
-  'slag-gate': slagGate,
-  'slipway-row': slipwayRow,
-  'spoil-heaps': spoilHeaps,
-  'spur-end': spurEnd,
-  'spur-road': spurRoad,
-  stiltholm,
-  'sunk-lane': sunkLane,
-  tenements,
-  'terminus-square': terminusSquare,
-  'the-crater': theCrater,
-  'the-cut': theCut,
-  'the-falls': theFalls,
-  'the-lantern': theLantern,
-  'the-ledge': theLedge,
-  'the-roost': theRoost,
-  'the-ropery': theRopery,
-  'the-sores': theSores,
-  'the-spire': theSpire,
-  'the-spit': theSpit,
-  'the-towpath': theTowpath,
-  'tide-station': tideStation,
-  'upper-station': upperStation,
-  uptown,
-  'valley-road': valleyRoad,
-  'high-common': highCommon,
-  'wall-ditch': wallDitch,
-  wallside,
-  'watch-road': watchRoad,
-  'water-gate': waterGate,
-  'weed-lane': weedLane,
-  'west-gate-road': westGateRoad,
-  westgate,
-  'wire-fields': wireFields,
-  'withy-beds': withyBeds,
-  'kingfisher-bank': kingfisherBank,
-  'woods-end': woodsEnd,
+  'antispinward-wall': antispinwardWall,
+  'kestrel-lawns': kestrelLawns,
+  'drill-field': drillField,
+  'top-terrace': topTerrace,
+  'site-orchard': siteOrchard,
+  'wheat-steps': wheatSteps,
+  'arcade-mile': arcadeMile,
+  'combine-blocks': combineBlocks,
+  'the-overpass': theOverpass,
+  'hull-shadow': hullShadow,
+  'the-bow': theBow,
+  'scrap-sea': scrapSea,
+  'glass-flats': glassFlats,
+  'pylon-walk': pylonWalk,
+  'null-approach': nullApproach,
+  'coolant-flats': coolantFlats,
+  'signal-hill': signalHill,
+  'kestrel-lake': kestrelLake,
+  'range-road': rangeRoad,
+  'sluice-row': sluiceRow,
+  'windpump-rise': windpumpRise,
+  'barley-steps': barleySteps,
+  'undertow': undertow,
+  'canal-ward': canalWard,
+  'the-stacks': theStacks,
+  'bilge-flats': bilgeFlats,
+  'keel-road': keelRoad,
+  'engine-field': engineField,
+  'hymn-road': hymnRoad,
+  'vesper-approach': vesperApproach,
+  'needle-foot': needleFoot,
+  'grate-fields': grateFields,
+  'seam-wood': seamWood,
+  'site-kestrel': siteKestrel,
+  'rim-meadow': rimMeadow,
+  'low-furrows': lowFurrows,
+  'seed-fields': seedFields,
+  'tithe-barns': titheBarns,
+  'spire-plaza': spirePlaza,
+  'ninth-street': ninthStreet,
+  'site-gallowglass': siteGallowglass,
+  'rivet-dunes': rivetDunes,
+  'slag-plain': slagPlain,
+  'tallow-approach': tallowApproach,
+  'the-choir': theChoir,
+  'prism-fields': prismFields,
+  'final-seam': finalSeam,
+  'site-null': siteNull,
+  'recruit-lines': recruitLines,
+  'kestrel-commons': kestrelCommons,
+  'white-gate': whiteGate,
+  'drovers-way': droversWay,
+  'harrowgate': harrowgate,
+  'mill-steps': millSteps,
+  'glasshouse-alley': glasshouseAlley,
+  'neon-row': neonRow,
+  'holo-gardens': holoGardens,
+  'rustwater': rustwater,
+  'reactor-scar': reactorScar,
+  'cargo-spill': cargoSpill,
+  'silent-rise': silentRise,
+  'shard-moor': shardMoor,
+  'last-post': lastPost,
+  'spindle-rim': spindleRim,
+  'parade-ground': paradeGround,
+  'lower-lawns': lowerLawns,
+  'firing-line': firingLine,
+  'harrow-downs': harrowDowns,
+  'harrow-lanes': harrowLanes,
+  'bramble-steps': brambleSteps,
+  'sprawl-north': sprawlNorth,
+  'sprawl-south': sprawlSouth,
+  'brightside': brightside,
+  'hatch-fields': hatchFields,
+  'wreck-rim': wreckRim,
+  'site-tallow': siteTallow,
+  'glass-rim': glassRim,
+  'site-vesper': siteVesper,
+  'plating-road': platingRoad,
+  'the-terminus': theTerminus,
+  'quiet-field': quietField,
+  'lakeside': lakeside,
+  'kestrel-rim': kestrelRim,
+  'haycut': haycut,
+  'spill-meadows': spillMeadows,
+  'fallow-rows': fallowRows,
+  'gallowglass-fence': gallowglassFence,
+  'signal-street': signalStreet,
+  'night-market': nightMarket,
+  'gantry-flats': gantryFlats,
+  'sternward': sternward,
+  'hull-shadow-ii': hullShadowIi,
+  'the-lens': theLens,
+  'choir-road': choirRoad,
+  'last-light': lastLight,
+  'null-approach-ii': nullApproachIi,
+  'kestrel-intake': kestrelIntake,
+  'gallowglass-undercity': gallowglassUndercity,
+  'null-below': nullBelow,
 };
+
+export const SQUARE_LAYOUT_IDS: readonly DistrictId[] = [
+  'antispinward-wall',
+  'kestrel-lawns',
+  'drill-field',
+  'top-terrace',
+  'site-orchard',
+  'wheat-steps',
+  'arcade-mile',
+  'combine-blocks',
+  'the-overpass',
+  'hull-shadow',
+  'the-bow',
+  'scrap-sea',
+  'glass-flats',
+  'pylon-walk',
+  'null-approach',
+  'coolant-flats',
+  'signal-hill',
+  'kestrel-lake',
+  'range-road',
+  'sluice-row',
+  'windpump-rise',
+  'barley-steps',
+  'undertow',
+  'canal-ward',
+  'the-stacks',
+  'bilge-flats',
+  'keel-road',
+  'engine-field',
+  'hymn-road',
+  'vesper-approach',
+  'needle-foot',
+  'grate-fields',
+  'seam-wood',
+  'site-kestrel',
+  'rim-meadow',
+  'low-furrows',
+  'seed-fields',
+  'tithe-barns',
+  'spire-plaza',
+  'ninth-street',
+  'site-gallowglass',
+  'rivet-dunes',
+  'slag-plain',
+  'tallow-approach',
+  'the-choir',
+  'prism-fields',
+  'final-seam',
+  'site-null',
+  'recruit-lines',
+  'kestrel-commons',
+  'white-gate',
+  'drovers-way',
+  'harrowgate',
+  'mill-steps',
+  'glasshouse-alley',
+  'neon-row',
+  'holo-gardens',
+  'rustwater',
+  'reactor-scar',
+  'cargo-spill',
+  'silent-rise',
+  'shard-moor',
+  'last-post',
+  'spindle-rim',
+  'parade-ground',
+  'lower-lawns',
+  'firing-line',
+  'harrow-downs',
+  'harrow-lanes',
+  'bramble-steps',
+  'sprawl-north',
+  'sprawl-south',
+  'brightside',
+  'hatch-fields',
+  'wreck-rim',
+  'site-tallow',
+  'glass-rim',
+  'site-vesper',
+  'plating-road',
+  'the-terminus',
+  'quiet-field',
+  'lakeside',
+  'kestrel-rim',
+  'haycut',
+  'spill-meadows',
+  'fallow-rows',
+  'gallowglass-fence',
+  'signal-street',
+  'night-market',
+  'gantry-flats',
+  'sternward',
+  'hull-shadow-ii',
+  'the-lens',
+  'choir-road',
+  'last-light',
+  'null-approach-ii',
+];
+
+export const BELOW_LAYOUT_IDS: readonly DistrictId[] = [
+  'kestrel-intake',
+  'gallowglass-undercity',
+  'null-below',
+];

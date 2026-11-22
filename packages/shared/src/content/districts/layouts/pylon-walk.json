@@ -1,0 +1,54 @@
+{
+  "id": "pylon-walk",
+  "name": "Pylon Walk",
+  "subtitle": "The Span, the Glass Steppe",
+  "tier": 11,
+  "region": "glass-steppe",
+  "condition": "alien",
+  "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 13, "row": 0 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Pylon Walk" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 53, "dy": 36 }
+  },
+  "objects": [
+    { "id": "pylon-walk-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 42 } },
+    { "id": "pylon-walk-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 28, "dy": 17 } },
+    { "id": "pylon-walk-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 15, "dy": 48 } },
+    { "id": "pylon-walk-barricade-3", "object": "barricade", "at": { "room": "ground", "dx": 37, "dy": 48 } },
+    { "id": "pylon-walk-ledge-milestone-4", "object": "ledge-milestone", "at": { "room": "ground", "dx": 9, "dy": 50 } },
+    { "id": "pylon-walk-precursor-pylon-5", "object": "precursor-pylon", "at": { "room": "ground", "dx": 56, "dy": 52 } },
+    { "id": "pylon-walk-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 28, "dy": 26 } },
+    { "id": "pylon-walk-directorate-salvage-7", "object": "directorate-salvage", "at": { "room": "ground", "dx": 4, "dy": 54 } },
+    { "id": "pylon-walk-red-trace-9", "object": "red-trace", "at": { "room": "ground", "dx": 38, "dy": 60 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "pylon-walk-choir-echo-0", "creature": "choir-echo", "at": { "room": "ground", "dx": 19, "dy": 21 } },
+    { "id": "pylon-walk-red-twin-1", "creature": "red-twin", "at": { "room": "ground", "dx": 24, "dy": 48 } },
+    { "id": "pylon-walk-glass-stalker-2", "creature": "glass-stalker", "at": { "room": "ground", "dx": 8, "dy": 34 } },
+    { "id": "pylon-walk-choir-echo-3", "creature": "choir-echo", "at": { "room": "ground", "dx": 25, "dy": 35 } },
+    { "id": "pylon-walk-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 5, "dy": 24 } },
+    { "id": "pylon-walk-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 43, "dy": 25 } },
+    { "id": "pylon-walk-choir-echo-6", "creature": "choir-echo", "at": { "room": "ground", "dx": 43, "dy": 35 } },
+    { "id": "pylon-walk-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 13, "dy": 37 } },
+    { "id": "pylon-walk-glass-stalker-8", "creature": "glass-stalker", "at": { "room": "ground", "dx": 33, "dy": 31 } },
+    { "id": "pylon-walk-choir-echo-9", "creature": "choir-echo", "at": { "room": "ground", "dx": 58, "dy": 43 } },
+    { "id": "pylon-walk-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 57, "dy": 26 } },
+    { "id": "pylon-walk-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 11, "dy": 17 } },
+    { "id": "pylon-walk-choir-echo-12", "creature": "choir-echo", "at": { "room": "ground", "dx": 57, "dy": 33 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

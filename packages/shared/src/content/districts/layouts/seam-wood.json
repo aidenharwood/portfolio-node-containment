@@ -1,0 +1,56 @@
+{
+  "id": "seam-wood",
+  "name": "Seam Wood",
+  "subtitle": "The Span, Kestrel Reach",
+  "tier": 1,
+  "region": "kestrel-reach",
+  "condition": "pristine",
+  "ambience": { "darkness": 0.16, "tint": "#e8eef4", "fog": "#c8d8e8", "sky": "#9fc8f0", "weather": ["mist"], "haze": 0.7 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 0, "row": 2 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Seam Wood" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 51, "dy": 36 }
+  },
+  "objects": [
+    { "id": "seam-wood-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 28 } },
+    { "id": "seam-wood-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 24, "dy": 11 } },
+    { "id": "seam-wood-checkpoint-barrier-2", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 18, "dy": 24 } },
+    { "id": "seam-wood-bollard-3", "object": "bollard", "at": { "room": "ground", "dx": 51, "dy": 18 } },
+    { "id": "seam-wood-street-tree-4", "object": "street-tree", "at": { "room": "ground", "dx": 36, "dy": 18 } },
+    { "id": "seam-wood-bollard-5", "object": "bollard", "at": { "room": "ground", "dx": 22, "dy": 18 } },
+    { "id": "seam-wood-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 53, "dy": 6 } },
+    { "id": "seam-wood-street-bench-7", "object": "street-bench", "at": { "room": "ground", "dx": 20, "dy": 51 }, "facing": "south" },
+    { "id": "seam-wood-allotment-bed-8", "object": "allotment-bed", "at": { "room": "ground", "dx": 47, "dy": 50 } },
+    { "id": "seam-wood-eel-trap-9", "object": "eel-trap", "at": { "room": "ground", "dx": 27, "dy": 25 } },
+    { "id": "seam-wood-scrap-pile-10", "object": "scrap-pile", "at": { "room": "ground", "dx": 27, "dy": 60 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "seam-wood-lawn-rat-0", "creature": "lawn-rat", "at": { "room": "ground", "dx": 45, "dy": 16 } },
+    { "id": "seam-wood-courtyard-gull-1", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 24, "dy": 4 } },
+    { "id": "seam-wood-lawn-rat-2", "creature": "lawn-rat", "at": { "room": "ground", "dx": 31, "dy": 50 } },
+    { "id": "seam-wood-courtyard-gull-3", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 50, "dy": 26 } },
+    { "id": "seam-wood-lawn-rat-4", "creature": "lawn-rat", "at": { "room": "ground", "dx": 60, "dy": 16 } },
+    { "id": "seam-wood-courtyard-gull-5", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 37, "dy": 4 } },
+    { "id": "seam-wood-lawn-rat-6", "creature": "lawn-rat", "at": { "room": "ground", "dx": 35, "dy": 33 } },
+    { "id": "seam-wood-courtyard-gull-7", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 56, "dy": 48 } },
+    { "id": "seam-wood-lawn-rat-8", "creature": "lawn-rat", "at": { "room": "ground", "dx": 58, "dy": 59 } },
+    { "id": "seam-wood-courtyard-gull-9", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 36, "dy": 56 } },
+    { "id": "seam-wood-lawn-rat-10", "creature": "lawn-rat", "at": { "room": "ground", "dx": 19, "dy": 6 } },
+    { "id": "seam-wood-courtyard-gull-11", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 26, "dy": 53 } },
+    { "id": "seam-wood-lawn-rat-12", "creature": "lawn-rat", "at": { "room": "ground", "dx": 56, "dy": 33 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

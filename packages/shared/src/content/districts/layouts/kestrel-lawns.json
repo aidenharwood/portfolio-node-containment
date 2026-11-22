@@ -1,0 +1,56 @@
+{
+  "id": "kestrel-lawns",
+  "name": "Kestrel Lawns",
+  "subtitle": "The Span, Kestrel Reach",
+  "tier": 1,
+  "region": "kestrel-reach",
+  "condition": "pristine",
+  "ambience": { "darkness": 0.16, "tint": "#e8eef4", "fog": "#c8d8e8", "sky": "#9fc8f0", "weather": ["mist"], "haze": 0.7 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 1, "row": 0 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Kestrel Lawns" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 23, "dy": 27 }
+  },
+  "objects": [
+    { "id": "kestrel-lawns-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 21, "dy": 35 } },
+    { "id": "kestrel-lawns-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 19, "dy": 49 } },
+    { "id": "kestrel-lawns-litter-bin-2", "object": "litter-bin", "at": { "room": "ground", "dx": 5, "dy": 52 } },
+    { "id": "kestrel-lawns-litter-bin-3", "object": "litter-bin", "at": { "room": "ground", "dx": 9, "dy": 40 } },
+    { "id": "kestrel-lawns-flood-mast-4", "object": "flood-mast", "at": { "room": "ground", "dx": 13, "dy": 27 } },
+    { "id": "kestrel-lawns-bollard-5", "object": "bollard", "at": { "room": "ground", "dx": 44, "dy": 37 } },
+    { "id": "kestrel-lawns-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 49, "dy": 43 } },
+    { "id": "kestrel-lawns-street-bench-7", "object": "street-bench", "at": { "room": "ground", "dx": 43, "dy": 20 }, "facing": "south" },
+    { "id": "kestrel-lawns-faint-trace-8", "object": "faint-trace", "at": { "room": "ground", "dx": 12, "dy": 59 } },
+    { "id": "kestrel-lawns-allotment-bed-9", "object": "allotment-bed", "at": { "room": "ground", "dx": 30, "dy": 30 } },
+    { "id": "kestrel-lawns-eel-trap-10", "object": "eel-trap", "at": { "room": "ground", "dx": 50, "dy": 36 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "kestrel-lawns-lawn-rat-0", "creature": "lawn-rat", "at": { "room": "ground", "dx": 31, "dy": 50 } },
+    { "id": "kestrel-lawns-courtyard-gull-1", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 27, "dy": 20 } },
+    { "id": "kestrel-lawns-lawn-rat-2", "creature": "lawn-rat", "at": { "room": "ground", "dx": 35, "dy": 35 } },
+    { "id": "kestrel-lawns-courtyard-gull-3", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 50, "dy": 28 } },
+    { "id": "kestrel-lawns-lawn-rat-4", "creature": "lawn-rat", "at": { "room": "ground", "dx": 44, "dy": 27 } },
+    { "id": "kestrel-lawns-courtyard-gull-5", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 5, "dy": 33 } },
+    { "id": "kestrel-lawns-lawn-rat-6", "creature": "lawn-rat", "at": { "room": "ground", "dx": 49, "dy": 57 } },
+    { "id": "kestrel-lawns-courtyard-gull-7", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 56, "dy": 47 } },
+    { "id": "kestrel-lawns-lawn-rat-8", "creature": "lawn-rat", "at": { "room": "ground", "dx": 13, "dy": 34 } },
+    { "id": "kestrel-lawns-courtyard-gull-9", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 25, "dy": 56 } },
+    { "id": "kestrel-lawns-lawn-rat-10", "creature": "lawn-rat", "at": { "room": "ground", "dx": 53, "dy": 54 } },
+    { "id": "kestrel-lawns-courtyard-gull-11", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 44, "dy": 58 } },
+    { "id": "kestrel-lawns-lawn-rat-12", "creature": "lawn-rat", "at": { "room": "ground", "dx": 36, "dy": 16 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

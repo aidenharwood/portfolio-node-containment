@@ -1,0 +1,54 @@
+{
+  "id": "signal-street",
+  "name": "Signal Street",
+  "subtitle": "The Span, Halcyon",
+  "tier": 7,
+  "region": "halcyon",
+  "condition": "worn",
+  "ambience": { "darkness": 0.58, "tint": "#3a2448", "fog": "#1e1430", "sky": "#2a1838", "weather": ["rain"], "haze": 1.3 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 7, "row": 5 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Signal Street" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 9, "dy": 24 }
+  },
+  "objects": [
+    { "id": "signal-street-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 31 } },
+    { "id": "signal-street-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 16 } },
+    { "id": "signal-street-bollard-2", "object": "bollard", "at": { "room": "ground", "dx": 17, "dy": 38 } },
+    { "id": "signal-street-holo-billboard-3", "object": "holo-billboard", "at": { "room": "ground", "dx": 51, "dy": 4 } },
+    { "id": "signal-street-food-stall-4", "object": "food-stall", "at": { "room": "ground", "dx": 8, "dy": 5 } },
+    { "id": "signal-street-parked-car-5", "object": "parked-car", "at": { "room": "ground", "dx": 53, "dy": 15 } },
+    { "id": "signal-street-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 33, "dy": 7 } },
+    { "id": "signal-street-crusher-housing-7", "object": "crusher-housing", "at": { "room": "ground", "dx": 59, "dy": 34 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "signal-street-ad-wraith-0", "creature": "ad-wraith", "at": { "room": "ground", "dx": 55, "dy": 43 } },
+    { "id": "signal-street-glass-hound-1", "creature": "glass-hound", "at": { "room": "ground", "dx": 19, "dy": 29 } },
+    { "id": "signal-street-alley-crawler-2", "creature": "alley-crawler", "at": { "room": "ground", "dx": 26, "dy": 46 } },
+    { "id": "signal-street-ad-wraith-3", "creature": "ad-wraith", "at": { "room": "ground", "dx": 20, "dy": 14 } },
+    { "id": "signal-street-glass-hound-4", "creature": "glass-hound", "at": { "room": "ground", "dx": 58, "dy": 4 } },
+    { "id": "signal-street-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 45, "dy": 4 } },
+    { "id": "signal-street-ad-wraith-6", "creature": "ad-wraith", "at": { "room": "ground", "dx": 41, "dy": 11 } },
+    { "id": "signal-street-glass-hound-7", "creature": "glass-hound", "at": { "room": "ground", "dx": 57, "dy": 9 } },
+    { "id": "signal-street-alley-crawler-8", "creature": "alley-crawler", "at": { "room": "ground", "dx": 19, "dy": 21 } },
+    { "id": "signal-street-ad-wraith-9", "creature": "ad-wraith", "at": { "room": "ground", "dx": 16, "dy": 47 } },
+    { "id": "signal-street-glass-hound-10", "creature": "glass-hound", "at": { "room": "ground", "dx": 37, "dy": 37 } },
+    { "id": "signal-street-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 11, "dy": 13 } },
+    { "id": "signal-street-ad-wraith-12", "creature": "ad-wraith", "at": { "room": "ground", "dx": 18, "dy": 9 } },
+    { "id": "signal-street-glass-hound-13", "creature": "glass-hound", "at": { "room": "ground", "dx": 58, "dy": 19 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

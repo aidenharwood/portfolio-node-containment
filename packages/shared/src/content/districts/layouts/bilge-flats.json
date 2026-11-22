@@ -1,0 +1,58 @@
+{
+  "id": "bilge-flats",
+  "name": "Bilge Flats",
+  "subtitle": "The Span, the Wreckfield",
+  "tier": 8,
+  "region": "wreckfield",
+  "condition": "breached",
+  "ambience": { "darkness": 0.4, "tint": "#5a3a28", "fog": "#4a3424", "sky": "#8a6a50", "weather": ["dust", "embers"], "haze": 1.2 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 9, "row": 1 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Bilge Flats" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 5, "dy": 31 }
+  },
+  "objects": [
+    { "id": "bilge-flats-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 9, "dy": 25 } },
+    { "id": "bilge-flats-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 10, "dy": 47 } },
+    { "id": "bilge-flats-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 32, "dy": 22 } },
+    { "id": "bilge-flats-magnet-crane-3", "object": "magnet-crane", "at": { "room": "ground", "dx": 51, "dy": 35 } },
+    { "id": "bilge-flats-utility-pole-4", "object": "utility-pole", "at": { "room": "ground", "dx": 31, "dy": 47 } },
+    { "id": "bilge-flats-magnet-crane-5", "object": "magnet-crane", "at": { "room": "ground", "dx": 41, "dy": 46 } },
+    { "id": "bilge-flats-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 46, "dy": 30 } },
+    { "id": "bilge-flats-hull-trace-7", "object": "hull-trace", "at": { "room": "ground", "dx": 23, "dy": 27 } },
+    { "id": "bilge-flats-wreck-plate-9", "object": "wreck-plate", "at": { "room": "ground", "dx": 13, "dy": 14 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "bilge-flats-rustling-0", "creature": "rustling", "at": { "room": "ground", "dx": 59, "dy": 43 } },
+    { "id": "bilge-flats-hull-knocker-1", "creature": "hull-knocker", "at": { "room": "ground", "dx": 24, "dy": 47 } },
+    { "id": "bilge-flats-rustling-2", "creature": "rustling", "at": { "room": "ground", "dx": 28, "dy": 56 } },
+    { "id": "bilge-flats-hull-knocker-3", "creature": "hull-knocker", "at": { "room": "ground", "dx": 54, "dy": 51 } },
+    { "id": "bilge-flats-rustling-4", "creature": "rustling", "at": { "room": "ground", "dx": 58, "dy": 3 } },
+    { "id": "bilge-flats-hull-knocker-5", "creature": "hull-knocker", "at": { "room": "ground", "dx": 19, "dy": 17 } },
+    { "id": "bilge-flats-rustling-6", "creature": "rustling", "at": { "room": "ground", "dx": 45, "dy": 14 } },
+    { "id": "bilge-flats-hull-knocker-7", "creature": "hull-knocker", "at": { "room": "ground", "dx": 6, "dy": 40 } },
+    { "id": "bilge-flats-rustling-8", "creature": "rustling", "at": { "room": "ground", "dx": 17, "dy": 52 } },
+    { "id": "bilge-flats-hull-knocker-9", "creature": "hull-knocker", "at": { "room": "ground", "dx": 54, "dy": 46 } },
+    { "id": "bilge-flats-rustling-10", "creature": "rustling", "at": { "room": "ground", "dx": 58, "dy": 56 } },
+    { "id": "bilge-flats-hull-knocker-11", "creature": "hull-knocker", "at": { "room": "ground", "dx": 56, "dy": 14 } },
+    { "id": "bilge-flats-rustling-12", "creature": "rustling", "at": { "room": "ground", "dx": 40, "dy": 28 } },
+    { "id": "bilge-flats-hull-knocker-13", "creature": "hull-knocker", "at": { "room": "ground", "dx": 48, "dy": 6 } },
+    { "id": "bilge-flats-rustling-14", "creature": "rustling", "at": { "room": "ground", "dx": 30, "dy": 12 } },
+    { "id": "bilge-flats-hull-knocker-15", "creature": "hull-knocker", "at": { "room": "ground", "dx": 38, "dy": 7 } },
+    { "id": "bilge-flats-rustling-16", "creature": "rustling", "at": { "room": "ground", "dx": 6, "dy": 60 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

@@ -1,0 +1,60 @@
+{
+  "id": "vesper-approach",
+  "name": "Vesper Approach",
+  "subtitle": "The Span, the Glass Steppe",
+  "tier": 11,
+  "region": "glass-steppe",
+  "condition": "alien",
+  "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 13, "row": 1 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Vesper Approach" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 13, "dy": 42 }
+  },
+  "objects": [
+    { "id": "vesper-approach-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 3, "dy": 7 } },
+    { "id": "vesper-approach-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 46 } },
+    { "id": "vesper-approach-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 23, "dy": 40 } },
+    { "id": "vesper-approach-ledge-milestone-3", "object": "ledge-milestone", "at": { "room": "ground", "dx": 3, "dy": 40 } },
+    { "id": "vesper-approach-precursor-pylon-4", "object": "precursor-pylon", "at": { "room": "ground", "dx": 34, "dy": 34 } },
+    { "id": "vesper-approach-burn-barrel-5", "object": "burn-barrel", "at": { "room": "ground", "dx": 19, "dy": 28 } },
+    { "id": "vesper-approach-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 53, "dy": 50 } },
+    { "id": "vesper-approach-steppe-north-gate-leaf-0", "object": "steppe-north-gate-leaf", "at": { "room": "ground", "dx": 63, "dy": 38 }, "facing": "east" },
+    { "id": "vesper-approach-steppe-north-gate-leaf-1", "object": "steppe-north-gate-leaf", "at": { "room": "ground", "dx": 63, "dy": 39 }, "facing": "east" },
+    { "id": "vesper-approach-red-trace-10", "object": "red-trace", "at": { "room": "ground", "dx": 44, "dy": 34 } },
+    { "id": "vesper-approach-sprung-cell-door-11", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 35, "dy": 5 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "vesper-approach-choir-echo-0", "creature": "choir-echo", "at": { "room": "ground", "dx": 30, "dy": 10 } },
+    { "id": "vesper-approach-red-twin-1", "creature": "red-twin", "at": { "room": "ground", "dx": 50, "dy": 13 } },
+    { "id": "vesper-approach-glass-stalker-2", "creature": "glass-stalker", "at": { "room": "ground", "dx": 8, "dy": 31 } },
+    { "id": "vesper-approach-choir-echo-3", "creature": "choir-echo", "at": { "room": "ground", "dx": 31, "dy": 48 } },
+    { "id": "vesper-approach-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 27, "dy": 53 } },
+    { "id": "vesper-approach-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 6, "dy": 24 } },
+    { "id": "vesper-approach-choir-echo-6", "creature": "choir-echo", "at": { "room": "ground", "dx": 43, "dy": 8 } },
+    { "id": "vesper-approach-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 50, "dy": 20 } },
+    { "id": "vesper-approach-glass-stalker-8", "creature": "glass-stalker", "at": { "room": "ground", "dx": 7, "dy": 59 } },
+    { "id": "vesper-approach-choir-echo-9", "creature": "choir-echo", "at": { "room": "ground", "dx": 27, "dy": 18 } },
+    { "id": "vesper-approach-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 58, "dy": 20 } },
+    { "id": "vesper-approach-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 13, "dy": 14 } },
+    { "id": "vesper-approach-choir-echo-12", "creature": "choir-echo", "at": { "room": "ground", "dx": 14, "dy": 56 } },
+    { "id": "vesper-approach-red-twin-13", "creature": "red-twin", "at": { "room": "ground", "dx": 42, "dy": 54 } },
+    { "id": "vesper-approach-glass-stalker-14", "creature": "glass-stalker", "at": { "room": "ground", "dx": 29, "dy": 43 } },
+    { "id": "vesper-approach-choir-echo-15", "creature": "choir-echo", "at": { "room": "ground", "dx": 16, "dy": 38 } },
+    { "id": "vesper-approach-red-twin-16", "creature": "red-twin", "at": { "room": "ground", "dx": 21, "dy": 54 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

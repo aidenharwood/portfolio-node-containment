@@ -1,0 +1,55 @@
+{
+  "id": "haycut",
+  "name": "Haycut",
+  "subtitle": "The Span, Harrow Terraces",
+  "tier": 3,
+  "region": "harrow-terraces",
+  "condition": "overgrown",
+  "ambience": { "darkness": 0.2, "tint": "#e4dcb8", "fog": "#d8d0a8", "sky": "#b8d8c0", "weather": ["dust"], "haze": 0.8 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 3, "row": 5 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Haycut" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 36, "dy": 3 }
+  },
+  "objects": [
+    { "id": "haycut-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 26 } },
+    { "id": "haycut-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 15, "dy": 20 } },
+    { "id": "haycut-street-tree-2", "object": "street-tree", "at": { "room": "ground", "dx": 40, "dy": 25 } },
+    { "id": "haycut-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 19, "dy": 6 } },
+    { "id": "haycut-windpump-4", "object": "windpump", "at": { "room": "ground", "dx": 19, "dy": 35 } },
+    { "id": "haycut-barricade-5", "object": "barricade", "at": { "room": "ground", "dx": 28, "dy": 16 } },
+    { "id": "haycut-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 57, "dy": 28 } },
+    { "id": "haycut-dredge-spot-7", "object": "dredge-spot", "at": { "room": "ground", "dx": 47, "dy": 14 } },
+    { "id": "haycut-reed-bed-8", "object": "reed-bed", "at": { "room": "ground", "dx": 57, "dy": 9 } },
+    { "id": "haycut-culvert-trace-9", "object": "culvert-trace", "at": { "room": "ground", "dx": 33, "dy": 11 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "haycut-furrow-eel-0", "creature": "furrow-eel", "at": { "room": "ground", "dx": 54, "dy": 20 } },
+    { "id": "haycut-crop-magpie-1", "creature": "crop-magpie", "at": { "room": "ground", "dx": 58, "dy": 17 } },
+    { "id": "haycut-furrow-eel-2", "creature": "furrow-eel", "at": { "room": "ground", "dx": 40, "dy": 41 } },
+    { "id": "haycut-crop-magpie-3", "creature": "crop-magpie", "at": { "room": "ground", "dx": 35, "dy": 33 } },
+    { "id": "haycut-furrow-eel-4", "creature": "furrow-eel", "at": { "room": "ground", "dx": 23, "dy": 24 } },
+    { "id": "haycut-crop-magpie-5", "creature": "crop-magpie", "at": { "room": "ground", "dx": 25, "dy": 7 } },
+    { "id": "haycut-furrow-eel-6", "creature": "furrow-eel", "at": { "room": "ground", "dx": 15, "dy": 13 } },
+    { "id": "haycut-crop-magpie-7", "creature": "crop-magpie", "at": { "room": "ground", "dx": 6, "dy": 39 } },
+    { "id": "haycut-furrow-eel-8", "creature": "furrow-eel", "at": { "room": "ground", "dx": 14, "dy": 39 } },
+    { "id": "haycut-crop-magpie-9", "creature": "crop-magpie", "at": { "room": "ground", "dx": 13, "dy": 45 } },
+    { "id": "haycut-furrow-eel-10", "creature": "furrow-eel", "at": { "room": "ground", "dx": 56, "dy": 45 } },
+    { "id": "haycut-crop-magpie-11", "creature": "crop-magpie", "at": { "room": "ground", "dx": 28, "dy": 42 } },
+    { "id": "haycut-furrow-eel-12", "creature": "furrow-eel", "at": { "room": "ground", "dx": 49, "dy": 29 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

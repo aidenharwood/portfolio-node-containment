@@ -1,0 +1,60 @@
+{
+  "id": "windpump-rise",
+  "name": "Windpump Rise",
+  "subtitle": "The Span, Harrow Terraces",
+  "tier": 4,
+  "region": "harrow-terraces",
+  "condition": "overgrown",
+  "ambience": { "darkness": 0.2, "tint": "#e4dcb8", "fog": "#d8d0a8", "sky": "#b8d8c0", "weather": ["dust"], "haze": 0.8 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 4, "row": 1 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Windpump Rise" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 29, "dy": 30 }
+  },
+  "objects": [
+    { "id": "windpump-rise-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 53, "dy": 52 } },
+    { "id": "windpump-rise-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 12, "dy": 6 } },
+    { "id": "windpump-rise-utility-pole-2", "object": "utility-pole", "at": { "room": "ground", "dx": 19, "dy": 27 } },
+    { "id": "windpump-rise-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 16, "dy": 52 } },
+    { "id": "windpump-rise-windpump-4", "object": "windpump", "at": { "room": "ground", "dx": 43, "dy": 27 } },
+    { "id": "windpump-rise-street-tree-5", "object": "street-tree", "at": { "room": "ground", "dx": 59, "dy": 36 } },
+    { "id": "windpump-rise-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 31, "dy": 48 } },
+    { "id": "windpump-rise-reed-bed-7", "object": "reed-bed", "at": { "room": "ground", "dx": 34, "dy": 5 } },
+    { "id": "windpump-rise-culvert-trace-8", "object": "culvert-trace", "at": { "room": "ground", "dx": 41, "dy": 59 } },
+    { "id": "windpump-rise-dredge-spot-9", "object": "dredge-spot", "at": { "room": "ground", "dx": 24, "dy": 48 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "windpump-rise-seed-mite-0", "creature": "seed-mite", "at": { "room": "ground", "dx": 17, "dy": 14 } },
+    { "id": "windpump-rise-scarecoat-1", "creature": "scarecoat", "at": { "room": "ground", "dx": 41, "dy": 45 } },
+    { "id": "windpump-rise-crop-magpie-2", "creature": "crop-magpie", "at": { "room": "ground", "dx": 4, "dy": 43 } },
+    { "id": "windpump-rise-seed-mite-3", "creature": "seed-mite", "at": { "room": "ground", "dx": 43, "dy": 33 } },
+    { "id": "windpump-rise-scarecoat-4", "creature": "scarecoat", "at": { "room": "ground", "dx": 9, "dy": 53 } },
+    { "id": "windpump-rise-crop-magpie-5", "creature": "crop-magpie", "at": { "room": "ground", "dx": 28, "dy": 57 } },
+    { "id": "windpump-rise-seed-mite-6", "creature": "seed-mite", "at": { "room": "ground", "dx": 30, "dy": 10 } },
+    { "id": "windpump-rise-scarecoat-7", "creature": "scarecoat", "at": { "room": "ground", "dx": 28, "dy": 3 } },
+    { "id": "windpump-rise-crop-magpie-8", "creature": "crop-magpie", "at": { "room": "ground", "dx": 57, "dy": 45 } },
+    { "id": "windpump-rise-seed-mite-9", "creature": "seed-mite", "at": { "room": "ground", "dx": 14, "dy": 40 } },
+    { "id": "windpump-rise-scarecoat-10", "creature": "scarecoat", "at": { "room": "ground", "dx": 53, "dy": 20 } },
+    { "id": "windpump-rise-crop-magpie-11", "creature": "crop-magpie", "at": { "room": "ground", "dx": 32, "dy": 38 } },
+    { "id": "windpump-rise-seed-mite-12", "creature": "seed-mite", "at": { "room": "ground", "dx": 9, "dy": 29 } },
+    { "id": "windpump-rise-scarecoat-13", "creature": "scarecoat", "at": { "room": "ground", "dx": 5, "dy": 4 } },
+    { "id": "windpump-rise-crop-magpie-14", "creature": "crop-magpie", "at": { "room": "ground", "dx": 35, "dy": 60 } },
+    { "id": "windpump-rise-seed-mite-15", "creature": "seed-mite", "at": { "room": "ground", "dx": 39, "dy": 20 } },
+    { "id": "windpump-rise-scarecoat-16", "creature": "scarecoat", "at": { "room": "ground", "dx": 21, "dy": 59 } },
+    { "id": "windpump-rise-crop-magpie-17", "creature": "crop-magpie", "at": { "room": "ground", "dx": 35, "dy": 23 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

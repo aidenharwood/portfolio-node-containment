@@ -1,0 +1,56 @@
+{
+  "id": "fallow-rows",
+  "name": "Fallow Rows",
+  "subtitle": "The Span, Harrow Terraces",
+  "tier": 5,
+  "region": "harrow-terraces",
+  "condition": "overgrown",
+  "ambience": { "darkness": 0.2, "tint": "#e4dcb8", "fog": "#d8d0a8", "sky": "#b8d8c0", "weather": ["dust"], "haze": 0.8 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 5, "row": 5 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Fallow Rows" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 28, "dy": 4 }
+  },
+  "objects": [
+    { "id": "fallow-rows-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 10, "dy": 30 } },
+    { "id": "fallow-rows-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 36 } },
+    { "id": "fallow-rows-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 45, "dy": 28 } },
+    { "id": "fallow-rows-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 15, "dy": 7 } },
+    { "id": "fallow-rows-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 29, "dy": 16 } },
+    { "id": "fallow-rows-barricade-5", "object": "barricade", "at": { "room": "ground", "dx": 42, "dy": 20 } },
+    { "id": "fallow-rows-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 23, "dy": 17 } },
+    { "id": "fallow-rows-harrow-south-gate-leaf-0", "object": "harrow-south-gate-leaf", "at": { "room": "ground", "dx": 63, "dy": 10 }, "facing": "east" },
+    { "id": "fallow-rows-harrow-south-gate-leaf-1", "object": "harrow-south-gate-leaf", "at": { "room": "ground", "dx": 63, "dy": 11 }, "facing": "east" },
+    { "id": "fallow-rows-reed-bed-9", "object": "reed-bed", "at": { "room": "ground", "dx": 28, "dy": 31 } },
+    { "id": "fallow-rows-culvert-trace-10", "object": "culvert-trace", "at": { "room": "ground", "dx": 3, "dy": 25 } },
+    { "id": "fallow-rows-lock-gear-11", "object": "lock-gear", "at": { "room": "ground", "dx": 3, "dy": 32 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "fallow-rows-thornback-0", "creature": "thornback", "at": { "room": "ground", "dx": 21, "dy": 9 } },
+    { "id": "fallow-rows-seed-mite-1", "creature": "seed-mite", "at": { "room": "ground", "dx": 57, "dy": 33 } },
+    { "id": "fallow-rows-thornback-2", "creature": "thornback", "at": { "room": "ground", "dx": 37, "dy": 7 } },
+    { "id": "fallow-rows-seed-mite-3", "creature": "seed-mite", "at": { "room": "ground", "dx": 9, "dy": 19 } },
+    { "id": "fallow-rows-thornback-4", "creature": "thornback", "at": { "room": "ground", "dx": 42, "dy": 4 } },
+    { "id": "fallow-rows-seed-mite-5", "creature": "seed-mite", "at": { "room": "ground", "dx": 58, "dy": 25 } },
+    { "id": "fallow-rows-thornback-6", "creature": "thornback", "at": { "room": "ground", "dx": 17, "dy": 30 } },
+    { "id": "fallow-rows-seed-mite-7", "creature": "seed-mite", "at": { "room": "ground", "dx": 36, "dy": 25 } },
+    { "id": "fallow-rows-thornback-8", "creature": "thornback", "at": { "room": "ground", "dx": 46, "dy": 13 } },
+    { "id": "fallow-rows-seed-mite-9", "creature": "seed-mite", "at": { "room": "ground", "dx": 50, "dy": 4 } },
+    { "id": "fallow-rows-thornback-10", "creature": "thornback", "at": { "room": "ground", "dx": 6, "dy": 15 } },
+    { "id": "fallow-rows-seed-mite-11", "creature": "seed-mite", "at": { "room": "ground", "dx": 20, "dy": 35 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

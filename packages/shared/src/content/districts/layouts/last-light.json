@@ -1,0 +1,54 @@
+{
+  "id": "last-light",
+  "name": "Last Light",
+  "subtitle": "The Span, the Spindle",
+  "tier": 12,
+  "region": "the-spindle",
+  "condition": "alien",
+  "ambience": { "darkness": 0.62, "tint": "#1a2a3a", "fog": "#0c1824", "sky": "#1a3048", "weather": ["sparks"], "haze": 1.4 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 14, "row": 5 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Last Light" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 32, "dy": 5 }
+  },
+  "objects": [
+    { "id": "last-light-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 17, "dy": 18 } },
+    { "id": "last-light-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 24 } },
+    { "id": "last-light-precursor-pylon-2", "object": "precursor-pylon", "at": { "room": "ground", "dx": 24, "dy": 10 } },
+    { "id": "last-light-precursor-pylon-3", "object": "precursor-pylon", "at": { "room": "ground", "dx": 43, "dy": 19 } },
+    { "id": "last-light-steam-vent-4", "object": "steam-vent", "at": { "room": "ground", "dx": 47, "dy": 31 } },
+    { "id": "last-light-barricade-5", "object": "barricade", "at": { "room": "ground", "dx": 59, "dy": 38 } },
+    { "id": "last-light-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 39, "dy": 9 } },
+    { "id": "last-light-vault-residue-8", "object": "vault-residue", "at": { "room": "ground", "dx": 10, "dy": 36 } },
+    { "id": "last-light-vault-bloom-9", "object": "vault-bloom", "at": { "room": "ground", "dx": 7, "dy": 25 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "last-light-null-echo-0", "creature": "null-echo", "at": { "room": "ground", "dx": 18, "dy": 33 } },
+    { "id": "last-light-cell-breaker-1", "creature": "cell-breaker", "at": { "room": "ground", "dx": 20, "dy": 43 } },
+    { "id": "last-light-null-echo-2", "creature": "null-echo", "at": { "room": "ground", "dx": 25, "dy": 42 } },
+    { "id": "last-light-cell-breaker-3", "creature": "cell-breaker", "at": { "room": "ground", "dx": 27, "dy": 25 } },
+    { "id": "last-light-null-echo-4", "creature": "null-echo", "at": { "room": "ground", "dx": 45, "dy": 44 } },
+    { "id": "last-light-cell-breaker-5", "creature": "cell-breaker", "at": { "room": "ground", "dx": 46, "dy": 3 } },
+    { "id": "last-light-null-echo-6", "creature": "null-echo", "at": { "room": "ground", "dx": 19, "dy": 3 } },
+    { "id": "last-light-cell-breaker-7", "creature": "cell-breaker", "at": { "room": "ground", "dx": 13, "dy": 9 } },
+    { "id": "last-light-null-echo-8", "creature": "null-echo", "at": { "room": "ground", "dx": 8, "dy": 15 } },
+    { "id": "last-light-cell-breaker-9", "creature": "cell-breaker", "at": { "room": "ground", "dx": 58, "dy": 23 } },
+    { "id": "last-light-null-echo-10", "creature": "null-echo", "at": { "room": "ground", "dx": 59, "dy": 28 } },
+    { "id": "last-light-cell-breaker-11", "creature": "cell-breaker", "at": { "room": "ground", "dx": 33, "dy": 14 } },
+    { "id": "last-light-null-echo-12", "creature": "null-echo", "at": { "room": "ground", "dx": 43, "dy": 38 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

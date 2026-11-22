@@ -1,0 +1,98 @@
+{
+  "id": "site-null",
+  "name": "Site Null",
+  "subtitle": "The Spindle · SC-V · Inverted",
+  "tier": 13,
+  "region": "the-spindle",
+  "condition": "uncanny",
+  "ambience": { "darkness": 0.62, "tint": "#1a2a3a", "fog": "#0c1824", "sky": "#1a3048", "weather": ["sparks"], "haze": 1.4 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 15, "row": 2 },
+  "steps": [
+    { "kind": "building", "id": "null-headhouse", "rect": { "x": 9, "y": 10, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "null-holding", "rect": { "x": 25, "y": 10, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "null-records", "rect": { "x": 41, "y": 10, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Site Null" },
+    { "room": "null-headhouse", "name": "Null Headhouse", "safe": true },
+    { "room": "null-holding", "name": "The Outside", "safe": false },
+    { "room": "null-records", "name": "Null Records", "safe": false }
+  ],
+  "anchors": {
+    "lift-arrival": { "room": "null-headhouse", "dx": 5, "dy": 2 },
+    "start": { "room": "ground", "dx": 52, "dy": 23 }
+  },
+  "objects": [
+    { "id": "null-headhouse-null-lift-down-0", "object": "null-lift-down", "at": { "room": "null-headhouse", "dx": 5, "dy": 0 }, "facing": "south" },
+    { "id": "null-headhouse-notice-board-1", "object": "notice-board", "at": { "room": "null-headhouse", "dx": 2, "dy": 0 }, "facing": "south" },
+    { "id": "null-headhouse-vending-machine-2", "object": "vending-machine", "at": { "room": "null-headhouse", "dx": 8, "dy": 0 }, "facing": "south" },
+    { "id": "null-headhouse-security-camera-3", "object": "security-camera", "at": { "room": "null-headhouse", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "null-headhouse-street-bench-4", "object": "street-bench", "at": { "room": "null-headhouse", "dx": 2, "dy": 4 }, "facing": "north" },
+    { "id": "null-headhouse-table-5", "object": "table", "at": { "room": "null-headhouse", "dx": 9, "dy": 3 } },
+    { "id": "null-headhouse-chair-6", "object": "chair", "at": { "room": "null-headhouse", "dx": 9, "dy": 2 }, "facing": "south" },
+    { "id": "null-holding-secure-cell-0", "object": "secure-cell", "at": { "room": "null-holding", "dx": 1, "dy": 1 } },
+    { "id": "null-holding-secure-cell-1", "object": "secure-cell", "at": { "room": "null-holding", "dx": 4, "dy": 1 } },
+    { "id": "null-holding-secure-cell-2", "object": "secure-cell", "at": { "room": "null-holding", "dx": 7, "dy": 1 } },
+    { "id": "null-holding-keycard-reader-3", "object": "keycard-reader", "at": { "room": "null-holding", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "null-holding-security-camera-4", "object": "security-camera", "at": { "room": "null-holding", "dx": 0, "dy": 0 }, "facing": "south" },
+    { "id": "null-holding-lab-bench-5", "object": "lab-bench", "at": { "room": "null-holding", "dx": 10, "dy": 4 } },
+    { "id": "null-records-shelving-0", "object": "shelving", "at": { "room": "null-records", "dx": 1, "dy": 0 }, "facing": "south" },
+    { "id": "null-records-shelving-1", "object": "shelving", "at": { "room": "null-records", "dx": 2, "dy": 0 }, "facing": "south" },
+    { "id": "null-records-notice-board-2", "object": "notice-board", "at": { "room": "null-records", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "null-records-storage-locker-3", "object": "storage-locker", "at": { "room": "null-records", "dx": 9, "dy": 0 }, "facing": "south" },
+    { "id": "null-records-security-camera-4", "object": "security-camera", "at": { "room": "null-records", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "null-records-table-5", "object": "table", "at": { "room": "null-records", "dx": 3, "dy": 3 } },
+    { "id": "null-records-table-6", "object": "table", "at": { "room": "null-records", "dx": 4, "dy": 3 } },
+    { "id": "null-records-chair-7", "object": "chair", "at": { "room": "null-records", "dx": 3, "dy": 2 }, "facing": "south" },
+    { "id": "null-records-chair-8", "object": "chair", "at": { "room": "null-records", "dx": 4, "dy": 2 }, "facing": "south" },
+    { "id": "site-null-street-lamp-22", "object": "street-lamp", "at": { "room": "ground", "dx": 8, "dy": 6 } },
+    { "id": "site-null-street-lamp-23", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 34 } },
+    { "id": "site-null-street-lamp-24", "object": "street-lamp", "at": { "room": "ground", "dx": 51, "dy": 51 } },
+    { "id": "site-null-street-lamp-25", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 26 } },
+    { "id": "site-null-flood-mast-26", "object": "flood-mast", "at": { "room": "ground", "dx": 54, "dy": 35 } },
+    { "id": "site-null-flood-mast-27", "object": "flood-mast", "at": { "room": "ground", "dx": 21, "dy": 44 } },
+    { "id": "site-null-checkpoint-barrier-28", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 41, "dy": 35 } },
+    { "id": "site-null-steam-vent-29", "object": "steam-vent", "at": { "room": "ground", "dx": 43, "dy": 27 } },
+    { "id": "site-null-steam-vent-30", "object": "steam-vent", "at": { "room": "ground", "dx": 37, "dy": 42 } },
+    { "id": "site-null-precursor-pylon-31", "object": "precursor-pylon", "at": { "room": "ground", "dx": 15, "dy": 54 } },
+    { "id": "site-null-barricade-32", "object": "barricade", "at": { "room": "ground", "dx": 17, "dy": 26 } },
+    { "id": "site-null-vault-trace-33", "object": "vault-trace", "at": { "room": "ground", "dx": 25, "dy": 59 } },
+    { "id": "site-null-vault-residue-34", "object": "vault-residue", "at": { "room": "ground", "dx": 4, "dy": 20 } }
+  ],
+  "assemblies": [],
+  "npcs": [
+    { "id": "null-headhouse-registrar-lune-null", "npc": "registrar-lune-null", "at": { "room": "null-headhouse", "dx": 8, "dy": 5 } }
+  ],
+  "creatures": [
+    { "id": "null-holding-null-echo-0", "creature": "null-echo", "at": { "room": "null-holding", "dx": 2, "dy": 5 } },
+    { "id": "null-holding-null-stalker-1", "creature": "null-stalker", "at": { "room": "null-holding", "dx": 9, "dy": 6 } },
+    { "id": "null-records-null-echo-0", "creature": "null-echo", "at": { "room": "null-records", "dx": 9, "dy": 5 } },
+    { "id": "site-null-null-echo-0", "creature": "null-echo", "at": { "room": "ground", "dx": 39, "dy": 6 } },
+    { "id": "site-null-null-stalker-1", "creature": "null-stalker", "at": { "room": "ground", "dx": 23, "dy": 30 } },
+    { "id": "site-null-cell-breaker-2", "creature": "cell-breaker", "at": { "room": "ground", "dx": 10, "dy": 25 } },
+    { "id": "site-null-null-echo-3", "creature": "null-echo", "at": { "room": "ground", "dx": 23, "dy": 24 } },
+    { "id": "site-null-null-stalker-4", "creature": "null-stalker", "at": { "room": "ground", "dx": 41, "dy": 60 } },
+    { "id": "site-null-cell-breaker-5", "creature": "cell-breaker", "at": { "room": "ground", "dx": 35, "dy": 55 } },
+    { "id": "site-null-null-echo-6", "creature": "null-echo", "at": { "room": "ground", "dx": 11, "dy": 43 } },
+    { "id": "site-null-null-stalker-7", "creature": "null-stalker", "at": { "room": "ground", "dx": 23, "dy": 4 } },
+    { "id": "site-null-cell-breaker-8", "creature": "cell-breaker", "at": { "room": "ground", "dx": 51, "dy": 60 } },
+    { "id": "site-null-null-echo-9", "creature": "null-echo", "at": { "room": "ground", "dx": 5, "dy": 41 } },
+    { "id": "site-null-null-stalker-10", "creature": "null-stalker", "at": { "room": "ground", "dx": 19, "dy": 37 } },
+    { "id": "site-null-cell-breaker-11", "creature": "cell-breaker", "at": { "room": "ground", "dx": 29, "dy": 40 } },
+    { "id": "site-null-null-echo-12", "creature": "null-echo", "at": { "room": "ground", "dx": 32, "dy": 3 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [
+    { "id": "site-null-landmark", "prefab": "landmark-spindle-light", "at": { "room": "ground", "dx": 28, "dy": 34 }, "facing": "south" }
+  ],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 },
+    "null-headhouse": { "theme": "transit", "people": 0 },
+    "null-holding": { "theme": "containment", "people": 0 },
+    "null-records": { "theme": "office", "people": 0 }
+  },
+  "furnish": { "landmarks": ["ground"] }
+}

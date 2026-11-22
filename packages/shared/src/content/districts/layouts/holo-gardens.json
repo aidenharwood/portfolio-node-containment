@@ -1,0 +1,60 @@
+{
+  "id": "holo-gardens",
+  "name": "Holo Gardens",
+  "subtitle": "The Span, Halcyon",
+  "tier": 7,
+  "region": "halcyon",
+  "condition": "worn",
+  "ambience": { "darkness": 0.58, "tint": "#3a2448", "fog": "#1e1430", "sky": "#2a1838", "weather": ["rain"], "haze": 1.3 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 8, "row": 3 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Holo Gardens" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 55, "dy": 58 }
+  },
+  "objects": [
+    { "id": "holo-gardens-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 28, "dy": 45 } },
+    { "id": "holo-gardens-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 21 } },
+    { "id": "holo-gardens-bollard-2", "object": "bollard", "at": { "room": "ground", "dx": 49, "dy": 51 } },
+    { "id": "holo-gardens-food-stall-3", "object": "food-stall", "at": { "room": "ground", "dx": 38, "dy": 32 } },
+    { "id": "holo-gardens-steam-vent-4", "object": "steam-vent", "at": { "room": "ground", "dx": 55, "dy": 8 } },
+    { "id": "holo-gardens-litter-bin-5", "object": "litter-bin", "at": { "room": "ground", "dx": 41, "dy": 50 } },
+    { "id": "holo-gardens-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 15, "dy": 37 } },
+    { "id": "holo-gardens-halcyon-gate-leaf-0", "object": "halcyon-gate-leaf", "at": { "room": "ground", "dx": 63, "dy": 30 }, "facing": "east" },
+    { "id": "holo-gardens-halcyon-gate-leaf-1", "object": "halcyon-gate-leaf", "at": { "room": "ground", "dx": 63, "dy": 31 }, "facing": "east" },
+    { "id": "holo-gardens-crusher-housing-10", "object": "crusher-housing", "at": { "room": "ground", "dx": 13, "dy": 44 } },
+    { "id": "holo-gardens-scrap-heap-11", "object": "scrap-heap", "at": { "room": "ground", "dx": 7, "dy": 36 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "holo-gardens-ad-wraith-0", "creature": "ad-wraith", "at": { "room": "ground", "dx": 57, "dy": 49 } },
+    { "id": "holo-gardens-glass-hound-1", "creature": "glass-hound", "at": { "room": "ground", "dx": 44, "dy": 56 } },
+    { "id": "holo-gardens-alley-crawler-2", "creature": "alley-crawler", "at": { "room": "ground", "dx": 44, "dy": 28 } },
+    { "id": "holo-gardens-ad-wraith-3", "creature": "ad-wraith", "at": { "room": "ground", "dx": 28, "dy": 4 } },
+    { "id": "holo-gardens-glass-hound-4", "creature": "glass-hound", "at": { "room": "ground", "dx": 51, "dy": 27 } },
+    { "id": "holo-gardens-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 12, "dy": 29 } },
+    { "id": "holo-gardens-ad-wraith-6", "creature": "ad-wraith", "at": { "room": "ground", "dx": 21, "dy": 31 } },
+    { "id": "holo-gardens-glass-hound-7", "creature": "glass-hound", "at": { "room": "ground", "dx": 3, "dy": 59 } },
+    { "id": "holo-gardens-alley-crawler-8", "creature": "alley-crawler", "at": { "room": "ground", "dx": 14, "dy": 6 } },
+    { "id": "holo-gardens-ad-wraith-9", "creature": "ad-wraith", "at": { "room": "ground", "dx": 48, "dy": 33 } },
+    { "id": "holo-gardens-glass-hound-10", "creature": "glass-hound", "at": { "room": "ground", "dx": 37, "dy": 58 } },
+    { "id": "holo-gardens-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 3, "dy": 29 } },
+    { "id": "holo-gardens-ad-wraith-12", "creature": "ad-wraith", "at": { "room": "ground", "dx": 30, "dy": 9 } },
+    { "id": "holo-gardens-glass-hound-13", "creature": "glass-hound", "at": { "room": "ground", "dx": 27, "dy": 35 } },
+    { "id": "holo-gardens-alley-crawler-14", "creature": "alley-crawler", "at": { "room": "ground", "dx": 20, "dy": 46 } },
+    { "id": "holo-gardens-ad-wraith-15", "creature": "ad-wraith", "at": { "room": "ground", "dx": 9, "dy": 15 } },
+    { "id": "holo-gardens-glass-hound-16", "creature": "glass-hound", "at": { "room": "ground", "dx": 14, "dy": 15 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

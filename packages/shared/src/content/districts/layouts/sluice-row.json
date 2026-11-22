@@ -1,0 +1,59 @@
+{
+  "id": "sluice-row",
+  "name": "Sluice Row",
+  "subtitle": "The Span, Harrow Terraces",
+  "tier": 3,
+  "region": "harrow-terraces",
+  "condition": "overgrown",
+  "ambience": { "darkness": 0.2, "tint": "#e4dcb8", "fog": "#d8d0a8", "sky": "#b8d8c0", "weather": ["dust"], "haze": 0.8 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 3, "row": 1 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Sluice Row" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 55, "dy": 49 }
+  },
+  "objects": [
+    { "id": "sluice-row-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 7, "dy": 38 } },
+    { "id": "sluice-row-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 42 } },
+    { "id": "sluice-row-windpump-2", "object": "windpump", "at": { "room": "ground", "dx": 25, "dy": 16 } },
+    { "id": "sluice-row-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 18, "dy": 45 } },
+    { "id": "sluice-row-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 28, "dy": 38 } },
+    { "id": "sluice-row-barricade-5", "object": "barricade", "at": { "room": "ground", "dx": 29, "dy": 30 } },
+    { "id": "sluice-row-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 57, "dy": 14 } },
+    { "id": "sluice-row-dredge-spot-7", "object": "dredge-spot", "at": { "room": "ground", "dx": 42, "dy": 6 } },
+    { "id": "sluice-row-reed-bed-8", "object": "reed-bed", "at": { "room": "ground", "dx": 56, "dy": 23 } },
+    { "id": "sluice-row-culvert-trace-9", "object": "culvert-trace", "at": { "room": "ground", "dx": 9, "dy": 28 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "sluice-row-furrow-eel-0", "creature": "furrow-eel", "at": { "room": "ground", "dx": 39, "dy": 57 } },
+    { "id": "sluice-row-crop-magpie-1", "creature": "crop-magpie", "at": { "room": "ground", "dx": 17, "dy": 32 } },
+    { "id": "sluice-row-furrow-eel-2", "creature": "furrow-eel", "at": { "room": "ground", "dx": 48, "dy": 29 } },
+    { "id": "sluice-row-crop-magpie-3", "creature": "crop-magpie", "at": { "room": "ground", "dx": 17, "dy": 57 } },
+    { "id": "sluice-row-furrow-eel-4", "creature": "furrow-eel", "at": { "room": "ground", "dx": 54, "dy": 44 } },
+    { "id": "sluice-row-crop-magpie-5", "creature": "crop-magpie", "at": { "room": "ground", "dx": 27, "dy": 4 } },
+    { "id": "sluice-row-furrow-eel-6", "creature": "furrow-eel", "at": { "room": "ground", "dx": 39, "dy": 52 } },
+    { "id": "sluice-row-crop-magpie-7", "creature": "crop-magpie", "at": { "room": "ground", "dx": 49, "dy": 23 } },
+    { "id": "sluice-row-furrow-eel-8", "creature": "furrow-eel", "at": { "room": "ground", "dx": 15, "dy": 16 } },
+    { "id": "sluice-row-crop-magpie-9", "creature": "crop-magpie", "at": { "room": "ground", "dx": 50, "dy": 38 } },
+    { "id": "sluice-row-furrow-eel-10", "creature": "furrow-eel", "at": { "room": "ground", "dx": 44, "dy": 16 } },
+    { "id": "sluice-row-crop-magpie-11", "creature": "crop-magpie", "at": { "room": "ground", "dx": 5, "dy": 49 } },
+    { "id": "sluice-row-furrow-eel-12", "creature": "furrow-eel", "at": { "room": "ground", "dx": 49, "dy": 15 } },
+    { "id": "sluice-row-crop-magpie-13", "creature": "crop-magpie", "at": { "room": "ground", "dx": 48, "dy": 49 } },
+    { "id": "sluice-row-furrow-eel-14", "creature": "furrow-eel", "at": { "room": "ground", "dx": 15, "dy": 22 } },
+    { "id": "sluice-row-crop-magpie-15", "creature": "crop-magpie", "at": { "room": "ground", "dx": 44, "dy": 22 } },
+    { "id": "sluice-row-furrow-eel-16", "creature": "furrow-eel", "at": { "room": "ground", "dx": 60, "dy": 36 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}
