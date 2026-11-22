@@ -116,11 +116,32 @@ test('standard-integrity creatures give more experience at higher levels', () =>
   }
 });
 
-test('the Ward offers enough quest points to reach The Heart', () => {
-  const heart = GAME_CONTENT.quests.get('the-heart');
-  assert.ok(heart);
-  const available = [...GAME_CONTENT.quests.values()].filter((quest) => quest.id !== 'the-heart').reduce((sum, quest) => sum + (quest.questPoints ?? (quest.category === 'tutorial' ? 0 : 1)), 0);
-  assert.ok(available >= 12, `${available} quest points are on offer before The Heart`);
+const questPointsOf = (quest: { readonly questPoints?: number; readonly category: string }): number => quest.questPoints ?? (quest.category === 'tutorial' ? 0 : 1);
+
+const STORYLINES = () => [...GAME_CONTENT.questlines.values()].filter((questline) => questline.kind === 'main');
+
+const STORY_CHAPTERS = (): string[] => STORYLINES().flatMap((questline) => questline.questIds);
+
+const predecessorsOf = (questId: string): string[] => {
+  const before: string[] = [];
+  let current = questId;
+  for (;;) {
+    const previous = [...GAME_CONTENT.quests.values()].find((quest) => quest.followUpQuestId === current && !before.includes(quest.id) && quest.id !== questId);
+    if (!previous) return before;
+    before.push(previous.id);
+    current = previous.id;
+  }
+};
+
+test('every quest-point gate, the finale included, asks no more than the other quests offer', () => {
+  for (const quest of GAME_CONTENT.quests.values()) {
+    const available = [...GAME_CONTENT.quests.values()].filter((other) => other.id !== quest.id).reduce((sum, other) => sum + questPointsOf(other), 0);
+    for (const step of quest.steps) {
+      for (const objective of step.objectives) {
+        if (objective.type === 'reach' && objective.measure === 'questPoints') assert.ok(objective.level <= available, `${quest.id}/${step.id} asks ${objective.level} of the ${available} quest points on offer elsewhere`);
+      }
+    }
+  }
 });
 
 const mulberry = (seed: number) => () => {
@@ -170,16 +191,16 @@ const SCRAP_SET: EquipmentState = { primary: 'scrap-shock-baton', head: 'scrap-h
 const IRON_SET: EquipmentState = { primary: 'ferro-shock-baton', head: 'ferro-helmet', torso: 'ferro-carapace', hands: 'ferro-gauntlets', legs: 'ferro-legguards', feet: 'ferro-mag-boots' };
 
 const BANDS: readonly { readonly name: string; readonly operative: Operative; readonly creature: string; readonly min: number; readonly max: number }[] = [
-  { name: 'a fresh operative in the issue kit beats canal rats', operative: { closeQuarters: 1, fortitude: 1, gear: KIT }, creature: 'canal-rat', min: 0.95, max: 1 },
-  { name: 'a fresh operative in the issue kit beats stray dogs', operative: { closeQuarters: 1, fortitude: 1, gear: KIT }, creature: 'stray-dog', min: 0.95, max: 1 },
-  { name: 'a fresh operative is not yet safe against gutter mites', operative: { closeQuarters: 1, fortitude: 1, gear: KIT }, creature: 'gutter-mite', min: 0, max: 0.85 },
-  { name: 'combat level 4 in the issue kit handles gutter mites', operative: { closeQuarters: 5, fortitude: 3, gear: KIT }, creature: 'gutter-mite', min: 0.95, max: 1 },
-  { name: 'Close Quarters 6 in scrap handles silt eels', operative: { closeQuarters: 6, fortitude: 5, gear: SCRAP_SET }, creature: 'silt-eel', min: 0.85, max: 1 },
-  { name: 'the Lamplighter turns back an operative still in scrap', operative: { closeQuarters: 10, fortitude: 7, gear: SCRAP_SET }, creature: 'the-lamplighter', min: 0, max: 0.4 },
-  { name: 'the Lamplighter falls to the same operative with an iron baton', operative: { closeQuarters: 10, fortitude: 7, gear: { ...SCRAP_SET, primary: 'ferro-shock-baton' } }, creature: 'the-lamplighter', min: 0.75, max: 0.97 },
-  { name: 'the Scrapyards stake is no place for Close Quarters 8 in scrap', operative: { closeQuarters: 8, fortitude: 6, gear: SCRAP_SET }, creature: 'rustling', min: 0, max: 0.25 },
-  { name: 'an iron blade at Close Quarters 10 handles rustlings', operative: { closeQuarters: 10, fortitude: 7, gear: { ...SCRAP_SET, primary: 'ferro-monoblade' } }, creature: 'rustling', min: 0.8, max: 1 },
-  { name: 'an operative at 10 in iron clears scrap crawlers', operative: { closeQuarters: 10, fortitude: 10, gear: IRON_SET }, creature: 'scrap-crawler', min: 0.9, max: 1 },
+  { name: 'a fresh operative in the issue kit beats lawn rats', operative: { closeQuarters: 1, fortitude: 1, gear: KIT }, creature: 'lawn-rat', min: 0.95, max: 1 },
+  { name: 'a fresh operative in the issue kit beats courtyard gulls', operative: { closeQuarters: 1, fortitude: 1, gear: KIT }, creature: 'courtyard-gull', min: 0.95, max: 1 },
+  { name: 'a fresh operative is not yet safe against grounds mites', operative: { closeQuarters: 1, fortitude: 1, gear: KIT }, creature: 'grounds-mite', min: 0, max: 0.85 },
+  { name: 'combat level 4 in the issue kit handles grounds mites', operative: { closeQuarters: 5, fortitude: 3, gear: KIT }, creature: 'grounds-mite', min: 0.95, max: 1 },
+  { name: 'Close Quarters 6 in scrap handles furrow eels', operative: { closeQuarters: 6, fortitude: 5, gear: SCRAP_SET }, creature: 'furrow-eel', min: 0.85, max: 1 },
+  { name: 'the Orchard Keeper turns back an operative still in scrap', operative: { closeQuarters: 15, fortitude: 12, gear: SCRAP_SET }, creature: 'orchard-keeper', min: 0, max: 0.4 },
+  { name: 'the Orchard Keeper falls to the same operative in ferro', operative: { closeQuarters: 15, fortitude: 12, gear: IRON_SET }, creature: 'orchard-keeper', min: 0.75, max: 0.97 },
+  { name: 'the upper Harrow terraces are no place for Close Quarters 8 in scrap', operative: { closeQuarters: 8, fortitude: 6, gear: SCRAP_SET }, creature: 'thornback', min: 0, max: 0.25 },
+  { name: 'a ferro blade at Close Quarters 10 handles thornbacks', operative: { closeQuarters: 10, fortitude: 7, gear: { ...SCRAP_SET, primary: 'ferro-monoblade' } }, creature: 'thornback', min: 0.8, max: 1 },
+  { name: 'an operative at 10 in ferro clears seed mites', operative: { closeQuarters: 10, fortitude: 10, gear: IRON_SET }, creature: 'seed-mite', min: 0.9, max: 1 },
 ];
 
 for (const band of BANDS) {
@@ -204,25 +225,26 @@ test('ladder weapons carry only the offence stat their style uses, and the blade
   }
 });
 
-test('the Site Meridian storyline hands each chapter straight to the next', () => {
-  const tutorial = GAME_CONTENT.quests.get(GAME_CONTENT.newCharacter.startingQuestId ?? '');
-  assert.equal(tutorial?.followUpQuestId, GAME_CONTENT.questlines.get('site-meridian')?.questIds[0]);
-  const chapters = GAME_CONTENT.questlines.get('site-meridian')?.questIds ?? [];
-  for (const [index, questId] of chapters.slice(0, -1).entries()) {
-    assert.equal(GAME_CONTENT.quests.get(questId)?.followUpQuestId, chapters[index + 1], `${questId} leads on`);
+test('every storyline hands each chapter straight to the next, and the first quest leads into one', () => {
+  const start = GAME_CONTENT.newCharacter.startingQuestId ?? '';
+  assert.ok(GAME_CONTENT.quests.get(start), start);
+  const questlines = STORYLINES();
+  assert.ok(questlines.some((questline) => questline.questIds[0] === start || questline.questIds[0] === GAME_CONTENT.quests.get(start)?.followUpQuestId), `${start} opens no storyline`);
+  for (const questline of questlines) {
+    for (const [index, questId] of questline.questIds.slice(0, -1).entries()) {
+      assert.equal(GAME_CONTENT.quests.get(questId)?.followUpQuestId, questline.questIds[index + 1], `${questline.id}: ${questId} leads on`);
+    }
   }
 });
 
-test('Lost Cat runs three gutter mites back to back: risky without food, safe eating smoked eels between fights', () => {
+test('three grounds mites back to back are risky without food and safe eating smoked eels between fights', () => {
   const eel = GAME_CONTENT.items.get('smoked-eel')?.consumable?.heal ?? 0;
   assert.ok(eel > 0);
-  const mites = GAME_CONTENT.quests.get('lost-cat')?.steps.find((step) => step.id === 'mites')?.objectives[0];
-  assert.ok(mites?.type === 'defeat' && mites.creatureId === 'gutter-mite');
   const fresh: Operative = { closeQuarters: 4, fortitude: 3, gear: KIT };
   const recommended: Operative = { closeQuarters: 6, fortitude: 4, gear: KIT };
-  assert.ok(gauntletWinRate(fresh, 'gutter-mite', mites.count) < 0.3, 'the journal warning to eat is earned');
-  assert.ok(gauntletWinRate(fresh, 'gutter-mite', mites.count, 2 * eel) >= 0.95, 'two eels between fights carry a fresh operative through');
-  assert.ok(gauntletWinRate(recommended, 'gutter-mite', mites.count, eel) >= 0.95, 'one eel between fights is enough at the recommended level');
+  assert.ok(gauntletWinRate(fresh, 'grounds-mite', 3) < 0.3, 'the warning to eat is earned');
+  assert.ok(gauntletWinRate(fresh, 'grounds-mite', 3, 2 * eel) >= 0.95, 'two eels between fights carry a fresh operative through');
+  assert.ok(gauntletWinRate(recommended, 'grounds-mite', 3, eel) >= 0.95, 'one eel between fights is enough at the recommended level');
 });
 
 test('quest rewards hand out only craftable, non-unique gear and consumables', () => {
@@ -237,12 +259,27 @@ test('quest rewards hand out only craftable, non-unique gear and consumables', (
   }
 });
 
-test('quests before Dead Band pay most of the Engineering its receiver needs', () => {
-  const receiver = [...GAME_CONTENT.recipes.values()].find((recipe) => recipe.output.itemId === 'dead-band-receiver');
-  assert.ok(receiver);
-  const before = ['valve-trouble', 'steel-below'];
-  const paid = before.flatMap((id) => GAME_CONTENT.quests.get(id)?.rewards ?? []).reduce((sum, effect) => sum + (effect.type === 'grantExperience' && effect.skill === 'engineering' ? effect.amount : 0), 0);
-  assert.ok(paid >= 0.75 * experienceForLevel(receiver.level), `${paid} Engineering XP against ${experienceForLevel(receiver.level)}`);
+test('a story chapter that has you craft its own item pays most of the skill beforehand or gates on it first', () => {
+  for (const questId of STORY_CHAPTERS()) {
+    const quest = GAME_CONTENT.quests.get(questId);
+    assert.ok(quest, questId);
+    const before = predecessorsOf(quest.id);
+    const gates = new Map<string, number>();
+    for (const step of quest.steps) {
+      for (const objective of step.objectives) {
+        if (objective.type !== 'craft') continue;
+        const item = GAME_CONTENT.items.get(objective.itemId);
+        const recipe = [...GAME_CONTENT.recipes.values()].find((entry) => entry.output.itemId === objective.itemId);
+        if (item?.category !== 'quest' || !recipe || recipe.level <= 1) continue;
+        if ((gates.get(recipe.skill) ?? 0) >= recipe.level) continue;
+        const paid = before.flatMap((id) => GAME_CONTENT.quests.get(id)?.rewards ?? []).reduce((sum, effect) => sum + (effect.type === 'grantExperience' && effect.skill === recipe.skill ? effect.amount : 0), 0);
+        assert.ok(paid >= 0.75 * experienceForLevel(recipe.level), `${quest.id}/${step.id} crafts ${item.id} at ${recipe.skill} ${recipe.level}: earlier quests pay ${paid} of ${experienceForLevel(recipe.level)} XP`);
+      }
+      for (const objective of step.objectives) {
+        if (objective.type === 'reach') gates.set(objective.measure, Math.max(gates.get(objective.measure) ?? 0, objective.level));
+      }
+    }
+  }
 });
 
 test('tier-1 food sells for no more than 1.5 scrip per point healed', () => {
@@ -281,9 +318,31 @@ test('the maul hits at least as hard per tick as the blade at every rung', () =>
   }
 });
 
-test('the strongest creature an operative can safely farm pays the most experience per minute', () => {
-  const farmable = ['canal-rat', 'pigeon', 'scrap-magpie', 'stray-dog', 'gutter-mite', 'silt-eel', 'scrap-crawler'];
+const COLUMNS: readonly { readonly name: string; readonly tiers: readonly [number, number] }[] = [
+  { name: 'Kestrel', tiers: [1, 2] },
+  { name: 'Harrow', tiers: [3, 5] },
+  { name: 'Halcyon', tiers: [6, 7] },
+  { name: 'Wreckfield', tiers: [8, 9] },
+  { name: 'Glass Steppe', tiers: [10, 11] },
+  { name: 'Spindle', tiers: [12, 13] },
+];
+
+const homeTiers = (): Map<string, number> => {
+  const tiers = new Map<string, number>();
+  for (const district of GAME_CONTENT.districts.values()) {
+    for (const placement of district.creatures ?? []) tiers.set(placement.creatureId, Math.max(tiers.get(placement.creatureId) ?? 0, district.tier));
+  }
+  return tiers;
+};
+
+const isBoss = (creatureId: string): boolean => Boolean(GAME_CONTENT.creatures.get(creatureId)?.encounter);
+
+const residentsOf = (column: (typeof COLUMNS)[number]): string[] =>
+  [...homeTiers()].filter(([id, tier]) => !isBoss(id) && tier >= column.tiers[0] && tier <= column.tiers[1]).map(([id]) => id);
+
+test('the strongest creature of Kestrel and Harrow an operative can safely farm pays the most experience per minute', () => {
   const operative: Operative = { closeQuarters: 10, fortitude: 10, gear: IRON_SET };
+  const candidates = [...residentsOf(COLUMNS[0]!), ...residentsOf(COLUMNS[1]!)];
   const perMinute = (creatureId: string): number => {
     const creature = GAME_CONTENT.creatures.get(creatureId);
     assert.ok(creature);
@@ -293,8 +352,10 @@ test('the strongest creature an operative can safely farm pays the most experien
     const ticks = (creature.integrity / perSwing) * attack.speedTicks + 15;
     return ((creature.integrity * 4 + creature.experience) / ticks) * 200;
   };
-  const best = farmable.reduce((top, id) => (perMinute(id) > perMinute(top) ? id : top));
-  assert.equal(best, 'scrap-crawler', `${best} pays ${perMinute(best).toFixed(0)} a minute`);
+  const safe = candidates.filter((id) => winRate(operative, id, 1000) >= 0.95);
+  const strongest = safe.reduce((top, id) => (GAME_CONTENT.creatures.get(id)!.level > GAME_CONTENT.creatures.get(top)!.level ? id : top));
+  const best = candidates.reduce((top, id) => (perMinute(id) > perMinute(top) ? id : top));
+  assert.equal(best, strongest, `${best} pays ${perMinute(best).toFixed(0)} a minute against ${strongest}'s ${perMinute(strongest).toFixed(0)}`);
 });
 
 type Style = keyof typeof COMBAT_STYLE_INFO;
@@ -373,21 +434,6 @@ function linePace(style: Style, level: number, creatureId: string, gearLevel = l
   return ((creature.integrity * 4 + creature.experience) / (fight + Math.max(15, healing))) * 200;
 }
 
-test('counting the wait to heal, the Fringe pays better than crawlers until the Cordon catches up in the forties and takes over at 50', () => {
-  for (const level of [20, 25, 30, 35]) {
-    const knockers = linePace('melee', level, 'hull-knocker');
-    const crawlers = linePace('melee', level, 'scrap-crawler');
-    assert.ok(knockers > crawlers * 1.1, `at ${level} knockers pay ${knockers.toFixed(0)} against crawlers' ${crawlers.toFixed(0)}`);
-    assert.ok(linePace('melee', level, 'cordon-stalker') < knockers, `at ${level} the Cordon outpays the Fringe`);
-  }
-  for (const level of [40, 45, 50]) {
-    const knockers = linePace('melee', level, 'hull-knocker', 40);
-    const cordon = linePace('melee', level, 'cordon-stalker', 40);
-    const floor = level >= 50 ? 1 : 0.9;
-    assert.ok(cordon >= knockers * floor, `at ${level} the Cordon pays ${cordon.toFixed(0)} against knockers' ${knockers.toFixed(0)}`);
-  }
-});
-
 const farmable = (): string[] => {
   const spots = new Map<string, number>();
   for (const district of GAME_CONTENT.districts.values()) {
@@ -396,27 +442,45 @@ const farmable = (): string[] => {
   return [...spots].filter(([, count]) => count >= 2).map(([id]) => id);
 };
 
-test('at combat levels 20, 30, 40 and 50 every style has a safe farm in its own armour line and strongest weapon that keeps pace with melee', () => {
-  const creatures = farmable();
-  assert.ok(!creatures.includes('the-warden') && !creatures.includes('the-lamplighter'));
-  for (const level of [20, 30, 40, 50]) {
-    const best = (style: Style) =>
-      creatures
-        .map((id) => ({ id, ...lineFight(style, level, id, true), pace: linePace(style, level, id, level, true) }))
-        .filter((fight) => fight.win >= 0.95 && fight.lost <= 0.6)
-        .sort((a, b) => b.pace - a.pace)[0];
-    const melee = best('melee');
+const bestSafeFarm = (creatures: readonly string[], styles: readonly Style[], level: number) =>
+  creatures
+    .flatMap((id) => styles.map((style) => ({ id, style, ...lineFight(style, level, id, true), pace: linePace(style, level, id, level, true) })))
+    .filter((fight) => fight.win >= 0.95 && fight.lost <= 0.6)
+    .sort((a, b) => b.pace - a.pace)[0];
+
+test('no boss is a farm', () => {
+  for (const id of farmable()) assert.ok(!isBoss(id), `${id} is placed as a farm`);
+});
+
+for (const level of [20, 30, 40, 50]) {
+  test(`at combat level ${level} every style has a safe farm in its own armour line and strongest weapon that keeps pace with melee`, () => {
+    const creatures = farmable();
+    const melee = bestSafeFarm(creatures, ['melee'], level);
     assert.ok(melee, `melee has no safe farm at ${level}`);
     for (const style of STYLES) {
-      const farm = best(style);
+      const farm = bestSafeFarm(creatures, [style], level);
       assert.ok(farm, `${style} has no safe farm at ${level}`);
       assert.ok(farm.pace >= 0.7 * melee.pace, `${style} at ${level}: ${farm.id} pays ${farm.pace.toFixed(0)} a minute against melee's ${melee.pace.toFixed(0)} on ${melee.id}`);
     }
-  }
-});
+  });
+}
+
+for (const [index, column] of COLUMNS.entries()) {
+  const previous = COLUMNS[index - 1];
+  if (index < 2 || !previous) continue;
+  test(`counting the wait to heal, the ${column.name} out-pays the ${previous.name} once an operative is level with it`, () => {
+    const residents = residentsOf(column).filter((id) => farmable().includes(id));
+    assert.ok(residents.length > 0, `${column.name} has no farm`);
+    const level = Math.max(...residents.map((id) => GAME_CONTENT.creatures.get(id)!.level)) + 3;
+    const here = bestSafeFarm(residents, STYLES, level);
+    const there = bestSafeFarm(residentsOf(previous).filter((id) => farmable().includes(id)), STYLES, level);
+    assert.ok(here && there, `no safe farm at ${level}`);
+    assert.ok(here.pace >= there.pace * 1.05, `at ${level} the ${column.name} pays ${here.pace.toFixed(0)} on ${here.id} against ${there.pace.toFixed(0)} on ${there.id} in the ${previous.name}`);
+  });
+}
 
 test('every combat style has at least two non-boss creatures that guard with its armour line', () => {
-  const creatures = [...GAME_CONTENT.creatures.values()].filter((creature) => creature.id !== 'the-warden');
+  const creatures = [...GAME_CONTENT.creatures.values()].filter((creature) => !creature.encounter);
   for (const style of Object.keys(COMBAT_STYLE_INFO) as (keyof typeof COMBAT_STYLE_INFO)[]) {
     const line = COMBAT_STYLE_INFO[style].line;
     const guarded = creatures.filter((creature) => creature.guard === line);
@@ -453,7 +517,6 @@ test('an NPC with a waiting line says it while the quest is active', () => {
 });
 
 test('a story chapter that starts on its own has no gated offer left to hide its story, and its gates are reachable', () => {
-  const chapters = GAME_CONTENT.questlines.get('site-meridian')?.questIds ?? [];
   const followUps = new Set([...GAME_CONTENT.quests.values()].flatMap((quest) => (quest.followUpQuestId ? [quest.followUpQuestId] : [])));
   const skipped = new Set(['skillLevel', 'combatLevel', 'questPoints']);
   for (const dialogue of GAME_CONTENT.dialogues.values()) {
@@ -465,8 +528,8 @@ test('a story chapter that starts on its own has no gated offer left to hide its
       }
     }
   }
-  const available = [...GAME_CONTENT.quests.values()].filter((quest) => quest.id !== 'the-heart' && quest.category !== 'tutorial').reduce((sum, quest) => sum + (quest.questPoints ?? 1), 0);
-  for (const questId of chapters) {
+  for (const questId of STORY_CHAPTERS()) {
+    const available = [...GAME_CONTENT.quests.values()].filter((quest) => quest.id !== questId && quest.category !== 'tutorial').reduce((sum, quest) => sum + (quest.questPoints ?? 1), 0);
     for (const step of GAME_CONTENT.quests.get(questId)?.steps ?? []) {
       for (const objective of step.objectives) {
         if (objective.type === 'reach' && objective.measure === 'questPoints') assert.ok(objective.level <= available, `${questId} asks ${objective.level} of ${available} quest points`);
@@ -476,7 +539,7 @@ test('a story chapter that starts on its own has no gated offer left to hide its
 });
 
 test('each story gate on a skill or combat level points the minimap somewhere to train', () => {
-  for (const questId of GAME_CONTENT.questlines.get('site-meridian')?.questIds ?? []) {
+  for (const questId of STORY_CHAPTERS()) {
     for (const step of GAME_CONTENT.quests.get(questId)?.steps ?? []) {
       for (const objective of step.objectives) {
         if (objective.type !== 'reach' || objective.measure === 'questPoints') continue;
@@ -487,51 +550,43 @@ test('each story gate on a skill or combat level points the minimap somewhere to
   }
 });
 
-test('a story chapter never hides a Containment wall inside a contain step: a reach gate comes first', () => {
-  const chapters = GAME_CONTENT.questlines.get('site-meridian')?.questIds ?? [];
+test('a storyline never hides a Containment wall inside a contain step: a reach gate comes first', () => {
   const contained: string[] = [];
-  let supplied = 0;
-  for (const questId of chapters) {
-    const quest = GAME_CONTENT.quests.get(questId);
-    assert.ok(quest, questId);
-    let gated = 0;
-    for (const step of quest.steps) {
-      for (const objective of step.objectives) {
-        if (objective.type === 'contain') {
-          const creature = GAME_CONTENT.creatures.get(objective.creatureId);
-          assert.ok(creature, objective.creatureId);
-          const level = containmentLevelFor(creature);
-          contained.push(`${questId}/${step.id}`);
-          if (experienceForLevel(level) > supplied) assert.ok(gated >= level, `${questId}/${step.id} contains ${creature.name} (Containment ${level}) with no earlier reach gate at that level`);
+  for (const questline of STORYLINES()) {
+    let supplied = 0;
+    for (const questId of questline.questIds) {
+      const quest = GAME_CONTENT.quests.get(questId);
+      assert.ok(quest, questId);
+      let gated = 0;
+      for (const step of quest.steps) {
+        for (const objective of step.objectives) {
+          if (objective.type === 'contain') {
+            const creature = GAME_CONTENT.creatures.get(objective.creatureId);
+            assert.ok(creature, objective.creatureId);
+            const level = containmentLevelFor(creature);
+            contained.push(`${questId}/${step.id}`);
+            if (experienceForLevel(level) > supplied) assert.ok(gated >= level, `${questId}/${step.id} contains ${creature.name} (Containment ${level}) with no earlier reach gate at that level`);
+          }
+        }
+        for (const objective of step.objectives) {
+          if (objective.type === 'reach' && objective.measure === 'containment') gated = Math.max(gated, objective.level);
         }
       }
-      for (const objective of step.objectives) {
-        if (objective.type === 'reach' && objective.measure === 'containment') gated = Math.max(gated, objective.level);
+      for (const effect of quest.rewards) {
+        if (effect.type === 'grantExperience' && effect.skill === 'containment') supplied += effect.amount;
       }
     }
-    for (const effect of quest.rewards) {
-      if (effect.type === 'grantExperience' && effect.skill === 'containment') supplied += effect.amount;
-    }
   }
-  assert.ok(contained.includes('bill-of-lading/specimen') && contained.includes('the-heart/tide'), contained.join(', '));
+  assert.ok(contained.length > 0, 'some storyline asks for a containment');
 });
 
-test('The Heart contains its tide wraith before the Warden, and saves on every step stay put or wait on the wraith', () => {
-  const heart = GAME_CONTENT.quests.get('the-heart');
-  assert.ok(heart);
-  const ids = heart.steps.map((step) => step.id);
-  assert.ok(ids.indexOf('tide') > ids.indexOf('hale') && ids.indexOf('tide') < ids.indexOf('descend'), ids.join(','));
-  assert.ok(ids.indexOf('descend') < ids.indexOf('warden') && ids.indexOf('warden') < ids.indexOf('hatch'));
-  for (const stepId of ['hale', 'descend', 'warden', 'hatch', 'mercer', 'tide']) {
-    const saved = { questId: heart.id, status: 'active' as const, stepIndex: 0, stepId, objectiveProgress: [0] };
-    const moved = realignedProgress(heart, saved);
-    assert.equal(heart.steps[moved.stepIndex]?.id, stepId, `a save on ${stepId} stays on it`);
+test('a save on any quest step stays on that step', () => {
+  for (const quest of GAME_CONTENT.quests.values()) {
+    for (const step of quest.steps) {
+      const saved = { questId: quest.id, status: 'active' as const, stepIndex: 0, stepId: step.id, objectiveProgress: [0] };
+      assert.equal(quest.steps[realignedProgress(quest, saved).stepIndex]?.id, step.id, `a save on ${quest.id}/${step.id} stays on it`);
+    }
   }
-  const legacy = (stepIndex: number) => ({ questId: heart.id, status: 'active' as const, stepIndex, objectiveProgress: [0] });
-  const placed = [0, 1, 2, 3, 4].map((index) => heart.steps[realignedProgress(heart, legacy(index)).stepIndex]?.id);
-  assert.equal(placed[0], 'hale');
-  for (const stepId of placed) assert.ok(stepId && ids.indexOf(stepId) <= ids.indexOf('mercer'));
-  assert.ok(ids.indexOf(placed[2] ?? '') <= ids.indexOf('warden'), 'a legacy save at the Warden is never moved past it');
 });
 
 test('the level cap is 200 and mastery mantles do not out-stat the best tier-50 back item', () => {

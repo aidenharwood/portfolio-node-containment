@@ -23,7 +23,7 @@
     { "room": "orchard-rows", "name": "The Mother Rows", "safe": false, "multiCombat": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 49, "dy": 27 }
+    "start": { "room": "ground", "dx": 10, "dy": 60 }
   },
   "objects": [
     { "id": "orchard-gatehouse-shelving-0", "object": "shelving", "at": { "room": "orchard-gatehouse", "dx": 1, "dy": 0 }, "facing": "south" },
@@ -64,8 +64,9 @@
     { "id": "site-orchard-barricade-35", "object": "barricade", "at": { "room": "ground", "dx": 52, "dy": 59 } },
     { "id": "site-orchard-washing-line-36", "object": "washing-line", "at": { "room": "ground", "dx": 55, "dy": 51 } },
     { "id": "site-orchard-barricade-37", "object": "barricade", "at": { "room": "ground", "dx": 17, "dy": 27 } },
-    { "id": "site-orchard-lock-gear-38", "object": "lock-gear", "at": { "room": "ground", "dx": 4, "dy": 29 } },
-    { "id": "site-orchard-reed-bed-39", "object": "reed-bed", "at": { "room": "ground", "dx": 5, "dy": 51 } }
+    { "id": "site-orchard-orchard-seed-drawer-38", "object": "orchard-seed-drawer", "at": { "room": "ground", "dx": 4, "dy": 29 } },
+    { "id": "site-orchard-lock-gear-39", "object": "lock-gear", "at": { "room": "ground", "dx": 5, "dy": 51 } },
+    { "id": "site-orchard-reed-bed-40", "object": "reed-bed", "at": { "room": "ground", "dx": 10, "dy": 27 } }
   ],
   "assemblies": [],
   "npcs": [
@@ -77,13 +78,13 @@
     { "id": "seed-vault-seed-mite-1", "creature": "seed-mite", "at": { "room": "seed-vault", "dx": 9, "dy": 6 } },
     { "id": "orchard-rows-orchard-keeper-0", "creature": "orchard-keeper", "at": { "room": "orchard-rows", "dx": 5, "dy": 4 } },
     { "id": "orchard-rows-seed-mite-1", "creature": "seed-mite", "at": { "room": "orchard-rows", "dx": 11, "dy": 4 } },
-    { "id": "site-orchard-scarecoat-0", "creature": "scarecoat", "at": { "room": "ground", "dx": 56, "dy": 26 } },
-    { "id": "site-orchard-seed-mite-1", "creature": "seed-mite", "at": { "room": "ground", "dx": 6, "dy": 42 } },
-    { "id": "site-orchard-scarecoat-2", "creature": "scarecoat", "at": { "room": "ground", "dx": 10, "dy": 27 } },
-    { "id": "site-orchard-seed-mite-3", "creature": "seed-mite", "at": { "room": "ground", "dx": 42, "dy": 28 } },
-    { "id": "site-orchard-scarecoat-4", "creature": "scarecoat", "at": { "room": "ground", "dx": 30, "dy": 27 } },
-    { "id": "site-orchard-seed-mite-5", "creature": "seed-mite", "at": { "room": "ground", "dx": 33, "dy": 22 } },
-    { "id": "site-orchard-scarecoat-6", "creature": "scarecoat", "at": { "room": "ground", "dx": 39, "dy": 20 } }
+    { "id": "site-orchard-scarecoat-0", "creature": "scarecoat", "at": { "room": "ground", "dx": 42, "dy": 28 } },
+    { "id": "site-orchard-seed-mite-1", "creature": "seed-mite", "at": { "room": "ground", "dx": 30, "dy": 27 } },
+    { "id": "site-orchard-scarecoat-2", "creature": "scarecoat", "at": { "room": "ground", "dx": 33, "dy": 22 } },
+    { "id": "site-orchard-seed-mite-3", "creature": "seed-mite", "at": { "room": "ground", "dx": 39, "dy": 20 } },
+    { "id": "site-orchard-scarecoat-4", "creature": "scarecoat", "at": { "room": "ground", "dx": 49, "dy": 27 } },
+    { "id": "site-orchard-seed-mite-5", "creature": "seed-mite", "at": { "room": "ground", "dx": 5, "dy": 42 } },
+    { "id": "site-orchard-scarecoat-6", "creature": "scarecoat", "at": { "room": "ground", "dx": 39, "dy": 60 } }
   ],
   "lights": [],
   "decals": [],

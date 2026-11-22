@@ -26,7 +26,7 @@
   ],
   "anchors": {
     "outpost": { "room": "neon-row-post", "dx": 6, "dy": 2 },
-    "start": { "room": "ground", "dx": 28, "dy": 27 }
+    "start": { "room": "ground", "dx": 40, "dy": 33 }
   },
   "objects": [
     { "id": "neon-row-post-shelving-0", "object": "shelving", "at": { "room": "neon-row-post", "dx": 1, "dy": 0 }, "facing": "south" },
@@ -94,7 +94,8 @@
     { "id": "neon-row-barricade-62", "object": "barricade", "at": { "room": "ground", "dx": 8, "dy": 58 } },
     { "id": "neon-row-street-bench-63", "object": "street-bench", "at": { "room": "ground", "dx": 57, "dy": 15 }, "facing": "south" },
     { "id": "neon-row-street-bench-64", "object": "street-bench", "at": { "room": "ground", "dx": 60, "dy": 60 }, "facing": "south" },
-    { "id": "neon-row-street-bench-65", "object": "street-bench", "at": { "room": "ground", "dx": 52, "dy": 46 }, "facing": "south" }
+    { "id": "neon-row-street-bench-65", "object": "street-bench", "at": { "room": "ground", "dx": 52, "dy": 46 }, "facing": "south" },
+    { "id": "neon-row-dead-screen-66", "object": "dead-screen", "at": { "room": "ground", "dx": 28, "dy": 27 } }
   ],
   "assemblies": [],
   "npcs": [

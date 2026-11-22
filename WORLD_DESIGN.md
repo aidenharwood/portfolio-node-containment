@@ -2,23 +2,21 @@
 
 Read this before adding or changing a district, a level or anything placed in one. It applies to humans and AI agents alike. Every district in the game follows these rules; there is no exemption list. The rules marked **checked** are enforced by `findWorldDesignIssues` (`packages/shared/src/content/worldDesignIntegrity.ts`), which runs inside `findContentIssues`: the server will not boot and `npm test` fails when one is broken. The rest is judgement, and reviewers hold changes to it.
 
-> **Status:** the overworld is the Hinterland (`docs/superpowers/specs/2026-11-19-hinterland-atlas-design.md`): one land plan, `content/land/hinterland.json`, 768 × 640 tiles, with the Low Ward pinned into it so Terminus Square starts at 128, 320. The Low Ward is built and peopled: nine open squares from Terminus Square out to the Cordon gate, and three levels below Site Meridian (Intake, the Secure Wing and the Vault) reached by the headhouse lift. Beyond the Cordon, 132 land squares are cut from the plan into eight wards, each blocked out with its town, Site compound, outpost and crossings. Players call the land beyond the Cordon New Meridian (district subtitles say so); its ids keep the name `hinterland`. Every gate stands open from the start, so the whole overworld is walkable on day one. Their people, quests, creatures, gathering spots and Site levels come ward by ward.
+> **Status:** the overworld is the Span (`docs/superpowers/specs/2026-11-20-the-span-design.md`): one land plan, `content/land/the-span.json`, 16 × 6 squares of 64 (1024 × 384 tiles), cut into 96 land squares across six regions, with three facility levels below ground (Kestrel Intake, the Gallowglass undercity and Null Below). Every region has its outpost, its Site and its settlement, built and peopled. Every Seam gate stands open from the start.
 >
-> **Next:** walk the land in a live game (build order step 5 of the atlas spec), then the far view (step 6), which draws low-detail land and landmark silhouettes beyond the built chunks so the sightlines work.
+> **How it was made:** `scripts/span/drawLand.ts` drew the land plan, and `scripts/span/cutSquares.ts` wrote every layout file. It cuts each square, stands the buildings listed in `scripts/span/places.ts` and dresses them from the room recipes in `scripts/span/recipes.ts`. It also places props, creature packs, gathering nodes, gate leaves and landmarks, and retitles the three blueprint facility levels (`scripts/span/below.ts`). The generator can be re-run while the Span is still being shaped, and it rewrites every layout when it is. Once a layout is edited by hand, stop re-running it.
 
 ## What the world should feel like
 
-Hollow Bay is **towns standing in a reclaimed landscape that you can walk across in any direction**, the way you can in RuneScape. The Low Ward is a dense port town where a river meets a small bay. Beyond the Cordon the anomalies let the city go wild: moor, overgrown suburbs, a great wood, marsh, a ridge, mountains and the Blight, with towns of very different sizes standing in that land and roads that fork at crossroads and loop. You go indoors by walking through a building's door. You go down by taking a lift or stair inside a facility.
+The Span is **a strip of a precursor ring-habitat that you walk along from end to end**. Rim walls close it to the north and south. It is cut into segments by the Seams: precursor bulkheads that cross it from rim to rim and are passable only at their gates. Inside each segment the ground is open and walkable in any direction, the way it is in RuneScape. You go indoors by walking through a building's door, and you go down by taking a Site's lift.
 
-- **Open ground first.** The overworld is not a set of rooms joined by corridors. It is open ground, with roads, squares, yards, fields and woods, and buildings standing in it. Walls exist only around buildings, along town walls and Directorate compounds, and at the edge of the playable map.
-- **The land is one place.** Coasts, the river, ridges, cliffs, roads and ward borders cross square edges freely. Nobody should be able to tell where one 64 × 64 square ends and the next begins; reviewers look at the assembled map with the grid hidden, and land that follows square edges is redrawn.
-- **Towns differ in size.** A town is anything from a hamlet of six cottages to a walled city of three squares. The ground between towns is wild land, broken up with cover, rises and paths so no stretch reads as a flat field.
-- **Height shapes the land.** Ridges, cliffs, plateaus and ledges decide where you can walk and what you can see past (see Terrain). Plan the sightlines: from the crossroads you see Old Town's wall, the Spire and Ironside's stacks; from the ridge you look down on the river and the walled town.
-- **Buildings stand in the ground.** A building is a small walled interior with doors onto the ground around it: a shop, a home, a pub, a gatehouse. Interiors are small and full; the ground outside is wide.
-- **Underground is enclosed.** Facility levels below the street are rooms joined by links, as before, and get more enclosed and more dangerous the deeper you go.
-- **Filler is content.** Most of the land is ground no quest sends you to: moor, woods, marsh, back lanes, yards and quays. It carries props, light, people and the odd gathering spot.
-- **Coherent shape.** The whole land has a plan you can describe in one sentence (the atlas spec's), and every ward has its own. New ground extends that plan.
-- **Landmarks.** Every town square has one thing you can see from a distance and won't find anywhere else, such as the station clock, the Ironside stacks or the drowned belfry, so players can find their way without the map. On the Low Ward's blueprint squares that means one per square. On land squares it means one per town, Site or outpost square, standing as a `focal` set-piece; wild squares need none, because the land itself (the ridge, the falls, the crater) is what you steer by there.
+- **Spinward is harder.** The regions run west to east: Kestrel Reach, Harrow Terraces, Halcyon, the Wreckfield, the Glass Steppe and the Spindle. Tier rises by column, so walking east is the difficulty curve.
+- **Every region is a different place.** Kestrel is clean white Directorate land around a lake. Harrow climbs in terraces to the rim. Halcyon is a neon arcology on a raised platform, laid out on a street grid of tower blocks. The Wreckfield is rust and scrap around the *Meridian*'s hull and a toxic lake. The Glass Steppe is alien soil around a terraced glass plateau. The Spindle is plating, grates and coolant at the end of the arc.
+- **Open ground first.** Walls stand only around buildings, along the rims and in the Seams.
+- **The Spill runs the length of the Span.** It is a river crossed by plank bridges, detouring south around the terraces.
+- **Settlements and Sites stand on pads.** These are flat paved grounds inside a square, with buildings in two rows facing south and a landmark set-piece. The Sites are graded by Security Class and status: Kestrel is Secure, Orchard is Strained, Gallowglass is Breached, Tallow is Overrun, Vesper is Lost and Null is Inverted. You see the status in what the Site holds: NPCs in safe buildings, or creatures in the cells, the yards and the open ground.
+- **Underground is enclosed.** Facility levels are rooms joined by links.
+- **Landmarks.** Every town, outpost and Site square holds one `focal` set-piece you can steer by, such as the Kestrel Headframe, the Aurelian Spire, the Meridian's bow or the Spindle.
 
 ## Rules
 
@@ -37,7 +35,7 @@ Hollow Bay is **towns standing in a reclaimed landscape that you can walk across
     - **Set-pieces** are prefabs placed by hand. They never overlap what is already there, and they keep a clear ring around them that crowds stay out of. Name each district's landmark rooms in `furnish.landmarks`; each one holds a set-piece whose prefab has the `focal` role.
     - **Dressing** names each room's `theme` (`civic`, `office`, `canteen`, `freight`, `ward`, `chapel`…, see `DRESSING_THEMES` in `content/prefabs/types.ts`): what the room is for. The theme decides which props belong there (see Placement below) and who stands about: generic NPCs (`content/ambientNpcs.ts`) gather near the benches, stools and pews in safe rooms. A room that is honestly two things says so with `also`, such as `{ "theme": "garden", "also": ["dormitory"] }` for the gardeners' quarters. Set `people` or `cast` on a room to override the crowd.
     - **Decals** paint the floor: inlays, mosaics, rugs, runners, lane paint and hazard paint come with prefabs, and anything else (wear, scorch, moss, salt crust) is placed by hand in the layout's `decals`. They lie on walkable floor only and change nothing in play.
-    - **Condition** labels how far a district has decayed (`pristine`, `worn`, `breached`, `overgrown`, `flooded`, `alien`, `uncanny`): the Low Ward is worn, the Shipyard Fringe breached, and the deep levels under Site Meridian alien. It adds nothing by itself; show it with what you place, such as barricades, rubble, sandbags and toppled furniture. An `uncanny` pocket mirrors its original strictly and gets it quietly wrong, with benches facing the wall and bookcases turned around.
+    - **Condition** labels how far a district has decayed (`pristine`, `worn`, `breached`, `overgrown`, `flooded`, `alien`, `uncanny`): Kestrel is pristine, Halcyon worn, the Wreckfield breached, the Glass Steppe alien, and Site Null and Null Below uncanny. It adds nothing by itself; show it with what you place, such as barricades, rubble, sandbags and toppled furniture. An `uncanny` pocket mirrors its original strictly and gets it quietly wrong, with benches facing the wall and bookcases turned around.
 7. **Ids are forever.** Do not rename an area, an instance id or a district: saves, quests and flags refer to them.
 7a. **Land is drawn, never typed.** Overworld ground beyond the districts is a land plan, `content/land/<id>.json`, drawn in the editor's land layer (`/editor.html?land=<id>`, tool L) and saved from there. Never type tiles or heights into a plan, and never hand-edit its coordinates in bulk; the save writes the canonical form and refuses a plan that breaks a square cut from it.
     - **Close every edge of the plan with land that matches what lies beyond it.** Past each edge the game repeats the edge tile and its height for one chunk, so sea at the edge reads as open sea, and fells or mountains at the edge read as fells or mountains going on. Walkable land never touches the plan's edge (**checked**, `findLandPlanIssues`).
@@ -122,7 +120,7 @@ The rest is judgement, and reviewers hold it:
     - **Platforms.** The track runs straight through the platform room and out of it at both ends, so a tram comes in one end and leaves by the other (`findTramIssues`). Give the room a `hazard` strip along the platform edge and walkable floor beside the car. A platform is usually a room on the district's edge with the bed along its outer side; where the bed cuts a door or an exit off from the platform, put `bridge` assemblies over it.
     - **Inside a district** draw the bed with `track(...)` in the blueprint. Through void it becomes a tunnel, since the rock beside it is walled. Where it must cross walkable floor, cross at right angles and put `bridge` assemblies over it (`facing: 'south'` over a bed running east–west, `'east'` over one running north–south), several side by side on a boulevard. Otherwise keep the bed out of rooms; a trench along the edge of a boulevard is acceptable.
     - **Between districts** the bed runs through the rock and the chasms as a level connector made by `drawTrackway` (`world/trackway.ts`), with waypoints given relative to placed districts. It may only cross void; when it would run into a district, that stretch belongs in that district's blueprint, ending at the district's edge where the connector picks it up.
-    - **The Low Ward** will have one short line from Terminus Square to the Canal Basin. Walking stays the main way around.
+    - **The Span** has no tram line yet. A maglev along the arc is the natural next transit, and walking stays the main way around.
 18. **A terminal is a room of its own.** Every tram station stands in a safe room called `tram-terminal`. No NPC stands in it, and nothing in it offers storage, a shop, the market, contracts, crafting or a teleport: benches, a departure board, a directory kiosk and the tram map only. No district exit touches it, and it is walled apart from its own doors, each at most 3 tiles wide; track beside it does not count. **Checked** (`findTerminalIssues`).
 
 ## Shape language
@@ -139,42 +137,34 @@ The rest is judgement, and reviewers hold it:
 
 **Tiers follow the level ladder.** A district's tier is the tier of the highest level it serves (`TIER_LEVEL_FLOORS`): home squares 1, the Canal Basin and the Cut 3, the Scrapyards and B1 6, the Fringe 8, the Cordon and B2 10, the Vault 12. A gathering spot only stands where the tier covers its level.
 
-**Safe ground.** The innermost area decides whether a tile is safe, so a fenced yard (a `building` with an outdoor floor and `"safe": false`) can hold critters inside a safe square, like the rail yard and the allotments. The squares near Terminus Square are otherwise safe all over. From the Cut, the Scrapyards and the Shipyard Fringe outward the open ground is hostile and only the buildings are safe, so creatures and gathering spots go on the ground and people stay indoors.
+**Safe ground.** The innermost area decides whether a tile is safe, so a fenced yard (a `building` with an outdoor floor and `"safe": false`) can hold critters inside a safe square, like Site Kestrel's Training Yard. Settlement squares are otherwise safe all over. Wild and Site squares are hostile and only the buildings people work in are safe, so creatures and gathering spots go on the ground and people stay indoors.
 
 **Rooms.** A tile inside a building belongs to the building, not to the ground around it: placement checks and the editor use the smallest room that contains the tile.
 
 **Floors.** `ceramic` is for medical, ward, lab, cold and canteen rooms; `boards` for homes, shops, offices, canteens and the like. Wall materials say who built a place: brick and blockwork for the old city, corrugated cladding for what went up after the anomalies, and the Directorate panel for the Directorate.
 
-## Wards
+## Regions
 
-Beyond the Cordon the overworld is the Hinterland, eight wards in one land plan (`docs/superpowers/specs/2026-11-19-hinterland-atlas-design.md`). The Low Ward is a port on the west coast; the Old Shipyards hold the north-west coast, the moor and the crossroads outside the Cordon; Tidemarsh the delta and the Great Wood on the south coast; the Heights the ridge to the north; Old Town the walled city astride the river in the valley; Ironside the falls under the north-east mountains; the Drowned Quarter the south-east coast; the Lantern the spit and the Blight road on its ledge; and the Blight the wild east round the crater lake.
+The Span is six regions in one land plan. Each region is a ward of the plan, sealed from its neighbours by a Seam, a rock bulkhead three tiles either side of a column boundary, with three `gate` steps through it.
 
-| Ward | Tiers | Squares | Outpost (hub) | Site square |
+| Region | Columns | Tiers | Outpost (hub) | Site |
 | - | - | - | - | - |
-| Old Shipyards | 14–15 | 36 | Forward Post Four, `gatehouse-yard` | `dry-dock-four` |
-| Tidemarsh | 16–17 | 26 | Tide Station, `tide-station` | `brinehouse` |
-| the Heights | 18–19 | 14 | Upper Station, `upper-station` | `the-spire` |
-| Old Town | 20–21 | 9 | The Hostel, `westgate` | `cathedral-close` |
-| Ironside | 22–23 | 8 | Shift House, `railhead` | `bellows` |
-| Drowned Quarter | 24–25 | 9 | The Roost, `the-roost` | `site-fathom` |
-| the Lantern | 26–27 | 15 | Keepers' Post, `keepers-hamlet` | `the-lantern` |
-| the Blight | 28 | 15 | Rim Camp, `rim-camp` | the Hollow, reserved |
+| Kestrel Reach | 0–2 | 1–2 | Commons Stores, `kestrel-commons` (the exchange) | `site-kestrel` (SC-V, Secure), lift to `kestrel-intake` |
+| Harrow Terraces | 3–5 | 3–5 | Co-op Stores, `harrowgate` | `site-orchard` (SC-II, Strained) |
+| Halcyon | 6–8 | 6–7 | Juno's, `neon-row` | `site-gallowglass` (SC-III, Breached), lift to `gallowglass-undercity` |
+| the Wreckfield | 9–11 | 8–9 | Mags' Post, `rustwater` | `site-tallow` (SC-IV, Overrun) |
+| the Glass Steppe | 12–13 | 10–11 | Pilgrims' Rest, `the-choir` | `site-vesper` (SC-IV, Lost) |
+| the Spindle | 14–15 | 12–13 | Last Post HQ, `last-post` | `site-null` (SC-V, Inverted), lift to `null-below` |
 
-- **A ward is a region.** Every land square belongs to the ward the land plan's `ward` steps give its tiles. A square crossed by a ward border is `split`, one district per ward, each keeping only its own ward's tiles.
-- **Wards are sealed by land.** Sea, the river, the creek, cliffs, Old Town's wall and the mountains close each ward. Every gap is a land gate: a `gate` step in the plan, two tiles across and two deep, whose door tiles hold two leaves of one door object. Every gate, the Cordon gate included, is open to everyone from the start: the world is reachable from the first minute, and only buildings and lifts may be locked. The seal is still **checked** (`findSealedWardIssues`), so the gates stay the only ways between wards.
-- **Every ward has** an outpost (a safe building with a storage locker, a quartermaster, an exchange mailbox and a contract board), a Site compound (a Directorate compound with a headhouse whose lift will lead to the Site's levels, a holding block and the Site's landmark), a town or hamlet, and wild land. The Blight has no town; its Site is the Hollow beneath the crater lake.
-- **Tier only rises.** Squares touching a ward's entry gate take its lower tier and the rest its higher one, so each square has a gentler neighbour on the way in.
+- **A region is a ward.** No square crosses a Seam, so no square is split.
+- **Every gate stands open.** Each leaf is a door object with no conditions. The seal is still **checked** (`findSealedWardIssues`), so the gates stay the only ways between regions.
+- **Safe and hostile ground.** Settlement and outpost squares are safe all over. Site squares and wild squares are hostile, and their buildings are safe only where people work in them. Boss arenas are fenced yards with `multiCombat`.
 
-**Where per-square rules change for land squares.** The rules written for the Low Ward's blueprint squares bend in three places on land:
-
-- **Edges.** A land square has no `exit` steps and no two-ways-in rule (rule 8). Its edges are the land's: walkable land meets walkable land across a seam, and sea or rock with no district is scenery, not a seam.
-- **Landmarks.** One per town, Site or outpost square rather than one per square, standing as a `focal` set-piece named in `furnish.landmarks` (see What the world should feel like).
-- **Ward edges.** Squares of different wards that touch do not keep a fence between them. The land seals the ward, and a gate is a gap in that land with a door in it, not a two-wide `gate` exit in a square's edge.
+**Where per-square rules change for land squares:** a land square has no `exit` steps and no two-ways-in rule. Its edges are the land's, and its landmark is a `focal` set-piece named in `furnish.landmarks`.
 
 ## Reserved ground
 
-- **Under the crater lake:** the Hollow, the Blight's Site and the finale's ground. How the finale enters it (the Sites' lowest hatches, the lake, or both) is the finale's plan to decide. No level is built for it, and nothing else may take its id, `the-hollow`.
-- **Each Site's levels:** the headhouse lifts in the seven new Site compounds are dormant until their levels are built.
+- **The other Site levels:** Site Orchard, Site Tallow and Site Vesper have no level below ground yet. Vesper's headhouse lift is dormant.
 
 ## Adding a district
 

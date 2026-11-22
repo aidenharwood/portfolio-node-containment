@@ -4,10 +4,10 @@ import { GAME_CONTENT } from '@containment/shared';
 import { createBlendedAmbience, easeAmbience, sampleAmbience } from '../src/render/world/ambienceBlend.ts';
 
 const overworld = GAME_CONTENT.levels.get('overworld')!;
-const vault = GAME_CONTENT.levels.get('meridian-b3')!;
-const fringeYard = overworld.layout.toLevelPoint('shipyard-fringe', { x: 32, y: 32 });
+const vault = GAME_CONTENT.levels.get('null-b1')!;
+const fringeYard = overworld.layout.toLevelPoint('arcade-mile', { x: 32, y: 32 });
 
-test('the Fringe rains on open ground and the Vault grows spores under cover', () => {
+test('Halcyon rains on open ground and Null Below grows spores under cover', () => {
   const fringe = sampleAmbience(overworld, fringeYard);
   assert.equal(fringe.weather.rain, 1);
   assert.ok(fringe.exposure > 0.5);

@@ -23,7 +23,7 @@
     { "room": "ninth-flat-2", "name": "Flat 12B", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 28, "dy": 25 }
+    "start": { "room": "ground", "dx": 20, "dy": 7 }
   },
   "objects": [
     { "id": "ninth-noodles-ward-cooker-0", "object": "ward-cooker", "at": { "room": "ninth-noodles", "dx": 1, "dy": 0 } },
@@ -74,7 +74,8 @@
     { "id": "ninth-street-barricade-45", "object": "barricade", "at": { "room": "ground", "dx": 15, "dy": 43 } },
     { "id": "ninth-street-street-bench-46", "object": "street-bench", "at": { "room": "ground", "dx": 36, "dy": 4 }, "facing": "south" },
     { "id": "ninth-street-street-bench-47", "object": "street-bench", "at": { "room": "ground", "dx": 38, "dy": 51 }, "facing": "south" },
-    { "id": "ninth-street-street-bench-48", "object": "street-bench", "at": { "room": "ground", "dx": 48, "dy": 4 }, "facing": "south" }
+    { "id": "ninth-street-street-bench-48", "object": "street-bench", "at": { "room": "ground", "dx": 48, "dy": 4 }, "facing": "south" },
+    { "id": "ninth-street-dead-screen-49", "object": "dead-screen", "at": { "room": "ground", "dx": 28, "dy": 25 } }
   ],
   "assemblies": [],
   "npcs": [

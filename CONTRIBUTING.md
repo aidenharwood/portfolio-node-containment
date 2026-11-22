@@ -76,14 +76,14 @@ Unique gear is never crafted. It only comes from the loot of a boss or a select 
 
 ### Orient an object
 
-Object models face south (+y on the map) by default. Wall-mounted or doorway objects on an east, west or north wall need `facing` on their `ObjectPlacement`, for example `facing: 'east'` for a bulkhead on a west wall. Wide doorways are two adjacent placements of the same object, like the Sector 2 bulkheads in the Atrium and the matching pair inside Sector 2.
+Object models face south (+y on the map) by default. Wall-mounted or doorway objects on an east, west or north wall need `facing` on their `ObjectPlacement`, for example `facing: 'east'` for a bulkhead on a west wall. Wide doorways are two adjacent placements of the same object, like the two leaves of a Seam gate.
 
 ### Add a district
 
 Read `WORLD_DESIGN.md` first: it holds the rules, and `findWorldDesignIssues` enforces most of them. A district is a JSON layout file drawn from blueprint steps, and becomes part of the world when a level places it. `content/districts/layouts/brine-galleries.json` is a full example, and `content/districts/brineGalleries.ts` shows the module that loads it.
 
-1. Give it a `tier` (1 is Terminus Square, 3 the Canal Basin and the Cut, 6 the Scrapyards and B1, 8 the Fringe, 10 the Cordon and B2, 12 the Vault; past the Cordon each ward spans two tiers, from 14–15 in the Old Shipyards to 26–27 at the Lantern, as `docs/superpowers/specs/2026-11-18-hollow-bay-atlas.md` sets out). Crafting checks use it to decide which gear its materials may feed, and tier may not fall with distance from the level spawn.
-   Also give it a `region` (`content/regions.ts`). Overworld districts must be reachable on foot from the Atrium; mark one `reachedOnlyByTram` only if it is meant to be.
+1. Give it a `tier` (1 to 13, following `TIER_LEVEL_FLOORS`; on the Span it rises by column, `COLUMN_TIERS` in `scripts/span/atlas.ts`: Kestrel 1–2, Harrow 3–5, Halcyon 6–7, the Wreckfield 8–9, the Glass Steppe 10–11, the Spindle 12–13). Crafting checks use it to decide which gear its materials may feed, and tier may not fall with distance from the level spawn.
+   Also give it a `region` (`SPAN_REGIONS` in `content/span/people.ts`). Overworld districts must be reachable on foot from the spawn at Site Kestrel; mark one `reachedOnlyByTram` only if it is meant to be.
 2. Write `content/districts/layouts/<district-id>.json` (the format is `DISTRICT_LAYOUT_SCHEMA` in `shared/src/world/layoutSchema.ts`). Its `steps` are drawn by `drawBlueprint` (`shared/src/world/blueprint.ts`): `room` for each named space (`rect`, `octagon` or `round`), `link` for the passages and doorways between rooms, `exit` for each way out of the district, `patch` for pools, track, partitions and floor strips, `pillars` for colonnades, `track` for a tram bed. Never draw walls; they appear around every floor tile. Use `tiles` only to paint single tiles over what the steps drew.
 3. Declare `areas` as `{ room, name, safe?, multiCombat? }`. Combat is single-way by default; set `multiCombat: true` for boss fights with adds. Mark outposts, camps and hubs `safe: true`: friendly NPCs on a floor level must stand in one, creatures must be placed outside one, and gathering nodes belong in the hostile areas around it.
 4. Place `npcs`, `objects`, `assemblies`, `creatures`, `lights`, `decals` and `setPieces` with an `at`: `{ "room": "plaza", "dx": 29, "dy": 25 }` inside a room, `{ "exit": "north", "index": 0 }` or `{ "link": ["a", "b"], "index": 0 }` for doors, and `{ "x": 3, "y": 4 }` only for a point in no room. A position outside its room fails at load with the JSON path, and `findContentIssues` reports anything placed on an unwalkable tile.
@@ -152,7 +152,7 @@ Add an entry to `CONTRACTS` in `content/contracts.ts` with `daily(...)` or `week
 
 ### Balancing
 
-`packages/shared/test/wardBalance.test.ts` runs seeded fights between operatives at set skill levels and each Hollow Bay creature, using the shared combat maths. Keep these bands when tuning creatures, XP rewards or gear:
+`packages/shared/test/wardBalance.test.ts` runs seeded fights between operatives at set skill levels and each Span creature, using the shared combat maths. Keep these bands when tuning creatures, XP rewards or gear:
 
 | Fight | Target win rate |
 | --- | --- |

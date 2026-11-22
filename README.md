@@ -1,6 +1,6 @@
 # Containment Online
 
-A browser-based, point-and-click sci-fi MMO set inside a containment facility run by the Meridian Directorate. The world is fully 3D and built from voxels, with a freely orbiting camera. It has click-to-walk movement, hover bubbles for interactions, context-menu interactions, skills that level from XP, a 28-slot inventory, and an eleven-slot loadout.
+A browser-based, point-and-click sci-fi MMO about containment. You are a fresh recruit of Intake Cohort 41 in the Meridian Directorate's Containment Service, posted to Site Kestrel at the far end of **the Span**. The Span is a precursor ring-habitat arc, and its builders, the Quiet, left it full of sealed reliquaries. The world is fully 3D voxels with a freely orbiting camera. You click to walk, hover for bubbles, right-click for every option, and train skills that level from XP. You carry a 28-slot inventory and an eleven-slot loadout.
 
 ## Quick start
 
@@ -31,58 +31,27 @@ Environment variables for the server: `GAME_SERVER_PORT` (default 7420), `DATABA
 
 ## What exists today
 
-- **Auth:** registration and login use scrypt-hashed passwords. Session tokens are stored only as SHA-256 hashes and expire after 14 days. Failed logins are throttled per origin and username.
-- **Character creation:** purely cosmetic. Personnel files can be deleted from the roster: you retype the name to confirm, and the character must not be deployed. You choose a name, pronouns and appearance: a male or female body, build, height, complexion, hair style and colour, eyes, distinguishing marks and cybernetic augments. Every operative starts with identical, untrained skills, an empty pack and nothing but an undersuit. The early tutorial has you craft what you need. There are no classes and no attributes; everything is earned by training skills. A live 3D voxel preview, which you can drag to rotate, shows the character with a walk cycle. Male and female bodies have different silhouettes, and armour follows the body underneath. Everything you equip appears on your character exactly as its icon shows.
-- **Gear:** stacking inventory, equipping with skill-level requirements, swap-on-equip, aggregated stats, and procedurally drawn icons and on-body visuals.
-- **Derived stats:** a combat profile (Integrity, Melee and Ranged Rating, Defence, Hazard and Cognitive Resistance, Analysis) computed purely from trained skills plus equipped gear (`shared/src/character/derivedStats.ts`).
-- **Combat:** server-authoritative and tick-based, in the style of classic point-and-click MMOs. Your **combat level** comes from Close Quarters, Marksmanship and Fortitude. Creatures are passive unless marked aggressive, and aggressive ones ignore operatives more than four combat levels above them. Ranged attacks fire visible projectiles.
-  - Click a creature to engage. Your character closes the distance and attacks on the weapon's rhythm.
-  - Hit chance and max hit come from Close Quarters or Marksmanship plus weapon Power or Accuracy. Damage taken is reduced by Defence (Fortitude plus Armor).
-  - Damage dealt trains the matching style skill and Fortitude.
-  - Creatures have aggro and leash ranges, loot tables and respawn timers.
-  - When your character is incapacitated, they wake in the Atrium Medbay at full integrity. Integrity also regenerates out of combat, and Medgel heals it.
-  - The screen shows hit splats, overhead health bars, an integrity bar and a target panel.
-- **Economy:** Quartermaster Okafor runs Meridian Requisitions. Right-click and choose "Trade", or ask in dialogue, to buy Medgel and gear with scrip. You can sell creature materials and spare equipment back at half value. Right-click a listing or an item to buy or sell 1, 5, 10 or all of it.
-- **Personal storage:** storage lockers by Requisitions (Atrium) and in the Undercroft camp open onto the same storage, which has 200 slots and stacks everything. Click to move one, or right-click for 5, X (any amount) or all. "Deposit pack" stores everything except quest items. Lockers stand in the Commissary, the Fabrication Hall, the Undercroft camp and on the hydroponics platform.
-- **Built for crowds:**
-  - **Layers:** each level has a capacity. Once a level is full, new arrivals go to an overflow copy of it (shown as "Layer 2" in the banner and minimap). Overflow layers that sit empty are retired.
-  - **Single-way combat:** outside special areas, a creature fights one operative at a time and an operative is fought by one creature at a time. You can't attack something another operative is fighting, and you can't be piled on. Multi-combat areas, such as the Foreman's workshop with its leech adds, allow free-for-all fights.
-  - **Shared credit (multi-combat areas):** everyone who damages a creature gets quest credit, kill XP and their own loot roll.
-  - **Faster respawns when busy:** respawns speed up as a layer gets busier.
-- **Ground items:**
-  - Creature loot and anything you drop or can't carry lands on the floor as a small spinning voxel model.
-  - For the first minute only its owner can see or take it; it has a gold halo. Then it goes public with a cyan halo, and it despawns after three minutes.
-  - Click an item to walk over and take it. Quest items can't be dropped.
-- **Gathering, refining and crafting:** every piece of gear and every healing item can be made. Raw stock is gathered with Salvage from resource nodes: scrap heaps, textile bins, moss beds, resin drums, severed conduits, lumen blooms and slag heaps. Creature drops count as raw stock too. A Refinery turns raw stock into base parts (Refining), a Fabricator assembles parts into equipment (Engineering), and a Bio-synthesiser makes medicine (Biochemistry): Medgel, Trauma Foam and Clotting Shots. Click a node and you keep working it until it runs dry (it replenishes after a while, for everyone in that level layer) or your pack is full. Workshops are in the Atrium (west wall) and Mags' camp in the Undercroft. Deeper districts hold better stock.
-- **Ranged training path:** a level-1 Trainee Dart Pistol (from Sergeant Kade, or 35 scrip at Requisitions) trains Marksmanship up to the Kestrel's level-5 requirement.
-- **Minimap:** circular, centred on you and rotated with the camera, with a north marker, your facing arrow, creatures, NPCs and ground items. Click it to walk.
-- **Settings:** the sliders button beside the minimap's Map button opens graphics settings (resolution, shadows, glow and scanlines) and an interface scale from 80% to 150%. They are saved in the browser.
-- **Side panel:** the inventory, loadout and skills tabs size themselves to the space the panel has, so they never scroll, on desktop or phone and at any interface scale.
-- **Item sprites:** every item has a voxel model. Its inventory and shop icon is a render of that model.
-- **Quests and tutorial:** a data-driven quest engine with event-based and state-based objectives, conditional dialogue trees and effects. The storyline runs in order:
-  1. *Orientation Protocol* (Intake Wing): getting around and gear.
-  2. *Field Fabrication* (Atrium workshop, Technician Pell): gather scrap, offcuts and moss, refine them into plates, a bolt and a gel base, then assemble your own stun baton and synthesise a Medgel.
-  3. *Live Fire* (Atrium training range): wielding a weapon, fighting and healing. Kade accepts the baton you made.
-  4. *The Knocking*, the first main-story quest: through the quarantine bulkhead into **Sector 2**. You clear Gloam Mites, recover Dr. Halvorsen's expedition log and put down the Hollow Warden. It ends by revealing Sector 3.
-  5. *The Far Side* (recommended rating 8): Varga gives you a Lantern Lens and clears you for the Atrium service lift down to **the Undercroft**, a flooded, rusting maintenance level with failing lights. You restore three junction boxes and defeat the Foreman, who unseals the way to **Sector 3**. There you find Dr. Halvorsen alive at the Knock, then report back to Sel.
-  6. *Act II · The Original Contract*: from Deepwatch Station through the Cryovault, the Signal Array, the Drowned Archive and the Furnace, then through the Knock into **Meridian Below** to give the far side your answer.
-  7. *Act III · Return to Sender* (recommended rating 34–38): nine letters arrive after the answer, and the ninth is in your handwriting. Achterberg traces it to a return chute in the Signal Array that opens into **the Dead Letter Office**, a pocket where forty years of Meridian's post was answered by the Postmaster. Clear the franking clerks, sort the dead letters, defeat the Postmaster and stop the franking engine, then carry the founder's undelivered letter to Halvorsen for a countersignature and to Achterberg to send it.
-  8. *Act IV · Postmarked* (recommended rating 40–50): one of the replies came up the Waterworks drains, postmarked CALDER. The culvert past the filter beds opens onto a salt road into the **Calder Wing**, a sealed neighbour Site on the same floor. Clear the brine galleries, answer the gatehouse intercom and meet Warden Brandt, end the lost shifts of salt wights, then silence the Salt Bishop in the salt cathedral. The Calder Gatehouse is an outpost with a commissary, storage, an exchange mailbox, a contract board and a stop on the Meridian Line; its gallery lift goes down to the Calder Deeps, where the Shift Foreman still runs the last shift. The Calder Gatehouse side quests run alongside the act. Tiers 10–11 (Saltworks and Cathedral gear) are crafted from Calder salt.
-     Act IV continues west (recommended rating 50–60): a Vesper Sanatorium referral comes up the Medbay's pneumatic tube. The Hydroponics seed vault opens onto the Sanatorium Walk and the **Vesper Wing**: clear the orderlies from the wards, ring at the Porter's Lodge to meet Matron Ashby, relieve the night nurses, then give the Chief Physician a second opinion in the surgery. The lodge is an outpost with Apothecary Lowe's dispensary, storage, a mailbox, a contract board and the western end of the Meridian Line; its bed lift drops to the Cold Ward, where the Almoner keeps her accounts. Tiers 12–13 (Ward and Physician gear) come from Vesper's herbs, linen and tinctures.
-
-  Side quests: *Overgrowth* comes from Dr. Oyelaran on the Verdance hydroponics deck: cut back thorn crawlers, harvest strangler fibre and check the seed vault. *Static in the Vents* runs in the Atrium. *Leech Season* comes from Mags, a scavenger in the Undercroft camp: bring five Leech Sacs for a Filter Respirator.
-- **Undercroft gear tier:** Mags' swap shop (buys at 60%) and Undercroft drops lead to the Shock Maul (Close Quarters 8), Marksman Carbine (Marksmanship 10) and Composite Plate (Fortitude 8). Pipe Leeches (level 4) and Rust Hounds (level 7) are the training ground for the Foreman (level 10).
-- **The Meridian Atrium hub:** the first hub, laid out as districts around a central plaza and coolant core.
-  - **Commissary:** Requisitions and storage.
-  - **Fabrication Hall:** all three crafting stations and starter resource nodes.
-  - **Quarantine Gate:** the way to Sector 2.
-  - **Archives:** Sel.
-  - **Training Range:** Kade and the drones.
-  - **Engineering Bay:** the service lift to the Undercroft.
-  - **Medbay:** Medic Anand, who heals for free and sells medicine, plus beds you can rest on. This is also where incapacitated operatives wake up.
-  - **Transit Bay:** the lift from the Intake Wing and the tram to Verdance Hydroponics.
-- **Verdance Hydroponics (tier 2):** an overgrown agricultural deck between Sector 2 and the Undercroft in difficulty. Thorn Crawlers (level 4) drop thorn clusters, and Spore Drifters (level 6, ranged) drop lumen spores and moss. Strangler vines (Salvage 4) give fibre for Braided Cord, Sap Poultices (heal 11) and Thornweave Gloves.
-- **World:** a Three.js voxel renderer with baked ambient occlusion, soft shadows, dynamic point lights, bloom and wall cutaway; the camera orbits and zooms freely. A server-authoritative 300ms tick and A* pathfinding with no corner-cutting. The world is a set of continuous levels assembled from hand-built districts (the main floor joins the Intake Wing, Meridian Atrium, the Sector 2 quarantine and Verdance Hydroponics; below it lie the Undercroft and the Deep), with lifts between levels, pocket dimensions beyond the Threshold, and only nearby activity sent to each player. There are wandering NPCs, objects that run effects, lighting and a minimap.
+- **Auth:** scrypt-hashed passwords. Session tokens are stored as SHA-256 hashes and expire after 14 days. Failed logins are throttled.
+- **Character creation:** cosmetic only. There are no classes or attributes, and everything is earned by training skills. A live 3D voxel preview shows the character, and everything equipped appears on the body exactly as its icon shows.
+- **Combat:** server-authoritative and tick-based. Melee beats ranged, ranged beats psionic, and psionic beats melee. Creatures have aggro and leash ranges, loot and respawns, and can be footprinted 2×2. Bosses run data-driven encounters with telegraphs, summons, hazards, phases and enrage. Anomalous specimens can be **contained** instead of killed once you have worn them down and trained enough Containment.
+- **Gathering and crafting:** gear and medicine are crafted from gathered stock. The refinery makes plating, the fabricator gear, the synthesiser medicine and the cooker food. Six gear ladders (scrap, ferro, plasteel, duralloy, sinter, vault-glass) follow the regions spinward, and each region's nodes and creatures supply the ladder you wear there.
+- **Economy and services:** every region has an outpost with a quartermaster, a storage locker, a contract board and an exchange mailbox. Kestrel Commons holds the player exchange. Daily and weekly contracts pay scrip, XP and commendations.
+- **Crowds:** levels overflow into layers, combat is single-way outside multi-combat areas, everyone who damages a creature gets credit, and respawns speed up when a layer is busy.
+- **The Span:** one overworld of 1024 × 384 tiles in 96 land squares, with three facility levels below ground. Six regions run west to east, each sealed from the next by a Seam bulkhead with three open gates:
+  - **Kestrel Reach** (tiers 1–2): Site Kestrel, SC-V, Secure; Kestrel Commons; the Recruit Lines.
+  - **Harrow Terraces** (3–5): Harrowgate and Site Orchard, SC-II, Strained.
+  - **Halcyon** (6–7): a neon arcology under the Aurelian Spire; Site Gallowglass, SC-III, Breached, and its undercity.
+  - **The Wreckfield** (8–9): Rustwater in the shadow of the crashed colony ship *Meridian*; Site Tallow, SC-IV, Overrun.
+  - **The Glass Steppe** (10–11): the pilgrim Choir and Site Vesper, SC-IV, Lost.
+  - **The Spindle** (12–13): Last Post, and Site Null, SC-V, Inverted, with Null Below.
+- **Story:** six acts, and a side questline in every settlement.
+  - *Intake*: kit, the yard, your first containment, the oath. Your file has a PREVIOUS INTAKE field.
+  - *Strain*: Site Orchard's seed stock walks out of the vault. Put down the Orchard Keeper.
+  - *Breach*: dead screens, ad-wraiths, the Gallowglass undercity and Mr Brightly.
+  - *Overrun*: retake Site Tallow, find your own name on its casualty board, and face the Cohort.
+  - *Lost*: Site Vesper went quiet. Break the hymn and defeat the Precentor.
+  - *Inverted*: at Site Null the cells are on the outside. Face the Warden of Null, then choose to re-seal it or sign out of the Roster.
+- **Guidance:** one tracked quest draws a walking route, objective markers and a transit plan through the lifts. The world map is fully charted.
 
 ## Repository layout
 

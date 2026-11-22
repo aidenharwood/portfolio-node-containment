@@ -23,7 +23,7 @@
     { "room": "plaza-flat-1", "name": "Flat 9C", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 27, "dy": 45 }
+    "start": { "room": "ground", "dx": 9, "dy": 49 }
   },
   "objects": [
     { "id": "aurelian-lobby-shelving-0", "object": "shelving", "at": { "room": "aurelian-lobby", "dx": 1, "dy": 0 }, "facing": "south" },
@@ -76,7 +76,9 @@
     { "id": "spire-plaza-barricade-47", "object": "barricade", "at": { "room": "ground", "dx": 31, "dy": 4 } },
     { "id": "spire-plaza-street-bench-48", "object": "street-bench", "at": { "room": "ground", "dx": 59, "dy": 24 }, "facing": "south" },
     { "id": "spire-plaza-street-bench-49", "object": "street-bench", "at": { "room": "ground", "dx": 60, "dy": 43 }, "facing": "south" },
-    { "id": "spire-plaza-street-bench-50", "object": "street-bench", "at": { "room": "ground", "dx": 32, "dy": 53 }, "facing": "south" }
+    { "id": "spire-plaza-street-bench-50", "object": "street-bench", "at": { "room": "ground", "dx": 32, "dy": 53 }, "facing": "south" },
+    { "id": "spire-plaza-smiling-fridge-51", "object": "smiling-fridge", "at": { "room": "ground", "dx": 27, "dy": 45 } },
+    { "id": "spire-plaza-dead-screen-52", "object": "dead-screen", "at": { "room": "ground", "dx": 47, "dy": 58 } }
   ],
   "assemblies": [],
   "npcs": [

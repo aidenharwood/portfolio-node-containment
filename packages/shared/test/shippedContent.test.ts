@@ -12,7 +12,7 @@ test('new characters start in a district of the shipped world', () => {
   assert.ok(GAME_CONTENT.levels.get(start.levelId)?.layout.districtAt(start.position));
 });
 
-test('the Site Meridian lifts run from the headhouse down to the Vault and back', () => {
+test('every Site lift runs from its headhouse down to its facility level and back', () => {
   const depthOf = (districtId: string): number | undefined => {
     const levelId = GAME_CONTENT.levelOfDistrict.get(districtId);
     return levelId === undefined ? undefined : GAME_CONTENT.levels.get(levelId)?.definition.depth;
@@ -23,12 +23,12 @@ test('the Site Meridian lifts run from the headhouse down to the Vault and back'
     return effect.type === 'teleport' ? effect.districtId : '';
   };
   const route: readonly [string, string, number][] = [
-    ['meridian-lift', 'canal-basin', -1],
-    ['intake-lift-down', 'meridian-intake', -2],
-    ['secure-lift-down', 'meridian-secure', -3],
-    ['vault-lift-up', 'meridian-vault', -2],
-    ['secure-lift-up', 'meridian-secure', -1],
-    ['intake-lift-up', 'meridian-intake', 0],
+    ['kestrel-lift-down', 'site-kestrel', -1],
+    ['kestrel-lift-up', 'kestrel-intake', 0],
+    ['gallowglass-lift-down', 'site-gallowglass', -1],
+    ['gallowglass-lift-up', 'gallowglass-undercity', 0],
+    ['null-lift-down', 'site-null', -1],
+    ['null-lift-up', 'null-below', 0],
   ];
   for (const [lift, from, depth] of route) {
     const placed = GAME_CONTENT.districts.get(from)?.objects.some((object) => object.objectId === lift);
@@ -37,15 +37,16 @@ test('the Site Meridian lifts run from the headhouse down to the Vault and back'
   }
 });
 
-test('the opening quest can be finished in Terminus Square', () => {
+test('the opening quest can be finished between Site Kestrel and Kestrel Commons', () => {
   const opening = GAME_CONTENT.quests.get(GAME_CONTENT.newCharacter.startingQuestId ?? '');
   assert.ok(opening, 'new characters start on a quest');
-  const terminus = GAME_CONTENT.districts.get('terminus-square');
-  const placed = new Set((terminus?.creatures ?? []).map((creature) => creature.creatureId));
+  const home = ['site-kestrel', 'kestrel-commons'].map((id) => GAME_CONTENT.districts.get(id));
+  const placed = new Set(home.flatMap((district) => (district?.creatures ?? []).map((creature) => creature.creatureId)));
+  const people = new Set(home.flatMap((district) => (district?.npcs ?? []).map((npc) => npc.npcId)));
   for (const step of opening.steps) {
     for (const objective of step.objectives) {
-      if (objective.type === 'defeat' || objective.type === 'contain') assert.ok(placed.has(objective.creatureId), `${objective.creatureId} lives in Terminus Square`);
-      if (objective.type === 'talkTo') assert.ok(terminus?.npcs.some((npc) => npc.npcId === objective.npcId), `${objective.npcId} stands in Terminus Square`);
+      if (objective.type === 'defeat' || objective.type === 'contain') assert.ok(placed.has(objective.creatureId), `${objective.creatureId} lives at Kestrel`);
+      if (objective.type === 'talkTo') assert.ok(people.has(objective.npcId), `${objective.npcId} stands at Kestrel`);
     }
   }
 });

@@ -148,15 +148,15 @@ describe('quest handholding', () => {
   });
 
   test('a shipped area step whose centre is walkable and owned still routes to its centre', () => {
-    const levelId = GAME_CONTENT.levelOfDistrict.get('tenements');
+    const levelId = GAME_CONTENT.levelOfDistrict.get('kestrel-intake');
     assert.ok(levelId);
     const shipped = GAME_CONTENT.levels.get(levelId);
-    const quest = GAME_CONTENT.quests.get('rent-day');
+    const quest = GAME_CONTENT.quests.get('paper-trail');
     assert.ok(shipped && quest);
-    const stepIndex = quest.steps.findIndex((step) => step.id === 'search');
-    const tracked = trackedQuest({ 'rent-day': { questId: 'rent-day', status: 'active', stepIndex, objectiveProgress: [0] } }, GAME_CONTENT.quests, 'rent-day');
+    const stepIndex = quest.steps.findIndex((step) => step.id === 'descend');
+    const tracked = trackedQuest({ 'paper-trail': { questId: 'paper-trail', status: 'active', stepIndex, objectiveProgress: [0] } }, GAME_CONTENT.quests, 'paper-trail');
     assert.ok(tracked);
-    const area = shipped.areas.find((candidate) => candidate.districtId === 'tenements' && candidate.id === 'home-gale');
+    const area = shipped.areas.find((candidate) => candidate.districtId === 'kestrel-intake' && candidate.id === 'processing');
     assert.ok(area);
     const goals = routeGoals(tracked, { level: shipped, npcPositions: new Map(), creatures: [], depletedInstances: new Set() }, GAME_CONTENT);
     assert.deepEqual(goals, [{ point: { x: area.rect.x + Math.floor(area.rect.width / 2), y: area.rect.y + Math.floor(area.rect.height / 2) }, arriveAdjacent: false }]);

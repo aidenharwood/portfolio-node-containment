@@ -26,7 +26,7 @@
   ],
   "anchors": {
     "outpost": { "room": "commons-stores", "dx": 6, "dy": 2 },
-    "start": { "room": "ground", "dx": 16, "dy": 60 }
+    "start": { "room": "ground", "dx": 25, "dy": 5 }
   },
   "objects": [
     { "id": "commons-stores-shelving-0", "object": "shelving", "at": { "room": "commons-stores", "dx": 1, "dy": 0 }, "facing": "south" },
@@ -92,7 +92,8 @@
     { "id": "kestrel-commons-barricade-60", "object": "barricade", "at": { "room": "ground", "dx": 48, "dy": 54 } },
     { "id": "kestrel-commons-street-bench-61", "object": "street-bench", "at": { "room": "ground", "dx": 29, "dy": 45 }, "facing": "south" },
     { "id": "kestrel-commons-street-bench-62", "object": "street-bench", "at": { "room": "ground", "dx": 59, "dy": 46 }, "facing": "south" },
-    { "id": "kestrel-commons-street-bench-63", "object": "street-bench", "at": { "room": "ground", "dx": 21, "dy": 55 }, "facing": "south" }
+    { "id": "kestrel-commons-street-bench-63", "object": "street-bench", "at": { "room": "ground", "dx": 21, "dy": 55 }, "facing": "south" },
+    { "id": "kestrel-commons-barracks-bunk-frame-64", "object": "barracks-bunk-frame", "at": { "room": "ground", "dx": 16, "dy": 60 } }
   ],
   "assemblies": [],
   "npcs": [

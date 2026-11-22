@@ -135,7 +135,7 @@ export const SPAN_SHOPS: readonly ShopDefinition[] = [
   CONTRACTS_OFFICE,
   store('kestrel-stores', 'Commons Stores', 'Sign for it.', [...RATIONS, ['scrap-metal', 4], ['scrap-shock-baton', 30], ['scrap-coil-pistol', 40], ['scrap-psi-focus', 40]]),
   store('kestrel-armoury', 'Kestrel Armoury', 'Scrap issue. Earn the rest.', [['scrap-shock-baton', 30], ['scrap-monoblade', 45], ['scrap-power-hammer', 60], ['scrap-coil-pistol', 40], ['scrap-pulse-carbine', 60], ['scrap-psi-focus', 40], ['scrap-helmet', 40], ['scrap-carapace', 70], ['scav-hood', 30], ['static-crown', 40]]),
-  store('kestrel-mess', 'The Mess', 'Sit, eat.', [['noodle-bowl', 15], ['day-old-loaf', 2], ['smoked-eel', 8], ['basin-eel', 6]], false),
+  { ...store('kestrel-mess', 'The Mess', 'Sit, eat.', [['noodle-bowl', 15], ['day-old-loaf', 2], ['basin-eel', 6]], false), listings: [{ itemId: 'noodle-bowl', price: 15 }, { itemId: 'day-old-loaf', price: 2 }, { itemId: 'basin-eel', price: 6 }, { itemId: 'smoked-eel', price: 8, afterQuest: 'names-in-the-bunks' }, { itemId: 'tide-broth', price: 110, afterQuest: 'names-in-the-bunks' }] },
   store('kestrel-parts', 'Fabrication Shed', 'Parts and plate.', [['scrap-plating', 10], ['scrap-metal', 4], ['trace-dust', 6]]),
   store('kestrel-clinic', 'Commons Clinic', 'Dressings and tinctures.', [['greens-poultice', 12], ['hand-leaf-cutting', 9], ['grip-tincture', 30]]),
   store('lines-store', 'Lines Store', 'Bread, string and gossip.', [['day-old-loaf', 2], ['rag-bundle', 3], ['basin-eel', 6]]),
