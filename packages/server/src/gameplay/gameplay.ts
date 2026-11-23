@@ -176,7 +176,7 @@ export class Gameplay implements EffectHost, GatheringHost, WorldHooks, CombatHo
     this.contracts.refresh(player, true);
     this.social.arrive(player);
     this.flush(player);
-    player.send({ type: 'chat.message', channel: 'system', text: `Welcome to Hollow Bay, ${player.record.name}.` });
+    player.send({ type: 'chat.message', channel: 'system', text: `Welcome to the Span, ${player.record.name}.` });
     return player;
   }
 

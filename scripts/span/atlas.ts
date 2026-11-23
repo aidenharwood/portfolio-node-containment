@@ -1,90 +1,161 @@
 export const SQUARE = 64;
-export const COLUMNS = 16;
-export const ROWS = 6;
+export const LAND_ID = 'the-span';
+
+export const GRID: readonly string[] = [
+  '..................',
+  '..CCCCCCCCWWWWWW..',
+  '.CCCCCCCCCWWWWWWW.',
+  '.CCCCCCCCCWWWWWWW.',
+  '.HHHH#######GGGGG.',
+  '.HHHH##SSSSS#GGGG.',
+  '.HHHH#SSSSSSGGGGG.',
+  '.HHHH#SSSSSS#GGGG.',
+  '..HHH##SSSS##GGGG.',
+  '..HHK#######~GGG..',
+  '..KKKKKKK~~~GGG...',
+  '..KKKKKKK~~.GG....',
+  '...KKKKK..........',
+  '..................',
+];
+
+export const COLUMNS = GRID[0]!.length;
+export const ROWS = GRID.length;
 export const WIDTH = SQUARE * COLUMNS;
 export const HEIGHT = SQUARE * ROWS;
-export const LAND_ID = 'the-span';
-export const BASE_HEIGHT = 2;
 
 export interface RegionSpec {
+  readonly code: string;
   readonly id: string;
   readonly name: string;
-  readonly from: number;
-  readonly to: number;
+  readonly tiers: readonly [number, number];
+  readonly relief: readonly [number, number];
+  readonly scale: number;
+  readonly ground: 'grass' | 'soil' | 'asphalt' | 'gravel' | 'concrete';
 }
 
 export const REGIONS: readonly RegionSpec[] = [
-  { id: 'kestrel-reach', name: 'Kestrel Reach', from: 0, to: 192 },
-  { id: 'harrow-terraces', name: 'Harrow Terraces', from: 192, to: 384 },
-  { id: 'halcyon', name: 'Halcyon', from: 384, to: 576 },
-  { id: 'wreckfield', name: 'the Wreckfield', from: 576, to: 768 },
-  { id: 'glass-steppe', name: 'the Glass Steppe', from: 768, to: 896 },
-  { id: 'the-spindle', name: 'the Spindle', from: 896, to: 1024 },
+  { code: 'K', id: 'kestrel-reach', name: 'Kestrel Reach', tiers: [1, 2], relief: [1, 11], scale: 46, ground: 'grass' },
+  { code: 'H', id: 'harrow-terraces', name: 'Harrow Terraces', tiers: [3, 5], relief: [2, 15], scale: 40, ground: 'grass' },
+  { code: 'C', id: 'halcyon', name: 'Halcyon', tiers: [6, 7], relief: [3, 10], scale: 70, ground: 'asphalt' },
+  { code: 'W', id: 'wreckfield', name: 'the Wreckfield', tiers: [8, 9], relief: [0, 9], scale: 36, ground: 'gravel' },
+  { code: 'G', id: 'glass-steppe', name: 'the Glass Steppe', tiers: [10, 11], relief: [5, 15], scale: 44, ground: 'soil' },
+  { code: 'S', id: 'the-spindle', name: 'the Spindle', tiers: [12, 13], relief: [9, 15], scale: 32, ground: 'concrete' },
 ];
 
-export const COLUMN_TIERS: readonly number[] = [1, 1, 2, 3, 4, 5, 6, 7, 7, 8, 9, 9, 10, 11, 12, 13];
+export const MASSIF = '#';
+export const SEA = '.';
+export const DROP = '~';
 
-export const SEAM_HALF = 3;
-
-export interface GateSpec {
-  readonly id: string;
-  readonly seam: number;
-  readonly y: number;
-}
-
-export const GATES: readonly GateSpec[] = [
-  { id: 'kestrel-north-gate', seam: 192, y: 70 },
-  { id: 'kestrel-gate', seam: 192, y: 262 },
-  { id: 'kestrel-south-gate', seam: 192, y: 334 },
-  { id: 'harrow-north-gate', seam: 384, y: 92 },
-  { id: 'harrow-gate', seam: 384, y: 258 },
-  { id: 'harrow-south-gate', seam: 384, y: 330 },
-  { id: 'halcyon-north-gate', seam: 576, y: 76 },
-  { id: 'halcyon-gate', seam: 576, y: 222 },
-  { id: 'halcyon-south-gate', seam: 576, y: 326 },
-  { id: 'wreck-north-gate', seam: 768, y: 90 },
-  { id: 'wreck-gate', seam: 768, y: 236 },
-  { id: 'wreck-south-gate', seam: 768, y: 312 },
-  { id: 'steppe-north-gate', seam: 896, y: 102 },
-  { id: 'steppe-gate', seam: 896, y: 190 },
-  { id: 'steppe-south-gate', seam: 896, y: 296 },
-];
+export const codeAt = (column: number, row: number): string => GRID[row]?.[column] ?? SEA;
+export const regionOfCode = (code: string): RegionSpec | undefined => REGIONS.find((region) => region.code === code);
+export const regionAtSquare = (column: number, row: number): RegionSpec | undefined => regionOfCode(codeAt(column, row));
+export const regionById = (id: string): RegionSpec => {
+  const found = REGIONS.find((region) => region.id === id);
+  if (!found) throw new Error('no region ' + id);
+  return found;
+};
 
 export type PlaceKind = 'site' | 'hub' | 'town';
+export type PadTile = 'paving' | 'concrete' | 'asphalt' | 'gravel' | 'rust' | 'plating' | 'terrazzo';
 
 export interface PlaceSpec {
+  readonly id: string;
   readonly column: number;
   readonly row: number;
   readonly kind: PlaceKind;
-  readonly pad: 'paving' | 'concrete' | 'asphalt' | 'gravel' | 'rust' | 'plating' | 'terrazzo';
-  readonly rect?: { readonly x: number; readonly y: number; readonly width: number; readonly height: number };
-  readonly height?: number;
+  readonly pad: PadTile;
+  readonly station?: { readonly id: string; readonly name: string };
+  readonly tier?: number;
 }
 
 export const PLACES: readonly PlaceSpec[] = [
-  { column: 1, row: 2, kind: 'site', pad: 'concrete' },
-  { column: 1, row: 3, kind: 'hub', pad: 'paving' },
-  { column: 0, row: 3, kind: 'town', pad: 'paving' },
-  { column: 4, row: 3, kind: 'hub', pad: 'paving' },
-  { column: 4, row: 4, kind: 'town', pad: 'gravel' },
-  { column: 4, row: 0, kind: 'site', pad: 'concrete', rect: { x: 262, y: 28, width: 52, height: 32 }, height: 7 },
-  { column: 6, row: 2, kind: 'town', pad: 'asphalt' },
-  { column: 7, row: 2, kind: 'town', pad: 'asphalt' },
-  { column: 7, row: 3, kind: 'hub', pad: 'asphalt' },
-  { column: 6, row: 3, kind: 'town', pad: 'asphalt' },
-  { column: 8, row: 2, kind: 'site', pad: 'concrete' },
-  { column: 9, row: 3, kind: 'hub', pad: 'rust' },
-  { column: 11, row: 4, kind: 'site', pad: 'concrete' },
-  { column: 12, row: 2, kind: 'hub', pad: 'gravel' },
-  { column: 13, row: 4, kind: 'site', pad: 'concrete' },
-  { column: 14, row: 3, kind: 'hub', pad: 'concrete' },
-  { column: 15, row: 2, kind: 'site', pad: 'plating' },
+  { id: 'site-kestrel', column: 5, row: 10, kind: 'site', pad: 'concrete', tier: 1 },
+  { id: 'kestrel-commons', column: 5, row: 11, kind: 'hub', pad: 'paving', station: { id: 'kestrel-commons-station', name: 'Kestrel Commons' } },
+  { id: 'recruit-lines', column: 4, row: 10, kind: 'town', pad: 'paving' },
+  { id: 'harrowgate', column: 2, row: 6, kind: 'hub', pad: 'paving', station: { id: 'harrowgate-halt', name: 'Harrowgate Halt' } },
+  { id: 'harrow-lanes', column: 2, row: 7, kind: 'town', pad: 'gravel' },
+  { id: 'site-orchard', column: 4, row: 5, kind: 'site', pad: 'concrete', tier: 5 },
+  { id: 'neon-row', column: 5, row: 2, kind: 'hub', pad: 'asphalt', station: { id: 'neon-row-station', name: 'Neon Row' } },
+  { id: 'spire-plaza', column: 5, row: 1, kind: 'town', pad: 'asphalt' },
+  { id: 'ninth-street', column: 6, row: 1, kind: 'town', pad: 'asphalt' },
+  { id: 'glasshouse-alley', column: 5, row: 3, kind: 'town', pad: 'asphalt' },
+  { id: 'site-gallowglass', column: 7, row: 3, kind: 'site', pad: 'concrete', tier: 7 },
+  { id: 'rustwater', column: 12, row: 2, kind: 'hub', pad: 'rust', station: { id: 'rustwater-station', name: 'Rustwater' } },
+  { id: 'site-tallow', column: 15, row: 2, kind: 'site', pad: 'concrete', tier: 9 },
+  { id: 'the-choir', column: 14, row: 6, kind: 'hub', pad: 'gravel', station: { id: 'choir-halt', name: 'the Choir' } },
+  { id: 'site-vesper', column: 15, row: 8, kind: 'site', pad: 'concrete', tier: 11 },
+  { id: 'last-post', column: 10, row: 6, kind: 'hub', pad: 'concrete', station: { id: 'last-post-funicular', name: 'Last Post' } },
+  { id: 'site-null', column: 7, row: 6, kind: 'site', pad: 'plating', tier: 13 },
 ];
 
-export const regionAt = (x: number): RegionSpec => {
-  const found = REGIONS.find((region) => x >= region.from && x < region.to);
-  if (!found) throw new Error('no region at x ' + x);
+export const placeAt = (column: number, row: number): PlaceSpec | undefined => PLACES.find((place) => place.column === column && place.row === row);
+export const placeById = (id: string): PlaceSpec => {
+  const found = PLACES.find((place) => place.id === id);
+  if (!found) throw new Error('no place ' + id);
   return found;
+};
+
+export const PAD_INSET = 6;
+export const padOf = (place: PlaceSpec): { readonly x: number; readonly y: number; readonly width: number; readonly height: number } => ({
+  x: place.column * SQUARE + PAD_INSET,
+  y: place.row * SQUARE + PAD_INSET,
+  width: SQUARE - 2 * PAD_INSET,
+  height: SQUARE - 2 * PAD_INSET,
+});
+
+export const STATION_TRACK_ROW = 52;
+export const TERMINAL = { x: 14, y: 49, width: 36, height: 5, door: 30 };
+
+export interface RailPoint {
+  readonly x: number;
+  readonly y: number;
+}
+
+const stationRow = (row: number): number => row * SQUARE + STATION_TRACK_ROW;
+
+export const RAIL: readonly (readonly RailPoint[])[] = [
+  [
+    { x: 6 * SQUARE + 40, y: stationRow(11) },
+    { x: 3 * SQUARE + 20, y: stationRow(11) },
+    { x: 3 * SQUARE + 20, y: stationRow(6) },
+    { x: 1 * SQUARE + 20, y: stationRow(6) },
+    { x: 1 * SQUARE + 20, y: stationRow(2) },
+    { x: 13 * SQUARE + 40, y: stationRow(2) },
+    { x: 13 * SQUARE + 40, y: stationRow(6) },
+    { x: 15 * SQUARE + 30, y: stationRow(6) },
+  ],
+  [
+    { x: 13 * SQUARE + 40, y: stationRow(6) },
+    { x: 9 * SQUARE + 20, y: stationRow(6) },
+  ],
+];
+
+export const TRAM_LINES: readonly { readonly id: string; readonly name: string; readonly color: string; readonly stations: readonly string[] }[] = [
+  { id: 'ring-line', name: 'Ring Line', color: '#4fd8ff', stations: ['kestrel-commons-station', 'harrowgate-halt', 'neon-row-station', 'rustwater-station', 'choir-halt'] },
+  { id: 'spindle-funicular', name: 'Spindle Funicular', color: '#ffb347', stations: ['choir-halt', 'last-post-funicular'] },
+];
+
+export const SEAM_HALF = 3;
+
+export interface SeamSpec {
+  readonly between: readonly [string, string];
+  readonly gates: readonly string[];
+}
+
+export const SEAMS: readonly SeamSpec[] = [
+  { between: ['K', 'H'], gates: ['kestrel-north-gate', 'kestrel-gate', 'kestrel-south-gate'] },
+  { between: ['H', 'C'], gates: ['harrow-north-gate', 'harrow-gate', 'harrow-south-gate'] },
+  { between: ['C', 'W'], gates: ['halcyon-north-gate', 'halcyon-gate', 'halcyon-south-gate'] },
+  { between: ['W', 'G'], gates: ['wreck-north-gate', 'wreck-gate', 'wreck-south-gate'] },
+  { between: ['G', 'S'], gates: ['steppe-north-gate', 'steppe-gate', 'steppe-south-gate'] },
+];
+
+export const WILD_PINS: Readonly<Record<string, string>> = {
+  '3,8': 'Sluice Row',
+  '4,2': 'Arcade Mile',
+  '13,7': 'Glass Flats',
+  '14,8': 'Pylon Walk',
+  '13,9': 'Shard Moor',
 };
 
 export function random(seed: number): () => number {
@@ -97,13 +168,50 @@ export function random(seed: number): () => number {
   };
 }
 
-export const spillY = (x: number): number => {
-  const ramp = (value: number): number => Math.max(0, Math.min(1, value));
-  const detour = 52 * ramp((x - 176) / 24) * ramp((400 - x) / 24);
-  return 156 + 14 * Math.sin(x / 70) + 5 * Math.sin(x / 23) + detour;
+export const landSquares = (): { readonly column: number; readonly row: number; readonly region: RegionSpec }[] => {
+  const out: { column: number; row: number; region: RegionSpec }[] = [];
+  for (let row = 0; row < ROWS; row++) for (let column = 0; column < COLUMNS; column++) {
+    const region = regionAtSquare(column, row);
+    if (region) out.push({ column, row, region });
+  }
+  return out;
 };
 
-export const padOf = (place: PlaceSpec): { readonly x: number; readonly y: number; readonly width: number; readonly height: number } =>
-  place.rect ?? { x: place.column * SQUARE + 6, y: place.row * SQUARE + 6, width: SQUARE - 12, height: SQUARE - 12 };
-
-export const padHeightOf = (place: PlaceSpec): number => place.height ?? (place.column >= 6 && place.column <= 8 ? 3 : BASE_HEIGHT);
+export function squareTiers(): Map<string, number> {
+  const start = placeById('site-kestrel');
+  const distance = new Map<string, number>([[start.column + ',' + start.row, 0]]);
+  const queue: [number, number][] = [[start.column, start.row]];
+  for (let head = 0; head < queue.length; head++) {
+    const [column, row] = queue[head]!;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const key = column + dx + ',' + (row + dy);
+      if (distance.has(key) || !regionAtSquare(column + dx, row + dy)) continue;
+      distance.set(key, distance.get(column + ',' + row)! + 1);
+      queue.push([column + dx, row + dy]);
+    }
+  }
+  const tiers = new Map<string, number>();
+  for (const region of REGIONS) {
+    const squares = landSquares().filter((square) => square.region === region);
+    const values = squares.map((square) => distance.get(square.column + ',' + square.row) ?? 0);
+    const low = Math.min(...values);
+    const high = Math.max(...values);
+    const [first, last] = region.tiers;
+    for (const square of squares) {
+      const share = high === low ? 0 : ((distance.get(square.column + ',' + square.row) ?? 0) - low) / (high - low);
+      const pinned = placeAt(square.column, square.row)?.tier;
+      tiers.set(square.column + ',' + square.row, pinned ?? Math.min(last, first + Math.floor(share * (last - first + 1))));
+    }
+  }
+  const ordered = [...distance].sort((a, b) => a[1] - b[1]);
+  for (const [key, steps] of ordered) {
+    const [column, row] = key.split(',').map(Number) as [number, number];
+    let floor = tiers.get(key) ?? 1;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const near = column + dx + ',' + (row + dy);
+      if ((distance.get(near) ?? Infinity) < steps) floor = Math.max(floor, tiers.get(near) ?? 1);
+    }
+    tiers.set(key, floor);
+  }
+  return tiers;
+}

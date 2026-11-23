@@ -6,7 +6,7 @@ import type { QuestlineDefinition } from '../../../quests/questline.ts';
 import type { WorldObjectDefinition } from '../../../world/entities.ts';
 import { active, bye, questItem, questObject, questTalk, say, shop } from '../../catalog/dialogueKit.ts';
 import { questPay, styleQuestPay, type QuestPay } from '../../catalog/questPay.ts';
-import { CLEARANCE_GALLOWGLASS } from '../lifts.ts';
+import { CLEARANCE_GALLOWGLASS } from '../clearance.ts';
 
 const scrip = (count: number): QuestPay => ({ effect: { type: 'giveItem', itemId: 'meridian-scrip', count }, line: `${count} Scrip` });
 

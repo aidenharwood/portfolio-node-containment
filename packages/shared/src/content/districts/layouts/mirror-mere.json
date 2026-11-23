@@ -1,0 +1,56 @@
+{
+  "id": "mirror-mere",
+  "name": "Mirror Mere",
+  "subtitle": "The Span, the Glass Steppe",
+  "tier": 11,
+  "region": "glass-steppe",
+  "condition": "alien",
+  "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 16, "row": 7 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Mirror Mere" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 47, "dy": 40 }
+  },
+  "objects": [
+    { "id": "mirror-mere-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 42, "dy": 19 } },
+    { "id": "mirror-mere-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 32 } },
+    { "id": "mirror-mere-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 47, "dy": 25 } },
+    { "id": "mirror-mere-flood-mast-3", "object": "flood-mast", "at": { "room": "ground", "dx": 25, "dy": 3 } },
+    { "id": "mirror-mere-flood-mast-4", "object": "flood-mast", "at": { "room": "ground", "dx": 44, "dy": 3 } },
+    { "id": "mirror-mere-ledge-milestone-5", "object": "ledge-milestone", "at": { "room": "ground", "dx": 45, "dy": 47 } },
+    { "id": "mirror-mere-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 18, "dy": 49 } },
+    { "id": "mirror-mere-sprung-cell-door-8", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 3, "dy": 25 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "mirror-mere-choir-echo-0", "creature": "choir-echo", "at": { "room": "ground", "dx": 31, "dy": 53 } },
+    { "id": "mirror-mere-red-twin-1", "creature": "red-twin", "at": { "room": "ground", "dx": 6, "dy": 17 } },
+    { "id": "mirror-mere-glass-stalker-2", "creature": "glass-stalker", "at": { "room": "ground", "dx": 11, "dy": 54 } },
+    { "id": "mirror-mere-choir-echo-3", "creature": "choir-echo", "at": { "room": "ground", "dx": 5, "dy": 11 } },
+    { "id": "mirror-mere-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 17, "dy": 33 } },
+    { "id": "mirror-mere-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 44, "dy": 10 } },
+    { "id": "mirror-mere-choir-echo-6", "creature": "choir-echo", "at": { "room": "ground", "dx": 13, "dy": 10 } },
+    { "id": "mirror-mere-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 7, "dy": 38 } },
+    { "id": "mirror-mere-glass-stalker-8", "creature": "glass-stalker", "at": { "room": "ground", "dx": 12, "dy": 48 } },
+    { "id": "mirror-mere-choir-echo-9", "creature": "choir-echo", "at": { "room": "ground", "dx": 42, "dy": 58 } },
+    { "id": "mirror-mere-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 53, "dy": 6 } },
+    { "id": "mirror-mere-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 6, "dy": 52 } },
+    { "id": "mirror-mere-choir-echo-12", "creature": "choir-echo", "at": { "room": "ground", "dx": 28, "dy": 9 } },
+    { "id": "mirror-mere-red-twin-13", "creature": "red-twin", "at": { "room": "ground", "dx": 5, "dy": 33 } },
+    { "id": "mirror-mere-glass-stalker-14", "creature": "glass-stalker", "at": { "room": "ground", "dx": 18, "dy": 40 } },
+    { "id": "mirror-mere-choir-echo-15", "creature": "choir-echo", "at": { "room": "ground", "dx": 39, "dy": 43 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

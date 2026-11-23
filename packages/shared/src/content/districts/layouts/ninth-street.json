@@ -7,7 +7,7 @@
   "condition": "worn",
   "ambience": { "darkness": 0.58, "tint": "#3a2448", "fog": "#1e1430", "sky": "#2a1838", "weather": ["rain"], "haze": 1.3 },
   "size": { "width": 64, "height": 64 },
-  "square": { "column": 7, "row": 2 },
+  "square": { "column": 6, "row": 1 },
   "steps": [
     { "kind": "building", "id": "ninth-noodles", "rect": { "x": 9, "y": 10, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "ninth-pawn", "rect": { "x": 25, "y": 10, "width": 12, "height": 8 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
@@ -23,7 +23,7 @@
     { "room": "ninth-flat-2", "name": "Flat 12B", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 20, "dy": 7 }
+    "start": { "room": "ground", "dx": 13, "dy": 60 }
   },
   "objects": [
     { "id": "ninth-noodles-ward-cooker-0", "object": "ward-cooker", "at": { "room": "ninth-noodles", "dx": 1, "dy": 0 } },
@@ -61,21 +61,21 @@
     { "id": "ninth-flat-2-shelving-2", "object": "shelving", "at": { "room": "ninth-flat-2", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "ninth-flat-2-table-3", "object": "table", "at": { "room": "ninth-flat-2", "dx": 5, "dy": 3 } },
     { "id": "ninth-flat-2-chair-4", "object": "chair", "at": { "room": "ninth-flat-2", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "ninth-street-street-lamp-35", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 37 } },
-    { "id": "ninth-street-street-lamp-36", "object": "street-lamp", "at": { "room": "ground", "dx": 20, "dy": 38 } },
-    { "id": "ninth-street-street-lamp-37", "object": "street-lamp", "at": { "room": "ground", "dx": 28, "dy": 55 } },
-    { "id": "ninth-street-street-lamp-38", "object": "street-lamp", "at": { "room": "ground", "dx": 57, "dy": 13 } },
-    { "id": "ninth-street-steam-vent-39", "object": "steam-vent", "at": { "room": "ground", "dx": 43, "dy": 44 } },
-    { "id": "ninth-street-steam-vent-40", "object": "steam-vent", "at": { "room": "ground", "dx": 10, "dy": 60 } },
-    { "id": "ninth-street-utility-pole-41", "object": "utility-pole", "at": { "room": "ground", "dx": 22, "dy": 21 } },
-    { "id": "ninth-street-bollard-42", "object": "bollard", "at": { "room": "ground", "dx": 6, "dy": 40 } },
-    { "id": "ninth-street-litter-bin-43", "object": "litter-bin", "at": { "room": "ground", "dx": 51, "dy": 60 } },
-    { "id": "ninth-street-bollard-44", "object": "bollard", "at": { "room": "ground", "dx": 50, "dy": 44 } },
-    { "id": "ninth-street-barricade-45", "object": "barricade", "at": { "room": "ground", "dx": 15, "dy": 43 } },
-    { "id": "ninth-street-street-bench-46", "object": "street-bench", "at": { "room": "ground", "dx": 36, "dy": 4 }, "facing": "south" },
-    { "id": "ninth-street-street-bench-47", "object": "street-bench", "at": { "room": "ground", "dx": 38, "dy": 51 }, "facing": "south" },
-    { "id": "ninth-street-street-bench-48", "object": "street-bench", "at": { "room": "ground", "dx": 48, "dy": 4 }, "facing": "south" },
-    { "id": "ninth-street-dead-screen-49", "object": "dead-screen", "at": { "room": "ground", "dx": 28, "dy": 25 } }
+    { "id": "ninth-street-street-lamp-35", "object": "street-lamp", "at": { "room": "ground", "dx": 57, "dy": 14 } },
+    { "id": "ninth-street-street-lamp-36", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 4 } },
+    { "id": "ninth-street-street-lamp-37", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 45 } },
+    { "id": "ninth-street-street-lamp-38", "object": "street-lamp", "at": { "room": "ground", "dx": 24, "dy": 47 } },
+    { "id": "ninth-street-utility-pole-39", "object": "utility-pole", "at": { "room": "ground", "dx": 15, "dy": 44 } },
+    { "id": "ninth-street-steam-vent-40", "object": "steam-vent", "at": { "room": "ground", "dx": 52, "dy": 29 } },
+    { "id": "ninth-street-holo-billboard-41", "object": "holo-billboard", "at": { "room": "ground", "dx": 37, "dy": 54 } },
+    { "id": "ninth-street-bollard-42", "object": "bollard", "at": { "room": "ground", "dx": 58, "dy": 35 } },
+    { "id": "ninth-street-litter-bin-43", "object": "litter-bin", "at": { "room": "ground", "dx": 49, "dy": 35 } },
+    { "id": "ninth-street-litter-bin-44", "object": "litter-bin", "at": { "room": "ground", "dx": 35, "dy": 24 } },
+    { "id": "ninth-street-barricade-45", "object": "barricade", "at": { "room": "ground", "dx": 31, "dy": 60 } },
+    { "id": "ninth-street-street-bench-46", "object": "street-bench", "at": { "room": "ground", "dx": 15, "dy": 25 }, "facing": "south" },
+    { "id": "ninth-street-street-bench-47", "object": "street-bench", "at": { "room": "ground", "dx": 49, "dy": 57 }, "facing": "south" },
+    { "id": "ninth-street-street-bench-48", "object": "street-bench", "at": { "room": "ground", "dx": 45, "dy": 21 }, "facing": "south" },
+    { "id": "ninth-street-dead-screen-49", "object": "dead-screen", "at": { "room": "ground", "dx": 23, "dy": 30 } }
   ],
   "assemblies": [],
   "npcs": [

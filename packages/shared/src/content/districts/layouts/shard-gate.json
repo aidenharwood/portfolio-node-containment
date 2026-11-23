@@ -1,0 +1,55 @@
+{
+  "id": "shard-gate",
+  "name": "Shard Gate",
+  "subtitle": "The Span, the Glass Steppe",
+  "tier": 11,
+  "region": "glass-steppe",
+  "condition": "alien",
+  "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 14, "row": 10 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Shard Gate" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 20, "dy": 29 }
+  },
+  "objects": [
+    { "id": "shard-gate-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 17 } },
+    { "id": "shard-gate-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 4, "dy": 44 } },
+    { "id": "shard-gate-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 15, "dy": 38 } },
+    { "id": "shard-gate-flood-mast-3", "object": "flood-mast", "at": { "room": "ground", "dx": 41, "dy": 47 } },
+    { "id": "shard-gate-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 42, "dy": 3 } },
+    { "id": "shard-gate-precursor-pylon-5", "object": "precursor-pylon", "at": { "room": "ground", "dx": 3, "dy": 10 } },
+    { "id": "shard-gate-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 40, "dy": 33 } },
+    { "id": "shard-gate-sprung-cell-door-7", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 19, "dy": 5 } },
+    { "id": "shard-gate-directorate-salvage-8", "object": "directorate-salvage", "at": { "room": "ground", "dx": 49, "dy": 24 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "shard-gate-choir-echo-0", "creature": "choir-echo", "at": { "room": "ground", "dx": 51, "dy": 37 } },
+    { "id": "shard-gate-red-twin-1", "creature": "red-twin", "at": { "room": "ground", "dx": 4, "dy": 4 } },
+    { "id": "shard-gate-glass-stalker-2", "creature": "glass-stalker", "at": { "room": "ground", "dx": 39, "dy": 25 } },
+    { "id": "shard-gate-choir-echo-3", "creature": "choir-echo", "at": { "room": "ground", "dx": 10, "dy": 52 } },
+    { "id": "shard-gate-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 24, "dy": 46 } },
+    { "id": "shard-gate-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 4, "dy": 52 } },
+    { "id": "shard-gate-choir-echo-6", "creature": "choir-echo", "at": { "room": "ground", "dx": 5, "dy": 18 } },
+    { "id": "shard-gate-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 24, "dy": 40 } },
+    { "id": "shard-gate-glass-stalker-8", "creature": "glass-stalker", "at": { "room": "ground", "dx": 11, "dy": 9 } },
+    { "id": "shard-gate-choir-echo-9", "creature": "choir-echo", "at": { "room": "ground", "dx": 27, "dy": 12 } },
+    { "id": "shard-gate-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 18, "dy": 54 } },
+    { "id": "shard-gate-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 35, "dy": 6 } },
+    { "id": "shard-gate-choir-echo-12", "creature": "choir-echo", "at": { "room": "ground", "dx": 15, "dy": 15 } },
+    { "id": "shard-gate-red-twin-13", "creature": "red-twin", "at": { "room": "ground", "dx": 50, "dy": 47 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

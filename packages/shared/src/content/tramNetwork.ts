@@ -4,10 +4,6 @@ import type { TramLineDefinition, TramNetwork, TramStation, TramStationDefinitio
 import type { LocatableContent } from './levelIndex.ts';
 import { locate } from './levelIndex.ts';
 
-export const TRAM_STATIONS: readonly TramStationDefinition[] = [];
-
-export const TRAM_LINES: readonly TramLineDefinition[] = [];
-
 function resolveStation(
   definition: TramStationDefinition,
   districts: ReadonlyMap<DistrictId, DistrictDefinition>,

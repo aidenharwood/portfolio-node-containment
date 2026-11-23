@@ -2,6 +2,7 @@ import type { DistrictDefinition } from '../../world/district.ts';
 import { buildDistrict } from '../../world/layout.ts';
 import { CITY_KIT } from '../catalog/cityKit.ts';
 import { LANDMARK_KIT } from '../catalog/landmarks.ts';
+import { TRANSIT_KIT } from '../catalog/transit.ts';
 import { BELOW_LAYOUT_IDS, LAYOUT_SOURCES, SQUARE_LAYOUT_IDS } from '../districts/layouts/index.ts';
 import { registerFurnishingKit } from '../furnishingKit.ts';
 import { landFrom, SHIPPED_LANDS } from '../land/index.ts';
@@ -9,6 +10,7 @@ import { SPAN_KIT } from './objects.ts';
 
 registerFurnishingKit(CITY_KIT);
 registerFurnishingKit(LANDMARK_KIT);
+registerFurnishingKit(TRANSIT_KIT);
 registerFurnishingKit(SPAN_KIT);
 
 export const SPAN_LAND_ID = 'the-span';

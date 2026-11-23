@@ -8,7 +8,7 @@ import type { GameEffect } from '../../../rules/effects.ts';
 import type { WorldObjectDefinition } from '../../../world/entities.ts';
 import { active, bye, questItem, questObject, questTalk, say, shop, type QuestTalk } from '../../catalog/dialogueKit.ts';
 import { questPay, styleQuestPay, type QuestPay } from '../../catalog/questPay.ts';
-import { CLEARANCE_NULL } from '../lifts.ts';
+import { CLEARANCE_NULL } from '../clearance.ts';
 
 const ACT_THREE_END = 'breach';
 const SCRIP = 'meridian-scrip';

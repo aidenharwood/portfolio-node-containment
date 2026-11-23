@@ -1,0 +1,63 @@
+{
+  "id": "shining-downs",
+  "name": "Shining Downs",
+  "subtitle": "The Span, the Glass Steppe",
+  "tier": 10,
+  "region": "glass-steppe",
+  "condition": "alien",
+  "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 13, "row": 6 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Shining Downs" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 14, "dy": 49 }
+  },
+  "objects": [
+    { "id": "shining-downs-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 49 } },
+    { "id": "shining-downs-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 17, "dy": 34 } },
+    { "id": "shining-downs-flood-mast-2", "object": "flood-mast", "at": { "room": "ground", "dx": 32, "dy": 9 } },
+    { "id": "shining-downs-ledge-milestone-3", "object": "ledge-milestone", "at": { "room": "ground", "dx": 47, "dy": 56 } },
+    { "id": "shining-downs-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 6, "dy": 45 } },
+    { "id": "shining-downs-precursor-pylon-5", "object": "precursor-pylon", "at": { "room": "ground", "dx": 34, "dy": 31 } },
+    { "id": "shining-downs-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 7, "dy": 15 } },
+    { "id": "shining-downs-sprung-cell-door-7", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 52, "dy": 47 } },
+    { "id": "shining-downs-directorate-salvage-8", "object": "directorate-salvage", "at": { "room": "ground", "dx": 4, "dy": 28 } },
+    { "id": "shining-downs-red-moss-9", "object": "red-moss", "at": { "room": "ground", "dx": 60, "dy": 27 } }
+  ],
+  "assemblies": [
+    { "id": "shining-downs-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 39, "dy": 22 }, "facing": "east", "span": 2 },
+    { "id": "shining-downs-bridge-1", "assembly": "bridge", "at": { "room": "ground", "dx": 50, "dy": 51 }, "span": 2 },
+    { "id": "shining-downs-bridge-2", "assembly": "bridge", "at": { "room": "ground", "dx": 14, "dy": 51 }, "span": 2 }
+  ],
+  "npcs": [],
+  "creatures": [
+    { "id": "shining-downs-prism-hound-0", "creature": "prism-hound", "at": { "room": "ground", "dx": 44, "dy": 9 } },
+    { "id": "shining-downs-glass-stalker-1", "creature": "glass-stalker", "at": { "room": "ground", "dx": 17, "dy": 21 } },
+    { "id": "shining-downs-prism-hound-2", "creature": "prism-hound", "at": { "room": "ground", "dx": 6, "dy": 55 } },
+    { "id": "shining-downs-glass-stalker-3", "creature": "glass-stalker", "at": { "room": "ground", "dx": 38, "dy": 15 } },
+    { "id": "shining-downs-prism-hound-4", "creature": "prism-hound", "at": { "room": "ground", "dx": 31, "dy": 57 } },
+    { "id": "shining-downs-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 14, "dy": 44 } },
+    { "id": "shining-downs-prism-hound-6", "creature": "prism-hound", "at": { "room": "ground", "dx": 59, "dy": 35 } },
+    { "id": "shining-downs-glass-stalker-7", "creature": "glass-stalker", "at": { "room": "ground", "dx": 46, "dy": 37 } },
+    { "id": "shining-downs-prism-hound-8", "creature": "prism-hound", "at": { "room": "ground", "dx": 52, "dy": 6 } },
+    { "id": "shining-downs-glass-stalker-9", "creature": "glass-stalker", "at": { "room": "ground", "dx": 48, "dy": 13 } },
+    { "id": "shining-downs-prism-hound-10", "creature": "prism-hound", "at": { "room": "ground", "dx": 54, "dy": 22 } },
+    { "id": "shining-downs-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 16, "dy": 6 } },
+    { "id": "shining-downs-prism-hound-12", "creature": "prism-hound", "at": { "room": "ground", "dx": 3, "dy": 37 } },
+    { "id": "shining-downs-glass-stalker-13", "creature": "glass-stalker", "at": { "room": "ground", "dx": 25, "dy": 36 } },
+    { "id": "shining-downs-prism-hound-14", "creature": "prism-hound", "at": { "room": "ground", "dx": 29, "dy": 46 } },
+    { "id": "shining-downs-glass-stalker-15", "creature": "glass-stalker", "at": { "room": "ground", "dx": 59, "dy": 11 } },
+    { "id": "shining-downs-prism-hound-16", "creature": "prism-hound", "at": { "room": "ground", "dx": 43, "dy": 49 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

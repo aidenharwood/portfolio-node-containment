@@ -1,0 +1,59 @@
+{
+  "id": "westcliff",
+  "name": "Westcliff",
+  "subtitle": "The Span, Harrow Terraces",
+  "tier": 3,
+  "region": "harrow-terraces",
+  "condition": "overgrown",
+  "ambience": { "darkness": 0.2, "tint": "#e4dcb8", "fog": "#d8d0a8", "sky": "#b8d8c0", "weather": ["dust"], "haze": 0.8 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 2, "row": 9 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Westcliff" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 32, "dy": 42 }
+  },
+  "objects": [
+    { "id": "westcliff-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 55, "dy": 24 } },
+    { "id": "westcliff-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 42 } },
+    { "id": "westcliff-windpump-2", "object": "windpump", "at": { "room": "ground", "dx": 37, "dy": 14 } },
+    { "id": "westcliff-burn-barrel-3", "object": "burn-barrel", "at": { "room": "ground", "dx": 24, "dy": 34 } },
+    { "id": "westcliff-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 14, "dy": 16 } },
+    { "id": "westcliff-burn-barrel-5", "object": "burn-barrel", "at": { "room": "ground", "dx": 46, "dy": 20 } },
+    { "id": "westcliff-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 58, "dy": 36 } },
+    { "id": "westcliff-kestrel-gate-leaf-0", "object": "kestrel-gate-leaf", "at": { "room": "ground", "dx": 42, "dy": 63 }, "facing": "south" },
+    { "id": "westcliff-kestrel-gate-leaf-1", "object": "kestrel-gate-leaf", "at": { "room": "ground", "dx": 43, "dy": 63 }, "facing": "south" },
+    { "id": "westcliff-cable-drum-9", "object": "cable-drum", "at": { "room": "ground", "dx": 46, "dy": 52 } },
+    { "id": "westcliff-dredge-spot-10", "object": "dredge-spot", "at": { "room": "ground", "dx": 49, "dy": 41 } },
+    { "id": "westcliff-reed-bed-11", "object": "reed-bed", "at": { "room": "ground", "dx": 25, "dy": 17 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "westcliff-furrow-eel-0", "creature": "furrow-eel", "at": { "room": "ground", "dx": 12, "dy": 57 } },
+    { "id": "westcliff-crop-magpie-1", "creature": "crop-magpie", "at": { "room": "ground", "dx": 36, "dy": 37 } },
+    { "id": "westcliff-furrow-eel-2", "creature": "furrow-eel", "at": { "room": "ground", "dx": 45, "dy": 29 } },
+    { "id": "westcliff-crop-magpie-3", "creature": "crop-magpie", "at": { "room": "ground", "dx": 52, "dy": 17 } },
+    { "id": "westcliff-furrow-eel-4", "creature": "furrow-eel", "at": { "room": "ground", "dx": 56, "dy": 57 } },
+    { "id": "westcliff-crop-magpie-5", "creature": "crop-magpie", "at": { "room": "ground", "dx": 60, "dy": 14 } },
+    { "id": "westcliff-furrow-eel-6", "creature": "furrow-eel", "at": { "room": "ground", "dx": 16, "dy": 32 } },
+    { "id": "westcliff-crop-magpie-7", "creature": "crop-magpie", "at": { "room": "ground", "dx": 33, "dy": 32 } },
+    { "id": "westcliff-furrow-eel-8", "creature": "furrow-eel", "at": { "room": "ground", "dx": 38, "dy": 20 } },
+    { "id": "westcliff-crop-magpie-9", "creature": "crop-magpie", "at": { "room": "ground", "dx": 22, "dy": 41 } },
+    { "id": "westcliff-furrow-eel-10", "creature": "furrow-eel", "at": { "room": "ground", "dx": 58, "dy": 49 } },
+    { "id": "westcliff-crop-magpie-11", "creature": "crop-magpie", "at": { "room": "ground", "dx": 30, "dy": 23 } },
+    { "id": "westcliff-furrow-eel-12", "creature": "furrow-eel", "at": { "room": "ground", "dx": 10, "dy": 3 } },
+    { "id": "westcliff-crop-magpie-13", "creature": "crop-magpie", "at": { "room": "ground", "dx": 27, "dy": 47 } },
+    { "id": "westcliff-furrow-eel-14", "creature": "furrow-eel", "at": { "room": "ground", "dx": 30, "dy": 58 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

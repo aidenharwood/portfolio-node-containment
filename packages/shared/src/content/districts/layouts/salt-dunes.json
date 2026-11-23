@@ -1,0 +1,59 @@
+{
+  "id": "salt-dunes",
+  "name": "Salt Dunes",
+  "subtitle": "The Span, Kestrel Reach",
+  "tier": 2,
+  "region": "kestrel-reach",
+  "condition": "pristine",
+  "ambience": { "darkness": 0.16, "tint": "#e8eef4", "fog": "#c8d8e8", "sky": "#9fc8f0", "weather": ["mist"], "haze": 0.7 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 6, "row": 12 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Salt Dunes" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 19, "dy": 24 }
+  },
+  "objects": [
+    { "id": "salt-dunes-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 19, "dy": 36 } },
+    { "id": "salt-dunes-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 7, "dy": 43 } },
+    { "id": "salt-dunes-litter-bin-2", "object": "litter-bin", "at": { "room": "ground", "dx": 3, "dy": 15 } },
+    { "id": "salt-dunes-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 33, "dy": 21 } },
+    { "id": "salt-dunes-street-tree-4", "object": "street-tree", "at": { "room": "ground", "dx": 54, "dy": 38 } },
+    { "id": "salt-dunes-checkpoint-barrier-5", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 52, "dy": 25 } },
+    { "id": "salt-dunes-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 52, "dy": 16 } },
+    { "id": "salt-dunes-street-bench-7", "object": "street-bench", "at": { "room": "ground", "dx": 42, "dy": 24 }, "facing": "south" },
+    { "id": "salt-dunes-faint-trace-8", "object": "faint-trace", "at": { "room": "ground", "dx": 8, "dy": 33 } },
+    { "id": "salt-dunes-eel-trap-9", "object": "eel-trap", "at": { "room": "ground", "dx": 5, "dy": 24 } },
+    { "id": "salt-dunes-cable-drum-10", "object": "cable-drum", "at": { "room": "ground", "dx": 15, "dy": 3 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "salt-dunes-feral-hound-0", "creature": "feral-hound", "at": { "room": "ground", "dx": 22, "dy": 54 } },
+    { "id": "salt-dunes-grounds-mite-1", "creature": "grounds-mite", "at": { "room": "ground", "dx": 59, "dy": 19 } },
+    { "id": "salt-dunes-lawn-rat-2", "creature": "lawn-rat", "at": { "room": "ground", "dx": 54, "dy": 32 } },
+    { "id": "salt-dunes-feral-hound-3", "creature": "feral-hound", "at": { "room": "ground", "dx": 40, "dy": 6 } },
+    { "id": "salt-dunes-grounds-mite-4", "creature": "grounds-mite", "at": { "room": "ground", "dx": 46, "dy": 4 } },
+    { "id": "salt-dunes-lawn-rat-5", "creature": "lawn-rat", "at": { "room": "ground", "dx": 13, "dy": 13 } },
+    { "id": "salt-dunes-feral-hound-6", "creature": "feral-hound", "at": { "room": "ground", "dx": 42, "dy": 45 } },
+    { "id": "salt-dunes-grounds-mite-7", "creature": "grounds-mite", "at": { "room": "ground", "dx": 37, "dy": 45 } },
+    { "id": "salt-dunes-lawn-rat-8", "creature": "lawn-rat", "at": { "room": "ground", "dx": 16, "dy": 43 } },
+    { "id": "salt-dunes-feral-hound-9", "creature": "feral-hound", "at": { "room": "ground", "dx": 9, "dy": 17 } },
+    { "id": "salt-dunes-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 45, "dy": 33 } },
+    { "id": "salt-dunes-lawn-rat-11", "creature": "lawn-rat", "at": { "room": "ground", "dx": 16, "dy": 50 } },
+    { "id": "salt-dunes-feral-hound-12", "creature": "feral-hound", "at": { "room": "ground", "dx": 28, "dy": 12 } },
+    { "id": "salt-dunes-grounds-mite-13", "creature": "grounds-mite", "at": { "room": "ground", "dx": 26, "dy": 23 } },
+    { "id": "salt-dunes-lawn-rat-14", "creature": "lawn-rat", "at": { "room": "ground", "dx": 56, "dy": 46 } },
+    { "id": "salt-dunes-feral-hound-15", "creature": "feral-hound", "at": { "room": "ground", "dx": 51, "dy": 5 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

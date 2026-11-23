@@ -7,8 +7,10 @@
   "condition": "alien",
   "ambience": { "darkness": 0.62, "tint": "#1a2a3a", "fog": "#0c1824", "sky": "#1a3048", "weather": ["sparks"], "haze": 1.4 },
   "size": { "width": 64, "height": 64 },
-  "square": { "column": 14, "row": 3 },
+  "square": { "column": 10, "row": 6 },
   "steps": [
+    { "kind": "building", "id": "tram-terminal", "rect": { "x": 14, "y": 49, "width": 36, "height": 5 }, "floor": "terrazzo", "wall": "wall", "doors": [{ "side": "north", "width": 2, "offset": 16 }] },
+    { "kind": "track", "points": [{ "x": 0, "y": 52 }, { "x": 62, "y": 52 }] },
     { "kind": "building", "id": "last-post-hq", "rect": { "x": 9, "y": 10, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "last-post-mess", "rect": { "x": 25, "y": 10, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "last-post-aid", "rect": { "x": 41, "y": 10, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
@@ -18,6 +20,7 @@
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Last Post", "safe": true },
+    { "room": "tram-terminal", "name": "Last Post Station", "safe": true },
     { "room": "last-post-hq", "name": "Last Post HQ", "safe": true },
     { "room": "last-post-mess", "name": "Last Post Mess", "safe": true },
     { "room": "last-post-aid", "name": "Aid Station", "safe": true },
@@ -25,10 +28,13 @@
     { "room": "last-post-bunks", "name": "Last Post Bunks", "safe": true }
   ],
   "anchors": {
+    "tramPlatform": { "room": "tram-terminal", "dx": 16, "dy": 1 },
     "outpost": { "room": "last-post-hq", "dx": 6, "dy": 2 },
-    "start": { "room": "ground", "dx": 32, "dy": 54 }
+    "start": { "room": "ground", "dx": 19, "dy": 46 }
   },
   "objects": [
+    { "id": "last-post-departure-board", "object": "departure-board", "at": { "room": "tram-terminal", "dx": 4, "dy": 0 }, "facing": "south" },
+    { "id": "last-post-terminal-bench", "object": "street-bench", "at": { "room": "tram-terminal", "dx": 26, "dy": 0 }, "facing": "south" },
     { "id": "last-post-hq-shelving-0", "object": "shelving", "at": { "room": "last-post-hq", "dx": 1, "dy": 0 }, "facing": "south" },
     { "id": "last-post-hq-shelving-1", "object": "shelving", "at": { "room": "last-post-hq", "dx": 2, "dy": 0 }, "facing": "south" },
     { "id": "last-post-hq-shelving-2", "object": "shelving", "at": { "room": "last-post-hq", "dx": 3, "dy": 0 }, "facing": "south" },
@@ -79,22 +85,24 @@
     { "id": "last-post-bunks-bed-8", "object": "bed", "at": { "room": "last-post-bunks", "dx": 9, "dy": 5 } },
     { "id": "last-post-bunks-bed-9", "object": "bed", "at": { "room": "last-post-bunks", "dx": 11, "dy": 5 } },
     { "id": "last-post-bunks-storage-locker-10", "object": "storage-locker", "at": { "room": "last-post-bunks", "dx": 0, "dy": 3 }, "facing": "east" },
-    { "id": "last-post-street-lamp-50", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 46 } },
-    { "id": "last-post-street-lamp-51", "object": "street-lamp", "at": { "room": "ground", "dx": 8, "dy": 49 } },
-    { "id": "last-post-street-lamp-52", "object": "street-lamp", "at": { "room": "ground", "dx": 55, "dy": 43 } },
-    { "id": "last-post-street-lamp-53", "object": "street-lamp", "at": { "room": "ground", "dx": 54, "dy": 54 } },
-    { "id": "last-post-checkpoint-barrier-54", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 32, "dy": 25 } },
-    { "id": "last-post-barricade-55", "object": "barricade", "at": { "room": "ground", "dx": 44, "dy": 41 } },
-    { "id": "last-post-steam-vent-56", "object": "steam-vent", "at": { "room": "ground", "dx": 12, "dy": 4 } },
-    { "id": "last-post-checkpoint-barrier-57", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 58, "dy": 33 } },
-    { "id": "last-post-steam-vent-58", "object": "steam-vent", "at": { "room": "ground", "dx": 26, "dy": 52 } },
-    { "id": "last-post-checkpoint-barrier-59", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 15, "dy": 58 } },
-    { "id": "last-post-barricade-60", "object": "barricade", "at": { "room": "ground", "dx": 46, "dy": 6 } },
-    { "id": "last-post-street-bench-61", "object": "street-bench", "at": { "room": "ground", "dx": 42, "dy": 59 }, "facing": "south" },
-    { "id": "last-post-street-bench-62", "object": "street-bench", "at": { "room": "ground", "dx": 20, "dy": 22 }, "facing": "south" },
-    { "id": "last-post-street-bench-63", "object": "street-bench", "at": { "room": "ground", "dx": 53, "dy": 22 }, "facing": "south" }
+    { "id": "last-post-street-lamp-52", "object": "street-lamp", "at": { "room": "ground", "dx": 3, "dy": 29 } },
+    { "id": "last-post-street-lamp-53", "object": "street-lamp", "at": { "room": "ground", "dx": 47, "dy": 4 } },
+    { "id": "last-post-street-lamp-54", "object": "street-lamp", "at": { "room": "ground", "dx": 6, "dy": 48 } },
+    { "id": "last-post-street-lamp-55", "object": "street-lamp", "at": { "room": "ground", "dx": 60, "dy": 22 } },
+    { "id": "last-post-flood-mast-56", "object": "flood-mast", "at": { "room": "ground", "dx": 58, "dy": 41 } },
+    { "id": "last-post-flood-mast-57", "object": "flood-mast", "at": { "room": "ground", "dx": 8, "dy": 21 } },
+    { "id": "last-post-checkpoint-barrier-58", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 51, "dy": 28 } },
+    { "id": "last-post-flood-mast-59", "object": "flood-mast", "at": { "room": "ground", "dx": 3, "dy": 7 } },
+    { "id": "last-post-barricade-60", "object": "barricade", "at": { "room": "ground", "dx": 60, "dy": 6 } },
+    { "id": "last-post-flood-mast-61", "object": "flood-mast", "at": { "room": "ground", "dx": 45, "dy": 23 } },
+    { "id": "last-post-barricade-62", "object": "barricade", "at": { "room": "ground", "dx": 56, "dy": 49 } },
+    { "id": "last-post-street-bench-63", "object": "street-bench", "at": { "room": "ground", "dx": 22, "dy": 3 }, "facing": "south" },
+    { "id": "last-post-street-bench-64", "object": "street-bench", "at": { "room": "ground", "dx": 38, "dy": 60 }, "facing": "south" },
+    { "id": "last-post-street-bench-65", "object": "street-bench", "at": { "room": "ground", "dx": 15, "dy": 6 }, "facing": "south" }
   ],
-  "assemblies": [],
+  "assemblies": [
+    { "id": "last-post-tram-car", "assembly": "tram-car", "at": { "room": "tram-terminal", "dx": 14, "dy": 3 } }
+  ],
   "npcs": [
     { "id": "last-post-hq-captain-halloran", "npc": "captain-halloran", "at": { "room": "last-post-hq", "dx": 2, "dy": 2 } },
     { "id": "last-post-mess-cook-perpetua", "npc": "cook-perpetua", "at": { "room": "last-post-mess", "dx": 2, "dy": 2 } },
@@ -110,6 +118,7 @@
   ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
+    "tram-terminal": { "theme": "transit", "people": 0 },
     "last-post-hq": { "theme": "office", "also": ["shop"], "people": 0 },
     "last-post-mess": { "theme": "canteen", "people": 0 },
     "last-post-aid": { "theme": "medical", "people": 0 },

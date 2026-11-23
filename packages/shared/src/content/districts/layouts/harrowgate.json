@@ -7,8 +7,10 @@
   "condition": "overgrown",
   "ambience": { "darkness": 0.2, "tint": "#e4dcb8", "fog": "#d8d0a8", "sky": "#b8d8c0", "weather": ["dust"], "haze": 0.8 },
   "size": { "width": 64, "height": 64 },
-  "square": { "column": 4, "row": 3 },
+  "square": { "column": 2, "row": 6 },
   "steps": [
+    { "kind": "building", "id": "tram-terminal", "rect": { "x": 14, "y": 49, "width": 36, "height": 5 }, "floor": "terrazzo", "wall": "wall", "doors": [{ "side": "north", "width": 2, "offset": 16 }] },
+    { "kind": "track", "points": [{ "x": 0, "y": 52 }, { "x": 62, "y": 52 }] },
     { "kind": "building", "id": "coop-stores", "rect": { "x": 9, "y": 10, "width": 12, "height": 8 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "harrow-apothecary", "rect": { "x": 25, "y": 10, "width": 12, "height": 8 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "harrow-smithy", "rect": { "x": 41, "y": 10, "width": 12, "height": 8 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
@@ -18,6 +20,7 @@
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Harrowgate", "safe": true },
+    { "room": "tram-terminal", "name": "Harrowgate Halt Station", "safe": true },
     { "room": "coop-stores", "name": "Co-op Stores", "safe": true },
     { "room": "harrow-apothecary", "name": "Wynn’s Apothecary", "safe": true },
     { "room": "harrow-smithy", "name": "The Smithy", "safe": true },
@@ -25,10 +28,13 @@
     { "room": "coop-hall", "name": "Co-op Hall", "safe": true }
   ],
   "anchors": {
+    "tramPlatform": { "room": "tram-terminal", "dx": 16, "dy": 1 },
     "outpost": { "room": "coop-stores", "dx": 6, "dy": 2 },
-    "start": { "room": "ground", "dx": 3, "dy": 42 }
+    "start": { "room": "ground", "dx": 27, "dy": 44 }
   },
   "objects": [
+    { "id": "harrowgate-departure-board", "object": "departure-board", "at": { "room": "tram-terminal", "dx": 4, "dy": 0 }, "facing": "south" },
+    { "id": "harrowgate-terminal-bench", "object": "street-bench", "at": { "room": "tram-terminal", "dx": 26, "dy": 0 }, "facing": "south" },
     { "id": "coop-stores-shelving-0", "object": "shelving", "at": { "room": "coop-stores", "dx": 1, "dy": 0 }, "facing": "south" },
     { "id": "coop-stores-shelving-1", "object": "shelving", "at": { "room": "coop-stores", "dx": 2, "dy": 0 }, "facing": "south" },
     { "id": "coop-stores-shelving-2", "object": "shelving", "at": { "room": "coop-stores", "dx": 3, "dy": 0 }, "facing": "south" },
@@ -80,22 +86,24 @@
     { "id": "coop-hall-street-bench-5", "object": "street-bench", "at": { "room": "coop-hall", "dx": 10, "dy": 4 }, "facing": "north" },
     { "id": "coop-hall-street-bench-6", "object": "street-bench", "at": { "room": "coop-hall", "dx": 2, "dy": 6 }, "facing": "north" },
     { "id": "coop-hall-street-bench-7", "object": "street-bench", "at": { "room": "coop-hall", "dx": 9, "dy": 6 }, "facing": "north" },
-    { "id": "harrowgate-street-lamp-51", "object": "street-lamp", "at": { "room": "ground", "dx": 26, "dy": 46 } },
-    { "id": "harrowgate-street-lamp-52", "object": "street-lamp", "at": { "room": "ground", "dx": 9, "dy": 60 } },
-    { "id": "harrowgate-street-lamp-53", "object": "street-lamp", "at": { "room": "ground", "dx": 9, "dy": 53 } },
-    { "id": "harrowgate-street-lamp-54", "object": "street-lamp", "at": { "room": "ground", "dx": 52, "dy": 24 } },
-    { "id": "harrowgate-street-tree-55", "object": "street-tree", "at": { "room": "ground", "dx": 44, "dy": 43 } },
-    { "id": "harrowgate-utility-pole-56", "object": "utility-pole", "at": { "room": "ground", "dx": 45, "dy": 49 } },
-    { "id": "harrowgate-burn-barrel-57", "object": "burn-barrel", "at": { "room": "ground", "dx": 53, "dy": 32 } },
-    { "id": "harrowgate-windpump-58", "object": "windpump", "at": { "room": "ground", "dx": 30, "dy": 54 } },
-    { "id": "harrowgate-utility-pole-59", "object": "utility-pole", "at": { "room": "ground", "dx": 34, "dy": 59 } },
-    { "id": "harrowgate-street-tree-60", "object": "street-tree", "at": { "room": "ground", "dx": 60, "dy": 58 } },
-    { "id": "harrowgate-barricade-61", "object": "barricade", "at": { "room": "ground", "dx": 40, "dy": 26 } },
-    { "id": "harrowgate-street-bench-62", "object": "street-bench", "at": { "room": "ground", "dx": 52, "dy": 40 }, "facing": "south" },
-    { "id": "harrowgate-street-bench-63", "object": "street-bench", "at": { "room": "ground", "dx": 29, "dy": 26 }, "facing": "south" },
-    { "id": "harrowgate-street-bench-64", "object": "street-bench", "at": { "room": "ground", "dx": 49, "dy": 60 }, "facing": "south" }
+    { "id": "harrowgate-street-lamp-53", "object": "street-lamp", "at": { "room": "ground", "dx": 47, "dy": 41 } },
+    { "id": "harrowgate-street-lamp-54", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 27 } },
+    { "id": "harrowgate-street-lamp-55", "object": "street-lamp", "at": { "room": "ground", "dx": 4, "dy": 58 } },
+    { "id": "harrowgate-street-lamp-56", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 3 } },
+    { "id": "harrowgate-windpump-57", "object": "windpump", "at": { "room": "ground", "dx": 3, "dy": 9 } },
+    { "id": "harrowgate-burn-barrel-58", "object": "burn-barrel", "at": { "room": "ground", "dx": 58, "dy": 43 } },
+    { "id": "harrowgate-burn-barrel-59", "object": "burn-barrel", "at": { "room": "ground", "dx": 8, "dy": 24 } },
+    { "id": "harrowgate-street-tree-60", "object": "street-tree", "at": { "room": "ground", "dx": 56, "dy": 56 } },
+    { "id": "harrowgate-utility-pole-61", "object": "utility-pole", "at": { "room": "ground", "dx": 56, "dy": 17 } },
+    { "id": "harrowgate-barricade-62", "object": "barricade", "at": { "room": "ground", "dx": 59, "dy": 35 } },
+    { "id": "harrowgate-barricade-63", "object": "barricade", "at": { "room": "ground", "dx": 26, "dy": 24 } },
+    { "id": "harrowgate-street-bench-64", "object": "street-bench", "at": { "room": "ground", "dx": 46, "dy": 59 }, "facing": "south" },
+    { "id": "harrowgate-street-bench-65", "object": "street-bench", "at": { "room": "ground", "dx": 53, "dy": 24 }, "facing": "south" },
+    { "id": "harrowgate-street-bench-66", "object": "street-bench", "at": { "room": "ground", "dx": 47, "dy": 25 }, "facing": "south" }
   ],
-  "assemblies": [],
+  "assemblies": [
+    { "id": "harrowgate-tram-car", "assembly": "tram-car", "at": { "room": "tram-terminal", "dx": 14, "dy": 3 } }
+  ],
   "npcs": [
     { "id": "coop-stores-steward-tull", "npc": "steward-tull", "at": { "room": "coop-stores", "dx": 2, "dy": 2 } },
     { "id": "harrow-apothecary-apothecary-wynn", "npc": "apothecary-wynn", "at": { "room": "harrow-apothecary", "dx": 2, "dy": 2 } },
@@ -111,6 +119,7 @@
   ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
+    "tram-terminal": { "theme": "transit", "people": 0 },
     "coop-stores": { "theme": "office", "also": ["shop"], "people": 0 },
     "harrow-apothecary": { "theme": "shop", "people": 0 },
     "harrow-smithy": { "theme": "works", "people": 0 },

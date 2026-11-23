@@ -1,0 +1,50 @@
+{
+  "id": "boiler-bay",
+  "name": "Boiler Bay",
+  "subtitle": "The Span, the Wreckfield",
+  "tier": 9,
+  "region": "wreckfield",
+  "condition": "breached",
+  "ambience": { "darkness": 0.4, "tint": "#5a3a28", "fog": "#4a3424", "sky": "#8a6a50", "weather": ["dust", "embers"], "haze": 1.2 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 15, "row": 3 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Boiler Bay" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 44, "dy": 3 }
+  },
+  "objects": [
+    { "id": "boiler-bay-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 47 } },
+    { "id": "boiler-bay-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 35, "dy": 58 } },
+    { "id": "boiler-bay-magnet-crane-2", "object": "magnet-crane", "at": { "room": "ground", "dx": 14, "dy": 43 } },
+    { "id": "boiler-bay-burn-barrel-3", "object": "burn-barrel", "at": { "room": "ground", "dx": 28, "dy": 54 } },
+    { "id": "boiler-bay-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 4, "dy": 46 } },
+    { "id": "boiler-bay-utility-pole-5", "object": "utility-pole", "at": { "room": "ground", "dx": 57, "dy": 55 } },
+    { "id": "boiler-bay-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 53, "dy": 42 } },
+    { "id": "boiler-bay-rivet-seam-9", "object": "rivet-seam", "at": { "room": "ground", "dx": 57, "dy": 3 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "boiler-bay-bilge-wraith-0", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 16, "dy": 51 } },
+    { "id": "boiler-bay-rustling-1", "creature": "rustling", "at": { "room": "ground", "dx": 8, "dy": 41 } },
+    { "id": "boiler-bay-hull-knocker-2", "creature": "hull-knocker", "at": { "room": "ground", "dx": 29, "dy": 5 } },
+    { "id": "boiler-bay-bilge-wraith-3", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 33, "dy": 50 } },
+    { "id": "boiler-bay-rustling-4", "creature": "rustling", "at": { "room": "ground", "dx": 40, "dy": 7 } },
+    { "id": "boiler-bay-hull-knocker-5", "creature": "hull-knocker", "at": { "room": "ground", "dx": 17, "dy": 4 } },
+    { "id": "boiler-bay-bilge-wraith-6", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 42, "dy": 56 } },
+    { "id": "boiler-bay-rustling-7", "creature": "rustling", "at": { "room": "ground", "dx": 53, "dy": 48 } },
+    { "id": "boiler-bay-hull-knocker-8", "creature": "hull-knocker", "at": { "room": "ground", "dx": 13, "dy": 8 } },
+    { "id": "boiler-bay-bilge-wraith-9", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 23, "dy": 8 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

@@ -1,0 +1,57 @@
+{
+  "id": "antiphon-ridge",
+  "name": "Antiphon Ridge",
+  "subtitle": "The Span, the Glass Steppe",
+  "tier": 11,
+  "region": "glass-steppe",
+  "condition": "alien",
+  "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 13, "row": 8 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Antiphon Ridge" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 12, "dy": 17 }
+  },
+  "objects": [
+    { "id": "antiphon-ridge-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 18 } },
+    { "id": "antiphon-ridge-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 33, "dy": 11 } },
+    { "id": "antiphon-ridge-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 11, "dy": 53 } },
+    { "id": "antiphon-ridge-ledge-milestone-3", "object": "ledge-milestone", "at": { "room": "ground", "dx": 54, "dy": 4 } },
+    { "id": "antiphon-ridge-flood-mast-4", "object": "flood-mast", "at": { "room": "ground", "dx": 35, "dy": 19 } },
+    { "id": "antiphon-ridge-ledge-milestone-5", "object": "ledge-milestone", "at": { "room": "ground", "dx": 34, "dy": 52 } },
+    { "id": "antiphon-ridge-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 21, "dy": 6 } },
+    { "id": "antiphon-ridge-directorate-salvage-7", "object": "directorate-salvage", "at": { "room": "ground", "dx": 40, "dy": 11 } },
+    { "id": "antiphon-ridge-red-trace-9", "object": "red-trace", "at": { "room": "ground", "dx": 49, "dy": 60 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "antiphon-ridge-choir-echo-0", "creature": "choir-echo", "at": { "room": "ground", "dx": 47, "dy": 36 } },
+    { "id": "antiphon-ridge-red-twin-1", "creature": "red-twin", "at": { "room": "ground", "dx": 27, "dy": 23 } },
+    { "id": "antiphon-ridge-glass-stalker-2", "creature": "glass-stalker", "at": { "room": "ground", "dx": 20, "dy": 21 } },
+    { "id": "antiphon-ridge-choir-echo-3", "creature": "choir-echo", "at": { "room": "ground", "dx": 13, "dy": 32 } },
+    { "id": "antiphon-ridge-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 17, "dy": 36 } },
+    { "id": "antiphon-ridge-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 24, "dy": 51 } },
+    { "id": "antiphon-ridge-choir-echo-6", "creature": "choir-echo", "at": { "room": "ground", "dx": 13, "dy": 59 } },
+    { "id": "antiphon-ridge-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 42, "dy": 40 } },
+    { "id": "antiphon-ridge-glass-stalker-8", "creature": "glass-stalker", "at": { "room": "ground", "dx": 25, "dy": 11 } },
+    { "id": "antiphon-ridge-choir-echo-9", "creature": "choir-echo", "at": { "room": "ground", "dx": 43, "dy": 29 } },
+    { "id": "antiphon-ridge-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 20, "dy": 14 } },
+    { "id": "antiphon-ridge-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 45, "dy": 45 } },
+    { "id": "antiphon-ridge-choir-echo-12", "creature": "choir-echo", "at": { "room": "ground", "dx": 8, "dy": 23 } },
+    { "id": "antiphon-ridge-red-twin-13", "creature": "red-twin", "at": { "room": "ground", "dx": 28, "dy": 30 } },
+    { "id": "antiphon-ridge-glass-stalker-14", "creature": "glass-stalker", "at": { "room": "ground", "dx": 11, "dy": 5 } },
+    { "id": "antiphon-ridge-choir-echo-15", "creature": "choir-echo", "at": { "room": "ground", "dx": 24, "dy": 36 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

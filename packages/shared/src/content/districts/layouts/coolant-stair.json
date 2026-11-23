@@ -1,0 +1,58 @@
+{
+  "id": "coolant-stair",
+  "name": "Coolant Stair",
+  "subtitle": "The Span, the Spindle",
+  "tier": 13,
+  "region": "the-spindle",
+  "condition": "alien",
+  "ambience": { "darkness": 0.62, "tint": "#1a2a3a", "fog": "#0c1824", "sky": "#1a3048", "weather": ["sparks"], "haze": 1.4 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 8, "row": 7 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Coolant Stair" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 25, "dy": 50 }
+  },
+  "objects": [
+    { "id": "coolant-stair-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 14, "dy": 51 } },
+    { "id": "coolant-stair-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 13, "dy": 25 } },
+    { "id": "coolant-stair-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 49, "dy": 23 } },
+    { "id": "coolant-stair-flood-mast-3", "object": "flood-mast", "at": { "room": "ground", "dx": 34, "dy": 32 } },
+    { "id": "coolant-stair-precursor-pylon-4", "object": "precursor-pylon", "at": { "room": "ground", "dx": 23, "dy": 36 } },
+    { "id": "coolant-stair-checkpoint-barrier-5", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 28, "dy": 60 } },
+    { "id": "coolant-stair-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 3, "dy": 16 } },
+    { "id": "coolant-stair-vault-bloom-8", "object": "vault-bloom", "at": { "room": "ground", "dx": 59, "dy": 56 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "coolant-stair-null-stalker-0", "creature": "null-stalker", "at": { "room": "ground", "dx": 44, "dy": 39 } },
+    { "id": "coolant-stair-null-echo-1", "creature": "null-echo", "at": { "room": "ground", "dx": 29, "dy": 53 } },
+    { "id": "coolant-stair-cell-breaker-2", "creature": "cell-breaker", "at": { "room": "ground", "dx": 43, "dy": 3 } },
+    { "id": "coolant-stair-null-stalker-3", "creature": "null-stalker", "at": { "room": "ground", "dx": 20, "dy": 59 } },
+    { "id": "coolant-stair-null-echo-4", "creature": "null-echo", "at": { "room": "ground", "dx": 34, "dy": 47 } },
+    { "id": "coolant-stair-cell-breaker-5", "creature": "cell-breaker", "at": { "room": "ground", "dx": 38, "dy": 52 } },
+    { "id": "coolant-stair-null-stalker-6", "creature": "null-stalker", "at": { "room": "ground", "dx": 37, "dy": 10 } },
+    { "id": "coolant-stair-null-echo-7", "creature": "null-echo", "at": { "room": "ground", "dx": 25, "dy": 11 } },
+    { "id": "coolant-stair-cell-breaker-8", "creature": "cell-breaker", "at": { "room": "ground", "dx": 40, "dy": 26 } },
+    { "id": "coolant-stair-null-stalker-9", "creature": "null-stalker", "at": { "room": "ground", "dx": 16, "dy": 7 } },
+    { "id": "coolant-stair-null-echo-10", "creature": "null-echo", "at": { "room": "ground", "dx": 44, "dy": 18 } },
+    { "id": "coolant-stair-cell-breaker-11", "creature": "cell-breaker", "at": { "room": "ground", "dx": 59, "dy": 14 } },
+    { "id": "coolant-stair-null-stalker-12", "creature": "null-stalker", "at": { "room": "ground", "dx": 24, "dy": 4 } },
+    { "id": "coolant-stair-null-echo-13", "creature": "null-echo", "at": { "room": "ground", "dx": 48, "dy": 57 } },
+    { "id": "coolant-stair-cell-breaker-14", "creature": "cell-breaker", "at": { "room": "ground", "dx": 15, "dy": 35 } },
+    { "id": "coolant-stair-null-stalker-15", "creature": "null-stalker", "at": { "room": "ground", "dx": 56, "dy": 23 } },
+    { "id": "coolant-stair-null-echo-16", "creature": "null-echo", "at": { "room": "ground", "dx": 55, "dy": 3 } },
+    { "id": "coolant-stair-cell-breaker-17", "creature": "cell-breaker", "at": { "room": "ground", "dx": 37, "dy": 15 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

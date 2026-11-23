@@ -1,0 +1,58 @@
+{
+  "id": "pale-steppe",
+  "name": "Pale Steppe",
+  "subtitle": "The Span, the Glass Steppe",
+  "tier": 11,
+  "region": "glass-steppe",
+  "condition": "alien",
+  "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 13, "row": 10 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Pale Steppe" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 39, "dy": 6 }
+  },
+  "objects": [
+    { "id": "pale-steppe-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 37 } },
+    { "id": "pale-steppe-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 59, "dy": 11 } },
+    { "id": "pale-steppe-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 25, "dy": 19 } },
+    { "id": "pale-steppe-precursor-pylon-3", "object": "precursor-pylon", "at": { "room": "ground", "dx": 40, "dy": 51 } },
+    { "id": "pale-steppe-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 5, "dy": 21 } },
+    { "id": "pale-steppe-barricade-5", "object": "barricade", "at": { "room": "ground", "dx": 44, "dy": 14 } },
+    { "id": "pale-steppe-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 39, "dy": 42 } },
+    { "id": "pale-steppe-sprung-cell-door-8", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 28, "dy": 29 } },
+    { "id": "pale-steppe-directorate-salvage-9", "object": "directorate-salvage", "at": { "room": "ground", "dx": 17, "dy": 29 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "pale-steppe-choir-echo-0", "creature": "choir-echo", "at": { "room": "ground", "dx": 34, "dy": 21 } },
+    { "id": "pale-steppe-red-twin-1", "creature": "red-twin", "at": { "room": "ground", "dx": 56, "dy": 41 } },
+    { "id": "pale-steppe-glass-stalker-2", "creature": "glass-stalker", "at": { "room": "ground", "dx": 19, "dy": 45 } },
+    { "id": "pale-steppe-choir-echo-3", "creature": "choir-echo", "at": { "room": "ground", "dx": 3, "dy": 58 } },
+    { "id": "pale-steppe-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 47, "dy": 20 } },
+    { "id": "pale-steppe-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 47, "dy": 49 } },
+    { "id": "pale-steppe-choir-echo-6", "creature": "choir-echo", "at": { "room": "ground", "dx": 30, "dy": 47 } },
+    { "id": "pale-steppe-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 20, "dy": 59 } },
+    { "id": "pale-steppe-glass-stalker-8", "creature": "glass-stalker", "at": { "room": "ground", "dx": 26, "dy": 7 } },
+    { "id": "pale-steppe-choir-echo-9", "creature": "choir-echo", "at": { "room": "ground", "dx": 4, "dy": 11 } },
+    { "id": "pale-steppe-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 5, "dy": 53 } },
+    { "id": "pale-steppe-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 14, "dy": 9 } },
+    { "id": "pale-steppe-choir-echo-12", "creature": "choir-echo", "at": { "room": "ground", "dx": 34, "dy": 28 } },
+    { "id": "pale-steppe-red-twin-13", "creature": "red-twin", "at": { "room": "ground", "dx": 47, "dy": 3 } },
+    { "id": "pale-steppe-glass-stalker-14", "creature": "glass-stalker", "at": { "room": "ground", "dx": 30, "dy": 12 } },
+    { "id": "pale-steppe-choir-echo-15", "creature": "choir-echo", "at": { "room": "ground", "dx": 34, "dy": 59 } },
+    { "id": "pale-steppe-red-twin-16", "creature": "red-twin", "at": { "room": "ground", "dx": 7, "dy": 45 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

@@ -1,0 +1,57 @@
+{
+  "id": "pylon-park",
+  "name": "Pylon Park",
+  "subtitle": "The Span, Halcyon",
+  "tier": 6,
+  "region": "halcyon",
+  "condition": "worn",
+  "ambience": { "darkness": 0.58, "tint": "#3a2448", "fog": "#1e1430", "sky": "#2a1838", "weather": ["rain"], "haze": 1.3 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 6, "row": 3 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Pylon Park" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 3, "dy": 51 }
+  },
+  "objects": [
+    { "id": "pylon-park-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 13 } },
+    { "id": "pylon-park-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 56, "dy": 44 } },
+    { "id": "pylon-park-holo-billboard-2", "object": "holo-billboard", "at": { "room": "ground", "dx": 59, "dy": 29 } },
+    { "id": "pylon-park-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 36, "dy": 36 } },
+    { "id": "pylon-park-utility-pole-4", "object": "utility-pole", "at": { "room": "ground", "dx": 13, "dy": 20 } },
+    { "id": "pylon-park-holo-billboard-5", "object": "holo-billboard", "at": { "room": "ground", "dx": 54, "dy": 19 } },
+    { "id": "pylon-park-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 13, "dy": 8 } },
+    { "id": "pylon-park-scrap-heap-7", "object": "scrap-heap", "at": { "room": "ground", "dx": 47, "dy": 37 } },
+    { "id": "pylon-park-culture-bench-8", "object": "culture-bench", "at": { "room": "ground", "dx": 27, "dy": 48 } },
+    { "id": "pylon-park-amber-trace-9", "object": "amber-trace", "at": { "room": "ground", "dx": 30, "dy": 18 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "pylon-park-neon-moth-0", "creature": "neon-moth", "at": { "room": "ground", "dx": 44, "dy": 28 } },
+    { "id": "pylon-park-alley-crawler-1", "creature": "alley-crawler", "at": { "room": "ground", "dx": 37, "dy": 15 } },
+    { "id": "pylon-park-neon-moth-2", "creature": "neon-moth", "at": { "room": "ground", "dx": 56, "dy": 37 } },
+    { "id": "pylon-park-alley-crawler-3", "creature": "alley-crawler", "at": { "room": "ground", "dx": 14, "dy": 37 } },
+    { "id": "pylon-park-neon-moth-4", "creature": "neon-moth", "at": { "room": "ground", "dx": 35, "dy": 9 } },
+    { "id": "pylon-park-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 4, "dy": 37 } },
+    { "id": "pylon-park-neon-moth-6", "creature": "neon-moth", "at": { "room": "ground", "dx": 3, "dy": 32 } },
+    { "id": "pylon-park-alley-crawler-7", "creature": "alley-crawler", "at": { "room": "ground", "dx": 21, "dy": 49 } },
+    { "id": "pylon-park-neon-moth-8", "creature": "neon-moth", "at": { "room": "ground", "dx": 5, "dy": 5 } },
+    { "id": "pylon-park-alley-crawler-9", "creature": "alley-crawler", "at": { "room": "ground", "dx": 37, "dy": 48 } },
+    { "id": "pylon-park-neon-moth-10", "creature": "neon-moth", "at": { "room": "ground", "dx": 48, "dy": 21 } },
+    { "id": "pylon-park-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 59, "dy": 55 } },
+    { "id": "pylon-park-neon-moth-12", "creature": "neon-moth", "at": { "room": "ground", "dx": 36, "dy": 26 } },
+    { "id": "pylon-park-alley-crawler-13", "creature": "alley-crawler", "at": { "room": "ground", "dx": 41, "dy": 6 } },
+    { "id": "pylon-park-neon-moth-14", "creature": "neon-moth", "at": { "room": "ground", "dx": 37, "dy": 42 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

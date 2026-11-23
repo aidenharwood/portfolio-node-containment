@@ -31,6 +31,7 @@ import { WARD_SPOTS, WARD_STATIONS } from './catalog/nodes.ts';
 import { CITY_KIT_OBJECTS } from './catalog/cityKit.ts';
 import { LANDMARK_OBJECTS } from './catalog/landmarks.ts';
 import { STORAGE_LOCKER } from './catalog/services.ts';
+import { TRANSIT_ASSEMBLIES, TRANSIT_OBJECTS } from './catalog/transit.ts';
 import { combineDialogues } from './catalog/dialogueKit.ts';
 import { SPAN_CREATURES } from './span/creatures.ts';
 import { SPAN_DISTRICTS } from './span/districts.ts';
@@ -39,7 +40,8 @@ import { SPAN_KIT } from './span/objects.ts';
 import { SPAN_BASE_DIALOGUES, SPAN_NPCS, SPAN_REGIONS, SPAN_SHOPS } from './span/people.ts';
 import { SPAN_QUESTS, SPAN_QUESTLINES, SPAN_QUEST_DIALOGUES, SPAN_QUEST_ITEMS, SPAN_QUEST_OBJECTS, SPAN_QUEST_RECIPES, TUTORIAL_QUEST_ID } from './span/quests/index.ts';
 import { CONTRACTS } from './contracts.ts';
-import { buildTramNetwork, TRAM_LINES, TRAM_STATIONS } from './tramNetwork.ts';
+import { buildTramNetwork } from './tramNetwork.ts';
+import { SPAN_TRAM_LINES, SPAN_TRAM_STATIONS } from './span/transit.ts';
 
 export interface GameContent {
   readonly items: ItemCatalog;
@@ -83,8 +85,8 @@ function indexById<T extends { readonly id: string }>(entries: readonly T[]): Re
 }
 
 const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById(SPAN_DISTRICTS);
-const INSTALLED = buildInstallations([STORAGE_LOCKER, ...CITY_KIT_OBJECTS, ...LANDMARK_OBJECTS, ...SPAN_KIT.objects, ...SPAN_LIFTS, ...SPAN_RELICS, ...WARD_SPOTS, ...WARD_STATIONS, ...SPAN_QUEST_OBJECTS]);
-const ASSEMBLY_INDEX: ReadonlyMap<AssemblyId, AssemblyDefinition> = indexById([...ASSEMBLIES, ...INSTALLED.assemblies]);
+const INSTALLED = buildInstallations([STORAGE_LOCKER, ...CITY_KIT_OBJECTS, ...LANDMARK_OBJECTS, ...TRANSIT_OBJECTS, ...SPAN_KIT.objects, ...SPAN_LIFTS, ...SPAN_RELICS, ...WARD_SPOTS, ...WARD_STATIONS, ...SPAN_QUEST_OBJECTS]);
+const ASSEMBLY_INDEX: ReadonlyMap<AssemblyId, AssemblyDefinition> = indexById([...ASSEMBLIES, ...TRANSIT_ASSEMBLIES, ...INSTALLED.assemblies]);
 const LEVEL_INDEX: LevelIndex = buildLevelIndex([OVERWORLD, ...BELOW_LEVELS], DISTRICTS, ASSEMBLY_INDEX);
 
 function placed(districtId: DistrictId, position: TilePoint): WorldLocation {
@@ -109,7 +111,7 @@ export const GAME_CONTENT: GameContent = {
   levelOfDistrict: LEVEL_INDEX.levelOfDistrict,
   lands: SHIPPED_LANDS,
   regions: indexById(SPAN_REGIONS),
-  tram: buildTramNetwork(TRAM_STATIONS, TRAM_LINES, DISTRICTS, LEVEL_INDEX),
+  tram: buildTramNetwork(SPAN_TRAM_STATIONS, SPAN_TRAM_LINES, DISTRICTS, LEVEL_INDEX),
   creatures: indexById<CreatureDefinition>(SPAN_CREATURES),
   shops: indexById(SPAN_SHOPS),
   recipes: indexById<RecipeDefinition>([...WARD_RECIPES, ...FIELD_GEAR_RECIPES, ...SPAN_QUEST_RECIPES]),

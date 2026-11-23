@@ -1,0 +1,56 @@
+{
+  "id": "axle-flats",
+  "name": "Axle Flats",
+  "subtitle": "The Span, the Spindle",
+  "tier": 12,
+  "region": "the-spindle",
+  "condition": "alien",
+  "ambience": { "darkness": 0.62, "tint": "#1a2a3a", "fog": "#0c1824", "sky": "#1a3048", "weather": ["sparks"], "haze": 1.4 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 11, "row": 7 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Axle Flats" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 43, "dy": 16 }
+  },
+  "objects": [
+    { "id": "axle-flats-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 23, "dy": 56 } },
+    { "id": "axle-flats-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 10, "dy": 32 } },
+    { "id": "axle-flats-flood-mast-2", "object": "flood-mast", "at": { "room": "ground", "dx": 32, "dy": 49 } },
+    { "id": "axle-flats-checkpoint-barrier-3", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 9, "dy": 21 } },
+    { "id": "axle-flats-checkpoint-barrier-4", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 33, "dy": 32 } },
+    { "id": "axle-flats-steam-vent-5", "object": "steam-vent", "at": { "room": "ground", "dx": 30, "dy": 19 } },
+    { "id": "axle-flats-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 16, "dy": 4 } },
+    { "id": "axle-flats-vault-trace-7", "object": "vault-trace", "at": { "room": "ground", "dx": 10, "dy": 47 } },
+    { "id": "axle-flats-vault-residue-9", "object": "vault-residue", "at": { "room": "ground", "dx": 46, "dy": 25 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "axle-flats-null-echo-0", "creature": "null-echo", "at": { "room": "ground", "dx": 20, "dy": 33 } },
+    { "id": "axle-flats-cell-breaker-1", "creature": "cell-breaker", "at": { "room": "ground", "dx": 17, "dy": 20 } },
+    { "id": "axle-flats-null-echo-2", "creature": "null-echo", "at": { "room": "ground", "dx": 22, "dy": 39 } },
+    { "id": "axle-flats-cell-breaker-3", "creature": "cell-breaker", "at": { "room": "ground", "dx": 32, "dy": 11 } },
+    { "id": "axle-flats-null-echo-4", "creature": "null-echo", "at": { "room": "ground", "dx": 54, "dy": 43 } },
+    { "id": "axle-flats-cell-breaker-5", "creature": "cell-breaker", "at": { "room": "ground", "dx": 38, "dy": 53 } },
+    { "id": "axle-flats-null-echo-6", "creature": "null-echo", "at": { "room": "ground", "dx": 52, "dy": 35 } },
+    { "id": "axle-flats-cell-breaker-7", "creature": "cell-breaker", "at": { "room": "ground", "dx": 23, "dy": 12 } },
+    { "id": "axle-flats-null-echo-8", "creature": "null-echo", "at": { "room": "ground", "dx": 40, "dy": 5 } },
+    { "id": "axle-flats-cell-breaker-9", "creature": "cell-breaker", "at": { "room": "ground", "dx": 23, "dy": 44 } },
+    { "id": "axle-flats-null-echo-10", "creature": "null-echo", "at": { "room": "ground", "dx": 37, "dy": 44 } },
+    { "id": "axle-flats-cell-breaker-11", "creature": "cell-breaker", "at": { "room": "ground", "dx": 5, "dy": 38 } },
+    { "id": "axle-flats-null-echo-12", "creature": "null-echo", "at": { "room": "ground", "dx": 17, "dy": 43 } },
+    { "id": "axle-flats-cell-breaker-13", "creature": "cell-breaker", "at": { "room": "ground", "dx": 53, "dy": 27 } },
+    { "id": "axle-flats-null-echo-14", "creature": "null-echo", "at": { "room": "ground", "dx": 16, "dy": 28 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

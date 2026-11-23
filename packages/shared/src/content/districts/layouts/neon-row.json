@@ -2,13 +2,15 @@
   "id": "neon-row",
   "name": "Neon Row",
   "subtitle": "Halcyon · the strip under the Spire",
-  "tier": 7,
+  "tier": 6,
   "region": "halcyon",
   "condition": "worn",
   "ambience": { "darkness": 0.58, "tint": "#3a2448", "fog": "#1e1430", "sky": "#2a1838", "weather": ["rain"], "haze": 1.3 },
   "size": { "width": 64, "height": 64 },
-  "square": { "column": 7, "row": 3 },
+  "square": { "column": 5, "row": 2 },
   "steps": [
+    { "kind": "building", "id": "tram-terminal", "rect": { "x": 14, "y": 49, "width": 36, "height": 5 }, "floor": "terrazzo", "wall": "wall", "doors": [{ "side": "north", "width": 2, "offset": 16 }] },
+    { "kind": "track", "points": [{ "x": 0, "y": 52 }, { "x": 62, "y": 52 }] },
     { "kind": "building", "id": "neon-row-post", "rect": { "x": 9, "y": 10, "width": 12, "height": 8 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "static-bloom", "rect": { "x": 25, "y": 10, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "sato-clinic", "rect": { "x": 41, "y": 10, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
@@ -18,6 +20,7 @@
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Neon Row", "safe": true },
+    { "room": "tram-terminal", "name": "Neon Row Station", "safe": true },
     { "room": "neon-row-post", "name": "Juno’s", "safe": true },
     { "room": "static-bloom", "name": "The Static Bloom", "safe": true },
     { "room": "sato-clinic", "name": "Sato Clinic", "safe": true },
@@ -25,10 +28,13 @@
     { "room": "night-market", "name": "Night Market", "safe": true }
   ],
   "anchors": {
+    "tramPlatform": { "room": "tram-terminal", "dx": 16, "dy": 1 },
     "outpost": { "room": "neon-row-post", "dx": 6, "dy": 2 },
-    "start": { "room": "ground", "dx": 40, "dy": 33 }
+    "start": { "room": "ground", "dx": 4, "dy": 34 }
   },
   "objects": [
+    { "id": "neon-row-departure-board", "object": "departure-board", "at": { "room": "tram-terminal", "dx": 4, "dy": 0 }, "facing": "south" },
+    { "id": "neon-row-terminal-bench", "object": "street-bench", "at": { "room": "tram-terminal", "dx": 26, "dy": 0 }, "facing": "south" },
     { "id": "neon-row-post-shelving-0", "object": "shelving", "at": { "room": "neon-row-post", "dx": 1, "dy": 0 }, "facing": "south" },
     { "id": "neon-row-post-shelving-1", "object": "shelving", "at": { "room": "neon-row-post", "dx": 2, "dy": 0 }, "facing": "south" },
     { "id": "neon-row-post-shelving-2", "object": "shelving", "at": { "room": "neon-row-post", "dx": 3, "dy": 0 }, "facing": "south" },
@@ -81,23 +87,25 @@
     { "id": "night-market-counter-9", "object": "counter", "at": { "room": "night-market", "dx": 3, "dy": 3 } },
     { "id": "night-market-table-10", "object": "table", "at": { "room": "night-market", "dx": 9, "dy": 5 } },
     { "id": "night-market-chair-11", "object": "chair", "at": { "room": "night-market", "dx": 9, "dy": 4 }, "facing": "south" },
-    { "id": "neon-row-street-lamp-52", "object": "street-lamp", "at": { "room": "ground", "dx": 21, "dy": 26 } },
-    { "id": "neon-row-street-lamp-53", "object": "street-lamp", "at": { "room": "ground", "dx": 57, "dy": 39 } },
-    { "id": "neon-row-street-lamp-54", "object": "street-lamp", "at": { "room": "ground", "dx": 4, "dy": 30 } },
-    { "id": "neon-row-street-lamp-55", "object": "street-lamp", "at": { "room": "ground", "dx": 53, "dy": 57 } },
-    { "id": "neon-row-steam-vent-56", "object": "steam-vent", "at": { "room": "ground", "dx": 14, "dy": 57 } },
-    { "id": "neon-row-bollard-57", "object": "bollard", "at": { "room": "ground", "dx": 34, "dy": 4 } },
-    { "id": "neon-row-utility-pole-58", "object": "utility-pole", "at": { "room": "ground", "dx": 18, "dy": 48 } },
-    { "id": "neon-row-utility-pole-59", "object": "utility-pole", "at": { "room": "ground", "dx": 9, "dy": 47 } },
-    { "id": "neon-row-steam-vent-60", "object": "steam-vent", "at": { "room": "ground", "dx": 8, "dy": 21 } },
-    { "id": "neon-row-steam-vent-61", "object": "steam-vent", "at": { "room": "ground", "dx": 27, "dy": 6 } },
-    { "id": "neon-row-barricade-62", "object": "barricade", "at": { "room": "ground", "dx": 8, "dy": 58 } },
-    { "id": "neon-row-street-bench-63", "object": "street-bench", "at": { "room": "ground", "dx": 57, "dy": 15 }, "facing": "south" },
-    { "id": "neon-row-street-bench-64", "object": "street-bench", "at": { "room": "ground", "dx": 60, "dy": 60 }, "facing": "south" },
-    { "id": "neon-row-street-bench-65", "object": "street-bench", "at": { "room": "ground", "dx": 52, "dy": 46 }, "facing": "south" },
-    { "id": "neon-row-dead-screen-66", "object": "dead-screen", "at": { "room": "ground", "dx": 28, "dy": 27 } }
+    { "id": "neon-row-street-lamp-54", "object": "street-lamp", "at": { "room": "ground", "dx": 4, "dy": 18 } },
+    { "id": "neon-row-street-lamp-55", "object": "street-lamp", "at": { "room": "ground", "dx": 55, "dy": 3 } },
+    { "id": "neon-row-street-lamp-56", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 41 } },
+    { "id": "neon-row-street-lamp-57", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 24 } },
+    { "id": "neon-row-food-stall-58", "object": "food-stall", "at": { "room": "ground", "dx": 58, "dy": 36 } },
+    { "id": "neon-row-holo-billboard-59", "object": "holo-billboard", "at": { "room": "ground", "dx": 39, "dy": 24 } },
+    { "id": "neon-row-bollard-60", "object": "bollard", "at": { "room": "ground", "dx": 26, "dy": 59 } },
+    { "id": "neon-row-steam-vent-61", "object": "steam-vent", "at": { "room": "ground", "dx": 42, "dy": 5 } },
+    { "id": "neon-row-steam-vent-62", "object": "steam-vent", "at": { "room": "ground", "dx": 56, "dy": 44 } },
+    { "id": "neon-row-litter-bin-63", "object": "litter-bin", "at": { "room": "ground", "dx": 40, "dy": 32 } },
+    { "id": "neon-row-barricade-64", "object": "barricade", "at": { "room": "ground", "dx": 6, "dy": 57 } },
+    { "id": "neon-row-street-bench-65", "object": "street-bench", "at": { "room": "ground", "dx": 7, "dy": 47 }, "facing": "south" },
+    { "id": "neon-row-street-bench-66", "object": "street-bench", "at": { "room": "ground", "dx": 15, "dy": 6 }, "facing": "south" },
+    { "id": "neon-row-street-bench-67", "object": "street-bench", "at": { "room": "ground", "dx": 52, "dy": 27 }, "facing": "south" },
+    { "id": "neon-row-dead-screen-68", "object": "dead-screen", "at": { "room": "ground", "dx": 12, "dy": 60 } }
   ],
-  "assemblies": [],
+  "assemblies": [
+    { "id": "neon-row-tram-car", "assembly": "tram-car", "at": { "room": "tram-terminal", "dx": 14, "dy": 3 } }
+  ],
   "npcs": [
     { "id": "neon-row-post-fixer-juno", "npc": "fixer-juno", "at": { "room": "neon-row-post", "dx": 2, "dy": 2 } },
     { "id": "static-bloom-bartender-kit", "npc": "bartender-kit", "at": { "room": "static-bloom", "dx": 2, "dy": 2 } },
@@ -113,6 +121,7 @@
   ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
+    "tram-terminal": { "theme": "transit", "people": 0 },
     "neon-row-post": { "theme": "office", "also": ["shop"], "people": 0 },
     "static-bloom": { "theme": "canteen", "people": 0 },
     "sato-clinic": { "theme": "medical", "people": 0 },

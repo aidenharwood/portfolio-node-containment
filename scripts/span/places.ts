@@ -65,7 +65,7 @@ const hall = (npcs: readonly string[], wall: BuildingSpec['wall'] = 'brick'): Ki
 const yard = (id: string, name: string, x: number, y: number, w: number, h: number, creatures: readonly string[], options: Partial<BuildingSpec> = {}): BuildingSpec => ({ id, name, x, y, w, h, floor: 'gravel', wall: 'wall', edge: 'fence', door: 'north', theme: 'street', safe: false, recipe: 'yard', creatures, ...options });
 
 export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
-  '1,2': {
+  'site-kestrel': {
     id: 'site-kestrel',
     name: 'Site Kestrel',
     subtitle: 'Kestrel Reach · SC-V · Secure',
@@ -82,7 +82,7 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     landmark: { prefab: 'landmark-kestrel-headframe', at: { x: 45, y: 33 } },
     wildlife: false,
   },
-  '1,3': {
+  'kestrel-commons': {
     id: 'kestrel-commons',
     name: 'Kestrel Commons',
     subtitle: 'Kestrel Reach · the Directorate town',
@@ -96,7 +96,7 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     ],
     landmark: { prefab: 'landmark-commons-clock', at: { x: 45, y: 33 } },
   },
-  '0,3': {
+  'recruit-lines': {
     id: 'recruit-lines',
     name: 'The Recruit Lines',
     subtitle: 'Kestrel Reach · married quarters and the chapel',
@@ -110,7 +110,7 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     ],
     landmark: { prefab: 'landmark-cohort-bell', at: { x: 45, y: 33 } },
   },
-  '4,3': {
+  'harrowgate': {
     id: 'harrowgate',
     name: 'Harrowgate',
     subtitle: 'Harrow Terraces · the co-op town',
@@ -124,7 +124,7 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     ],
     landmark: { prefab: 'landmark-harrow-windpump', at: { x: 45, y: 33 } },
   },
-  '4,4': {
+  'harrow-lanes': {
     id: 'harrow-lanes',
     name: 'Harrow Lanes',
     subtitle: 'Harrow Terraces · cottages and the bakery',
@@ -138,7 +138,7 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     ],
     landmark: { prefab: 'landmark-grain-silo', at: { x: 44, y: 32 } },
   },
-  '4,0': {
+  'site-orchard': {
     id: 'site-orchard',
     name: 'Site Orchard',
     subtitle: 'Harrow Terraces · SC-II · Strained',
@@ -153,7 +153,7 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     landmark: { prefab: 'landmark-orchard-gantry', at: { x: 45, y: 46 } },
     creatures: ['scarecoat', 'seed-mite'],
   },
-  '7,3': {
+  'neon-row': {
     id: 'neon-row',
     name: 'Neon Row',
     subtitle: 'Halcyon · the strip under the Spire',
@@ -168,7 +168,7 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     ],
     landmark: { prefab: 'landmark-brightly-billboard', at: { x: 45, y: 33 } },
   },
-  '6,2': {
+  'spire-plaza': {
     id: 'spire-plaza',
     name: 'Spire Plaza',
     subtitle: 'Halcyon · the Aurelian Combine',
@@ -182,7 +182,7 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     ],
     landmark: { prefab: 'landmark-aurelian-spire', at: { x: 30, y: 33 } },
   },
-  '7,2': {
+  'ninth-street': {
     id: 'ninth-street',
     name: 'Ninth Street',
     subtitle: 'Halcyon · stalls, noodles and flats',
@@ -196,7 +196,7 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     ],
     landmark: { prefab: 'landmark-neon-mast', at: { x: 30, y: 33 } },
   },
-  '6,3': {
+  'glasshouse-alley': {
     id: 'glasshouse-alley',
     name: 'Glasshouse Alley',
     subtitle: 'Halcyon · where the Combine does not look',
@@ -209,7 +209,7 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     ],
     landmark: { prefab: 'landmark-neon-mast', at: { x: 30, y: 33 } },
   },
-  '8,2': {
+  'site-gallowglass': {
     id: 'site-gallowglass',
     name: 'Site Gallowglass',
     subtitle: 'Halcyon · SC-III · Breached',
@@ -223,7 +223,7 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     landmark: { prefab: 'landmark-gallowglass-headframe', at: { x: 30, y: 33 } },
     creatures: ['glass-hound', 'ad-wraith', 'alley-crawler'],
   },
-  '9,3': {
+  'rustwater': {
     id: 'rustwater',
     name: 'Rustwater',
     subtitle: 'The Wreckfield · the scavenger town',
@@ -238,7 +238,7 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     ],
     landmark: { prefab: 'landmark-rustwater-crane', at: { x: 45, y: 33 } },
   },
-  '11,4': {
+  'site-tallow': {
     id: 'site-tallow',
     name: 'Site Tallow',
     subtitle: 'The Wreckfield · SC-IV · Overrun',
@@ -253,7 +253,7 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     landmark: { prefab: 'landmark-tallow-stack', at: { x: 45, y: 34 } },
     creatures: ['bilge-wraith', 'rustling', 'misprint'],
   },
-  '12,2': {
+  'the-choir': {
     id: 'the-choir',
     name: 'The Choir',
     subtitle: 'The Glass Steppe · the pilgrim enclave',
@@ -268,7 +268,7 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     ],
     landmark: { prefab: 'landmark-choir-bell', at: { x: 45, y: 33 } },
   },
-  '13,4': {
+  'site-vesper': {
     id: 'site-vesper',
     name: 'Site Vesper',
     subtitle: 'The Glass Steppe · SC-IV · Lost',
@@ -283,7 +283,7 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     landmark: { prefab: 'landmark-vesper-beacon', at: { x: 44, y: 34 } },
     creatures: ['choir-echo', 'red-twin', 'glass-stalker'],
   },
-  '14,3': {
+  'last-post': {
     id: 'last-post',
     name: 'Last Post',
     subtitle: 'The Spindle · the last Directorate camp',
@@ -298,7 +298,7 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     ],
     landmark: { prefab: 'landmark-last-post-mast', at: { x: 45, y: 33 } },
   },
-  '15,2': {
+  'site-null': {
     id: 'site-null',
     name: 'Site Null',
     subtitle: 'The Spindle · SC-V · Inverted',

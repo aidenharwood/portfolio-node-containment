@@ -1,0 +1,60 @@
+{
+  "id": "pilgrim-steps",
+  "name": "Pilgrim Steps",
+  "subtitle": "The Span, the Glass Steppe",
+  "tier": 10,
+  "region": "glass-steppe",
+  "condition": "alien",
+  "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 12, "row": 6 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Pilgrim Steps" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 7, "dy": 45 }
+  },
+  "objects": [
+    { "id": "pilgrim-steps-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 58, "dy": 38 } },
+    { "id": "pilgrim-steps-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 42 } },
+    { "id": "pilgrim-steps-precursor-pylon-2", "object": "precursor-pylon", "at": { "room": "ground", "dx": 37, "dy": 25 } },
+    { "id": "pilgrim-steps-ledge-milestone-3", "object": "ledge-milestone", "at": { "room": "ground", "dx": 14, "dy": 30 } },
+    { "id": "pilgrim-steps-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 15, "dy": 16 } },
+    { "id": "pilgrim-steps-flood-mast-5", "object": "flood-mast", "at": { "room": "ground", "dx": 31, "dy": 30 } },
+    { "id": "pilgrim-steps-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 35, "dy": 19 } },
+    { "id": "pilgrim-steps-red-trace-7", "object": "red-trace", "at": { "room": "ground", "dx": 41, "dy": 8 } },
+    { "id": "pilgrim-steps-sprung-cell-door-8", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 58, "dy": 28 } },
+    { "id": "pilgrim-steps-directorate-salvage-9", "object": "directorate-salvage", "at": { "room": "ground", "dx": 54, "dy": 17 } }
+  ],
+  "assemblies": [
+    { "id": "pilgrim-steps-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 6, "dy": 51 }, "span": 2 },
+    { "id": "pilgrim-steps-bridge-1", "assembly": "bridge", "at": { "room": "ground", "dx": 30, "dy": 51 }, "span": 2 },
+    { "id": "pilgrim-steps-bridge-2", "assembly": "bridge", "at": { "room": "ground", "dx": 54, "dy": 51 }, "span": 2 }
+  ],
+  "npcs": [],
+  "creatures": [
+    { "id": "pilgrim-steps-prism-hound-0", "creature": "prism-hound", "at": { "room": "ground", "dx": 22, "dy": 30 } },
+    { "id": "pilgrim-steps-glass-stalker-1", "creature": "glass-stalker", "at": { "room": "ground", "dx": 10, "dy": 8 } },
+    { "id": "pilgrim-steps-prism-hound-2", "creature": "prism-hound", "at": { "room": "ground", "dx": 16, "dy": 23 } },
+    { "id": "pilgrim-steps-glass-stalker-3", "creature": "glass-stalker", "at": { "room": "ground", "dx": 21, "dy": 45 } },
+    { "id": "pilgrim-steps-prism-hound-4", "creature": "prism-hound", "at": { "room": "ground", "dx": 36, "dy": 34 } },
+    { "id": "pilgrim-steps-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 44, "dy": 27 } },
+    { "id": "pilgrim-steps-prism-hound-6", "creature": "prism-hound", "at": { "room": "ground", "dx": 42, "dy": 19 } },
+    { "id": "pilgrim-steps-glass-stalker-7", "creature": "glass-stalker", "at": { "room": "ground", "dx": 17, "dy": 42 } },
+    { "id": "pilgrim-steps-prism-hound-8", "creature": "prism-hound", "at": { "room": "ground", "dx": 43, "dy": 41 } },
+    { "id": "pilgrim-steps-glass-stalker-9", "creature": "glass-stalker", "at": { "room": "ground", "dx": 43, "dy": 50 } },
+    { "id": "pilgrim-steps-prism-hound-10", "creature": "prism-hound", "at": { "room": "ground", "dx": 22, "dy": 50 } },
+    { "id": "pilgrim-steps-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 8, "dy": 26 } },
+    { "id": "pilgrim-steps-prism-hound-12", "creature": "prism-hound", "at": { "room": "ground", "dx": 15, "dy": 50 } },
+    { "id": "pilgrim-steps-glass-stalker-13", "creature": "glass-stalker", "at": { "room": "ground", "dx": 54, "dy": 10 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

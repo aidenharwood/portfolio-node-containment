@@ -7,8 +7,10 @@
   "condition": "pristine",
   "ambience": { "darkness": 0.16, "tint": "#e8eef4", "fog": "#c8d8e8", "sky": "#9fc8f0", "weather": ["mist"], "haze": 0.7 },
   "size": { "width": 64, "height": 64 },
-  "square": { "column": 1, "row": 3 },
+  "square": { "column": 5, "row": 11 },
   "steps": [
+    { "kind": "building", "id": "tram-terminal", "rect": { "x": 14, "y": 49, "width": 36, "height": 5 }, "floor": "terrazzo", "wall": "wall", "doors": [{ "side": "north", "width": 2, "offset": 16 }] },
+    { "kind": "track", "points": [{ "x": 0, "y": 52 }, { "x": 62, "y": 52 }] },
     { "kind": "building", "id": "commons-stores", "rect": { "x": 9, "y": 10, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "the-mess", "rect": { "x": 25, "y": 10, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "fabrication-shed", "rect": { "x": 41, "y": 10, "width": 12, "height": 8 }, "floor": "concrete", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
@@ -18,6 +20,7 @@
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Kestrel Commons", "safe": true },
+    { "room": "tram-terminal", "name": "Kestrel Commons Station", "safe": true },
     { "room": "commons-stores", "name": "Commons Stores", "safe": true },
     { "room": "the-mess", "name": "The Mess", "safe": true },
     { "room": "fabrication-shed", "name": "Fabrication Shed", "safe": true },
@@ -25,10 +28,13 @@
     { "room": "barracks-41", "name": "Barracks 41", "safe": true }
   ],
   "anchors": {
+    "tramPlatform": { "room": "tram-terminal", "dx": 16, "dy": 1 },
     "outpost": { "room": "commons-stores", "dx": 6, "dy": 2 },
-    "start": { "room": "ground", "dx": 25, "dy": 5 }
+    "start": { "room": "ground", "dx": 48, "dy": 4 }
   },
   "objects": [
+    { "id": "kestrel-commons-departure-board", "object": "departure-board", "at": { "room": "tram-terminal", "dx": 4, "dy": 0 }, "facing": "south" },
+    { "id": "kestrel-commons-terminal-bench", "object": "street-bench", "at": { "room": "tram-terminal", "dx": 26, "dy": 0 }, "facing": "south" },
     { "id": "commons-stores-shelving-0", "object": "shelving", "at": { "room": "commons-stores", "dx": 1, "dy": 0 }, "facing": "south" },
     { "id": "commons-stores-shelving-1", "object": "shelving", "at": { "room": "commons-stores", "dx": 2, "dy": 0 }, "facing": "south" },
     { "id": "commons-stores-shelving-2", "object": "shelving", "at": { "room": "commons-stores", "dx": 3, "dy": 0 }, "facing": "south" },
@@ -79,23 +85,25 @@
     { "id": "barracks-41-bed-8", "object": "bed", "at": { "room": "barracks-41", "dx": 9, "dy": 5 } },
     { "id": "barracks-41-bed-9", "object": "bed", "at": { "room": "barracks-41", "dx": 11, "dy": 5 } },
     { "id": "barracks-41-storage-locker-10", "object": "storage-locker", "at": { "room": "barracks-41", "dx": 0, "dy": 3 }, "facing": "east" },
-    { "id": "kestrel-commons-street-lamp-50", "object": "street-lamp", "at": { "room": "ground", "dx": 3, "dy": 52 } },
-    { "id": "kestrel-commons-street-lamp-51", "object": "street-lamp", "at": { "room": "ground", "dx": 53, "dy": 40 } },
-    { "id": "kestrel-commons-street-lamp-52", "object": "street-lamp", "at": { "room": "ground", "dx": 56, "dy": 53 } },
-    { "id": "kestrel-commons-street-lamp-53", "object": "street-lamp", "at": { "room": "ground", "dx": 15, "dy": 4 } },
-    { "id": "kestrel-commons-litter-bin-54", "object": "litter-bin", "at": { "room": "ground", "dx": 43, "dy": 4 } },
-    { "id": "kestrel-commons-street-tree-55", "object": "street-tree", "at": { "room": "ground", "dx": 28, "dy": 54 } },
-    { "id": "kestrel-commons-street-tree-56", "object": "street-tree", "at": { "room": "ground", "dx": 49, "dy": 6 } },
-    { "id": "kestrel-commons-bollard-57", "object": "bollard", "at": { "room": "ground", "dx": 58, "dy": 6 } },
-    { "id": "kestrel-commons-checkpoint-barrier-58", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 42, "dy": 24 } },
-    { "id": "kestrel-commons-street-tree-59", "object": "street-tree", "at": { "room": "ground", "dx": 6, "dy": 27 } },
-    { "id": "kestrel-commons-barricade-60", "object": "barricade", "at": { "room": "ground", "dx": 48, "dy": 54 } },
-    { "id": "kestrel-commons-street-bench-61", "object": "street-bench", "at": { "room": "ground", "dx": 29, "dy": 45 }, "facing": "south" },
-    { "id": "kestrel-commons-street-bench-62", "object": "street-bench", "at": { "room": "ground", "dx": 59, "dy": 46 }, "facing": "south" },
-    { "id": "kestrel-commons-street-bench-63", "object": "street-bench", "at": { "room": "ground", "dx": 21, "dy": 55 }, "facing": "south" },
-    { "id": "kestrel-commons-barracks-bunk-frame-64", "object": "barracks-bunk-frame", "at": { "room": "ground", "dx": 16, "dy": 60 } }
+    { "id": "kestrel-commons-street-lamp-52", "object": "street-lamp", "at": { "room": "ground", "dx": 4, "dy": 3 } },
+    { "id": "kestrel-commons-street-lamp-53", "object": "street-lamp", "at": { "room": "ground", "dx": 20, "dy": 4 } },
+    { "id": "kestrel-commons-street-lamp-54", "object": "street-lamp", "at": { "room": "ground", "dx": 53, "dy": 37 } },
+    { "id": "kestrel-commons-street-lamp-55", "object": "street-lamp", "at": { "room": "ground", "dx": 56, "dy": 24 } },
+    { "id": "kestrel-commons-street-tree-56", "object": "street-tree", "at": { "room": "ground", "dx": 6, "dy": 43 } },
+    { "id": "kestrel-commons-street-tree-57", "object": "street-tree", "at": { "room": "ground", "dx": 57, "dy": 13 } },
+    { "id": "kestrel-commons-litter-bin-58", "object": "litter-bin", "at": { "room": "ground", "dx": 4, "dy": 17 } },
+    { "id": "kestrel-commons-litter-bin-59", "object": "litter-bin", "at": { "room": "ground", "dx": 47, "dy": 23 } },
+    { "id": "kestrel-commons-bollard-60", "object": "bollard", "at": { "room": "ground", "dx": 38, "dy": 22 } },
+    { "id": "kestrel-commons-street-tree-61", "object": "street-tree", "at": { "room": "ground", "dx": 60, "dy": 39 } },
+    { "id": "kestrel-commons-barricade-62", "object": "barricade", "at": { "room": "ground", "dx": 4, "dy": 23 } },
+    { "id": "kestrel-commons-street-bench-63", "object": "street-bench", "at": { "room": "ground", "dx": 22, "dy": 24 }, "facing": "south" },
+    { "id": "kestrel-commons-street-bench-64", "object": "street-bench", "at": { "room": "ground", "dx": 16, "dy": 27 }, "facing": "south" },
+    { "id": "kestrel-commons-street-bench-65", "object": "street-bench", "at": { "room": "ground", "dx": 5, "dy": 32 }, "facing": "south" },
+    { "id": "kestrel-commons-barracks-bunk-frame-66", "object": "barracks-bunk-frame", "at": { "room": "ground", "dx": 24, "dy": 43 } }
   ],
-  "assemblies": [],
+  "assemblies": [
+    { "id": "kestrel-commons-tram-car", "assembly": "tram-car", "at": { "room": "tram-terminal", "dx": 14, "dy": 3 } }
+  ],
   "npcs": [
     { "id": "commons-stores-quartermaster-okonkwo", "npc": "quartermaster-okonkwo", "at": { "room": "commons-stores", "dx": 2, "dy": 2 } },
     { "id": "the-mess-cook-tavi", "npc": "cook-tavi", "at": { "room": "the-mess", "dx": 2, "dy": 2 } },
@@ -111,6 +119,7 @@
   ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
+    "tram-terminal": { "theme": "transit", "people": 0 },
     "commons-stores": { "theme": "office", "also": ["shop"], "people": 0 },
     "the-mess": { "theme": "canteen", "people": 0 },
     "fabrication-shed": { "theme": "works", "people": 0 },

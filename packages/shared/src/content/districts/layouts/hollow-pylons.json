@@ -1,0 +1,57 @@
+{
+  "id": "hollow-pylons",
+  "name": "Hollow Pylons",
+  "subtitle": "The Span, the Glass Steppe",
+  "tier": 11,
+  "region": "glass-steppe",
+  "condition": "alien",
+  "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
+  "size": { "width": 64, "height": 64 },
+  "square": { "column": 14, "row": 7 },
+  "steps": [],
+  "tiles": [],
+  "areas": [
+    { "room": "ground", "name": "Hollow Pylons" }
+  ],
+  "anchors": {
+    "start": { "room": "ground", "dx": 30, "dy": 35 }
+  },
+  "objects": [
+    { "id": "hollow-pylons-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 20, "dy": 19 } },
+    { "id": "hollow-pylons-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 14, "dy": 26 } },
+    { "id": "hollow-pylons-ledge-milestone-2", "object": "ledge-milestone", "at": { "room": "ground", "dx": 29, "dy": 27 } },
+    { "id": "hollow-pylons-ledge-milestone-3", "object": "ledge-milestone", "at": { "room": "ground", "dx": 45, "dy": 43 } },
+    { "id": "hollow-pylons-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 45, "dy": 22 } },
+    { "id": "hollow-pylons-ledge-milestone-5", "object": "ledge-milestone", "at": { "room": "ground", "dx": 52, "dy": 23 } },
+    { "id": "hollow-pylons-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 11, "dy": 7 } }
+  ],
+  "assemblies": [],
+  "npcs": [],
+  "creatures": [
+    { "id": "hollow-pylons-choir-echo-0", "creature": "choir-echo", "at": { "room": "ground", "dx": 3, "dy": 55 } },
+    { "id": "hollow-pylons-red-twin-1", "creature": "red-twin", "at": { "room": "ground", "dx": 42, "dy": 50 } },
+    { "id": "hollow-pylons-glass-stalker-2", "creature": "glass-stalker", "at": { "room": "ground", "dx": 18, "dy": 53 } },
+    { "id": "hollow-pylons-choir-echo-3", "creature": "choir-echo", "at": { "room": "ground", "dx": 6, "dy": 27 } },
+    { "id": "hollow-pylons-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 59, "dy": 6 } },
+    { "id": "hollow-pylons-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 42, "dy": 4 } },
+    { "id": "hollow-pylons-choir-echo-6", "creature": "choir-echo", "at": { "room": "ground", "dx": 28, "dy": 53 } },
+    { "id": "hollow-pylons-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 37, "dy": 18 } },
+    { "id": "hollow-pylons-glass-stalker-8", "creature": "glass-stalker", "at": { "room": "ground", "dx": 23, "dy": 8 } },
+    { "id": "hollow-pylons-choir-echo-9", "creature": "choir-echo", "at": { "room": "ground", "dx": 25, "dy": 47 } },
+    { "id": "hollow-pylons-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 3, "dy": 47 } },
+    { "id": "hollow-pylons-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 13, "dy": 49 } },
+    { "id": "hollow-pylons-choir-echo-12", "creature": "choir-echo", "at": { "room": "ground", "dx": 49, "dy": 37 } },
+    { "id": "hollow-pylons-red-twin-13", "creature": "red-twin", "at": { "room": "ground", "dx": 53, "dy": 3 } },
+    { "id": "hollow-pylons-glass-stalker-14", "creature": "glass-stalker", "at": { "room": "ground", "dx": 10, "dy": 15 } },
+    { "id": "hollow-pylons-choir-echo-15", "creature": "choir-echo", "at": { "room": "ground", "dx": 60, "dy": 47 } },
+    { "id": "hollow-pylons-red-twin-16", "creature": "red-twin", "at": { "room": "ground", "dx": 39, "dy": 11 } },
+    { "id": "hollow-pylons-glass-stalker-17", "creature": "glass-stalker", "at": { "room": "ground", "dx": 53, "dy": 42 } }
+  ],
+  "lights": [],
+  "decals": [],
+  "setPieces": [],
+  "dressing": {
+    "ground": { "theme": "street", "people": 0 }
+  },
+  "furnish": {}
+}

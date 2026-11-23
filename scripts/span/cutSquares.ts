@@ -12,8 +12,12 @@ import { registerFurnishingKit } from '../../packages/shared/src/content/furnish
 import { CITY_KIT } from '../../packages/shared/src/content/catalog/cityKit.ts';
 import { LANDMARK_KIT } from '../../packages/shared/src/content/catalog/landmarks.ts';
 import { SPAN_KIT, seamLeafOf } from '../../packages/shared/src/content/span/objects.ts';
-import { COLUMN_TIERS, GATES, padOf, PLACES, random, REGIONS, SQUARE, regionAt } from './atlas.ts';
+import { placeAt, PLACES, random, REGIONS, SQUARE, squareTiers, STATION_TRACK_ROW, TERMINAL, WILD_PINS } from './atlas.ts';
+import { GATE_PLANS } from './plan.ts';
+import { BRIDGE_PLANS_FOR_LAND } from './bridges.ts';
 import { PLACE_SPECS, type BuildingSpec, type PlaceSquare } from './places.ts';
+
+const TIERS = squareTiers();
 import { recipeOf } from './recipes.ts';
 import { BELOW } from './below.ts';
 import { EXTRAS as SPINWARD_EXTRAS } from './extras/spinward.ts';
@@ -56,12 +60,158 @@ const CONDITION: Readonly<Record<string, NonNullable<DistrictLayout['condition']
 };
 
 const WILD_NAMES: Readonly<Record<string, readonly string[]>> = {
-  'kestrel-reach': ['Antispinward Wall', 'Kestrel Lawns', 'Drill Field', 'Signal Hill', 'Kestrel Lake', 'Range Road', 'Seam Wood', 'Rim Meadow', 'White Gate', 'Parade Ground', 'Lower Lawns', 'Firing Line', 'Quiet Field', 'Lakeside', 'Kestrel Rim'],
-  'harrow-terraces': ['Top Terrace', 'Wheat Steps', 'Sluice Row', 'Windpump Rise', 'Barley Steps', 'Low Furrows', 'Seed Fields', 'Tithe Barns', 'Drovers Way', 'Mill Steps', 'Harrow Downs', 'Bramble Steps', 'Haycut', 'Spill Meadows', 'Fallow Rows', 'Orchard Edge'],
-  halcyon: ['Arcade Mile', 'Combine Blocks', 'The Overpass', 'Undertow', 'Canal Ward', 'The Stacks', 'Holo Gardens', 'Sprawl North', 'Sprawl South', 'Brightside', 'Gallowglass Fence', 'Signal Street', 'Night Market'],
-  wreckfield: ['Hull Shadow', 'The Bow', 'Scrap Sea', 'Bilge Flats', 'Keel Road', 'Engine Field', 'Rivet Dunes', 'Slag Plain', 'Tallow Approach', 'Reactor Scar', 'Cargo Spill', 'Hatch Fields', 'Wreck Rim', 'Gantry Flats', 'Sternward'],
-  'glass-steppe': ['Glass Flats', 'Pylon Walk', 'Hymn Road', 'Vesper Approach', 'Prism Fields', 'Silent Rise', 'Shard Moor', 'Glass Rim', 'The Lens', 'Choir Road'],
-  'the-spindle': ['Null Approach', 'Coolant Flats', 'Needle Foot', 'Grate Fields', 'Final Seam', 'Spindle Rim', 'Plating Road', 'The Terminus', 'Last Light'],
+  'kestrel-reach': [
+    'Kestrel Lawns',
+    'Drill Field',
+    'Signal Hill',
+    'Kestrel Lake',
+    'Range Road',
+    'Seam Wood',
+    'Rim Meadow',
+    'White Gate',
+    'Parade Ground',
+    'Lower Lawns',
+    'Firing Line',
+    'Quiet Field',
+    'Lakeside',
+    'Brim Shore',
+    'Gull Point',
+    'Salt Dunes',
+    'Lantern Cove',
+    'Muster Field',
+    'Kestrel Downs',
+    'Saltmarsh',
+    'Weir Meadow',
+    'Pebble Strand',
+    'Long Barrow',
+    'Cadet Wood'
+  ],
+  'harrow-terraces': [
+    'Top Terrace',
+    'Wheat Steps',
+    'Windpump Rise',
+    'Barley Steps',
+    'Low Furrows',
+    'Seed Fields',
+    'Tithe Barns',
+    'Drovers Way',
+    'Mill Steps',
+    'Harrow Downs',
+    'Bramble Steps',
+    'Haycut',
+    'Spill Meadows',
+    'Fallow Rows',
+    'Orchard Edge',
+    'Westcliff',
+    'Gleaners Bank',
+    'High Furrows',
+    'Stile Hill',
+    'Cider Steps',
+    'Hopfield',
+    'Harrow Strand',
+    'Flank Terraces',
+    'Coppice Rise'
+  ],
+  'halcyon': [
+    'Combine Blocks',
+    'The Overpass',
+    'Undertow',
+    'Canal Ward',
+    'The Stacks',
+    'Holo Gardens',
+    'Sprawl North',
+    'Sprawl South',
+    'Brightside',
+    'Gallowglass Fence',
+    'Signal Street',
+    'Night Market',
+    'Chrome Quay',
+    'Spire Heights',
+    'Low Arcology',
+    'Data Docks',
+    'Lantern Ward',
+    'Pylon Park',
+    'The Underpass',
+    'Halcyon Strand',
+    'Cable Row',
+    'Ninth Ward',
+    'Mirror Blocks',
+    'Glow Terraces',
+    'Vat Row',
+    'Overlook'
+  ],
+  'wreckfield': [
+    'Hull Shadow',
+    'The Bow',
+    'Scrap Sea',
+    'Bilge Flats',
+    'Keel Road',
+    'Engine Field',
+    'Rivet Dunes',
+    'Slag Plain',
+    'Tallow Approach',
+    'Reactor Scar',
+    'Cargo Spill',
+    'Hatch Fields',
+    'Wreck Rim',
+    'Gantry Flats',
+    'Sternward',
+    'Crater Shore',
+    'Boiler Bay',
+    'Ballast Strand',
+    'Fuel Marsh',
+    'Lifeboat Row',
+    'Mast Field'
+  ],
+  'glass-steppe': [
+    'Hymn Road',
+    'Vesper Approach',
+    'Prism Fields',
+    'Silent Rise',
+    'Glass Rim',
+    'The Lens',
+    'Choir Road',
+    'Refraction Moor',
+    'Bell Heath',
+    'Pilgrim Steps',
+    'Shining Downs',
+    'Candle Flats',
+    'Echo Plain',
+    'Hollow Pylons',
+    'Vigil Fields',
+    'Mirror Mere',
+    'Antiphon Ridge',
+    'Cantor Heath',
+    'Drop Edge',
+    'Glass Strand',
+    'Litany Fields',
+    'Pale Steppe',
+    'Shard Gate',
+    'Steppe Foot',
+    'Tuning Fields'
+  ],
+  'the-spindle': [
+    'Null Approach',
+    'Coolant Flats',
+    'Needle Foot',
+    'Grate Fields',
+    'Final Seam',
+    'Spindle Rim',
+    'Plating Road',
+    'The Terminus',
+    'Last Light',
+    'Summit Road',
+    'Crown Plating',
+    'Coolant Stair',
+    'Inverse Field',
+    'Quiet Peaks',
+    'Axle Flats',
+    'Hush Plateau',
+    'Spindle Crown',
+    'White Noise',
+    'Sealed Ground',
+    'Antenna Field'
+  ]
 };
 
 const PROPS: Readonly<Record<string, readonly string[]>> = {
@@ -147,7 +297,10 @@ const usedIds = new Set<string>();
 
 function nameFor(cut: Cut, place: PlaceSquare | undefined): { id: string; name: string } {
   if (place) return { id: place.id, name: place.name };
-  const pool = WILD_NAMES[cut.region] ?? ['Wilds'];
+  const pinned = WILD_PINS[cut.column + ',' + cut.row];
+  if (pinned) return { id: kebab(pinned), name: pinned };
+  const pinnedNames = new Set(Object.values(WILD_PINS));
+  const pool = (WILD_NAMES[cut.region] ?? ['Wilds']).filter((entry) => !pinnedNames.has(entry));
   for (;;) {
     const index = nameIndex.get(cut.region) ?? 0;
     nameIndex.set(cut.region, index + 1);
@@ -160,10 +313,11 @@ function nameFor(cut: Cut, place: PlaceSquare | undefined): { id: string; name: 
 
 function layoutFor(cut: Cut): DistrictLayout {
   const key = cut.column + ',' + cut.row;
-  const place = PLACE_SPECS[key];
+  const place = PLACE_SPECS[placeAt(cut.column, cut.row)?.id ?? ''];
+  const station = placeAt(cut.column, cut.row)?.station;
   const { id, name } = nameFor(cut, place);
   usedIds.add(id);
-  const tier = COLUMN_TIERS[cut.column]!;
+  const tier = TIERS.get(key)!;
   const region = REGIONS.find((entry) => entry.id === cut.region)!;
   const next = random(cut.column * 977 + cut.row * 131 + 7);
   const steps: DistrictLayout['steps'] = [];
@@ -175,6 +329,17 @@ function layoutFor(cut: Cut): DistrictLayout {
   const setPieces: DistrictLayout['setPieces'] = [];
   const anchors: DistrictLayout['anchors'] = {};
   const buildings: BuildingSpec[] = place?.buildings ?? [];
+  const assemblies: NonNullable<DistrictLayout['assemblies']>[number][] = [];
+  if (station) {
+    steps.push({ kind: 'building', id: 'tram-terminal', rect: { x: TERMINAL.x, y: TERMINAL.y, width: TERMINAL.width, height: TERMINAL.height }, floor: 'terrazzo', wall: 'wall', doors: [{ side: 'north', width: 2, offset: TERMINAL.door - TERMINAL.x }] });
+    steps.push({ kind: 'track', points: [{ x: 0, y: STATION_TRACK_ROW }, { x: SQUARE - 2, y: STATION_TRACK_ROW }] });
+    areas.push({ room: 'tram-terminal', name: station.name + ' Station', safe: true });
+    dressing['tram-terminal'] = { theme: 'transit', people: 0 };
+    assemblies.push({ id: id + '-tram-car', assembly: 'tram-car', at: { room: 'tram-terminal', dx: TERMINAL.door - TERMINAL.x - 2, dy: STATION_TRACK_ROW - TERMINAL.y } });
+    objects.push({ id: id + '-departure-board', object: 'departure-board', at: { room: 'tram-terminal', dx: 4, dy: 0 }, facing: 'south' });
+    objects.push({ id: id + '-terminal-bench', object: 'street-bench', at: { room: 'tram-terminal', dx: 26, dy: 0 }, facing: 'south' });
+    anchors.tramPlatform = { room: 'tram-terminal', dx: TERMINAL.door - TERMINAL.x, dy: 1 };
+  }
   for (const building of buildings) {
     steps.push({ kind: 'building', id: building.id, rect: { x: building.x, y: building.y, width: building.w, height: building.h }, floor: building.floor, wall: building.wall, ...(building.edge ? { edge: building.edge } : {}), doors: [{ side: building.door ?? 'south', width: 2 }] });
     areas.push({ room: building.id, name: building.name, ...(building.safe ? { safe: true } : { safe: false }), ...(building.multiCombat ? { multiCombat: true } : {}) });
@@ -215,7 +380,7 @@ function layoutFor(cut: Cut): DistrictLayout {
   const map = parseTileLayout(buildDistrictMap(base));
   const inBuilding = (x: number, y: number): boolean => buildings.some((b) => x >= b.x - 1 && y >= b.y - 1 && x <= b.x + b.w && y <= b.y + b.h);
   const doorTiles = buildings.map((b) => ({ x: b.x + Math.floor((b.w - 2) / 2) + 0.5, y: (b.door ?? 'south') === 'south' ? b.y + b.h : b.y - 1 }));
-  const gateTiles = GATES.map((gate) => ({ x: gate.seam - cut.column * SQUARE, y: gate.y - cut.row * SQUARE }));
+  const gateTiles = GATE_PLANS.map((gate) => ({ x: gate.x - cut.column * SQUARE, y: gate.y - cut.row * SQUARE }));
   const walkableAt = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < SQUARE && y < SQUARE && TILE_KINDS[map.tileAt({ x, y })].walkable && map.tileAt({ x, y }) !== 'door';
   const taken: { x: number; y: number; r: number }[] = [];
   const clear = (x: number, y: number, w: number, h: number, ring: number): boolean => {
@@ -264,12 +429,24 @@ function layoutFor(cut: Cut): DistrictLayout {
   putObject('barricade', 6);
   if (place?.groundSafe || cut.region === 'kestrel-reach') for (let index = 0; index < (place ? 3 : 1); index++) putObject('street-bench', 6, 'south');
 
-  for (const gate of GATES) {
-    const gx = gate.seam - 1 - cut.column * SQUARE;
+  for (const gate of GATE_PLANS) {
+    const gx = gate.x - cut.column * SQUARE;
     const gy = gate.y - cut.row * SQUARE;
     if (gx < 0 || gy < 0 || gx >= SQUARE || gy >= SQUARE) continue;
-    objects.push({ id: id + '-' + gate.id + '-leaf-0', object: seamLeafOf(gate.id), at: { room: 'ground', dx: gx, dy: gy }, facing: 'east' });
-    objects.push({ id: id + '-' + gate.id + '-leaf-1', object: seamLeafOf(gate.id), at: { room: 'ground', dx: gx, dy: gy + 1 }, facing: 'east' });
+    const second = gate.vertical ? { dx: gx, dy: gy + 1 } : { dx: gx + 1, dy: gy };
+    const facing = gate.vertical ? 'east' : 'south';
+    objects.push({ id: id + '-' + gate.id + '-leaf-0', object: seamLeafOf(gate.id), at: { room: 'ground', dx: gx, dy: gy }, facing });
+    objects.push({ id: id + '-' + gate.id + '-leaf-1', object: seamLeafOf(gate.id), at: { room: 'ground', ...second }, facing });
+  }
+
+  for (const bridge of BRIDGE_PLANS_FOR_LAND) {
+    const bx = bridge.x - cut.column * SQUARE;
+    const by = bridge.y - cut.row * SQUARE;
+    if (bx < 0 || by < 0 || bx >= SQUARE || by >= SQUARE) continue;
+    assemblies.push(bridge.horizontal
+      ? { id: id + '-bridge-' + assemblies.length, assembly: 'bridge', at: { room: 'ground', dx: bx, dy: by - 1 }, span: 2 }
+      : { id: id + '-bridge-' + assemblies.length, assembly: 'bridge', at: { room: 'ground', dx: bx - 1, dy: by }, facing: 'east', span: 2 });
+    taken.push({ x: bx + 1, y: by + 1, r: 4 });
   }
 
   for (const extra of EXTRAS[id] ?? []) if (!putObject(extra, 5)) throw new Error(id + ': nowhere to stand ' + extra);
@@ -307,6 +484,7 @@ function layoutFor(cut: Cut): DistrictLayout {
     npcs,
     creatures,
     setPieces,
+    assemblies,
     furnish: place?.landmark ? { landmarks: ['ground'] } : {},
   });
 }
@@ -352,7 +530,4 @@ const imports = written.map((entry) => "import " + camel(entry.id) + " from './"
 writeFileSync(join(OUT, 'index.ts'), "import type { DistrictId } from '../../../ids.ts';\n" + imports + '\n\nexport const LAYOUT_SOURCES: Readonly<Record<DistrictId, unknown>> = {\n' + written.map((entry) => "  '" + entry.id + "': " + camel(entry.id) + ',').join('\n') + '\n};\n\nexport const SQUARE_LAYOUT_IDS: readonly DistrictId[] = [\n' + written.filter((entry) => entry.kind === 'square').map((entry) => "  '" + entry.id + "',").join('\n') + '\n];\n\nexport const BELOW_LAYOUT_IDS: readonly DistrictId[] = [\n' + written.filter((entry) => entry.kind === 'below').map((entry) => "  '" + entry.id + "',").join('\n') + '\n];\n');
 console.log(written.length + ' layouts: ' + written.map((entry) => entry.id).join(' '));
 void readFileSync;
-void regionAt;
-void PLACES;
-void padOf;
 void ({} as TileKindId);

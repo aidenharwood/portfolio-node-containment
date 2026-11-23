@@ -7,8 +7,10 @@
   "condition": "breached",
   "ambience": { "darkness": 0.4, "tint": "#5a3a28", "fog": "#4a3424", "sky": "#8a6a50", "weather": ["dust", "embers"], "haze": 1.2 },
   "size": { "width": 64, "height": 64 },
-  "square": { "column": 9, "row": 3 },
+  "square": { "column": 12, "row": 2 },
   "steps": [
+    { "kind": "building", "id": "tram-terminal", "rect": { "x": 14, "y": 49, "width": 36, "height": 5 }, "floor": "terrazzo", "wall": "wall", "doors": [{ "side": "north", "width": 2, "offset": 16 }] },
+    { "kind": "track", "points": [{ "x": 0, "y": 52 }, { "x": 62, "y": 52 }] },
     { "kind": "building", "id": "rustwater-post", "rect": { "x": 9, "y": 10, "width": 12, "height": 8 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "hallam-breakers", "rect": { "x": 25, "y": 10, "width": 12, "height": 8 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "rust-kitchen", "rect": { "x": 41, "y": 10, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
@@ -18,6 +20,7 @@
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Rustwater", "safe": true },
+    { "room": "tram-terminal", "name": "Rustwater Station", "safe": true },
     { "room": "rustwater-post", "name": "Mags’ Post", "safe": true },
     { "room": "hallam-breakers", "name": "Hallam’s Breakers", "safe": true },
     { "room": "rust-kitchen", "name": "Rust Kitchen", "safe": true },
@@ -25,10 +28,13 @@
     { "room": "rustwater-bunks", "name": "The Bunks", "safe": true }
   ],
   "anchors": {
+    "tramPlatform": { "room": "tram-terminal", "dx": 16, "dy": 1 },
     "outpost": { "room": "rustwater-post", "dx": 6, "dy": 2 },
-    "start": { "room": "ground", "dx": 58, "dy": 6 }
+    "start": { "room": "ground", "dx": 4, "dy": 39 }
   },
   "objects": [
+    { "id": "rustwater-departure-board", "object": "departure-board", "at": { "room": "tram-terminal", "dx": 4, "dy": 0 }, "facing": "south" },
+    { "id": "rustwater-terminal-bench", "object": "street-bench", "at": { "room": "tram-terminal", "dx": 26, "dy": 0 }, "facing": "south" },
     { "id": "rustwater-post-shelving-0", "object": "shelving", "at": { "room": "rustwater-post", "dx": 1, "dy": 0 }, "facing": "south" },
     { "id": "rustwater-post-shelving-1", "object": "shelving", "at": { "room": "rustwater-post", "dx": 2, "dy": 0 }, "facing": "south" },
     { "id": "rustwater-post-shelving-2", "object": "shelving", "at": { "room": "rustwater-post", "dx": 3, "dy": 0 }, "facing": "south" },
@@ -83,22 +89,24 @@
     { "id": "rustwater-bunks-bed-8", "object": "bed", "at": { "room": "rustwater-bunks", "dx": 9, "dy": 5 } },
     { "id": "rustwater-bunks-bed-9", "object": "bed", "at": { "room": "rustwater-bunks", "dx": 11, "dy": 5 } },
     { "id": "rustwater-bunks-storage-locker-10", "object": "storage-locker", "at": { "room": "rustwater-bunks", "dx": 0, "dy": 3 }, "facing": "east" },
-    { "id": "rustwater-street-lamp-54", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 22 } },
-    { "id": "rustwater-street-lamp-55", "object": "street-lamp", "at": { "room": "ground", "dx": 20, "dy": 21 } },
-    { "id": "rustwater-street-lamp-56", "object": "street-lamp", "at": { "room": "ground", "dx": 47, "dy": 58 } },
-    { "id": "rustwater-street-lamp-57", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 6 } },
-    { "id": "rustwater-burn-barrel-58", "object": "burn-barrel", "at": { "room": "ground", "dx": 29, "dy": 51 } },
-    { "id": "rustwater-burn-barrel-59", "object": "burn-barrel", "at": { "room": "ground", "dx": 30, "dy": 45 } },
-    { "id": "rustwater-barricade-60", "object": "barricade", "at": { "room": "ground", "dx": 51, "dy": 43 } },
-    { "id": "rustwater-magnet-crane-61", "object": "magnet-crane", "at": { "room": "ground", "dx": 46, "dy": 50 } },
-    { "id": "rustwater-barricade-62", "object": "barricade", "at": { "room": "ground", "dx": 29, "dy": 23 } },
-    { "id": "rustwater-magnet-crane-63", "object": "magnet-crane", "at": { "room": "ground", "dx": 23, "dy": 59 } },
-    { "id": "rustwater-barricade-64", "object": "barricade", "at": { "room": "ground", "dx": 19, "dy": 49 } },
-    { "id": "rustwater-street-bench-65", "object": "street-bench", "at": { "room": "ground", "dx": 32, "dy": 5 }, "facing": "south" },
-    { "id": "rustwater-street-bench-66", "object": "street-bench", "at": { "room": "ground", "dx": 8, "dy": 47 }, "facing": "south" },
-    { "id": "rustwater-street-bench-67", "object": "street-bench", "at": { "room": "ground", "dx": 54, "dy": 49 }, "facing": "south" }
+    { "id": "rustwater-street-lamp-56", "object": "street-lamp", "at": { "room": "ground", "dx": 14, "dy": 23 } },
+    { "id": "rustwater-street-lamp-57", "object": "street-lamp", "at": { "room": "ground", "dx": 49, "dy": 45 } },
+    { "id": "rustwater-street-lamp-58", "object": "street-lamp", "at": { "room": "ground", "dx": 19, "dy": 59 } },
+    { "id": "rustwater-street-lamp-59", "object": "street-lamp", "at": { "room": "ground", "dx": 4, "dy": 14 } },
+    { "id": "rustwater-magnet-crane-60", "object": "magnet-crane", "at": { "room": "ground", "dx": 7, "dy": 22 } },
+    { "id": "rustwater-utility-pole-61", "object": "utility-pole", "at": { "room": "ground", "dx": 53, "dy": 33 } },
+    { "id": "rustwater-burn-barrel-62", "object": "burn-barrel", "at": { "room": "ground", "dx": 7, "dy": 6 } },
+    { "id": "rustwater-burn-barrel-63", "object": "burn-barrel", "at": { "room": "ground", "dx": 35, "dy": 44 } },
+    { "id": "rustwater-utility-pole-64", "object": "utility-pole", "at": { "room": "ground", "dx": 50, "dy": 27 } },
+    { "id": "rustwater-utility-pole-65", "object": "utility-pole", "at": { "room": "ground", "dx": 60, "dy": 36 } },
+    { "id": "rustwater-barricade-66", "object": "barricade", "at": { "room": "ground", "dx": 53, "dy": 59 } },
+    { "id": "rustwater-street-bench-67", "object": "street-bench", "at": { "room": "ground", "dx": 42, "dy": 24 }, "facing": "south" },
+    { "id": "rustwater-street-bench-68", "object": "street-bench", "at": { "room": "ground", "dx": 20, "dy": 6 }, "facing": "south" },
+    { "id": "rustwater-street-bench-69", "object": "street-bench", "at": { "room": "ground", "dx": 21, "dy": 44 }, "facing": "south" }
   ],
-  "assemblies": [],
+  "assemblies": [
+    { "id": "rustwater-tram-car", "assembly": "tram-car", "at": { "room": "tram-terminal", "dx": 14, "dy": 3 } }
+  ],
   "npcs": [
     { "id": "rustwater-post-scav-boss-mags", "npc": "scav-boss-mags", "at": { "room": "rustwater-post", "dx": 2, "dy": 2 } },
     { "id": "hallam-breakers-scrapper-hallam", "npc": "scrapper-hallam", "at": { "room": "hallam-breakers", "dx": 2, "dy": 2 } },
@@ -114,6 +122,7 @@
   ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },
+    "tram-terminal": { "theme": "transit", "people": 0 },
     "rustwater-post": { "theme": "office", "also": ["shop"], "people": 0 },
     "hallam-breakers": { "theme": "shop", "people": 0 },
     "rust-kitchen": { "theme": "canteen", "people": 0 },

@@ -7,7 +7,7 @@
   "condition": "pristine",
   "ambience": { "darkness": 0.16, "tint": "#e8eef4", "fog": "#c8d8e8", "sky": "#9fc8f0", "weather": ["mist"], "haze": 0.7 },
   "size": { "width": 64, "height": 64 },
-  "square": { "column": 0, "row": 3 },
+  "square": { "column": 4, "row": 10 },
   "steps": [
     { "kind": "building", "id": "cohort-hall", "rect": { "x": 9, "y": 10, "width": 12, "height": 8 }, "floor": "terrazzo", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "lines-cottage-1", "rect": { "x": 25, "y": 10, "width": 8, "height": 6 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
@@ -25,7 +25,7 @@
     { "room": "lines-cottage-3", "name": "Number Twelve", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 14, "dy": 60 }
+    "start": { "room": "ground", "dx": 9, "dy": 55 }
   },
   "objects": [
     { "id": "cohort-hall-notice-board-0", "object": "notice-board", "at": { "room": "cohort-hall", "dx": 5, "dy": 0 }, "facing": "south" },
@@ -62,20 +62,20 @@
     { "id": "lines-cottage-3-shelving-2", "object": "shelving", "at": { "room": "lines-cottage-3", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "lines-cottage-3-table-3", "object": "table", "at": { "room": "lines-cottage-3", "dx": 5, "dy": 3 } },
     { "id": "lines-cottage-3-chair-4", "object": "chair", "at": { "room": "lines-cottage-3", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "recruit-lines-street-lamp-34", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 31 } },
-    { "id": "recruit-lines-street-lamp-35", "object": "street-lamp", "at": { "room": "ground", "dx": 52, "dy": 48 } },
-    { "id": "recruit-lines-street-lamp-36", "object": "street-lamp", "at": { "room": "ground", "dx": 58, "dy": 44 } },
-    { "id": "recruit-lines-street-lamp-37", "object": "street-lamp", "at": { "room": "ground", "dx": 56, "dy": 32 } },
-    { "id": "recruit-lines-checkpoint-barrier-38", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 26, "dy": 43 } },
-    { "id": "recruit-lines-bollard-39", "object": "bollard", "at": { "room": "ground", "dx": 35, "dy": 46 } },
-    { "id": "recruit-lines-flood-mast-40", "object": "flood-mast", "at": { "room": "ground", "dx": 11, "dy": 54 } },
-    { "id": "recruit-lines-flood-mast-41", "object": "flood-mast", "at": { "room": "ground", "dx": 50, "dy": 56 } },
-    { "id": "recruit-lines-bollard-42", "object": "bollard", "at": { "room": "ground", "dx": 55, "dy": 6 } },
-    { "id": "recruit-lines-bollard-43", "object": "bollard", "at": { "room": "ground", "dx": 13, "dy": 27 } },
-    { "id": "recruit-lines-barricade-44", "object": "barricade", "at": { "room": "ground", "dx": 19, "dy": 25 } },
-    { "id": "recruit-lines-street-bench-45", "object": "street-bench", "at": { "room": "ground", "dx": 48, "dy": 26 }, "facing": "south" },
-    { "id": "recruit-lines-street-bench-46", "object": "street-bench", "at": { "room": "ground", "dx": 30, "dy": 57 }, "facing": "south" },
-    { "id": "recruit-lines-street-bench-47", "object": "street-bench", "at": { "room": "ground", "dx": 35, "dy": 52 }, "facing": "south" }
+    { "id": "recruit-lines-street-lamp-34", "object": "street-lamp", "at": { "room": "ground", "dx": 35, "dy": 22 } },
+    { "id": "recruit-lines-street-lamp-35", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 6 } },
+    { "id": "recruit-lines-street-lamp-36", "object": "street-lamp", "at": { "room": "ground", "dx": 57, "dy": 33 } },
+    { "id": "recruit-lines-street-lamp-37", "object": "street-lamp", "at": { "room": "ground", "dx": 57, "dy": 59 } },
+    { "id": "recruit-lines-litter-bin-38", "object": "litter-bin", "at": { "room": "ground", "dx": 40, "dy": 52 } },
+    { "id": "recruit-lines-litter-bin-39", "object": "litter-bin", "at": { "room": "ground", "dx": 25, "dy": 22 } },
+    { "id": "recruit-lines-litter-bin-40", "object": "litter-bin", "at": { "room": "ground", "dx": 54, "dy": 42 } },
+    { "id": "recruit-lines-checkpoint-barrier-41", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 4, "dy": 31 } },
+    { "id": "recruit-lines-bollard-42", "object": "bollard", "at": { "room": "ground", "dx": 4, "dy": 40 } },
+    { "id": "recruit-lines-street-tree-43", "object": "street-tree", "at": { "room": "ground", "dx": 12, "dy": 26 } },
+    { "id": "recruit-lines-barricade-44", "object": "barricade", "at": { "room": "ground", "dx": 51, "dy": 49 } },
+    { "id": "recruit-lines-street-bench-45", "object": "street-bench", "at": { "room": "ground", "dx": 18, "dy": 24 }, "facing": "south" },
+    { "id": "recruit-lines-street-bench-46", "object": "street-bench", "at": { "room": "ground", "dx": 36, "dy": 41 }, "facing": "south" },
+    { "id": "recruit-lines-street-bench-47", "object": "street-bench", "at": { "room": "ground", "dx": 47, "dy": 26 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [

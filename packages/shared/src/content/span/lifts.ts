@@ -3,9 +3,9 @@ import { DRESSING_THEMES } from '../prefabs/types.ts';
 import { spanAnchor } from './districts.ts';
 import { liftObject } from './objects.ts';
 
-export const CLEARANCE_INTAKE = 'clearance-kestrel-intake';
-export const CLEARANCE_GALLOWGLASS = 'clearance-gallowglass';
-export const CLEARANCE_NULL = 'clearance-null';
+import { CLEARANCE_GALLOWGLASS, CLEARANCE_INTAKE, CLEARANCE_NULL } from './clearance.ts';
+
+export { CLEARANCE_GALLOWGLASS, CLEARANCE_INTAKE, CLEARANCE_NULL };
 
 export const SPAN_LIFTS: readonly WorldObjectDefinition[] = [
   liftObject({ id: 'kestrel-lift-down', verb: 'Descend', where: 'Kestrel Intake, B1', site: 'Site Kestrel', districtId: 'kestrel-intake', position: spanAnchor('kestrel-intake', 'arrival'), clearance: CLEARANCE_INTAKE }),
