@@ -108,6 +108,8 @@
     { "id": "rustwater-tram-car", "assembly": "tram-car", "at": { "room": "tram-terminal", "dx": 14, "dy": 3 } }
   ],
   "npcs": [
+    { "id": "rustwater-quest-reprint-marek", "npc": "reprint-marek", "at": { "room": "ground", "dx": 48, "dy": 39 } },
+    { "id": "rustwater-quest-archivist-okafor", "npc": "archivist-okafor", "at": { "room": "ground", "dx": 41, "dy": 39 } },
     { "id": "rustwater-post-scav-boss-mags", "npc": "scav-boss-mags", "at": { "room": "rustwater-post", "dx": 2, "dy": 2 } },
     { "id": "hallam-breakers-scrapper-hallam", "npc": "scrapper-hallam", "at": { "room": "hallam-breakers", "dx": 2, "dy": 2 } },
     { "id": "rust-kitchen-cook-bello", "npc": "cook-bello", "at": { "room": "rust-kitchen", "dx": 2, "dy": 2 } },

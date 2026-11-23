@@ -8,25 +8,42 @@
   "ambience": { "darkness": 0.58, "tint": "#3a2448", "fog": "#1e1430", "sky": "#2a1838", "weather": ["rain"], "haze": 1.3 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 2 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 28, "y": 30, "width": 14, "height": 10 }, "height": 6 },
+    { "kind": "building", "id": "arcade-mile-kiosk", "rect": { "x": 29, "y": 31, "width": 12, "height": 8 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Arcade Mile" }
+    { "room": "ground", "name": "Arcade Mile" },
+    { "room": "arcade-mile-kiosk", "name": "Arcade Mile Kiosk", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 53, "dy": 38 }
+    "start": { "room": "ground", "dx": 35, "dy": 42 }
   },
   "objects": [
+    { "id": "arcade-mile-quest-scrapped-cabinet", "object": "scrapped-cabinet", "at": { "room": "ground", "dx": 41, "dy": 42 } },
     { "id": "arcade-mile-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 10, "dy": 31 } },
     { "id": "arcade-mile-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 52, "dy": 8 } },
     { "id": "arcade-mile-holo-billboard-2", "object": "holo-billboard", "at": { "room": "ground", "dx": 58, "dy": 48 } },
     { "id": "arcade-mile-steam-vent-3", "object": "steam-vent", "at": { "room": "ground", "dx": 45, "dy": 16 } },
     { "id": "arcade-mile-utility-pole-4", "object": "utility-pole", "at": { "room": "ground", "dx": 53, "dy": 21 } },
     { "id": "arcade-mile-holo-billboard-5", "object": "holo-billboard", "at": { "room": "ground", "dx": 20, "dy": 7 } },
-    { "id": "arcade-mile-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 46, "dy": 40 } },
     { "id": "arcade-mile-scrap-heap-7", "object": "scrap-heap", "at": { "room": "ground", "dx": 23, "dy": 48 } },
     { "id": "arcade-mile-culture-bench-8", "object": "culture-bench", "at": { "room": "ground", "dx": 29, "dy": 3 } },
-    { "id": "arcade-mile-amber-trace-9", "object": "amber-trace", "at": { "room": "ground", "dx": 9, "dy": 23 } }
+    { "id": "arcade-mile-amber-trace-9", "object": "amber-trace", "at": { "room": "ground", "dx": 9, "dy": 23 } },
+    { "id": "arcade-mile-kiosk-shelving-0", "object": "shelving", "at": { "room": "arcade-mile-kiosk", "dx": 1, "dy": 0 }, "facing": "south" },
+    { "id": "arcade-mile-kiosk-shelving-1", "object": "shelving", "at": { "room": "arcade-mile-kiosk", "dx": 2, "dy": 0 }, "facing": "south" },
+    { "id": "arcade-mile-kiosk-shelving-2", "object": "shelving", "at": { "room": "arcade-mile-kiosk", "dx": 3, "dy": 0 }, "facing": "south" },
+    { "id": "arcade-mile-kiosk-shelving-3", "object": "shelving", "at": { "room": "arcade-mile-kiosk", "dx": 4, "dy": 0 }, "facing": "south" },
+    { "id": "arcade-mile-kiosk-notice-board-4", "object": "notice-board", "at": { "room": "arcade-mile-kiosk", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "arcade-mile-kiosk-neon-sign-cyan-5", "object": "neon-sign-cyan", "at": { "room": "arcade-mile-kiosk", "dx": 8, "dy": 0 }, "facing": "south" },
+    { "id": "arcade-mile-kiosk-vending-machine-6", "object": "vending-machine", "at": { "room": "arcade-mile-kiosk", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "arcade-mile-kiosk-counter-7", "object": "counter", "at": { "room": "arcade-mile-kiosk", "dx": 1, "dy": 3 } },
+    { "id": "arcade-mile-kiosk-counter-8", "object": "counter", "at": { "room": "arcade-mile-kiosk", "dx": 2, "dy": 3 } },
+    { "id": "arcade-mile-kiosk-counter-9", "object": "counter", "at": { "room": "arcade-mile-kiosk", "dx": 3, "dy": 3 } },
+    { "id": "arcade-mile-kiosk-table-10", "object": "table", "at": { "room": "arcade-mile-kiosk", "dx": 9, "dy": 5 } },
+    { "id": "arcade-mile-kiosk-chair-11", "object": "chair", "at": { "room": "arcade-mile-kiosk", "dx": 9, "dy": 4 }, "facing": "south" },
+    { "id": "arcade-mile-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 54, "dy": 40 } }
   ],
   "assemblies": [
     { "id": "arcade-mile-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 6, "dy": 51 }, "span": 2 },
@@ -37,26 +54,26 @@
   "creatures": [
     { "id": "arcade-mile-neon-moth-0", "creature": "neon-moth", "at": { "room": "ground", "dx": 60, "dy": 55 } },
     { "id": "arcade-mile-alley-crawler-1", "creature": "alley-crawler", "at": { "room": "ground", "dx": 25, "dy": 39 } },
-    { "id": "arcade-mile-neon-moth-2", "creature": "neon-moth", "at": { "room": "ground", "dx": 31, "dy": 36 } },
     { "id": "arcade-mile-alley-crawler-3", "creature": "alley-crawler", "at": { "room": "ground", "dx": 45, "dy": 30 } },
     { "id": "arcade-mile-neon-moth-4", "creature": "neon-moth", "at": { "room": "ground", "dx": 22, "dy": 29 } },
     { "id": "arcade-mile-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 20, "dy": 59 } },
     { "id": "arcade-mile-neon-moth-6", "creature": "neon-moth", "at": { "room": "ground", "dx": 15, "dy": 19 } },
     { "id": "arcade-mile-alley-crawler-7", "creature": "alley-crawler", "at": { "room": "ground", "dx": 26, "dy": 59 } },
     { "id": "arcade-mile-neon-moth-8", "creature": "neon-moth", "at": { "room": "ground", "dx": 55, "dy": 60 } },
-    { "id": "arcade-mile-alley-crawler-9", "creature": "alley-crawler", "at": { "room": "ground", "dx": 35, "dy": 44 } },
     { "id": "arcade-mile-neon-moth-10", "creature": "neon-moth", "at": { "room": "ground", "dx": 41, "dy": 47 } },
     { "id": "arcade-mile-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 10, "dy": 57 } },
     { "id": "arcade-mile-neon-moth-12", "creature": "neon-moth", "at": { "room": "ground", "dx": 60, "dy": 35 } },
-    { "id": "arcade-mile-alley-crawler-13", "creature": "alley-crawler", "at": { "room": "ground", "dx": 30, "dy": 28 } },
     { "id": "arcade-mile-neon-moth-14", "creature": "neon-moth", "at": { "room": "ground", "dx": 17, "dy": 55 } },
     { "id": "arcade-mile-alley-crawler-15", "creature": "alley-crawler", "at": { "room": "ground", "dx": 43, "dy": 59 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "arcade-mile-landmark", "prefab": "landmark-market-mast", "at": { "room": "ground", "dx": 47, "dy": 37 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "arcade-mile-kiosk": { "theme": "shop", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

@@ -5,6 +5,7 @@ import {
   interestSet,
   type ChunkKey,
   combatExperience,
+  fortitudeCarryAfter,
   combatLevel,
   awaitsContainment,
   REGENERATION_INTERVAL_TICKS,
@@ -209,9 +210,10 @@ export class CombatController implements EncounterHost {
         ...(attack.weapon ? { weapon: attack.weapon } : {}),
         vitals: creature.vitals(),
       });
-      for (const award of combatExperience(attack.style, damage)) {
+      for (const award of combatExperience(attack.style, damage, player.fortitudeCarry)) {
         this.effects.awardExperience(player, award.skill, award.amount, false);
       }
+      player.fortitudeCarry = fortitudeCarryAfter(damage, player.fortitudeCarry);
       if (creature.targetId === null) {
         creature.targetId = player.entityId;
         creature.returningHome = false;

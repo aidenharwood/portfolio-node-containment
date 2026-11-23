@@ -8,18 +8,20 @@
   "ambience": { "darkness": 0.16, "tint": "#e8eef4", "fog": "#c8d8e8", "sky": "#9fc8f0", "weather": ["mist"], "haze": 0.7 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 5, "row": 12 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 30, "y": 27, "width": 10, "height": 8 }, "height": 4 },
+    { "kind": "building", "id": "keepers-cottage", "rect": { "x": 31, "y": 28, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Gull Point" }
+    { "room": "ground", "name": "Gull Point" },
+    { "room": "keepers-cottage", "name": "Keeper’s Cottage", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 14, "dy": 4 }
   },
   "objects": [
     { "id": "gull-point-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 55, "dy": 53 } },
-    { "id": "gull-point-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 25 } },
-    { "id": "gull-point-litter-bin-2", "object": "litter-bin", "at": { "room": "ground", "dx": 47, "dy": 25 } },
     { "id": "gull-point-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 23, "dy": 38 } },
     { "id": "gull-point-street-tree-4", "object": "street-tree", "at": { "room": "ground", "dx": 55, "dy": 16 } },
     { "id": "gull-point-flood-mast-5", "object": "flood-mast", "at": { "room": "ground", "dx": 39, "dy": 52 } },
@@ -27,33 +29,43 @@
     { "id": "gull-point-street-bench-7", "object": "street-bench", "at": { "room": "ground", "dx": 12, "dy": 21 }, "facing": "south" },
     { "id": "gull-point-scrap-pile-8", "object": "scrap-pile", "at": { "room": "ground", "dx": 42, "dy": 29 } },
     { "id": "gull-point-faint-trace-9", "object": "faint-trace", "at": { "room": "ground", "dx": 21, "dy": 30 } },
-    { "id": "gull-point-eel-trap-10", "object": "eel-trap", "at": { "room": "ground", "dx": 6, "dy": 3 } }
+    { "id": "gull-point-eel-trap-10", "object": "eel-trap", "at": { "room": "ground", "dx": 6, "dy": 3 } },
+    { "id": "keepers-cottage-bed-0", "object": "bed", "at": { "room": "keepers-cottage", "dx": 1, "dy": 0 } },
+    { "id": "keepers-cottage-washer-1", "object": "washer", "at": { "room": "keepers-cottage", "dx": 4, "dy": 0 }, "facing": "south" },
+    { "id": "keepers-cottage-shelving-2", "object": "shelving", "at": { "room": "keepers-cottage", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "keepers-cottage-table-3", "object": "table", "at": { "room": "keepers-cottage", "dx": 5, "dy": 3 } },
+    { "id": "keepers-cottage-chair-4", "object": "chair", "at": { "room": "keepers-cottage", "dx": 5, "dy": 2 }, "facing": "south" },
+    { "id": "gull-point-poi-kestrel-survey-locker-0", "object": "kestrel-survey-locker", "at": { "room": "ground", "dx": 47, "dy": 27 } }
   ],
   "assemblies": [],
-  "npcs": [],
+  "npcs": [
+    { "id": "keepers-cottage-keeper-ivo", "npc": "keeper-ivo", "at": { "room": "keepers-cottage", "dx": 2, "dy": 3 } }
+  ],
   "creatures": [
     { "id": "gull-point-feral-hound-0", "creature": "feral-hound", "at": { "room": "ground", "dx": 24, "dy": 15 } },
     { "id": "gull-point-grounds-mite-1", "creature": "grounds-mite", "at": { "room": "ground", "dx": 50, "dy": 12 } },
-    { "id": "gull-point-lawn-rat-2", "creature": "lawn-rat", "at": { "room": "ground", "dx": 7, "dy": 32 } },
+    { "id": "gull-point-courtyard-gull-2", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 7, "dy": 32 } },
     { "id": "gull-point-feral-hound-3", "creature": "feral-hound", "at": { "room": "ground", "dx": 60, "dy": 40 } },
     { "id": "gull-point-grounds-mite-4", "creature": "grounds-mite", "at": { "room": "ground", "dx": 48, "dy": 54 } },
-    { "id": "gull-point-lawn-rat-5", "creature": "lawn-rat", "at": { "room": "ground", "dx": 38, "dy": 36 } },
     { "id": "gull-point-feral-hound-6", "creature": "feral-hound", "at": { "room": "ground", "dx": 56, "dy": 30 } },
     { "id": "gull-point-grounds-mite-7", "creature": "grounds-mite", "at": { "room": "ground", "dx": 32, "dy": 50 } },
-    { "id": "gull-point-lawn-rat-8", "creature": "lawn-rat", "at": { "room": "ground", "dx": 54, "dy": 44 } },
+    { "id": "gull-point-courtyard-gull-8", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 54, "dy": 44 } },
     { "id": "gull-point-feral-hound-9", "creature": "feral-hound", "at": { "room": "ground", "dx": 27, "dy": 32 } },
     { "id": "gull-point-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 17, "dy": 49 } },
-    { "id": "gull-point-lawn-rat-11", "creature": "lawn-rat", "at": { "room": "ground", "dx": 29, "dy": 9 } },
+    { "id": "gull-point-courtyard-gull-11", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 29, "dy": 9 } },
     { "id": "gull-point-feral-hound-12", "creature": "feral-hound", "at": { "room": "ground", "dx": 12, "dy": 49 } },
     { "id": "gull-point-grounds-mite-13", "creature": "grounds-mite", "at": { "room": "ground", "dx": 35, "dy": 18 } },
-    { "id": "gull-point-lawn-rat-14", "creature": "lawn-rat", "at": { "room": "ground", "dx": 9, "dy": 27 } },
+    { "id": "gull-point-courtyard-gull-14", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 9, "dy": 27 } },
     { "id": "gull-point-feral-hound-15", "creature": "feral-hound", "at": { "room": "ground", "dx": 40, "dy": 43 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "gull-point-landmark", "prefab": "landmark-gull-point-light", "at": { "room": "ground", "dx": 45, "dy": 33 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "keepers-cottage": { "theme": "home", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

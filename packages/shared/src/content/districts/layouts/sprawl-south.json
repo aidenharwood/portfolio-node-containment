@@ -8,25 +8,40 @@
   "ambience": { "darkness": 0.58, "tint": "#3a2448", "fog": "#1e1430", "sky": "#2a1838", "weather": ["rain"], "haze": 1.3 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 2, "row": 2 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 29, "y": 29, "width": 14, "height": 10 }, "height": 6 },
+    { "kind": "building", "id": "sprawl-noodle-bar", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Sprawl South" }
+    { "room": "ground", "name": "Sprawl South" },
+    { "room": "sprawl-noodle-bar", "name": "Sprawl Noodle Bar", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 23, "dy": 42 }
   },
   "objects": [
     { "id": "sprawl-south-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 47, "dy": 23 } },
-    { "id": "sprawl-south-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 42 } },
     { "id": "sprawl-south-steam-vent-2", "object": "steam-vent", "at": { "room": "ground", "dx": 59, "dy": 60 } },
-    { "id": "sprawl-south-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 44, "dy": 35 } },
     { "id": "sprawl-south-litter-bin-4", "object": "litter-bin", "at": { "room": "ground", "dx": 8, "dy": 36 } },
     { "id": "sprawl-south-litter-bin-5", "object": "litter-bin", "at": { "room": "ground", "dx": 28, "dy": 59 } },
     { "id": "sprawl-south-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 17, "dy": 16 } },
     { "id": "sprawl-south-culture-bench-7", "object": "culture-bench", "at": { "room": "ground", "dx": 60, "dy": 14 } },
     { "id": "sprawl-south-amber-trace-8", "object": "amber-trace", "at": { "room": "ground", "dx": 46, "dy": 45 } },
-    { "id": "sprawl-south-scrap-heap-9", "object": "scrap-heap", "at": { "room": "ground", "dx": 24, "dy": 13 } }
+    { "id": "sprawl-south-scrap-heap-9", "object": "scrap-heap", "at": { "room": "ground", "dx": 24, "dy": 13 } },
+    { "id": "sprawl-noodle-bar-ward-cooker-0", "object": "ward-cooker", "at": { "room": "sprawl-noodle-bar", "dx": 1, "dy": 0 } },
+    { "id": "sprawl-noodle-bar-shelving-1", "object": "shelving", "at": { "room": "sprawl-noodle-bar", "dx": 3, "dy": 0 }, "facing": "south" },
+    { "id": "sprawl-noodle-bar-vending-machine-2", "object": "vending-machine", "at": { "room": "sprawl-noodle-bar", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "sprawl-noodle-bar-counter-3", "object": "counter", "at": { "room": "sprawl-noodle-bar", "dx": 1, "dy": 3 } },
+    { "id": "sprawl-noodle-bar-counter-4", "object": "counter", "at": { "room": "sprawl-noodle-bar", "dx": 2, "dy": 3 } },
+    { "id": "sprawl-noodle-bar-counter-5", "object": "counter", "at": { "room": "sprawl-noodle-bar", "dx": 3, "dy": 3 } },
+    { "id": "sprawl-noodle-bar-table-6", "object": "table", "at": { "room": "sprawl-noodle-bar", "dx": 8, "dy": 3 } },
+    { "id": "sprawl-noodle-bar-chair-7", "object": "chair", "at": { "room": "sprawl-noodle-bar", "dx": 8, "dy": 2 }, "facing": "south" },
+    { "id": "sprawl-noodle-bar-table-8", "object": "table", "at": { "room": "sprawl-noodle-bar", "dx": 10, "dy": 3 } },
+    { "id": "sprawl-noodle-bar-chair-9", "object": "chair", "at": { "room": "sprawl-noodle-bar", "dx": 10, "dy": 2 }, "facing": "south" },
+    { "id": "sprawl-noodle-bar-table-10", "object": "table", "at": { "room": "sprawl-noodle-bar", "dx": 9, "dy": 6 } },
+    { "id": "sprawl-noodle-bar-chair-11", "object": "chair", "at": { "room": "sprawl-noodle-bar", "dx": 9, "dy": 5 }, "facing": "south" },
+    { "id": "sprawl-south-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 43, "dy": 24 } }
   ],
   "assemblies": [
     { "id": "sprawl-south-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 14, "dy": 51 }, "span": 2 },
@@ -43,20 +58,21 @@
     { "id": "sprawl-south-neon-moth-6", "creature": "neon-moth", "at": { "room": "ground", "dx": 52, "dy": 16 } },
     { "id": "sprawl-south-alley-crawler-7", "creature": "alley-crawler", "at": { "room": "ground", "dx": 5, "dy": 49 } },
     { "id": "sprawl-south-neon-moth-8", "creature": "neon-moth", "at": { "room": "ground", "dx": 7, "dy": 11 } },
-    { "id": "sprawl-south-alley-crawler-9", "creature": "alley-crawler", "at": { "room": "ground", "dx": 32, "dy": 35 } },
     { "id": "sprawl-south-neon-moth-10", "creature": "neon-moth", "at": { "room": "ground", "dx": 17, "dy": 31 } },
     { "id": "sprawl-south-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 11, "dy": 19 } },
     { "id": "sprawl-south-neon-moth-12", "creature": "neon-moth", "at": { "room": "ground", "dx": 41, "dy": 5 } },
     { "id": "sprawl-south-alley-crawler-13", "creature": "alley-crawler", "at": { "room": "ground", "dx": 53, "dy": 36 } },
-    { "id": "sprawl-south-neon-moth-14", "creature": "neon-moth", "at": { "room": "ground", "dx": 30, "dy": 28 } },
     { "id": "sprawl-south-alley-crawler-15", "creature": "alley-crawler", "at": { "room": "ground", "dx": 26, "dy": 5 } },
     { "id": "sprawl-south-neon-moth-16", "creature": "neon-moth", "at": { "room": "ground", "dx": 55, "dy": 43 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "sprawl-south-landmark", "prefab": "landmark-strand-screen", "at": { "room": "ground", "dx": 36, "dy": 22 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "sprawl-noodle-bar": { "theme": "canteen", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

@@ -19,7 +19,7 @@
     { "room": "ground", "name": "Site Vesper" },
     { "room": "vesper-headhouse", "name": "Vesper Headhouse", "safe": false },
     { "room": "vesper-records", "name": "Vesper Records", "safe": false },
-    { "room": "vesper-holding", "name": "Vesper Holding", "safe": false },
+    { "room": "vesper-holding", "name": "Vesper Holding", "safe": false, "multiCombat": true },
     { "room": "vesper-nave", "name": "The Nave", "safe": false, "multiCombat": true }
   ],
   "anchors": {
@@ -27,7 +27,7 @@
     "start": { "room": "ground", "dx": 56, "dy": 8 }
   },
   "objects": [
-    { "id": "vesper-headhouse-lift-door-0", "object": "lift-door", "at": { "room": "vesper-headhouse", "dx": 5, "dy": 0 }, "facing": "south" },
+    { "id": "vesper-headhouse-vesper-lift-down-0", "object": "vesper-lift-down", "at": { "room": "vesper-headhouse", "dx": 5, "dy": 0 }, "facing": "south" },
     { "id": "vesper-headhouse-notice-board-1", "object": "notice-board", "at": { "room": "vesper-headhouse", "dx": 2, "dy": 0 }, "facing": "south" },
     { "id": "vesper-headhouse-vending-machine-2", "object": "vending-machine", "at": { "room": "vesper-headhouse", "dx": 8, "dy": 0 }, "facing": "south" },
     { "id": "vesper-headhouse-security-camera-3", "object": "security-camera", "at": { "room": "vesper-headhouse", "dx": 11, "dy": 0 }, "facing": "south" },
@@ -71,6 +71,7 @@
   "assemblies": [],
   "npcs": [],
   "creatures": [
+    { "id": "vesper-holding-prism-alpha-0", "creature": "prism-alpha", "at": { "room": "vesper-holding", "dx": 6, "dy": 4 } },
     { "id": "vesper-headhouse-choir-echo-0", "creature": "choir-echo", "at": { "room": "vesper-headhouse", "dx": 9, "dy": 6 } },
     { "id": "vesper-records-choir-echo-0", "creature": "choir-echo", "at": { "room": "vesper-records", "dx": 9, "dy": 5 } },
     { "id": "vesper-records-red-twin-1", "creature": "red-twin", "at": { "room": "vesper-records", "dx": 2, "dy": 5 } },

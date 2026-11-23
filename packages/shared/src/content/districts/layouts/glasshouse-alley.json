@@ -66,6 +66,7 @@
   ],
   "assemblies": [],
   "npcs": [
+    { "id": "glasshouse-alley-quest-reprint-sola", "npc": "reprint-sola", "at": { "room": "ground", "dx": 41, "dy": 37 } },
     { "id": "glasshouse-bar-bartender-reza", "npc": "bartender-reza", "at": { "room": "glasshouse-bar", "dx": 2, "dy": 2 } },
     { "id": "alley-clinic-doc-esperanza", "npc": "doc-esperanza", "at": { "room": "alley-clinic", "dx": 9, "dy": 4 } },
     { "id": "alley-flat-runner-tam", "npc": "runner-tam", "at": { "room": "alley-flat", "dx": 2, "dy": 3 } }

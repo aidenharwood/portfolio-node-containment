@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.58, "tint": "#3a2448", "fog": "#1e1430", "sky": "#2a1838", "weather": ["rain"], "haze": 1.3 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 1, "row": 2 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 28, "y": 29, "width": 14, "height": 10 }, "height": 5 },
+    { "kind": "building", "id": "capsule-block", "rect": { "x": 29, "y": 30, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Sprawl North" }
+    { "room": "ground", "name": "Sprawl North" },
+    { "room": "capsule-block", "name": "Capsule Block", "safe": false }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 46, "dy": 58 }
@@ -20,11 +24,22 @@
     { "id": "sprawl-north-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 42, "dy": 24 } },
     { "id": "sprawl-north-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 51, "dy": 21 } },
     { "id": "sprawl-north-litter-bin-2", "object": "litter-bin", "at": { "room": "ground", "dx": 17, "dy": 37 } },
-    { "id": "sprawl-north-food-stall-3", "object": "food-stall", "at": { "room": "ground", "dx": 28, "dy": 35 } },
     { "id": "sprawl-north-food-stall-4", "object": "food-stall", "at": { "room": "ground", "dx": 30, "dy": 45 } },
     { "id": "sprawl-north-bollard-5", "object": "bollard", "at": { "room": "ground", "dx": 23, "dy": 8 } },
     { "id": "sprawl-north-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 57, "dy": 33 } },
-    { "id": "sprawl-north-crusher-housing-8", "object": "crusher-housing", "at": { "room": "ground", "dx": 45, "dy": 12 } }
+    { "id": "sprawl-north-crusher-housing-8", "object": "crusher-housing", "at": { "room": "ground", "dx": 45, "dy": 12 } },
+    { "id": "capsule-block-bed-0", "object": "bed", "at": { "room": "capsule-block", "dx": 1, "dy": 0 } },
+    { "id": "capsule-block-bed-1", "object": "bed", "at": { "room": "capsule-block", "dx": 3, "dy": 0 } },
+    { "id": "capsule-block-bed-2", "object": "bed", "at": { "room": "capsule-block", "dx": 5, "dy": 0 } },
+    { "id": "capsule-block-bed-3", "object": "bed", "at": { "room": "capsule-block", "dx": 7, "dy": 0 } },
+    { "id": "capsule-block-bed-4", "object": "bed", "at": { "room": "capsule-block", "dx": 9, "dy": 0 } },
+    { "id": "capsule-block-bed-5", "object": "bed", "at": { "room": "capsule-block", "dx": 11, "dy": 0 } },
+    { "id": "capsule-block-bed-6", "object": "bed", "at": { "room": "capsule-block", "dx": 1, "dy": 5 } },
+    { "id": "capsule-block-bed-7", "object": "bed", "at": { "room": "capsule-block", "dx": 3, "dy": 5 } },
+    { "id": "capsule-block-bed-8", "object": "bed", "at": { "room": "capsule-block", "dx": 9, "dy": 5 } },
+    { "id": "capsule-block-bed-9", "object": "bed", "at": { "room": "capsule-block", "dx": 11, "dy": 5 } },
+    { "id": "capsule-block-storage-locker-10", "object": "storage-locker", "at": { "room": "capsule-block", "dx": 0, "dy": 3 }, "facing": "east" },
+    { "id": "sprawl-north-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 54, "dy": 35 } }
   ],
   "assemblies": [
     { "id": "sprawl-north-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 30, "dy": 51 }, "span": 2 },
@@ -32,25 +47,26 @@
   ],
   "npcs": [],
   "creatures": [
-    { "id": "sprawl-north-ad-wraith-0", "creature": "ad-wraith", "at": { "room": "ground", "dx": 48, "dy": 37 } },
     { "id": "sprawl-north-glass-hound-1", "creature": "glass-hound", "at": { "room": "ground", "dx": 57, "dy": 8 } },
     { "id": "sprawl-north-alley-crawler-2", "creature": "alley-crawler", "at": { "room": "ground", "dx": 25, "dy": 20 } },
-    { "id": "sprawl-north-ad-wraith-3", "creature": "ad-wraith", "at": { "room": "ground", "dx": 43, "dy": 50 } },
-    { "id": "sprawl-north-glass-hound-4", "creature": "glass-hound", "at": { "room": "ground", "dx": 39, "dy": 43 } },
+    { "id": "sprawl-north-vent-moth-3", "creature": "vent-moth", "at": { "room": "ground", "dx": 43, "dy": 50 } },
     { "id": "sprawl-north-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 60, "dy": 56 } },
-    { "id": "sprawl-north-ad-wraith-6", "creature": "ad-wraith", "at": { "room": "ground", "dx": 51, "dy": 33 } },
     { "id": "sprawl-north-glass-hound-7", "creature": "glass-hound", "at": { "room": "ground", "dx": 38, "dy": 57 } },
     { "id": "sprawl-north-alley-crawler-8", "creature": "alley-crawler", "at": { "room": "ground", "dx": 12, "dy": 45 } },
-    { "id": "sprawl-north-ad-wraith-9", "creature": "ad-wraith", "at": { "room": "ground", "dx": 36, "dy": 31 } },
     { "id": "sprawl-north-glass-hound-10", "creature": "glass-hound", "at": { "room": "ground", "dx": 12, "dy": 32 } },
     { "id": "sprawl-north-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 17, "dy": 23 } },
-    { "id": "sprawl-north-ad-wraith-12", "creature": "ad-wraith", "at": { "room": "ground", "dx": 30, "dy": 12 } }
+    { "id": "sprawl-north-vent-moth-12", "creature": "vent-moth", "at": { "room": "ground", "dx": 30, "dy": 12 } },
+    { "id": "capsule-block-alley-crawler-0", "creature": "alley-crawler", "at": { "room": "capsule-block", "dx": 6, "dy": 3 } },
+    { "id": "capsule-block-glass-hound-1", "creature": "glass-hound", "at": { "room": "capsule-block", "dx": 2, "dy": 3 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "sprawl-north-landmark", "prefab": "landmark-combine-screen", "at": { "room": "ground", "dx": 47, "dy": 33 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "capsule-block": { "theme": "dormitory", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

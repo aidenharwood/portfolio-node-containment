@@ -8,23 +8,32 @@
   "ambience": { "darkness": 0.62, "tint": "#1a2a3a", "fog": "#0c1824", "sky": "#1a3048", "weather": ["sparks"], "haze": 1.4 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 9, "row": 7 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 29, "y": 27, "width": 10, "height": 8 }, "height": 10 },
+    { "kind": "building", "id": "inverse-house", "rect": { "x": 30, "y": 28, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Inverse Field" }
+    { "room": "ground", "name": "Inverse Field" },
+    { "room": "inverse-house", "name": "Inverse House", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 54, "dy": 26 }
   },
   "objects": [
-    { "id": "inverse-field-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 25 } },
     { "id": "inverse-field-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 39 } },
     { "id": "inverse-field-checkpoint-barrier-2", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 51, "dy": 13 } },
     { "id": "inverse-field-flood-mast-3", "object": "flood-mast", "at": { "room": "ground", "dx": 33, "dy": 3 } },
     { "id": "inverse-field-precursor-pylon-4", "object": "precursor-pylon", "at": { "room": "ground", "dx": 24, "dy": 42 } },
     { "id": "inverse-field-barricade-5", "object": "barricade", "at": { "room": "ground", "dx": 48, "dy": 24 } },
     { "id": "inverse-field-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 11, "dy": 43 } },
-    { "id": "inverse-field-vault-residue-9", "object": "vault-residue", "at": { "room": "ground", "dx": 42, "dy": 60 } }
+    { "id": "inverse-field-vault-residue-9", "object": "vault-residue", "at": { "room": "ground", "dx": 42, "dy": 60 } },
+    { "id": "inverse-house-bed-0", "object": "bed", "at": { "room": "inverse-house", "dx": 1, "dy": 0 } },
+    { "id": "inverse-house-washer-1", "object": "washer", "at": { "room": "inverse-house", "dx": 4, "dy": 0 }, "facing": "south" },
+    { "id": "inverse-house-shelving-2", "object": "shelving", "at": { "room": "inverse-house", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "inverse-house-table-3", "object": "table", "at": { "room": "inverse-house", "dx": 5, "dy": 3 } },
+    { "id": "inverse-house-chair-4", "object": "chair", "at": { "room": "inverse-house", "dx": 5, "dy": 2 }, "facing": "south" },
+    { "id": "inverse-field-poi-spindle-vault-drawer-0", "object": "spindle-vault-drawer", "at": { "room": "ground", "dx": 42, "dy": 21 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -41,18 +50,18 @@
     { "id": "inverse-field-null-stalker-9", "creature": "null-stalker", "at": { "room": "ground", "dx": 24, "dy": 11 } },
     { "id": "inverse-field-null-echo-10", "creature": "null-echo", "at": { "room": "ground", "dx": 8, "dy": 4 } },
     { "id": "inverse-field-cell-breaker-11", "creature": "cell-breaker", "at": { "room": "ground", "dx": 20, "dy": 36 } },
-    { "id": "inverse-field-null-stalker-12", "creature": "null-stalker", "at": { "room": "ground", "dx": 37, "dy": 35 } },
     { "id": "inverse-field-null-echo-13", "creature": "null-echo", "at": { "room": "ground", "dx": 30, "dy": 45 } },
-    { "id": "inverse-field-cell-breaker-14", "creature": "cell-breaker", "at": { "room": "ground", "dx": 42, "dy": 23 } },
     { "id": "inverse-field-null-stalker-15", "creature": "null-stalker", "at": { "room": "ground", "dx": 38, "dy": 10 } },
-    { "id": "inverse-field-null-echo-16", "creature": "null-echo", "at": { "room": "ground", "dx": 28, "dy": 37 } },
     { "id": "inverse-field-cell-breaker-17", "creature": "cell-breaker", "at": { "room": "ground", "dx": 28, "dy": 14 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "inverse-field-landmark", "prefab": "landmark-null-chimney", "at": { "room": "ground", "dx": 35, "dy": 20 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "inverse-house": { "theme": "home", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

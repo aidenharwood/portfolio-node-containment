@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.4, "tint": "#5a3a28", "fog": "#4a3424", "sky": "#8a6a50", "weather": ["dust", "embers"], "haze": 1.2 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 13, "row": 1 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 30, "y": 30, "width": 14, "height": 10 }, "height": 3 },
+    { "kind": "building", "id": "bilge-pumphouse", "rect": { "x": 31, "y": 31, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Bilge Flats" }
+    { "room": "ground", "name": "Bilge Flats" },
+    { "room": "bilge-pumphouse", "name": "Bilge Pumphouse", "safe": false }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 13, "dy": 19 }
@@ -19,38 +23,48 @@
   "objects": [
     { "id": "bilge-flats-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 46 } },
     { "id": "bilge-flats-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 50, "dy": 23 } },
-    { "id": "bilge-flats-magnet-crane-2", "object": "magnet-crane", "at": { "room": "ground", "dx": 34, "dy": 34 } },
     { "id": "bilge-flats-parked-car-3", "object": "parked-car", "at": { "room": "ground", "dx": 19, "dy": 28 } },
     { "id": "bilge-flats-parked-car-4", "object": "parked-car", "at": { "room": "ground", "dx": 25, "dy": 44 } },
-    { "id": "bilge-flats-magnet-crane-5", "object": "magnet-crane", "at": { "room": "ground", "dx": 47, "dy": 30 } },
     { "id": "bilge-flats-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 30, "dy": 10 } },
-    { "id": "bilge-flats-rivet-seam-9", "object": "rivet-seam", "at": { "room": "ground", "dx": 52, "dy": 55 } }
+    { "id": "bilge-flats-rivet-seam-9", "object": "rivet-seam", "at": { "room": "ground", "dx": 52, "dy": 55 } },
+    { "id": "bilge-pumphouse-secure-cell-0", "object": "secure-cell", "at": { "room": "bilge-pumphouse", "dx": 1, "dy": 1 } },
+    { "id": "bilge-pumphouse-secure-cell-1", "object": "secure-cell", "at": { "room": "bilge-pumphouse", "dx": 4, "dy": 1 } },
+    { "id": "bilge-pumphouse-secure-cell-2", "object": "secure-cell", "at": { "room": "bilge-pumphouse", "dx": 7, "dy": 1 } },
+    { "id": "bilge-pumphouse-keycard-reader-3", "object": "keycard-reader", "at": { "room": "bilge-pumphouse", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "bilge-pumphouse-security-camera-4", "object": "security-camera", "at": { "room": "bilge-pumphouse", "dx": 0, "dy": 0 }, "facing": "south" },
+    { "id": "bilge-pumphouse-lab-bench-5", "object": "lab-bench", "at": { "room": "bilge-pumphouse", "dx": 10, "dy": 4 } },
+    { "id": "bilge-flats-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 51, "dy": 42 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
     { "id": "bilge-flats-bilge-wraith-0", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 31, "dy": 48 } },
     { "id": "bilge-flats-rustling-1", "creature": "rustling", "at": { "room": "ground", "dx": 27, "dy": 53 } },
-    { "id": "bilge-flats-hull-knocker-2", "creature": "hull-knocker", "at": { "room": "ground", "dx": 6, "dy": 24 } },
+    { "id": "bilge-flats-ballast-crab-2", "creature": "ballast-crab", "at": { "room": "ground", "dx": 6, "dy": 24 } },
     { "id": "bilge-flats-bilge-wraith-3", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 43, "dy": 8 } },
     { "id": "bilge-flats-rustling-4", "creature": "rustling", "at": { "room": "ground", "dx": 59, "dy": 46 } },
-    { "id": "bilge-flats-hull-knocker-5", "creature": "hull-knocker", "at": { "room": "ground", "dx": 7, "dy": 59 } },
+    { "id": "bilge-flats-ballast-crab-5", "creature": "ballast-crab", "at": { "room": "ground", "dx": 7, "dy": 59 } },
     { "id": "bilge-flats-bilge-wraith-6", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 5, "dy": 10 } },
     { "id": "bilge-flats-rustling-7", "creature": "rustling", "at": { "room": "ground", "dx": 27, "dy": 18 } },
-    { "id": "bilge-flats-hull-knocker-8", "creature": "hull-knocker", "at": { "room": "ground", "dx": 58, "dy": 20 } },
+    { "id": "bilge-flats-ballast-crab-8", "creature": "ballast-crab", "at": { "room": "ground", "dx": 58, "dy": 20 } },
     { "id": "bilge-flats-bilge-wraith-9", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 13, "dy": 14 } },
     { "id": "bilge-flats-rustling-10", "creature": "rustling", "at": { "room": "ground", "dx": 14, "dy": 56 } },
-    { "id": "bilge-flats-hull-knocker-11", "creature": "hull-knocker", "at": { "room": "ground", "dx": 42, "dy": 54 } },
+    { "id": "bilge-flats-ballast-crab-11", "creature": "ballast-crab", "at": { "room": "ground", "dx": 42, "dy": 54 } },
     { "id": "bilge-flats-bilge-wraith-12", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 16, "dy": 38 } },
     { "id": "bilge-flats-rustling-13", "creature": "rustling", "at": { "room": "ground", "dx": 21, "dy": 54 } },
-    { "id": "bilge-flats-hull-knocker-14", "creature": "hull-knocker", "at": { "room": "ground", "dx": 13, "dy": 42 } },
-    { "id": "bilge-flats-bilge-wraith-15", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 30, "dy": 22 } }
+    { "id": "bilge-flats-ballast-crab-14", "creature": "ballast-crab", "at": { "room": "ground", "dx": 13, "dy": 42 } },
+    { "id": "bilge-flats-bilge-wraith-15", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 30, "dy": 22 } },
+    { "id": "bilge-pumphouse-bilge-wraith-0", "creature": "bilge-wraith", "at": { "room": "bilge-pumphouse", "dx": 2, "dy": 5 } },
+    { "id": "bilge-pumphouse-rustling-1", "creature": "rustling", "at": { "room": "bilge-pumphouse", "dx": 9, "dy": 6 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "bilge-flats-landmark", "prefab": "landmark-lifeboat-hull", "at": { "room": "ground", "dx": 49, "dy": 34 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "bilge-pumphouse": { "theme": "containment", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

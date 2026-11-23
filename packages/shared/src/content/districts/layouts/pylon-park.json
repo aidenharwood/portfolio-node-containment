@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.58, "tint": "#3a2448", "fog": "#1e1430", "sky": "#2a1838", "weather": ["rain"], "haze": 1.3 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 6, "row": 3 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 36, "y": 29, "width": 14, "height": 10 }, "height": 6 },
+    { "kind": "building", "id": "pylon-park-lab", "rect": { "x": 37, "y": 30, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Pylon Park" }
+    { "room": "ground", "name": "Pylon Park" },
+    { "room": "pylon-park-lab", "name": "Park Kiosk Lab", "safe": false }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 3, "dy": 51 }
@@ -20,38 +24,46 @@
     { "id": "pylon-park-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 13 } },
     { "id": "pylon-park-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 56, "dy": 44 } },
     { "id": "pylon-park-holo-billboard-2", "object": "holo-billboard", "at": { "room": "ground", "dx": 59, "dy": 29 } },
-    { "id": "pylon-park-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 36, "dy": 36 } },
     { "id": "pylon-park-utility-pole-4", "object": "utility-pole", "at": { "room": "ground", "dx": 13, "dy": 20 } },
     { "id": "pylon-park-holo-billboard-5", "object": "holo-billboard", "at": { "room": "ground", "dx": 54, "dy": 19 } },
     { "id": "pylon-park-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 13, "dy": 8 } },
-    { "id": "pylon-park-scrap-heap-7", "object": "scrap-heap", "at": { "room": "ground", "dx": 47, "dy": 37 } },
     { "id": "pylon-park-culture-bench-8", "object": "culture-bench", "at": { "room": "ground", "dx": 27, "dy": 48 } },
-    { "id": "pylon-park-amber-trace-9", "object": "amber-trace", "at": { "room": "ground", "dx": 30, "dy": 18 } }
+    { "id": "pylon-park-amber-trace-9", "object": "amber-trace", "at": { "room": "ground", "dx": 30, "dy": 18 } },
+    { "id": "pylon-park-lab-lab-bench-0", "object": "lab-bench", "at": { "room": "pylon-park-lab", "dx": 2, "dy": 3 } },
+    { "id": "pylon-park-lab-lab-bench-1", "object": "lab-bench", "at": { "room": "pylon-park-lab", "dx": 3, "dy": 3 } },
+    { "id": "pylon-park-lab-lab-bench-2", "object": "lab-bench", "at": { "room": "pylon-park-lab", "dx": 4, "dy": 3 } },
+    { "id": "pylon-park-lab-lab-bench-3", "object": "lab-bench", "at": { "room": "pylon-park-lab", "dx": 5, "dy": 3 } },
+    { "id": "pylon-park-lab-shelving-4", "object": "shelving", "at": { "room": "pylon-park-lab", "dx": 9, "dy": 0 }, "facing": "south" },
+    { "id": "pylon-park-lab-shelving-5", "object": "shelving", "at": { "room": "pylon-park-lab", "dx": 10, "dy": 0 }, "facing": "south" },
+    { "id": "pylon-park-lab-shelving-6", "object": "shelving", "at": { "room": "pylon-park-lab", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "pylon-park-lab-amber-trace-7", "object": "amber-trace", "at": { "room": "pylon-park-lab", "dx": 10, "dy": 5 } },
+    { "id": "pylon-park-poi-halcyon-lockbox-0", "object": "halcyon-lockbox", "at": { "room": "ground", "dx": 51, "dy": 22 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "pylon-park-neon-moth-0", "creature": "neon-moth", "at": { "room": "ground", "dx": 44, "dy": 28 } },
     { "id": "pylon-park-alley-crawler-1", "creature": "alley-crawler", "at": { "room": "ground", "dx": 37, "dy": 15 } },
-    { "id": "pylon-park-neon-moth-2", "creature": "neon-moth", "at": { "room": "ground", "dx": 56, "dy": 37 } },
+    { "id": "pylon-park-holo-shill-2", "creature": "holo-shill", "at": { "room": "ground", "dx": 56, "dy": 37 } },
     { "id": "pylon-park-alley-crawler-3", "creature": "alley-crawler", "at": { "room": "ground", "dx": 14, "dy": 37 } },
-    { "id": "pylon-park-neon-moth-4", "creature": "neon-moth", "at": { "room": "ground", "dx": 35, "dy": 9 } },
+    { "id": "pylon-park-holo-shill-4", "creature": "holo-shill", "at": { "room": "ground", "dx": 35, "dy": 9 } },
     { "id": "pylon-park-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 4, "dy": 37 } },
-    { "id": "pylon-park-neon-moth-6", "creature": "neon-moth", "at": { "room": "ground", "dx": 3, "dy": 32 } },
+    { "id": "pylon-park-holo-shill-6", "creature": "holo-shill", "at": { "room": "ground", "dx": 3, "dy": 32 } },
     { "id": "pylon-park-alley-crawler-7", "creature": "alley-crawler", "at": { "room": "ground", "dx": 21, "dy": 49 } },
-    { "id": "pylon-park-neon-moth-8", "creature": "neon-moth", "at": { "room": "ground", "dx": 5, "dy": 5 } },
+    { "id": "pylon-park-holo-shill-8", "creature": "holo-shill", "at": { "room": "ground", "dx": 5, "dy": 5 } },
     { "id": "pylon-park-alley-crawler-9", "creature": "alley-crawler", "at": { "room": "ground", "dx": 37, "dy": 48 } },
-    { "id": "pylon-park-neon-moth-10", "creature": "neon-moth", "at": { "room": "ground", "dx": 48, "dy": 21 } },
     { "id": "pylon-park-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 59, "dy": 55 } },
-    { "id": "pylon-park-neon-moth-12", "creature": "neon-moth", "at": { "room": "ground", "dx": 36, "dy": 26 } },
+    { "id": "pylon-park-holo-shill-12", "creature": "holo-shill", "at": { "room": "ground", "dx": 36, "dy": 26 } },
     { "id": "pylon-park-alley-crawler-13", "creature": "alley-crawler", "at": { "room": "ground", "dx": 41, "dy": 6 } },
-    { "id": "pylon-park-neon-moth-14", "creature": "neon-moth", "at": { "room": "ground", "dx": 37, "dy": 42 } }
+    { "id": "pylon-park-lab-neon-moth-0", "creature": "neon-moth", "at": { "room": "pylon-park-lab", "dx": 8, "dy": 5 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "pylon-park-landmark", "prefab": "landmark-park-clock", "at": { "room": "ground", "dx": 44, "dy": 22 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "pylon-park-lab": { "theme": "lab", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

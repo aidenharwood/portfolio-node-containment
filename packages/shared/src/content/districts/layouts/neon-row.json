@@ -33,6 +33,7 @@
     "start": { "room": "ground", "dx": 4, "dy": 34 }
   },
   "objects": [
+    { "id": "neon-row-quest-smile-chart", "object": "smile-chart", "at": { "room": "sato-clinic", "dx": 5, "dy": 4 } },
     { "id": "neon-row-departure-board", "object": "departure-board", "at": { "room": "tram-terminal", "dx": 4, "dy": 0 }, "facing": "south" },
     { "id": "neon-row-terminal-bench", "object": "street-bench", "at": { "room": "tram-terminal", "dx": 26, "dy": 0 }, "facing": "south" },
     { "id": "neon-row-post-shelving-0", "object": "shelving", "at": { "room": "neon-row-post", "dx": 1, "dy": 0 }, "facing": "south" },

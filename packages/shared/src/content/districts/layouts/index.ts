@@ -140,6 +140,8 @@ import lanternCove from './lantern-cove.json' with { type: 'json' };
 import kestrelIntake from './kestrel-intake.json' with { type: 'json' };
 import gallowglassUndercity from './gallowglass-undercity.json' with { type: 'json' };
 import nullBelow from './null-below.json' with { type: 'json' };
+import tallowHolding from './tallow-holding.json' with { type: 'json' };
+import vesperDeep from './vesper-deep.json' with { type: 'json' };
 
 export const LAYOUT_SOURCES: Readonly<Record<DistrictId, unknown>> = {
   'combine-blocks': combineBlocks,
@@ -283,6 +285,8 @@ export const LAYOUT_SOURCES: Readonly<Record<DistrictId, unknown>> = {
   'kestrel-intake': kestrelIntake,
   'gallowglass-undercity': gallowglassUndercity,
   'null-below': nullBelow,
+  'tallow-holding': tallowHolding,
+  'vesper-deep': vesperDeep,
 };
 
 export const SQUARE_LAYOUT_IDS: readonly DistrictId[] = [
@@ -430,4 +434,6 @@ export const BELOW_LAYOUT_IDS: readonly DistrictId[] = [
   'kestrel-intake',
   'gallowglass-undercity',
   'null-below',
+  'tallow-holding',
+  'vesper-deep',
 ];

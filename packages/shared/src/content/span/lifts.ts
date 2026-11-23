@@ -12,6 +12,10 @@ export const SPAN_LIFTS: readonly WorldObjectDefinition[] = [
   liftObject({ id: 'kestrel-lift-up', verb: 'Ascend', where: 'the Kestrel headhouse', site: 'Site Kestrel', districtId: 'site-kestrel', position: spanAnchor('site-kestrel', 'lift-arrival') }),
   liftObject({ id: 'gallowglass-lift-down', verb: 'Descend', where: 'the Gallowglass undercity', site: 'Site Gallowglass', districtId: 'gallowglass-undercity', position: spanAnchor('gallowglass-undercity', 'arrival'), clearance: CLEARANCE_GALLOWGLASS }),
   liftObject({ id: 'gallowglass-lift-up', verb: 'Ascend', where: 'the Gallowglass headhouse', site: 'Site Gallowglass', districtId: 'site-gallowglass', position: spanAnchor('site-gallowglass', 'lift-arrival') }),
+  liftObject({ id: 'tallow-lift-down', verb: 'Descend', where: 'Tallow Holding, B1', site: 'Site Tallow', districtId: 'tallow-holding', position: spanAnchor('tallow-holding', 'arrival') }),
+  liftObject({ id: 'tallow-lift-up', verb: 'Ascend', where: 'the Tallow forward post', site: 'Site Tallow', districtId: 'site-tallow', position: spanAnchor('site-tallow', 'lift-arrival') }),
+  liftObject({ id: 'vesper-lift-down', verb: 'Descend', where: 'Vesper Deep, B1', site: 'Site Vesper', districtId: 'vesper-deep', position: spanAnchor('vesper-deep', 'arrival') }),
+  liftObject({ id: 'vesper-lift-up', verb: 'Ascend', where: 'the Vesper headhouse', site: 'Site Vesper', districtId: 'site-vesper', position: spanAnchor('site-vesper', 'lift-arrival') }),
   liftObject({ id: 'null-lift-down', verb: 'Descend', where: 'Null Below', site: 'Site Null', districtId: 'null-below', position: spanAnchor('null-below', 'arrival'), clearance: CLEARANCE_NULL }),
   liftObject({ id: 'null-lift-up', verb: 'Ascend', where: 'the Null headhouse', site: 'Site Null', districtId: 'site-null', position: spanAnchor('site-null', 'lift-arrival') }),
 ];
@@ -29,5 +33,7 @@ const relic = (id: string, name: string, examine: string, model: WorldObjectDefi
 export const SPAN_RELICS: readonly WorldObjectDefinition[] = [
   relic('the-roster', 'The Roster', 'KST-000. A grey steel filing cabinet behind a pane of hard light. A drawer is open. The top file has your name on it, and a photograph taken tomorrow.', 'secureCell', 'Read the open file', 'The file is yours. Intake date: today. Previous intake: two years ago. Status: REISSUED.'),
   relic('brightly-reel', 'Brightly Reel', 'A reel of advert film, still warm, still running with no projector.', 'secureCell', 'Watch', 'Mr Brightly smiles out of the reel and says your name, correctly.'),
+  relic('tallow-ledger', 'Casualty Ledger', 'The Tallow Holding casualty ledger, chained to a lab bench. Every page lists the same names, in a slightly different hand.', 'secureCell', 'Read', 'The last entry: COHORT RELEASED TO PARADE GROUND. Signed by Lt Osei, in a hand that is not hers.'),
+  relic('vesper-cradle', 'The Cradle', 'A cradle of grown glass in the heart of Vesper Deep, big enough for something the size of a choir. It is empty, and still warm.', 'secureCell', 'Listen', 'The cradle hums the hymn the Precentor sings. It hums the next verse too, the one nobody has heard yet.'),
   relic('null-console', 'Review Console', 'A Directorate console built into precursor glass. The screen lists every person on the Span under the heading BREACHES.', 'secureCell', 'Read', 'You are on the list. You were added by Site Kestrel, by Registrar Lune, on the day the Meridian came down.'),
 ];

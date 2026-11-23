@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 13, "row": 10 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 30, "y": 32, "width": 14, "height": 10 }, "height": 10 },
+    { "kind": "building", "id": "pale-barracks", "rect": { "x": 31, "y": 33, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Pale Steppe" }
+    { "room": "ground", "name": "Pale Steppe" },
+    { "room": "pale-barracks", "name": "Pale Barracks", "safe": false }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 39, "dy": 6 }
@@ -23,36 +27,52 @@
     { "id": "pale-steppe-precursor-pylon-3", "object": "precursor-pylon", "at": { "room": "ground", "dx": 40, "dy": 51 } },
     { "id": "pale-steppe-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 5, "dy": 21 } },
     { "id": "pale-steppe-barricade-5", "object": "barricade", "at": { "room": "ground", "dx": 44, "dy": 14 } },
-    { "id": "pale-steppe-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 39, "dy": 42 } },
     { "id": "pale-steppe-sprung-cell-door-8", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 28, "dy": 29 } },
-    { "id": "pale-steppe-directorate-salvage-9", "object": "directorate-salvage", "at": { "room": "ground", "dx": 17, "dy": 29 } }
+    { "id": "pale-steppe-directorate-salvage-9", "object": "directorate-salvage", "at": { "room": "ground", "dx": 17, "dy": 29 } },
+    { "id": "pale-barracks-bed-0", "object": "bed", "at": { "room": "pale-barracks", "dx": 1, "dy": 0 } },
+    { "id": "pale-barracks-bed-1", "object": "bed", "at": { "room": "pale-barracks", "dx": 3, "dy": 0 } },
+    { "id": "pale-barracks-bed-2", "object": "bed", "at": { "room": "pale-barracks", "dx": 5, "dy": 0 } },
+    { "id": "pale-barracks-bed-3", "object": "bed", "at": { "room": "pale-barracks", "dx": 7, "dy": 0 } },
+    { "id": "pale-barracks-bed-4", "object": "bed", "at": { "room": "pale-barracks", "dx": 9, "dy": 0 } },
+    { "id": "pale-barracks-bed-5", "object": "bed", "at": { "room": "pale-barracks", "dx": 11, "dy": 0 } },
+    { "id": "pale-barracks-bed-6", "object": "bed", "at": { "room": "pale-barracks", "dx": 1, "dy": 5 } },
+    { "id": "pale-barracks-bed-7", "object": "bed", "at": { "room": "pale-barracks", "dx": 3, "dy": 5 } },
+    { "id": "pale-barracks-bed-8", "object": "bed", "at": { "room": "pale-barracks", "dx": 9, "dy": 5 } },
+    { "id": "pale-barracks-bed-9", "object": "bed", "at": { "room": "pale-barracks", "dx": 11, "dy": 5 } },
+    { "id": "pale-barracks-storage-locker-10", "object": "storage-locker", "at": { "room": "pale-barracks", "dx": 0, "dy": 3 }, "facing": "east" },
+    { "id": "pale-steppe-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 49, "dy": 41 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
     { "id": "pale-steppe-choir-echo-0", "creature": "choir-echo", "at": { "room": "ground", "dx": 34, "dy": 21 } },
     { "id": "pale-steppe-red-twin-1", "creature": "red-twin", "at": { "room": "ground", "dx": 56, "dy": 41 } },
-    { "id": "pale-steppe-glass-stalker-2", "creature": "glass-stalker", "at": { "room": "ground", "dx": 19, "dy": 45 } },
+    { "id": "pale-steppe-prism-hound-2", "creature": "prism-hound", "at": { "room": "ground", "dx": 19, "dy": 45 } },
     { "id": "pale-steppe-choir-echo-3", "creature": "choir-echo", "at": { "room": "ground", "dx": 3, "dy": 58 } },
     { "id": "pale-steppe-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 47, "dy": 20 } },
-    { "id": "pale-steppe-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 47, "dy": 49 } },
+    { "id": "pale-steppe-prism-hound-5", "creature": "prism-hound", "at": { "room": "ground", "dx": 47, "dy": 49 } },
     { "id": "pale-steppe-choir-echo-6", "creature": "choir-echo", "at": { "room": "ground", "dx": 30, "dy": 47 } },
     { "id": "pale-steppe-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 20, "dy": 59 } },
-    { "id": "pale-steppe-glass-stalker-8", "creature": "glass-stalker", "at": { "room": "ground", "dx": 26, "dy": 7 } },
+    { "id": "pale-steppe-prism-hound-8", "creature": "prism-hound", "at": { "room": "ground", "dx": 26, "dy": 7 } },
     { "id": "pale-steppe-choir-echo-9", "creature": "choir-echo", "at": { "room": "ground", "dx": 4, "dy": 11 } },
     { "id": "pale-steppe-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 5, "dy": 53 } },
-    { "id": "pale-steppe-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 14, "dy": 9 } },
+    { "id": "pale-steppe-prism-hound-11", "creature": "prism-hound", "at": { "room": "ground", "dx": 14, "dy": 9 } },
     { "id": "pale-steppe-choir-echo-12", "creature": "choir-echo", "at": { "room": "ground", "dx": 34, "dy": 28 } },
     { "id": "pale-steppe-red-twin-13", "creature": "red-twin", "at": { "room": "ground", "dx": 47, "dy": 3 } },
-    { "id": "pale-steppe-glass-stalker-14", "creature": "glass-stalker", "at": { "room": "ground", "dx": 30, "dy": 12 } },
+    { "id": "pale-steppe-prism-hound-14", "creature": "prism-hound", "at": { "room": "ground", "dx": 30, "dy": 12 } },
     { "id": "pale-steppe-choir-echo-15", "creature": "choir-echo", "at": { "room": "ground", "dx": 34, "dy": 59 } },
-    { "id": "pale-steppe-red-twin-16", "creature": "red-twin", "at": { "room": "ground", "dx": 7, "dy": 45 } }
+    { "id": "pale-steppe-red-twin-16", "creature": "red-twin", "at": { "room": "ground", "dx": 7, "dy": 45 } },
+    { "id": "pale-barracks-choir-echo-0", "creature": "choir-echo", "at": { "room": "pale-barracks", "dx": 6, "dy": 3 } },
+    { "id": "pale-barracks-choir-echo-1", "creature": "choir-echo", "at": { "room": "pale-barracks", "dx": 2, "dy": 3 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "pale-steppe-landmark", "prefab": "landmark-steppe-mast", "at": { "room": "ground", "dx": 49, "dy": 35 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "pale-barracks": { "theme": "dormitory", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

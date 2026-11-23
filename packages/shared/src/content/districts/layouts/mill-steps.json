@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.2, "tint": "#e4dcb8", "fog": "#d8d0a8", "sky": "#b8d8c0", "weather": ["dust"], "haze": 0.8 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 3, "row": 6 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 28, "y": 30, "width": 14, "height": 10 }, "height": 9 },
+    { "kind": "building", "id": "terrace-mill", "rect": { "x": 29, "y": 31, "width": 12, "height": 8 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Mill Steps" }
+    { "room": "ground", "name": "Mill Steps" },
+    { "room": "terrace-mill", "name": "Terrace Mill", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 3, "dy": 39 }
@@ -26,13 +30,21 @@
     { "id": "mill-steps-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 8, "dy": 13 } },
     { "id": "mill-steps-reed-bed-7", "object": "reed-bed", "at": { "room": "ground", "dx": 7, "dy": 21 } },
     { "id": "mill-steps-culvert-trace-8", "object": "culvert-trace", "at": { "room": "ground", "dx": 48, "dy": 58 } },
-    { "id": "mill-steps-dredge-spot-9", "object": "dredge-spot", "at": { "room": "ground", "dx": 41, "dy": 10 } }
+    { "id": "mill-steps-dredge-spot-9", "object": "dredge-spot", "at": { "room": "ground", "dx": 41, "dy": 10 } },
+    { "id": "terrace-mill-ward-refinery-0", "object": "ward-refinery", "at": { "room": "terrace-mill", "dx": 1, "dy": 1 } },
+    { "id": "terrace-mill-ward-fabricator-1", "object": "ward-fabricator", "at": { "room": "terrace-mill", "dx": 4, "dy": 1 } },
+    { "id": "terrace-mill-ward-synthesiser-2", "object": "ward-synthesiser", "at": { "room": "terrace-mill", "dx": 7, "dy": 1 } },
+    { "id": "terrace-mill-shelving-3", "object": "shelving", "at": { "room": "terrace-mill", "dx": 10, "dy": 0 }, "facing": "south" },
+    { "id": "terrace-mill-shelving-4", "object": "shelving", "at": { "room": "terrace-mill", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "terrace-mill-table-5", "object": "table", "at": { "room": "terrace-mill", "dx": 10, "dy": 5 } },
+    { "id": "terrace-mill-chair-6", "object": "chair", "at": { "room": "terrace-mill", "dx": 10, "dy": 4 }, "facing": "south" },
+    { "id": "mill-steps-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 30, "dy": 24 } }
   ],
   "assemblies": [],
-  "npcs": [],
+  "npcs": [
+    { "id": "terrace-mill-miller-bryn", "npc": "miller-bryn", "at": { "room": "terrace-mill", "dx": 2, "dy": 4 } }
+  ],
   "creatures": [
-    { "id": "mill-steps-seed-mite-0", "creature": "seed-mite", "at": { "room": "ground", "dx": 33, "dy": 28 } },
-    { "id": "mill-steps-scarecoat-1", "creature": "scarecoat", "at": { "room": "ground", "dx": 37, "dy": 44 } },
     { "id": "mill-steps-crop-magpie-2", "creature": "crop-magpie", "at": { "room": "ground", "dx": 35, "dy": 59 } },
     { "id": "mill-steps-seed-mite-3", "creature": "seed-mite", "at": { "room": "ground", "dx": 21, "dy": 14 } },
     { "id": "mill-steps-scarecoat-4", "creature": "scarecoat", "at": { "room": "ground", "dx": 57, "dy": 20 } },
@@ -40,9 +52,7 @@
     { "id": "mill-steps-seed-mite-6", "creature": "seed-mite", "at": { "room": "ground", "dx": 59, "dy": 13 } },
     { "id": "mill-steps-scarecoat-7", "creature": "scarecoat", "at": { "room": "ground", "dx": 50, "dy": 32 } },
     { "id": "mill-steps-crop-magpie-8", "creature": "crop-magpie", "at": { "room": "ground", "dx": 46, "dy": 4 } },
-    { "id": "mill-steps-seed-mite-9", "creature": "seed-mite", "at": { "room": "ground", "dx": 43, "dy": 36 } },
     { "id": "mill-steps-scarecoat-10", "creature": "scarecoat", "at": { "room": "ground", "dx": 52, "dy": 5 } },
-    { "id": "mill-steps-crop-magpie-11", "creature": "crop-magpie", "at": { "room": "ground", "dx": 38, "dy": 38 } },
     { "id": "mill-steps-seed-mite-12", "creature": "seed-mite", "at": { "room": "ground", "dx": 27, "dy": 24 } },
     { "id": "mill-steps-scarecoat-13", "creature": "scarecoat", "at": { "room": "ground", "dx": 16, "dy": 55 } },
     { "id": "mill-steps-crop-magpie-14", "creature": "crop-magpie", "at": { "room": "ground", "dx": 51, "dy": 10 } },
@@ -52,9 +62,12 @@
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "mill-steps-landmark", "prefab": "landmark-mill-wheel", "at": { "room": "ground", "dx": 36, "dy": 23 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "terrace-mill": { "theme": "works", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

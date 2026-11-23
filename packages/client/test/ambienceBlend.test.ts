@@ -5,7 +5,7 @@ import { createBlendedAmbience, easeAmbience, sampleAmbience } from '../src/rend
 
 const overworld = GAME_CONTENT.levels.get('overworld')!;
 const vault = GAME_CONTENT.levels.get('null-b1')!;
-const fringeYard = overworld.layout.toLevelPoint('arcade-mile', { x: 32, y: 32 });
+const fringeYard = overworld.layout.toLevelPoint('arcade-mile', { x: 20, y: 20 });
 
 test('Halcyon rains on open ground and Null Below grows spores under cover', () => {
   const fringe = sampleAmbience(overworld, fringeYard);

@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.62, "tint": "#1a2a3a", "fog": "#0c1824", "sky": "#1a3048", "weather": ["sparks"], "haze": 1.4 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 11, "row": 6 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 29, "y": 30, "width": 10, "height": 8 }, "height": 12 },
+    { "kind": "building", "id": "last-light-hut", "rect": { "x": 30, "y": 31, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Last Light" }
+    { "room": "ground", "name": "Last Light" },
+    { "room": "last-light-hut", "name": "Last Light Hut", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 11, "dy": 9 }
@@ -30,8 +34,13 @@
     { "id": "last-light-steppe-gate-leaf-1", "object": "steppe-gate-leaf", "at": { "room": "ground", "dx": 63, "dy": 25 }, "facing": "east" },
     { "id": "last-light-steppe-south-gate-leaf-0", "object": "steppe-south-gate-leaf", "at": { "room": "ground", "dx": 63, "dy": 34 }, "facing": "east" },
     { "id": "last-light-steppe-south-gate-leaf-1", "object": "steppe-south-gate-leaf", "at": { "room": "ground", "dx": 63, "dy": 35 }, "facing": "east" },
-    { "id": "last-light-vault-bloom-13", "object": "vault-bloom", "at": { "room": "ground", "dx": 39, "dy": 41 } },
-    { "id": "last-light-vault-trace-14", "object": "vault-trace", "at": { "room": "ground", "dx": 50, "dy": 15 } }
+    { "id": "last-light-vault-trace-14", "object": "vault-trace", "at": { "room": "ground", "dx": 50, "dy": 15 } },
+    { "id": "last-light-hut-bed-0", "object": "bed", "at": { "room": "last-light-hut", "dx": 1, "dy": 0 } },
+    { "id": "last-light-hut-washer-1", "object": "washer", "at": { "room": "last-light-hut", "dx": 4, "dy": 0 }, "facing": "south" },
+    { "id": "last-light-hut-shelving-2", "object": "shelving", "at": { "room": "last-light-hut", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "last-light-hut-table-3", "object": "table", "at": { "room": "last-light-hut", "dx": 5, "dy": 3 } },
+    { "id": "last-light-hut-chair-4", "object": "chair", "at": { "room": "last-light-hut", "dx": 5, "dy": 2 }, "facing": "south" },
+    { "id": "last-light-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 43, "dy": 24 } }
   ],
   "assemblies": [
     { "id": "last-light-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 22, "dy": 51 }, "span": 2 },
@@ -43,8 +52,6 @@
     { "id": "last-light-cell-breaker-1", "creature": "cell-breaker", "at": { "room": "ground", "dx": 12, "dy": 58 } },
     { "id": "last-light-null-echo-2", "creature": "null-echo", "at": { "room": "ground", "dx": 47, "dy": 27 } },
     { "id": "last-light-cell-breaker-3", "creature": "cell-breaker", "at": { "room": "ground", "dx": 52, "dy": 40 } },
-    { "id": "last-light-null-echo-4", "creature": "null-echo", "at": { "room": "ground", "dx": 28, "dy": 38 } },
-    { "id": "last-light-cell-breaker-5", "creature": "cell-breaker", "at": { "room": "ground", "dx": 38, "dy": 30 } },
     { "id": "last-light-null-echo-6", "creature": "null-echo", "at": { "room": "ground", "dx": 28, "dy": 50 } },
     { "id": "last-light-cell-breaker-7", "creature": "cell-breaker", "at": { "room": "ground", "dx": 40, "dy": 58 } },
     { "id": "last-light-null-echo-8", "creature": "null-echo", "at": { "room": "ground", "dx": 13, "dy": 37 } },
@@ -59,9 +66,12 @@
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "last-light-landmark", "prefab": "landmark-spindle-rim-light", "at": { "room": "ground", "dx": 37, "dy": 24 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "last-light-hut": { "theme": "home", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

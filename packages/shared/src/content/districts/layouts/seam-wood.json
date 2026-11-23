@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.16, "tint": "#e8eef4", "fog": "#c8d8e8", "sky": "#9fc8f0", "weather": ["mist"], "haze": 0.7 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 8, "row": 10 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 29, "y": 30, "width": 14, "height": 10 }, "height": 7 },
+    { "kind": "building", "id": "seam-wood-station", "rect": { "x": 30, "y": 31, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Seam Wood" }
+    { "room": "ground", "name": "Seam Wood" },
+    { "room": "seam-wood-station", "name": "Seam Wood Field Station", "safe": false }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 53, "dy": 7 }
@@ -19,40 +23,50 @@
   "objects": [
     { "id": "seam-wood-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 14, "dy": 12 } },
     { "id": "seam-wood-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 45 } },
-    { "id": "seam-wood-bollard-2", "object": "bollard", "at": { "room": "ground", "dx": 44, "dy": 31 } },
     { "id": "seam-wood-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 3, "dy": 42 } },
     { "id": "seam-wood-flood-mast-4", "object": "flood-mast", "at": { "room": "ground", "dx": 9, "dy": 50 } },
     { "id": "seam-wood-checkpoint-barrier-5", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 21, "dy": 34 } },
     { "id": "seam-wood-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 9, "dy": 23 } },
     { "id": "seam-wood-street-bench-7", "object": "street-bench", "at": { "room": "ground", "dx": 28, "dy": 15 }, "facing": "south" },
     { "id": "seam-wood-faint-trace-8", "object": "faint-trace", "at": { "room": "ground", "dx": 16, "dy": 60 } },
-    { "id": "seam-wood-eel-trap-9", "object": "eel-trap", "at": { "room": "ground", "dx": 29, "dy": 40 } },
-    { "id": "seam-wood-cable-drum-10", "object": "cable-drum", "at": { "room": "ground", "dx": 29, "dy": 27 } }
+    { "id": "seam-wood-cable-drum-10", "object": "cable-drum", "at": { "room": "ground", "dx": 29, "dy": 27 } },
+    { "id": "seam-wood-station-lab-bench-0", "object": "lab-bench", "at": { "room": "seam-wood-station", "dx": 2, "dy": 3 } },
+    { "id": "seam-wood-station-lab-bench-1", "object": "lab-bench", "at": { "room": "seam-wood-station", "dx": 3, "dy": 3 } },
+    { "id": "seam-wood-station-lab-bench-2", "object": "lab-bench", "at": { "room": "seam-wood-station", "dx": 4, "dy": 3 } },
+    { "id": "seam-wood-station-lab-bench-3", "object": "lab-bench", "at": { "room": "seam-wood-station", "dx": 5, "dy": 3 } },
+    { "id": "seam-wood-station-shelving-4", "object": "shelving", "at": { "room": "seam-wood-station", "dx": 9, "dy": 0 }, "facing": "south" },
+    { "id": "seam-wood-station-shelving-5", "object": "shelving", "at": { "room": "seam-wood-station", "dx": 10, "dy": 0 }, "facing": "south" },
+    { "id": "seam-wood-station-shelving-6", "object": "shelving", "at": { "room": "seam-wood-station", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "seam-wood-station-faint-trace-7", "object": "faint-trace", "at": { "room": "seam-wood-station", "dx": 10, "dy": 5 } },
+    { "id": "seam-wood-poi-kestrel-survey-locker-0", "object": "kestrel-survey-locker", "at": { "room": "ground", "dx": 44, "dy": 25 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "seam-wood-feral-hound-0", "creature": "feral-hound", "at": { "room": "ground", "dx": 47, "dy": 22 } },
+    { "id": "seam-wood-seam-boar-0", "creature": "seam-boar", "at": { "room": "ground", "dx": 47, "dy": 22 } },
     { "id": "seam-wood-grounds-mite-1", "creature": "grounds-mite", "at": { "room": "ground", "dx": 22, "dy": 16 } },
-    { "id": "seam-wood-lawn-rat-2", "creature": "lawn-rat", "at": { "room": "ground", "dx": 36, "dy": 38 } },
-    { "id": "seam-wood-feral-hound-3", "creature": "feral-hound", "at": { "room": "ground", "dx": 15, "dy": 40 } },
+    { "id": "seam-wood-seam-boar-3", "creature": "seam-boar", "at": { "room": "ground", "dx": 15, "dy": 40 } },
     { "id": "seam-wood-grounds-mite-4", "creature": "grounds-mite", "at": { "room": "ground", "dx": 6, "dy": 30 } },
     { "id": "seam-wood-lawn-rat-5", "creature": "lawn-rat", "at": { "room": "ground", "dx": 42, "dy": 5 } },
-    { "id": "seam-wood-feral-hound-6", "creature": "feral-hound", "at": { "room": "ground", "dx": 19, "dy": 45 } },
+    { "id": "seam-wood-seam-boar-6", "creature": "seam-boar", "at": { "room": "ground", "dx": 19, "dy": 45 } },
     { "id": "seam-wood-grounds-mite-7", "creature": "grounds-mite", "at": { "room": "ground", "dx": 45, "dy": 12 } },
     { "id": "seam-wood-lawn-rat-8", "creature": "lawn-rat", "at": { "room": "ground", "dx": 31, "dy": 51 } },
-    { "id": "seam-wood-feral-hound-9", "creature": "feral-hound", "at": { "room": "ground", "dx": 14, "dy": 32 } },
+    { "id": "seam-wood-seam-boar-9", "creature": "seam-boar", "at": { "room": "ground", "dx": 14, "dy": 32 } },
     { "id": "seam-wood-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 34, "dy": 14 } },
     { "id": "seam-wood-lawn-rat-11", "creature": "lawn-rat", "at": { "room": "ground", "dx": 20, "dy": 21 } },
-    { "id": "seam-wood-feral-hound-12", "creature": "feral-hound", "at": { "room": "ground", "dx": 53, "dy": 38 } },
+    { "id": "seam-wood-seam-boar-12", "creature": "seam-boar", "at": { "room": "ground", "dx": 53, "dy": 38 } },
     { "id": "seam-wood-grounds-mite-13", "creature": "grounds-mite", "at": { "room": "ground", "dx": 42, "dy": 16 } },
-    { "id": "seam-wood-lawn-rat-14", "creature": "lawn-rat", "at": { "room": "ground", "dx": 44, "dy": 53 } }
+    { "id": "seam-wood-lawn-rat-14", "creature": "lawn-rat", "at": { "room": "ground", "dx": 44, "dy": 53 } },
+    { "id": "seam-wood-station-feral-hound-0", "creature": "feral-hound", "at": { "room": "seam-wood-station", "dx": 8, "dy": 5 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "seam-wood-landmark", "prefab": "landmark-seam-pylon", "at": { "room": "ground", "dx": 38, "dy": 24 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "seam-wood-station": { "theme": "lab", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

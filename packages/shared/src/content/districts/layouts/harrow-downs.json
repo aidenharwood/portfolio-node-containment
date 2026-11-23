@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.2, "tint": "#e4dcb8", "fog": "#d8d0a8", "sky": "#b8d8c0", "weather": ["dust"], "haze": 0.8 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 6 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 28, "y": 29, "width": 10, "height": 8 }, "height": 12 },
+    { "kind": "building", "id": "downs-cottage", "rect": { "x": 29, "y": 30, "width": 8, "height": 6 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Harrow Downs" }
+    { "room": "ground", "name": "Harrow Downs" },
+    { "room": "downs-cottage", "name": "Downs Cottage", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 47, "dy": 51 }
@@ -26,7 +30,13 @@
     { "id": "harrow-downs-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 11, "dy": 11 } },
     { "id": "harrow-downs-culvert-trace-7", "object": "culvert-trace", "at": { "room": "ground", "dx": 40, "dy": 17 } },
     { "id": "harrow-downs-cable-drum-8", "object": "cable-drum", "at": { "room": "ground", "dx": 47, "dy": 40 } },
-    { "id": "harrow-downs-dredge-spot-9", "object": "dredge-spot", "at": { "room": "ground", "dx": 33, "dy": 52 } }
+    { "id": "harrow-downs-dredge-spot-9", "object": "dredge-spot", "at": { "room": "ground", "dx": 33, "dy": 52 } },
+    { "id": "downs-cottage-bed-0", "object": "bed", "at": { "room": "downs-cottage", "dx": 1, "dy": 0 } },
+    { "id": "downs-cottage-washer-1", "object": "washer", "at": { "room": "downs-cottage", "dx": 4, "dy": 0 }, "facing": "south" },
+    { "id": "downs-cottage-shelving-2", "object": "shelving", "at": { "room": "downs-cottage", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "downs-cottage-table-3", "object": "table", "at": { "room": "downs-cottage", "dx": 5, "dy": 3 } },
+    { "id": "downs-cottage-chair-4", "object": "chair", "at": { "room": "downs-cottage", "dx": 5, "dy": 2 }, "facing": "south" },
+    { "id": "harrow-downs-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 50, "dy": 33 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -40,20 +50,21 @@
     { "id": "harrow-downs-furrow-eel-6", "creature": "furrow-eel", "at": { "room": "ground", "dx": 11, "dy": 41 } },
     { "id": "harrow-downs-crop-magpie-7", "creature": "crop-magpie", "at": { "room": "ground", "dx": 55, "dy": 4 } },
     { "id": "harrow-downs-furrow-eel-8", "creature": "furrow-eel", "at": { "room": "ground", "dx": 10, "dy": 36 } },
-    { "id": "harrow-downs-crop-magpie-9", "creature": "crop-magpie", "at": { "room": "ground", "dx": 52, "dy": 34 } },
     { "id": "harrow-downs-furrow-eel-10", "creature": "furrow-eel", "at": { "room": "ground", "dx": 21, "dy": 13 } },
     { "id": "harrow-downs-crop-magpie-11", "creature": "crop-magpie", "at": { "room": "ground", "dx": 44, "dy": 25 } },
     { "id": "harrow-downs-furrow-eel-12", "creature": "furrow-eel", "at": { "room": "ground", "dx": 7, "dy": 48 } },
     { "id": "harrow-downs-crop-magpie-13", "creature": "crop-magpie", "at": { "room": "ground", "dx": 30, "dy": 45 } },
     { "id": "harrow-downs-furrow-eel-14", "creature": "furrow-eel", "at": { "room": "ground", "dx": 54, "dy": 10 } },
-    { "id": "harrow-downs-crop-magpie-15", "creature": "crop-magpie", "at": { "room": "ground", "dx": 26, "dy": 36 } },
     { "id": "harrow-downs-furrow-eel-16", "creature": "furrow-eel", "at": { "room": "ground", "dx": 6, "dy": 4 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "harrow-downs-landmark", "prefab": "landmark-drovers-bell", "at": { "room": "ground", "dx": 43, "dy": 31 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "downs-cottage": { "theme": "home", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

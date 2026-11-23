@@ -1,4 +1,6 @@
+import { roundExperience } from '../character/skills.ts';
 import { chebyshevDistance, type TilePoint } from '../world/geometry.ts';
+import { killValue } from './combatMath.ts';
 import type { CreatureDefinition, CreatureId } from './creatures.ts';
 import { COMBAT_STYLE_INFO, styleBeating, type CombatStyle } from './weapons.ts';
 
@@ -8,12 +10,12 @@ export const STUDY_REACH = 4;
 
 export const STUDY_TICKS = 6;
 
-export const REPEAT_STUDY_COOLDOWN_TICKS = 300;
+export const REPEAT_STUDY_COOLDOWN_TICKS = 100;
 
 export const EXPLOITED_DEFENCE_FACTOR = 0.7;
 
-export const STUDY_EXPERIENCE_PER_INTEGRITY = 12;
-const REPEAT_STUDY_SHARE = 0.2;
+export const FIRST_STUDY_KILL_SHARE = 5;
+export const REPEAT_STUDY_SHARE = 0.15;
 
 export const studiedFlag = (creatureId: CreatureId): string => `studied:${creatureId}`;
 
@@ -31,8 +33,8 @@ export const isWithinStudyReach = (from: TilePoint, to: TilePoint, hasSightline:
   chebyshevDistance(from, to) <= STUDY_REACH && hasSightline(from, to);
 
 export function studyExperience(creature: CreatureDefinition, firstStudy: boolean): number {
-  const discovery = creature.integrity * STUDY_EXPERIENCE_PER_INTEGRITY;
-  return firstStudy ? discovery : Math.max(1, Math.round(discovery * REPEAT_STUDY_SHARE));
+  const discovery = killValue(creature) * FIRST_STUDY_KILL_SHARE;
+  return roundExperience(Math.max(0.1, firstStudy ? discovery : discovery * REPEAT_STUDY_SHARE));
 }
 
 export const GUARD_STRONG_FACTOR = 1.15;

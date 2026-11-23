@@ -7,11 +7,13 @@ import { BELOW_LAYOUT_IDS, LAYOUT_SOURCES, SQUARE_LAYOUT_IDS } from '../district
 import { registerFurnishingKit } from '../furnishingKit.ts';
 import { landFrom, SHIPPED_LANDS } from '../land/index.ts';
 import { SPAN_KIT } from './objects.ts';
+import { WILD_KIT } from './wilds.ts';
 
 registerFurnishingKit(CITY_KIT);
 registerFurnishingKit(LANDMARK_KIT);
 registerFurnishingKit(TRANSIT_KIT);
 registerFurnishingKit(SPAN_KIT);
+registerFurnishingKit(WILD_KIT);
 
 export const SPAN_LAND_ID = 'the-span';
 

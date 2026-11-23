@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 16, "row": 4 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 30, "y": 29, "width": 14, "height": 10 }, "height": 9 },
+    { "kind": "building", "id": "rim-post", "rect": { "x": 31, "y": 30, "width": 12, "height": 8 }, "floor": "carpet", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Glass Rim" }
+    { "room": "ground", "name": "Glass Rim" },
+    { "room": "rim-post", "name": "Rim Post", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 25, "dy": 9 }
@@ -26,32 +30,43 @@
     { "id": "glass-rim-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 18, "dy": 38 } },
     { "id": "glass-rim-directorate-salvage-7", "object": "directorate-salvage", "at": { "room": "ground", "dx": 12, "dy": 15 } },
     { "id": "glass-rim-red-moss-8", "object": "red-moss", "at": { "room": "ground", "dx": 41, "dy": 22 } },
-    { "id": "glass-rim-red-trace-9", "object": "red-trace", "at": { "room": "ground", "dx": 10, "dy": 31 } }
+    { "id": "glass-rim-red-trace-9", "object": "red-trace", "at": { "room": "ground", "dx": 10, "dy": 31 } },
+    { "id": "rim-post-shelving-0", "object": "shelving", "at": { "room": "rim-post", "dx": 1, "dy": 0 }, "facing": "south" },
+    { "id": "rim-post-shelving-1", "object": "shelving", "at": { "room": "rim-post", "dx": 2, "dy": 0 }, "facing": "south" },
+    { "id": "rim-post-notice-board-2", "object": "notice-board", "at": { "room": "rim-post", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "rim-post-storage-locker-3", "object": "storage-locker", "at": { "room": "rim-post", "dx": 9, "dy": 0 }, "facing": "south" },
+    { "id": "rim-post-security-camera-4", "object": "security-camera", "at": { "room": "rim-post", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "rim-post-table-5", "object": "table", "at": { "room": "rim-post", "dx": 3, "dy": 3 } },
+    { "id": "rim-post-table-6", "object": "table", "at": { "room": "rim-post", "dx": 4, "dy": 3 } },
+    { "id": "rim-post-chair-7", "object": "chair", "at": { "room": "rim-post", "dx": 3, "dy": 2 }, "facing": "south" },
+    { "id": "rim-post-chair-8", "object": "chair", "at": { "room": "rim-post", "dx": 4, "dy": 2 }, "facing": "south" },
+    { "id": "glass-rim-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 51, "dy": 39 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "glass-rim-prism-hound-0", "creature": "prism-hound", "at": { "room": "ground", "dx": 52, "dy": 38 } },
-    { "id": "glass-rim-glass-stalker-1", "creature": "glass-stalker", "at": { "room": "ground", "dx": 50, "dy": 31 } },
     { "id": "glass-rim-prism-hound-2", "creature": "prism-hound", "at": { "room": "ground", "dx": 49, "dy": 57 } },
-    { "id": "glass-rim-glass-stalker-3", "creature": "glass-stalker", "at": { "room": "ground", "dx": 4, "dy": 18 } },
+    { "id": "glass-rim-shard-wisp-3", "creature": "shard-wisp", "at": { "room": "ground", "dx": 4, "dy": 18 } },
     { "id": "glass-rim-prism-hound-4", "creature": "prism-hound", "at": { "room": "ground", "dx": 20, "dy": 56 } },
-    { "id": "glass-rim-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 4, "dy": 24 } },
+    { "id": "glass-rim-shard-wisp-5", "creature": "shard-wisp", "at": { "room": "ground", "dx": 4, "dy": 24 } },
     { "id": "glass-rim-prism-hound-6", "creature": "prism-hound", "at": { "room": "ground", "dx": 38, "dy": 8 } },
-    { "id": "glass-rim-glass-stalker-7", "creature": "glass-stalker", "at": { "room": "ground", "dx": 29, "dy": 20 } },
+    { "id": "glass-rim-shard-wisp-7", "creature": "shard-wisp", "at": { "room": "ground", "dx": 29, "dy": 20 } },
     { "id": "glass-rim-prism-hound-8", "creature": "prism-hound", "at": { "room": "ground", "dx": 32, "dy": 6 } },
-    { "id": "glass-rim-glass-stalker-9", "creature": "glass-stalker", "at": { "room": "ground", "dx": 41, "dy": 60 } },
+    { "id": "glass-rim-shard-wisp-9", "creature": "shard-wisp", "at": { "room": "ground", "dx": 41, "dy": 60 } },
     { "id": "glass-rim-prism-hound-10", "creature": "prism-hound", "at": { "room": "ground", "dx": 21, "dy": 29 } },
-    { "id": "glass-rim-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 27, "dy": 38 } },
+    { "id": "glass-rim-shard-wisp-11", "creature": "shard-wisp", "at": { "room": "ground", "dx": 27, "dy": 38 } },
     { "id": "glass-rim-prism-hound-12", "creature": "prism-hound", "at": { "room": "ground", "dx": 38, "dy": 44 } },
-    { "id": "glass-rim-glass-stalker-13", "creature": "glass-stalker", "at": { "room": "ground", "dx": 23, "dy": 23 } },
+    { "id": "glass-rim-shard-wisp-13", "creature": "shard-wisp", "at": { "room": "ground", "dx": 23, "dy": 23 } },
     { "id": "glass-rim-prism-hound-14", "creature": "prism-hound", "at": { "room": "ground", "dx": 30, "dy": 44 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "glass-rim-landmark", "prefab": "landmark-steppe-mast", "at": { "room": "ground", "dx": 49, "dy": 33 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "rim-post": { "theme": "office", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

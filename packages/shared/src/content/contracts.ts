@@ -1,4 +1,4 @@
-import { experienceForLevel, SKILL_INFO, type SkillId } from '../character/skills.ts';
+import { experienceStepAt, SKILL_INFO, type SkillId } from '../character/skills.ts';
 import { COMMENDATION_ITEM_ID, type ContractCadence, type ContractDefinition, type ContractObjective } from '../contracts/contract.ts';
 import { TIER_LEVEL_FLOORS } from '../crafting/tiers.ts';
 import { CURRENCY_ITEM_ID } from '../economy/shop.ts';
@@ -26,15 +26,13 @@ const OBJECTIVE_SKILL: Readonly<Record<ContractObjective['type'], SkillId>> = {
 const SCRIP_PER_TIER: Readonly<Record<ContractCadence, number>> = { daily: 45, weekly: 220 };
 const COMMENDATIONS: Readonly<Record<ContractCadence, number>> = { daily: 3, weekly: 12 };
 const LEVEL_SHARE: Readonly<Record<ContractCadence, number>> = { daily: 0.5, weekly: 2 };
-const EXPERIENCE_FLOOR: Readonly<Record<ContractCadence, number>> = { daily: 150, weekly: 600 };
-
-const levelStepAt = (level: number): number => experienceForLevel(level + 1) - experienceForLevel(level);
+const EXPERIENCE_FLOOR: Readonly<Record<ContractCadence, number>> = { daily: 20, weekly: 80 };
 
 function contract(cadence: ContractCadence, draft: ContractDraft): ContractDefinition {
   const { skill: override, ...rest } = draft;
   const skill = override ?? OBJECTIVE_SKILL[draft.objective.type];
   const scrip = SCRIP_PER_TIER[cadence] * draft.tier;
-  const experience = Math.max(EXPERIENCE_FLOOR[cadence], Math.round(levelStepAt(TIER_LEVEL_FLOORS[draft.tier - 1] ?? 1) * LEVEL_SHARE[cadence]));
+  const experience = Math.max(EXPERIENCE_FLOOR[cadence], Math.round(experienceStepAt(TIER_LEVEL_FLOORS[draft.tier - 1] ?? 1) * LEVEL_SHARE[cadence]));
   const commendations = COMMENDATIONS[cadence] + Math.floor(draft.tier / 3) * (cadence === 'daily' ? 1 : 3);
   return {
     ...rest,
@@ -94,6 +92,23 @@ export const CONTRACTS: readonly ContractDefinition[] = [
   daily({ id: 'wraith-seal', name: 'Wraith Seal', brief: 'Draw bilge wraiths out of the water and seal them dry.', tier: 9, requires: [arrived, fought(32), skill('containment', 25)], objective: contain(2, 'bilge-wraith') }),
   daily({ id: 'prism-cull', name: 'Prism Cull', brief: 'Prism hounds are running down pilgrims on the Hymn Road.', tier: 10, requires: [arrived, fought(38)], objective: defeat(6, 'prism-hound', 'glass-stalker') }),
   daily({ id: 'null-rounds', name: 'Null Rounds', brief: 'Walk the Spindle rim and put down what is doing rounds in Directorate white.', tier: 12, requires: [arrived, fought(48)], objective: defeat(6, 'null-echo', 'null-stalker') }),
+  daily({ id: 'range-recovery', name: 'Range Recovery', brief: 'Drill sentries have walked off the firing ranges and seam boars are rooting up the fences. Bring both back under control.', tier: 2, requires: [arrived, fought(3)], objective: defeat(8, 'drill-sentry', 'seam-boar') }),
+  daily({ id: 'leech-jars', name: 'Leech Jars', brief: 'Research wants ditch leeches alive. Salt the ditch and lift them out.', tier: 3, requires: [arrived, fought(7), skill('containment', 8)], objective: contain(3, 'ditch-leech') }),
+  daily({ id: 'seed-weeding', name: 'Seed Weeding', brief: 'Seed mites are sprouting along the mill steps. Weed them before they set.', tier: 4, requires: [arrived, fought(10)], objective: defeat(8, 'seed-mite', 'crop-magpie') }),
+  daily({ id: 'thorn-cull', name: 'Thorn Cull', brief: 'The upper terraces are thick with thornbacks and barn crawlers. The co-op wants the rows walkable by harvest.', tier: 5, requires: [arrived, fought(14)], objective: defeat(6, 'thornback', 'barn-crawler') }),
+  daily({ id: 'still-air', name: 'Still Air', brief: 'Bag windpump wights on a calm day, while they cannot turn.', tier: 5, requires: [arrived, fought(14), skill('containment', 16)], objective: contain(2, 'windpump-wight') }),
+  daily({ id: 'billboard-blackout', name: 'Billboard Blackout', brief: 'Ad-wraiths and holo-shills are working the Halcyon crowds. Switch them off.', tier: 7, requires: [arrived, fought(20)], objective: defeat(6, 'ad-wraith', 'holo-shill') }),
+  daily({ id: 'vent-jars', name: 'Vent Jars', brief: 'Vent moths are cooking the arcology ducts. Shut the vents and jar them.', tier: 7, requires: [arrived, fought(22), skill('containment', 20)], objective: contain(3, 'vent-moth') }),
+  daily({ id: 'core-recovery', name: 'Core Recovery', brief: 'Knock rustlings down to their cores and bring the cores back sealed.', tier: 8, requires: [arrived, fought(26), skill('containment', 25)], objective: contain(2, 'rustling') }),
+  daily({ id: 'crab-pots', name: 'Crab Pots', brief: 'Ballast crabs are walking out of the flooded tanks onto the haul roads. Put them back.', tier: 8, requires: [arrived, fought(26)], objective: defeat(6, 'ballast-crab') }),
+  daily({ id: 'roll-call', name: 'Roll Call', brief: 'Misprints are standing in for the missing at Tallow. Dismiss them.', tier: 9, requires: [arrived, fought(32)], objective: defeat(6, 'misprint') }),
+  daily({ id: 'shard-catch', name: 'Shard Catch', brief: 'Gather shard wisps whole off the steppe. Leave no piece behind.', tier: 10, requires: [arrived, fought(38), skill('containment', 40)], objective: contain(2, 'shard-wisp', 'glass-stalker') }),
+  daily({ id: 'hymn-breaking', name: 'Hymn Breaking', brief: 'The Choir is singing on the high steppe again. Break the hymn.', tier: 11, requires: [arrived, fought(43)], objective: defeat(6, 'choir-echo', 'red-twin') }),
+  daily({ id: 'twin-cells', name: 'Twin Cells', brief: 'Separate red twins by sound and seal each half in its own cell.', tier: 11, requires: [arrived, fought(43), skill('containment', 35)], objective: contain(2, 'red-twin') }),
+  daily({ id: 'breaker-detail', name: 'Breaker Detail', brief: 'Cell-breakers and coolant wraiths are holding the Spindle rim. Clear a path.', tier: 12, requires: [arrived, fought(48)], objective: defeat(6, 'cell-breaker', 'coolant-wraith') }),
+  daily({ id: 'cryo-seal', name: 'Cryo Seal', brief: 'Drain the channels and seal coolant wraiths dry.', tier: 12, requires: [arrived, fought(48), skill('containment', 48)], objective: contain(2, 'coolant-wraith') }),
+  daily({ id: 'filing-error', name: 'Filing Error', brief: 'Null stalkers and clerks are filing the whole Spindle under breach. Correct the record.', tier: 13, requires: [arrived, fought(53)], objective: defeat(6, 'null-stalker', 'clerk-of-null') }),
+  daily({ id: 'audit-trail', name: 'Audit Trail', brief: 'Seal clerks of Null and null stalkers while they are busy with their forms.', tier: 13, requires: [arrived, fought(53), skill('containment', 52)], objective: contain(2, 'clerk-of-null', 'null-stalker') }),
   weekly({ id: 'pest-control', name: 'Reach Pest Control', brief: 'A week keeping Kestrel Reach clear of rats, gulls and hounds.', tier: 1, requires: [arrived], objective: defeat(30, 'lawn-rat', 'courtyard-gull', 'feral-hound') }),
   weekly({ id: 'stockpile', name: 'Scrap Stockpile', brief: 'The Directorate is building a reserve. Salvage scrap from the piles round Kestrel.', tier: 1, requires: [arrived], objective: gather(60, 'scrap-metal') }),
   weekly({ id: 'cut-sweep', name: 'Terrace Sweep', brief: 'A week keeping the Harrow terraces clear of eels and magpies.', tier: 3, requires: [arrived, fought(7)], objective: defeat(40, 'furrow-eel', 'crop-magpie') }),
@@ -102,4 +117,16 @@ export const CONTRACTS: readonly ContractDefinition[] = [
   weekly({ id: 'rivet-haul', name: 'Rivet Haul', brief: 'The Directorate wants the Meridian’s rivets. All of them, eventually. Start with twenty.', tier: 9, requires: [arrived, skill('salvage', 35)], objective: gather(20, 'hull-rivets') }),
   weekly({ id: 'trace-ledger', name: 'Trace Ledger', brief: 'Research wants a week of samples: seed residue, amber, anything that hums.', tier: 6, requires: [arrived, skill('research', 10)], objective: gather(30, 'culvert-trace', 'amber-trace'), skill: 'research' }),
   weekly({ id: 'refinery-shift', name: 'Refinery Shift', brief: 'Put in a full week on the refinery.', tier: 1, requires: [arrived], objective: craft(20, 'scrap-plating') }),
+  weekly({ id: 'terrace-hold', name: 'Terrace Hold', brief: 'A week holding the upper Harrow terraces against thornbacks, wights and barn crawlers.', tier: 5, requires: [arrived, fought(14)], objective: defeat(40, 'thornback', 'windpump-wight', 'barn-crawler') }),
+  weekly({ id: 'deck-sweep', name: 'Deck Sweep', brief: 'A week clearing the Meridian’s flooded decks of wraiths, misprints and crabs.', tier: 9, requires: [arrived, fought(32)], objective: defeat(40, 'bilge-wraith', 'misprint', 'ballast-crab') }),
+  weekly({ id: 'steppe-sweep', name: 'Steppe Sweep', brief: 'A week keeping the Hymn Road open through hounds, stalkers and shard wisps.', tier: 10, requires: [arrived, fought(38)], objective: defeat(40, 'prism-hound', 'glass-stalker', 'shard-wisp') }),
+  weekly({ id: 'choir-sweep', name: 'Choir Sweep', brief: 'A week silencing the high steppe, one echo and one twin at a time.', tier: 11, requires: [arrived, fought(43)], objective: defeat(40, 'choir-echo', 'red-twin') }),
+  weekly({ id: 'rim-sweep', name: 'Rim Sweep', brief: 'A week walking the Spindle rim against echoes, breakers and coolant wraiths.', tier: 12, requires: [arrived, fought(48)], objective: defeat(40, 'null-echo', 'cell-breaker', 'coolant-wraith') }),
+  weekly({ id: 'spindle-sweep', name: 'Spindle Sweep', brief: 'A week on the upper Spindle. Everything up there is doing rounds; do yours.', tier: 13, requires: [arrived, fought(53)], objective: defeat(40, 'null-stalker', 'clerk-of-null') }),
+  weekly({ id: 'keeper-pruning', name: 'Pruning Season', brief: 'The Orchard Keeper keeps growing back. Cut it down three times this week.', tier: 5, requires: [arrived, fought(16)], objective: defeat(3, 'orchard-keeper') }),
+  weekly({ id: 'brightly-ratings', name: 'Falling Ratings', brief: 'Mr Brightly is back on every screen in the undercity. Take him off the air, three times.', tier: 7, requires: [arrived, fought(25)], objective: defeat(3, 'mr-brightly') }),
+  weekly({ id: 'cohort-dismissed', name: 'Cohort Dismissed', brief: 'The Cohort reforms on the Parade Ground every few days. Dismiss it three times.', tier: 9, requires: [arrived, fought(35)], objective: defeat(3, 'the-cohort') }),
+  weekly({ id: 'precentor-silence', name: 'A Minute’s Silence', brief: 'Stop the Precentor’s hymn three times this week.', tier: 11, requires: [arrived, fought(45)], objective: defeat(3, 'the-precentor') }),
+  weekly({ id: 'warden-review', name: 'Review the Reviewer', brief: 'The Warden of Null keeps reopening its review. Close it three times.', tier: 13, requires: [arrived, fought(55)], objective: defeat(3, 'warden-of-null') }),
+  weekly({ id: 'keter-docket', name: 'Keter Docket', brief: 'Research wants keter-class specimens for the deep cells. Five of them, sealed.', tier: 12, requires: [arrived, fought(46), skill('containment', 35)], objective: contain(5, 'red-twin', 'coolant-wraith', 'null-stalker', 'mr-brightly', 'the-precentor', 'warden-of-null') }),
 ];

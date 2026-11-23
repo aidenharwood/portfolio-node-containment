@@ -2,9 +2,9 @@
 
 Read this before adding or changing a district, a level or anything placed in one. It applies to humans and AI agents alike. Every district in the game follows these rules; there is no exemption list. The rules marked **checked** are enforced by `findWorldDesignIssues` (`packages/shared/src/content/worldDesignIntegrity.ts`), which runs inside `findContentIssues`: the server will not boot and `npm test` fails when one is broken. The rest is judgement, and reviewers hold changes to it.
 
-> **Status:** the overworld is the Span (`docs/superpowers/specs/2026-11-20-the-span-design.md`, reshaped by `docs/superpowers/specs/2026-11-23-the-span-unrolled.md`): one land plan, `content/land/the-span.json`, 18 × 14 squares of 64 (1152 × 896 tiles). It is an island, the Reach, cut into 138 land squares across six regions around the Quiet Massif, with three facility levels below ground (Kestrel Intake, the Gallowglass undercity and Null Below). Every region has its outpost, its Site and its settlement, built and peopled. Every Seam gate stands open from the start. The Span Transit runs the Ring Line and the Spindle Funicular through six terminals.
+> **Status:** the overworld is the Span (`docs/superpowers/specs/2026-11-20-the-span-design.md`, reshaped by `docs/superpowers/specs/2026-11-23-the-span-unrolled.md`): one land plan, `content/land/the-span.json`, 18 × 14 squares of 64 (1152 × 896 tiles). It is an island, the Reach, cut into 138 land squares across six regions around the Quiet Massif, with five facility levels below ground (Kestrel Intake, the Gallowglass undercity, Tallow Holding, Vesper Deep and Null Below). Every wild square holds a point of interest: one building (a cottage, post, workshop, waystation, lab or a ruin with creatures in it), a `focal` landmark, and a region cache or skill-gated secret. Every region has its outpost, its Site and its settlement, built and peopled. Every Seam gate stands open from the start. The Span Transit runs the Ring Line and the Spindle Funicular through six terminals.
 >
-> **How it was made:** `scripts/span/atlas.ts` holds the map as data: the `GRID` of region codes, the `REGIONS` with their tiers and relief, the `PLACES`, the `SEAMS` and the `RAIL`. `scripts/span/drawLand.ts` drew the land plan from it, and `scripts/span/cutSquares.ts` wrote every layout file. It cuts each square, stands the buildings listed in `scripts/span/places.ts` and dresses them from the room recipes in `scripts/span/recipes.ts`. It also places props, creature packs, gathering nodes, gate leaves and landmarks, and retitles the three blueprint facility levels (`scripts/span/below.ts`). The generator can be re-run while the Span is still being shaped, and it rewrites every layout when it is. Once a layout is edited by hand, stop re-running it.
+> **How it was made:** `scripts/span/atlas.ts` holds the map as data: the `GRID` of region codes, the `REGIONS` with their tiers and relief, the `PLACES`, the `SEAMS` and the `RAIL`. `scripts/span/drawLand.ts` drew the land plan from it, and `scripts/span/cutSquares.ts` wrote every layout file. It cuts each square, stands the buildings listed in `scripts/span/places.ts` and dresses them from the room recipes in `scripts/span/recipes.ts`. It also places props, creature packs, gathering nodes, gate leaves and landmarks, and retitles the blueprint facility levels (`scripts/span/below.ts`). `scripts/span/wilds.ts` holds `WILD_POIS`, the point of interest of every wild square, and `dressWild` stands it on a levelled spot, clearing the decor, nodes and pack creatures it covers; `cutSquares` applies it, and `scripts/span/dressWilds.ts` applies it in place to layouts already written (it skips a square that already has its building). `scripts/span/writeBelow.ts` writes chosen facility levels from `below.ts` without touching the others. Each wild square's creature mix is `WILD_PACKS` in `wilds.ts`, and `WILD_OVERRIDES` pins the points of interest that were moved or re-dressed. Quest objects and NPCs come from `scripts/span/extras/`: `quests.ts` places them at fixed spots, the other files stand quest props wherever there is room. Site holdings name their `elite` and `multiCombat` in `places.ts`, and `below.ts` does the same for the facility levels. The layout files are generator output: never edit one by hand. Change the input and re-run `node scripts/span/cutSquares.ts`, which rewrites every layout; `layoutGeneration.test.ts` fails if regenerating changes any committed file.
 
 ## What the world should feel like
 
@@ -131,7 +131,7 @@ The rest is judgement, and reviewers hold it:
 | Place | Shapes and floors | Landmark |
 | ----- | ----------------- | -------- |
 | Overworld squares | 64×64 open ground, `paving` base, `asphalt` roads, `gravel` yards, `grass` parks | One per square, such as the station clock |
-| Land squares | Cut from the land plan: its cover (`grass`, `dirt`, `trees`, `water`, `soil`, `rust`, `gravel`) under the square's own roads, yards and buildings | One per town, Site or outpost square, as a `focal` set-piece; wild squares steer by the land |
+| Land squares | Cut from the land plan: its cover (`grass`, `dirt`, `trees`, `water`, `soil`, `rust`, `gravel`) under the square's own roads, yards and buildings | One per square, as a `focal` set-piece: the town's, Site's or outpost's own, or the wild square's (`content/span/wilds.ts`) |
 | City buildings | Small walled interiors in `brick`, `blockwork` or `cladding`; `boards` for homes, shops and pubs, `terrazzo` for public halls | Shop signs and awnings outside |
 | Directorate buildings | Directorate panel walls (`wall`), `plating` floors, an orange band outside | The Directorate sign |
 | Directorate compounds | A `building` with an outdoor floor and `edge: "barrier"`: a walled yard with a gate, Directorate buildings standing inside it | The Site Meridian headframe |
@@ -155,8 +155,8 @@ The Span is six regions in one land plan, set clockwise round the Quiet Massif (
 | Kestrel Reach | the south coast, round a lake | 1–2 | 1–11 | Commons Stores, `kestrel-commons` (the exchange) | `site-kestrel` (SC-V, Secure), lift to `kestrel-intake` |
 | Harrow Terraces | the west flank of the Massif | 3–5 | 2–15 | Co-op Stores, `harrowgate` | `site-orchard` (SC-II, Strained) |
 | Halcyon | the north-west, a tower skyline | 6–7 | 3–10, towers to 15 | Juno's, `neon-row` | `site-gallowglass` (SC-III, Breached), lift to `gallowglass-undercity` |
-| the Wreckfield | the north-east coast, round a crater lake and the hull | 8–9 | 0–9 | Mags' Post, `rustwater` | `site-tallow` (SC-IV, Overrun) |
-| the Glass Steppe | the east, a high plateau | 10–11 | 5–15 | Pilgrims' Rest, `the-choir` | `site-vesper` (SC-IV, Lost) |
+| the Wreckfield | the north-east coast, round a crater lake and the hull | 8–9 | 0–9 | Mags' Post, `rustwater` | `site-tallow` (SC-IV, Overrun), lift to `tallow-holding` |
+| the Glass Steppe | the east, a high plateau | 10–11 | 5–15 | Pilgrims' Rest, `the-choir` | `site-vesper` (SC-IV, Lost), lift to `vesper-deep` |
 | the Spindle | the Massif's summit, reached only from the Steppe | 12–13 | 9–15 | Last Post HQ, `last-post` | `site-null` (SC-V, Inverted), lift to `null-below` |
 
 - **A region is a ward.** Seams run along square edges, so no square is split.
@@ -167,7 +167,7 @@ The Span is six regions in one land plan, set clockwise round the Quiet Massif (
 
 ## Reserved ground
 
-- **The other Site levels:** Site Orchard, Site Tallow and Site Vesper have no level below ground yet. Vesper's headhouse lift is dormant.
+- **The other Site level:** Site Orchard has no level below ground yet. Site Tallow's forward post lifts down to Tallow Holding (B1, T9) and Site Vesper's headhouse down to Vesper Deep (B1, T11); neither lift needs clearance.
 
 ## Adding a district
 

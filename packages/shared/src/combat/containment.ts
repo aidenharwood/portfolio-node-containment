@@ -1,4 +1,4 @@
-import { levelForExperience, type SkillExperience } from '../character/skills.ts';
+import { levelForExperience, roundExperience, type SkillExperience } from '../character/skills.ts';
 import { nearestFootprintTile } from '../world/footprint.ts';
 import { chebyshevDistance, type TilePoint } from '../world/geometry.ts';
 import type { ContainmentClass, CreatureDefinition } from './creatures.ts';
@@ -24,9 +24,20 @@ export const CONTAINMENT_THRESHOLD_PER_RESEARCH_LEVEL = 0.01;
 
 export const MAX_CONTAINMENT_THRESHOLD = 0.25;
 
-export const CONTAINMENT_EXPERIENCE_PER_INTEGRITY = 12;
+export const CONTAINMENT_CLASS_FACTOR: Readonly<Record<ContainmentClass, number>> = { safe: 1, euclid: 1.4, keter: 2 };
 
-export const containmentExperience = (creature: CreatureDefinition): number => creature.integrity * CONTAINMENT_EXPERIENCE_PER_INTEGRITY;
+export const CONTAINMENT_EXPERIENCE_SCALE = 0.0045;
+
+export const CONTAINMENT_LEVEL_EXPONENT = 1.5;
+
+export const MIN_CONTAINMENT_EXPERIENCE_PER_INTEGRITY = 0.08;
+
+export const containmentExperience = (creature: CreatureDefinition): number =>
+  roundExperience(
+    creature.integrity *
+      Math.max(MIN_CONTAINMENT_EXPERIENCE_PER_INTEGRITY, containmentLevelFor(creature) ** CONTAINMENT_LEVEL_EXPONENT * CONTAINMENT_EXPERIENCE_SCALE) *
+      (creature.containment ? CONTAINMENT_CLASS_FACTOR[creature.containment.containmentClass] : 1),
+  );
 
 export const containmentLevelFor = (creature: CreatureDefinition): number => creature.containment?.requiredLevel ?? creature.level;
 

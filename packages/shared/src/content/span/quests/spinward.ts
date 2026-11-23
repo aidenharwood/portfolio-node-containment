@@ -70,7 +70,7 @@ export const SPINWARD_QUESTS: readonly QuestDefinition[] = [
       { id: 'kessel', journal: 'Report to Dr Kessel in the Orchard Laboratory.', objectives: [{ type: 'talkTo', npcId: 'dr-kessel', label: 'Report to Dr Kessel' }] },
     ],
     ...paid([scrip(300), styleQuestPay(15, 3), questPay('containment', 15, 2), questPay('fortitude', 15, 1)], [
-      { type: 'notify', text: 'Site Orchard: Strained, downgraded to Secure, pending. Kessel has wired an Agent Mercer at Site Gallowglass. Mercer did not wire back. Halcyon is spinward.' },
+      { type: 'notify', text: 'Site Orchard: Strained, downgraded to Secure, pending. Kessel has wired an Agent Mercer at Site Gallowglass. Mercer did not wire back. Halcyon is the next Seam round the Massif.' },
     ]),
     followUpQuestId: 'bright-lights',
   },
@@ -313,9 +313,9 @@ export const SPINWARD_QUESTS: readonly QuestDefinition[] = [
 export const SPINWARD_QUESTLINES: readonly QuestlineDefinition[] = [
   { id: 'act-two-strain', name: 'Act II · Strain', kind: 'main', summary: 'Site Orchard is losing its seed stock into the Harrow Terraces.', questIds: ['harrow-call', 'seed-stock', 'the-keeper'] },
   { id: 'act-three-breach', name: 'Act III · Breach', kind: 'main', summary: 'Gallowglass is breached, and the Combine wants it kept quiet.', questIds: ['bright-lights', 'dead-air', 'breach'] },
-  { id: 'kestrel-errands', name: 'Kestrel Reach', kind: 'side', summary: 'Small jobs around Kestrel Commons and the Recruit Lines.', questIds: ['names-in-the-bunks', 'table-for-two', 'heartbeat', 'governor'] },
-  { id: 'harrow-errands', name: 'Harrow Terraces', kind: 'side', summary: 'Farm work, with teeth.', questIds: ['coat-check', 'dry-season', 'bitter-herbs', 'mostly-wheat'] },
-  { id: 'halcyon-errands', name: 'Halcyon', kind: 'side', summary: 'Favours under the neon.', questIds: ['unsubscribe', 'last-orders', 'package-deal', 'forty-floors'] },
+  { id: 'kestrel-errands', name: 'Kestrel Reach', kind: 'side', summary: 'Small jobs around Kestrel Commons and the Recruit Lines.', questIds: ['names-in-the-bunks', 'table-for-two', 'heartbeat', 'governor', 'gull-weather', 'the-coat-that-sulks', 'range-day', 'the-lift-book'] },
+  { id: 'harrow-errands', name: 'Harrow Terraces', kind: 'side', summary: 'Farm work, with teeth.', questIds: ['coat-check', 'dry-season', 'bitter-herbs', 'mostly-wheat', 'first-melt', 'seed-in-the-blood', 'last-word-at-the-plough'] },
+  { id: 'halcyon-errands', name: 'Halcyon', kind: 'side', summary: 'Favours under the neon.', questIds: ['unsubscribe', 'last-orders', 'package-deal', 'forty-floors', 'takeaway', 'the-smile-clinic', 'brightly-done', 'high-score', 'fell-off-a-truck', 'no-screens'] },
 ];
 
 type Line = readonly [questId: string, stepId: string, text: string];
@@ -359,7 +359,7 @@ const MAIN_DIALOGUES: readonly DialogueDefinition[] = [
       ['the-keeper', 'ready', 'Not yet. The Keeper is fifteen of something and you are not. Come back at combat level 14.'],
       ['the-keeper', 'rows', 'South fence. The Mother Rows. Take it out in the open, away from the beds.'],
       ['the-keeper', 'keeper', 'When it plants the lamp, the mites come up out of the soil. Kill the mites. Then the gardener.'],
-      ['the-keeper', 'kessel', 'The rows have stopped moving. For a gardener it was very tidy. I have wired Halcyon: Site Gallowglass has gone quiet, and quiet there means loud. Go spinward, operative. Ask for Mercer.'],
+      ['the-keeper', 'kessel', 'The rows have stopped moving. For a gardener it was very tidy. I have wired Halcyon: Site Gallowglass has gone quiet, and quiet there means loud. Go spinward, round the Massif to Halcyon, operative. Ask for Mercer.'],
     ],
     'Site Orchard holds a gardener. The gardener has decided we are weeds. I need operatives, not opinions.',
   ),
@@ -484,7 +484,7 @@ const SIDE_DIALOGUES: readonly DialogueDefinition[] = [
   questTalk({
     npc: 'apothecary-wynn',
     questId: 'bitter-herbs',
-    offer: { text: 'Since the Orchard started to strain, my reeds grow twice as fast and taste of copper. I would like four fresh bundles, cut by someone who is not me, so I can blame them if they bite.', accept: 'Four bundles.', requires: ['paper-trail'] },
+    offer: { text: 'Since the Orchard started to strain, my reeds grow twice as fast and taste of copper. I would like four fresh bundles, cut by someone who is not me, so I can blame them if they bite.', accept: 'Four bundles.', requires: ['paper-trail'], conditions: [{ type: 'skillLevel', skill: 'biochemistry', atLeast: 10 }], notReady: 'You want to cut my reeds with those hands? The beds take Biochemistry 10. Cook a few eels from the traps and come back.' },
     waiting: 'Four reed bundles. From a reed bed, not the market.',
     hand: { stepId: 'wynn', text: 'Fresh? Let me see.', option: 'Hand over the reeds.', items: ['reed-bundle'], signal: 'wynn-reeds', thanks: 'Hm. One bundle was plenty. Seed residue in the cells, the same as the Orchard soil. They are not growing faster. They are growing back. Keep the rest, they are good for poultices.' },
     done: 'I have relabelled the reeds. Third alphabet. You do not want to know what it says.',
@@ -582,5 +582,5 @@ export const SPINWARD_OBJECTS: readonly WorldObjectDefinition[] = [
 ];
 
 export const SPINWARD_RECIPES: readonly RecipeDefinition[] = [
-  { id: 'fabricator:drone-governor', station: 'fabricator', skill: 'engineering', level: 8, inputs: [{ itemId: 'scrap-plating', count: 2 }, { itemId: 'trace-dust', count: 2 }], output: { itemId: 'drone-governor', count: 1 }, experience: 60, ticks: 6 },
+  { id: 'fabricator:drone-governor', station: 'fabricator', skill: 'engineering', level: 8, inputs: [{ itemId: 'scrap-plating', count: 2 }, { itemId: 'trace-dust', count: 2 }], output: { itemId: 'drone-governor', count: 1 }, experience: 3, ticks: 6 },
 ];

@@ -8,33 +8,48 @@
   "ambience": { "darkness": 0.62, "tint": "#1a2a3a", "fog": "#0c1824", "sky": "#1a3048", "weather": ["sparks"], "haze": 1.4 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 10, "row": 8 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 29, "y": 29, "width": 14, "height": 10 }, "height": 11 },
+    { "kind": "building", "id": "sentry-post", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Sealed Ground" }
+    { "room": "ground", "name": "Sealed Ground" },
+    { "room": "sentry-post", "name": "Sentry Post", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 24, "dy": 14 }
   },
   "objects": [
+    { "id": "sealed-ground-quest-checkpoint-seal", "object": "checkpoint-seal", "at": { "room": "ground", "dx": 37, "dy": 39 } },
     { "id": "sealed-ground-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 47 } },
-    { "id": "sealed-ground-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 24 } },
     { "id": "sealed-ground-checkpoint-barrier-2", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 43, "dy": 10 } },
     { "id": "sealed-ground-steam-vent-3", "object": "steam-vent", "at": { "room": "ground", "dx": 7, "dy": 34 } },
     { "id": "sealed-ground-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 9, "dy": 13 } },
     { "id": "sealed-ground-precursor-pylon-5", "object": "precursor-pylon", "at": { "room": "ground", "dx": 54, "dy": 34 } },
     { "id": "sealed-ground-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 48, "dy": 44 } },
     { "id": "sealed-ground-vault-residue-7", "object": "vault-residue", "at": { "room": "ground", "dx": 20, "dy": 21 } },
-    { "id": "sealed-ground-vault-bloom-8", "object": "vault-bloom", "at": { "room": "ground", "dx": 31, "dy": 13 } }
+    { "id": "sealed-ground-vault-bloom-8", "object": "vault-bloom", "at": { "room": "ground", "dx": 31, "dy": 13 } },
+    { "id": "sentry-post-shelving-0", "object": "shelving", "at": { "room": "sentry-post", "dx": 1, "dy": 0 }, "facing": "south" },
+    { "id": "sentry-post-shelving-1", "object": "shelving", "at": { "room": "sentry-post", "dx": 2, "dy": 0 }, "facing": "south" },
+    { "id": "sentry-post-notice-board-2", "object": "notice-board", "at": { "room": "sentry-post", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "sentry-post-storage-locker-3", "object": "storage-locker", "at": { "room": "sentry-post", "dx": 9, "dy": 0 }, "facing": "south" },
+    { "id": "sentry-post-security-camera-4", "object": "security-camera", "at": { "room": "sentry-post", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "sentry-post-table-5", "object": "table", "at": { "room": "sentry-post", "dx": 3, "dy": 3 } },
+    { "id": "sentry-post-table-6", "object": "table", "at": { "room": "sentry-post", "dx": 4, "dy": 3 } },
+    { "id": "sentry-post-chair-7", "object": "chair", "at": { "room": "sentry-post", "dx": 3, "dy": 2 }, "facing": "south" },
+    { "id": "sentry-post-chair-8", "object": "chair", "at": { "room": "sentry-post", "dx": 4, "dy": 2 }, "facing": "south" },
+    { "id": "sealed-ground-poi-spindle-vault-drawer-0", "object": "spindle-vault-drawer", "at": { "room": "ground", "dx": 40, "dy": 20 } }
   ],
   "assemblies": [],
-  "npcs": [],
+  "npcs": [
+    { "id": "sentry-post-sentry-ashe", "npc": "sentry-ashe", "at": { "room": "sentry-post", "dx": 8, "dy": 3 } }
+  ],
   "creatures": [
     { "id": "sealed-ground-null-stalker-0", "creature": "null-stalker", "at": { "room": "ground", "dx": 16, "dy": 5 } },
     { "id": "sealed-ground-null-echo-1", "creature": "null-echo", "at": { "room": "ground", "dx": 17, "dy": 35 } },
     { "id": "sealed-ground-cell-breaker-2", "creature": "cell-breaker", "at": { "room": "ground", "dx": 40, "dy": 44 } },
     { "id": "sealed-ground-null-stalker-3", "creature": "null-stalker", "at": { "room": "ground", "dx": 10, "dy": 6 } },
-    { "id": "sealed-ground-null-echo-4", "creature": "null-echo", "at": { "room": "ground", "dx": 41, "dy": 38 } },
     { "id": "sealed-ground-cell-breaker-5", "creature": "cell-breaker", "at": { "room": "ground", "dx": 8, "dy": 40 } },
     { "id": "sealed-ground-null-stalker-6", "creature": "null-stalker", "at": { "room": "ground", "dx": 3, "dy": 5 } },
     { "id": "sealed-ground-null-echo-7", "creature": "null-echo", "at": { "room": "ground", "dx": 21, "dy": 44 } },
@@ -43,14 +58,16 @@
     { "id": "sealed-ground-null-echo-10", "creature": "null-echo", "at": { "room": "ground", "dx": 29, "dy": 20 } },
     { "id": "sealed-ground-cell-breaker-11", "creature": "cell-breaker", "at": { "room": "ground", "dx": 25, "dy": 38 } },
     { "id": "sealed-ground-null-stalker-12", "creature": "null-stalker", "at": { "room": "ground", "dx": 54, "dy": 51 } },
-    { "id": "sealed-ground-null-echo-13", "creature": "null-echo", "at": { "room": "ground", "dx": 33, "dy": 30 } },
     { "id": "sealed-ground-cell-breaker-14", "creature": "cell-breaker", "at": { "room": "ground", "dx": 36, "dy": 4 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "sealed-ground-landmark", "prefab": "landmark-sealed-door", "at": { "room": "ground", "dx": 33, "dy": 22 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "sentry-post": { "theme": "office", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

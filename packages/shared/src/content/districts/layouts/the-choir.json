@@ -101,6 +101,8 @@
     { "id": "the-choir-tram-car", "assembly": "tram-car", "at": { "room": "tram-terminal", "dx": 14, "dy": 3 } }
   ],
   "npcs": [
+    { "id": "the-choir-quest-reprint-yusuf", "npc": "reprint-yusuf", "at": { "room": "ground", "dx": 48, "dy": 39 } },
+    { "id": "the-choir-quest-surveyor-idris", "npc": "surveyor-idris", "at": { "room": "ground", "dx": 41, "dy": 39 } },
     { "id": "choir-post-cantor-ysolde", "npc": "cantor-ysolde", "at": { "room": "choir-post", "dx": 2, "dy": 2 } },
     { "id": "choir-chapel-pilgrim-ruth", "npc": "pilgrim-ruth", "at": { "room": "choir-chapel", "dx": 6, "dy": 2 } },
     { "id": "choir-infirmary-dr-nakamura", "npc": "dr-nakamura", "at": { "room": "choir-infirmary", "dx": 9, "dy": 4 } },

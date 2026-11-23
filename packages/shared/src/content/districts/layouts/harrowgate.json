@@ -105,6 +105,7 @@
     { "id": "harrowgate-tram-car", "assembly": "tram-car", "at": { "room": "tram-terminal", "dx": 14, "dy": 3 } }
   ],
   "npcs": [
+    { "id": "harrowgate-quest-reprint-adebayo", "npc": "reprint-adebayo", "at": { "room": "ground", "dx": 41, "dy": 39 } },
     { "id": "coop-stores-steward-tull", "npc": "steward-tull", "at": { "room": "coop-stores", "dx": 2, "dy": 2 } },
     { "id": "harrow-apothecary-apothecary-wynn", "npc": "apothecary-wynn", "at": { "room": "harrow-apothecary", "dx": 2, "dy": 2 } },
     { "id": "harrow-smithy-smith-keane", "npc": "smith-keane", "at": { "room": "harrow-smithy", "dx": 2, "dy": 4 } },

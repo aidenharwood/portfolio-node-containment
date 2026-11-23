@@ -8,25 +8,37 @@
   "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 13, "row": 5 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 19, "y": 28, "width": 14, "height": 10 }, "height": 10 },
+    { "kind": "building", "id": "lens-observatory", "rect": { "x": 20, "y": 29, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "The Lens" }
+    { "room": "ground", "name": "The Lens" },
+    { "room": "lens-observatory", "name": "Lens Observatory", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 17, "dy": 28 }
+    "start": { "room": "ground", "dx": 26, "dy": 40 }
   },
   "objects": [
+    { "id": "the-lens-quest-lens-mount", "object": "lens-mount", "at": { "room": "ground", "dx": 37, "dy": 39 } },
     { "id": "the-lens-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 55, "dy": 13 } },
     { "id": "the-lens-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 40 } },
     { "id": "the-lens-flood-mast-2", "object": "flood-mast", "at": { "room": "ground", "dx": 26, "dy": 54 } },
     { "id": "the-lens-precursor-pylon-3", "object": "precursor-pylon", "at": { "room": "ground", "dx": 24, "dy": 3 } },
     { "id": "the-lens-flood-mast-4", "object": "flood-mast", "at": { "room": "ground", "dx": 30, "dy": 25 } },
-    { "id": "the-lens-ledge-milestone-5", "object": "ledge-milestone", "at": { "room": "ground", "dx": 27, "dy": 47 } },
     { "id": "the-lens-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 47, "dy": 31 } },
     { "id": "the-lens-red-trace-7", "object": "red-trace", "at": { "room": "ground", "dx": 7, "dy": 57 } },
     { "id": "the-lens-sprung-cell-door-8", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 59, "dy": 34 } },
-    { "id": "the-lens-directorate-salvage-9", "object": "directorate-salvage", "at": { "room": "ground", "dx": 36, "dy": 60 } }
+    { "id": "the-lens-directorate-salvage-9", "object": "directorate-salvage", "at": { "room": "ground", "dx": 36, "dy": 60 } },
+    { "id": "lens-observatory-lab-bench-0", "object": "lab-bench", "at": { "room": "lens-observatory", "dx": 2, "dy": 3 } },
+    { "id": "lens-observatory-lab-bench-1", "object": "lab-bench", "at": { "room": "lens-observatory", "dx": 3, "dy": 3 } },
+    { "id": "lens-observatory-lab-bench-2", "object": "lab-bench", "at": { "room": "lens-observatory", "dx": 4, "dy": 3 } },
+    { "id": "lens-observatory-lab-bench-3", "object": "lab-bench", "at": { "room": "lens-observatory", "dx": 5, "dy": 3 } },
+    { "id": "lens-observatory-shelving-4", "object": "shelving", "at": { "room": "lens-observatory", "dx": 9, "dy": 0 }, "facing": "south" },
+    { "id": "lens-observatory-shelving-5", "object": "shelving", "at": { "room": "lens-observatory", "dx": 10, "dy": 0 }, "facing": "south" },
+    { "id": "lens-observatory-shelving-6", "object": "shelving", "at": { "room": "lens-observatory", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "the-lens-poi-steppe-reliquary-0", "object": "steppe-reliquary", "at": { "room": "ground", "dx": 32, "dy": 46 } }
   ],
   "assemblies": [
     { "id": "the-lens-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 39, "dy": 14 }, "facing": "east", "span": 2 },
@@ -34,28 +46,29 @@
   ],
   "npcs": [],
   "creatures": [
-    { "id": "the-lens-prism-hound-0", "creature": "prism-hound", "at": { "room": "ground", "dx": 54, "dy": 5 } },
+    { "id": "the-lens-shard-wisp-0", "creature": "shard-wisp", "at": { "room": "ground", "dx": 54, "dy": 5 } },
     { "id": "the-lens-glass-stalker-1", "creature": "glass-stalker", "at": { "room": "ground", "dx": 32, "dy": 52 } },
-    { "id": "the-lens-prism-hound-2", "creature": "prism-hound", "at": { "room": "ground", "dx": 8, "dy": 48 } },
+    { "id": "the-lens-shard-wisp-2", "creature": "shard-wisp", "at": { "room": "ground", "dx": 8, "dy": 48 } },
     { "id": "the-lens-glass-stalker-3", "creature": "glass-stalker", "at": { "room": "ground", "dx": 20, "dy": 56 } },
-    { "id": "the-lens-prism-hound-4", "creature": "prism-hound", "at": { "room": "ground", "dx": 59, "dy": 55 } },
+    { "id": "the-lens-shard-wisp-4", "creature": "shard-wisp", "at": { "room": "ground", "dx": 59, "dy": 55 } },
     { "id": "the-lens-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 19, "dy": 22 } },
-    { "id": "the-lens-prism-hound-6", "creature": "prism-hound", "at": { "room": "ground", "dx": 7, "dy": 40 } },
+    { "id": "the-lens-shard-wisp-6", "creature": "shard-wisp", "at": { "room": "ground", "dx": 7, "dy": 40 } },
     { "id": "the-lens-glass-stalker-7", "creature": "glass-stalker", "at": { "room": "ground", "dx": 49, "dy": 9 } },
-    { "id": "the-lens-prism-hound-8", "creature": "prism-hound", "at": { "room": "ground", "dx": 53, "dy": 47 } },
-    { "id": "the-lens-glass-stalker-9", "creature": "glass-stalker", "at": { "room": "ground", "dx": 21, "dy": 46 } },
-    { "id": "the-lens-prism-hound-10", "creature": "prism-hound", "at": { "room": "ground", "dx": 10, "dy": 14 } },
+    { "id": "the-lens-shard-wisp-8", "creature": "shard-wisp", "at": { "room": "ground", "dx": 53, "dy": 47 } },
+    { "id": "the-lens-shard-wisp-10", "creature": "shard-wisp", "at": { "room": "ground", "dx": 10, "dy": 14 } },
     { "id": "the-lens-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 15, "dy": 3 } },
-    { "id": "the-lens-prism-hound-12", "creature": "prism-hound", "at": { "room": "ground", "dx": 52, "dy": 20 } },
+    { "id": "the-lens-shard-wisp-12", "creature": "shard-wisp", "at": { "room": "ground", "dx": 52, "dy": 20 } },
     { "id": "the-lens-glass-stalker-13", "creature": "glass-stalker", "at": { "room": "ground", "dx": 35, "dy": 17 } },
-    { "id": "the-lens-prism-hound-14", "creature": "prism-hound", "at": { "room": "ground", "dx": 31, "dy": 38 } },
     { "id": "the-lens-glass-stalker-15", "creature": "glass-stalker", "at": { "room": "ground", "dx": 18, "dy": 7 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "the-lens-landmark", "prefab": "landmark-glass-spire", "at": { "room": "ground", "dx": 24, "dy": 46 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "lens-observatory": { "theme": "lab", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

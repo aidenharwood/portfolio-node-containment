@@ -20,6 +20,9 @@ import { PLACE_SPECS, type BuildingSpec, type PlaceSquare } from './places.ts';
 const TIERS = squareTiers();
 import { recipeOf } from './recipes.ts';
 import { BELOW } from './below.ts';
+import { dressWild, WILD_OVERRIDES, WILD_PACKS } from './wilds.ts';
+import { withQuestPlacements } from './extras/quests.ts';
+import { WILD_KIT } from '../../packages/shared/src/content/span/wilds.ts';
 import { EXTRAS as SPINWARD_EXTRAS } from './extras/spinward.ts';
 import { EXTRAS as FAR_SPAN_EXTRAS } from './extras/farSpan.ts';
 import { SPINWARD_OBJECTS } from '../../packages/shared/src/content/span/quests/spinward.ts';
@@ -28,15 +31,14 @@ import { DRESSING_THEMES } from '../../packages/shared/src/content/prefabs/types
 
 registerFurnishingKit({ objects: [...SPINWARD_OBJECTS, ...FAR_SPAN_OBJECTS].map((object) => ({ ...object, furnishing: object.furnishing ?? { mount: 'free', homes: DRESSING_THEMES } })), prefabs: [], signatures: {} });
 const EXTRAS: Readonly<Record<string, readonly string[]>> = Object.fromEntries([...new Set([...Object.keys(SPINWARD_EXTRAS), ...Object.keys(FAR_SPAN_EXTRAS)])].map((key) => [key, [...(SPINWARD_EXTRAS[key] ?? []), ...(FAR_SPAN_EXTRAS[key] ?? [])]]));
-import { SPAN_CREATURES } from '../../packages/shared/src/content/span/creatures.ts';
-import { WARD_SPOTS } from '../../packages/shared/src/content/catalog/nodes.ts';
-import { CITY_KIT_OBJECTS } from '../../packages/shared/src/content/catalog/cityKit.ts';
+import { safeNodes } from './safeNodes.ts';
 
 registerFurnishingKit(CITY_KIT);
 registerFurnishingKit(LANDMARK_KIT);
 registerFurnishingKit(SPAN_KIT);
+registerFurnishingKit(WILD_KIT);
 
-const OUT = join(import.meta.dirname, '../../packages/shared/src/content/districts/layouts');
+const OUT = process.env.SPAN_LAYOUT_OUT ?? join(import.meta.dirname, '../../packages/shared/src/content/districts/layouts');
 const land: LandMap = drawLand(parseLandPlan(landSource));
 
 type Placement = { id: string; object: string; at: { room: string; dx: number; dy: number }; facing?: 'north' | 'east' | 'south' | 'west' };
@@ -328,8 +330,10 @@ function layoutFor(cut: Cut): DistrictLayout {
   const creatures: DistrictLayout['creatures'] = [];
   const setPieces: DistrictLayout['setPieces'] = [];
   const anchors: DistrictLayout['anchors'] = {};
-  const buildings: BuildingSpec[] = place?.buildings ?? [];
+  const buildings: readonly BuildingSpec[] = place?.buildings ?? [];
   const assemblies: NonNullable<DistrictLayout['assemblies']>[number][] = [];
+  const elites: DistrictLayout['creatures'] = [];
+  const fittings: { after: string; placement: Placement }[] = [];
   if (station) {
     steps.push({ kind: 'building', id: 'tram-terminal', rect: { x: TERMINAL.x, y: TERMINAL.y, width: TERMINAL.width, height: TERMINAL.height }, floor: 'terrazzo', wall: 'wall', doors: [{ side: 'north', width: 2, offset: TERMINAL.door - TERMINAL.x }] });
     steps.push({ kind: 'track', points: [{ x: 0, y: STATION_TRACK_ROW }, { x: SQUARE - 2, y: STATION_TRACK_ROW }] });
@@ -343,11 +347,13 @@ function layoutFor(cut: Cut): DistrictLayout {
   for (const building of buildings) {
     steps.push({ kind: 'building', id: building.id, rect: { x: building.x, y: building.y, width: building.w, height: building.h }, floor: building.floor, wall: building.wall, ...(building.edge ? { edge: building.edge } : {}), doors: [{ side: building.door ?? 'south', width: 2 }] });
     areas.push({ room: building.id, name: building.name, ...(building.safe ? { safe: true } : { safe: false }), ...(building.multiCombat ? { multiCombat: true } : {}) });
-    dressing[building.id] = { theme: building.theme, ...(building.also ? { also: building.also } : {}), people: 0 };
+    dressing[building.id] = { theme: building.theme, ...(building.also ? { also: [...building.also] } : {}), people: 0 };
     const recipe = recipeOf(building);
     recipe.objects.forEach((object, index) => objects.push({ id: building.id + '-' + object.object + '-' + index, object: object.object, at: { room: building.id, dx: object.dx, dy: object.dy }, ...(object.facing ? { facing: object.facing } : {}) }));
     recipe.npcs.forEach((npc) => npcs.push({ id: building.id + '-' + npc.npc, npc: npc.npc, at: { room: building.id, dx: npc.dx, dy: npc.dy } }));
     recipe.creatures.forEach((creature, index) => creatures.push({ id: building.id + '-' + creature.creature + '-' + index, creature: creature.creature, at: { room: building.id, dx: creature.dx, dy: creature.dy } }));
+    recipe.elites.forEach((creature, index) => elites.push({ id: building.id + '-' + creature.creature + '-' + index, creature: creature.creature, at: { room: building.id, dx: creature.dx, dy: creature.dy } }));
+    recipe.late.forEach((object, index) => fittings.push({ after: building.id + '-' + recipe.objects[object.after]!.object + '-' + object.after, placement: { id: building.id + '-' + object.object + '-' + (recipe.objects.length + index), object: object.object, at: { room: building.id, dx: object.dx, dy: object.dy }, ...(object.facing ? { facing: object.facing } : {}) } }));
     for (const [anchor, at] of Object.entries(recipe.anchors)) anchors[anchor] = { room: building.id, dx: at.dx, dy: at.dy };
   }
   const groundSafe = place?.groundSafe ?? false;
@@ -477,50 +483,65 @@ function layoutFor(cut: Cut): DistrictLayout {
   anchors.start = { room: 'ground', dx: startSpot.x, dy: startSpot.y };
   for (const [anchor, at] of Object.entries(place?.anchors ?? {})) anchors[anchor] = { room: 'ground', dx: at.x, dy: at.y };
 
+  for (const fitting of fittings) objects.splice(objects.findIndex((object) => object.id === fitting.after) + 1, 0, fitting.placement);
+
   return DISTRICT_LAYOUT_SCHEMA.parse({
     ...base,
     anchors,
     objects,
     npcs,
-    creatures,
+    creatures: [...elites, ...creatures],
     setPieces,
     assemblies,
     furnish: place?.landmark ? { landmarks: ['ground'] } : {},
   });
 }
 
-function buildDistrictMap(layout: DistrictLayout): readonly string[] {
-  return buildDistrict(layout, land, {}).map;
+function swapPacks(layout: DistrictLayout): DistrictLayout {
+  const swaps = WILD_PACKS[layout.id];
+  if (!swaps) return layout;
+  const generated = new RegExp('^' + layout.id + '-(.+)-([0-9]+)$');
+  return {
+    ...layout,
+    creatures: layout.creatures.map((creature) => {
+      const match = generated.exec(creature.id);
+      const kind = swaps[creature.creature];
+      if (!match || match[1] !== creature.creature || kind === undefined) return creature;
+      return { ...creature, id: layout.id + '-' + kind + '-' + match[2], creature: kind };
+    }),
+  };
 }
 
-const NODE_LEVEL = new Map<string, number>([...WARD_SPOTS, ...CITY_KIT_OBJECTS].flatMap((object) => object.interactions.flatMap((interaction) => (interaction.gather ? [[object.id, interaction.gather.level] as const] : []))));
-const CREATURE = new Map(SPAN_CREATURES.map((creature) => [creature.id, creature]));
+function overridden(layout: DistrictLayout): DistrictLayout {
+  const override = WILD_OVERRIDES[layout.id];
+  if (!override?.omit && !override?.place) return layout;
+  const omit = new Set(override.omit ?? []);
+  const place = <T extends { id: string; at: DistrictLayout['objects'][number]['at'] }>(entry: T): T => {
+    const spot = override.place?.[entry.id];
+    return spot ? { ...entry, at: { room: 'ground', dx: spot.x, dy: spot.y } } : entry;
+  };
+  return { ...layout, objects: layout.objects.filter((object) => !omit.has(object.id)).map(place), creatures: layout.creatures.filter((creature) => !omit.has(creature.id)).map(place) };
+}
 
-function safeNodes(layout: DistrictLayout, onLand: boolean): DistrictLayout {
-  const district = buildDistrict(layout, onLand ? land : undefined, {});
-  const unsafe = new Set<string>();
-  for (const object of district.objects) {
-    const level = NODE_LEVEL.get(object.objectId);
-    if (level === undefined) continue;
-    for (const placement of district.creatures ?? []) {
-      const creature = CREATURE.get(placement.creatureId);
-      if (!creature?.aggressive || creature.level <= level + 5) continue;
-      const reach = creature.aggroRadius + creature.attack.range + creature.wanderRadius + 2;
-      if (Math.max(Math.abs(object.position.x - placement.position.x), Math.abs(object.position.y - placement.position.y)) <= reach) unsafe.add(object.instanceId);
-    }
-  }
-  return { ...layout, objects: layout.objects.filter((object) => !unsafe.has(object.id)) };
+function dressSquare(cut: Cut): DistrictLayout {
+  const layout = layoutFor(cut);
+  if (WILD_OVERRIDES[layout.id]?.packFirst) return safeNodes(overridden(dressWild(overridden(swapPacks(safeNodes(layout, land))), land)), land);
+  return safeNodes(overridden(swapPacks(safeNodes(dressWild(layout, land), land))), land);
+}
+
+function buildDistrictMap(layout: DistrictLayout): readonly string[] {
+  return buildDistrict(layout, land, {}).map;
 }
 
 for (const file of readdirSync(OUT)) if (file.endsWith('.json')) unlinkSync(join(OUT, file));
 const written: { id: string; kind: 'square' | 'below' }[] = [];
 for (const cut of all) {
-  const layout = safeNodes(layoutFor(cut), true);
+  const layout = withQuestPlacements(dressSquare(cut));
   writeFileSync(join(OUT, layout.id + '.json'), printLayout(layout));
   written.push({ id: layout.id, kind: 'square' });
 }
 for (const source of BELOW) {
-  const layout = safeNodes(DISTRICT_LAYOUT_SCHEMA.parse(source), false);
+  const layout = withQuestPlacements(safeNodes(DISTRICT_LAYOUT_SCHEMA.parse(source)));
   writeFileSync(join(OUT, layout.id + '.json'), printLayout(layout));
   written.push({ id: layout.id, kind: 'below' });
 }

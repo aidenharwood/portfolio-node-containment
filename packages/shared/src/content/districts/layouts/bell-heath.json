@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 16, "row": 5 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 27, "y": 30, "width": 14, "height": 10 }, "height": 10 },
+    { "kind": "building", "id": "heath-chapel", "rect": { "x": 28, "y": 31, "width": 12, "height": 8 }, "floor": "terrazzo", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Bell Heath" }
+    { "room": "ground", "name": "Bell Heath" },
+    { "room": "heath-chapel", "name": "Heath Chapel", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 34, "dy": 18 }
@@ -22,14 +26,21 @@
     { "id": "bell-heath-flood-mast-2", "object": "flood-mast", "at": { "room": "ground", "dx": 32, "dy": 10 } },
     { "id": "bell-heath-ledge-milestone-3", "object": "ledge-milestone", "at": { "room": "ground", "dx": 9, "dy": 22 } },
     { "id": "bell-heath-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 24, "dy": 12 } },
-    { "id": "bell-heath-barricade-5", "object": "barricade", "at": { "room": "ground", "dx": 47, "dy": 39 } },
     { "id": "bell-heath-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 11, "dy": 33 } },
-    { "id": "bell-heath-directorate-salvage-7", "object": "directorate-salvage", "at": { "room": "ground", "dx": 49, "dy": 21 } }
+    { "id": "bell-heath-directorate-salvage-7", "object": "directorate-salvage", "at": { "room": "ground", "dx": 49, "dy": 21 } },
+    { "id": "heath-chapel-notice-board-0", "object": "notice-board", "at": { "room": "heath-chapel", "dx": 5, "dy": 0 }, "facing": "south" },
+    { "id": "heath-chapel-table-1", "object": "table", "at": { "room": "heath-chapel", "dx": 6, "dy": 1 } },
+    { "id": "heath-chapel-street-bench-2", "object": "street-bench", "at": { "room": "heath-chapel", "dx": 2, "dy": 4 }, "facing": "north" },
+    { "id": "heath-chapel-street-bench-3", "object": "street-bench", "at": { "room": "heath-chapel", "dx": 3, "dy": 4 }, "facing": "north" },
+    { "id": "heath-chapel-street-bench-4", "object": "street-bench", "at": { "room": "heath-chapel", "dx": 9, "dy": 4 }, "facing": "north" },
+    { "id": "heath-chapel-street-bench-5", "object": "street-bench", "at": { "room": "heath-chapel", "dx": 10, "dy": 4 }, "facing": "north" },
+    { "id": "heath-chapel-street-bench-6", "object": "street-bench", "at": { "room": "heath-chapel", "dx": 2, "dy": 6 }, "facing": "north" },
+    { "id": "heath-chapel-street-bench-7", "object": "street-bench", "at": { "room": "heath-chapel", "dx": 9, "dy": 6 }, "facing": "north" },
+    { "id": "bell-heath-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 53, "dy": 37 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "bell-heath-choir-echo-0", "creature": "choir-echo", "at": { "room": "ground", "dx": 25, "dy": 38 } },
     { "id": "bell-heath-red-twin-1", "creature": "red-twin", "at": { "room": "ground", "dx": 48, "dy": 7 } },
     { "id": "bell-heath-glass-stalker-2", "creature": "glass-stalker", "at": { "room": "ground", "dx": 37, "dy": 45 } },
     { "id": "bell-heath-choir-echo-3", "creature": "choir-echo", "at": { "room": "ground", "dx": 56, "dy": 58 } },
@@ -48,9 +59,12 @@
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "bell-heath-landmark", "prefab": "landmark-cantor-bell", "at": { "room": "ground", "dx": 46, "dy": 37 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "heath-chapel": { "theme": "civic", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

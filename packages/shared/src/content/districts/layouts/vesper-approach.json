@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 13, "row": 4 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 19, "y": 30, "width": 14, "height": 10 }, "height": 9 },
+    { "kind": "building", "id": "vesper-checkpoint", "rect": { "x": 20, "y": 31, "width": 12, "height": 8 }, "floor": "carpet", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Vesper Approach" }
+    { "room": "ground", "name": "Vesper Approach" },
+    { "room": "vesper-checkpoint", "name": "Vesper Checkpoint", "safe": false }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 58, "dy": 20 }
@@ -25,8 +29,17 @@
     { "id": "vesper-approach-burn-barrel-5", "object": "burn-barrel", "at": { "room": "ground", "dx": 52, "dy": 45 } },
     { "id": "vesper-approach-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 56, "dy": 10 } },
     { "id": "vesper-approach-red-moss-7", "object": "red-moss", "at": { "room": "ground", "dx": 26, "dy": 50 } },
-    { "id": "vesper-approach-red-trace-8", "object": "red-trace", "at": { "room": "ground", "dx": 20, "dy": 39 } },
-    { "id": "vesper-approach-sprung-cell-door-9", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 29, "dy": 6 } }
+    { "id": "vesper-approach-sprung-cell-door-9", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 29, "dy": 6 } },
+    { "id": "vesper-checkpoint-shelving-0", "object": "shelving", "at": { "room": "vesper-checkpoint", "dx": 1, "dy": 0 }, "facing": "south" },
+    { "id": "vesper-checkpoint-shelving-1", "object": "shelving", "at": { "room": "vesper-checkpoint", "dx": 2, "dy": 0 }, "facing": "south" },
+    { "id": "vesper-checkpoint-notice-board-2", "object": "notice-board", "at": { "room": "vesper-checkpoint", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "vesper-checkpoint-storage-locker-3", "object": "storage-locker", "at": { "room": "vesper-checkpoint", "dx": 9, "dy": 0 }, "facing": "south" },
+    { "id": "vesper-checkpoint-security-camera-4", "object": "security-camera", "at": { "room": "vesper-checkpoint", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "vesper-checkpoint-table-5", "object": "table", "at": { "room": "vesper-checkpoint", "dx": 3, "dy": 3 } },
+    { "id": "vesper-checkpoint-table-6", "object": "table", "at": { "room": "vesper-checkpoint", "dx": 4, "dy": 3 } },
+    { "id": "vesper-checkpoint-chair-7", "object": "chair", "at": { "room": "vesper-checkpoint", "dx": 3, "dy": 2 }, "facing": "south" },
+    { "id": "vesper-checkpoint-chair-8", "object": "chair", "at": { "room": "vesper-checkpoint", "dx": 4, "dy": 2 }, "facing": "south" },
+    { "id": "vesper-approach-poi-steppe-reliquary-0", "object": "steppe-reliquary", "at": { "room": "ground", "dx": 37, "dy": 23 } }
   ],
   "assemblies": [
     { "id": "vesper-approach-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 39, "dy": 6 }, "facing": "east", "span": 2 },
@@ -36,28 +49,31 @@
   "npcs": [],
   "creatures": [
     { "id": "vesper-approach-prism-hound-0", "creature": "prism-hound", "at": { "room": "ground", "dx": 6, "dy": 40 } },
-    { "id": "vesper-approach-glass-stalker-1", "creature": "glass-stalker", "at": { "room": "ground", "dx": 35, "dy": 13 } },
+    { "id": "vesper-approach-shard-wisp-1", "creature": "shard-wisp", "at": { "room": "ground", "dx": 35, "dy": 13 } },
     { "id": "vesper-approach-prism-hound-2", "creature": "prism-hound", "at": { "room": "ground", "dx": 15, "dy": 12 } },
-    { "id": "vesper-approach-glass-stalker-3", "creature": "glass-stalker", "at": { "room": "ground", "dx": 50, "dy": 10 } },
-    { "id": "vesper-approach-prism-hound-4", "creature": "prism-hound", "at": { "room": "ground", "dx": 34, "dy": 24 } },
-    { "id": "vesper-approach-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 15, "dy": 5 } },
+    { "id": "vesper-approach-shard-wisp-3", "creature": "shard-wisp", "at": { "room": "ground", "dx": 50, "dy": 10 } },
+    { "id": "vesper-approach-shard-wisp-5", "creature": "shard-wisp", "at": { "room": "ground", "dx": 15, "dy": 5 } },
     { "id": "vesper-approach-prism-hound-6", "creature": "prism-hound", "at": { "room": "ground", "dx": 59, "dy": 41 } },
-    { "id": "vesper-approach-glass-stalker-7", "creature": "glass-stalker", "at": { "room": "ground", "dx": 16, "dy": 32 } },
+    { "id": "vesper-approach-shard-wisp-7", "creature": "shard-wisp", "at": { "room": "ground", "dx": 16, "dy": 32 } },
     { "id": "vesper-approach-prism-hound-8", "creature": "prism-hound", "at": { "room": "ground", "dx": 47, "dy": 57 } },
-    { "id": "vesper-approach-glass-stalker-9", "creature": "glass-stalker", "at": { "room": "ground", "dx": 28, "dy": 36 } },
     { "id": "vesper-approach-prism-hound-10", "creature": "prism-hound", "at": { "room": "ground", "dx": 60, "dy": 35 } },
-    { "id": "vesper-approach-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 60, "dy": 26 } },
+    { "id": "vesper-approach-shard-wisp-11", "creature": "shard-wisp", "at": { "room": "ground", "dx": 60, "dy": 26 } },
     { "id": "vesper-approach-prism-hound-12", "creature": "prism-hound", "at": { "room": "ground", "dx": 55, "dy": 56 } },
-    { "id": "vesper-approach-glass-stalker-13", "creature": "glass-stalker", "at": { "room": "ground", "dx": 49, "dy": 31 } },
+    { "id": "vesper-approach-shard-wisp-13", "creature": "shard-wisp", "at": { "room": "ground", "dx": 49, "dy": 31 } },
     { "id": "vesper-approach-prism-hound-14", "creature": "prism-hound", "at": { "room": "ground", "dx": 24, "dy": 22 } },
-    { "id": "vesper-approach-glass-stalker-15", "creature": "glass-stalker", "at": { "room": "ground", "dx": 4, "dy": 20 } },
-    { "id": "vesper-approach-prism-hound-16", "creature": "prism-hound", "at": { "room": "ground", "dx": 37, "dy": 39 } }
+    { "id": "vesper-approach-shard-wisp-15", "creature": "shard-wisp", "at": { "room": "ground", "dx": 4, "dy": 20 } },
+    { "id": "vesper-approach-prism-hound-16", "creature": "prism-hound", "at": { "room": "ground", "dx": 37, "dy": 39 } },
+    { "id": "vesper-checkpoint-prism-hound-0", "creature": "prism-hound", "at": { "room": "vesper-checkpoint", "dx": 9, "dy": 5 } },
+    { "id": "vesper-checkpoint-prism-hound-1", "creature": "prism-hound", "at": { "room": "vesper-checkpoint", "dx": 2, "dy": 5 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "vesper-approach-landmark", "prefab": "landmark-steppe-mast", "at": { "room": "ground", "dx": 31, "dy": 24 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "vesper-checkpoint": { "theme": "office", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

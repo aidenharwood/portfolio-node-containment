@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.16, "tint": "#e8eef4", "fog": "#c8d8e8", "sky": "#9fc8f0", "weather": ["mist"], "haze": 0.7 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 2, "row": 10 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 40, "y": 37, "width": 14, "height": 10 }, "height": 7 },
+    { "kind": "building", "id": "drill-hall-bunks", "rect": { "x": 41, "y": 38, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Drill Field" }
+    { "room": "ground", "name": "Drill Field" },
+    { "room": "drill-hall-bunks", "name": "Drill Hall Bunks", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 13, "dy": 41 }
@@ -19,39 +23,51 @@
   "objects": [
     { "id": "drill-field-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 28, "dy": 20 } },
     { "id": "drill-field-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 12, "dy": 15 } },
-    { "id": "drill-field-street-tree-2", "object": "street-tree", "at": { "room": "ground", "dx": 54, "dy": 44 } },
     { "id": "drill-field-litter-bin-3", "object": "litter-bin", "at": { "room": "ground", "dx": 49, "dy": 12 } },
     { "id": "drill-field-checkpoint-barrier-4", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 27, "dy": 6 } },
     { "id": "drill-field-street-tree-5", "object": "street-tree", "at": { "room": "ground", "dx": 41, "dy": 27 } },
     { "id": "drill-field-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 27, "dy": 12 } },
     { "id": "drill-field-street-bench-7", "object": "street-bench", "at": { "room": "ground", "dx": 35, "dy": 52 }, "facing": "south" },
     { "id": "drill-field-cable-drum-8", "object": "cable-drum", "at": { "room": "ground", "dx": 56, "dy": 8 } },
-    { "id": "drill-field-scrap-pile-9", "object": "scrap-pile", "at": { "room": "ground", "dx": 50, "dy": 51 } },
-    { "id": "drill-field-faint-trace-10", "object": "faint-trace", "at": { "room": "ground", "dx": 57, "dy": 50 } }
+    { "id": "drill-field-faint-trace-10", "object": "faint-trace", "at": { "room": "ground", "dx": 57, "dy": 50 } },
+    { "id": "drill-hall-bunks-bed-0", "object": "bed", "at": { "room": "drill-hall-bunks", "dx": 1, "dy": 0 } },
+    { "id": "drill-hall-bunks-bed-1", "object": "bed", "at": { "room": "drill-hall-bunks", "dx": 3, "dy": 0 } },
+    { "id": "drill-hall-bunks-bed-2", "object": "bed", "at": { "room": "drill-hall-bunks", "dx": 5, "dy": 0 } },
+    { "id": "drill-hall-bunks-bed-3", "object": "bed", "at": { "room": "drill-hall-bunks", "dx": 7, "dy": 0 } },
+    { "id": "drill-hall-bunks-bed-4", "object": "bed", "at": { "room": "drill-hall-bunks", "dx": 9, "dy": 0 } },
+    { "id": "drill-hall-bunks-bed-5", "object": "bed", "at": { "room": "drill-hall-bunks", "dx": 11, "dy": 0 } },
+    { "id": "drill-hall-bunks-bed-6", "object": "bed", "at": { "room": "drill-hall-bunks", "dx": 1, "dy": 5 } },
+    { "id": "drill-hall-bunks-bed-7", "object": "bed", "at": { "room": "drill-hall-bunks", "dx": 3, "dy": 5 } },
+    { "id": "drill-hall-bunks-bed-8", "object": "bed", "at": { "room": "drill-hall-bunks", "dx": 9, "dy": 5 } },
+    { "id": "drill-hall-bunks-bed-9", "object": "bed", "at": { "room": "drill-hall-bunks", "dx": 11, "dy": 5 } },
+    { "id": "drill-hall-bunks-storage-locker-10", "object": "storage-locker", "at": { "room": "drill-hall-bunks", "dx": 0, "dy": 3 }, "facing": "east" },
+    { "id": "drill-field-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 55, "dy": 29 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
     { "id": "drill-field-feral-hound-0", "creature": "feral-hound", "at": { "room": "ground", "dx": 20, "dy": 8 } },
     { "id": "drill-field-grounds-mite-1", "creature": "grounds-mite", "at": { "room": "ground", "dx": 50, "dy": 21 } },
-    { "id": "drill-field-lawn-rat-2", "creature": "lawn-rat", "at": { "room": "ground", "dx": 40, "dy": 34 } },
+    { "id": "drill-field-drill-sentry-2", "creature": "drill-sentry", "at": { "room": "ground", "dx": 40, "dy": 34 } },
     { "id": "drill-field-feral-hound-3", "creature": "feral-hound", "at": { "room": "ground", "dx": 10, "dy": 50 } },
     { "id": "drill-field-grounds-mite-4", "creature": "grounds-mite", "at": { "room": "ground", "dx": 37, "dy": 9 } },
-    { "id": "drill-field-lawn-rat-5", "creature": "lawn-rat", "at": { "room": "ground", "dx": 59, "dy": 15 } },
-    { "id": "drill-field-feral-hound-6", "creature": "feral-hound", "at": { "room": "ground", "dx": 44, "dy": 42 } },
+    { "id": "drill-field-drill-sentry-5", "creature": "drill-sentry", "at": { "room": "ground", "dx": 59, "dy": 15 } },
     { "id": "drill-field-grounds-mite-7", "creature": "grounds-mite", "at": { "room": "ground", "dx": 19, "dy": 13 } },
-    { "id": "drill-field-lawn-rat-8", "creature": "lawn-rat", "at": { "room": "ground", "dx": 49, "dy": 60 } },
+    { "id": "drill-field-drill-sentry-8", "creature": "drill-sentry", "at": { "room": "ground", "dx": 49, "dy": 60 } },
     { "id": "drill-field-feral-hound-9", "creature": "feral-hound", "at": { "room": "ground", "dx": 33, "dy": 42 } },
     { "id": "drill-field-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 15, "dy": 8 } },
-    { "id": "drill-field-lawn-rat-11", "creature": "lawn-rat", "at": { "room": "ground", "dx": 19, "dy": 39 } },
+    { "id": "drill-field-drill-sentry-11", "creature": "drill-sentry", "at": { "room": "ground", "dx": 19, "dy": 39 } },
     { "id": "drill-field-feral-hound-12", "creature": "feral-hound", "at": { "room": "ground", "dx": 19, "dy": 26 } },
     { "id": "drill-field-grounds-mite-13", "creature": "grounds-mite", "at": { "room": "ground", "dx": 26, "dy": 31 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "drill-field-landmark", "prefab": "landmark-drill-bell", "at": { "room": "ground", "dx": 47, "dy": 29 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "drill-hall-bunks": { "theme": "dormitory", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

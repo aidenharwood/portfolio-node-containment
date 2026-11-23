@@ -13,6 +13,7 @@ import {
   studiedFlag,
   studyBlocker,
   studyExperience,
+  REPEAT_STUDY_SHARE,
   type ConditionContext,
 } from '@containment/shared';
 import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
@@ -81,9 +82,9 @@ test('studied creatures are read back from flags', () => {
   assert.deepEqual(studiedCreaturesOf(['visited:x', studiedFlag('gloam-mite'), studiedFlag('the-host')]), ['gloam-mite', 'the-host']);
 });
 
-test('repeat studies pay a fifth of discovery experience', () => {
+test('repeat studies pay a fixed share of discovery experience', () => {
   for (const creature of FIXTURE_CONTENT.creatures.values()) {
     const discovery = studyExperience(creature, true);
-    assert.equal(studyExperience(creature, false), Math.max(1, Math.round(discovery * 0.2)), creature.id);
+    assert.ok(Math.abs(studyExperience(creature, false) - Math.max(0.1, discovery * REPEAT_STUDY_SHARE)) <= 0.11, creature.id);
   }
 });

@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.16, "tint": "#e8eef4", "fog": "#c8d8e8", "sky": "#9fc8f0", "weather": ["mist"], "haze": 0.7 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 6, "row": 10 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 31, "y": 29, "width": 10, "height": 8 }, "height": 7 },
+    { "kind": "building", "id": "lake-boathouse", "rect": { "x": 32, "y": 30, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Kestrel Lake" }
+    { "room": "ground", "name": "Kestrel Lake" },
+    { "room": "lake-boathouse", "name": "Boathouse", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 39, "dy": 55 }
@@ -20,14 +24,18 @@
     { "id": "kestrel-lake-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 47 } },
     { "id": "kestrel-lake-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 21, "dy": 9 } },
     { "id": "kestrel-lake-flood-mast-2", "object": "flood-mast", "at": { "room": "ground", "dx": 23, "dy": 29 } },
-    { "id": "kestrel-lake-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 37, "dy": 31 } },
     { "id": "kestrel-lake-checkpoint-barrier-4", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 5, "dy": 26 } },
-    { "id": "kestrel-lake-litter-bin-5", "object": "litter-bin", "at": { "room": "ground", "dx": 31, "dy": 28 } },
     { "id": "kestrel-lake-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 31, "dy": 14 } },
     { "id": "kestrel-lake-street-bench-7", "object": "street-bench", "at": { "room": "ground", "dx": 12, "dy": 15 }, "facing": "south" },
     { "id": "kestrel-lake-scrap-pile-8", "object": "scrap-pile", "at": { "room": "ground", "dx": 55, "dy": 31 } },
     { "id": "kestrel-lake-faint-trace-9", "object": "faint-trace", "at": { "room": "ground", "dx": 5, "dy": 59 } },
-    { "id": "kestrel-lake-allotment-bed-10", "object": "allotment-bed", "at": { "room": "ground", "dx": 15, "dy": 37 } }
+    { "id": "kestrel-lake-allotment-bed-10", "object": "allotment-bed", "at": { "room": "ground", "dx": 15, "dy": 37 } },
+    { "id": "lake-boathouse-bed-0", "object": "bed", "at": { "room": "lake-boathouse", "dx": 1, "dy": 0 } },
+    { "id": "lake-boathouse-washer-1", "object": "washer", "at": { "room": "lake-boathouse", "dx": 4, "dy": 0 }, "facing": "south" },
+    { "id": "lake-boathouse-shelving-2", "object": "shelving", "at": { "room": "lake-boathouse", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "lake-boathouse-table-3", "object": "table", "at": { "room": "lake-boathouse", "dx": 5, "dy": 3 } },
+    { "id": "lake-boathouse-chair-4", "object": "chair", "at": { "room": "lake-boathouse", "dx": 5, "dy": 2 }, "facing": "south" },
+    { "id": "kestrel-lake-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 53, "dy": 34 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -47,14 +55,16 @@
     { "id": "kestrel-lake-lawn-rat-12", "creature": "lawn-rat", "at": { "room": "ground", "dx": 21, "dy": 47 } },
     { "id": "kestrel-lake-courtyard-gull-13", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 5, "dy": 47 } },
     { "id": "kestrel-lake-lawn-rat-14", "creature": "lawn-rat", "at": { "room": "ground", "dx": 19, "dy": 57 } },
-    { "id": "kestrel-lake-courtyard-gull-15", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 31, "dy": 37 } },
     { "id": "kestrel-lake-lawn-rat-16", "creature": "lawn-rat", "at": { "room": "ground", "dx": 22, "dy": 18 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "kestrel-lake-landmark", "prefab": "landmark-lake-gauge", "at": { "room": "ground", "dx": 46, "dy": 35 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "lake-boathouse": { "theme": "home", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

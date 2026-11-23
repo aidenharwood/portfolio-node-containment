@@ -8,23 +8,34 @@
   "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 14, "row": 8 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 29, "y": 27, "width": 14, "height": 10 }, "height": 11 },
+    { "kind": "building", "id": "pylon-cells", "rect": { "x": 30, "y": 28, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Pylon Walk" }
+    { "room": "ground", "name": "Pylon Walk" },
+    { "room": "pylon-cells", "name": "Pylon Cells", "safe": false }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 55, "dy": 16 }
   },
   "objects": [
-    { "id": "pylon-walk-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 28 } },
+    { "id": "pylon-walk-quest-pylon-tuner", "object": "pylon-tuner", "at": { "room": "ground", "dx": 41, "dy": 39 } },
     { "id": "pylon-walk-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 26, "dy": 48 } },
     { "id": "pylon-walk-ledge-milestone-2", "object": "ledge-milestone", "at": { "room": "ground", "dx": 8, "dy": 6 } },
     { "id": "pylon-walk-ledge-milestone-3", "object": "ledge-milestone", "at": { "room": "ground", "dx": 50, "dy": 22 } },
     { "id": "pylon-walk-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 10, "dy": 48 } },
     { "id": "pylon-walk-ledge-milestone-5", "object": "ledge-milestone", "at": { "room": "ground", "dx": 11, "dy": 40 } },
     { "id": "pylon-walk-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 58, "dy": 32 } },
-    { "id": "pylon-walk-sprung-cell-door-9", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 18, "dy": 17 } }
+    { "id": "pylon-walk-sprung-cell-door-9", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 18, "dy": 17 } },
+    { "id": "pylon-cells-secure-cell-0", "object": "secure-cell", "at": { "room": "pylon-cells", "dx": 1, "dy": 1 } },
+    { "id": "pylon-cells-secure-cell-1", "object": "secure-cell", "at": { "room": "pylon-cells", "dx": 4, "dy": 1 } },
+    { "id": "pylon-cells-secure-cell-2", "object": "secure-cell", "at": { "room": "pylon-cells", "dx": 7, "dy": 1 } },
+    { "id": "pylon-cells-keycard-reader-3", "object": "keycard-reader", "at": { "room": "pylon-cells", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "pylon-cells-security-camera-4", "object": "security-camera", "at": { "room": "pylon-cells", "dx": 0, "dy": 0 }, "facing": "south" },
+    { "id": "pylon-cells-lab-bench-5", "object": "lab-bench", "at": { "room": "pylon-cells", "dx": 10, "dy": 4 } },
+    { "id": "pylon-walk-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 43, "dy": 19 } }
   ],
   "assemblies": [],
   "npcs": [],
@@ -34,10 +45,8 @@
     { "id": "pylon-walk-glass-stalker-2", "creature": "glass-stalker", "at": { "room": "ground", "dx": 17, "dy": 7 } },
     { "id": "pylon-walk-choir-echo-3", "creature": "choir-echo", "at": { "room": "ground", "dx": 3, "dy": 20 } },
     { "id": "pylon-walk-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 44, "dy": 47 } },
-    { "id": "pylon-walk-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 33, "dy": 28 } },
     { "id": "pylon-walk-choir-echo-6", "creature": "choir-echo", "at": { "room": "ground", "dx": 53, "dy": 51 } },
     { "id": "pylon-walk-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 3, "dy": 42 } },
-    { "id": "pylon-walk-glass-stalker-8", "creature": "glass-stalker", "at": { "room": "ground", "dx": 40, "dy": 17 } },
     { "id": "pylon-walk-choir-echo-9", "creature": "choir-echo", "at": { "room": "ground", "dx": 34, "dy": 16 } },
     { "id": "pylon-walk-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 56, "dy": 46 } },
     { "id": "pylon-walk-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 55, "dy": 10 } },
@@ -46,13 +55,18 @@
     { "id": "pylon-walk-glass-stalker-14", "creature": "glass-stalker", "at": { "room": "ground", "dx": 47, "dy": 10 } },
     { "id": "pylon-walk-choir-echo-15", "creature": "choir-echo", "at": { "room": "ground", "dx": 50, "dy": 40 } },
     { "id": "pylon-walk-red-twin-16", "creature": "red-twin", "at": { "room": "ground", "dx": 25, "dy": 4 } },
-    { "id": "pylon-walk-glass-stalker-17", "creature": "glass-stalker", "at": { "room": "ground", "dx": 20, "dy": 43 } }
+    { "id": "pylon-walk-glass-stalker-17", "creature": "glass-stalker", "at": { "room": "ground", "dx": 20, "dy": 43 } },
+    { "id": "pylon-cells-red-twin-0", "creature": "red-twin", "at": { "room": "pylon-cells", "dx": 2, "dy": 5 } },
+    { "id": "pylon-cells-glass-stalker-1", "creature": "glass-stalker", "at": { "room": "pylon-cells", "dx": 9, "dy": 6 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "pylon-walk-landmark", "prefab": "landmark-tuning-pylon", "at": { "room": "ground", "dx": 37, "dy": 20 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "pylon-cells": { "theme": "containment", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

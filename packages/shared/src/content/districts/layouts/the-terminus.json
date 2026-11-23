@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.62, "tint": "#1a2a3a", "fog": "#0c1824", "sky": "#1a3048", "weather": ["sparks"], "haze": 1.4 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 9, "row": 6 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 29, "y": 29, "width": 14, "height": 10 }, "height": 11 },
+    { "kind": "building", "id": "terminus-control", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "The Terminus" }
+    { "room": "ground", "name": "The Terminus" },
+    { "room": "terminus-control", "name": "Terminus Control", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 18, "dy": 12 }
@@ -20,44 +24,55 @@
     { "id": "the-terminus-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 12 } },
     { "id": "the-terminus-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 49, "dy": 26 } },
     { "id": "the-terminus-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 27, "dy": 5 } },
-    { "id": "the-terminus-checkpoint-barrier-3", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 40, "dy": 30 } },
     { "id": "the-terminus-precursor-pylon-4", "object": "precursor-pylon", "at": { "room": "ground", "dx": 19, "dy": 34 } },
     { "id": "the-terminus-checkpoint-barrier-5", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 24, "dy": 19 } },
-    { "id": "the-terminus-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 35, "dy": 43 } },
     { "id": "the-terminus-sprung-cell-door-7", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 51, "dy": 3 } },
     { "id": "the-terminus-vault-residue-8", "object": "vault-residue", "at": { "room": "ground", "dx": 59, "dy": 38 } },
-    { "id": "the-terminus-vault-bloom-9", "object": "vault-bloom", "at": { "room": "ground", "dx": 21, "dy": 48 } }
+    { "id": "the-terminus-vault-bloom-9", "object": "vault-bloom", "at": { "room": "ground", "dx": 21, "dy": 48 } },
+    { "id": "terminus-control-lab-bench-0", "object": "lab-bench", "at": { "room": "terminus-control", "dx": 2, "dy": 3 } },
+    { "id": "terminus-control-lab-bench-1", "object": "lab-bench", "at": { "room": "terminus-control", "dx": 3, "dy": 3 } },
+    { "id": "terminus-control-lab-bench-2", "object": "lab-bench", "at": { "room": "terminus-control", "dx": 4, "dy": 3 } },
+    { "id": "terminus-control-lab-bench-3", "object": "lab-bench", "at": { "room": "terminus-control", "dx": 5, "dy": 3 } },
+    { "id": "terminus-control-shelving-4", "object": "shelving", "at": { "room": "terminus-control", "dx": 9, "dy": 0 }, "facing": "south" },
+    { "id": "terminus-control-shelving-5", "object": "shelving", "at": { "room": "terminus-control", "dx": 10, "dy": 0 }, "facing": "south" },
+    { "id": "terminus-control-shelving-6", "object": "shelving", "at": { "room": "terminus-control", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "the-terminus-poi-spindle-vault-drawer-0", "object": "spindle-vault-drawer", "at": { "room": "ground", "dx": 55, "dy": 32 } }
   ],
   "assemblies": [
     { "id": "the-terminus-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 30, "dy": 51 }, "span": 2 },
     { "id": "the-terminus-bridge-1", "assembly": "bridge", "at": { "room": "ground", "dx": 54, "dy": 51 }, "span": 2 }
   ],
-  "npcs": [],
+  "npcs": [
+    { "id": "terminus-control-terminus-tech-roan", "npc": "terminus-tech-roan", "at": { "room": "terminus-control", "dx": 7, "dy": 2 } }
+  ],
   "creatures": [
-    { "id": "the-terminus-null-echo-0", "creature": "null-echo", "at": { "room": "ground", "dx": 17, "dy": 6 } },
+    { "id": "the-terminus-coolant-wraith-0", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 17, "dy": 6 } },
     { "id": "the-terminus-cell-breaker-1", "creature": "cell-breaker", "at": { "room": "ground", "dx": 44, "dy": 50 } },
-    { "id": "the-terminus-null-echo-2", "creature": "null-echo", "at": { "room": "ground", "dx": 13, "dy": 52 } },
+    { "id": "the-terminus-coolant-wraith-2", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 13, "dy": 52 } },
     { "id": "the-terminus-cell-breaker-3", "creature": "cell-breaker", "at": { "room": "ground", "dx": 20, "dy": 26 } },
-    { "id": "the-terminus-null-echo-4", "creature": "null-echo", "at": { "room": "ground", "dx": 32, "dy": 24 } },
+    { "id": "the-terminus-coolant-wraith-4", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 32, "dy": 24 } },
     { "id": "the-terminus-cell-breaker-5", "creature": "cell-breaker", "at": { "room": "ground", "dx": 28, "dy": 46 } },
-    { "id": "the-terminus-null-echo-6", "creature": "null-echo", "at": { "room": "ground", "dx": 36, "dy": 4 } },
+    { "id": "the-terminus-coolant-wraith-6", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 36, "dy": 4 } },
     { "id": "the-terminus-cell-breaker-7", "creature": "cell-breaker", "at": { "room": "ground", "dx": 8, "dy": 9 } },
-    { "id": "the-terminus-null-echo-8", "creature": "null-echo", "at": { "room": "ground", "dx": 10, "dy": 59 } },
+    { "id": "the-terminus-coolant-wraith-8", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 10, "dy": 59 } },
     { "id": "the-terminus-cell-breaker-9", "creature": "cell-breaker", "at": { "room": "ground", "dx": 42, "dy": 58 } },
-    { "id": "the-terminus-null-echo-10", "creature": "null-echo", "at": { "room": "ground", "dx": 54, "dy": 17 } },
+    { "id": "the-terminus-coolant-wraith-10", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 54, "dy": 17 } },
     { "id": "the-terminus-cell-breaker-11", "creature": "cell-breaker", "at": { "room": "ground", "dx": 51, "dy": 47 } },
-    { "id": "the-terminus-null-echo-12", "creature": "null-echo", "at": { "room": "ground", "dx": 9, "dy": 26 } },
+    { "id": "the-terminus-coolant-wraith-12", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 9, "dy": 26 } },
     { "id": "the-terminus-cell-breaker-13", "creature": "cell-breaker", "at": { "room": "ground", "dx": 8, "dy": 14 } },
-    { "id": "the-terminus-null-echo-14", "creature": "null-echo", "at": { "room": "ground", "dx": 50, "dy": 55 } },
+    { "id": "the-terminus-coolant-wraith-14", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 50, "dy": 55 } },
     { "id": "the-terminus-cell-breaker-15", "creature": "cell-breaker", "at": { "room": "ground", "dx": 15, "dy": 40 } },
-    { "id": "the-terminus-null-echo-16", "creature": "null-echo", "at": { "room": "ground", "dx": 12, "dy": 22 } },
+    { "id": "the-terminus-coolant-wraith-16", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 12, "dy": 22 } },
     { "id": "the-terminus-cell-breaker-17", "creature": "cell-breaker", "at": { "room": "ground", "dx": 9, "dy": 49 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "the-terminus-landmark", "prefab": "landmark-terminus-headframe", "at": { "room": "ground", "dx": 48, "dy": 31 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "terminus-control": { "theme": "lab", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

@@ -8,50 +8,68 @@
   "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 14, "row": 9 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 30, "y": 29, "width": 14, "height": 10 }, "height": 9 },
+    { "kind": "building", "id": "drop-lookout", "rect": { "x": 31, "y": 30, "width": 12, "height": 8 }, "floor": "carpet", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Drop Edge" }
+    { "room": "ground", "name": "Drop Edge" },
+    { "room": "drop-lookout", "name": "Drop Lookout", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 27, "dy": 34 }
   },
   "objects": [
+    { "id": "drop-edge-quest-drop-lookout", "object": "drop-lookout", "at": { "room": "ground", "dx": 41, "dy": 39 } },
     { "id": "drop-edge-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 13 } },
     { "id": "drop-edge-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 47, "dy": 11 } },
-    { "id": "drop-edge-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 40, "dy": 32 } },
     { "id": "drop-edge-ledge-milestone-3", "object": "ledge-milestone", "at": { "room": "ground", "dx": 19, "dy": 23 } },
     { "id": "drop-edge-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 25, "dy": 11 } },
     { "id": "drop-edge-barricade-5", "object": "barricade", "at": { "room": "ground", "dx": 10, "dy": 56 } },
     { "id": "drop-edge-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 10, "dy": 17 } },
-    { "id": "drop-edge-sprung-cell-door-8", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 58, "dy": 39 } }
+    { "id": "drop-edge-sprung-cell-door-8", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 58, "dy": 39 } },
+    { "id": "drop-lookout-shelving-0", "object": "shelving", "at": { "room": "drop-lookout", "dx": 1, "dy": 0 }, "facing": "south" },
+    { "id": "drop-lookout-shelving-1", "object": "shelving", "at": { "room": "drop-lookout", "dx": 2, "dy": 0 }, "facing": "south" },
+    { "id": "drop-lookout-notice-board-2", "object": "notice-board", "at": { "room": "drop-lookout", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "drop-lookout-storage-locker-3", "object": "storage-locker", "at": { "room": "drop-lookout", "dx": 9, "dy": 0 }, "facing": "south" },
+    { "id": "drop-lookout-security-camera-4", "object": "security-camera", "at": { "room": "drop-lookout", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "drop-lookout-table-5", "object": "table", "at": { "room": "drop-lookout", "dx": 3, "dy": 3 } },
+    { "id": "drop-lookout-table-6", "object": "table", "at": { "room": "drop-lookout", "dx": 4, "dy": 3 } },
+    { "id": "drop-lookout-chair-7", "object": "chair", "at": { "room": "drop-lookout", "dx": 3, "dy": 2 }, "facing": "south" },
+    { "id": "drop-lookout-chair-8", "object": "chair", "at": { "room": "drop-lookout", "dx": 4, "dy": 2 }, "facing": "south" },
+    { "id": "drop-edge-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 48, "dy": 44 } }
   ],
   "assemblies": [],
-  "npcs": [],
+  "npcs": [
+    { "id": "drop-lookout-lookout-brask", "npc": "lookout-brask", "at": { "room": "drop-lookout", "dx": 8, "dy": 3 } }
+  ],
   "creatures": [
     { "id": "drop-edge-choir-echo-0", "creature": "choir-echo", "at": { "room": "ground", "dx": 3, "dy": 33 } },
     { "id": "drop-edge-red-twin-1", "creature": "red-twin", "at": { "room": "ground", "dx": 60, "dy": 50 } },
-    { "id": "drop-edge-glass-stalker-2", "creature": "glass-stalker", "at": { "room": "ground", "dx": 36, "dy": 44 } },
+    { "id": "drop-edge-prism-hound-2", "creature": "prism-hound", "at": { "room": "ground", "dx": 36, "dy": 44 } },
     { "id": "drop-edge-choir-echo-3", "creature": "choir-echo", "at": { "room": "ground", "dx": 11, "dy": 33 } },
     { "id": "drop-edge-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 49, "dy": 3 } },
-    { "id": "drop-edge-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 19, "dy": 60 } },
+    { "id": "drop-edge-prism-hound-5", "creature": "prism-hound", "at": { "room": "ground", "dx": 19, "dy": 60 } },
     { "id": "drop-edge-choir-echo-6", "creature": "choir-echo", "at": { "room": "ground", "dx": 28, "dy": 50 } },
     { "id": "drop-edge-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 51, "dy": 18 } },
-    { "id": "drop-edge-glass-stalker-8", "creature": "glass-stalker", "at": { "room": "ground", "dx": 25, "dy": 41 } },
+    { "id": "drop-edge-prism-hound-8", "creature": "prism-hound", "at": { "room": "ground", "dx": 25, "dy": 41 } },
     { "id": "drop-edge-choir-echo-9", "creature": "choir-echo", "at": { "room": "ground", "dx": 10, "dy": 43 } },
     { "id": "drop-edge-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 60, "dy": 27 } },
-    { "id": "drop-edge-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 35, "dy": 26 } },
+    { "id": "drop-edge-prism-hound-11", "creature": "prism-hound", "at": { "room": "ground", "dx": 35, "dy": 26 } },
     { "id": "drop-edge-choir-echo-12", "creature": "choir-echo", "at": { "room": "ground", "dx": 31, "dy": 22 } },
     { "id": "drop-edge-red-twin-13", "creature": "red-twin", "at": { "room": "ground", "dx": 25, "dy": 17 } },
-    { "id": "drop-edge-glass-stalker-14", "creature": "glass-stalker", "at": { "room": "ground", "dx": 47, "dy": 50 } },
-    { "id": "drop-edge-choir-echo-15", "creature": "choir-echo", "at": { "room": "ground", "dx": 33, "dy": 39 } },
+    { "id": "drop-edge-prism-hound-14", "creature": "prism-hound", "at": { "room": "ground", "dx": 47, "dy": 50 } },
     { "id": "drop-edge-red-twin-16", "creature": "red-twin", "at": { "room": "ground", "dx": 23, "dy": 4 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "drop-edge-landmark", "prefab": "landmark-drop-light", "at": { "room": "ground", "dx": 49, "dy": 36 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "drop-lookout": { "theme": "office", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

@@ -29,6 +29,10 @@ test('every Site lift runs from its headhouse down to its facility level and bac
     ['gallowglass-lift-up', 'gallowglass-undercity', 0],
     ['null-lift-down', 'site-null', -1],
     ['null-lift-up', 'null-below', 0],
+    ['tallow-lift-down', 'site-tallow', -1],
+    ['tallow-lift-up', 'tallow-holding', 0],
+    ['vesper-lift-down', 'site-vesper', -1],
+    ['vesper-lift-up', 'vesper-deep', 0],
   ];
   for (const [lift, from, depth] of route) {
     const placed = GAME_CONTENT.districts.get(from)?.objects.some((object) => object.objectId === lift);

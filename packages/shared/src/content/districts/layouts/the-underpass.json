@@ -8,48 +8,59 @@
   "ambience": { "darkness": 0.58, "tint": "#3a2448", "fog": "#1e1430", "sky": "#2a1838", "weather": ["rain"], "haze": 1.3 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 8, "row": 3 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 30, "y": 28, "width": 10, "height": 8 }, "height": 6 },
+    { "kind": "building", "id": "underpass-squat", "rect": { "x": 31, "y": 29, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "The Underpass" }
+    { "room": "ground", "name": "The Underpass" },
+    { "room": "underpass-squat", "name": "Underpass Squat", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 24, "dy": 51 }
   },
   "objects": [
-    { "id": "the-underpass-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 21 } },
     { "id": "the-underpass-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 49 } },
-    { "id": "the-underpass-litter-bin-2", "object": "litter-bin", "at": { "room": "ground", "dx": 32, "dy": 30 } },
     { "id": "the-underpass-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 8, "dy": 48 } },
     { "id": "the-underpass-bollard-4", "object": "bollard", "at": { "room": "ground", "dx": 37, "dy": 9 } },
     { "id": "the-underpass-utility-pole-5", "object": "utility-pole", "at": { "room": "ground", "dx": 7, "dy": 36 } },
     { "id": "the-underpass-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 57, "dy": 49 } },
     { "id": "the-underpass-amber-trace-7", "object": "amber-trace", "at": { "room": "ground", "dx": 44, "dy": 56 } },
     { "id": "the-underpass-crusher-housing-8", "object": "crusher-housing", "at": { "room": "ground", "dx": 44, "dy": 28 } },
-    { "id": "the-underpass-scrap-heap-9", "object": "scrap-heap", "at": { "room": "ground", "dx": 36, "dy": 50 } }
+    { "id": "the-underpass-scrap-heap-9", "object": "scrap-heap", "at": { "room": "ground", "dx": 36, "dy": 50 } },
+    { "id": "underpass-squat-bed-0", "object": "bed", "at": { "room": "underpass-squat", "dx": 1, "dy": 0 } },
+    { "id": "underpass-squat-washer-1", "object": "washer", "at": { "room": "underpass-squat", "dx": 4, "dy": 0 }, "facing": "south" },
+    { "id": "underpass-squat-shelving-2", "object": "shelving", "at": { "room": "underpass-squat", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "underpass-squat-table-3", "object": "table", "at": { "room": "underpass-squat", "dx": 5, "dy": 3 } },
+    { "id": "underpass-squat-chair-4", "object": "chair", "at": { "room": "underpass-squat", "dx": 5, "dy": 2 }, "facing": "south" },
+    { "id": "the-underpass-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 42, "dy": 22 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
     { "id": "the-underpass-ad-wraith-0", "creature": "ad-wraith", "at": { "room": "ground", "dx": 28, "dy": 4 } },
-    { "id": "the-underpass-glass-hound-1", "creature": "glass-hound", "at": { "room": "ground", "dx": 51, "dy": 27 } },
+    { "id": "the-underpass-vent-moth-1", "creature": "vent-moth", "at": { "room": "ground", "dx": 51, "dy": 27 } },
     { "id": "the-underpass-alley-crawler-2", "creature": "alley-crawler", "at": { "room": "ground", "dx": 12, "dy": 29 } },
     { "id": "the-underpass-ad-wraith-3", "creature": "ad-wraith", "at": { "room": "ground", "dx": 3, "dy": 59 } },
-    { "id": "the-underpass-glass-hound-4", "creature": "glass-hound", "at": { "room": "ground", "dx": 3, "dy": 29 } },
+    { "id": "the-underpass-vent-moth-4", "creature": "vent-moth", "at": { "room": "ground", "dx": 3, "dy": 29 } },
     { "id": "the-underpass-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 30, "dy": 9 } },
     { "id": "the-underpass-ad-wraith-6", "creature": "ad-wraith", "at": { "room": "ground", "dx": 9, "dy": 15 } },
-    { "id": "the-underpass-glass-hound-7", "creature": "glass-hound", "at": { "room": "ground", "dx": 17, "dy": 51 } },
+    { "id": "the-underpass-vent-moth-7", "creature": "vent-moth", "at": { "room": "ground", "dx": 17, "dy": 51 } },
     { "id": "the-underpass-alley-crawler-8", "creature": "alley-crawler", "at": { "room": "ground", "dx": 10, "dy": 3 } },
     { "id": "the-underpass-ad-wraith-9", "creature": "ad-wraith", "at": { "room": "ground", "dx": 59, "dy": 29 } },
-    { "id": "the-underpass-glass-hound-10", "creature": "glass-hound", "at": { "room": "ground", "dx": 10, "dy": 9 } },
+    { "id": "the-underpass-vent-moth-10", "creature": "vent-moth", "at": { "room": "ground", "dx": 10, "dy": 9 } },
     { "id": "the-underpass-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 59, "dy": 55 } },
     { "id": "the-underpass-ad-wraith-12", "creature": "ad-wraith", "at": { "room": "ground", "dx": 12, "dy": 55 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "the-underpass-landmark", "prefab": "landmark-strand-screen", "at": { "room": "ground", "dx": 35, "dy": 21 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "underpass-squat": { "theme": "home", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

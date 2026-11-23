@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.16, "tint": "#e8eef4", "fog": "#c8d8e8", "sky": "#9fc8f0", "weather": ["mist"], "haze": 0.7 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 3, "row": 10 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 29, "y": 28, "width": 14, "height": 10 }, "height": 5 },
+    { "kind": "building", "id": "relay-hut", "rect": { "x": 30, "y": 29, "width": 12, "height": 8 }, "floor": "concrete", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Signal Hill" }
+    { "room": "ground", "name": "Signal Hill" },
+    { "room": "relay-hut", "name": "Relay Hut", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 15, "dy": 49 }
@@ -27,20 +31,29 @@
     { "id": "signal-hill-street-bench-7", "object": "street-bench", "at": { "room": "ground", "dx": 17, "dy": 33 }, "facing": "south" },
     { "id": "signal-hill-scrap-pile-8", "object": "scrap-pile", "at": { "room": "ground", "dx": 24, "dy": 35 } },
     { "id": "signal-hill-faint-trace-9", "object": "faint-trace", "at": { "room": "ground", "dx": 31, "dy": 52 } },
-    { "id": "signal-hill-eel-trap-10", "object": "eel-trap", "at": { "room": "ground", "dx": 51, "dy": 37 } }
+    { "id": "signal-hill-eel-trap-10", "object": "eel-trap", "at": { "room": "ground", "dx": 51, "dy": 37 } },
+    { "id": "relay-hut-ward-refinery-0", "object": "ward-refinery", "at": { "room": "relay-hut", "dx": 1, "dy": 1 } },
+    { "id": "relay-hut-ward-fabricator-1", "object": "ward-fabricator", "at": { "room": "relay-hut", "dx": 4, "dy": 1 } },
+    { "id": "relay-hut-ward-synthesiser-2", "object": "ward-synthesiser", "at": { "room": "relay-hut", "dx": 7, "dy": 1 } },
+    { "id": "relay-hut-shelving-3", "object": "shelving", "at": { "room": "relay-hut", "dx": 10, "dy": 0 }, "facing": "south" },
+    { "id": "relay-hut-shelving-4", "object": "shelving", "at": { "room": "relay-hut", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "relay-hut-table-5", "object": "table", "at": { "room": "relay-hut", "dx": 10, "dy": 5 } },
+    { "id": "relay-hut-chair-6", "object": "chair", "at": { "room": "relay-hut", "dx": 10, "dy": 4 }, "facing": "south" },
+    { "id": "signal-hill-poi-kestrel-survey-locker-0", "object": "kestrel-survey-locker", "at": { "room": "ground", "dx": 42, "dy": 19 } }
   ],
   "assemblies": [
     { "id": "signal-hill-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 19, "dy": 22 }, "facing": "east", "span": 2 },
     { "id": "signal-hill-bridge-1", "assembly": "bridge", "at": { "room": "ground", "dx": 19, "dy": 46 }, "facing": "east", "span": 2 }
   ],
-  "npcs": [],
+  "npcs": [
+    { "id": "relay-hut-signaller-penn", "npc": "signaller-penn", "at": { "room": "relay-hut", "dx": 2, "dy": 4 } }
+  ],
   "creatures": [
     { "id": "signal-hill-feral-hound-0", "creature": "feral-hound", "at": { "room": "ground", "dx": 6, "dy": 23 } },
     { "id": "signal-hill-grounds-mite-1", "creature": "grounds-mite", "at": { "room": "ground", "dx": 9, "dy": 36 } },
     { "id": "signal-hill-lawn-rat-2", "creature": "lawn-rat", "at": { "room": "ground", "dx": 52, "dy": 17 } },
     { "id": "signal-hill-feral-hound-3", "creature": "feral-hound", "at": { "room": "ground", "dx": 43, "dy": 56 } },
     { "id": "signal-hill-grounds-mite-4", "creature": "grounds-mite", "at": { "room": "ground", "dx": 34, "dy": 45 } },
-    { "id": "signal-hill-lawn-rat-5", "creature": "lawn-rat", "at": { "room": "ground", "dx": 38, "dy": 32 } },
     { "id": "signal-hill-feral-hound-6", "creature": "feral-hound", "at": { "room": "ground", "dx": 57, "dy": 53 } },
     { "id": "signal-hill-grounds-mite-7", "creature": "grounds-mite", "at": { "room": "ground", "dx": 60, "dy": 19 } },
     { "id": "signal-hill-lawn-rat-8", "creature": "lawn-rat", "at": { "room": "ground", "dx": 52, "dy": 31 } },
@@ -50,14 +63,16 @@
     { "id": "signal-hill-feral-hound-12", "creature": "feral-hound", "at": { "room": "ground", "dx": 7, "dy": 12 } },
     { "id": "signal-hill-grounds-mite-13", "creature": "grounds-mite", "at": { "room": "ground", "dx": 8, "dy": 42 } },
     { "id": "signal-hill-lawn-rat-14", "creature": "lawn-rat", "at": { "room": "ground", "dx": 59, "dy": 38 } },
-    { "id": "signal-hill-feral-hound-15", "creature": "feral-hound", "at": { "room": "ground", "dx": 8, "dy": 5 } },
-    { "id": "signal-hill-grounds-mite-16", "creature": "grounds-mite", "at": { "room": "ground", "dx": 28, "dy": 42 } }
+    { "id": "signal-hill-feral-hound-15", "creature": "feral-hound", "at": { "room": "ground", "dx": 8, "dy": 5 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "signal-hill-landmark", "prefab": "landmark-signal-relay", "at": { "room": "ground", "dx": 36, "dy": 22 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "relay-hut": { "theme": "works", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

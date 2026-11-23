@@ -1,5 +1,5 @@
 import { deriveCombatProfile, type CombatProfile } from '../character/derivedStats.ts';
-import type { SkillExperience, SkillId } from '../character/skills.ts';
+import { roundExperience, type SkillExperience, type SkillId } from '../character/skills.ts';
 import { equipmentStats, type EquipmentState } from '../gear/equipment.ts';
 import type { ItemCatalog } from '../gear/items.ts';
 import { sumStats, type StatBlock } from '../gear/stats.ts';
@@ -33,8 +33,8 @@ const MAX_HIT_CHANCE = 0.95;
 const RATING_FLOOR = 8;
 const DEFENCE_WEIGHT = 0.9;
 const RATING_PER_MAX_HIT = 4;
-const STYLE_EXPERIENCE_PER_DAMAGE = 4;
-const FORTITUDE_EXPERIENCE_PER_DAMAGE = 2;
+export const STYLE_EXPERIENCE_PER_DAMAGE = 0.1;
+const FORTITUDE_EXPERIENCE_PER_DAMAGE = 0.05;
 
 export function weaponOf(equipment: EquipmentState, items: ItemCatalog): WeaponProfile {
   const primary = equipment.primary ? items.get(equipment.primary) : undefined;
@@ -151,21 +151,33 @@ function isWithinReach(
   return inLine && dx + dy <= reach && hasLineOfSight(from, to);
 }
 
-export function combatExperience(style: CombatStyle, damage: number): ExperienceAward[] {
+const paidTenths = (amount: number): number => Math.floor(amount * 10 + 1e-6) / 10;
+
+const owedFortitude = (damage: number, fortitudeCarry: number): number => damage * FORTITUDE_EXPERIENCE_PER_DAMAGE + fortitudeCarry;
+
+export function combatExperience(style: CombatStyle, damage: number, fortitudeCarry = 0): ExperienceAward[] {
   if (damage <= 0) return [];
   return [
-    { skill: COMBAT_STYLE_INFO[style].skill, amount: damage * STYLE_EXPERIENCE_PER_DAMAGE },
-    { skill: 'fortitude', amount: Math.round(damage * FORTITUDE_EXPERIENCE_PER_DAMAGE) },
+    { skill: COMBAT_STYLE_INFO[style].skill, amount: roundExperience(damage * STYLE_EXPERIENCE_PER_DAMAGE) },
+    { skill: 'fortitude', amount: paidTenths(owedFortitude(damage, fortitudeCarry)) },
   ];
+}
+
+export function fortitudeCarryAfter(damage: number, fortitudeCarry = 0): number {
+  if (damage <= 0) return fortitudeCarry;
+  const owed = owedFortitude(damage, fortitudeCarry);
+  return Math.max(0, Math.round((owed - paidTenths(owed)) * 1000) / 1000);
 }
 
 export function defeatExperience(style: CombatStyle, experience: number): ExperienceAward[] {
   if (experience <= 0) return [];
   return [
     { skill: COMBAT_STYLE_INFO[style].skill, amount: experience },
-    { skill: 'fortitude', amount: Math.round(experience / 2) },
+    { skill: 'fortitude', amount: roundExperience(experience / 2) },
   ];
 }
+
+export const killValue = (creature: { readonly experience: number; readonly integrity: number }): number => creature.experience + creature.integrity * STYLE_EXPERIENCE_PER_DAMAGE;
 
 const MIN_RESPAWN_FRACTION = 0.35;
 const RESPAWN_SPEEDUP_PER_PLAYER = 0.15;

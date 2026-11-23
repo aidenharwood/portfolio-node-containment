@@ -10,6 +10,7 @@ import {
   STUDY_TICKS,
   studiedFlag,
   studyExperience,
+  roundExperience,
   type CharacterRecord,
   type QuestProgress,
 } from '@containment/shared';
@@ -61,7 +62,7 @@ describe('studying anomalies', () => {
     const before = harness.player.record.skills.research;
     study(harness);
     tickUntilStudied(harness);
-    const gained = harness.player.record.skills.research - before;
+    const gained = roundExperience(harness.player.record.skills.research - before);
     assert.equal(gained, studyExperience(warden, false));
     assert.ok(gained < studyExperience(warden, true) / 4);
   });
@@ -89,7 +90,7 @@ describe('studying anomalies', () => {
     for (let tick = 0; tick < REPEAT_STUDY_COOLDOWN_TICKS; tick++) harness.gameplay.tick();
     study(harness);
     tickUntilStudied(harness);
-    assert.equal(harness.player.record.skills.research - afterFirst, Math.round(studyExperience(warden, true) * 0.2));
+    assert.equal(roundExperience(harness.player.record.skills.research - afterFirst), studyExperience(warden, false));
   });
 
   test('repeat notes on fresh spawns are rate limited per character', () => {
@@ -100,20 +101,20 @@ describe('studying anomalies', () => {
     const before = harness.player.record.skills.research;
     study(harness);
     tickUntilStudied(harness);
-    const first = harness.player.record.skills.research - before;
+    const first = roundExperience(harness.player.record.skills.research - before);
     assert.equal(first, studyExperience(warden, false));
     for (let tick = 0; tick < 50 - STUDY_TICKS; tick++) harness.gameplay.tick();
     specimen.notedBy.clear();
     const afterFirst = harness.player.record.skills.research;
     study(harness);
     assert.equal(harness.player.activity, null);
-    assert.equal(harness.sink.last('notice')?.text, 'Your notes need a minute to settle.');
+    assert.equal(harness.sink.last('notice')?.text, 'Your notes need half a minute to settle.');
     for (let tick = 0; tick < STUDY_TICKS * 2; tick++) harness.gameplay.tick();
     assert.equal(harness.player.record.skills.research, afterFirst);
     for (let tick = 0; tick < REPEAT_STUDY_COOLDOWN_TICKS; tick++) harness.gameplay.tick();
     study(harness);
     tickUntilStudied(harness);
-    assert.equal(harness.player.record.skills.research - afterFirst, studyExperience(warden, false));
+    assert.equal(roundExperience(harness.player.record.skills.research - afterFirst), studyExperience(warden, false));
   });
 
   test('each character is limited by their own last note', () => {
@@ -136,7 +137,7 @@ describe('studying anomalies', () => {
     const mineBefore = harness.player.record.skills.research;
     studyAs(harness.player);
     finish(harness.player);
-    assert.equal(harness.player.record.skills.research - mineBefore, studyExperience(warden, false));
+    assert.equal(roundExperience(harness.player.record.skills.research - mineBefore), studyExperience(warden, false));
     const firstNote = harness.player.lastNoteTick;
     assert.ok(firstNote > -Infinity);
     assert.equal(other.lastNoteTick, -Infinity);
@@ -146,7 +147,7 @@ describe('studying anomalies', () => {
     const otherBefore = other.record.skills.research;
     studyAs(other);
     finish(other);
-    assert.equal(other.record.skills.research - otherBefore, studyExperience(warden, false));
+    assert.equal(roundExperience(other.record.skills.research - otherBefore), studyExperience(warden, false));
     assert.equal(harness.player.lastNoteTick, firstNote);
     assert.ok(other.lastNoteTick > firstNote);
 
@@ -154,10 +155,10 @@ describe('studying anomalies', () => {
     const mineAfter = harness.player.record.skills.research;
     studyAs(harness.player);
     assert.equal(harness.player.activity, null);
-    assert.equal(harness.sink.last('notice')?.text, 'Your notes need a minute to settle.');
+    assert.equal(harness.sink.last('notice')?.text, 'Your notes need half a minute to settle.');
     studyAs(other);
     assert.equal(other.activity, null);
-    assert.equal(otherSink.last('notice')?.text, 'Your notes need a minute to settle.');
+    assert.equal(otherSink.last('notice')?.text, 'Your notes need half a minute to settle.');
     assert.equal(harness.player.record.skills.research, mineAfter);
 
     for (let tick = 0; tick < REPEAT_STUDY_COOLDOWN_TICKS - (other.lastNoteTick - firstNote); tick++) harness.gameplay.tick();
@@ -168,7 +169,7 @@ describe('studying anomalies', () => {
     assert.equal(other.record.skills.research, otherHeld);
     studyAs(harness.player);
     finish(harness.player);
-    assert.equal(harness.player.record.skills.research - mineAfter, studyExperience(warden, false));
+    assert.equal(roundExperience(harness.player.record.skills.research - mineAfter), studyExperience(warden, false));
   });
 
   test('a first study is never rate limited', () => {
@@ -178,7 +179,7 @@ describe('studying anomalies', () => {
     const before = harness.player.record.skills.research;
     study(harness);
     tickUntilStudied(harness);
-    assert.equal(harness.player.record.skills.research - before, studyExperience(warden, true));
+    assert.equal(roundExperience(harness.player.record.skills.research - before), studyExperience(warden, true));
   });
 
   test('a study is refused when Analysis is below the specimen level', () => {

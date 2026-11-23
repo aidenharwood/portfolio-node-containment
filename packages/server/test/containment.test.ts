@@ -4,8 +4,8 @@ import {
   containmentExperience,
   createStartingSkills,
   experienceForLevel,
-
   maxIntegrityFor,
+  roundExperience,
   type CharacterRecord,
   type QuestProgress,
 } from '@containment/shared';
@@ -66,7 +66,7 @@ describe('containment', () => {
     harness.send({ type: 'world.interact', targetKind: 'creature', instanceId: 'arena-warden', interactionIndex: 1 });
     harness.ticksUntil(() => !creature.isAlive, 50);
 
-    assert.ok(harness.player.record.skills.containment >= containmentBefore + 300);
+    assert.equal(roundExperience(harness.player.record.skills.containment - containmentBefore), containmentExperience(creature.definition));
     const ground = [...harness.gameplay.world.levelOf(harness.player).groundItems.values()];
     const scrip = ground.filter((item) => item.itemId === 'meridian-scrip' && item.ownerId === harness.player.entityId).reduce((total, item) => total + item.quantity, 0);
     assert.equal(scrip, 5 + 10, 'the regular drop and the containment bonus both land');

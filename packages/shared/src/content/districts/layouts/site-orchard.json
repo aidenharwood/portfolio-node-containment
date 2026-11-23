@@ -19,7 +19,7 @@
     { "room": "ground", "name": "Site Orchard" },
     { "room": "orchard-gatehouse", "name": "Orchard Gatehouse", "safe": true },
     { "room": "orchard-lab", "name": "Orchard Laboratory", "safe": true },
-    { "room": "seed-vault", "name": "Seed Vault", "safe": false },
+    { "room": "seed-vault", "name": "Seed Vault", "safe": false, "multiCombat": true },
     { "room": "orchard-rows", "name": "The Mother Rows", "safe": false, "multiCombat": true }
   ],
   "anchors": {
@@ -74,6 +74,7 @@
     { "id": "orchard-lab-dr-kessel", "npc": "dr-kessel", "at": { "room": "orchard-lab", "dx": 7, "dy": 2 } }
   ],
   "creatures": [
+    { "id": "seed-vault-thornback-matriarch-0", "creature": "thornback-matriarch", "at": { "room": "seed-vault", "dx": 6, "dy": 4 } },
     { "id": "seed-vault-scarecoat-0", "creature": "scarecoat", "at": { "room": "seed-vault", "dx": 2, "dy": 5 } },
     { "id": "seed-vault-seed-mite-1", "creature": "seed-mite", "at": { "room": "seed-vault", "dx": 9, "dy": 6 } },
     { "id": "orchard-rows-orchard-keeper-0", "creature": "orchard-keeper", "at": { "room": "orchard-rows", "dx": 5, "dy": 4 } },

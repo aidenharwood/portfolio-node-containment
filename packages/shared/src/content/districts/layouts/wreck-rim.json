@@ -8,16 +8,19 @@
   "ambience": { "darkness": 0.4, "tint": "#5a3a28", "fog": "#4a3424", "sky": "#8a6a50", "weather": ["dust", "embers"], "haze": 1.2 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 11, "row": 3 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 29, "y": 30, "width": 10, "height": 8 }, "height": 4 },
+    { "kind": "building", "id": "rim-shack", "rect": { "x": 30, "y": 31, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Wreck Rim" }
+    { "room": "ground", "name": "Wreck Rim" },
+    { "room": "rim-shack", "name": "Rim Shack", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 44, "dy": 33 }
+    "start": { "room": "ground", "dx": 34, "dy": 40 }
   },
   "objects": [
-    { "id": "wreck-rim-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 38 } },
     { "id": "wreck-rim-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 50 } },
     { "id": "wreck-rim-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 24, "dy": 45 } },
     { "id": "wreck-rim-burn-barrel-3", "object": "burn-barrel", "at": { "room": "ground", "dx": 60, "dy": 18 } },
@@ -25,34 +28,43 @@
     { "id": "wreck-rim-burn-barrel-5", "object": "burn-barrel", "at": { "room": "ground", "dx": 41, "dy": 8 } },
     { "id": "wreck-rim-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 54, "dy": 26 } },
     { "id": "wreck-rim-hull-trace-7", "object": "hull-trace", "at": { "room": "ground", "dx": 38, "dy": 20 } },
-    { "id": "wreck-rim-wreck-plate-9", "object": "wreck-plate", "at": { "room": "ground", "dx": 54, "dy": 5 } }
+    { "id": "wreck-rim-wreck-plate-9", "object": "wreck-plate", "at": { "room": "ground", "dx": 54, "dy": 5 } },
+    { "id": "rim-shack-bed-0", "object": "bed", "at": { "room": "rim-shack", "dx": 1, "dy": 0 } },
+    { "id": "rim-shack-washer-1", "object": "washer", "at": { "room": "rim-shack", "dx": 4, "dy": 0 }, "facing": "south" },
+    { "id": "rim-shack-shelving-2", "object": "shelving", "at": { "room": "rim-shack", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "rim-shack-table-3", "object": "table", "at": { "room": "rim-shack", "dx": 5, "dy": 3 } },
+    { "id": "rim-shack-chair-4", "object": "chair", "at": { "room": "rim-shack", "dx": 5, "dy": 2 }, "facing": "south" },
+    { "id": "wreck-rim-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 51, "dy": 35 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "wreck-rim-rustling-0", "creature": "rustling", "at": { "room": "ground", "dx": 26, "dy": 13 } },
+    { "id": "wreck-rim-ballast-crab-0", "creature": "ballast-crab", "at": { "room": "ground", "dx": 26, "dy": 13 } },
     { "id": "wreck-rim-hull-knocker-1", "creature": "hull-knocker", "at": { "room": "ground", "dx": 4, "dy": 19 } },
-    { "id": "wreck-rim-rustling-2", "creature": "rustling", "at": { "room": "ground", "dx": 51, "dy": 54 } },
+    { "id": "wreck-rim-ballast-crab-2", "creature": "ballast-crab", "at": { "room": "ground", "dx": 51, "dy": 54 } },
     { "id": "wreck-rim-hull-knocker-3", "creature": "hull-knocker", "at": { "room": "ground", "dx": 5, "dy": 8 } },
-    { "id": "wreck-rim-rustling-4", "creature": "rustling", "at": { "room": "ground", "dx": 31, "dy": 7 } },
+    { "id": "wreck-rim-ballast-crab-4", "creature": "ballast-crab", "at": { "room": "ground", "dx": 31, "dy": 7 } },
     { "id": "wreck-rim-hull-knocker-5", "creature": "hull-knocker", "at": { "room": "ground", "dx": 58, "dy": 48 } },
-    { "id": "wreck-rim-rustling-6", "creature": "rustling", "at": { "room": "ground", "dx": 12, "dy": 49 } },
+    { "id": "wreck-rim-ballast-crab-6", "creature": "ballast-crab", "at": { "room": "ground", "dx": 12, "dy": 49 } },
     { "id": "wreck-rim-hull-knocker-7", "creature": "hull-knocker", "at": { "room": "ground", "dx": 17, "dy": 24 } },
-    { "id": "wreck-rim-rustling-8", "creature": "rustling", "at": { "room": "ground", "dx": 6, "dy": 13 } },
+    { "id": "wreck-rim-ballast-crab-8", "creature": "ballast-crab", "at": { "room": "ground", "dx": 6, "dy": 13 } },
     { "id": "wreck-rim-hull-knocker-9", "creature": "hull-knocker", "at": { "room": "ground", "dx": 53, "dy": 15 } },
-    { "id": "wreck-rim-rustling-10", "creature": "rustling", "at": { "room": "ground", "dx": 27, "dy": 26 } },
+    { "id": "wreck-rim-ballast-crab-10", "creature": "ballast-crab", "at": { "room": "ground", "dx": 27, "dy": 26 } },
     { "id": "wreck-rim-hull-knocker-11", "creature": "hull-knocker", "at": { "room": "ground", "dx": 26, "dy": 56 } },
-    { "id": "wreck-rim-rustling-12", "creature": "rustling", "at": { "room": "ground", "dx": 48, "dy": 10 } },
+    { "id": "wreck-rim-ballast-crab-12", "creature": "ballast-crab", "at": { "room": "ground", "dx": 48, "dy": 10 } },
     { "id": "wreck-rim-hull-knocker-13", "creature": "hull-knocker", "at": { "room": "ground", "dx": 15, "dy": 4 } },
-    { "id": "wreck-rim-rustling-14", "creature": "rustling", "at": { "room": "ground", "dx": 15, "dy": 37 } },
+    { "id": "wreck-rim-ballast-crab-14", "creature": "ballast-crab", "at": { "room": "ground", "dx": 15, "dy": 37 } },
     { "id": "wreck-rim-hull-knocker-15", "creature": "hull-knocker", "at": { "room": "ground", "dx": 24, "dy": 21 } },
-    { "id": "wreck-rim-rustling-16", "creature": "rustling", "at": { "room": "ground", "dx": 12, "dy": 21 } }
+    { "id": "wreck-rim-ballast-crab-16", "creature": "ballast-crab", "at": { "room": "ground", "dx": 12, "dy": 21 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "wreck-rim-landmark", "prefab": "landmark-wreck-crane", "at": { "room": "ground", "dx": 44, "dy": 32 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "rim-shack": { "theme": "home", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

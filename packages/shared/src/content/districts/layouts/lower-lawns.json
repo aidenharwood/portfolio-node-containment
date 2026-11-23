@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.16, "tint": "#e8eef4", "fog": "#c8d8e8", "sky": "#9fc8f0", "weather": ["mist"], "haze": 0.7 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 6, "row": 11 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 19, "y": 26, "width": 10, "height": 8 }, "height": 5 },
+    { "kind": "building", "id": "gardeners-shed", "rect": { "x": 20, "y": 27, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Lower Lawns" }
+    { "room": "ground", "name": "Lower Lawns" },
+    { "room": "gardeners-shed", "name": "Gardener’s Shed", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 32, "dy": 14 }
@@ -21,13 +25,17 @@
     { "id": "lower-lawns-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 24 } },
     { "id": "lower-lawns-street-tree-2", "object": "street-tree", "at": { "room": "ground", "dx": 58, "dy": 23 } },
     { "id": "lower-lawns-flood-mast-3", "object": "flood-mast", "at": { "room": "ground", "dx": 3, "dy": 13 } },
-    { "id": "lower-lawns-litter-bin-4", "object": "litter-bin", "at": { "room": "ground", "dx": 21, "dy": 26 } },
     { "id": "lower-lawns-street-tree-5", "object": "street-tree", "at": { "room": "ground", "dx": 57, "dy": 37 } },
     { "id": "lower-lawns-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 58, "dy": 47 } },
-    { "id": "lower-lawns-street-bench-7", "object": "street-bench", "at": { "room": "ground", "dx": 21, "dy": 37 }, "facing": "south" },
     { "id": "lower-lawns-scrap-pile-8", "object": "scrap-pile", "at": { "room": "ground", "dx": 25, "dy": 8 } },
     { "id": "lower-lawns-faint-trace-9", "object": "faint-trace", "at": { "room": "ground", "dx": 46, "dy": 56 } },
-    { "id": "lower-lawns-eel-trap-10", "object": "eel-trap", "at": { "room": "ground", "dx": 9, "dy": 40 } }
+    { "id": "lower-lawns-eel-trap-10", "object": "eel-trap", "at": { "room": "ground", "dx": 9, "dy": 40 } },
+    { "id": "gardeners-shed-bed-0", "object": "bed", "at": { "room": "gardeners-shed", "dx": 1, "dy": 0 } },
+    { "id": "gardeners-shed-washer-1", "object": "washer", "at": { "room": "gardeners-shed", "dx": 4, "dy": 0 }, "facing": "south" },
+    { "id": "gardeners-shed-shelving-2", "object": "shelving", "at": { "room": "gardeners-shed", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "gardeners-shed-table-3", "object": "table", "at": { "room": "gardeners-shed", "dx": 5, "dy": 3 } },
+    { "id": "gardeners-shed-chair-4", "object": "chair", "at": { "room": "gardeners-shed", "dx": 5, "dy": 2 }, "facing": "south" },
+    { "id": "lower-lawns-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 32, "dy": 19 } }
   ],
   "assemblies": [
     { "id": "lower-lawns-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 6, "dy": 51 }, "span": 2 },
@@ -44,7 +52,6 @@
     { "id": "lower-lawns-feral-hound-6", "creature": "feral-hound", "at": { "room": "ground", "dx": 6, "dy": 19 } },
     { "id": "lower-lawns-grounds-mite-7", "creature": "grounds-mite", "at": { "room": "ground", "dx": 37, "dy": 49 } },
     { "id": "lower-lawns-lawn-rat-8", "creature": "lawn-rat", "at": { "room": "ground", "dx": 52, "dy": 4 } },
-    { "id": "lower-lawns-feral-hound-9", "creature": "feral-hound", "at": { "room": "ground", "dx": 27, "dy": 18 } },
     { "id": "lower-lawns-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 15, "dy": 60 } },
     { "id": "lower-lawns-lawn-rat-11", "creature": "lawn-rat", "at": { "room": "ground", "dx": 3, "dy": 49 } },
     { "id": "lower-lawns-feral-hound-12", "creature": "feral-hound", "at": { "room": "ground", "dx": 53, "dy": 52 } },
@@ -56,9 +63,12 @@
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "lower-lawns-landmark", "prefab": "landmark-lawn-clock", "at": { "room": "ground", "dx": 25, "dy": 19 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "gardeners-shed": { "theme": "home", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

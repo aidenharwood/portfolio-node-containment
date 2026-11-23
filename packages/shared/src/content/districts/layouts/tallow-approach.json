@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.4, "tint": "#5a3a28", "fog": "#4a3424", "sky": "#8a6a50", "weather": ["dust", "embers"], "haze": 1.2 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 13, "row": 2 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 29, "y": 28, "width": 14, "height": 10 }, "height": 3 },
+    { "kind": "building", "id": "tallow-outpost", "rect": { "x": 30, "y": 29, "width": 12, "height": 8 }, "floor": "carpet", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Tallow Approach" }
+    { "room": "ground", "name": "Tallow Approach" },
+    { "room": "tallow-outpost", "name": "Abandoned Outpost", "safe": false }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 11, "dy": 13 }
@@ -19,13 +23,22 @@
   "objects": [
     { "id": "tallow-approach-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 51, "dy": 9 } },
     { "id": "tallow-approach-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 15, "dy": 21 } },
-    { "id": "tallow-approach-utility-pole-2", "object": "utility-pole", "at": { "room": "ground", "dx": 42, "dy": 27 } },
     { "id": "tallow-approach-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 15, "dy": 41 } },
     { "id": "tallow-approach-magnet-crane-4", "object": "magnet-crane", "at": { "room": "ground", "dx": 6, "dy": 19 } },
     { "id": "tallow-approach-magnet-crane-5", "object": "magnet-crane", "at": { "room": "ground", "dx": 44, "dy": 57 } },
     { "id": "tallow-approach-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 32, "dy": 43 } },
     { "id": "tallow-approach-rivet-seam-8", "object": "rivet-seam", "at": { "room": "ground", "dx": 53, "dy": 25 } },
-    { "id": "tallow-approach-wreck-plate-9", "object": "wreck-plate", "at": { "room": "ground", "dx": 14, "dy": 31 } }
+    { "id": "tallow-approach-wreck-plate-9", "object": "wreck-plate", "at": { "room": "ground", "dx": 14, "dy": 31 } },
+    { "id": "tallow-outpost-shelving-0", "object": "shelving", "at": { "room": "tallow-outpost", "dx": 1, "dy": 0 }, "facing": "south" },
+    { "id": "tallow-outpost-shelving-1", "object": "shelving", "at": { "room": "tallow-outpost", "dx": 2, "dy": 0 }, "facing": "south" },
+    { "id": "tallow-outpost-notice-board-2", "object": "notice-board", "at": { "room": "tallow-outpost", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "tallow-outpost-storage-locker-3", "object": "storage-locker", "at": { "room": "tallow-outpost", "dx": 9, "dy": 0 }, "facing": "south" },
+    { "id": "tallow-outpost-security-camera-4", "object": "security-camera", "at": { "room": "tallow-outpost", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "tallow-outpost-table-5", "object": "table", "at": { "room": "tallow-outpost", "dx": 3, "dy": 3 } },
+    { "id": "tallow-outpost-table-6", "object": "table", "at": { "room": "tallow-outpost", "dx": 4, "dy": 3 } },
+    { "id": "tallow-outpost-chair-7", "object": "chair", "at": { "room": "tallow-outpost", "dx": 3, "dy": 2 }, "facing": "south" },
+    { "id": "tallow-outpost-chair-8", "object": "chair", "at": { "room": "tallow-outpost", "dx": 4, "dy": 2 }, "facing": "south" },
+    { "id": "tallow-approach-poi-wreck-strongroom-0", "object": "wreck-strongroom", "at": { "room": "ground", "dx": 50, "dy": 41 } }
   ],
   "assemblies": [
     { "id": "tallow-approach-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 6, "dy": 51 }, "span": 2 },
@@ -34,29 +47,33 @@
   "npcs": [],
   "creatures": [
     { "id": "tallow-approach-bilge-wraith-0", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 58, "dy": 51 } },
-    { "id": "tallow-approach-rustling-1", "creature": "rustling", "at": { "room": "ground", "dx": 55, "dy": 34 } },
+    { "id": "tallow-approach-misprint-1", "creature": "misprint", "at": { "room": "ground", "dx": 55, "dy": 34 } },
     { "id": "tallow-approach-hull-knocker-2", "creature": "hull-knocker", "at": { "room": "ground", "dx": 23, "dy": 56 } },
     { "id": "tallow-approach-bilge-wraith-3", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 40, "dy": 46 } },
-    { "id": "tallow-approach-rustling-4", "creature": "rustling", "at": { "room": "ground", "dx": 7, "dy": 27 } },
+    { "id": "tallow-approach-misprint-4", "creature": "misprint", "at": { "room": "ground", "dx": 7, "dy": 27 } },
     { "id": "tallow-approach-hull-knocker-5", "creature": "hull-knocker", "at": { "room": "ground", "dx": 35, "dy": 56 } },
     { "id": "tallow-approach-bilge-wraith-6", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 38, "dy": 4 } },
-    { "id": "tallow-approach-rustling-7", "creature": "rustling", "at": { "room": "ground", "dx": 44, "dy": 21 } },
+    { "id": "tallow-approach-misprint-7", "creature": "misprint", "at": { "room": "ground", "dx": 44, "dy": 21 } },
     { "id": "tallow-approach-hull-knocker-8", "creature": "hull-knocker", "at": { "room": "ground", "dx": 35, "dy": 18 } },
     { "id": "tallow-approach-bilge-wraith-9", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 9, "dy": 4 } },
-    { "id": "tallow-approach-rustling-10", "creature": "rustling", "at": { "room": "ground", "dx": 3, "dy": 34 } },
+    { "id": "tallow-approach-misprint-10", "creature": "misprint", "at": { "room": "ground", "dx": 3, "dy": 34 } },
     { "id": "tallow-approach-hull-knocker-11", "creature": "hull-knocker", "at": { "room": "ground", "dx": 52, "dy": 46 } },
     { "id": "tallow-approach-bilge-wraith-12", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 28, "dy": 10 } },
-    { "id": "tallow-approach-rustling-13", "creature": "rustling", "at": { "room": "ground", "dx": 17, "dy": 60 } },
+    { "id": "tallow-approach-misprint-13", "creature": "misprint", "at": { "room": "ground", "dx": 17, "dy": 60 } },
     { "id": "tallow-approach-hull-knocker-14", "creature": "hull-knocker", "at": { "room": "ground", "dx": 14, "dy": 47 } },
     { "id": "tallow-approach-bilge-wraith-15", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 3, "dy": 11 } },
-    { "id": "tallow-approach-rustling-16", "creature": "rustling", "at": { "room": "ground", "dx": 58, "dy": 17 } },
-    { "id": "tallow-approach-hull-knocker-17", "creature": "hull-knocker", "at": { "room": "ground", "dx": 32, "dy": 25 } }
+    { "id": "tallow-approach-misprint-16", "creature": "misprint", "at": { "room": "ground", "dx": 58, "dy": 17 } },
+    { "id": "tallow-outpost-misprint-0", "creature": "misprint", "at": { "room": "tallow-outpost", "dx": 9, "dy": 5 } },
+    { "id": "tallow-outpost-misprint-1", "creature": "misprint", "at": { "room": "tallow-outpost", "dx": 2, "dy": 5 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "tallow-approach-landmark", "prefab": "landmark-cargo-gantry", "at": { "room": "ground", "dx": 48, "dy": 33 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "tallow-outpost": { "theme": "office", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

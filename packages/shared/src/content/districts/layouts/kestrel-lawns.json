@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.16, "tint": "#e8eef4", "fog": "#c8d8e8", "sky": "#9fc8f0", "weather": ["mist"], "haze": 0.7 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 9 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 30, "y": 28, "width": 10, "height": 8 }, "height": 5 },
+    { "kind": "building", "id": "groundskeepers-lodge", "rect": { "x": 31, "y": 29, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Kestrel Lawns" }
+    { "room": "ground", "name": "Kestrel Lawns" },
+    { "room": "groundskeepers-lodge", "name": "Groundskeeper’s Lodge", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 16, "dy": 11 }
@@ -27,32 +31,40 @@
     { "id": "kestrel-lawns-street-bench-7", "object": "street-bench", "at": { "room": "ground", "dx": 47, "dy": 41 }, "facing": "south" },
     { "id": "kestrel-lawns-scrap-pile-8", "object": "scrap-pile", "at": { "room": "ground", "dx": 22, "dy": 37 } },
     { "id": "kestrel-lawns-faint-trace-9", "object": "faint-trace", "at": { "room": "ground", "dx": 39, "dy": 16 } },
-    { "id": "kestrel-lawns-eel-trap-10", "object": "eel-trap", "at": { "room": "ground", "dx": 17, "dy": 25 } }
+    { "id": "kestrel-lawns-eel-trap-10", "object": "eel-trap", "at": { "room": "ground", "dx": 17, "dy": 25 } },
+    { "id": "groundskeepers-lodge-bed-0", "object": "bed", "at": { "room": "groundskeepers-lodge", "dx": 1, "dy": 0 } },
+    { "id": "groundskeepers-lodge-washer-1", "object": "washer", "at": { "room": "groundskeepers-lodge", "dx": 4, "dy": 0 }, "facing": "south" },
+    { "id": "groundskeepers-lodge-shelving-2", "object": "shelving", "at": { "room": "groundskeepers-lodge", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "groundskeepers-lodge-table-3", "object": "table", "at": { "room": "groundskeepers-lodge", "dx": 5, "dy": 3 } },
+    { "id": "groundskeepers-lodge-chair-4", "object": "chair", "at": { "room": "groundskeepers-lodge", "dx": 5, "dy": 2 }, "facing": "south" },
+    { "id": "kestrel-lawns-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 53, "dy": 33 } }
   ],
   "assemblies": [],
-  "npcs": [],
+  "npcs": [
+    { "id": "groundskeepers-lodge-groundskeeper-elm", "npc": "groundskeeper-elm", "at": { "room": "groundskeepers-lodge", "dx": 2, "dy": 3 } }
+  ],
   "creatures": [
-    { "id": "kestrel-lawns-feral-hound-0", "creature": "feral-hound", "at": { "room": "ground", "dx": 38, "dy": 39 } },
     { "id": "kestrel-lawns-grounds-mite-1", "creature": "grounds-mite", "at": { "room": "ground", "dx": 42, "dy": 60 } },
     { "id": "kestrel-lawns-lawn-rat-2", "creature": "lawn-rat", "at": { "room": "ground", "dx": 9, "dy": 14 } },
     { "id": "kestrel-lawns-feral-hound-3", "creature": "feral-hound", "at": { "room": "ground", "dx": 25, "dy": 52 } },
-    { "id": "kestrel-lawns-grounds-mite-4", "creature": "grounds-mite", "at": { "room": "ground", "dx": 41, "dy": 31 } },
     { "id": "kestrel-lawns-lawn-rat-5", "creature": "lawn-rat", "at": { "room": "ground", "dx": 33, "dy": 9 } },
     { "id": "kestrel-lawns-feral-hound-6", "creature": "feral-hound", "at": { "room": "ground", "dx": 37, "dy": 57 } },
     { "id": "kestrel-lawns-grounds-mite-7", "creature": "grounds-mite", "at": { "room": "ground", "dx": 55, "dy": 5 } },
     { "id": "kestrel-lawns-lawn-rat-8", "creature": "lawn-rat", "at": { "room": "ground", "dx": 54, "dy": 52 } },
     { "id": "kestrel-lawns-feral-hound-9", "creature": "feral-hound", "at": { "room": "ground", "dx": 16, "dy": 34 } },
     { "id": "kestrel-lawns-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 40, "dy": 47 } },
-    { "id": "kestrel-lawns-lawn-rat-11", "creature": "lawn-rat", "at": { "room": "ground", "dx": 32, "dy": 34 } },
     { "id": "kestrel-lawns-feral-hound-12", "creature": "feral-hound", "at": { "room": "ground", "dx": 19, "dy": 50 } },
     { "id": "kestrel-lawns-grounds-mite-13", "creature": "grounds-mite", "at": { "room": "ground", "dx": 22, "dy": 11 } },
     { "id": "kestrel-lawns-lawn-rat-14", "creature": "lawn-rat", "at": { "room": "ground", "dx": 25, "dy": 47 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "kestrel-lawns-landmark", "prefab": "landmark-lawn-clock", "at": { "room": "ground", "dx": 46, "dy": 31 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "groundskeepers-lodge": { "theme": "home", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

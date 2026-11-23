@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.62, "tint": "#1a2a3a", "fog": "#0c1824", "sky": "#1a3048", "weather": ["sparks"], "haze": 1.4 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 6, "row": 6 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 29, "y": 29, "width": 14, "height": 10 }, "height": 13 },
+    { "kind": "building", "id": "rim-bunks", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Spindle Rim" }
+    { "room": "ground", "name": "Spindle Rim" },
+    { "room": "rim-bunks", "name": "Rim Bunks", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 18, "dy": 10 }
@@ -20,36 +24,50 @@
     { "id": "spindle-rim-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 23, "dy": 39 } },
     { "id": "spindle-rim-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 15, "dy": 42 } },
     { "id": "spindle-rim-steam-vent-2", "object": "steam-vent", "at": { "room": "ground", "dx": 46, "dy": 10 } },
-    { "id": "spindle-rim-checkpoint-barrier-3", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 35, "dy": 23 } },
     { "id": "spindle-rim-flood-mast-4", "object": "flood-mast", "at": { "room": "ground", "dx": 30, "dy": 8 } },
-    { "id": "spindle-rim-barricade-5", "object": "barricade", "at": { "room": "ground", "dx": 37, "dy": 29 } },
     { "id": "spindle-rim-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 24, "dy": 57 } },
-    { "id": "spindle-rim-vault-trace-9", "object": "vault-trace", "at": { "room": "ground", "dx": 60, "dy": 46 } }
+    { "id": "spindle-rim-vault-trace-9", "object": "vault-trace", "at": { "room": "ground", "dx": 60, "dy": 46 } },
+    { "id": "rim-bunks-bed-0", "object": "bed", "at": { "room": "rim-bunks", "dx": 1, "dy": 0 } },
+    { "id": "rim-bunks-bed-1", "object": "bed", "at": { "room": "rim-bunks", "dx": 3, "dy": 0 } },
+    { "id": "rim-bunks-bed-2", "object": "bed", "at": { "room": "rim-bunks", "dx": 5, "dy": 0 } },
+    { "id": "rim-bunks-bed-3", "object": "bed", "at": { "room": "rim-bunks", "dx": 7, "dy": 0 } },
+    { "id": "rim-bunks-bed-4", "object": "bed", "at": { "room": "rim-bunks", "dx": 9, "dy": 0 } },
+    { "id": "rim-bunks-bed-5", "object": "bed", "at": { "room": "rim-bunks", "dx": 11, "dy": 0 } },
+    { "id": "rim-bunks-bed-6", "object": "bed", "at": { "room": "rim-bunks", "dx": 1, "dy": 5 } },
+    { "id": "rim-bunks-bed-7", "object": "bed", "at": { "room": "rim-bunks", "dx": 3, "dy": 5 } },
+    { "id": "rim-bunks-bed-8", "object": "bed", "at": { "room": "rim-bunks", "dx": 9, "dy": 5 } },
+    { "id": "rim-bunks-bed-9", "object": "bed", "at": { "room": "rim-bunks", "dx": 11, "dy": 5 } },
+    { "id": "rim-bunks-storage-locker-10", "object": "storage-locker", "at": { "room": "rim-bunks", "dx": 0, "dy": 3 }, "facing": "east" },
+    { "id": "spindle-rim-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 41, "dy": 24 } }
   ],
   "assemblies": [],
-  "npcs": [],
+  "npcs": [
+    { "id": "rim-bunks-rim-scout-kaz", "npc": "rim-scout-kaz", "at": { "room": "rim-bunks", "dx": 6, "dy": 3 } }
+  ],
   "creatures": [
     { "id": "spindle-rim-null-stalker-0", "creature": "null-stalker", "at": { "room": "ground", "dx": 14, "dy": 56 } },
-    { "id": "spindle-rim-null-echo-1", "creature": "null-echo", "at": { "room": "ground", "dx": 43, "dy": 38 } },
-    { "id": "spindle-rim-cell-breaker-2", "creature": "cell-breaker", "at": { "room": "ground", "dx": 54, "dy": 23 } },
+    { "id": "spindle-rim-coolant-wraith-2", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 54, "dy": 23 } },
     { "id": "spindle-rim-null-stalker-3", "creature": "null-stalker", "at": { "room": "ground", "dx": 16, "dy": 17 } },
     { "id": "spindle-rim-null-echo-4", "creature": "null-echo", "at": { "room": "ground", "dx": 40, "dy": 45 } },
-    { "id": "spindle-rim-cell-breaker-5", "creature": "cell-breaker", "at": { "room": "ground", "dx": 50, "dy": 48 } },
+    { "id": "spindle-rim-coolant-wraith-5", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 50, "dy": 48 } },
     { "id": "spindle-rim-null-stalker-6", "creature": "null-stalker", "at": { "room": "ground", "dx": 19, "dy": 21 } },
     { "id": "spindle-rim-null-echo-7", "creature": "null-echo", "at": { "room": "ground", "dx": 19, "dy": 5 } },
-    { "id": "spindle-rim-cell-breaker-8", "creature": "cell-breaker", "at": { "room": "ground", "dx": 53, "dy": 60 } },
+    { "id": "spindle-rim-coolant-wraith-8", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 53, "dy": 60 } },
     { "id": "spindle-rim-null-stalker-9", "creature": "null-stalker", "at": { "room": "ground", "dx": 50, "dy": 27 } },
     { "id": "spindle-rim-null-echo-10", "creature": "null-echo", "at": { "room": "ground", "dx": 26, "dy": 17 } },
-    { "id": "spindle-rim-cell-breaker-11", "creature": "cell-breaker", "at": { "room": "ground", "dx": 60, "dy": 55 } },
+    { "id": "spindle-rim-coolant-wraith-11", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 60, "dy": 55 } },
     { "id": "spindle-rim-null-stalker-12", "creature": "null-stalker", "at": { "room": "ground", "dx": 7, "dy": 34 } },
     { "id": "spindle-rim-null-echo-13", "creature": "null-echo", "at": { "room": "ground", "dx": 36, "dy": 16 } },
-    { "id": "spindle-rim-cell-breaker-14", "creature": "cell-breaker", "at": { "room": "ground", "dx": 11, "dy": 29 } }
+    { "id": "spindle-rim-coolant-wraith-14", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 11, "dy": 29 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "spindle-rim-landmark", "prefab": "landmark-spindle-rim-light", "at": { "room": "ground", "dx": 35, "dy": 23 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "rim-bunks": { "theme": "dormitory", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

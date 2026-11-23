@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.4, "tint": "#5a3a28", "fog": "#4a3424", "sky": "#8a6a50", "weather": ["dust", "embers"], "haze": 1.2 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 13, "row": 3 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 19, "y": 30, "width": 14, "height": 10 }, "height": 4 },
+    { "kind": "building", "id": "stern-berths", "rect": { "x": 20, "y": 31, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Sternward" }
+    { "room": "ground", "name": "Sternward" },
+    { "room": "stern-berths", "name": "Stern Berths", "safe": false }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 50, "dy": 38 }
@@ -26,7 +30,19 @@
     { "id": "sternward-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 49, "dy": 48 } },
     { "id": "sternward-wreck-plate-7", "object": "wreck-plate", "at": { "room": "ground", "dx": 21, "dy": 21 } },
     { "id": "sternward-tide-weed-8", "object": "tide-weed", "at": { "room": "ground", "dx": 53, "dy": 25 } },
-    { "id": "sternward-hull-trace-9", "object": "hull-trace", "at": { "room": "ground", "dx": 26, "dy": 17 } }
+    { "id": "sternward-hull-trace-9", "object": "hull-trace", "at": { "room": "ground", "dx": 26, "dy": 17 } },
+    { "id": "stern-berths-bed-0", "object": "bed", "at": { "room": "stern-berths", "dx": 1, "dy": 0 } },
+    { "id": "stern-berths-bed-1", "object": "bed", "at": { "room": "stern-berths", "dx": 3, "dy": 0 } },
+    { "id": "stern-berths-bed-2", "object": "bed", "at": { "room": "stern-berths", "dx": 5, "dy": 0 } },
+    { "id": "stern-berths-bed-3", "object": "bed", "at": { "room": "stern-berths", "dx": 7, "dy": 0 } },
+    { "id": "stern-berths-bed-4", "object": "bed", "at": { "room": "stern-berths", "dx": 9, "dy": 0 } },
+    { "id": "stern-berths-bed-5", "object": "bed", "at": { "room": "stern-berths", "dx": 11, "dy": 0 } },
+    { "id": "stern-berths-bed-6", "object": "bed", "at": { "room": "stern-berths", "dx": 1, "dy": 5 } },
+    { "id": "stern-berths-bed-7", "object": "bed", "at": { "room": "stern-berths", "dx": 3, "dy": 5 } },
+    { "id": "stern-berths-bed-8", "object": "bed", "at": { "room": "stern-berths", "dx": 9, "dy": 5 } },
+    { "id": "stern-berths-bed-9", "object": "bed", "at": { "room": "stern-berths", "dx": 11, "dy": 5 } },
+    { "id": "stern-berths-storage-locker-10", "object": "storage-locker", "at": { "room": "stern-berths", "dx": 0, "dy": 3 }, "facing": "east" },
+    { "id": "sternward-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 22, "dy": 47 } }
   ],
   "assemblies": [
     { "id": "sternward-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 39, "dy": 22 }, "facing": "east", "span": 2 },
@@ -40,23 +56,25 @@
     { "id": "sternward-hull-knocker-3", "creature": "hull-knocker", "at": { "room": "ground", "dx": 14, "dy": 18 } },
     { "id": "sternward-rustling-4", "creature": "rustling", "at": { "room": "ground", "dx": 56, "dy": 37 } },
     { "id": "sternward-hull-knocker-5", "creature": "hull-knocker", "at": { "room": "ground", "dx": 8, "dy": 7 } },
-    { "id": "sternward-rustling-6", "creature": "rustling", "at": { "room": "ground", "dx": 34, "dy": 29 } },
     { "id": "sternward-hull-knocker-7", "creature": "hull-knocker", "at": { "room": "ground", "dx": 4, "dy": 10 } },
     { "id": "sternward-rustling-8", "creature": "rustling", "at": { "room": "ground", "dx": 59, "dy": 53 } },
-    { "id": "sternward-hull-knocker-9", "creature": "hull-knocker", "at": { "room": "ground", "dx": 26, "dy": 40 } },
     { "id": "sternward-rustling-10", "creature": "rustling", "at": { "room": "ground", "dx": 4, "dy": 47 } },
     { "id": "sternward-hull-knocker-11", "creature": "hull-knocker", "at": { "room": "ground", "dx": 34, "dy": 14 } },
     { "id": "sternward-rustling-12", "creature": "rustling", "at": { "room": "ground", "dx": 59, "dy": 8 } },
     { "id": "sternward-hull-knocker-13", "creature": "hull-knocker", "at": { "room": "ground", "dx": 56, "dy": 42 } },
-    { "id": "sternward-rustling-14", "creature": "rustling", "at": { "room": "ground", "dx": 25, "dy": 28 } },
     { "id": "sternward-hull-knocker-15", "creature": "hull-knocker", "at": { "room": "ground", "dx": 27, "dy": 6 } },
-    { "id": "sternward-rustling-16", "creature": "rustling", "at": { "room": "ground", "dx": 8, "dy": 56 } }
+    { "id": "sternward-rustling-16", "creature": "rustling", "at": { "room": "ground", "dx": 8, "dy": 56 } },
+    { "id": "stern-berths-rustling-0", "creature": "rustling", "at": { "room": "stern-berths", "dx": 6, "dy": 3 } },
+    { "id": "stern-berths-rustling-1", "creature": "rustling", "at": { "room": "stern-berths", "dx": 2, "dy": 3 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "sternward-landmark", "prefab": "landmark-lifeboat-hull", "at": { "room": "ground", "dx": 28, "dy": 48 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "stern-berths": { "theme": "dormitory", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

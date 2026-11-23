@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.62, "tint": "#1a2a3a", "fog": "#0c1824", "sky": "#1a3048", "weather": ["sparks"], "haze": 1.4 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 8, "row": 5 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 28, "y": 29, "width": 14, "height": 10 }, "height": 13 },
+    { "kind": "building", "id": "coolant-plant", "rect": { "x": 29, "y": 30, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Coolant Flats" }
+    { "room": "ground", "name": "Coolant Flats" },
+    { "room": "coolant-plant", "name": "Coolant Plant", "safe": false }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 13, "dy": 28 }
@@ -25,34 +29,45 @@
     { "id": "coolant-flats-steam-vent-5", "object": "steam-vent", "at": { "room": "ground", "dx": 28, "dy": 50 } },
     { "id": "coolant-flats-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 21, "dy": 31 } },
     { "id": "coolant-flats-vault-bloom-7", "object": "vault-bloom", "at": { "room": "ground", "dx": 45, "dy": 40 } },
-    { "id": "coolant-flats-vault-trace-8", "object": "vault-trace", "at": { "room": "ground", "dx": 22, "dy": 38 } }
+    { "id": "coolant-flats-vault-trace-8", "object": "vault-trace", "at": { "room": "ground", "dx": 22, "dy": 38 } },
+    { "id": "coolant-plant-lab-bench-0", "object": "lab-bench", "at": { "room": "coolant-plant", "dx": 2, "dy": 3 } },
+    { "id": "coolant-plant-lab-bench-1", "object": "lab-bench", "at": { "room": "coolant-plant", "dx": 3, "dy": 3 } },
+    { "id": "coolant-plant-lab-bench-2", "object": "lab-bench", "at": { "room": "coolant-plant", "dx": 4, "dy": 3 } },
+    { "id": "coolant-plant-lab-bench-3", "object": "lab-bench", "at": { "room": "coolant-plant", "dx": 5, "dy": 3 } },
+    { "id": "coolant-plant-shelving-4", "object": "shelving", "at": { "room": "coolant-plant", "dx": 9, "dy": 0 }, "facing": "south" },
+    { "id": "coolant-plant-shelving-5", "object": "shelving", "at": { "room": "coolant-plant", "dx": 10, "dy": 0 }, "facing": "south" },
+    { "id": "coolant-plant-shelving-6", "object": "shelving", "at": { "room": "coolant-plant", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "coolant-plant-vault-bloom-7", "object": "vault-bloom", "at": { "room": "coolant-plant", "dx": 10, "dy": 5 } },
+    { "id": "coolant-flats-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 46, "dy": 25 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "coolant-flats-null-stalker-0", "creature": "null-stalker", "at": { "room": "ground", "dx": 46, "dy": 26 } },
-    { "id": "coolant-flats-null-echo-1", "creature": "null-echo", "at": { "room": "ground", "dx": 20, "dy": 7 } },
+    { "id": "coolant-flats-clerk-of-null-1", "creature": "clerk-of-null", "at": { "room": "ground", "dx": 20, "dy": 7 } },
     { "id": "coolant-flats-cell-breaker-2", "creature": "cell-breaker", "at": { "room": "ground", "dx": 50, "dy": 60 } },
     { "id": "coolant-flats-null-stalker-3", "creature": "null-stalker", "at": { "room": "ground", "dx": 8, "dy": 56 } },
-    { "id": "coolant-flats-null-echo-4", "creature": "null-echo", "at": { "room": "ground", "dx": 11, "dy": 9 } },
+    { "id": "coolant-flats-clerk-of-null-4", "creature": "clerk-of-null", "at": { "room": "ground", "dx": 11, "dy": 9 } },
     { "id": "coolant-flats-cell-breaker-5", "creature": "cell-breaker", "at": { "room": "ground", "dx": 30, "dy": 21 } },
     { "id": "coolant-flats-null-stalker-6", "creature": "null-stalker", "at": { "room": "ground", "dx": 58, "dy": 11 } },
-    { "id": "coolant-flats-null-echo-7", "creature": "null-echo", "at": { "room": "ground", "dx": 27, "dy": 34 } },
     { "id": "coolant-flats-cell-breaker-8", "creature": "cell-breaker", "at": { "room": "ground", "dx": 45, "dy": 54 } },
     { "id": "coolant-flats-null-stalker-9", "creature": "null-stalker", "at": { "room": "ground", "dx": 6, "dy": 21 } },
-    { "id": "coolant-flats-null-echo-10", "creature": "null-echo", "at": { "room": "ground", "dx": 57, "dy": 59 } },
+    { "id": "coolant-flats-clerk-of-null-10", "creature": "clerk-of-null", "at": { "room": "ground", "dx": 57, "dy": 59 } },
     { "id": "coolant-flats-cell-breaker-11", "creature": "cell-breaker", "at": { "room": "ground", "dx": 17, "dy": 44 } },
     { "id": "coolant-flats-null-stalker-12", "creature": "null-stalker", "at": { "room": "ground", "dx": 45, "dy": 60 } },
-    { "id": "coolant-flats-null-echo-13", "creature": "null-echo", "at": { "room": "ground", "dx": 56, "dy": 52 } },
+    { "id": "coolant-flats-clerk-of-null-13", "creature": "clerk-of-null", "at": { "room": "ground", "dx": 56, "dy": 52 } },
     { "id": "coolant-flats-cell-breaker-14", "creature": "cell-breaker", "at": { "room": "ground", "dx": 25, "dy": 23 } },
     { "id": "coolant-flats-null-stalker-15", "creature": "null-stalker", "at": { "room": "ground", "dx": 29, "dy": 16 } },
-    { "id": "coolant-flats-null-echo-16", "creature": "null-echo", "at": { "room": "ground", "dx": 49, "dy": 50 } }
+    { "id": "coolant-flats-clerk-of-null-16", "creature": "clerk-of-null", "at": { "room": "ground", "dx": 49, "dy": 50 } },
+    { "id": "coolant-plant-cell-breaker-0", "creature": "cell-breaker", "at": { "room": "coolant-plant", "dx": 8, "dy": 5 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "coolant-flats-landmark", "prefab": "landmark-coolant-tower", "at": { "room": "ground", "dx": 47, "dy": 32 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "coolant-plant": { "theme": "lab", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

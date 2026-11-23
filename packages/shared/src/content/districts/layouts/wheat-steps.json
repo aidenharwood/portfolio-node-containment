@@ -8,53 +8,63 @@
   "ambience": { "darkness": 0.2, "tint": "#e4dcb8", "fog": "#d8d0a8", "sky": "#b8d8c0", "weather": ["dust"], "haze": 0.8 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 2, "row": 4 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 30, "y": 30, "width": 10, "height": 8 }, "height": 6 },
+    { "kind": "building", "id": "wheat-steps-croft", "rect": { "x": 31, "y": 31, "width": 8, "height": 6 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Wheat Steps" }
+    { "room": "ground", "name": "Wheat Steps" },
+    { "room": "wheat-steps-croft", "name": "Wheat Steps Croft", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 24, "dy": 4 }
   },
   "objects": [
-    { "id": "wheat-steps-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 35 } },
     { "id": "wheat-steps-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 6, "dy": 25 } },
     { "id": "wheat-steps-utility-pole-2", "object": "utility-pole", "at": { "room": "ground", "dx": 20, "dy": 29 } },
     { "id": "wheat-steps-burn-barrel-3", "object": "burn-barrel", "at": { "room": "ground", "dx": 41, "dy": 53 } },
     { "id": "wheat-steps-street-tree-4", "object": "street-tree", "at": { "room": "ground", "dx": 13, "dy": 49 } },
-    { "id": "wheat-steps-street-tree-5", "object": "street-tree", "at": { "room": "ground", "dx": 46, "dy": 21 } },
     { "id": "wheat-steps-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 23, "dy": 53 } },
     { "id": "wheat-steps-reed-bed-7", "object": "reed-bed", "at": { "room": "ground", "dx": 52, "dy": 55 } },
     { "id": "wheat-steps-culvert-trace-8", "object": "culvert-trace", "at": { "room": "ground", "dx": 54, "dy": 9 } },
-    { "id": "wheat-steps-lock-gear-9", "object": "lock-gear", "at": { "room": "ground", "dx": 49, "dy": 40 } }
+    { "id": "wheat-steps-lock-gear-9", "object": "lock-gear", "at": { "room": "ground", "dx": 49, "dy": 40 } },
+    { "id": "wheat-steps-croft-bed-0", "object": "bed", "at": { "room": "wheat-steps-croft", "dx": 1, "dy": 0 } },
+    { "id": "wheat-steps-croft-washer-1", "object": "washer", "at": { "room": "wheat-steps-croft", "dx": 4, "dy": 0 }, "facing": "south" },
+    { "id": "wheat-steps-croft-shelving-2", "object": "shelving", "at": { "room": "wheat-steps-croft", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "wheat-steps-croft-table-3", "object": "table", "at": { "room": "wheat-steps-croft", "dx": 5, "dy": 3 } },
+    { "id": "wheat-steps-croft-chair-4", "object": "chair", "at": { "room": "wheat-steps-croft", "dx": 5, "dy": 2 }, "facing": "south" },
+    { "id": "wheat-steps-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 44, "dy": 22 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "wheat-steps-thornback-0", "creature": "thornback", "at": { "room": "ground", "dx": 3, "dy": 15 } },
+    { "id": "wheat-steps-barn-crawler-0", "creature": "barn-crawler", "at": { "room": "ground", "dx": 3, "dy": 15 } },
     { "id": "wheat-steps-seed-mite-1", "creature": "seed-mite", "at": { "room": "ground", "dx": 44, "dy": 5 } },
-    { "id": "wheat-steps-thornback-2", "creature": "thornback", "at": { "room": "ground", "dx": 18, "dy": 40 } },
+    { "id": "wheat-steps-barn-crawler-2", "creature": "barn-crawler", "at": { "room": "ground", "dx": 18, "dy": 40 } },
     { "id": "wheat-steps-seed-mite-3", "creature": "seed-mite", "at": { "room": "ground", "dx": 54, "dy": 46 } },
-    { "id": "wheat-steps-thornback-4", "creature": "thornback", "at": { "room": "ground", "dx": 41, "dy": 11 } },
+    { "id": "wheat-steps-barn-crawler-4", "creature": "barn-crawler", "at": { "room": "ground", "dx": 41, "dy": 11 } },
     { "id": "wheat-steps-seed-mite-5", "creature": "seed-mite", "at": { "room": "ground", "dx": 54, "dy": 31 } },
-    { "id": "wheat-steps-thornback-6", "creature": "thornback", "at": { "room": "ground", "dx": 57, "dy": 41 } },
+    { "id": "wheat-steps-barn-crawler-6", "creature": "barn-crawler", "at": { "room": "ground", "dx": 57, "dy": 41 } },
     { "id": "wheat-steps-seed-mite-7", "creature": "seed-mite", "at": { "room": "ground", "dx": 45, "dy": 48 } },
-    { "id": "wheat-steps-thornback-8", "creature": "thornback", "at": { "room": "ground", "dx": 28, "dy": 36 } },
     { "id": "wheat-steps-seed-mite-9", "creature": "seed-mite", "at": { "room": "ground", "dx": 23, "dy": 11 } },
-    { "id": "wheat-steps-thornback-10", "creature": "thornback", "at": { "room": "ground", "dx": 39, "dy": 16 } },
+    { "id": "wheat-steps-barn-crawler-10", "creature": "barn-crawler", "at": { "room": "ground", "dx": 39, "dy": 16 } },
     { "id": "wheat-steps-seed-mite-11", "creature": "seed-mite", "at": { "room": "ground", "dx": 47, "dy": 11 } },
-    { "id": "wheat-steps-thornback-12", "creature": "thornback", "at": { "room": "ground", "dx": 9, "dy": 9 } },
+    { "id": "wheat-steps-barn-crawler-12", "creature": "barn-crawler", "at": { "room": "ground", "dx": 9, "dy": 9 } },
     { "id": "wheat-steps-seed-mite-13", "creature": "seed-mite", "at": { "room": "ground", "dx": 60, "dy": 20 } },
-    { "id": "wheat-steps-thornback-14", "creature": "thornback", "at": { "room": "ground", "dx": 22, "dy": 22 } },
+    { "id": "wheat-steps-barn-crawler-14", "creature": "barn-crawler", "at": { "room": "ground", "dx": 22, "dy": 22 } },
     { "id": "wheat-steps-seed-mite-15", "creature": "seed-mite", "at": { "room": "ground", "dx": 13, "dy": 37 } },
-    { "id": "wheat-steps-thornback-16", "creature": "thornback", "at": { "room": "ground", "dx": 30, "dy": 45 } },
+    { "id": "wheat-steps-barn-crawler-16", "creature": "barn-crawler", "at": { "room": "ground", "dx": 30, "dy": 45 } },
     { "id": "wheat-steps-seed-mite-17", "creature": "seed-mite", "at": { "room": "ground", "dx": 3, "dy": 55 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "wheat-steps-landmark", "prefab": "landmark-terrace-windpump", "at": { "room": "ground", "dx": 37, "dy": 23 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "wheat-steps-croft": { "theme": "home", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

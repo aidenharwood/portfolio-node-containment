@@ -8,45 +8,59 @@
   "ambience": { "darkness": 0.4, "tint": "#5a3a28", "fog": "#4a3424", "sky": "#8a6a50", "weather": ["dust", "embers"], "haze": 1.2 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 14, "row": 3 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 8, "y": 47, "width": 10, "height": 8 }, "height": 4 },
+    { "kind": "building", "id": "hermits-hut", "rect": { "x": 9, "y": 48, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Crater Shore" }
+    { "room": "ground", "name": "Crater Shore" },
+    { "room": "hermits-hut", "name": "Hermit’s Hut", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 50, "dy": 52 }
   },
   "objects": [
-    { "id": "crater-shore-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 46 } },
-    { "id": "crater-shore-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 8, "dy": 49 } },
+    { "id": "crater-shore-quest-cryo-pod", "object": "cryo-pod", "at": { "room": "ground", "dx": 44, "dy": 40 } },
     { "id": "crater-shore-parked-car-2", "object": "parked-car", "at": { "room": "ground", "dx": 43, "dy": 54 } },
     { "id": "crater-shore-parked-car-3", "object": "parked-car", "at": { "room": "ground", "dx": 19, "dy": 9 } },
     { "id": "crater-shore-utility-pole-4", "object": "utility-pole", "at": { "room": "ground", "dx": 34, "dy": 5 } },
     { "id": "crater-shore-barricade-5", "object": "barricade", "at": { "room": "ground", "dx": 52, "dy": 40 } },
-    { "id": "crater-shore-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 44, "dy": 41 } },
     { "id": "crater-shore-wreck-gate-leaf-0", "object": "wreck-gate-leaf", "at": { "room": "ground", "dx": 44, "dy": 63 }, "facing": "south" },
-    { "id": "crater-shore-wreck-gate-leaf-1", "object": "wreck-gate-leaf", "at": { "room": "ground", "dx": 45, "dy": 63 }, "facing": "south" }
+    { "id": "crater-shore-wreck-gate-leaf-1", "object": "wreck-gate-leaf", "at": { "room": "ground", "dx": 45, "dy": 63 }, "facing": "south" },
+    { "id": "crater-shore-poi-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 9, "dy": 42 } },
+    { "id": "hermits-hut-bed-0", "object": "bed", "at": { "room": "hermits-hut", "dx": 1, "dy": 0 } },
+    { "id": "hermits-hut-washer-1", "object": "washer", "at": { "room": "hermits-hut", "dx": 4, "dy": 0 }, "facing": "south" },
+    { "id": "hermits-hut-shelving-2", "object": "shelving", "at": { "room": "hermits-hut", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "hermits-hut-table-3", "object": "table", "at": { "room": "hermits-hut", "dx": 5, "dy": 3 } },
+    { "id": "hermits-hut-chair-4", "object": "chair", "at": { "room": "hermits-hut", "dx": 5, "dy": 2 }, "facing": "south" },
+    { "id": "crater-shore-poi-wreck-strongroom-0", "object": "wreck-strongroom", "at": { "room": "ground", "dx": 31, "dy": 56 } },
+    { "id": "crater-shore-poi-tide-weed-1", "object": "tide-weed", "at": { "room": "ground", "dx": 55, "dy": 9 } },
+    { "id": "crater-shore-poi-hull-trace-2", "object": "hull-trace", "at": { "room": "ground", "dx": 24, "dy": 7 } }
   ],
   "assemblies": [],
-  "npcs": [],
+  "npcs": [
+    { "id": "hermits-hut-shore-hermit-abe", "npc": "shore-hermit-abe", "at": { "room": "hermits-hut", "dx": 2, "dy": 3 } }
+  ],
   "creatures": [
-    { "id": "crater-shore-bilge-wraith-0", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 27, "dy": 49 } },
-    { "id": "crater-shore-rustling-1", "creature": "rustling", "at": { "room": "ground", "dx": 30, "dy": 53 } },
-    { "id": "crater-shore-hull-knocker-2", "creature": "hull-knocker", "at": { "room": "ground", "dx": 32, "dy": 42 } },
     { "id": "crater-shore-bilge-wraith-3", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 4, "dy": 33 } },
-    { "id": "crater-shore-rustling-4", "creature": "rustling", "at": { "room": "ground", "dx": 6, "dy": 4 } },
-    { "id": "crater-shore-hull-knocker-5", "creature": "hull-knocker", "at": { "room": "ground", "dx": 24, "dy": 53 } },
+    { "id": "crater-shore-misprint-4", "creature": "misprint", "at": { "room": "ground", "dx": 6, "dy": 4 } },
     { "id": "crater-shore-bilge-wraith-6", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 40, "dy": 4 } },
-    { "id": "crater-shore-rustling-7", "creature": "rustling", "at": { "room": "ground", "dx": 34, "dy": 57 } },
+    { "id": "crater-shore-misprint-7", "creature": "misprint", "at": { "room": "ground", "dx": 34, "dy": 57 } },
     { "id": "crater-shore-hull-knocker-8", "creature": "hull-knocker", "at": { "room": "ground", "dx": 58, "dy": 43 } },
-    { "id": "crater-shore-bilge-wraith-9", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 22, "dy": 47 } },
-    { "id": "crater-shore-rustling-10", "creature": "rustling", "at": { "room": "ground", "dx": 16, "dy": 49 } }
+    { "id": "crater-shore-poi-bilge-wraith-0", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 22, "dy": 39 } },
+    { "id": "crater-shore-poi-rustling-1", "creature": "rustling", "at": { "room": "ground", "dx": 23, "dy": 46 } },
+    { "id": "crater-shore-poi-hull-knocker-2", "creature": "hull-knocker", "at": { "room": "ground", "dx": 16, "dy": 40 } },
+    { "id": "crater-shore-poi-bilge-wraith-3", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 50, "dy": 39 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "crater-shore-landmark", "prefab": "landmark-crater-light", "at": { "room": "ground", "dx": 23, "dy": 54 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "hermits-hut": { "theme": "home", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

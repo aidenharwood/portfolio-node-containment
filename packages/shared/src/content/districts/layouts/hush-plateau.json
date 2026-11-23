@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.62, "tint": "#1a2a3a", "fog": "#0c1824", "sky": "#1a3048", "weather": ["sparks"], "haze": 1.4 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 7, "row": 8 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 29, "y": 23, "width": 14, "height": 10 }, "height": 10 },
+    { "kind": "building", "id": "hush-hall", "rect": { "x": 30, "y": 24, "width": 12, "height": 8 }, "floor": "terrazzo", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Hush Plateau" }
+    { "room": "ground", "name": "Hush Plateau" },
+    { "room": "hush-hall", "name": "Hush Hall", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 8, "dy": 50 }
@@ -23,33 +27,43 @@
     { "id": "hush-plateau-checkpoint-barrier-3", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 12, "dy": 45 } },
     { "id": "hush-plateau-steam-vent-4", "object": "steam-vent", "at": { "room": "ground", "dx": 55, "dy": 35 } },
     { "id": "hush-plateau-steam-vent-5", "object": "steam-vent", "at": { "room": "ground", "dx": 8, "dy": 22 } },
-    { "id": "hush-plateau-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 28, "dy": 28 } },
-    { "id": "hush-plateau-vault-trace-9", "object": "vault-trace", "at": { "room": "ground", "dx": 37, "dy": 3 } }
+    { "id": "hush-plateau-vault-trace-9", "object": "vault-trace", "at": { "room": "ground", "dx": 37, "dy": 3 } },
+    { "id": "hush-hall-notice-board-0", "object": "notice-board", "at": { "room": "hush-hall", "dx": 5, "dy": 0 }, "facing": "south" },
+    { "id": "hush-hall-table-1", "object": "table", "at": { "room": "hush-hall", "dx": 6, "dy": 1 } },
+    { "id": "hush-hall-street-bench-2", "object": "street-bench", "at": { "room": "hush-hall", "dx": 2, "dy": 4 }, "facing": "north" },
+    { "id": "hush-hall-street-bench-3", "object": "street-bench", "at": { "room": "hush-hall", "dx": 3, "dy": 4 }, "facing": "north" },
+    { "id": "hush-hall-street-bench-4", "object": "street-bench", "at": { "room": "hush-hall", "dx": 9, "dy": 4 }, "facing": "north" },
+    { "id": "hush-hall-street-bench-5", "object": "street-bench", "at": { "room": "hush-hall", "dx": 10, "dy": 4 }, "facing": "north" },
+    { "id": "hush-hall-street-bench-6", "object": "street-bench", "at": { "room": "hush-hall", "dx": 2, "dy": 6 }, "facing": "north" },
+    { "id": "hush-hall-street-bench-7", "object": "street-bench", "at": { "room": "hush-hall", "dx": 9, "dy": 6 }, "facing": "north" },
+    { "id": "hush-plateau-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 56, "dy": 29 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "hush-plateau-null-stalker-0", "creature": "null-stalker", "at": { "room": "ground", "dx": 47, "dy": 27 } },
-    { "id": "hush-plateau-null-echo-1", "creature": "null-echo", "at": { "room": "ground", "dx": 22, "dy": 10 } },
+    { "id": "hush-plateau-clerk-of-null-1", "creature": "clerk-of-null", "at": { "room": "ground", "dx": 22, "dy": 10 } },
     { "id": "hush-plateau-cell-breaker-2", "creature": "cell-breaker", "at": { "room": "ground", "dx": 7, "dy": 4 } },
     { "id": "hush-plateau-null-stalker-3", "creature": "null-stalker", "at": { "room": "ground", "dx": 19, "dy": 32 } },
-    { "id": "hush-plateau-null-echo-4", "creature": "null-echo", "at": { "room": "ground", "dx": 33, "dy": 10 } },
+    { "id": "hush-plateau-clerk-of-null-4", "creature": "clerk-of-null", "at": { "room": "ground", "dx": 33, "dy": 10 } },
     { "id": "hush-plateau-cell-breaker-5", "creature": "cell-breaker", "at": { "room": "ground", "dx": 60, "dy": 48 } },
     { "id": "hush-plateau-null-stalker-6", "creature": "null-stalker", "at": { "room": "ground", "dx": 45, "dy": 53 } },
-    { "id": "hush-plateau-null-echo-7", "creature": "null-echo", "at": { "room": "ground", "dx": 15, "dy": 26 } },
+    { "id": "hush-plateau-clerk-of-null-7", "creature": "clerk-of-null", "at": { "room": "ground", "dx": 15, "dy": 26 } },
     { "id": "hush-plateau-cell-breaker-8", "creature": "cell-breaker", "at": { "room": "ground", "dx": 38, "dy": 46 } },
     { "id": "hush-plateau-null-stalker-9", "creature": "null-stalker", "at": { "room": "ground", "dx": 8, "dy": 9 } },
-    { "id": "hush-plateau-null-echo-10", "creature": "null-echo", "at": { "room": "ground", "dx": 14, "dy": 9 } },
+    { "id": "hush-plateau-clerk-of-null-10", "creature": "clerk-of-null", "at": { "room": "ground", "dx": 14, "dy": 9 } },
     { "id": "hush-plateau-cell-breaker-11", "creature": "cell-breaker", "at": { "room": "ground", "dx": 47, "dy": 36 } },
     { "id": "hush-plateau-null-stalker-12", "creature": "null-stalker", "at": { "room": "ground", "dx": 26, "dy": 55 } },
-    { "id": "hush-plateau-null-echo-13", "creature": "null-echo", "at": { "room": "ground", "dx": 17, "dy": 54 } },
+    { "id": "hush-plateau-clerk-of-null-13", "creature": "clerk-of-null", "at": { "room": "ground", "dx": 17, "dy": 54 } },
     { "id": "hush-plateau-cell-breaker-14", "creature": "cell-breaker", "at": { "room": "ground", "dx": 19, "dy": 42 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "hush-plateau-landmark", "prefab": "landmark-crown-needle", "at": { "room": "ground", "dx": 48, "dy": 28 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "hush-hall": { "theme": "civic", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

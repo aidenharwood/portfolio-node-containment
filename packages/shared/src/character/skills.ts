@@ -92,6 +92,10 @@ export function experienceForLevel(level: number): number {
   return Math.floor(12 * n * n + 18 * n);
 }
 
+export const experienceStepAt = (level: number): number => experienceForLevel(level + 1) - experienceForLevel(level);
+
+export const roundExperience = (amount: number): number => Math.round(amount * 10) / 10;
+
 export function levelForExperience(experience: number): number {
   let level = 1;
 

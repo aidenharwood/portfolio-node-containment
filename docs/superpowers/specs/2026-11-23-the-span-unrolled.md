@@ -62,3 +62,16 @@ The **Span Transit** maglev comes back on the existing tram engine (stations, li
 - The track blocks walking. Bridges (deck assemblies) cross it at least once in every square it passes through.
 - The track is graded, not laid on the raw ground. `scripts/span/grade.ts` gives each line a height profile that follows the smoothed land, changes by at most one step at a time and holds each height for at least six tiles. It stays flat through every terminal, around every bend and under every bridge. Where the land is higher the track runs in a cutting, and where it is lower the track runs on an embankment; `soften` then slopes the land down to it.
 - The renderer draws each step in the grade as a smooth slope over the four tiles around it, and each bend of the double track as two curved lanes around the bend's inner corner. Where the Funicular leaves the Ring Line, the junction draws the straight through and both bends (`packages/client/src/render/world/trackPieces.ts`).
+
+## Quests across the island
+
+The story (Acts I–VI) is unchanged. Side content is spread round the Massif so every region has errands in its wild squares, not only in its hub. There are 71 quests in 16 questlines.
+
+- **Directions.** "Spinward" is the way the Span turns round the Massif: Kestrel, Harrowgate, Halcyon, Rustwater, the Choir, Last Post. Site Tallow is three squares from Rustwater, past the Reactor Scar, not "two hours".
+- **Regional errands.** Kestrel Reach, Harrow Terraces and Halcyon each gained errands for their idle shopkeepers, including the first Marksmanship (`range-day`), Refining (`first-melt`) and Psionics (`the-smile-clinic`) quests. Rustwater Jobs and Last Post Errands gained `salvage-rights` and `door-duty`.
+- **Chains in the wild.** `meridian-manifest` (the Bow, Keel Road, Engine Field, Boiler Bay, the Reactor Scar, the Crater Shore) and `pylon-line` (Hollow Pylons, the Pylon Walk, Vigil Fields, the Lens, Drop Edge) run through squares that had no quest. Each chain is joined by `followUpQuestId`.
+- **Cohort 41.** A side questline round the whole island: Okonkwo's returns board, then the reprints Adebayo (Harrowgate), Sola (Glasshouse Alley), Marek (Rustwater), Yusuf (the Choir) and Moreno (Last Post), each offering the next once the story has reached their region, ending at the Cohort Bell in the Recruit Lines.
+- **Choices.** `the-lift-book`, `last-word-at-the-plough`, `no-screens` and `crater-lake` end on a choice that sets a flag, pays differently and changes what the NPC says afterwards.
+- **After the file.** `the-next-cohort` is offered only with `ending:resealed` and `off-the-books` only with `ending:signed-out`. `directorate-commendation` refights three bosses and is the first offer gated on quest points (50).
+- **Gates.** Every side quest offered in dialogue waits on a story quest (`offerRequires`), and every gather step is gated on the skill its nodes need, either by an offer condition with a `notReady` line or by an earlier `reach` step (`test/questCoverage.test.ts`).
+- **Placement.** Quest NPCs added for these lines (`span/questFolk.ts`) stand in the safe ground of the hubs. Quest objects in wild squares stand in the `ground` room and are listed in each square's layout as `<district>-quest-<object>`.

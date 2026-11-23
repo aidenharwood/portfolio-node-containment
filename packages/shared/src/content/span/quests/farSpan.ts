@@ -28,7 +28,7 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
     id: 'sternward',
     name: 'Sternward',
     category: 'main',
-    summary: 'Mags Doherty says Site Tallow is two hours sternward, overrun, and still taking roll call every night.',
+    summary: 'Mags Doherty says Site Tallow is three fields sternward of Rustwater, past the Reactor Scar, overrun, and still taking roll call every night.',
     offeredBy: 'scav-boss-mags',
     offerRequires: [ACT_THREE_END],
     recommendedLevel: 30,
@@ -42,7 +42,7 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
       { id: 'post', journal: 'Find the Tallow Forward Post at the edge of Site Tallow.', objectives: [{ type: 'enterArea', districtId: 'site-tallow', areaId: 'tallow-forward-post', label: 'Reach the Tallow Forward Post' }] },
       { id: 'osei', journal: 'Report to Lieutenant Osei.', objectives: [{ type: 'talkTo', npcId: 'lt-osei', label: 'Report to Lieutenant Osei' }] },
     ],
-    ...pays(150, [questPay('fortitude', 30, 20), questPay('salvage', 30, 10)]),
+    ...pays(150, [questPay('fortitude', 30, 3), questPay('salvage', 30, 2)]),
     followUpQuestId: 'name-tape',
   },
   {
@@ -53,7 +53,7 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
     recommendedLevel: 32,
     steps: [
       { id: 'misprints', journal: 'Put down five misprints in Site Tallow. Do not read their name tapes.', objectives: [{ type: 'defeat', creatureId: 'misprint', count: 5, label: 'Defeat misprints' }] },
-      { id: 'board', journal: 'Read the casualty board on the wall of the Tallow yard.', objectives: [{ type: 'interactWith', objectId: 'casualty-board', label: 'Read the casualty board' }], onComplete: [{ type: 'grantExperience', skill: 'research', amount: 4000 }] },
+      { id: 'board', journal: 'Read the casualty board on the wall of the Tallow yard.', objectives: [{ type: 'interactWith', objectId: 'casualty-board', label: 'Read the casualty board' }], onComplete: [{ type: 'grantExperience', skill: 'research', amount: 150 }] },
       { id: 'osei', journal: 'Tell Lieutenant Osei whose name is on the board.', objectives: [{ type: 'talkTo', npcId: 'lt-osei', label: 'Tell Lieutenant Osei' }] },
       {
         id: 'steady',
@@ -63,7 +63,7 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
       { id: 'wraith', journal: 'Contain a bilge wraith in Site Tallow. Drive it out of the water first.', objectives: [{ type: 'contain', creatureId: 'bilge-wraith', count: 1, label: 'Contain a bilge wraith' }] },
       { id: 'report', journal: 'Bring the wraith’s cell back to Lieutenant Osei.', objectives: [{ type: 'talkTo', npcId: 'lt-osei', label: 'Report to Lieutenant Osei' }] },
     ],
-    ...pays(220, [questPay('containment', 33, 25), questPay('research', 33, 12)]),
+    ...pays(220, [questPay('containment', 33, 3), questPay('research', 33, 2)]),
     followUpQuestId: 'roll-call',
   },
   {
@@ -84,7 +84,7 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
     ],
     ...pays(
       400,
-      [styleQuestPay(39, 30), questPay('fortitude', 39, 15)],
+      [styleQuestPay(39, 3), questPay('fortitude', 39, 2)],
       [{ type: 'notify', text: 'Osei signs Tallow back to the Directorate. The Cohort was humming as it fell. Cantor Ysolde, at the Choir, will know the tune.' }],
     ),
     questPoints: 2,
@@ -100,10 +100,10 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
     steps: [
       { id: 'nakamura', journal: 'Hear Dr Nakamura out, in the Choir Infirmary.', objectives: [{ type: 'talkTo', npcId: 'dr-nakamura', label: 'Talk to Dr Nakamura' }] },
       { id: 'vesper', journal: 'Cross the glass to Site Vesper and get into Vesper Records.', objectives: [{ type: 'enterArea', districtId: 'site-vesper', areaId: 'vesper-records', label: 'Enter Vesper Records' }] },
-      { id: 'recorder', journal: 'Play back the shift recorder abandoned in the Vesper yard.', objectives: [{ type: 'interactWith', objectId: 'vesper-recorder', label: 'Play the shift recorder' }], onComplete: [{ type: 'grantExperience', skill: 'research', amount: 6000 }] },
+      { id: 'recorder', journal: 'Play back the shift recorder abandoned in the Vesper yard.', objectives: [{ type: 'interactWith', objectId: 'vesper-recorder', label: 'Play the shift recorder' }], onComplete: [{ type: 'grantExperience', skill: 'research', amount: 200 }] },
       { id: 'back', journal: 'Take what you heard back to Dr Nakamura.', objectives: [{ type: 'talkTo', npcId: 'dr-nakamura', label: 'Report to Dr Nakamura' }] },
     ],
-    ...pays(300, [questPay('research', 42, 20), styleQuestPay(42, 10)]),
+    ...pays(300, [questPay('research', 42, 3), styleQuestPay(42, 2)]),
     followUpQuestId: 'countersong',
   },
   {
@@ -132,7 +132,7 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
       { id: 'twin', journal: 'Ring the bell over a red twin’s hymn and contain it while it is out of tune.', objectives: [{ type: 'contain', creatureId: 'red-twin', count: 1, label: 'Contain a red twin' }] },
       { id: 'ruth-back', journal: 'Tell Pilgrim Ruth the countersong works.', objectives: [{ type: 'talkTo', npcId: 'pilgrim-ruth', label: 'Report to Pilgrim Ruth' }] },
     ],
-    ...pays(340, [questPay('containment', 45, 22), questPay('engineering', 45, 10)]),
+    ...pays(340, [questPay('containment', 45, 3), questPay('engineering', 45, 2)]),
     followUpQuestId: 'the-last-hymn',
   },
   {
@@ -161,7 +161,7 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
     ],
     ...pays(
       600,
-      [styleQuestPay(49, 30), questPay('psionics', 49, 12)],
+      [styleQuestPay(49, 3), questPay('psionics', 49, 2)],
       [{ type: 'notify', text: 'Nakamura says the hymn was a lullaby, and the Span was the child. Captain Halloran at Last Post wants to know what it was keeping asleep. Climb to the summit through the Spindle Seam. Once you have found the Last Post platform, the Spindle Funicular runs back up from the Choir.' }],
     ),
     questPoints: 2,
@@ -184,7 +184,7 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
       { id: 'headhouse', journal: 'Walk to Site Null and enter the Null Headhouse.', objectives: [{ type: 'enterArea', districtId: 'site-null', areaId: 'null-headhouse', label: 'Enter the Null Headhouse' }] },
       { id: 'lune', journal: 'Speak to the registrar at the Null Headhouse.', objectives: [{ type: 'talkTo', npcId: 'registrar-lune-null', label: 'Speak to the registrar' }], onComplete: [{ type: 'setFlag', flag: CLEARANCE_NULL }] },
     ],
-    ...pays(500, [questPay('fortitude', 52, 15), questPay('research', 52, 10)], [], ['Clearance for Null Below']),
+    ...pays(500, [questPay('fortitude', 52, 2), questPay('research', 52, 2)], [], ['Clearance for Null Below']),
     followUpQuestId: 'the-outside',
   },
   {
@@ -206,7 +206,7 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
       },
       { id: 'echoes', journal: 'Four null echoes are doing their rounds. End their shift.', objectives: [{ type: 'defeat', creatureId: 'null-echo', count: 4, label: 'Defeat null echoes' }] },
     ],
-    ...pays(500, [styleQuestPay(53, 20)]),
+    ...pays(500, [styleQuestPay(53, 3)]),
     followUpQuestId: 'the-review',
   },
   {
@@ -225,7 +225,7 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
       { id: 'warden', journal: 'Defeat the Warden of Null.', objectives: [{ type: 'defeat', creatureId: 'warden-of-null', count: 1, label: 'Defeat the Warden of Null' }] },
       { id: 'console', journal: 'Read the review console the Warden was guarding.', objectives: [{ type: 'interactWith', objectId: 'null-console', label: 'Read the review console' }] },
     ],
-    ...pays(800, [styleQuestPay(58, 30), questPay('fortitude', 58, 15)]),
+    ...pays(800, [styleQuestPay(58, 3), questPay('fortitude', 58, 2)]),
     followUpQuestId: 'end-of-file',
     questPoints: 2,
   },
@@ -239,7 +239,7 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
       { id: 'vale', journal: 'Sergeant Vale is waiting in the Last Post Bunks. He has an opinion.', objectives: [{ type: 'talkTo', npcId: 'sergeant-vale-null', label: 'Hear Sergeant Vale out' }] },
       { id: 'lune', journal: 'Tell Registrar Lune, in the Null Headhouse, what goes in your file.', objectives: [signalAt(FILE_CLOSED, 'registrar-lune-null', 'Close your file')] },
     ],
-    ...pays(1000, [styleQuestPay(58, 40), questPay('research', 58, 20)], [{ type: 'notify', text: 'Your file is closed. Whatever it says, you wrote it.' }]),
+    ...pays(1000, [styleQuestPay(58, 4), questPay('research', 58, 3)], [{ type: 'notify', text: 'Your file is closed. Whatever it says, you wrote it.' }]),
     questPoints: 3,
   },
   {
@@ -248,7 +248,7 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
     category: 'side',
     summary: 'Dutch Hallam buys hull plate by weight. He will not buy yours until you can cut it clean.',
     offeredBy: 'scrapper-hallam',
-    offerRequires: [],
+    offerRequires: ['breach'],
     recommendedLevel: 30,
     steps: [
       {
@@ -259,7 +259,7 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
       { id: 'plate', journal: 'Cut five hull plates from wreck plate on the Wreckfield.', objectives: [{ type: 'gather', itemId: 'hull-plate', count: 5, label: 'Cut hull plate' }] },
       { id: 'hand', journal: 'Bring five hull plates to Hallam’s Breakers.', objectives: [signalAt('by-weight-handed', 'scrapper-hallam', 'Sell Hallam the plate')] },
     ],
-    ...pays(180, [questPay('salvage', 31, 12)]),
+    ...pays(180, [questPay('salvage', 31, 2)]),
   },
   {
     id: 'knock-knock',
@@ -267,13 +267,13 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
     category: 'side',
     summary: 'Faye can’t sleep. Something in the Meridian knocks from the inside all night, and it isn’t the ship.',
     offeredBy: 'rigger-faye',
-    offerRequires: [],
+    offerRequires: ['breach'],
     recommendedLevel: 33,
     steps: [
       { id: 'knockers', journal: 'Kill six hull knockers on the Wreckfield.', objectives: [{ type: 'defeat', creatureId: 'hull-knocker', count: 6, label: 'Defeat hull knockers' }] },
       { id: 'faye', journal: 'Tell Faye at Rustwater Works it is quiet now.', objectives: [{ type: 'talkTo', npcId: 'rigger-faye', label: 'Talk to Faye' }] },
     ],
-    ...pays(150, [questPay('fortitude', 33, 10)], [{ type: 'giveItem', itemId: 'duralloy-plating', count: 2 }], ['2 Duralloy Plating']),
+    ...pays(150, [questPay('fortitude', 33, 2)], [{ type: 'giveItem', itemId: 'duralloy-plating', count: 2 }], ['2 Duralloy Plating']),
   },
   {
     id: 'bilge-broth',
@@ -281,13 +281,13 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
     category: 'side',
     summary: 'Bello is out of the one ingredient he refuses to name. It is tide weed. Everyone knows it is tide weed.',
     offeredBy: 'cook-bello',
-    offerRequires: [],
+    offerRequires: ['breach'],
     recommendedLevel: 30,
     steps: [
       { id: 'weed', journal: 'Cut four bunches of tide weed from the Wreckfield shallows.', objectives: [{ type: 'gather', itemId: 'tide-weed', count: 4, label: 'Cut tide weed' }] },
       { id: 'hand', journal: 'Bring the tide weed to Bello at the Rust Kitchen.', objectives: [signalAt('bilge-broth-handed', 'cook-bello', 'Give Bello the weed')] },
     ],
-    ...pays(100, [questPay('biochemistry', 32, 10)], [{ type: 'giveItem', itemId: 'tide-broth' }, { type: 'giveItem', itemId: 'tide-broth' }], ['2 Tide Broth']),
+    ...pays(100, [questPay('biochemistry', 32, 2)], [{ type: 'giveItem', itemId: 'tide-broth' }, { type: 'giveItem', itemId: 'tide-broth' }], ['2 Tide Broth']),
   },
   {
     id: 'dont-answer',
@@ -301,7 +301,7 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
       { id: 'bag', journal: 'Find Kit Rook’s kit bag somewhere on the Tallow yard and take his tags.', objectives: [{ type: 'obtainItem', itemId: 'kit-rook-tags', count: 1, label: 'Find Kit’s tags' }] },
       { id: 'hand', journal: 'Give the tags to Rook in the Bunks.', objectives: [signalAt('dont-answer-handed', 'scav-rook', 'Give Rook the tags')] },
     ],
-    ...pays(160, [questPay('research', 34, 8), styleQuestPay(34, 6)]),
+    ...pays(160, [questPay('research', 34, 2), styleQuestPay(34, 1)]),
   },
   {
     id: 'coax-the-glass',
@@ -309,13 +309,13 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
     category: 'side',
     summary: 'Oro wants red trace for a bell that rings in a colour. He says this is normal for glass.',
     offeredBy: 'glazier-oro',
-    offerRequires: [],
+    offerRequires: ['roll-call'],
     recommendedLevel: 41,
     steps: [
       { id: 'trace', journal: 'Collect five red traces on the Glass Steppe. Study them, or take them off things that hum.', objectives: [{ type: 'obtainItem', itemId: 'red-trace', count: 5, label: 'Collect red trace' }] },
       { id: 'hand', journal: 'Bring the red trace to Oro at the Glassworks.', objectives: [signalAt('coax-the-glass-handed', 'glazier-oro', 'Give Oro the trace')] },
     ],
-    ...pays(220, [questPay('engineering', 42, 10)]),
+    ...pays(220, [questPay('engineering', 42, 2)]),
   },
   {
     id: 'refectory-silence',
@@ -323,13 +323,13 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
     category: 'side',
     summary: 'Choir echoes stand at the Refectory windows every evening, singing grace. Brother Ansel would like to eat once in silence.',
     offeredBy: 'brother-ansel',
-    offerRequires: [],
+    offerRequires: ['gone-quiet'],
     recommendedLevel: 46,
     steps: [
       { id: 'echoes', journal: 'Put five choir echoes to rest on the Steppe.', objectives: [{ type: 'defeat', creatureId: 'choir-echo', count: 5, label: 'Defeat choir echoes' }] },
       { id: 'ansel', journal: 'Tell Brother Ansel to enjoy his soup.', objectives: [{ type: 'talkTo', npcId: 'brother-ansel', label: 'Talk to Brother Ansel' }] },
     ],
-    ...pays(240, [styleQuestPay(47, 10), questPay('fortitude', 47, 6)]),
+    ...pays(240, [styleQuestPay(47, 2), questPay('fortitude', 47, 1)]),
   },
   {
     id: 'barefoot',
@@ -337,7 +337,7 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
     category: 'side',
     summary: 'Pilgrim Ruth wants you to listen to the glass in three places. Shoes optional. She insists they are optional.',
     offeredBy: 'pilgrim-ruth',
-    offerRequires: [],
+    offerRequires: ['gone-quiet'],
     recommendedLevel: 41,
     steps: [
       {
@@ -351,7 +351,7 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
       },
       { id: 'ruth', journal: 'Tell Pilgrim Ruth what the glass said.', objectives: [{ type: 'talkTo', npcId: 'pilgrim-ruth', label: 'Talk to Pilgrim Ruth' }] },
     ],
-    ...pays(200, [questPay('research', 42, 10)]),
+    ...pays(200, [questPay('research', 42, 2)]),
   },
   {
     id: 'cuts-like-nothing',
@@ -359,7 +359,7 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
     category: 'side',
     summary: 'Engineer Saoirse needs vault residue to keep the generators running, and someone else’s fingers to collect it.',
     offeredBy: 'engineer-saoirse',
-    offerRequires: [],
+    offerRequires: ['the-last-hymn'],
     recommendedLevel: 50,
     steps: [
       {
@@ -370,7 +370,7 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
       { id: 'residue', journal: 'Salvage four vault residues in the Spindle.', objectives: [{ type: 'gather', itemId: 'vault-residue', count: 4, label: 'Salvage vault residue' }] },
       { id: 'hand', journal: 'Bring the residue to Saoirse at the Field Workshop.', objectives: [signalAt('cuts-like-nothing-handed', 'engineer-saoirse', 'Give Saoirse the residue')] },
     ],
-    ...pays(300, [questPay('salvage', 52, 10), questPay('engineering', 52, 6)]),
+    ...pays(300, [questPay('salvage', 52, 2), questPay('engineering', 52, 1)]),
   },
   {
     id: 'checked-on',
@@ -378,13 +378,13 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
     category: 'side',
     summary: 'Medic Quill’s patients keep coming back with clipboard bruises and a new surname. The null stalkers are doing rounds.',
     offeredBy: 'medic-quill',
-    offerRequires: [],
+    offerRequires: ['last-post'],
     recommendedLevel: 55,
     steps: [
       { id: 'stalkers', journal: 'Discharge five null stalkers in the Spindle.', objectives: [{ type: 'defeat', creatureId: 'null-stalker', count: 5, label: 'Defeat null stalkers' }] },
       { id: 'quill', journal: 'Tell Medic Quill his patients can keep their names.', objectives: [{ type: 'talkTo', npcId: 'medic-quill', label: 'Talk to Medic Quill' }] },
     ],
-    ...pays(320, [styleQuestPay(56, 10), questPay('fortitude', 56, 6)]),
+    ...pays(320, [styleQuestPay(56, 2), questPay('fortitude', 56, 1)]),
   },
   {
     id: 'last-meal',
@@ -392,13 +392,13 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
     category: 'side',
     summary: 'Perpetua has fed every operative who reached the Spindle. She wants vault bloom for the ones who go down tomorrow.',
     offeredBy: 'cook-perpetua',
-    offerRequires: [],
+    offerRequires: ['the-last-hymn'],
     recommendedLevel: 50,
     steps: [
       { id: 'bloom', journal: 'Harvest three vault blooms in the Spindle. Try not to look back at them.', objectives: [{ type: 'gather', itemId: 'vault-bloom', count: 3, label: 'Harvest vault bloom' }] },
       { id: 'hand', journal: 'Bring the bloom to Perpetua in the Last Post Mess.', objectives: [signalAt('last-meal-handed', 'cook-perpetua', 'Give Perpetua the bloom')] },
     ],
-    ...pays(260, [questPay('biochemistry', 52, 10)], [{ type: 'giveItem', itemId: 'tide-broth' }, { type: 'giveItem', itemId: 'tide-broth' }], ['2 Tide Broth']),
+    ...pays(260, [questPay('biochemistry', 52, 2)], [{ type: 'giveItem', itemId: 'tide-broth' }, { type: 'giveItem', itemId: 'tide-broth' }], ['2 Tide Broth']),
   },
 ];
 
@@ -406,9 +406,9 @@ export const FAR_SPAN_QUESTLINES: readonly QuestlineDefinition[] = [
   { id: 'act-four-overrun', name: 'Act IV · Overrun', kind: 'main', summary: 'Retake Site Tallow, where Cohort 41 died.', questIds: ['sternward', 'name-tape', 'roll-call'] },
   { id: 'act-five-lost', name: 'Act V · Lost', kind: 'main', summary: 'Find out why Site Vesper went silent.', questIds: ['gone-quiet', 'countersong', 'the-last-hymn'] },
   { id: 'act-six-inverted', name: 'Act VI · Inverted', kind: 'main', summary: 'Cross into Site Null, where the cells are on the outside, and choose.', questIds: ['last-post', 'the-outside', 'the-review', 'end-of-file'] },
-  { id: 'rustwater-jobs', name: 'Rustwater Jobs', kind: 'side', summary: 'Odd jobs for the scavengers in the Meridian’s shadow.', questIds: ['by-weight', 'knock-knock', 'bilge-broth', 'dont-answer'] },
+  { id: 'rustwater-jobs', name: 'Rustwater Jobs', kind: 'side', summary: 'Odd jobs for the scavengers in the Meridian’s shadow.', questIds: ['by-weight', 'knock-knock', 'bilge-broth', 'dont-answer', 'salvage-rights'] },
   { id: 'choir-alms', name: 'Choir Alms', kind: 'side', summary: 'Small mercies for the pilgrims of the Glass Steppe.', questIds: ['coax-the-glass', 'refectory-silence', 'barefoot'] },
-  { id: 'last-post-errands', name: 'Last Post Errands', kind: 'side', summary: 'Keeping the last camp on the Span running.', questIds: ['cuts-like-nothing', 'checked-on', 'last-meal'] },
+  { id: 'last-post-errands', name: 'Last Post Errands', kind: 'side', summary: 'Keeping the last camp on the Span running.', questIds: ['cuts-like-nothing', 'checked-on', 'last-meal', 'door-duty'] },
 ];
 
 type Counted = readonly (readonly [itemId: string, count: number])[];
@@ -450,7 +450,7 @@ export const FAR_SPAN_DIALOGUES: readonly DialogueDefinition[] = [
     npc: 'scav-boss-mags',
     questId: 'sternward',
     offer: {
-      text: 'You’re the Directorate kid who walked out of Halcyon. Good. Site Tallow is two hours sternward, overrun, and every night it still calls the roll. Somebody has to go and tell it nobody’s coming.',
+      text: 'You’re the Directorate kid who walked out of Halcyon. Good. Site Tallow is three fields sternward, past the Reactor Scar, overrun, and every night it still calls the roll. Somebody has to go and tell it nobody’s coming.',
       accept: 'I’ll go and tell it.',
       requires: [ACT_THREE_END],
     },
@@ -465,7 +465,7 @@ export const FAR_SPAN_DIALOGUES: readonly DialogueDefinition[] = [
     notes: [{ stepId: 'rook', text: 'Tallow? Rustlings on the road, wraiths in the wet, and uniforms in the yard. Empty uniforms, walking. One had my brother’s name. Get hard before you go. They don’t stop for tea.' }],
     waiting: '',
     done: 'You came back. Most don’t. Most do, actually, but they come back wrong.',
-    chat: 'Tallow’s two hours sternward. Don’t go. If you go, don’t go at night. If you go at night, don’t answer roll call.',
+    chat: 'Tallow’s three fields sternward, past the Reactor Scar. Don’t go. If you go, don’t go at night. If you go at night, don’t answer roll call.',
   }),
   handIn(
     {
@@ -526,6 +526,9 @@ export const FAR_SPAN_DIALOGUES: readonly DialogueDefinition[] = [
       offer: {
         text: 'You want to sell me hull plate? Show me your hands. No. Soft. Get your Salvage to thirty on the crusher housings, then cut me five plates off the wrecks. Clean edges. I can tell.',
         accept: 'Five plates, clean edges.',
+        requires: ['breach'],
+        conditions: [{ type: 'combatLevel', atLeast: 25 }],
+        notReady: 'Rustwater’s heaps bite back at soft operatives. Come back at combat level 25 and I will look at your hands.',
       },
       waiting: 'Five plates. If they’re ragged I’ll pay you in rags.',
       hand: { stepId: 'hand', text: 'Let’s see the plate.', option: 'Five hull plates.', items: [], signal: 'by-weight-handed', thanks: 'Hm. Good edges. Better than mine, and I won’t say that twice. Here.' },
@@ -541,6 +544,9 @@ export const FAR_SPAN_DIALOGUES: readonly DialogueDefinition[] = [
     offer: {
       text: 'You hear that? Every night. Knock, knock, knock, from inside the hull. It’s hull knockers. Crabs wearing the ship. I have to climb in there tomorrow and I would like it to be a crab-free climb.',
       accept: 'I’ll answer the door.',
+        requires: ['breach'],
+        conditions: [{ type: 'combatLevel', atLeast: 28 }],
+        notReady: 'Knockers are the size of a car and twice as rude. Come back at combat level 28.',
     },
     waiting: 'Six knockers should do it. They come in families, and I don’t want to meet the in-laws.',
     notes: [{ stepId: 'faye', text: 'Quiet. Actually quiet. I can hear the hull settle. Two hundred years old and it still creaks like a new ship. Take some plate, I rolled it myself.' }],
@@ -554,6 +560,9 @@ export const FAR_SPAN_DIALOGUES: readonly DialogueDefinition[] = [
       offer: {
         text: 'I’m out of the secret ingredient. It’s a secret. It’s green and it grows in the shallows and it’s called tide weed. Bring me four bunches and I’ll make you a broth you’ll remember. Not fondly. But you’ll remember.',
         accept: 'Four bunches of the secret.',
+        requires: ['breach'],
+        conditions: [{ type: 'skillLevel', skill: 'biochemistry', atLeast: 30 }],
+        notReady: 'Tide weed cuts you back if you don’t know the current. Biochemistry 30, then we talk secrets.',
       },
       waiting: 'Tide weed. Shallows. Against the current. If it’s going with the current, it isn’t weed, leave it alone.',
       hand: { stepId: 'hand', text: 'Smells like the secret.', option: 'Four bunches of tide weed.', items: [], signal: 'bilge-broth-handed', thanks: 'Perfect. Two bowls for you. Drink it hot. Drink it fast. Don’t look in the bottom.' },
@@ -626,6 +635,9 @@ export const FAR_SPAN_DIALOGUES: readonly DialogueDefinition[] = [
     offer: {
       text: 'You walk on the glass like it is floor. It is not floor. It is a letter. Walk the Glass Flats, the Pylon Walk and the Shard Moor, and listen. Shoes are optional. I have strong views on which option.',
       accept: 'I’ll listen. Shoes on.',
+        requires: ['gone-quiet'],
+        conditions: [{ type: 'combatLevel', atLeast: 40 }],
+        notReady: 'The glass will not talk to someone it could swallow. Come back at combat level 40.',
     },
     waiting: 'Three places: the Flats, the Pylon Walk, the Moor. Listen with your feet.',
     notes: [{ stepId: 'ruth', text: 'What did it say? A list of names, under the hum? Yes. It says that to everyone. The question is whether yours was on it twice.' }],
@@ -639,6 +651,9 @@ export const FAR_SPAN_DIALOGUES: readonly DialogueDefinition[] = [
       offer: {
         text: 'I want to blow a bell that rings in red. Not loud, red. For that I need red trace, five of it. Study it off the Steppe or take it off things that hum. Gently. Coax it. Don’t force it.',
         accept: 'Five red traces, coaxed.',
+        requires: ['roll-call'],
+        conditions: [{ type: 'combatLevel', atLeast: 38 }],
+        notReady: 'The things that hum on the Steppe are past forty. Come back at combat level 38 and I will trust you with glass.',
       },
       waiting: 'Five red traces. If any of them are humming, wrap them in cloth. They do not like to be carried while singing.',
       hand: { stepId: 'hand', text: 'Is that red trace I hear?', option: 'Five red traces.', items: [], signal: 'coax-the-glass-handed', thanks: 'Good colour. This will make a bell that rings at the edge of hearing, in red. You will know it when you see it.' },
@@ -653,6 +668,9 @@ export const FAR_SPAN_DIALOGUES: readonly DialogueDefinition[] = [
     offer: {
       text: 'Every evening the echoes from Vesper come to the Refectory windows and sing grace. Beautifully. For three hours. I would like, once, to eat soup in silence. Five of them, perhaps. The rest will take the hint.',
       accept: 'Five echoes, for soup.',
+        requires: ['gone-quiet'],
+        conditions: [{ type: 'combatLevel', atLeast: 44 }],
+        notReady: 'The echoes are stronger than they sound. Come back at combat level 44, and eat something first.',
     },
     waiting: 'Five choir echoes. They walk the Steppe between here and Vesper, still holding the note.',
     notes: [{ stepId: 'ansel', text: 'Listen. Nothing. Just the soup. Sit. Eat. Say nothing. That is the whole grace.' }],
@@ -733,6 +751,9 @@ export const FAR_SPAN_DIALOGUES: readonly DialogueDefinition[] = [
       offer: {
         text: 'The generators run on vault glass and I run on swearing. I am low on both. Four vault residues off the Spindle floor. You’ll need Salvage fifty or it will cut you instead. It still might.',
         accept: 'Four residues. Gloves on.',
+        requires: ['the-last-hymn'],
+        conditions: [{ type: 'combatLevel', atLeast: 48 }],
+        notReady: 'The Spindle rim is no place below combat level 48. Come back when it is.',
       },
       waiting: 'Four vault residues. Black, glassy, your reflection lags. Don’t stare at the lag.',
       hand: { stepId: 'hand', text: 'Is that residue? Hand it over slowly.', option: 'Four vault residues.', items: [], signal: 'cuts-like-nothing-handed', thanks: 'Lovely. That’s another month of lights. Hold out your hand. No, the other one. You still have both? Good work.' },
@@ -747,6 +768,9 @@ export const FAR_SPAN_DIALOGUES: readonly DialogueDefinition[] = [
     offer: {
       text: 'My patients come back from the rim with clipboard bruises, insisting their name is something else. It’s the null stalkers. They do rounds. They check on you. Five of them, discharged, and my ward empties.',
       accept: 'Five stalkers. Discharged.',
+        requires: ['last-post'],
+        conditions: [{ type: 'combatLevel', atLeast: 54 }],
+        notReady: 'Null stalkers are fifty-six and thorough. Come back at combat level 54.',
     },
     waiting: 'Null stalkers. Directorate white, clipboard for a head. If one asks your name, lie.',
     notes: [{ stepId: 'quill', text: 'Bed four woke up this morning and gave his own name. First time in a month. He wept. I may have wept. Here, for your trouble.' }],
@@ -761,6 +785,9 @@ export const FAR_SPAN_DIALOGUES: readonly DialogueDefinition[] = [
       offer: {
         text: 'Everyone who goes down to Null gets a last meal. Not because it’s their last. Because it might be. I need vault bloom for the stock, three of it. It turns towards you when you pick it. Pick it anyway.',
         accept: 'Three blooms.',
+        requires: ['the-last-hymn'],
+        conditions: [{ type: 'skillLevel', skill: 'biochemistry', atLeast: 50 }],
+        notReady: 'Vault bloom bites the hand that picks it badly. Biochemistry 50, love, then come back.',
       },
       waiting: 'Vault bloom, three. Pale, in the dark, facing you. It doesn’t mind. Much.',
       hand: { stepId: 'hand', text: 'Smells like bloom. Smells like you, a bit.', option: 'Three vault blooms.', items: [], signal: 'last-meal-handed', thanks: 'That’s the stock sorted. Two bowls for you, now and later. Eat the second one when you come back up.' },
@@ -820,7 +847,7 @@ export const FAR_SPAN_RECIPES: readonly RecipeDefinition[] = [
       { itemId: 'directorate-salvage', count: 2 },
     ],
     output: { itemId: 'silence-bell', count: 1 },
-    experience: 300,
+    experience: 12.5,
     ticks: 6,
   },
 ];

@@ -8,13 +8,17 @@
   "ambience": { "darkness": 0.16, "tint": "#e8eef4", "fog": "#c8d8e8", "sky": "#9fc8f0", "weather": ["mist"], "haze": 0.7 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 12 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 28, "y": 25, "width": 14, "height": 10 }, "height": 7 },
+    { "kind": "building", "id": "net-loft", "rect": { "x": 29, "y": 26, "width": 12, "height": 8 }, "floor": "concrete", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Brim Shore" }
+    { "room": "ground", "name": "Brim Shore" },
+    { "room": "net-loft", "name": "Net Loft", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 33, "dy": 15 }
+    "start": { "room": "ground", "dx": 35, "dy": 37 }
   },
   "objects": [
     { "id": "brim-shore-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 8, "dy": 27 } },
@@ -27,32 +31,42 @@
     { "id": "brim-shore-street-bench-7", "object": "street-bench", "at": { "room": "ground", "dx": 12, "dy": 21 }, "facing": "south" },
     { "id": "brim-shore-cable-drum-8", "object": "cable-drum", "at": { "room": "ground", "dx": 26, "dy": 8 } },
     { "id": "brim-shore-scrap-pile-9", "object": "scrap-pile", "at": { "room": "ground", "dx": 44, "dy": 3 } },
-    { "id": "brim-shore-faint-trace-10", "object": "faint-trace", "at": { "room": "ground", "dx": 4, "dy": 12 } }
+    { "id": "brim-shore-faint-trace-10", "object": "faint-trace", "at": { "room": "ground", "dx": 4, "dy": 12 } },
+    { "id": "net-loft-ward-refinery-0", "object": "ward-refinery", "at": { "room": "net-loft", "dx": 1, "dy": 1 } },
+    { "id": "net-loft-ward-fabricator-1", "object": "ward-fabricator", "at": { "room": "net-loft", "dx": 4, "dy": 1 } },
+    { "id": "net-loft-ward-synthesiser-2", "object": "ward-synthesiser", "at": { "room": "net-loft", "dx": 7, "dy": 1 } },
+    { "id": "net-loft-shelving-3", "object": "shelving", "at": { "room": "net-loft", "dx": 10, "dy": 0 }, "facing": "south" },
+    { "id": "net-loft-shelving-4", "object": "shelving", "at": { "room": "net-loft", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "net-loft-table-5", "object": "table", "at": { "room": "net-loft", "dx": 10, "dy": 5 } },
+    { "id": "net-loft-chair-6", "object": "chair", "at": { "room": "net-loft", "dx": 10, "dy": 4 }, "facing": "south" },
+    { "id": "brim-shore-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 35, "dy": 13 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "brim-shore-feral-hound-0", "creature": "feral-hound", "at": { "room": "ground", "dx": 6, "dy": 18 } },
+    { "id": "brim-shore-seam-boar-0", "creature": "seam-boar", "at": { "room": "ground", "dx": 6, "dy": 18 } },
     { "id": "brim-shore-grounds-mite-1", "creature": "grounds-mite", "at": { "room": "ground", "dx": 22, "dy": 24 } },
-    { "id": "brim-shore-lawn-rat-2", "creature": "lawn-rat", "at": { "room": "ground", "dx": 59, "dy": 19 } },
-    { "id": "brim-shore-feral-hound-3", "creature": "feral-hound", "at": { "room": "ground", "dx": 51, "dy": 38 } },
+    { "id": "brim-shore-courtyard-gull-2", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 59, "dy": 19 } },
+    { "id": "brim-shore-seam-boar-3", "creature": "seam-boar", "at": { "room": "ground", "dx": 51, "dy": 38 } },
     { "id": "brim-shore-grounds-mite-4", "creature": "grounds-mite", "at": { "room": "ground", "dx": 59, "dy": 8 } },
-    { "id": "brim-shore-lawn-rat-5", "creature": "lawn-rat", "at": { "room": "ground", "dx": 54, "dy": 52 } },
-    { "id": "brim-shore-feral-hound-6", "creature": "feral-hound", "at": { "room": "ground", "dx": 46, "dy": 50 } },
+    { "id": "brim-shore-courtyard-gull-5", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 54, "dy": 52 } },
+    { "id": "brim-shore-seam-boar-6", "creature": "seam-boar", "at": { "room": "ground", "dx": 46, "dy": 50 } },
     { "id": "brim-shore-grounds-mite-7", "creature": "grounds-mite", "at": { "room": "ground", "dx": 49, "dy": 10 } },
-    { "id": "brim-shore-lawn-rat-8", "creature": "lawn-rat", "at": { "room": "ground", "dx": 48, "dy": 33 } },
-    { "id": "brim-shore-feral-hound-9", "creature": "feral-hound", "at": { "room": "ground", "dx": 14, "dy": 8 } },
+    { "id": "brim-shore-courtyard-gull-8", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 48, "dy": 33 } },
+    { "id": "brim-shore-seam-boar-9", "creature": "seam-boar", "at": { "room": "ground", "dx": 14, "dy": 8 } },
     { "id": "brim-shore-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 58, "dy": 14 } },
-    { "id": "brim-shore-lawn-rat-11", "creature": "lawn-rat", "at": { "room": "ground", "dx": 47, "dy": 42 } },
-    { "id": "brim-shore-feral-hound-12", "creature": "feral-hound", "at": { "room": "ground", "dx": 35, "dy": 34 } },
+    { "id": "brim-shore-courtyard-gull-11", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 47, "dy": 42 } },
     { "id": "brim-shore-grounds-mite-13", "creature": "grounds-mite", "at": { "room": "ground", "dx": 26, "dy": 16 } },
-    { "id": "brim-shore-lawn-rat-14", "creature": "lawn-rat", "at": { "room": "ground", "dx": 42, "dy": 18 } }
+    { "id": "brim-shore-courtyard-gull-14", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 42, "dy": 18 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "brim-shore-landmark", "prefab": "landmark-cove-lantern", "at": { "room": "ground", "dx": 35, "dy": 19 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "net-loft": { "theme": "works", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

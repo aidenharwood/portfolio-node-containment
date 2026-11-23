@@ -1,3 +1,5 @@
+import { experienceStepAt, roundExperience } from '../../character/skills.ts';
+import { STYLE_EXPERIENCE_PER_DAMAGE } from '../../combat/combatMath.ts';
 import type { CreatureDefinition } from '../../combat/creatures.ts';
 import type { GearMotif } from '../../gear/items.ts';
 
@@ -21,11 +23,9 @@ export interface Beast {
   readonly guard?: GearMotif;
 }
 
-const KILL_BONUS_LEVEL_CAP = 16;
+export const KILLS_PER_LEVEL = 35;
 
-const VETERAN_LEVEL = 14;
-
-const VETERAN_LEVEL_CAP = 44;
+const MIN_KILL_EXPERIENCE = 0.1;
 
 const THREAT_LEVEL = 28;
 
@@ -35,18 +35,12 @@ const THREAT_DEFENCE_PER_LEVEL = 2;
 
 const THREAT_INTEGRITY_PER_LEVEL = 2;
 
-const THREAT_EXPERIENCE_PER_LEVEL = 0.035;
-
 const threatLevels = (level: number): number => Math.max(0, level - THREAT_LEVEL);
 
 export const standardIntegrity = (level: number): number => level * 3 + 4 + THREAT_INTEGRITY_PER_LEVEL * threatLevels(level);
 
 export const killExperience = (level: number, integrity = standardIntegrity(level)): number =>
-  Math.round(
-    (level * 6 + 2 * Math.min(level, KILL_BONUS_LEVEL_CAP) ** 2 + 8 * Math.max(0, Math.min(level, VETERAN_LEVEL_CAP) - VETERAN_LEVEL) ** 2) *
-      (1 + THREAT_EXPERIENCE_PER_LEVEL * threatLevels(level)) *
-      (integrity / standardIntegrity(level)),
-  );
+  Math.max(MIN_KILL_EXPERIENCE, roundExperience((experienceStepAt(level) / KILLS_PER_LEVEL / standardIntegrity(level) - STYLE_EXPERIENCE_PER_DAMAGE) * integrity));
 
 export const beast = (spec: Beast, style = spec.style ?? 'melee', threat = threatLevels(spec.level), integrity = spec.integrity ?? standardIntegrity(spec.level)): CreatureDefinition => ({
   id: spec.id,

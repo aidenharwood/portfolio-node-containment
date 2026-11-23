@@ -8,18 +8,22 @@
   "ambience": { "darkness": 0.58, "tint": "#3a2448", "fog": "#1e1430", "sky": "#2a1838", "weather": ["rain"], "haze": 1.3 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 2, "row": 3 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 30, "y": 18, "width": 14, "height": 10 }, "height": 7 },
+    { "kind": "building", "id": "arcology-canteen", "rect": { "x": 31, "y": 19, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Low Arcology" }
+    { "room": "ground", "name": "Low Arcology" },
+    { "room": "arcology-canteen", "name": "Arcology Canteen", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 43, "dy": 24 }
+    "start": { "room": "ground", "dx": 37, "dy": 30 }
   },
   "objects": [
+    { "id": "low-arcology-quest-combine-camera", "object": "combine-camera", "at": { "room": "ground", "dx": 34, "dy": 39 } },
     { "id": "low-arcology-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 24, "dy": 56 } },
     { "id": "low-arcology-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 55, "dy": 14 } },
-    { "id": "low-arcology-food-stall-2", "object": "food-stall", "at": { "room": "ground", "dx": 45, "dy": 17 } },
     { "id": "low-arcology-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 42, "dy": 49 } },
     { "id": "low-arcology-food-stall-4", "object": "food-stall", "at": { "room": "ground", "dx": 30, "dy": 49 } },
     { "id": "low-arcology-utility-pole-5", "object": "utility-pole", "at": { "room": "ground", "dx": 59, "dy": 22 } },
@@ -28,31 +32,44 @@
     { "id": "low-arcology-harrow-north-gate-leaf-1", "object": "harrow-north-gate-leaf", "at": { "room": "ground", "dx": 15, "dy": 63 }, "facing": "south" },
     { "id": "low-arcology-amber-trace-9", "object": "amber-trace", "at": { "room": "ground", "dx": 29, "dy": 4 } },
     { "id": "low-arcology-scrap-heap-10", "object": "scrap-heap", "at": { "room": "ground", "dx": 20, "dy": 22 } },
-    { "id": "low-arcology-culture-bench-11", "object": "culture-bench", "at": { "room": "ground", "dx": 32, "dy": 17 } }
+    { "id": "arcology-canteen-ward-cooker-0", "object": "ward-cooker", "at": { "room": "arcology-canteen", "dx": 1, "dy": 0 } },
+    { "id": "arcology-canteen-shelving-1", "object": "shelving", "at": { "room": "arcology-canteen", "dx": 3, "dy": 0 }, "facing": "south" },
+    { "id": "arcology-canteen-vending-machine-2", "object": "vending-machine", "at": { "room": "arcology-canteen", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "arcology-canteen-counter-3", "object": "counter", "at": { "room": "arcology-canteen", "dx": 1, "dy": 3 } },
+    { "id": "arcology-canteen-counter-4", "object": "counter", "at": { "room": "arcology-canteen", "dx": 2, "dy": 3 } },
+    { "id": "arcology-canteen-counter-5", "object": "counter", "at": { "room": "arcology-canteen", "dx": 3, "dy": 3 } },
+    { "id": "arcology-canteen-table-6", "object": "table", "at": { "room": "arcology-canteen", "dx": 8, "dy": 3 } },
+    { "id": "arcology-canteen-chair-7", "object": "chair", "at": { "room": "arcology-canteen", "dx": 8, "dy": 2 }, "facing": "south" },
+    { "id": "arcology-canteen-table-8", "object": "table", "at": { "room": "arcology-canteen", "dx": 10, "dy": 3 } },
+    { "id": "arcology-canteen-chair-9", "object": "chair", "at": { "room": "arcology-canteen", "dx": 10, "dy": 2 }, "facing": "south" },
+    { "id": "arcology-canteen-table-10", "object": "table", "at": { "room": "arcology-canteen", "dx": 9, "dy": 6 } },
+    { "id": "arcology-canteen-chair-11", "object": "chair", "at": { "room": "arcology-canteen", "dx": 9, "dy": 5 }, "facing": "south" },
+    { "id": "low-arcology-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 52, "dy": 30 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "low-arcology-neon-moth-0", "creature": "neon-moth", "at": { "room": "ground", "dx": 6, "dy": 22 } },
+    { "id": "low-arcology-holo-shill-0", "creature": "holo-shill", "at": { "room": "ground", "dx": 6, "dy": 22 } },
     { "id": "low-arcology-alley-crawler-1", "creature": "alley-crawler", "at": { "room": "ground", "dx": 55, "dy": 51 } },
-    { "id": "low-arcology-neon-moth-2", "creature": "neon-moth", "at": { "room": "ground", "dx": 30, "dy": 30 } },
     { "id": "low-arcology-alley-crawler-3", "creature": "alley-crawler", "at": { "room": "ground", "dx": 57, "dy": 5 } },
-    { "id": "low-arcology-neon-moth-4", "creature": "neon-moth", "at": { "room": "ground", "dx": 59, "dy": 29 } },
+    { "id": "low-arcology-holo-shill-4", "creature": "holo-shill", "at": { "room": "ground", "dx": 59, "dy": 29 } },
     { "id": "low-arcology-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 13, "dy": 53 } },
-    { "id": "low-arcology-neon-moth-6", "creature": "neon-moth", "at": { "room": "ground", "dx": 50, "dy": 24 } },
     { "id": "low-arcology-alley-crawler-7", "creature": "alley-crawler", "at": { "room": "ground", "dx": 57, "dy": 42 } },
-    { "id": "low-arcology-neon-moth-8", "creature": "neon-moth", "at": { "room": "ground", "dx": 35, "dy": 57 } },
+    { "id": "low-arcology-holo-shill-8", "creature": "holo-shill", "at": { "room": "ground", "dx": 35, "dy": 57 } },
     { "id": "low-arcology-alley-crawler-9", "creature": "alley-crawler", "at": { "room": "ground", "dx": 22, "dy": 14 } },
-    { "id": "low-arcology-neon-moth-10", "creature": "neon-moth", "at": { "room": "ground", "dx": 49, "dy": 47 } },
+    { "id": "low-arcology-holo-shill-10", "creature": "holo-shill", "at": { "room": "ground", "dx": 49, "dy": 47 } },
     { "id": "low-arcology-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 24, "dy": 41 } },
-    { "id": "low-arcology-neon-moth-12", "creature": "neon-moth", "at": { "room": "ground", "dx": 60, "dy": 58 } },
+    { "id": "low-arcology-holo-shill-12", "creature": "holo-shill", "at": { "room": "ground", "dx": 60, "dy": 58 } },
     { "id": "low-arcology-alley-crawler-13", "creature": "alley-crawler", "at": { "room": "ground", "dx": 54, "dy": 27 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "low-arcology-landmark", "prefab": "landmark-park-clock", "at": { "room": "ground", "dx": 49, "dy": 23 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "arcology-canteen": { "theme": "canteen", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

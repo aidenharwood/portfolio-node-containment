@@ -26,7 +26,7 @@
     { "room": "processing", "name": "Processing Hall", "safe": true },
     { "room": "lab-a", "name": "Print Room", "safe": false },
     { "room": "ward", "name": "Recovery Ward", "safe": false },
-    { "room": "amber-cells", "name": "Roster Holding", "safe": false },
+    { "room": "amber-cells", "name": "Roster Holding", "safe": false, "multiCombat": true },
     { "room": "lower-lift", "name": "Sealed Lift", "safe": true }
   ],
   "anchors": {
@@ -34,6 +34,7 @@
     "lower-arrival": { "room": "lower-lift", "dx": 4, "dy": 4 }
   },
   "objects": [
+    { "id": "kestrel-intake-quest-old-lift-book", "object": "old-lift-book", "at": { "room": "processing", "dx": 15, "dy": 6 } },
     { "id": "kestrel-intake-lift-up", "object": "kestrel-lift-up", "at": { "room": "lift-lobby", "dx": 4, "dy": 0 } },
     { "id": "kestrel-intake-mi-lobby-notices", "object": "notice-board", "at": { "room": "lift-lobby", "dx": 1, "dy": 0 } },
     { "id": "kestrel-intake-mi-lobby-camera", "object": "security-camera", "at": { "room": "lift-lobby", "dx": 9, "dy": 0 } },
@@ -96,6 +97,7 @@
     { "id": "kestrel-intake-hask", "npc": "officer-hask", "at": { "room": "processing", "dx": 15, "dy": 2 } }
   ],
   "creatures": [
+    { "id": "amber-cells-drill-master-0", "creature": "drill-master", "at": { "room": "amber-cells", "dx": 20, "dy": 6 } },
     { "id": "kestrel-intake-0", "creature": "sim-wisp", "at": { "room": "amber-cells", "dx": 12, "dy": 8 } },
     { "id": "kestrel-intake-1", "creature": "sim-wisp", "at": { "room": "amber-cells", "dx": 28, "dy": 8 } },
     { "id": "kestrel-intake-2", "creature": "grounds-mite", "at": { "room": "amber-cells", "dx": 20, "dy": 9 } },

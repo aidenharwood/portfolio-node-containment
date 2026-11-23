@@ -8,53 +8,65 @@
   "ambience": { "darkness": 0.4, "tint": "#5a3a28", "fog": "#4a3424", "sky": "#8a6a50", "weather": ["dust", "embers"], "haze": 1.2 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 12, "row": 3 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 28, "y": 30, "width": 14, "height": 10 }, "height": 4 },
+    { "kind": "building", "id": "gantry-workshop", "rect": { "x": 29, "y": 31, "width": 12, "height": 8 }, "floor": "concrete", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Gantry Flats" }
+    { "room": "ground", "name": "Gantry Flats" },
+    { "room": "gantry-workshop", "name": "Gantry Workshop", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 9, "dy": 12 }
   },
   "objects": [
-    { "id": "gantry-flats-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 32 } },
     { "id": "gantry-flats-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 47, "dy": 7 } },
     { "id": "gantry-flats-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 17, "dy": 50 } },
-    { "id": "gantry-flats-burn-barrel-3", "object": "burn-barrel", "at": { "room": "ground", "dx": 33, "dy": 37 } },
     { "id": "gantry-flats-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 48, "dy": 23 } },
     { "id": "gantry-flats-burn-barrel-5", "object": "burn-barrel", "at": { "room": "ground", "dx": 34, "dy": 57 } },
     { "id": "gantry-flats-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 12, "dy": 20 } },
     { "id": "gantry-flats-wreck-north-gate-leaf-0", "object": "wreck-north-gate-leaf", "at": { "room": "ground", "dx": 44, "dy": 63 }, "facing": "south" },
     { "id": "gantry-flats-wreck-north-gate-leaf-1", "object": "wreck-north-gate-leaf", "at": { "room": "ground", "dx": 45, "dy": 63 }, "facing": "south" },
     { "id": "gantry-flats-wreck-plate-10", "object": "wreck-plate", "at": { "room": "ground", "dx": 51, "dy": 13 } },
-    { "id": "gantry-flats-tide-weed-11", "object": "tide-weed", "at": { "room": "ground", "dx": 38, "dy": 15 } }
+    { "id": "gantry-flats-tide-weed-11", "object": "tide-weed", "at": { "room": "ground", "dx": 38, "dy": 15 } },
+    { "id": "gantry-workshop-ward-refinery-0", "object": "ward-refinery", "at": { "room": "gantry-workshop", "dx": 1, "dy": 1 } },
+    { "id": "gantry-workshop-ward-fabricator-1", "object": "ward-fabricator", "at": { "room": "gantry-workshop", "dx": 4, "dy": 1 } },
+    { "id": "gantry-workshop-ward-synthesiser-2", "object": "ward-synthesiser", "at": { "room": "gantry-workshop", "dx": 7, "dy": 1 } },
+    { "id": "gantry-workshop-shelving-3", "object": "shelving", "at": { "room": "gantry-workshop", "dx": 10, "dy": 0 }, "facing": "south" },
+    { "id": "gantry-workshop-shelving-4", "object": "shelving", "at": { "room": "gantry-workshop", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "gantry-workshop-table-5", "object": "table", "at": { "room": "gantry-workshop", "dx": 10, "dy": 5 } },
+    { "id": "gantry-workshop-chair-6", "object": "chair", "at": { "room": "gantry-workshop", "dx": 10, "dy": 4 }, "facing": "south" },
+    { "id": "gantry-flats-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 55, "dy": 32 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
     { "id": "gantry-flats-rustling-0", "creature": "rustling", "at": { "room": "ground", "dx": 4, "dy": 44 } },
-    { "id": "gantry-flats-hull-knocker-1", "creature": "hull-knocker", "at": { "room": "ground", "dx": 7, "dy": 24 } },
-    { "id": "gantry-flats-rustling-2", "creature": "rustling", "at": { "room": "ground", "dx": 32, "dy": 30 } },
-    { "id": "gantry-flats-hull-knocker-3", "creature": "hull-knocker", "at": { "room": "ground", "dx": 47, "dy": 50 } },
+    { "id": "gantry-flats-ballast-crab-1", "creature": "ballast-crab", "at": { "room": "ground", "dx": 7, "dy": 24 } },
+    { "id": "gantry-flats-ballast-crab-3", "creature": "ballast-crab", "at": { "room": "ground", "dx": 47, "dy": 50 } },
     { "id": "gantry-flats-rustling-4", "creature": "rustling", "at": { "room": "ground", "dx": 28, "dy": 6 } },
-    { "id": "gantry-flats-hull-knocker-5", "creature": "hull-knocker", "at": { "room": "ground", "dx": 21, "dy": 29 } },
+    { "id": "gantry-flats-ballast-crab-5", "creature": "ballast-crab", "at": { "room": "ground", "dx": 21, "dy": 29 } },
     { "id": "gantry-flats-rustling-6", "creature": "rustling", "at": { "room": "ground", "dx": 54, "dy": 53 } },
-    { "id": "gantry-flats-hull-knocker-7", "creature": "hull-knocker", "at": { "room": "ground", "dx": 17, "dy": 36 } },
+    { "id": "gantry-flats-ballast-crab-7", "creature": "ballast-crab", "at": { "room": "ground", "dx": 17, "dy": 36 } },
     { "id": "gantry-flats-rustling-8", "creature": "rustling", "at": { "room": "ground", "dx": 5, "dy": 6 } },
-    { "id": "gantry-flats-hull-knocker-9", "creature": "hull-knocker", "at": { "room": "ground", "dx": 18, "dy": 57 } },
+    { "id": "gantry-flats-ballast-crab-9", "creature": "ballast-crab", "at": { "room": "ground", "dx": 18, "dy": 57 } },
     { "id": "gantry-flats-rustling-10", "creature": "rustling", "at": { "room": "ground", "dx": 17, "dy": 9 } },
-    { "id": "gantry-flats-hull-knocker-11", "creature": "hull-knocker", "at": { "room": "ground", "dx": 58, "dy": 46 } },
+    { "id": "gantry-flats-ballast-crab-11", "creature": "ballast-crab", "at": { "room": "ground", "dx": 58, "dy": 46 } },
     { "id": "gantry-flats-rustling-12", "creature": "rustling", "at": { "room": "ground", "dx": 24, "dy": 12 } },
-    { "id": "gantry-flats-hull-knocker-13", "creature": "hull-knocker", "at": { "room": "ground", "dx": 30, "dy": 11 } },
+    { "id": "gantry-flats-ballast-crab-13", "creature": "ballast-crab", "at": { "room": "ground", "dx": 30, "dy": 11 } },
     { "id": "gantry-flats-rustling-14", "creature": "rustling", "at": { "room": "ground", "dx": 36, "dy": 47 } },
-    { "id": "gantry-flats-hull-knocker-15", "creature": "hull-knocker", "at": { "room": "ground", "dx": 53, "dy": 36 } },
+    { "id": "gantry-flats-ballast-crab-15", "creature": "ballast-crab", "at": { "room": "ground", "dx": 53, "dy": 36 } },
     { "id": "gantry-flats-rustling-16", "creature": "rustling", "at": { "room": "ground", "dx": 10, "dy": 59 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "gantry-flats-landmark", "prefab": "landmark-cargo-gantry", "at": { "room": "ground", "dx": 47, "dy": 34 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "gantry-workshop": { "theme": "works", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

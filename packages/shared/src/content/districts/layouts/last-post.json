@@ -104,6 +104,7 @@
     { "id": "last-post-tram-car", "assembly": "tram-car", "at": { "room": "tram-terminal", "dx": 14, "dy": 3 } }
   ],
   "npcs": [
+    { "id": "last-post-quest-reprint-cass", "npc": "reprint-cass", "at": { "room": "ground", "dx": 41, "dy": 39 } },
     { "id": "last-post-hq-captain-halloran", "npc": "captain-halloran", "at": { "room": "last-post-hq", "dx": 2, "dy": 2 } },
     { "id": "last-post-mess-cook-perpetua", "npc": "cook-perpetua", "at": { "room": "last-post-mess", "dx": 2, "dy": 2 } },
     { "id": "last-post-aid-medic-quill", "npc": "medic-quill", "at": { "room": "last-post-aid", "dx": 9, "dy": 4 } },

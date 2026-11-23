@@ -8,51 +8,65 @@
   "ambience": { "darkness": 0.62, "tint": "#1a2a3a", "fog": "#0c1824", "sky": "#1a3048", "weather": ["sparks"], "haze": 1.4 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 7, "row": 7 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 28, "y": 29, "width": 14, "height": 10 }, "height": 11 },
+    { "kind": "building", "id": "crown-lab", "rect": { "x": 29, "y": 30, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Crown Plating" }
+    { "room": "ground", "name": "Crown Plating" },
+    { "room": "crown-lab", "name": "Crown Lab", "safe": false }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 39, "dy": 7 }
   },
   "objects": [
-    { "id": "crown-plating-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 39 } },
     { "id": "crown-plating-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 59, "dy": 47 } },
-    { "id": "crown-plating-precursor-pylon-2", "object": "precursor-pylon", "at": { "room": "ground", "dx": 36, "dy": 34 } },
     { "id": "crown-plating-barricade-3", "object": "barricade", "at": { "room": "ground", "dx": 42, "dy": 51 } },
     { "id": "crown-plating-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 13, "dy": 44 } },
     { "id": "crown-plating-checkpoint-barrier-5", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 51, "dy": 5 } },
     { "id": "crown-plating-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 21, "dy": 30 } },
-    { "id": "crown-plating-vault-bloom-9", "object": "vault-bloom", "at": { "room": "ground", "dx": 56, "dy": 19 } }
+    { "id": "crown-plating-vault-bloom-9", "object": "vault-bloom", "at": { "room": "ground", "dx": 56, "dy": 19 } },
+    { "id": "crown-lab-lab-bench-0", "object": "lab-bench", "at": { "room": "crown-lab", "dx": 2, "dy": 3 } },
+    { "id": "crown-lab-lab-bench-1", "object": "lab-bench", "at": { "room": "crown-lab", "dx": 3, "dy": 3 } },
+    { "id": "crown-lab-lab-bench-2", "object": "lab-bench", "at": { "room": "crown-lab", "dx": 4, "dy": 3 } },
+    { "id": "crown-lab-lab-bench-3", "object": "lab-bench", "at": { "room": "crown-lab", "dx": 5, "dy": 3 } },
+    { "id": "crown-lab-shelving-4", "object": "shelving", "at": { "room": "crown-lab", "dx": 9, "dy": 0 }, "facing": "south" },
+    { "id": "crown-lab-shelving-5", "object": "shelving", "at": { "room": "crown-lab", "dx": 10, "dy": 0 }, "facing": "south" },
+    { "id": "crown-lab-shelving-6", "object": "shelving", "at": { "room": "crown-lab", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "crown-lab-vault-trace-7", "object": "vault-trace", "at": { "room": "crown-lab", "dx": 10, "dy": 5 } },
+    { "id": "crown-plating-poi-spindle-vault-drawer-0", "object": "spindle-vault-drawer", "at": { "room": "ground", "dx": 47, "dy": 42 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "crown-plating-null-stalker-0", "creature": "null-stalker", "at": { "room": "ground", "dx": 10, "dy": 16 } },
+    { "id": "crown-plating-clerk-of-null-0", "creature": "clerk-of-null", "at": { "room": "ground", "dx": 10, "dy": 16 } },
     { "id": "crown-plating-null-echo-1", "creature": "null-echo", "at": { "room": "ground", "dx": 26, "dy": 50 } },
     { "id": "crown-plating-cell-breaker-2", "creature": "cell-breaker", "at": { "room": "ground", "dx": 6, "dy": 29 } },
-    { "id": "crown-plating-null-stalker-3", "creature": "null-stalker", "at": { "room": "ground", "dx": 32, "dy": 57 } },
+    { "id": "crown-plating-clerk-of-null-3", "creature": "clerk-of-null", "at": { "room": "ground", "dx": 32, "dy": 57 } },
     { "id": "crown-plating-null-echo-4", "creature": "null-echo", "at": { "room": "ground", "dx": 55, "dy": 11 } },
     { "id": "crown-plating-cell-breaker-5", "creature": "cell-breaker", "at": { "room": "ground", "dx": 19, "dy": 22 } },
-    { "id": "crown-plating-null-stalker-6", "creature": "null-stalker", "at": { "room": "ground", "dx": 19, "dy": 16 } },
-    { "id": "crown-plating-null-echo-7", "creature": "null-echo", "at": { "room": "ground", "dx": 35, "dy": 43 } },
+    { "id": "crown-plating-clerk-of-null-6", "creature": "clerk-of-null", "at": { "room": "ground", "dx": 19, "dy": 16 } },
     { "id": "crown-plating-cell-breaker-8", "creature": "cell-breaker", "at": { "room": "ground", "dx": 43, "dy": 20 } },
-    { "id": "crown-plating-null-stalker-9", "creature": "null-stalker", "at": { "room": "ground", "dx": 52, "dy": 58 } },
+    { "id": "crown-plating-clerk-of-null-9", "creature": "clerk-of-null", "at": { "room": "ground", "dx": 52, "dy": 58 } },
     { "id": "crown-plating-null-echo-10", "creature": "null-echo", "at": { "room": "ground", "dx": 7, "dy": 11 } },
     { "id": "crown-plating-cell-breaker-11", "creature": "cell-breaker", "at": { "room": "ground", "dx": 5, "dy": 18 } },
-    { "id": "crown-plating-null-stalker-12", "creature": "null-stalker", "at": { "room": "ground", "dx": 31, "dy": 21 } },
+    { "id": "crown-plating-clerk-of-null-12", "creature": "clerk-of-null", "at": { "room": "ground", "dx": 31, "dy": 21 } },
     { "id": "crown-plating-null-echo-13", "creature": "null-echo", "at": { "room": "ground", "dx": 11, "dy": 51 } },
     { "id": "crown-plating-cell-breaker-14", "creature": "cell-breaker", "at": { "room": "ground", "dx": 14, "dy": 9 } },
-    { "id": "crown-plating-null-stalker-15", "creature": "null-stalker", "at": { "room": "ground", "dx": 34, "dy": 15 } },
+    { "id": "crown-plating-clerk-of-null-15", "creature": "clerk-of-null", "at": { "room": "ground", "dx": 34, "dy": 15 } },
     { "id": "crown-plating-null-echo-16", "creature": "null-echo", "at": { "room": "ground", "dx": 48, "dy": 16 } },
-    { "id": "crown-plating-cell-breaker-17", "creature": "cell-breaker", "at": { "room": "ground", "dx": 51, "dy": 27 } }
+    { "id": "crown-plating-cell-breaker-17", "creature": "cell-breaker", "at": { "room": "ground", "dx": 51, "dy": 27 } },
+    { "id": "crown-lab-null-echo-0", "creature": "null-echo", "at": { "room": "crown-lab", "dx": 8, "dy": 5 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "crown-plating-landmark", "prefab": "landmark-crown-needle", "at": { "room": "ground", "dx": 47, "dy": 34 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "crown-lab": { "theme": "lab", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

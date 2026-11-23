@@ -33,6 +33,7 @@
     "start": { "room": "ground", "dx": 48, "dy": 4 }
   },
   "objects": [
+    { "id": "kestrel-commons-quest-returns-board", "object": "returns-board", "at": { "room": "ground", "dx": 41, "dy": 39 } },
     { "id": "kestrel-commons-departure-board", "object": "departure-board", "at": { "room": "tram-terminal", "dx": 4, "dy": 0 }, "facing": "south" },
     { "id": "kestrel-commons-terminal-bench", "object": "street-bench", "at": { "room": "tram-terminal", "dx": 26, "dy": 0 }, "facing": "south" },
     { "id": "commons-stores-shelving-0", "object": "shelving", "at": { "room": "commons-stores", "dx": 1, "dy": 0 }, "facing": "south" },

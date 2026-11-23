@@ -18,11 +18,12 @@
   "areas": [
     { "room": "ground", "name": "Site Tallow" },
     { "room": "tallow-forward-post", "name": "Tallow Forward Post", "safe": true },
-    { "room": "tallow-holding", "name": "Tallow Holding", "safe": false },
+    { "room": "tallow-holding", "name": "Tallow Holding", "safe": false, "multiCombat": true },
     { "room": "tallow-barracks", "name": "Tallow Barracks", "safe": false },
     { "room": "tallow-parade", "name": "The Parade Ground", "safe": false, "multiCombat": true }
   ],
   "anchors": {
+    "lift-arrival": { "room": "tallow-forward-post", "dx": 7, "dy": 2 },
     "start": { "room": "ground", "dx": 4, "dy": 21 }
   },
   "objects": [
@@ -31,6 +32,7 @@
     { "id": "tallow-forward-post-notice-board-2", "object": "notice-board", "at": { "room": "tallow-forward-post", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "tallow-forward-post-storage-locker-3", "object": "storage-locker", "at": { "room": "tallow-forward-post", "dx": 9, "dy": 0 }, "facing": "south" },
     { "id": "tallow-forward-post-security-camera-4", "object": "security-camera", "at": { "room": "tallow-forward-post", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "tallow-forward-post-tallow-lift-down-9", "object": "tallow-lift-down", "at": { "room": "tallow-forward-post", "dx": 7, "dy": 0 }, "facing": "south" },
     { "id": "tallow-forward-post-table-5", "object": "table", "at": { "room": "tallow-forward-post", "dx": 3, "dy": 3 } },
     { "id": "tallow-forward-post-table-6", "object": "table", "at": { "room": "tallow-forward-post", "dx": 4, "dy": 3 } },
     { "id": "tallow-forward-post-chair-7", "object": "chair", "at": { "room": "tallow-forward-post", "dx": 3, "dy": 2 }, "facing": "south" },
@@ -76,6 +78,7 @@
     { "id": "tallow-forward-post-lt-osei", "npc": "lt-osei", "at": { "room": "tallow-forward-post", "dx": 8, "dy": 3 } }
   ],
   "creatures": [
+    { "id": "tallow-holding-the-bosun-0", "creature": "the-bosun", "at": { "room": "tallow-holding", "dx": 6, "dy": 4 } },
     { "id": "tallow-holding-bilge-wraith-0", "creature": "bilge-wraith", "at": { "room": "tallow-holding", "dx": 2, "dy": 5 } },
     { "id": "tallow-holding-misprint-1", "creature": "misprint", "at": { "room": "tallow-holding", "dx": 9, "dy": 6 } },
     { "id": "tallow-barracks-misprint-0", "creature": "misprint", "at": { "room": "tallow-barracks", "dx": 6, "dy": 3 } },

@@ -8,53 +8,67 @@
   "ambience": { "darkness": 0.2, "tint": "#e4dcb8", "fog": "#d8d0a8", "sky": "#b8d8c0", "weather": ["dust"], "haze": 0.8 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 3, "row": 4 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 30, "y": 30, "width": 14, "height": 10 }, "height": 9 },
+    { "kind": "building", "id": "rise-pump-house", "rect": { "x": 31, "y": 31, "width": 12, "height": 8 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Windpump Rise" }
+    { "room": "ground", "name": "Windpump Rise" },
+    { "room": "rise-pump-house", "name": "Pump House", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 14, "dy": 36 }
   },
   "objects": [
+    { "id": "windpump-rise-quest-windpump-housing", "object": "windpump-housing", "at": { "room": "ground", "dx": 41, "dy": 42 } },
     { "id": "windpump-rise-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 15 } },
     { "id": "windpump-rise-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 60, "dy": 44 } },
     { "id": "windpump-rise-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 13, "dy": 45 } },
     { "id": "windpump-rise-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 41, "dy": 26 } },
     { "id": "windpump-rise-washing-line-4", "object": "washing-line", "at": { "room": "ground", "dx": 48, "dy": 9 } },
     { "id": "windpump-rise-street-tree-5", "object": "street-tree", "at": { "room": "ground", "dx": 29, "dy": 51 } },
-    { "id": "windpump-rise-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 40, "dy": 40 } },
     { "id": "windpump-rise-culvert-trace-7", "object": "culvert-trace", "at": { "room": "ground", "dx": 17, "dy": 16 } },
-    { "id": "windpump-rise-lock-gear-8", "object": "lock-gear", "at": { "room": "ground", "dx": 36, "dy": 32 } },
-    { "id": "windpump-rise-dredge-spot-9", "object": "dredge-spot", "at": { "room": "ground", "dx": 32, "dy": 60 } }
+    { "id": "windpump-rise-dredge-spot-9", "object": "dredge-spot", "at": { "room": "ground", "dx": 32, "dy": 60 } },
+    { "id": "rise-pump-house-ward-refinery-0", "object": "ward-refinery", "at": { "room": "rise-pump-house", "dx": 1, "dy": 1 } },
+    { "id": "rise-pump-house-ward-fabricator-1", "object": "ward-fabricator", "at": { "room": "rise-pump-house", "dx": 4, "dy": 1 } },
+    { "id": "rise-pump-house-ward-synthesiser-2", "object": "ward-synthesiser", "at": { "room": "rise-pump-house", "dx": 7, "dy": 1 } },
+    { "id": "rise-pump-house-shelving-3", "object": "shelving", "at": { "room": "rise-pump-house", "dx": 10, "dy": 0 }, "facing": "south" },
+    { "id": "rise-pump-house-shelving-4", "object": "shelving", "at": { "room": "rise-pump-house", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "rise-pump-house-table-5", "object": "table", "at": { "room": "rise-pump-house", "dx": 10, "dy": 5 } },
+    { "id": "rise-pump-house-chair-6", "object": "chair", "at": { "room": "rise-pump-house", "dx": 10, "dy": 4 }, "facing": "south" },
+    { "id": "windpump-rise-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 39, "dy": 17 } }
   ],
   "assemblies": [],
-  "npcs": [],
+  "npcs": [
+    { "id": "rise-pump-house-windwright-cole", "npc": "windwright-cole", "at": { "room": "rise-pump-house", "dx": 2, "dy": 4 } }
+  ],
   "creatures": [
     { "id": "windpump-rise-thornback-0", "creature": "thornback", "at": { "room": "ground", "dx": 12, "dy": 30 } },
-    { "id": "windpump-rise-seed-mite-1", "creature": "seed-mite", "at": { "room": "ground", "dx": 31, "dy": 45 } },
+    { "id": "windpump-rise-windpump-wight-1", "creature": "windpump-wight", "at": { "room": "ground", "dx": 31, "dy": 45 } },
     { "id": "windpump-rise-thornback-2", "creature": "thornback", "at": { "room": "ground", "dx": 58, "dy": 60 } },
-    { "id": "windpump-rise-seed-mite-3", "creature": "seed-mite", "at": { "room": "ground", "dx": 20, "dy": 24 } },
+    { "id": "windpump-rise-windpump-wight-3", "creature": "windpump-wight", "at": { "room": "ground", "dx": 20, "dy": 24 } },
     { "id": "windpump-rise-thornback-4", "creature": "thornback", "at": { "room": "ground", "dx": 54, "dy": 54 } },
-    { "id": "windpump-rise-seed-mite-5", "creature": "seed-mite", "at": { "room": "ground", "dx": 54, "dy": 6 } },
+    { "id": "windpump-rise-windpump-wight-5", "creature": "windpump-wight", "at": { "room": "ground", "dx": 54, "dy": 6 } },
     { "id": "windpump-rise-thornback-6", "creature": "thornback", "at": { "room": "ground", "dx": 17, "dy": 54 } },
-    { "id": "windpump-rise-seed-mite-7", "creature": "seed-mite", "at": { "room": "ground", "dx": 28, "dy": 34 } },
     { "id": "windpump-rise-thornback-8", "creature": "thornback", "at": { "room": "ground", "dx": 46, "dy": 37 } },
-    { "id": "windpump-rise-seed-mite-9", "creature": "seed-mite", "at": { "room": "ground", "dx": 29, "dy": 5 } },
+    { "id": "windpump-rise-windpump-wight-9", "creature": "windpump-wight", "at": { "room": "ground", "dx": 29, "dy": 5 } },
     { "id": "windpump-rise-thornback-10", "creature": "thornback", "at": { "room": "ground", "dx": 5, "dy": 19 } },
-    { "id": "windpump-rise-seed-mite-11", "creature": "seed-mite", "at": { "room": "ground", "dx": 49, "dy": 20 } },
-    { "id": "windpump-rise-thornback-12", "creature": "thornback", "at": { "room": "ground", "dx": 33, "dy": 24 } },
-    { "id": "windpump-rise-seed-mite-13", "creature": "seed-mite", "at": { "room": "ground", "dx": 6, "dy": 14 } },
+    { "id": "windpump-rise-windpump-wight-11", "creature": "windpump-wight", "at": { "room": "ground", "dx": 49, "dy": 20 } },
+    { "id": "windpump-rise-windpump-wight-13", "creature": "windpump-wight", "at": { "room": "ground", "dx": 6, "dy": 14 } },
     { "id": "windpump-rise-thornback-14", "creature": "thornback", "at": { "room": "ground", "dx": 9, "dy": 34 } },
-    { "id": "windpump-rise-seed-mite-15", "creature": "seed-mite", "at": { "room": "ground", "dx": 12, "dy": 20 } },
+    { "id": "windpump-rise-windpump-wight-15", "creature": "windpump-wight", "at": { "room": "ground", "dx": 12, "dy": 20 } },
     { "id": "windpump-rise-thornback-16", "creature": "thornback", "at": { "room": "ground", "dx": 3, "dy": 32 } },
-    { "id": "windpump-rise-seed-mite-17", "creature": "seed-mite", "at": { "room": "ground", "dx": 11, "dy": 6 } }
+    { "id": "windpump-rise-windpump-wight-17", "creature": "windpump-wight", "at": { "room": "ground", "dx": 11, "dy": 6 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "windpump-rise-landmark", "prefab": "landmark-terrace-windpump", "at": { "room": "ground", "dx": 35, "dy": 23 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "rise-pump-house": { "theme": "works", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

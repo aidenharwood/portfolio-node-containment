@@ -6,13 +6,15 @@ export interface Recipe {
   readonly objects: { object: string; dx: number; dy: number; facing?: Facing }[];
   readonly npcs: { npc: string; dx: number; dy: number }[];
   readonly creatures: { creature: string; dx: number; dy: number }[];
+  readonly elites: { creature: string; dx: number; dy: number }[];
+  readonly late: { object: string; dx: number; dy: number; facing?: Facing; after: number }[];
   readonly anchors: Record<string, { dx: number; dy: number }>;
 }
 
 const S: Facing = 'south';
 
 export function recipeOf(building: BuildingSpec): Recipe {
-  const out: Recipe = { objects: [], npcs: [], creatures: [], anchors: {} };
+  const out: Recipe = { objects: [], npcs: [], creatures: [], elites: [], late: [], anchors: {} };
   const put = (object: string, dx: number, dy: number, facing?: Facing): void => void out.objects.push({ object, dx, dy, ...(facing ? { facing } : {}) });
   const npcs = building.npcs ?? [];
   const person = (index: number, dx: number, dy: number): void => {
@@ -77,6 +79,7 @@ export function recipeOf(building: BuildingSpec): Recipe {
       put('lab-bench', 10, 4);
       person(0, 9, 5); person(1, 2, 5);
       beasts([[2, 5], [9, 6], [3, 4]]);
+      if (building.elite) out.elites.push({ creature: building.elite, dx: 6, dy: 4 });
       break;
     }
     case 'headhouse':
@@ -97,6 +100,10 @@ export function recipeOf(building: BuildingSpec): Recipe {
     case 'office':
       put('shelving', 1, 0, S); put('shelving', 2, 0, S); put('notice-board', 6, 0, S); put('storage-locker', 9, 0, S); put('security-camera', 11, 0, S);
       put('table', 3, 3); put('table', 4, 3); put('chair', 3, 2, S); put('chair', 4, 2, S);
+      if (building.lift) {
+        out.late.push({ object: building.lift, dx: 7, dy: 0, facing: S, after: 4 });
+        out.anchors[building.anchor ?? 'lift-arrival'] = { dx: 7, dy: 2 };
+      }
       person(0, 8, 3); person(1, 2, 5);
       beasts([[9, 5], [2, 5]]);
       break;

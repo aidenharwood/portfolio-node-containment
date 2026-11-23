@@ -21,7 +21,7 @@ import type { Player } from '../world/player.ts';
 import type { World } from '../world/world.ts';
 import type { EffectRunner } from './effectRunner.ts';
 
-const NOTES_SETTLING = 'Your notes need a minute to settle.';
+const NOTES_SETTLING = 'Your notes need half a minute to settle.';
 
 export interface ResearchHost {
   notify(player: Player, tone: NoticeTone, text: string): void;

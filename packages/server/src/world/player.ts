@@ -73,6 +73,7 @@ export class Player {
   containTargetId: EntityId | null = null;
   finishingTargetId: EntityId | null = null;
   heldFireOn: EntityId | null = null;
+  fortitudeCarry = 0;
   shopSession: { readonly shopId: string; readonly keeperInstanceId: InstanceId | null } | null = null;
   activity: PlayerActivity | null = null;
   craftingStation: CraftingStation | null = null;

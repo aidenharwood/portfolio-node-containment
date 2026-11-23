@@ -1,12 +1,13 @@
-import { experienceForLevel, SKILL_INFO, type SkillId } from '../../character/skills.ts';
+import { experienceStepAt, SKILL_INFO, type SkillId } from '../../character/skills.ts';
 import type { GameEffect } from '../../rules/effects.ts';
 
-export const QUEST_PAY_FLAT_UNTIL = 10;
-export const QUEST_PAY_GROWTH = 15;
+export const QUEST_PAY_ROUNDING = 10;
 
-export const levelStepAt = (level: number): number => experienceForLevel(level + 1) - experienceForLevel(level);
+export const QUEST_PAY_SHARE = 0.18;
 
-export const questLevelShare = (level: number): number => 1 + Math.max(0, level - QUEST_PAY_FLAT_UNTIL) / QUEST_PAY_GROWTH;
+export const levelStepAt = experienceStepAt;
+
+export const questPayAmount = (level: number, weight: number): number => Math.max(QUEST_PAY_ROUNDING, Math.round((levelStepAt(level) * QUEST_PAY_SHARE * weight) / QUEST_PAY_ROUNDING) * QUEST_PAY_ROUNDING);
 
 export interface QuestPay {
   readonly effect: GameEffect;
@@ -14,13 +15,12 @@ export interface QuestPay {
 }
 
 export function questPay(skill: SkillId, level: number, weight: number): QuestPay {
-  const amount = Math.round((levelStepAt(level) * questLevelShare(level) * weight) / 100) * 100;
+  const amount = questPayAmount(level, weight);
   return { effect: { type: 'grantExperience', skill, amount }, line: `${amount} ${SKILL_INFO[skill].name} XP` };
 }
 
 export function styleQuestPay(level: number, weight: number): QuestPay {
-  const amount = Math.round((levelStepAt(level) * questLevelShare(level) * weight) / 100) * 100;
-  return styleExperiencePay(amount);
+  return styleExperiencePay(questPayAmount(level, weight));
 }
 
 export const styleExperiencePay = (amount: number): QuestPay => ({ effect: { type: 'grantStyleExperience', amount }, line: `${amount} combat XP (your weapon's skill)` });

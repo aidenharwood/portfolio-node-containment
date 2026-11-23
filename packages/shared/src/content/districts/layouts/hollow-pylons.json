@@ -8,50 +8,67 @@
   "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 14, "row": 7 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 20, "y": 30, "width": 14, "height": 10 }, "height": 11 },
+    { "kind": "building", "id": "tuning-station", "rect": { "x": 21, "y": 31, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Hollow Pylons" }
+    { "room": "ground", "name": "Hollow Pylons" },
+    { "room": "tuning-station", "name": "Tuning Station", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 30, "dy": 35 }
+    "start": { "room": "ground", "dx": 38, "dy": 40 }
   },
   "objects": [
+    { "id": "hollow-pylons-quest-pylon-tuner", "object": "pylon-tuner", "at": { "room": "ground", "dx": 41, "dy": 38 } },
     { "id": "hollow-pylons-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 20, "dy": 19 } },
     { "id": "hollow-pylons-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 14, "dy": 26 } },
-    { "id": "hollow-pylons-ledge-milestone-2", "object": "ledge-milestone", "at": { "room": "ground", "dx": 29, "dy": 27 } },
     { "id": "hollow-pylons-ledge-milestone-3", "object": "ledge-milestone", "at": { "room": "ground", "dx": 45, "dy": 43 } },
     { "id": "hollow-pylons-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 45, "dy": 22 } },
     { "id": "hollow-pylons-ledge-milestone-5", "object": "ledge-milestone", "at": { "room": "ground", "dx": 52, "dy": 23 } },
-    { "id": "hollow-pylons-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 11, "dy": 7 } }
+    { "id": "hollow-pylons-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 11, "dy": 7 } },
+    { "id": "tuning-station-lab-bench-0", "object": "lab-bench", "at": { "room": "tuning-station", "dx": 2, "dy": 3 } },
+    { "id": "tuning-station-lab-bench-1", "object": "lab-bench", "at": { "room": "tuning-station", "dx": 3, "dy": 3 } },
+    { "id": "tuning-station-lab-bench-2", "object": "lab-bench", "at": { "room": "tuning-station", "dx": 4, "dy": 3 } },
+    { "id": "tuning-station-lab-bench-3", "object": "lab-bench", "at": { "room": "tuning-station", "dx": 5, "dy": 3 } },
+    { "id": "tuning-station-shelving-4", "object": "shelving", "at": { "room": "tuning-station", "dx": 9, "dy": 0 }, "facing": "south" },
+    { "id": "tuning-station-shelving-5", "object": "shelving", "at": { "room": "tuning-station", "dx": 10, "dy": 0 }, "facing": "south" },
+    { "id": "tuning-station-shelving-6", "object": "shelving", "at": { "room": "tuning-station", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "hollow-pylons-poi-steppe-reliquary-0", "object": "steppe-reliquary", "at": { "room": "ground", "dx": 30, "dy": 56 } },
+    { "id": "hollow-pylons-poi-red-moss-1", "object": "red-moss", "at": { "room": "ground", "dx": 48, "dy": 32 } },
+    { "id": "hollow-pylons-poi-red-trace-2", "object": "red-trace", "at": { "room": "ground", "dx": 23, "dy": 23 } }
   ],
   "assemblies": [],
-  "npcs": [],
+  "npcs": [
+    { "id": "tuning-station-tuner-anwen", "npc": "tuner-anwen", "at": { "room": "tuning-station", "dx": 7, "dy": 2 } }
+  ],
   "creatures": [
-    { "id": "hollow-pylons-choir-echo-0", "creature": "choir-echo", "at": { "room": "ground", "dx": 3, "dy": 55 } },
+    { "id": "hollow-pylons-shard-wisp-0", "creature": "shard-wisp", "at": { "room": "ground", "dx": 3, "dy": 55 } },
     { "id": "hollow-pylons-red-twin-1", "creature": "red-twin", "at": { "room": "ground", "dx": 42, "dy": 50 } },
     { "id": "hollow-pylons-glass-stalker-2", "creature": "glass-stalker", "at": { "room": "ground", "dx": 18, "dy": 53 } },
-    { "id": "hollow-pylons-choir-echo-3", "creature": "choir-echo", "at": { "room": "ground", "dx": 6, "dy": 27 } },
+    { "id": "hollow-pylons-shard-wisp-3", "creature": "shard-wisp", "at": { "room": "ground", "dx": 6, "dy": 27 } },
     { "id": "hollow-pylons-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 59, "dy": 6 } },
     { "id": "hollow-pylons-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 42, "dy": 4 } },
-    { "id": "hollow-pylons-choir-echo-6", "creature": "choir-echo", "at": { "room": "ground", "dx": 28, "dy": 53 } },
     { "id": "hollow-pylons-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 37, "dy": 18 } },
     { "id": "hollow-pylons-glass-stalker-8", "creature": "glass-stalker", "at": { "room": "ground", "dx": 23, "dy": 8 } },
-    { "id": "hollow-pylons-choir-echo-9", "creature": "choir-echo", "at": { "room": "ground", "dx": 25, "dy": 47 } },
+    { "id": "hollow-pylons-shard-wisp-9", "creature": "shard-wisp", "at": { "room": "ground", "dx": 25, "dy": 47 } },
     { "id": "hollow-pylons-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 3, "dy": 47 } },
     { "id": "hollow-pylons-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 13, "dy": 49 } },
-    { "id": "hollow-pylons-choir-echo-12", "creature": "choir-echo", "at": { "room": "ground", "dx": 49, "dy": 37 } },
     { "id": "hollow-pylons-red-twin-13", "creature": "red-twin", "at": { "room": "ground", "dx": 53, "dy": 3 } },
     { "id": "hollow-pylons-glass-stalker-14", "creature": "glass-stalker", "at": { "room": "ground", "dx": 10, "dy": 15 } },
-    { "id": "hollow-pylons-choir-echo-15", "creature": "choir-echo", "at": { "room": "ground", "dx": 60, "dy": 47 } },
+    { "id": "hollow-pylons-shard-wisp-15", "creature": "shard-wisp", "at": { "room": "ground", "dx": 60, "dy": 47 } },
     { "id": "hollow-pylons-red-twin-16", "creature": "red-twin", "at": { "room": "ground", "dx": 39, "dy": 11 } },
     { "id": "hollow-pylons-glass-stalker-17", "creature": "glass-stalker", "at": { "room": "ground", "dx": 53, "dy": 42 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "hollow-pylons-landmark", "prefab": "landmark-pylon-line", "at": { "room": "ground", "dx": 29, "dy": 48 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "tuning-station": { "theme": "lab", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

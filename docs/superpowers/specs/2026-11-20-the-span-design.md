@@ -36,8 +36,8 @@ The tiers follow `TIER_LEVEL_FLOORS` (1 to 13). They first rose by column, west 
 | Kestrel Reach (`kestrel-reach`) | the south coast | 1–2 | Clean Directorate land: lawns, white paving, training yards, a lake | **Kestrel Commons**, a company town and the market hub | **Site Kestrel**, SC-V, Secure; looks like a training Site | Kestrel Intake (B1), T2 |
 | Harrow Terraces (`harrow-terraces`) | the Massif's west flank | 3–5 | Stepped farm terraces up a precursor slope, irrigation channels, windpumps | **Harrowgate**, a farming town | **Site Orchard**, SC-II, Strained; its seed stock is getting out into the fields | none |
 | Halcyon (`halcyon`) | the north-west | 6–7 | A neon arcology on asphalt: towers, holo billboards, food stalls, steam vents, alleys | **Halcyon Downtown**, under the Aurelian Combine's spire | **Site Gallowglass**, SC-III, Breached; gangs farm what got out | Gallowglass Undercity (B1), T7 |
-| The Wreckfield (`wreckfield`) | the north-east coast | 8–9 | Rust flats, a scrap sea and the crashed hull of the *Meridian* | **Rustwater**, a scavenger town in the hull's shadow | **Site Tallow**, SC-IV, Overrun; where Cohort 41 died | Tallow Holding (B1), T9 |
-| The Glass Steppe (`glass-steppe`) | the east plateau | 10–11 | Precursor glass plains, broken pylons, glassy pools, alien soil | **the Choir**, a pilgrim enclave that sings to the reliquaries | **Site Vesper**, SC-IV, Lost; dark and silent | Vesper Deep (B1), T11 |
+| The Wreckfield (`wreckfield`) | the north-east coast | 8–9 | Rust flats, a scrap sea and the crashed hull of the *Meridian* | **Rustwater**, a scavenger town in the hull's shadow | **Site Tallow**, SC-IV, Overrun; where Cohort 41 died | Tallow Holding (B1), T9, built: lift from the Tallow forward post |
+| The Glass Steppe (`glass-steppe`) | the east plateau | 10–11 | Precursor glass plains, broken pylons, glassy pools, alien soil | **the Choir**, a pilgrim enclave that sings to the reliquaries | **Site Vesper**, SC-IV, Lost; dark and silent | Vesper Deep (B1), T11, built: lift from the Vesper headhouse; the Cradle where the Precentor grew |
 | The Spindle (`the-spindle`) | the Massif's summit | 12–13 | The precursor terminus: dark plating, coolant, glass | **Last Post**, the final Directorate camp | **Site Null**, SC-V, Inverted (`uncanny`) | Null (B1), T13 |
 
 Every region has an outpost (a safe building with a storage locker, a quartermaster, an exchange mailbox and a contract board), a Site compound, a settlement and wild land. Kestrel Commons holds the exchange terminal, because it is the home region's hub.
@@ -46,14 +46,16 @@ Every region has an outpost (a safe building with a storage locker, a quartermas
 
 Every creature model is reused under new ids, names and levels, one band per region. The bosses get `encounter` mechanics (telegraphs, summons, hazards), which no creature used before.
 
-| Region | Creatures (model) | Boss |
-| - | - | - |
-| Kestrel | training drone, sim-wisp (crateWisp), lawn rat (canalRat), courtyard gull (pigeon) | none; the tutorial ends on a contained wisp |
-| Terraces | feral hound (strayDog), seed mite (gutterMite), furrow eel (siltEel), scarecoat (lineMimic), crop magpie (scrapMagpie) | **The Orchard Keeper** (lamplighter) |
-| Halcyon | neon moth (mothLantern), alley crawler (scrapCrawler), ad-wraith (vaultEcho), glass hound | **Mr Brightly**, a breached SC-III (redTwin) |
-| Wreckfield | rustling, hull knocker, bilge wraith (tideWraith), scrap crawler | **The Cohort** (cellBreaker) |
-| Glass Steppe | glass hound, cordon stalker, choir echo (vaultEcho), red twin | **The Precentor** (lamplighter, scaled) |
-| Spindle | null echo (vaultEcho), cell-breaker, stalker | **The Warden of Null** (warden) |
+| Region | Creatures (model) | Boss | Elite (holding cell) |
+| - | - | - | - |
+| Kestrel | training drone, sim-wisp (crateWisp), lawn rat (canalRat), courtyard gull (pigeon), feral hound and seam boar (strayDog), grounds mite (gutterMite), drill sentry (trainingDrone) | none; the tutorial ends on a contained wisp | the Drill Master, in Kestrel Intake's Roster Holding |
+| Terraces | crop magpie (scrapMagpie), furrow eel and ditch leech (siltEel), seed mite (gutterMite), scarecoat and windpump wight (lineMimic), thornback (strayDog), barn crawler (scrapCrawler) | **The Orchard Keeper** (lamplighter), level 19 | the Thornback Matriarch, in the Seed Vault |
+| Halcyon | neon moth and vent moth (mothLantern), alley crawler (scrapCrawler), ad-wraith and holo-shill (vaultEcho), glass hound | **Mr Brightly**, a breached SC-III (redTwin) | the Chrome Crawler, in Gallowglass Holding |
+| Wreckfield | rustling, hull knocker and ballast crab (hullKnocker), bilge wraith (tideWraith), misprint (lineMimic) | **The Cohort** (cellBreaker) | the Bosun (rustling), in Tallow Holding |
+| Glass Steppe | prism hound (glassHound), glass stalker (cordonStalker), shard wisp (crateWisp), choir echo (vaultEcho), red twin | **The Precentor** (lamplighter, scaled) | Prism Alpha, in Vesper Holding |
+| Spindle | null echo (vaultEcho), cell-breaker, null stalker, coolant wraith (tideWraith), clerk of Null (lineMimic) | **The Warden of Null** (warden) | the Null Auditor, in The Outside at Site Null |
+
+Neighbouring districts of a band draw different mixes from the region's roster, so walking a region changes what you fight. Bosses and elites pay `ENCOUNTER_EXPERIENCE_FACTOR` (2.5×) the kill experience of their integrity, outrank every regular creature placed with them and each drop at least one unique. Elites stand once each in a multi-combat holding cell, have 2.5× standard integrity, respawn every 1,500 to 3,000 ticks and drop a 2% unique on top of a guaranteed stack of their region's best materials.
 
 ## Crafting chain
 

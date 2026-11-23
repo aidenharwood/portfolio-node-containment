@@ -161,4 +161,25 @@ describe('quest handholding', () => {
     const goals = routeGoals(tracked, { level: shipped, npcPositions: new Map(), creatures: [], depletedInstances: new Set() }, GAME_CONTENT);
     assert.deepEqual(goals, [{ point: { x: area.rect.x + Math.floor(area.rect.width / 2), y: area.rect.y + Math.floor(area.rect.height / 2) }, arriveAdjacent: false }]);
   });
+  test('contain, craft, use and equip steps light up districts on the world map', () => {
+    const open = (objective: ActiveQuest['objectives'][number]['objective']) => [{ objective, progress: 0, goal: 1, done: false }];
+    assert.ok(objectiveDistricts(open({ type: 'contain', creatureId: 'sim-wisp', count: 1, label: 'Contain a wisp' }), GAME_CONTENT).has('site-kestrel'));
+    const recipe = [...GAME_CONTENT.recipes.values()][0];
+    assert.ok(recipe);
+    assert.ok(objectiveDistricts(open({ type: 'craft', itemId: recipe.output.itemId, count: 1, label: 'Make one' }), GAME_CONTENT).size > 0);
+    assert.ok(objectiveDistricts(open({ type: 'equipItem', itemId: 'scrap-shock-baton', label: 'Equip a baton' }), GAME_CONTENT).size > 0);
+    assert.ok(objectiveDistricts(open({ type: 'useItem', itemId: 'greens-poultice', label: 'Use a poultice' }), GAME_CONTENT).size > 0);
+  });
+
+  test('every open objective of every shipped quest points the world map somewhere', () => {
+    const blind = [...GAME_CONTENT.quests.values()].flatMap((quest) =>
+      quest.steps.flatMap((step) =>
+        step.objectives
+          .filter((objective) => objective.type !== 'reach')
+          .filter((objective) => objectiveDistricts([{ objective, progress: 0, goal: 1, done: false }], GAME_CONTENT).size === 0)
+          .map((objective) => quest.id + '/' + step.id + ' ' + objective.type),
+      ),
+    );
+    assert.deepEqual(blind, []);
+  });
 });

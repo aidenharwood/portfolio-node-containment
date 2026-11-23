@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.4, "tint": "#5a3a28", "fog": "#4a3424", "sky": "#8a6a50", "weather": ["dust", "embers"], "haze": 1.2 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 10, "row": 3 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 30, "y": 29, "width": 14, "height": 10 }, "height": 4 },
+    { "kind": "building", "id": "hatch-bunker", "rect": { "x": 31, "y": 30, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Hatch Fields" }
+    { "room": "ground", "name": "Hatch Fields" },
+    { "room": "hatch-bunker", "name": "Hatch Bunker", "safe": false }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 53, "dy": 52 }
@@ -20,38 +24,48 @@
     { "id": "hatch-fields-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 29 } },
     { "id": "hatch-fields-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 47, "dy": 15 } },
     { "id": "hatch-fields-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 60, "dy": 36 } },
-    { "id": "hatch-fields-parked-car-3", "object": "parked-car", "at": { "room": "ground", "dx": 45, "dy": 39 } },
     { "id": "hatch-fields-parked-car-4", "object": "parked-car", "at": { "room": "ground", "dx": 40, "dy": 45 } },
     { "id": "hatch-fields-burn-barrel-5", "object": "burn-barrel", "at": { "room": "ground", "dx": 14, "dy": 16 } },
     { "id": "hatch-fields-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 30, "dy": 4 } },
     { "id": "hatch-fields-tide-weed-7", "object": "tide-weed", "at": { "room": "ground", "dx": 12, "dy": 36 } },
-    { "id": "hatch-fields-hull-trace-8", "object": "hull-trace", "at": { "room": "ground", "dx": 49, "dy": 6 } }
+    { "id": "hatch-fields-hull-trace-8", "object": "hull-trace", "at": { "room": "ground", "dx": 49, "dy": 6 } },
+    { "id": "hatch-bunker-secure-cell-0", "object": "secure-cell", "at": { "room": "hatch-bunker", "dx": 1, "dy": 1 } },
+    { "id": "hatch-bunker-secure-cell-1", "object": "secure-cell", "at": { "room": "hatch-bunker", "dx": 4, "dy": 1 } },
+    { "id": "hatch-bunker-secure-cell-2", "object": "secure-cell", "at": { "room": "hatch-bunker", "dx": 7, "dy": 1 } },
+    { "id": "hatch-bunker-keycard-reader-3", "object": "keycard-reader", "at": { "room": "hatch-bunker", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "hatch-bunker-security-camera-4", "object": "security-camera", "at": { "room": "hatch-bunker", "dx": 0, "dy": 0 }, "facing": "south" },
+    { "id": "hatch-bunker-lab-bench-5", "object": "lab-bench", "at": { "room": "hatch-bunker", "dx": 10, "dy": 4 } },
+    { "id": "hatch-fields-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 49, "dy": 43 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
     { "id": "hatch-fields-rustling-0", "creature": "rustling", "at": { "room": "ground", "dx": 13, "dy": 26 } },
-    { "id": "hatch-fields-hull-knocker-1", "creature": "hull-knocker", "at": { "room": "ground", "dx": 33, "dy": 47 } },
+    { "id": "hatch-fields-ballast-crab-1", "creature": "ballast-crab", "at": { "room": "ground", "dx": 33, "dy": 47 } },
     { "id": "hatch-fields-rustling-2", "creature": "rustling", "at": { "room": "ground", "dx": 21, "dy": 52 } },
-    { "id": "hatch-fields-hull-knocker-3", "creature": "hull-knocker", "at": { "room": "ground", "dx": 30, "dy": 34 } },
     { "id": "hatch-fields-rustling-4", "creature": "rustling", "at": { "room": "ground", "dx": 33, "dy": 15 } },
-    { "id": "hatch-fields-hull-knocker-5", "creature": "hull-knocker", "at": { "room": "ground", "dx": 7, "dy": 9 } },
+    { "id": "hatch-fields-ballast-crab-5", "creature": "ballast-crab", "at": { "room": "ground", "dx": 7, "dy": 9 } },
     { "id": "hatch-fields-rustling-6", "creature": "rustling", "at": { "room": "ground", "dx": 47, "dy": 25 } },
-    { "id": "hatch-fields-hull-knocker-7", "creature": "hull-knocker", "at": { "room": "ground", "dx": 23, "dy": 9 } },
+    { "id": "hatch-fields-ballast-crab-7", "creature": "ballast-crab", "at": { "room": "ground", "dx": 23, "dy": 9 } },
     { "id": "hatch-fields-rustling-8", "creature": "rustling", "at": { "room": "ground", "dx": 30, "dy": 19 } },
-    { "id": "hatch-fields-hull-knocker-9", "creature": "hull-knocker", "at": { "room": "ground", "dx": 48, "dy": 50 } },
+    { "id": "hatch-fields-ballast-crab-9", "creature": "ballast-crab", "at": { "room": "ground", "dx": 48, "dy": 50 } },
     { "id": "hatch-fields-rustling-10", "creature": "rustling", "at": { "room": "ground", "dx": 7, "dy": 3 } },
-    { "id": "hatch-fields-hull-knocker-11", "creature": "hull-knocker", "at": { "room": "ground", "dx": 5, "dy": 21 } },
+    { "id": "hatch-fields-ballast-crab-11", "creature": "ballast-crab", "at": { "room": "ground", "dx": 5, "dy": 21 } },
     { "id": "hatch-fields-rustling-12", "creature": "rustling", "at": { "room": "ground", "dx": 58, "dy": 45 } },
-    { "id": "hatch-fields-hull-knocker-13", "creature": "hull-knocker", "at": { "room": "ground", "dx": 12, "dy": 5 } },
+    { "id": "hatch-fields-ballast-crab-13", "creature": "ballast-crab", "at": { "room": "ground", "dx": 12, "dy": 5 } },
     { "id": "hatch-fields-rustling-14", "creature": "rustling", "at": { "room": "ground", "dx": 4, "dy": 57 } },
-    { "id": "hatch-fields-hull-knocker-15", "creature": "hull-knocker", "at": { "room": "ground", "dx": 54, "dy": 14 } }
+    { "id": "hatch-fields-ballast-crab-15", "creature": "ballast-crab", "at": { "room": "ground", "dx": 54, "dy": 14 } },
+    { "id": "hatch-bunker-rustling-0", "creature": "rustling", "at": { "room": "hatch-bunker", "dx": 2, "dy": 5 } },
+    { "id": "hatch-bunker-rustling-1", "creature": "rustling", "at": { "room": "hatch-bunker", "dx": 9, "dy": 6 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "hatch-fields-landmark", "prefab": "landmark-lifeboat-hull", "at": { "room": "ground", "dx": 50, "dy": 35 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "hatch-bunker": { "theme": "containment", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

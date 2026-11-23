@@ -17,7 +17,7 @@
   "areas": [
     { "room": "ground", "name": "Site Null" },
     { "room": "null-headhouse", "name": "Null Headhouse", "safe": true },
-    { "room": "null-holding", "name": "The Outside", "safe": false },
+    { "room": "null-holding", "name": "The Outside", "safe": false, "multiCombat": true },
     { "room": "null-records", "name": "Null Records", "safe": false }
   ],
   "anchors": {
@@ -65,6 +65,7 @@
     { "id": "null-headhouse-registrar-lune-null", "npc": "registrar-lune-null", "at": { "room": "null-headhouse", "dx": 8, "dy": 5 } }
   ],
   "creatures": [
+    { "id": "null-holding-null-auditor-0", "creature": "null-auditor", "at": { "room": "null-holding", "dx": 6, "dy": 4 } },
     { "id": "null-holding-null-echo-0", "creature": "null-echo", "at": { "room": "null-holding", "dx": 2, "dy": 5 } },
     { "id": "null-holding-null-stalker-1", "creature": "null-stalker", "at": { "room": "null-holding", "dx": 9, "dy": 6 } },
     { "id": "null-records-null-echo-0", "creature": "null-echo", "at": { "room": "null-records", "dx": 9, "dy": 5 } },

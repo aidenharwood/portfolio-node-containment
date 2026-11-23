@@ -31,6 +31,7 @@
     "start": { "room": "ground", "dx": 31, "dy": 23 }
   },
   "objects": [
+    { "id": "site-kestrel-quest-sulking-coat-cell", "object": "sulking-coat-cell", "at": { "room": "holding-block-k", "dx": 6, "dy": 4 } },
     { "id": "kestrel-headhouse-kestrel-lift-down-0", "object": "kestrel-lift-down", "at": { "room": "kestrel-headhouse", "dx": 5, "dy": 0 }, "facing": "south" },
     { "id": "kestrel-headhouse-notice-board-1", "object": "notice-board", "at": { "room": "kestrel-headhouse", "dx": 2, "dy": 0 }, "facing": "south" },
     { "id": "kestrel-headhouse-vending-machine-2", "object": "vending-machine", "at": { "room": "kestrel-headhouse", "dx": 8, "dy": 0 }, "facing": "south" },
@@ -95,6 +96,7 @@
   ],
   "assemblies": [],
   "npcs": [
+    { "id": "site-kestrel-quest-range-master-brandt", "npc": "range-master-brandt", "at": { "room": "ground", "dx": 41, "dy": 39 } },
     { "id": "kestrel-headhouse-lift-warden-ama", "npc": "lift-warden-ama", "at": { "room": "kestrel-headhouse", "dx": 8, "dy": 5 } },
     { "id": "intake-office-sergeant-vale", "npc": "sergeant-vale", "at": { "room": "intake-office", "dx": 8, "dy": 3 } },
     { "id": "holding-block-k-warden-achebe", "npc": "warden-achebe", "at": { "room": "holding-block-k", "dx": 9, "dy": 5 } },

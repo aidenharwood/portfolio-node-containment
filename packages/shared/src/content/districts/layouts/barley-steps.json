@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.2, "tint": "#e4dcb8", "fog": "#d8d0a8", "sky": "#b8d8c0", "weather": ["dust"], "haze": 0.8 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 4 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 32, "y": 20, "width": 14, "height": 10 }, "height": 9 },
+    { "kind": "building", "id": "harvest-bunkhouse", "rect": { "x": 33, "y": 21, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Barley Steps" }
+    { "room": "ground", "name": "Barley Steps" },
+    { "room": "harvest-bunkhouse", "name": "Harvest Bunkhouse", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 32, "dy": 55 }
@@ -20,39 +24,50 @@
     { "id": "barley-steps-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 7, "dy": 56 } },
     { "id": "barley-steps-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 21, "dy": 32 } },
     { "id": "barley-steps-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 22, "dy": 60 } },
-    { "id": "barley-steps-barricade-3", "object": "barricade", "at": { "room": "ground", "dx": 53, "dy": 28 } },
     { "id": "barley-steps-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 31, "dy": 14 } },
     { "id": "barley-steps-street-tree-5", "object": "street-tree", "at": { "room": "ground", "dx": 47, "dy": 41 } },
     { "id": "barley-steps-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 38, "dy": 52 } },
     { "id": "barley-steps-lock-gear-7", "object": "lock-gear", "at": { "room": "ground", "dx": 25, "dy": 54 } },
-    { "id": "barley-steps-dredge-spot-8", "object": "dredge-spot", "at": { "room": "ground", "dx": 33, "dy": 31 } },
-    { "id": "barley-steps-reed-bed-9", "object": "reed-bed", "at": { "room": "ground", "dx": 5, "dy": 18 } }
+    { "id": "barley-steps-reed-bed-9", "object": "reed-bed", "at": { "room": "ground", "dx": 5, "dy": 18 } },
+    { "id": "harvest-bunkhouse-bed-0", "object": "bed", "at": { "room": "harvest-bunkhouse", "dx": 1, "dy": 0 } },
+    { "id": "harvest-bunkhouse-bed-1", "object": "bed", "at": { "room": "harvest-bunkhouse", "dx": 3, "dy": 0 } },
+    { "id": "harvest-bunkhouse-bed-2", "object": "bed", "at": { "room": "harvest-bunkhouse", "dx": 5, "dy": 0 } },
+    { "id": "harvest-bunkhouse-bed-3", "object": "bed", "at": { "room": "harvest-bunkhouse", "dx": 7, "dy": 0 } },
+    { "id": "harvest-bunkhouse-bed-4", "object": "bed", "at": { "room": "harvest-bunkhouse", "dx": 9, "dy": 0 } },
+    { "id": "harvest-bunkhouse-bed-5", "object": "bed", "at": { "room": "harvest-bunkhouse", "dx": 11, "dy": 0 } },
+    { "id": "harvest-bunkhouse-bed-6", "object": "bed", "at": { "room": "harvest-bunkhouse", "dx": 1, "dy": 5 } },
+    { "id": "harvest-bunkhouse-bed-7", "object": "bed", "at": { "room": "harvest-bunkhouse", "dx": 3, "dy": 5 } },
+    { "id": "harvest-bunkhouse-bed-8", "object": "bed", "at": { "room": "harvest-bunkhouse", "dx": 9, "dy": 5 } },
+    { "id": "harvest-bunkhouse-bed-9", "object": "bed", "at": { "room": "harvest-bunkhouse", "dx": 11, "dy": 5 } },
+    { "id": "harvest-bunkhouse-storage-locker-10", "object": "storage-locker", "at": { "room": "harvest-bunkhouse", "dx": 0, "dy": 3 }, "facing": "east" },
+    { "id": "barley-steps-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 54, "dy": 29 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "barley-steps-thornback-0", "creature": "thornback", "at": { "room": "ground", "dx": 44, "dy": 27 } },
-    { "id": "barley-steps-seed-mite-1", "creature": "seed-mite", "at": { "room": "ground", "dx": 3, "dy": 45 } },
-    { "id": "barley-steps-thornback-2", "creature": "thornback", "at": { "room": "ground", "dx": 42, "dy": 10 } },
-    { "id": "barley-steps-seed-mite-3", "creature": "seed-mite", "at": { "room": "ground", "dx": 50, "dy": 51 } },
-    { "id": "barley-steps-thornback-4", "creature": "thornback", "at": { "room": "ground", "dx": 7, "dy": 48 } },
-    { "id": "barley-steps-seed-mite-5", "creature": "seed-mite", "at": { "room": "ground", "dx": 38, "dy": 26 } },
-    { "id": "barley-steps-thornback-6", "creature": "thornback", "at": { "room": "ground", "dx": 9, "dy": 30 } },
-    { "id": "barley-steps-seed-mite-7", "creature": "seed-mite", "at": { "room": "ground", "dx": 18, "dy": 54 } },
-    { "id": "barley-steps-thornback-8", "creature": "thornback", "at": { "room": "ground", "dx": 12, "dy": 39 } },
-    { "id": "barley-steps-seed-mite-9", "creature": "seed-mite", "at": { "room": "ground", "dx": 42, "dy": 60 } },
-    { "id": "barley-steps-thornback-10", "creature": "thornback", "at": { "room": "ground", "dx": 43, "dy": 17 } },
-    { "id": "barley-steps-seed-mite-11", "creature": "seed-mite", "at": { "room": "ground", "dx": 3, "dy": 24 } },
-    { "id": "barley-steps-thornback-12", "creature": "thornback", "at": { "room": "ground", "dx": 16, "dy": 12 } },
-    { "id": "barley-steps-seed-mite-13", "creature": "seed-mite", "at": { "room": "ground", "dx": 42, "dy": 35 } },
-    { "id": "barley-steps-thornback-14", "creature": "thornback", "at": { "room": "ground", "dx": 48, "dy": 59 } },
-    { "id": "barley-steps-seed-mite-15", "creature": "seed-mite", "at": { "room": "ground", "dx": 33, "dy": 46 } }
+    { "id": "barley-steps-windpump-wight-1", "creature": "windpump-wight", "at": { "room": "ground", "dx": 3, "dy": 45 } },
+    { "id": "barley-steps-barn-crawler-2", "creature": "barn-crawler", "at": { "room": "ground", "dx": 42, "dy": 10 } },
+    { "id": "barley-steps-windpump-wight-3", "creature": "windpump-wight", "at": { "room": "ground", "dx": 50, "dy": 51 } },
+    { "id": "barley-steps-barn-crawler-4", "creature": "barn-crawler", "at": { "room": "ground", "dx": 7, "dy": 48 } },
+    { "id": "barley-steps-barn-crawler-6", "creature": "barn-crawler", "at": { "room": "ground", "dx": 9, "dy": 30 } },
+    { "id": "barley-steps-windpump-wight-7", "creature": "windpump-wight", "at": { "room": "ground", "dx": 18, "dy": 54 } },
+    { "id": "barley-steps-barn-crawler-8", "creature": "barn-crawler", "at": { "room": "ground", "dx": 12, "dy": 39 } },
+    { "id": "barley-steps-windpump-wight-9", "creature": "windpump-wight", "at": { "room": "ground", "dx": 42, "dy": 60 } },
+    { "id": "barley-steps-barn-crawler-10", "creature": "barn-crawler", "at": { "room": "ground", "dx": 43, "dy": 17 } },
+    { "id": "barley-steps-windpump-wight-11", "creature": "windpump-wight", "at": { "room": "ground", "dx": 3, "dy": 24 } },
+    { "id": "barley-steps-barn-crawler-12", "creature": "barn-crawler", "at": { "room": "ground", "dx": 16, "dy": 12 } },
+    { "id": "barley-steps-windpump-wight-13", "creature": "windpump-wight", "at": { "room": "ground", "dx": 42, "dy": 35 } },
+    { "id": "barley-steps-barn-crawler-14", "creature": "barn-crawler", "at": { "room": "ground", "dx": 48, "dy": 59 } },
+    { "id": "barley-steps-windpump-wight-15", "creature": "windpump-wight", "at": { "room": "ground", "dx": 33, "dy": 46 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "barley-steps-landmark", "prefab": "landmark-tithe-silo", "at": { "room": "ground", "dx": 51, "dy": 21 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "harvest-bunkhouse": { "theme": "dormitory", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

@@ -54,7 +54,7 @@
   "npcs": [],
   "creatures": [
     { "id": "null-below-0", "creature": "null-echo", "at": { "room": "chamber-a", "dx": 4, "dy": 9 } },
-    { "id": "null-below-1", "creature": "null-echo", "at": { "room": "chamber-a", "dx": 11, "dy": 8 } },
+    { "id": "null-below-1", "creature": "cell-breaker", "at": { "room": "chamber-a", "dx": 11, "dy": 8 } },
     { "id": "null-below-2", "creature": "null-echo", "at": { "room": "chamber-b", "dx": 10, "dy": 8 } },
     { "id": "null-below-3", "creature": "null-echo", "at": { "room": "chamber-c", "dx": 5, "dy": 8 } },
     { "id": "null-below-4", "creature": "null-echo", "at": { "room": "chamber-c", "dx": 10, "dy": 4 } },

@@ -28,6 +28,7 @@
     "start": { "room": "ground", "dx": 9, "dy": 55 }
   },
   "objects": [
+    { "id": "recruit-lines-quest-cohort-bell-rope", "object": "cohort-bell-rope", "at": { "room": "ground", "dx": 41, "dy": 39 } },
     { "id": "cohort-hall-notice-board-0", "object": "notice-board", "at": { "room": "cohort-hall", "dx": 5, "dy": 0 }, "facing": "south" },
     { "id": "cohort-hall-table-1", "object": "table", "at": { "room": "cohort-hall", "dx": 6, "dy": 1 } },
     { "id": "cohort-hall-street-bench-2", "object": "street-bench", "at": { "room": "cohort-hall", "dx": 2, "dy": 4 }, "facing": "north" },

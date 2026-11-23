@@ -9,6 +9,7 @@ import {
   SKILL_IDS,
   SKILL_LEVEL_CAP,
   removeItem,
+  roundExperience,
   SKILL_INFO,
   skillGuide,
   skillUnlocksBetween,
@@ -154,10 +155,10 @@ export class EffectRunner {
 
   awardExperience(player: Player, skill: SkillId, amount: number, announce: boolean): void {
     const before = player.record.skills[skill];
-    const after = before + Math.max(0, Math.floor(amount));
+    const after = roundExperience(before + Math.max(0, roundExperience(amount)));
     if (after === before) return;
     player.update({ skills: { ...player.record.skills, [skill]: after } });
-    if (announce) player.send({ type: 'chat.message', channel: 'system', text: `+${amount} ${SKILL_INFO[skill].name} XP` });
+    if (announce) player.send({ type: 'chat.message', channel: 'system', text: `+${roundExperience(amount)} ${SKILL_INFO[skill].name} XP` });
     const newLevel = levelForExperience(after);
     if (newLevel > levelForExperience(before)) {
       const unlocked = skillUnlocksBetween(skillGuide(this.content, skill), levelForExperience(before), newLevel);

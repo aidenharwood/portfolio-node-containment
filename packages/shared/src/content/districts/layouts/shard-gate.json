@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 14, "row": 10 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 29, "y": 29, "width": 14, "height": 10 }, "height": 10 },
+    { "kind": "building", "id": "shard-gate-post", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "carpet", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Shard Gate" }
+    { "room": "ground", "name": "Shard Gate" },
+    { "room": "shard-gate-post", "name": "Shard Gate Post", "safe": false }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 20, "dy": 29 }
@@ -23,33 +27,46 @@
     { "id": "shard-gate-flood-mast-3", "object": "flood-mast", "at": { "room": "ground", "dx": 41, "dy": 47 } },
     { "id": "shard-gate-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 42, "dy": 3 } },
     { "id": "shard-gate-precursor-pylon-5", "object": "precursor-pylon", "at": { "room": "ground", "dx": 3, "dy": 10 } },
-    { "id": "shard-gate-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 40, "dy": 33 } },
     { "id": "shard-gate-sprung-cell-door-7", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 19, "dy": 5 } },
-    { "id": "shard-gate-directorate-salvage-8", "object": "directorate-salvage", "at": { "room": "ground", "dx": 49, "dy": 24 } }
+    { "id": "shard-gate-directorate-salvage-8", "object": "directorate-salvage", "at": { "room": "ground", "dx": 49, "dy": 24 } },
+    { "id": "shard-gate-post-shelving-0", "object": "shelving", "at": { "room": "shard-gate-post", "dx": 1, "dy": 0 }, "facing": "south" },
+    { "id": "shard-gate-post-shelving-1", "object": "shelving", "at": { "room": "shard-gate-post", "dx": 2, "dy": 0 }, "facing": "south" },
+    { "id": "shard-gate-post-notice-board-2", "object": "notice-board", "at": { "room": "shard-gate-post", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "shard-gate-post-storage-locker-3", "object": "storage-locker", "at": { "room": "shard-gate-post", "dx": 9, "dy": 0 }, "facing": "south" },
+    { "id": "shard-gate-post-security-camera-4", "object": "security-camera", "at": { "room": "shard-gate-post", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "shard-gate-post-table-5", "object": "table", "at": { "room": "shard-gate-post", "dx": 3, "dy": 3 } },
+    { "id": "shard-gate-post-table-6", "object": "table", "at": { "room": "shard-gate-post", "dx": 4, "dy": 3 } },
+    { "id": "shard-gate-post-chair-7", "object": "chair", "at": { "room": "shard-gate-post", "dx": 3, "dy": 2 }, "facing": "south" },
+    { "id": "shard-gate-post-chair-8", "object": "chair", "at": { "room": "shard-gate-post", "dx": 4, "dy": 2 }, "facing": "south" },
+    { "id": "shard-gate-poi-steppe-reliquary-0", "object": "steppe-reliquary", "at": { "room": "ground", "dx": 48, "dy": 40 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "shard-gate-choir-echo-0", "creature": "choir-echo", "at": { "room": "ground", "dx": 51, "dy": 37 } },
     { "id": "shard-gate-red-twin-1", "creature": "red-twin", "at": { "room": "ground", "dx": 4, "dy": 4 } },
     { "id": "shard-gate-glass-stalker-2", "creature": "glass-stalker", "at": { "room": "ground", "dx": 39, "dy": 25 } },
-    { "id": "shard-gate-choir-echo-3", "creature": "choir-echo", "at": { "room": "ground", "dx": 10, "dy": 52 } },
+    { "id": "shard-gate-shard-wisp-3", "creature": "shard-wisp", "at": { "room": "ground", "dx": 10, "dy": 52 } },
     { "id": "shard-gate-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 24, "dy": 46 } },
     { "id": "shard-gate-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 4, "dy": 52 } },
-    { "id": "shard-gate-choir-echo-6", "creature": "choir-echo", "at": { "room": "ground", "dx": 5, "dy": 18 } },
+    { "id": "shard-gate-shard-wisp-6", "creature": "shard-wisp", "at": { "room": "ground", "dx": 5, "dy": 18 } },
     { "id": "shard-gate-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 24, "dy": 40 } },
     { "id": "shard-gate-glass-stalker-8", "creature": "glass-stalker", "at": { "room": "ground", "dx": 11, "dy": 9 } },
-    { "id": "shard-gate-choir-echo-9", "creature": "choir-echo", "at": { "room": "ground", "dx": 27, "dy": 12 } },
+    { "id": "shard-gate-shard-wisp-9", "creature": "shard-wisp", "at": { "room": "ground", "dx": 27, "dy": 12 } },
     { "id": "shard-gate-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 18, "dy": 54 } },
     { "id": "shard-gate-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 35, "dy": 6 } },
-    { "id": "shard-gate-choir-echo-12", "creature": "choir-echo", "at": { "room": "ground", "dx": 15, "dy": 15 } },
-    { "id": "shard-gate-red-twin-13", "creature": "red-twin", "at": { "room": "ground", "dx": 50, "dy": 47 } }
+    { "id": "shard-gate-shard-wisp-12", "creature": "shard-wisp", "at": { "room": "ground", "dx": 15, "dy": 15 } },
+    { "id": "shard-gate-red-twin-13", "creature": "red-twin", "at": { "room": "ground", "dx": 50, "dy": 47 } },
+    { "id": "shard-gate-post-glass-stalker-0", "creature": "glass-stalker", "at": { "room": "shard-gate-post", "dx": 9, "dy": 5 } },
+    { "id": "shard-gate-post-red-twin-1", "creature": "red-twin", "at": { "room": "shard-gate-post", "dx": 2, "dy": 5 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "shard-gate-landmark", "prefab": "landmark-tuning-pylon", "at": { "room": "ground", "dx": 48, "dy": 34 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "shard-gate-post": { "theme": "office", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

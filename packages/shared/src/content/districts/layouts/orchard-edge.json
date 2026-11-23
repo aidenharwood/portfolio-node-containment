@@ -8,16 +8,19 @@
   "ambience": { "darkness": 0.2, "tint": "#e4dcb8", "fog": "#d8d0a8", "sky": "#b8d8c0", "weather": ["dust"], "haze": 0.8 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 8 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 29, "y": 29, "width": 14, "height": 10 }, "height": 10 },
+    { "kind": "building", "id": "orchard-edge-checkpoint", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "carpet", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Orchard Edge" }
+    { "room": "ground", "name": "Orchard Edge" },
+    { "room": "orchard-edge-checkpoint", "name": "Orchard Edge Checkpoint", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 38, "dy": 22 }
   },
   "objects": [
-    { "id": "orchard-edge-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 50, "dy": 29 } },
     { "id": "orchard-edge-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 3, "dy": 7 } },
     { "id": "orchard-edge-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 29, "dy": 51 } },
     { "id": "orchard-edge-washing-line-3", "object": "washing-line", "at": { "room": "ground", "dx": 10, "dy": 5 } },
@@ -28,32 +31,42 @@
     { "id": "orchard-edge-kestrel-north-gate-leaf-1", "object": "kestrel-north-gate-leaf", "at": { "room": "ground", "dx": 37, "dy": 63 }, "facing": "south" },
     { "id": "orchard-edge-dredge-spot-9", "object": "dredge-spot", "at": { "room": "ground", "dx": 15, "dy": 29 } },
     { "id": "orchard-edge-reed-bed-10", "object": "reed-bed", "at": { "room": "ground", "dx": 53, "dy": 14 } },
-    { "id": "orchard-edge-culvert-trace-11", "object": "culvert-trace", "at": { "room": "ground", "dx": 45, "dy": 38 } }
+    { "id": "orchard-edge-checkpoint-shelving-0", "object": "shelving", "at": { "room": "orchard-edge-checkpoint", "dx": 1, "dy": 0 }, "facing": "south" },
+    { "id": "orchard-edge-checkpoint-shelving-1", "object": "shelving", "at": { "room": "orchard-edge-checkpoint", "dx": 2, "dy": 0 }, "facing": "south" },
+    { "id": "orchard-edge-checkpoint-notice-board-2", "object": "notice-board", "at": { "room": "orchard-edge-checkpoint", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "orchard-edge-checkpoint-storage-locker-3", "object": "storage-locker", "at": { "room": "orchard-edge-checkpoint", "dx": 9, "dy": 0 }, "facing": "south" },
+    { "id": "orchard-edge-checkpoint-security-camera-4", "object": "security-camera", "at": { "room": "orchard-edge-checkpoint", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "orchard-edge-checkpoint-table-5", "object": "table", "at": { "room": "orchard-edge-checkpoint", "dx": 3, "dy": 3 } },
+    { "id": "orchard-edge-checkpoint-table-6", "object": "table", "at": { "room": "orchard-edge-checkpoint", "dx": 4, "dy": 3 } },
+    { "id": "orchard-edge-checkpoint-chair-7", "object": "chair", "at": { "room": "orchard-edge-checkpoint", "dx": 3, "dy": 2 }, "facing": "south" },
+    { "id": "orchard-edge-checkpoint-chair-8", "object": "chair", "at": { "room": "orchard-edge-checkpoint", "dx": 4, "dy": 2 }, "facing": "south" },
+    { "id": "orchard-edge-poi-harrow-tithe-box-0", "object": "harrow-tithe-box", "at": { "room": "ground", "dx": 48, "dy": 28 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "orchard-edge-furrow-eel-0", "creature": "furrow-eel", "at": { "room": "ground", "dx": 11, "dy": 51 } },
+    { "id": "orchard-edge-ditch-leech-0", "creature": "ditch-leech", "at": { "room": "ground", "dx": 11, "dy": 51 } },
     { "id": "orchard-edge-crop-magpie-1", "creature": "crop-magpie", "at": { "room": "ground", "dx": 7, "dy": 23 } },
-    { "id": "orchard-edge-furrow-eel-2", "creature": "furrow-eel", "at": { "room": "ground", "dx": 33, "dy": 43 } },
     { "id": "orchard-edge-crop-magpie-3", "creature": "crop-magpie", "at": { "room": "ground", "dx": 53, "dy": 51 } },
-    { "id": "orchard-edge-furrow-eel-4", "creature": "furrow-eel", "at": { "room": "ground", "dx": 8, "dy": 15 } },
+    { "id": "orchard-edge-ditch-leech-4", "creature": "ditch-leech", "at": { "room": "ground", "dx": 8, "dy": 15 } },
     { "id": "orchard-edge-crop-magpie-5", "creature": "crop-magpie", "at": { "room": "ground", "dx": 25, "dy": 42 } },
-    { "id": "orchard-edge-furrow-eel-6", "creature": "furrow-eel", "at": { "room": "ground", "dx": 19, "dy": 45 } },
+    { "id": "orchard-edge-ditch-leech-6", "creature": "ditch-leech", "at": { "room": "ground", "dx": 19, "dy": 45 } },
     { "id": "orchard-edge-crop-magpie-7", "creature": "crop-magpie", "at": { "room": "ground", "dx": 35, "dy": 10 } },
-    { "id": "orchard-edge-furrow-eel-8", "creature": "furrow-eel", "at": { "room": "ground", "dx": 41, "dy": 47 } },
+    { "id": "orchard-edge-ditch-leech-8", "creature": "ditch-leech", "at": { "room": "ground", "dx": 41, "dy": 47 } },
     { "id": "orchard-edge-crop-magpie-9", "creature": "crop-magpie", "at": { "room": "ground", "dx": 33, "dy": 26 } },
-    { "id": "orchard-edge-furrow-eel-10", "creature": "furrow-eel", "at": { "room": "ground", "dx": 18, "dy": 58 } },
+    { "id": "orchard-edge-ditch-leech-10", "creature": "ditch-leech", "at": { "room": "ground", "dx": 18, "dy": 58 } },
     { "id": "orchard-edge-crop-magpie-11", "creature": "crop-magpie", "at": { "room": "ground", "dx": 32, "dy": 20 } },
-    { "id": "orchard-edge-furrow-eel-12", "creature": "furrow-eel", "at": { "room": "ground", "dx": 6, "dy": 44 } },
-    { "id": "orchard-edge-crop-magpie-13", "creature": "crop-magpie", "at": { "room": "ground", "dx": 5, "dy": 32 } },
-    { "id": "orchard-edge-furrow-eel-14", "creature": "furrow-eel", "at": { "room": "ground", "dx": 51, "dy": 36 } }
+    { "id": "orchard-edge-ditch-leech-12", "creature": "ditch-leech", "at": { "room": "ground", "dx": 6, "dy": 44 } },
+    { "id": "orchard-edge-crop-magpie-13", "creature": "crop-magpie", "at": { "room": "ground", "dx": 5, "dy": 32 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "orchard-edge-landmark", "prefab": "landmark-harvest-gantry", "at": { "room": "ground", "dx": 48, "dy": 34 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "orchard-edge-checkpoint": { "theme": "office", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

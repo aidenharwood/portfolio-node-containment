@@ -16,6 +16,8 @@ export const BELOW_LEVEL_RECIPES: readonly LevelRecipe[] = [
   below('kestrel-b1', 'Site Kestrel B1', -1, 'kestrel-intake'),
   below('gallowglass-b1', 'Site Gallowglass B1', -1, 'gallowglass-undercity'),
   below('null-b1', 'Site Null B1', -1, 'null-below'),
+  below('tallow-b1', 'Site Tallow B1', -1, 'tallow-holding'),
+  below('vesper-b1', 'Site Vesper B1', -1, 'vesper-deep'),
 ];
 
 export const BELOW_LEVELS: readonly LevelDefinition[] = BELOW_LEVEL_RECIPES.map((recipe) => recipe(SHIPPED_CONTEXT));

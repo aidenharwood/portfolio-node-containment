@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.2, "tint": "#e4dcb8", "fog": "#d8d0a8", "sky": "#b8d8c0", "weather": ["dust"], "haze": 0.8 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 2, "row": 9 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 29, "y": 29, "width": 10, "height": 8 }, "height": 6 },
+    { "kind": "building", "id": "cliff-hut", "rect": { "x": 30, "y": 30, "width": 8, "height": 6 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Westcliff" }
+    { "room": "ground", "name": "Westcliff" },
+    { "room": "cliff-hut", "name": "Cliff Hut", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 32, "dy": 42 }
@@ -28,32 +32,39 @@
     { "id": "westcliff-kestrel-gate-leaf-1", "object": "kestrel-gate-leaf", "at": { "room": "ground", "dx": 43, "dy": 63 }, "facing": "south" },
     { "id": "westcliff-cable-drum-9", "object": "cable-drum", "at": { "room": "ground", "dx": 46, "dy": 52 } },
     { "id": "westcliff-dredge-spot-10", "object": "dredge-spot", "at": { "room": "ground", "dx": 49, "dy": 41 } },
-    { "id": "westcliff-reed-bed-11", "object": "reed-bed", "at": { "room": "ground", "dx": 25, "dy": 17 } }
+    { "id": "westcliff-reed-bed-11", "object": "reed-bed", "at": { "room": "ground", "dx": 25, "dy": 17 } },
+    { "id": "cliff-hut-bed-0", "object": "bed", "at": { "room": "cliff-hut", "dx": 1, "dy": 0 } },
+    { "id": "cliff-hut-washer-1", "object": "washer", "at": { "room": "cliff-hut", "dx": 4, "dy": 0 }, "facing": "south" },
+    { "id": "cliff-hut-shelving-2", "object": "shelving", "at": { "room": "cliff-hut", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "cliff-hut-table-3", "object": "table", "at": { "room": "cliff-hut", "dx": 5, "dy": 3 } },
+    { "id": "cliff-hut-chair-4", "object": "chair", "at": { "room": "cliff-hut", "dx": 5, "dy": 2 }, "facing": "south" },
+    { "id": "westcliff-poi-harrow-tithe-box-0", "object": "harrow-tithe-box", "at": { "room": "ground", "dx": 52, "dy": 34 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "westcliff-furrow-eel-0", "creature": "furrow-eel", "at": { "room": "ground", "dx": 12, "dy": 57 } },
-    { "id": "westcliff-crop-magpie-1", "creature": "crop-magpie", "at": { "room": "ground", "dx": 36, "dy": 37 } },
-    { "id": "westcliff-furrow-eel-2", "creature": "furrow-eel", "at": { "room": "ground", "dx": 45, "dy": 29 } },
+    { "id": "westcliff-ditch-leech-0", "creature": "ditch-leech", "at": { "room": "ground", "dx": 12, "dy": 57 } },
+    { "id": "westcliff-ditch-leech-2", "creature": "ditch-leech", "at": { "room": "ground", "dx": 45, "dy": 29 } },
     { "id": "westcliff-crop-magpie-3", "creature": "crop-magpie", "at": { "room": "ground", "dx": 52, "dy": 17 } },
-    { "id": "westcliff-furrow-eel-4", "creature": "furrow-eel", "at": { "room": "ground", "dx": 56, "dy": 57 } },
+    { "id": "westcliff-ditch-leech-4", "creature": "ditch-leech", "at": { "room": "ground", "dx": 56, "dy": 57 } },
     { "id": "westcliff-crop-magpie-5", "creature": "crop-magpie", "at": { "room": "ground", "dx": 60, "dy": 14 } },
-    { "id": "westcliff-furrow-eel-6", "creature": "furrow-eel", "at": { "room": "ground", "dx": 16, "dy": 32 } },
-    { "id": "westcliff-crop-magpie-7", "creature": "crop-magpie", "at": { "room": "ground", "dx": 33, "dy": 32 } },
-    { "id": "westcliff-furrow-eel-8", "creature": "furrow-eel", "at": { "room": "ground", "dx": 38, "dy": 20 } },
+    { "id": "westcliff-ditch-leech-6", "creature": "ditch-leech", "at": { "room": "ground", "dx": 16, "dy": 32 } },
+    { "id": "westcliff-ditch-leech-8", "creature": "ditch-leech", "at": { "room": "ground", "dx": 38, "dy": 20 } },
     { "id": "westcliff-crop-magpie-9", "creature": "crop-magpie", "at": { "room": "ground", "dx": 22, "dy": 41 } },
-    { "id": "westcliff-furrow-eel-10", "creature": "furrow-eel", "at": { "room": "ground", "dx": 58, "dy": 49 } },
+    { "id": "westcliff-ditch-leech-10", "creature": "ditch-leech", "at": { "room": "ground", "dx": 58, "dy": 49 } },
     { "id": "westcliff-crop-magpie-11", "creature": "crop-magpie", "at": { "room": "ground", "dx": 30, "dy": 23 } },
-    { "id": "westcliff-furrow-eel-12", "creature": "furrow-eel", "at": { "room": "ground", "dx": 10, "dy": 3 } },
+    { "id": "westcliff-ditch-leech-12", "creature": "ditch-leech", "at": { "room": "ground", "dx": 10, "dy": 3 } },
     { "id": "westcliff-crop-magpie-13", "creature": "crop-magpie", "at": { "room": "ground", "dx": 27, "dy": 47 } },
-    { "id": "westcliff-furrow-eel-14", "creature": "furrow-eel", "at": { "room": "ground", "dx": 30, "dy": 58 } }
+    { "id": "westcliff-ditch-leech-14", "creature": "ditch-leech", "at": { "room": "ground", "dx": 30, "dy": 58 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "westcliff-landmark", "prefab": "landmark-cliff-beacon", "at": { "room": "ground", "dx": 44, "dy": 35 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "cliff-hut": { "theme": "home", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

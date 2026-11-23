@@ -8,50 +8,59 @@
   "ambience": { "darkness": 0.16, "tint": "#e8eef4", "fog": "#c8d8e8", "sky": "#9fc8f0", "weather": ["mist"], "haze": 0.7 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 2, "row": 11 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 29, "y": 30, "width": 10, "height": 8 }, "height": 6 },
+    { "kind": "building", "id": "shepherds-hut", "rect": { "x": 30, "y": 31, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Rim Meadow" }
+    { "room": "ground", "name": "Rim Meadow" },
+    { "room": "shepherds-hut", "name": "Shepherd’s Hut", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 18, "dy": 30 }
   },
   "objects": [
     { "id": "rim-meadow-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 20, "dy": 55 } },
-    { "id": "rim-meadow-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 41 } },
-    { "id": "rim-meadow-street-tree-2", "object": "street-tree", "at": { "room": "ground", "dx": 35, "dy": 29 } },
     { "id": "rim-meadow-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 18, "dy": 12 } },
-    { "id": "rim-meadow-street-tree-4", "object": "street-tree", "at": { "room": "ground", "dx": 34, "dy": 37 } },
     { "id": "rim-meadow-flood-mast-5", "object": "flood-mast", "at": { "room": "ground", "dx": 47, "dy": 29 } },
     { "id": "rim-meadow-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 10, "dy": 12 } },
     { "id": "rim-meadow-street-bench-7", "object": "street-bench", "at": { "room": "ground", "dx": 59, "dy": 32 }, "facing": "south" },
     { "id": "rim-meadow-scrap-pile-8", "object": "scrap-pile", "at": { "room": "ground", "dx": 47, "dy": 51 } },
     { "id": "rim-meadow-faint-trace-9", "object": "faint-trace", "at": { "room": "ground", "dx": 39, "dy": 16 } },
-    { "id": "rim-meadow-eel-trap-10", "object": "eel-trap", "at": { "room": "ground", "dx": 41, "dy": 25 } }
+    { "id": "rim-meadow-eel-trap-10", "object": "eel-trap", "at": { "room": "ground", "dx": 41, "dy": 25 } },
+    { "id": "shepherds-hut-bed-0", "object": "bed", "at": { "room": "shepherds-hut", "dx": 1, "dy": 0 } },
+    { "id": "shepherds-hut-washer-1", "object": "washer", "at": { "room": "shepherds-hut", "dx": 4, "dy": 0 }, "facing": "south" },
+    { "id": "shepherds-hut-shelving-2", "object": "shelving", "at": { "room": "shepherds-hut", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "shepherds-hut-table-3", "object": "table", "at": { "room": "shepherds-hut", "dx": 5, "dy": 3 } },
+    { "id": "shepherds-hut-chair-4", "object": "chair", "at": { "room": "shepherds-hut", "dx": 5, "dy": 2 }, "facing": "south" },
+    { "id": "rim-meadow-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 43, "dy": 42 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "rim-meadow-feral-hound-0", "creature": "feral-hound", "at": { "room": "ground", "dx": 52, "dy": 33 } },
+    { "id": "rim-meadow-seam-boar-0", "creature": "seam-boar", "at": { "room": "ground", "dx": 52, "dy": 33 } },
     { "id": "rim-meadow-grounds-mite-1", "creature": "grounds-mite", "at": { "room": "ground", "dx": 32, "dy": 3 } },
     { "id": "rim-meadow-lawn-rat-2", "creature": "lawn-rat", "at": { "room": "ground", "dx": 16, "dy": 20 } },
-    { "id": "rim-meadow-feral-hound-3", "creature": "feral-hound", "at": { "room": "ground", "dx": 26, "dy": 44 } },
+    { "id": "rim-meadow-seam-boar-3", "creature": "seam-boar", "at": { "room": "ground", "dx": 26, "dy": 44 } },
     { "id": "rim-meadow-grounds-mite-4", "creature": "grounds-mite", "at": { "room": "ground", "dx": 14, "dy": 45 } },
     { "id": "rim-meadow-lawn-rat-5", "creature": "lawn-rat", "at": { "room": "ground", "dx": 23, "dy": 40 } },
-    { "id": "rim-meadow-feral-hound-6", "creature": "feral-hound", "at": { "room": "ground", "dx": 56, "dy": 47 } },
+    { "id": "rim-meadow-seam-boar-6", "creature": "seam-boar", "at": { "room": "ground", "dx": 56, "dy": 47 } },
     { "id": "rim-meadow-grounds-mite-7", "creature": "grounds-mite", "at": { "room": "ground", "dx": 37, "dy": 6 } },
     { "id": "rim-meadow-lawn-rat-8", "creature": "lawn-rat", "at": { "room": "ground", "dx": 33, "dy": 21 } },
-    { "id": "rim-meadow-feral-hound-9", "creature": "feral-hound", "at": { "room": "ground", "dx": 27, "dy": 31 } },
     { "id": "rim-meadow-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 54, "dy": 21 } },
     { "id": "rim-meadow-lawn-rat-11", "creature": "lawn-rat", "at": { "room": "ground", "dx": 40, "dy": 53 } },
-    { "id": "rim-meadow-feral-hound-12", "creature": "feral-hound", "at": { "room": "ground", "dx": 54, "dy": 7 } },
+    { "id": "rim-meadow-seam-boar-12", "creature": "seam-boar", "at": { "room": "ground", "dx": 54, "dy": 7 } },
     { "id": "rim-meadow-grounds-mite-13", "creature": "grounds-mite", "at": { "room": "ground", "dx": 17, "dy": 35 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "rim-meadow-landmark", "prefab": "landmark-lake-gauge", "at": { "room": "ground", "dx": 44, "dy": 35 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "shepherds-hut": { "theme": "home", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

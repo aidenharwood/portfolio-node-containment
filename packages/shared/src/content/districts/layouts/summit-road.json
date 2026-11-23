@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.62, "tint": "#1a2a3a", "fog": "#0c1824", "sky": "#1a3048", "weather": ["sparks"], "haze": 1.4 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 6, "row": 7 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 31, "y": 30, "width": 14, "height": 10 }, "height": 12 },
+    { "kind": "building", "id": "summit-toll", "rect": { "x": 32, "y": 31, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Summit Road" }
+    { "room": "ground", "name": "Summit Road" },
+    { "room": "summit-toll", "name": "Summit Toll", "safe": false }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 58, "dy": 25 }
@@ -21,36 +25,48 @@
     { "id": "summit-road-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 7, "dy": 30 } },
     { "id": "summit-road-steam-vent-2", "object": "steam-vent", "at": { "room": "ground", "dx": 44, "dy": 8 } },
     { "id": "summit-road-precursor-pylon-3", "object": "precursor-pylon", "at": { "room": "ground", "dx": 33, "dy": 18 } },
-    { "id": "summit-road-steam-vent-4", "object": "steam-vent", "at": { "room": "ground", "dx": 44, "dy": 25 } },
-    { "id": "summit-road-steam-vent-5", "object": "steam-vent", "at": { "room": "ground", "dx": 39, "dy": 39 } },
     { "id": "summit-road-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 47, "dy": 53 } },
     { "id": "summit-road-vault-bloom-7", "object": "vault-bloom", "at": { "room": "ground", "dx": 44, "dy": 19 } },
-    { "id": "summit-road-vault-residue-9", "object": "vault-residue", "at": { "room": "ground", "dx": 43, "dy": 45 } }
+    { "id": "summit-road-vault-residue-9", "object": "vault-residue", "at": { "room": "ground", "dx": 43, "dy": 45 } },
+    { "id": "summit-toll-shelving-0", "object": "shelving", "at": { "room": "summit-toll", "dx": 1, "dy": 0 }, "facing": "south" },
+    { "id": "summit-toll-shelving-1", "object": "shelving", "at": { "room": "summit-toll", "dx": 2, "dy": 0 }, "facing": "south" },
+    { "id": "summit-toll-notice-board-2", "object": "notice-board", "at": { "room": "summit-toll", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "summit-toll-storage-locker-3", "object": "storage-locker", "at": { "room": "summit-toll", "dx": 9, "dy": 0 }, "facing": "south" },
+    { "id": "summit-toll-security-camera-4", "object": "security-camera", "at": { "room": "summit-toll", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "summit-toll-table-5", "object": "table", "at": { "room": "summit-toll", "dx": 3, "dy": 3 } },
+    { "id": "summit-toll-table-6", "object": "table", "at": { "room": "summit-toll", "dx": 4, "dy": 3 } },
+    { "id": "summit-toll-chair-7", "object": "chair", "at": { "room": "summit-toll", "dx": 3, "dy": 2 }, "facing": "south" },
+    { "id": "summit-toll-chair-8", "object": "chair", "at": { "room": "summit-toll", "dx": 4, "dy": 2 }, "facing": "south" },
+    { "id": "summit-road-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 45, "dy": 23 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
     { "id": "summit-road-null-stalker-0", "creature": "null-stalker", "at": { "room": "ground", "dx": 59, "dy": 53 } },
-    { "id": "summit-road-null-echo-1", "creature": "null-echo", "at": { "room": "ground", "dx": 21, "dy": 15 } },
+    { "id": "summit-road-clerk-of-null-1", "creature": "clerk-of-null", "at": { "room": "ground", "dx": 21, "dy": 15 } },
     { "id": "summit-road-cell-breaker-2", "creature": "cell-breaker", "at": { "room": "ground", "dx": 13, "dy": 41 } },
     { "id": "summit-road-null-stalker-3", "creature": "null-stalker", "at": { "room": "ground", "dx": 30, "dy": 5 } },
-    { "id": "summit-road-null-echo-4", "creature": "null-echo", "at": { "room": "ground", "dx": 55, "dy": 44 } },
+    { "id": "summit-road-clerk-of-null-4", "creature": "clerk-of-null", "at": { "room": "ground", "dx": 55, "dy": 44 } },
     { "id": "summit-road-cell-breaker-5", "creature": "cell-breaker", "at": { "room": "ground", "dx": 53, "dy": 56 } },
     { "id": "summit-road-null-stalker-6", "creature": "null-stalker", "at": { "room": "ground", "dx": 8, "dy": 16 } },
-    { "id": "summit-road-null-echo-7", "creature": "null-echo", "at": { "room": "ground", "dx": 14, "dy": 27 } },
-    { "id": "summit-road-cell-breaker-8", "creature": "cell-breaker", "at": { "room": "ground", "dx": 38, "dy": 33 } },
+    { "id": "summit-road-clerk-of-null-7", "creature": "clerk-of-null", "at": { "room": "ground", "dx": 14, "dy": 27 } },
     { "id": "summit-road-null-stalker-9", "creature": "null-stalker", "at": { "room": "ground", "dx": 7, "dy": 37 } },
-    { "id": "summit-road-null-echo-10", "creature": "null-echo", "at": { "room": "ground", "dx": 37, "dy": 53 } },
+    { "id": "summit-road-clerk-of-null-10", "creature": "clerk-of-null", "at": { "room": "ground", "dx": 37, "dy": 53 } },
     { "id": "summit-road-cell-breaker-11", "creature": "cell-breaker", "at": { "room": "ground", "dx": 59, "dy": 39 } },
     { "id": "summit-road-null-stalker-12", "creature": "null-stalker", "at": { "room": "ground", "dx": 25, "dy": 8 } },
-    { "id": "summit-road-null-echo-13", "creature": "null-echo", "at": { "room": "ground", "dx": 14, "dy": 48 } },
-    { "id": "summit-road-cell-breaker-14", "creature": "cell-breaker", "at": { "room": "ground", "dx": 56, "dy": 33 } }
+    { "id": "summit-road-clerk-of-null-13", "creature": "clerk-of-null", "at": { "room": "ground", "dx": 14, "dy": 48 } },
+    { "id": "summit-road-cell-breaker-14", "creature": "cell-breaker", "at": { "room": "ground", "dx": 56, "dy": 33 } },
+    { "id": "summit-toll-null-echo-0", "creature": "null-echo", "at": { "room": "summit-toll", "dx": 9, "dy": 5 } },
+    { "id": "summit-toll-null-echo-1", "creature": "null-echo", "at": { "room": "summit-toll", "dx": 2, "dy": 5 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "summit-road-landmark", "prefab": "landmark-antenna-mast", "at": { "room": "ground", "dx": 39, "dy": 24 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "summit-toll": { "theme": "office", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

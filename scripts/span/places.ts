@@ -22,6 +22,7 @@ export interface BuildingSpec {
   readonly creatures?: readonly string[];
   readonly nodes?: readonly string[];
   readonly lift?: string;
+  readonly elite?: string;
   readonly mail?: 'market-mailbox' | 'exchange-post';
   readonly anchor?: string;
   readonly neon?: boolean;
@@ -147,7 +148,7 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     buildings: [
       b('orchard-gatehouse', 'Orchard Gatehouse', [0, 1], office(['corporal-fenn']), 10, 31),
       b('orchard-lab', 'Orchard Laboratory', [1, 1], lab(['dr-kessel']), 10, 31),
-      b('seed-vault', 'Seed Vault', [2, 1], holding([], false, ['scarecoat', 'seed-mite']), 10, 31),
+      b('seed-vault', 'Seed Vault', [2, 1], { ...holding([], false, ['scarecoat', 'seed-mite']), multiCombat: true, elite: 'thornback-matriarch' }, 10, 31),
       yard('orchard-rows', 'The Mother Rows', 9, 43, 30, 13, ['orchard-keeper', 'seed-mite'], { floor: 'soil', multiCombat: true }),
     ],
     landmark: { prefab: 'landmark-orchard-gantry', at: { x: 45, y: 46 } },
@@ -217,7 +218,7 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     condition: 'breached',
     buildings: [
       b('gallowglass-headhouse', 'Gallowglass Headhouse', [0, 0], headhouse('gallowglass-lift-down', ['agent-mercer'])),
-      b('gallowglass-holding', 'Gallowglass Holding', [1, 0], holding([], false, ['glass-hound', 'ad-wraith'], 'secure-cell')),
+      b('gallowglass-holding', 'Gallowglass Holding', [1, 0], { ...holding([], false, ['glass-hound', 'ad-wraith'], 'secure-cell'), multiCombat: true, elite: 'chrome-crawler' }),
       b('gallowglass-lab', 'Gallowglass Lab', [2, 0], lab([], false, ['culture-bench', 'amber-trace'], ['neon-moth'])),
     ],
     landmark: { prefab: 'landmark-gallowglass-headframe', at: { x: 30, y: 33 } },
@@ -245,8 +246,8 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     groundSafe: false,
     condition: 'breached',
     buildings: [
-      b('tallow-forward-post', 'Tallow Forward Post', [0, 0], office(['lt-osei'])),
-      b('tallow-holding', 'Tallow Holding', [1, 0], holding([], false, ['bilge-wraith', 'misprint'], 'secure-cell')),
+      b('tallow-forward-post', 'Tallow Forward Post', [0, 0], { ...office(['lt-osei']), lift: 'tallow-lift-down' }),
+      b('tallow-holding', 'Tallow Holding', [1, 0], { ...holding([], false, ['bilge-wraith', 'misprint'], 'secure-cell'), multiCombat: true, elite: 'the-bosun' }),
       b('tallow-barracks', 'Tallow Barracks', [2, 0], dorm([], false, ['misprint', 'misprint'])),
       yard('tallow-parade', 'The Parade Ground', 9, 31, 30, 14, ['the-cohort', 'misprint'], { multiCombat: true, door: 'north' }),
     ],
@@ -275,9 +276,9 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     groundSafe: false,
     condition: 'alien',
     buildings: [
-      b('vesper-headhouse', 'Vesper Headhouse', [0, 0], headhouse('lift-door', [], false, ['choir-echo'])),
+      b('vesper-headhouse', 'Vesper Headhouse', [0, 0], headhouse('vesper-lift-down', [], false, ['choir-echo'])),
       b('vesper-records', 'Vesper Records', [1, 0], office([], false, ['choir-echo', 'red-twin'])),
-      b('vesper-holding', 'Vesper Holding', [2, 0], holding([], false, ['red-twin', 'choir-echo'], 'secure-cell')),
+      b('vesper-holding', 'Vesper Holding', [2, 0], { ...holding([], false, ['red-twin', 'choir-echo'], 'secure-cell'), multiCombat: true, elite: 'prism-alpha' }),
       yard('vesper-nave', 'The Nave', 9, 31, 30, 14, ['the-precentor', 'choir-echo'], { multiCombat: true, floor: 'grate' }),
     ],
     landmark: { prefab: 'landmark-vesper-beacon', at: { x: 44, y: 34 } },
@@ -306,7 +307,7 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     condition: 'uncanny',
     buildings: [
       b('null-headhouse', 'Null Headhouse', [0, 0], headhouse('null-lift-down', ['registrar-lune-null'])),
-      b('null-holding', 'The Outside', [1, 0], holding([], false, ['null-echo', 'null-stalker'], 'secure-cell')),
+      b('null-holding', 'The Outside', [1, 0], { ...holding([], false, ['null-echo', 'null-stalker'], 'secure-cell'), multiCombat: true, elite: 'null-auditor' }),
       b('null-records', 'Null Records', [2, 0], office([], false, ['null-echo'])),
     ],
     landmark: { prefab: 'landmark-spindle-light', at: { x: 28, y: 34 } },

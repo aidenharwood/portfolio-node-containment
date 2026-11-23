@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 13, "row": 9 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 30, "y": 29, "width": 14, "height": 10 }, "height": 11 },
+    { "kind": "building", "id": "shard-lab", "rect": { "x": 31, "y": 30, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Shard Moor" }
+    { "room": "ground", "name": "Shard Moor" },
+    { "room": "shard-lab", "name": "Shard Lab", "safe": false }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 21, "dy": 10 }
@@ -24,33 +28,40 @@
     { "id": "shard-moor-ledge-milestone-4", "object": "ledge-milestone", "at": { "room": "ground", "dx": 37, "dy": 60 } },
     { "id": "shard-moor-ledge-milestone-5", "object": "ledge-milestone", "at": { "room": "ground", "dx": 9, "dy": 3 } },
     { "id": "shard-moor-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 17, "dy": 20 } },
-    { "id": "shard-moor-sprung-cell-door-9", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 18, "dy": 3 } }
+    { "id": "shard-moor-sprung-cell-door-9", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 18, "dy": 3 } },
+    { "id": "shard-lab-lab-bench-0", "object": "lab-bench", "at": { "room": "shard-lab", "dx": 2, "dy": 3 } },
+    { "id": "shard-lab-lab-bench-1", "object": "lab-bench", "at": { "room": "shard-lab", "dx": 3, "dy": 3 } },
+    { "id": "shard-lab-lab-bench-2", "object": "lab-bench", "at": { "room": "shard-lab", "dx": 4, "dy": 3 } },
+    { "id": "shard-lab-lab-bench-3", "object": "lab-bench", "at": { "room": "shard-lab", "dx": 5, "dy": 3 } },
+    { "id": "shard-lab-shelving-4", "object": "shelving", "at": { "room": "shard-lab", "dx": 9, "dy": 0 }, "facing": "south" },
+    { "id": "shard-lab-shelving-5", "object": "shelving", "at": { "room": "shard-lab", "dx": 10, "dy": 0 }, "facing": "south" },
+    { "id": "shard-lab-shelving-6", "object": "shelving", "at": { "room": "shard-lab", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "shard-moor-poi-steppe-reliquary-0", "object": "steppe-reliquary", "at": { "room": "ground", "dx": 44, "dy": 22 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
     { "id": "shard-moor-choir-echo-0", "creature": "choir-echo", "at": { "room": "ground", "dx": 33, "dy": 10 } },
     { "id": "shard-moor-red-twin-1", "creature": "red-twin", "at": { "room": "ground", "dx": 15, "dy": 13 } },
-    { "id": "shard-moor-glass-stalker-2", "creature": "glass-stalker", "at": { "room": "ground", "dx": 33, "dy": 27 } },
-    { "id": "shard-moor-choir-echo-3", "creature": "choir-echo", "at": { "room": "ground", "dx": 35, "dy": 38 } },
     { "id": "shard-moor-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 9, "dy": 12 } },
-    { "id": "shard-moor-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 51, "dy": 30 } },
+    { "id": "shard-moor-shard-wisp-5", "creature": "shard-wisp", "at": { "room": "ground", "dx": 51, "dy": 30 } },
     { "id": "shard-moor-choir-echo-6", "creature": "choir-echo", "at": { "room": "ground", "dx": 27, "dy": 48 } },
     { "id": "shard-moor-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 59, "dy": 28 } },
-    { "id": "shard-moor-glass-stalker-8", "creature": "glass-stalker", "at": { "room": "ground", "dx": 23, "dy": 32 } },
-    { "id": "shard-moor-choir-echo-9", "creature": "choir-echo", "at": { "room": "ground", "dx": 44, "dy": 34 } },
+    { "id": "shard-moor-shard-wisp-8", "creature": "shard-wisp", "at": { "room": "ground", "dx": 23, "dy": 32 } },
     { "id": "shard-moor-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 8, "dy": 34 } },
-    { "id": "shard-moor-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 49, "dy": 56 } },
+    { "id": "shard-moor-shard-wisp-11", "creature": "shard-wisp", "at": { "room": "ground", "dx": 49, "dy": 56 } },
     { "id": "shard-moor-choir-echo-12", "creature": "choir-echo", "at": { "room": "ground", "dx": 19, "dy": 35 } },
-    { "id": "shard-moor-red-twin-13", "creature": "red-twin", "at": { "room": "ground", "dx": 42, "dy": 24 } },
-    { "id": "shard-moor-glass-stalker-14", "creature": "glass-stalker", "at": { "room": "ground", "dx": 45, "dy": 52 } },
-    { "id": "shard-moor-choir-echo-15", "creature": "choir-echo", "at": { "room": "ground", "dx": 37, "dy": 21 } }
+    { "id": "shard-moor-shard-wisp-14", "creature": "shard-wisp", "at": { "room": "ground", "dx": 45, "dy": 52 } },
+    { "id": "shard-lab-red-twin-0", "creature": "red-twin", "at": { "room": "shard-lab", "dx": 8, "dy": 5 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "shard-moor-landmark", "prefab": "landmark-tuning-pylon", "at": { "room": "ground", "dx": 38, "dy": 23 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "shard-lab": { "theme": "lab", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

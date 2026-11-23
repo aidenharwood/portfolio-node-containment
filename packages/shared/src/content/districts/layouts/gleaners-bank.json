@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.2, "tint": "#e4dcb8", "fog": "#d8d0a8", "sky": "#b8d8c0", "weather": ["dust"], "haze": 0.8 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 3, "row": 9 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 37, "y": 42, "width": 10, "height": 8 }, "height": 6 },
+    { "kind": "building", "id": "gleaners-cottage", "rect": { "x": 38, "y": 43, "width": 8, "height": 6 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Gleaners Bank" }
+    { "room": "ground", "name": "Gleaners Bank" },
+    { "room": "gleaners-cottage", "name": "Gleaner’s Cottage", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 53, "dy": 32 }
@@ -23,18 +27,25 @@
     { "id": "gleaners-bank-washing-line-3", "object": "washing-line", "at": { "room": "ground", "dx": 8, "dy": 31 } },
     { "id": "gleaners-bank-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 9, "dy": 42 } },
     { "id": "gleaners-bank-burn-barrel-5", "object": "burn-barrel", "at": { "room": "ground", "dx": 30, "dy": 57 } },
-    { "id": "gleaners-bank-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 44, "dy": 40 } },
     { "id": "gleaners-bank-kestrel-south-gate-leaf-0", "object": "kestrel-south-gate-leaf", "at": { "room": "ground", "dx": 63, "dy": 48 }, "facing": "east" },
     { "id": "gleaners-bank-kestrel-south-gate-leaf-1", "object": "kestrel-south-gate-leaf", "at": { "room": "ground", "dx": 63, "dy": 49 }, "facing": "east" },
     { "id": "gleaners-bank-dredge-spot-9", "object": "dredge-spot", "at": { "room": "ground", "dx": 36, "dy": 8 } },
     { "id": "gleaners-bank-reed-bed-10", "object": "reed-bed", "at": { "room": "ground", "dx": 53, "dy": 12 } },
-    { "id": "gleaners-bank-culvert-trace-11", "object": "culvert-trace", "at": { "room": "ground", "dx": 14, "dy": 20 } }
+    { "id": "gleaners-bank-culvert-trace-11", "object": "culvert-trace", "at": { "room": "ground", "dx": 14, "dy": 20 } },
+    { "id": "gleaners-cottage-bed-0", "object": "bed", "at": { "room": "gleaners-cottage", "dx": 1, "dy": 0 } },
+    { "id": "gleaners-cottage-washer-1", "object": "washer", "at": { "room": "gleaners-cottage", "dx": 4, "dy": 0 }, "facing": "south" },
+    { "id": "gleaners-cottage-shelving-2", "object": "shelving", "at": { "room": "gleaners-cottage", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "gleaners-cottage-table-3", "object": "table", "at": { "room": "gleaners-cottage", "dx": 5, "dy": 3 } },
+    { "id": "gleaners-cottage-chair-4", "object": "chair", "at": { "room": "gleaners-cottage", "dx": 5, "dy": 2 }, "facing": "south" },
+    { "id": "gleaners-bank-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 55, "dy": 35 } }
   ],
   "assemblies": [
     { "id": "gleaners-bank-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 19, "dy": 14 }, "facing": "east", "span": 2 },
     { "id": "gleaners-bank-bridge-1", "assembly": "bridge", "at": { "room": "ground", "dx": 19, "dy": 38 }, "facing": "east", "span": 2 }
   ],
-  "npcs": [],
+  "npcs": [
+    { "id": "gleaners-cottage-gleaner-sefa", "npc": "gleaner-sefa", "at": { "room": "gleaners-cottage", "dx": 2, "dy": 3 } }
+  ],
   "creatures": [
     { "id": "gleaners-bank-furrow-eel-0", "creature": "furrow-eel", "at": { "room": "ground", "dx": 54, "dy": 22 } },
     { "id": "gleaners-bank-crop-magpie-1", "creature": "crop-magpie", "at": { "room": "ground", "dx": 44, "dy": 30 } },
@@ -42,7 +53,6 @@
     { "id": "gleaners-bank-crop-magpie-3", "creature": "crop-magpie", "at": { "room": "ground", "dx": 4, "dy": 38 } },
     { "id": "gleaners-bank-furrow-eel-4", "creature": "furrow-eel", "at": { "room": "ground", "dx": 15, "dy": 43 } },
     { "id": "gleaners-bank-crop-magpie-5", "creature": "crop-magpie", "at": { "room": "ground", "dx": 48, "dy": 21 } },
-    { "id": "gleaners-bank-furrow-eel-6", "creature": "furrow-eel", "at": { "room": "ground", "dx": 50, "dy": 39 } },
     { "id": "gleaners-bank-crop-magpie-7", "creature": "crop-magpie", "at": { "room": "ground", "dx": 13, "dy": 59 } },
     { "id": "gleaners-bank-furrow-eel-8", "creature": "furrow-eel", "at": { "room": "ground", "dx": 25, "dy": 5 } },
     { "id": "gleaners-bank-crop-magpie-9", "creature": "crop-magpie", "at": { "room": "ground", "dx": 44, "dy": 56 } },
@@ -54,9 +64,12 @@
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "gleaners-bank-landmark", "prefab": "landmark-tithe-silo", "at": { "room": "ground", "dx": 46, "dy": 34 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "gleaners-cottage": { "theme": "home", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

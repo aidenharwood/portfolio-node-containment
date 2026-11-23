@@ -4,6 +4,7 @@ import { DRESSING_THEMES, prefab, type DressingTheme } from '../../../src/conten
 import type { WorldObjectDefinition } from '../../../src/world/entities.ts';
 import { LANDMARK_PREFABS, LANDMARK_OBJECTS } from '../../../src/content/catalog/landmarks.ts';
 import { SPAN_LANDMARK_PREFABS, SPAN_LANDMARKS } from '../../../src/content/span/objects.ts';
+import { WILD_KIT, WILD_LANDMARKS } from '../../../src/content/span/wilds.ts';
 
 const ALL: readonly DressingTheme[] = DRESSING_THEMES;
 const except = (...themes: readonly DressingTheme[]): readonly DressingTheme[] => DRESSING_THEMES.filter((theme) => !themes.includes(theme));
@@ -44,9 +45,9 @@ export const KIT_OBJECTS: readonly WorldObjectDefinition[] = [
   prop('transit-shelter', { mount: 'free', homes: ['civic', 'office', 'camp', 'freight'] }, { footprint: { width: 3, height: 2 }, blocksMovement: false, deck: true }),
 ];
 
-const SHIPPED_LANDMARK_IDS = new Set([...LANDMARK_PREFABS, ...SPAN_LANDMARK_PREFABS].flatMap((landmark) => landmark.pieces.map((piece) => piece.objectId)));
+const SHIPPED_LANDMARK_IDS = new Set([...LANDMARK_PREFABS, ...SPAN_LANDMARK_PREFABS, ...WILD_KIT.prefabs].flatMap((landmark) => landmark.pieces.map((piece) => piece.objectId)));
 
-export const SHIPPED_LANDMARK_OBJECTS: readonly WorldObjectDefinition[] = [...LANDMARK_OBJECTS, ...SPAN_LANDMARKS].filter((object) => SHIPPED_LANDMARK_IDS.has(object.id));
+export const SHIPPED_LANDMARK_OBJECTS: readonly WorldObjectDefinition[] = [...LANDMARK_OBJECTS, ...SPAN_LANDMARKS, ...WILD_LANDMARKS].filter((object) => SHIPPED_LANDMARK_IDS.has(object.id));
 
 export const FIXTURE_FURNISHING: FurnishingKit = {
   objects: KIT_OBJECTS,

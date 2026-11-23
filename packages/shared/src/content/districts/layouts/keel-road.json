@@ -8,15 +8,20 @@
   "ambience": { "darkness": 0.4, "tint": "#5a3a28", "fog": "#4a3424", "sky": "#8a6a50", "weather": ["dust", "embers"], "haze": 1.2 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 14, "row": 1 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 28, "y": 29, "width": 14, "height": 10 }, "height": 4 },
+    { "kind": "building", "id": "keel-road-toll", "rect": { "x": 29, "y": 30, "width": 12, "height": 8 }, "floor": "carpet", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Keel Road" }
+    { "room": "ground", "name": "Keel Road" },
+    { "room": "keel-road-toll", "name": "Keel Road Toll", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 35, "dy": 32 }
+    "start": { "room": "ground", "dx": 35, "dy": 41 }
   },
   "objects": [
+    { "id": "keel-road-quest-purser-locker", "object": "purser-locker", "at": { "room": "ground", "dx": 41, "dy": 41 } },
     { "id": "keel-road-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 4, "dy": 33 } },
     { "id": "keel-road-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 46 } },
     { "id": "keel-road-utility-pole-2", "object": "utility-pole", "at": { "room": "ground", "dx": 35, "dy": 19 } },
@@ -25,33 +30,43 @@
     { "id": "keel-road-magnet-crane-5", "object": "magnet-crane", "at": { "room": "ground", "dx": 24, "dy": 13 } },
     { "id": "keel-road-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 14, "dy": 46 } },
     { "id": "keel-road-rivet-seam-8", "object": "rivet-seam", "at": { "room": "ground", "dx": 56, "dy": 46 } },
-    { "id": "keel-road-wreck-plate-9", "object": "wreck-plate", "at": { "room": "ground", "dx": 5, "dy": 55 } }
+    { "id": "keel-road-wreck-plate-9", "object": "wreck-plate", "at": { "room": "ground", "dx": 5, "dy": 55 } },
+    { "id": "keel-road-toll-shelving-0", "object": "shelving", "at": { "room": "keel-road-toll", "dx": 1, "dy": 0 }, "facing": "south" },
+    { "id": "keel-road-toll-shelving-1", "object": "shelving", "at": { "room": "keel-road-toll", "dx": 2, "dy": 0 }, "facing": "south" },
+    { "id": "keel-road-toll-notice-board-2", "object": "notice-board", "at": { "room": "keel-road-toll", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "keel-road-toll-storage-locker-3", "object": "storage-locker", "at": { "room": "keel-road-toll", "dx": 9, "dy": 0 }, "facing": "south" },
+    { "id": "keel-road-toll-security-camera-4", "object": "security-camera", "at": { "room": "keel-road-toll", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "keel-road-toll-table-5", "object": "table", "at": { "room": "keel-road-toll", "dx": 3, "dy": 3 } },
+    { "id": "keel-road-toll-table-6", "object": "table", "at": { "room": "keel-road-toll", "dx": 4, "dy": 3 } },
+    { "id": "keel-road-toll-chair-7", "object": "chair", "at": { "room": "keel-road-toll", "dx": 3, "dy": 2 }, "facing": "south" },
+    { "id": "keel-road-toll-chair-8", "object": "chair", "at": { "room": "keel-road-toll", "dx": 4, "dy": 2 }, "facing": "south" },
+    { "id": "keel-road-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 54, "dy": 31 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
     { "id": "keel-road-bilge-wraith-0", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 11, "dy": 12 } },
-    { "id": "keel-road-rustling-1", "creature": "rustling", "at": { "room": "ground", "dx": 14, "dy": 52 } },
-    { "id": "keel-road-hull-knocker-2", "creature": "hull-knocker", "at": { "room": "ground", "dx": 44, "dy": 28 } },
+    { "id": "keel-road-misprint-1", "creature": "misprint", "at": { "room": "ground", "dx": 14, "dy": 52 } },
     { "id": "keel-road-bilge-wraith-3", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 11, "dy": 39 } },
-    { "id": "keel-road-rustling-4", "creature": "rustling", "at": { "room": "ground", "dx": 23, "dy": 52 } },
+    { "id": "keel-road-misprint-4", "creature": "misprint", "at": { "room": "ground", "dx": 23, "dy": 52 } },
     { "id": "keel-road-hull-knocker-5", "creature": "hull-knocker", "at": { "room": "ground", "dx": 43, "dy": 19 } },
-    { "id": "keel-road-bilge-wraith-6", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 42, "dy": 37 } },
-    { "id": "keel-road-rustling-7", "creature": "rustling", "at": { "room": "ground", "dx": 35, "dy": 56 } },
+    { "id": "keel-road-misprint-7", "creature": "misprint", "at": { "room": "ground", "dx": 35, "dy": 56 } },
     { "id": "keel-road-hull-knocker-8", "creature": "hull-knocker", "at": { "room": "ground", "dx": 16, "dy": 58 } },
-    { "id": "keel-road-bilge-wraith-9", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 27, "dy": 30 } },
-    { "id": "keel-road-rustling-10", "creature": "rustling", "at": { "room": "ground", "dx": 9, "dy": 24 } },
+    { "id": "keel-road-misprint-10", "creature": "misprint", "at": { "room": "ground", "dx": 9, "dy": 24 } },
     { "id": "keel-road-hull-knocker-11", "creature": "hull-knocker", "at": { "room": "ground", "dx": 49, "dy": 14 } },
     { "id": "keel-road-bilge-wraith-12", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 53, "dy": 54 } },
-    { "id": "keel-road-rustling-13", "creature": "rustling", "at": { "room": "ground", "dx": 14, "dy": 21 } },
+    { "id": "keel-road-misprint-13", "creature": "misprint", "at": { "room": "ground", "dx": 14, "dy": 21 } },
     { "id": "keel-road-hull-knocker-14", "creature": "hull-knocker", "at": { "room": "ground", "dx": 14, "dy": 28 } },
     { "id": "keel-road-bilge-wraith-15", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 19, "dy": 42 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "keel-road-landmark", "prefab": "landmark-engine-headframe", "at": { "room": "ground", "dx": 47, "dy": 31 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "keel-road-toll": { "theme": "office", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

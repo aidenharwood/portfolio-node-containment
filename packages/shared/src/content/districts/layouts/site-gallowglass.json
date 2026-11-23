@@ -17,7 +17,7 @@
   "areas": [
     { "room": "ground", "name": "Site Gallowglass" },
     { "room": "gallowglass-headhouse", "name": "Gallowglass Headhouse", "safe": true },
-    { "room": "gallowglass-holding", "name": "Gallowglass Holding", "safe": false },
+    { "room": "gallowglass-holding", "name": "Gallowglass Holding", "safe": false, "multiCombat": true },
     { "room": "gallowglass-lab", "name": "Gallowglass Lab", "safe": false }
   ],
   "anchors": {
@@ -64,6 +64,7 @@
     { "id": "gallowglass-headhouse-agent-mercer", "npc": "agent-mercer", "at": { "room": "gallowglass-headhouse", "dx": 8, "dy": 5 } }
   ],
   "creatures": [
+    { "id": "gallowglass-holding-chrome-crawler-0", "creature": "chrome-crawler", "at": { "room": "gallowglass-holding", "dx": 6, "dy": 4 } },
     { "id": "gallowglass-holding-glass-hound-0", "creature": "glass-hound", "at": { "room": "gallowglass-holding", "dx": 2, "dy": 5 } },
     { "id": "gallowglass-holding-ad-wraith-1", "creature": "ad-wraith", "at": { "room": "gallowglass-holding", "dx": 9, "dy": 6 } },
     { "id": "gallowglass-lab-neon-moth-0", "creature": "neon-moth", "at": { "room": "gallowglass-lab", "dx": 8, "dy": 5 } },

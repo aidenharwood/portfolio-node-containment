@@ -116,21 +116,71 @@ export function questTalk(talk: QuestTalk, defaultRequires: readonly string[] = 
 
 type Entry = DialogueDefinition['entries'][number];
 
-const rank = (entry: Entry): number => {
-  const types = (entry.conditions ?? []).map((condition) => condition.type);
-  if (types.includes('questActive')) return 0;
-  if (types.includes('questNotStarted')) return 1;
-  if (types.length > 0) return 2;
-  return 3;
+const offeredQuest = (node: DialogueNode | undefined): string | undefined =>
+  (node?.options ?? []).flatMap((option) => option.effects ?? []).find((effect) => effect.type === 'startQuest')?.questId;
+
+const activeQuest = (entry: Entry): string | undefined => (entry.conditions ?? []).find((condition) => condition.type === 'questActive')?.questId;
+
+const isStepEntry = (entry: Entry): boolean => {
+  const conditions = entry.conditions ?? [];
+  return conditions.some((condition) => condition.type === 'questActive') && (conditions.length > 1 || conditions.some((condition) => condition.type === 'questActive' && condition.stepId !== undefined));
 };
 
-export function combineDialogues(dialogues: readonly DialogueDefinition[]): DialogueDefinition[] {
+const rank = (entry: Entry, node: DialogueNode | undefined): number => {
+  const types = (entry.conditions ?? []).map((condition) => condition.type);
+  if (isStepEntry(entry)) return 0;
+  if (offeredQuest(node)) return 1;
+  if (types.includes('questActive')) return 2;
+  if (types.includes('questNotStarted')) return 3;
+  if (types.length > 0) return 4;
+  return 5;
+};
+
+interface Topic {
+  readonly questId: string;
+  readonly entry: Entry;
+}
+
+function endOf(nodes: Readonly<Record<string, DialogueNode>>, start: string): string {
+  const seen = new Set<string>();
+  let at = start;
+  for (;;) {
+    const node = nodes[at];
+    if (!node || (node.options?.length ?? 0) > 0 || !node.next || seen.has(at)) return at;
+    seen.add(at);
+    at = node.next;
+  }
+}
+
+function withTopics(nodes: Record<string, DialogueNode>, topics: readonly Topic[], questName: (questId: string) => string): void {
+  const extra = new Map<string, DialogueOption[]>();
+  for (const topic of topics) {
+    const end = endOf(nodes, topic.entry.node);
+    const options = extra.get(end) ?? [];
+    for (const other of topics) {
+      if (other.questId === topic.questId) continue;
+      if (options.some((option) => option.next === other.entry.node && JSON.stringify(option.conditions) === JSON.stringify(other.entry.conditions ?? []))) continue;
+      options.push({ text: `About ${questName(other.questId)}...`, conditions: other.entry.conditions ?? [], next: other.entry.node });
+    }
+    extra.set(end, options);
+  }
+  for (const [name, options] of extra) {
+    const node = nodes[name];
+    if (!node || options.length === 0) continue;
+    const own = node.options ?? [];
+    const leaves = own.filter((option) => option.next === null && !option.effects);
+    nodes[name] = own.length > 0 ? { ...node, options: [...own.filter((option) => !leaves.includes(option)), ...options, ...leaves] } : { ...node, next: null, options: [...options, bye] };
+  }
+}
+
+export function combineDialogues(dialogues: readonly DialogueDefinition[], questName: (questId: string) => string = (questId) => questId): DialogueDefinition[] {
   const byId = new Map<string, DialogueDefinition[]>();
   for (const dialogue of dialogues) byId.set(dialogue.id, [...(byId.get(dialogue.id) ?? []), dialogue]);
   return [...byId.entries()].map(([id, group]) => {
     if (group.length === 1) return group[0] as DialogueDefinition;
     const nodes: Record<string, DialogueNode> = {};
     const ranked: { readonly entry: Entry; readonly rank: number; readonly order: number }[] = [];
+    const topics: Topic[] = [];
     group.forEach((dialogue, index) => {
       const rename = (node: string | null | undefined): string | null | undefined => (node === null || node === undefined ? node : `q${index}-${node}`);
       for (const [name, node] of Object.entries(dialogue.nodes)) {
@@ -141,12 +191,16 @@ export function combineDialogues(dialogues: readonly DialogueDefinition[]): Dial
         };
       }
       for (const entry of dialogue.entries) {
-        const entryRank = rank(entry);
-        if (entryRank === 3 && index < group.length - 1) continue;
-        ranked.push({ entry: { ...entry, node: `q${index}-${entry.node}` }, rank: entryRank, order: entryRank === 2 ? -index : index });
+        const entryRank = rank(entry, dialogue.nodes[entry.node]);
+        if (entryRank === 5 && index < group.length - 1) continue;
+        const renamed = { ...entry, node: `q${index}-${entry.node}` };
+        ranked.push({ entry: renamed, rank: entryRank, order: entryRank === 4 ? -index : index });
+        const questId = entryRank === 0 ? activeQuest(entry) : entryRank === 1 ? offeredQuest(dialogue.nodes[entry.node]) : undefined;
+        if (questId) topics.push({ questId, entry: renamed });
       }
     });
     ranked.sort((a, b) => a.rank - b.rank || a.order - b.order);
+    withTopics(nodes, topics, questName);
     return { id, entries: ranked.map((item) => item.entry), nodes };
   });
 }

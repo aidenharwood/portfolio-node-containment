@@ -8,32 +8,48 @@
   "ambience": { "darkness": 0.58, "tint": "#3a2448", "fog": "#1e1430", "sky": "#2a1838", "weather": ["rain"], "haze": 1.3 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 3, "row": 1 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 28, "y": 26, "width": 14, "height": 10 }, "height": 6 },
+    { "kind": "building", "id": "overpass-kiosk", "rect": { "x": 29, "y": 27, "width": 12, "height": 8 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "The Overpass" }
+    { "room": "ground", "name": "The Overpass" },
+    { "room": "overpass-kiosk", "name": "Overpass Kiosk", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 5, "dy": 19 }
   },
   "objects": [
+    { "id": "the-overpass-quest-cohort-billboard", "object": "cohort-billboard", "at": { "room": "ground", "dx": 41, "dy": 38 } },
     { "id": "the-overpass-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 7, "dy": 38 } },
     { "id": "the-overpass-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 25 } },
     { "id": "the-overpass-food-stall-2", "object": "food-stall", "at": { "room": "ground", "dx": 31, "dy": 18 } },
-    { "id": "the-overpass-litter-bin-3", "object": "litter-bin", "at": { "room": "ground", "dx": 29, "dy": 30 } },
     { "id": "the-overpass-utility-pole-4", "object": "utility-pole", "at": { "room": "ground", "dx": 14, "dy": 27 } },
     { "id": "the-overpass-food-stall-5", "object": "food-stall", "at": { "room": "ground", "dx": 56, "dy": 23 } },
     { "id": "the-overpass-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 39, "dy": 57 } },
     { "id": "the-overpass-culture-bench-7", "object": "culture-bench", "at": { "room": "ground", "dx": 17, "dy": 57 } },
     { "id": "the-overpass-amber-trace-8", "object": "amber-trace", "at": { "room": "ground", "dx": 54, "dy": 44 } },
-    { "id": "the-overpass-scrap-heap-9", "object": "scrap-heap", "at": { "room": "ground", "dx": 29, "dy": 43 } }
+    { "id": "the-overpass-scrap-heap-9", "object": "scrap-heap", "at": { "room": "ground", "dx": 29, "dy": 43 } },
+    { "id": "overpass-kiosk-shelving-0", "object": "shelving", "at": { "room": "overpass-kiosk", "dx": 1, "dy": 0 }, "facing": "south" },
+    { "id": "overpass-kiosk-shelving-1", "object": "shelving", "at": { "room": "overpass-kiosk", "dx": 2, "dy": 0 }, "facing": "south" },
+    { "id": "overpass-kiosk-shelving-2", "object": "shelving", "at": { "room": "overpass-kiosk", "dx": 3, "dy": 0 }, "facing": "south" },
+    { "id": "overpass-kiosk-shelving-3", "object": "shelving", "at": { "room": "overpass-kiosk", "dx": 4, "dy": 0 }, "facing": "south" },
+    { "id": "overpass-kiosk-notice-board-4", "object": "notice-board", "at": { "room": "overpass-kiosk", "dx": 6, "dy": 0 }, "facing": "south" },
+    { "id": "overpass-kiosk-neon-sign-cyan-5", "object": "neon-sign-cyan", "at": { "room": "overpass-kiosk", "dx": 8, "dy": 0 }, "facing": "south" },
+    { "id": "overpass-kiosk-vending-machine-6", "object": "vending-machine", "at": { "room": "overpass-kiosk", "dx": 11, "dy": 0 }, "facing": "south" },
+    { "id": "overpass-kiosk-counter-7", "object": "counter", "at": { "room": "overpass-kiosk", "dx": 1, "dy": 3 } },
+    { "id": "overpass-kiosk-counter-8", "object": "counter", "at": { "room": "overpass-kiosk", "dx": 2, "dy": 3 } },
+    { "id": "overpass-kiosk-counter-9", "object": "counter", "at": { "room": "overpass-kiosk", "dx": 3, "dy": 3 } },
+    { "id": "overpass-kiosk-table-10", "object": "table", "at": { "room": "overpass-kiosk", "dx": 9, "dy": 5 } },
+    { "id": "overpass-kiosk-chair-11", "object": "chair", "at": { "room": "overpass-kiosk", "dx": 9, "dy": 4 }, "facing": "south" },
+    { "id": "the-overpass-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 54, "dy": 30 } }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
     { "id": "the-overpass-neon-moth-0", "creature": "neon-moth", "at": { "room": "ground", "dx": 22, "dy": 30 } },
     { "id": "the-overpass-alley-crawler-1", "creature": "alley-crawler", "at": { "room": "ground", "dx": 14, "dy": 34 } },
-    { "id": "the-overpass-neon-moth-2", "creature": "neon-moth", "at": { "room": "ground", "dx": 49, "dy": 32 } },
     { "id": "the-overpass-alley-crawler-3", "creature": "alley-crawler", "at": { "room": "ground", "dx": 15, "dy": 16 } },
     { "id": "the-overpass-neon-moth-4", "creature": "neon-moth", "at": { "room": "ground", "dx": 50, "dy": 38 } },
     { "id": "the-overpass-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 44, "dy": 16 } },
@@ -43,15 +59,16 @@
     { "id": "the-overpass-alley-crawler-9", "creature": "alley-crawler", "at": { "room": "ground", "dx": 23, "dy": 46 } },
     { "id": "the-overpass-neon-moth-10", "creature": "neon-moth", "at": { "room": "ground", "dx": 6, "dy": 8 } },
     { "id": "the-overpass-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 60, "dy": 36 } },
-    { "id": "the-overpass-neon-moth-12", "creature": "neon-moth", "at": { "room": "ground", "dx": 40, "dy": 35 } },
-    { "id": "the-overpass-alley-crawler-13", "creature": "alley-crawler", "at": { "room": "ground", "dx": 35, "dy": 39 } },
     { "id": "the-overpass-neon-moth-14", "creature": "neon-moth", "at": { "room": "ground", "dx": 3, "dy": 26 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "the-overpass-landmark", "prefab": "landmark-strand-screen", "at": { "room": "ground", "dx": 47, "dy": 30 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "overpass-kiosk": { "theme": "shop", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

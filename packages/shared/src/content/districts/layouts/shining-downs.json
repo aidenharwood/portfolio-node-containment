@@ -8,10 +8,14 @@
   "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 13, "row": 6 },
-  "steps": [],
+  "steps": [
+    { "kind": "rise", "rect": { "x": 22, "y": 32, "width": 14, "height": 10 }, "height": 10 },
+    { "kind": "building", "id": "downs-barracks", "rect": { "x": 23, "y": 33, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+  ],
   "tiles": [],
   "areas": [
-    { "room": "ground", "name": "Shining Downs" }
+    { "room": "ground", "name": "Shining Downs" },
+    { "room": "downs-barracks", "name": "Downs Barracks", "safe": false }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 14, "dy": 49 }
@@ -22,11 +26,22 @@
     { "id": "shining-downs-flood-mast-2", "object": "flood-mast", "at": { "room": "ground", "dx": 32, "dy": 9 } },
     { "id": "shining-downs-ledge-milestone-3", "object": "ledge-milestone", "at": { "room": "ground", "dx": 47, "dy": 56 } },
     { "id": "shining-downs-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 6, "dy": 45 } },
-    { "id": "shining-downs-precursor-pylon-5", "object": "precursor-pylon", "at": { "room": "ground", "dx": 34, "dy": 31 } },
     { "id": "shining-downs-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 7, "dy": 15 } },
     { "id": "shining-downs-sprung-cell-door-7", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 52, "dy": 47 } },
     { "id": "shining-downs-directorate-salvage-8", "object": "directorate-salvage", "at": { "room": "ground", "dx": 4, "dy": 28 } },
-    { "id": "shining-downs-red-moss-9", "object": "red-moss", "at": { "room": "ground", "dx": 60, "dy": 27 } }
+    { "id": "shining-downs-red-moss-9", "object": "red-moss", "at": { "room": "ground", "dx": 60, "dy": 27 } },
+    { "id": "downs-barracks-bed-0", "object": "bed", "at": { "room": "downs-barracks", "dx": 1, "dy": 0 } },
+    { "id": "downs-barracks-bed-1", "object": "bed", "at": { "room": "downs-barracks", "dx": 3, "dy": 0 } },
+    { "id": "downs-barracks-bed-2", "object": "bed", "at": { "room": "downs-barracks", "dx": 5, "dy": 0 } },
+    { "id": "downs-barracks-bed-3", "object": "bed", "at": { "room": "downs-barracks", "dx": 7, "dy": 0 } },
+    { "id": "downs-barracks-bed-4", "object": "bed", "at": { "room": "downs-barracks", "dx": 9, "dy": 0 } },
+    { "id": "downs-barracks-bed-5", "object": "bed", "at": { "room": "downs-barracks", "dx": 11, "dy": 0 } },
+    { "id": "downs-barracks-bed-6", "object": "bed", "at": { "room": "downs-barracks", "dx": 1, "dy": 5 } },
+    { "id": "downs-barracks-bed-7", "object": "bed", "at": { "room": "downs-barracks", "dx": 3, "dy": 5 } },
+    { "id": "downs-barracks-bed-8", "object": "bed", "at": { "room": "downs-barracks", "dx": 9, "dy": 5 } },
+    { "id": "downs-barracks-bed-9", "object": "bed", "at": { "room": "downs-barracks", "dx": 11, "dy": 5 } },
+    { "id": "downs-barracks-storage-locker-10", "object": "storage-locker", "at": { "room": "downs-barracks", "dx": 0, "dy": 3 }, "facing": "east" },
+    { "id": "shining-downs-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 23, "dy": 26 } }
   ],
   "assemblies": [
     { "id": "shining-downs-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 39, "dy": 22 }, "facing": "east", "span": 2 },
@@ -48,16 +63,19 @@
     { "id": "shining-downs-prism-hound-10", "creature": "prism-hound", "at": { "room": "ground", "dx": 54, "dy": 22 } },
     { "id": "shining-downs-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 16, "dy": 6 } },
     { "id": "shining-downs-prism-hound-12", "creature": "prism-hound", "at": { "room": "ground", "dx": 3, "dy": 37 } },
-    { "id": "shining-downs-glass-stalker-13", "creature": "glass-stalker", "at": { "room": "ground", "dx": 25, "dy": 36 } },
-    { "id": "shining-downs-prism-hound-14", "creature": "prism-hound", "at": { "room": "ground", "dx": 29, "dy": 46 } },
     { "id": "shining-downs-glass-stalker-15", "creature": "glass-stalker", "at": { "room": "ground", "dx": 59, "dy": 11 } },
-    { "id": "shining-downs-prism-hound-16", "creature": "prism-hound", "at": { "room": "ground", "dx": 43, "dy": 49 } }
+    { "id": "shining-downs-prism-hound-16", "creature": "prism-hound", "at": { "room": "ground", "dx": 43, "dy": 49 } },
+    { "id": "downs-barracks-prism-hound-0", "creature": "prism-hound", "at": { "room": "downs-barracks", "dx": 6, "dy": 3 } },
+    { "id": "downs-barracks-glass-stalker-1", "creature": "glass-stalker", "at": { "room": "downs-barracks", "dx": 2, "dy": 3 } }
   ],
   "lights": [],
   "decals": [],
-  "setPieces": [],
+  "setPieces": [
+    { "id": "shining-downs-landmark", "prefab": "landmark-steppe-mast", "at": { "room": "ground", "dx": 29, "dy": 25 }, "facing": "south" }
+  ],
   "dressing": {
-    "ground": { "theme": "street", "people": 0 }
+    "ground": { "theme": "street", "people": 0 },
+    "downs-barracks": { "theme": "dormitory", "people": 0 }
   },
-  "furnish": {}
+  "furnish": { "landmarks": ["ground"] }
 }

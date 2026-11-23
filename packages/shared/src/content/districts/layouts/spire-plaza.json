@@ -26,6 +26,7 @@
     "start": { "room": "ground", "dx": 5, "dy": 46 }
   },
   "objects": [
+    { "id": "spire-plaza-quest-rigged-cabinet", "object": "rigged-cabinet", "at": { "room": "plaza-arcade", "dx": 6, "dy": 4 } },
     { "id": "aurelian-lobby-shelving-0", "object": "shelving", "at": { "room": "aurelian-lobby", "dx": 1, "dy": 0 }, "facing": "south" },
     { "id": "aurelian-lobby-shelving-1", "object": "shelving", "at": { "room": "aurelian-lobby", "dx": 2, "dy": 0 }, "facing": "south" },
     { "id": "aurelian-lobby-notice-board-2", "object": "notice-board", "at": { "room": "aurelian-lobby", "dx": 6, "dy": 0 }, "facing": "south" },

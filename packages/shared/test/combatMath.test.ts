@@ -3,6 +3,7 @@ import { describe, test } from 'node:test';
 import {
   combatExperience,
   createStartingSkills,
+  fortitudeCarryAfter,
   experienceForLevel,
   hasLineOfSight,
   hitChance,
@@ -65,10 +66,22 @@ describe('combat math', () => {
 
   test('damage awards style and fortitude experience', () => {
     assert.deepEqual(combatExperience('ranged', 3), [
-      { skill: 'marksmanship', amount: 12 },
-      { skill: 'fortitude', amount: 6 },
+      { skill: 'marksmanship', amount: 0.3 },
+      { skill: 'fortitude', amount: 0.1 },
     ]);
     assert.deepEqual(combatExperience('melee', 0), []);
+  });
+
+  test('fortitude carries the part of a tenth each hit leaves over', () => {
+    let carry = 0;
+    let paid = 0;
+    for (let hit = 0; hit < 40; hit++) {
+      paid += combatExperience('melee', 1, carry)[1]?.amount ?? 0;
+      carry = fortitudeCarryAfter(1, carry);
+    }
+    assert.ok(Math.abs(paid - 2) < 1e-9, `forty 1-damage hits pay 2 fortitude, paid ${paid}`);
+    assert.ok(Math.abs(combatExperience('ranged', 3, 0.05)[1]!.amount - 0.2) < 1e-9);
+    assert.equal(fortitudeCarryAfter(3, 0.05), 0);
   });
 });
 

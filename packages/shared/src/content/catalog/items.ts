@@ -5,7 +5,7 @@ import type { ConsumableKind, GearForm, GearMotif, ItemDefinition, ItemIconShape
 import type { EquipmentSlot } from '../../gear/slots.ts';
 import type { StatBlock, StatId } from '../../gear/stats.ts';
 import { boostTicksForMinutes } from '../../character/boosts.ts';
-import { experienceForLevel } from '../../character/skills.ts';
+import { experienceForLevel, roundExperience } from '../../character/skills.ts';
 import { gear } from '../gearItem.ts';
 
 const material = (id: string, name: string, examine: string, icon: ItemIconShape, colors: readonly [string, string], value: number): ItemDefinition => ({
@@ -144,7 +144,7 @@ export const MATERIAL_LADDER: readonly Material[] = [
     origin: 'Bolted together from whatever the heaps gave up.',
     clothOrigin: 'Stitched from rags and cable ties the heaps gave up.',
     value: 12,
-    experience: 14,
+    experience: 0.5,
   },
   {
     key: 'ferro',
@@ -163,7 +163,7 @@ export const MATERIAL_LADDER: readonly Material[] = [
     origin: 'Laminated basin iron. Heavy, honest and slightly damp.',
     clothOrigin: 'Ballistic cloth, resin-set against the basin damp. It mostly works.',
     value: 60,
-    experience: 26,
+    experience: 1.6,
   },
   {
     key: 'plasteel',
@@ -182,7 +182,7 @@ export const MATERIAL_LADDER: readonly Material[] = [
     origin: 'Scrapyard plasteel, pressed hot in the crusher shed.',
     clothOrigin: 'Woven from lab culture. It is warmer than it should be.',
     value: 140,
-    experience: 48,
+    experience: 3.5,
   },
   {
     key: 'duralloy',
@@ -201,7 +201,7 @@ export const MATERIAL_LADDER: readonly Material[] = [
     origin: 'Cut from hulls that never left the Fringe.',
     clothOrigin: 'Tide polymer from the Fringe sail lofts.',
     value: 260,
-    experience: 78,
+    experience: 5.8,
   },
   {
     key: 'sinter',
@@ -220,7 +220,7 @@ export const MATERIAL_LADDER: readonly Material[] = [
     origin: 'Directorate issue, once. The serial numbers are filed off.',
     clothOrigin: 'Red mesh off the Secure Wing. It hums near the cells.',
     value: 460,
-    experience: 120,
+    experience: 8,
   },
   {
     key: 'vault-glass',
@@ -239,7 +239,7 @@ export const MATERIAL_LADDER: readonly Material[] = [
     origin: 'Not made so much as persuaded. It hums when you are alone.',
     clothOrigin: 'Bloom silk. It turns to face you when you take it off.',
     value: 800,
-    experience: 170,
+    experience: 10.5,
   },
 ];
 
@@ -362,7 +362,7 @@ const recipe = (station: CraftingStation, skill: SkillId, output: string, level:
   level,
   inputs: Object.entries(inputs).map(([itemId, amount]) => ({ itemId, count: amount })),
   output: { itemId: output, count },
-  experience: Math.min(experience, Math.floor((experienceForLevel(level + 1) - experienceForLevel(level)) / 2)),
+  experience: Math.min(roundExperience(experience), Math.floor((experienceForLevel(level + 1) - experienceForLevel(level)) / 2)),
   ticks: level < 10 ? 4 : 6,
 });
 
@@ -460,11 +460,11 @@ interface KitLine {
 }
 
 export const KIT_TIERS: readonly KitTier[] = [
-  { numeral: 'I', level: 8, fittings: { 'copper-wire': 1 }, overdrive: 'scrap-plating', optics: 'rag-bundle', tuning: 'trace-dust', boost: 2, experience: 14, value: 12, note: 'Held together with copper wire and optimism.' },
-  { numeral: 'II', level: 20, fittings: { 'induction-coil': 1 }, overdrive: 'ferro-plating', optics: 'ballistic-cloth', tuning: 'culvert-trace', boost: 3, experience: 36, value: 30, note: 'Wound round an induction coil, with a ferro clamp that will outlive you.' },
-  { numeral: 'III', level: 30, fittings: { servo: 1 }, overdrive: 'plasteel-plating', optics: 'synth-weave', tuning: 'amber-trace', boost: 4, experience: 62, value: 60, note: 'Driven by a rebuilt lock-motor servo, still green at the edges. It holds true.' },
-  { numeral: 'IV', level: 40, fittings: { 'gyro-stabiliser': 1 }, overdrive: 'duralloy-plating', optics: 'tide-polymer', tuning: 'hull-trace', boost: 5, experience: 94, value: 100, note: 'Seated on a gyro stabiliser ground from crusher steel. It never wobbles.' },
-  { numeral: 'V', level: 45, fittings: { 'cell-mesh': 1, 'hull-rivets': 1 }, overdrive: 'sinter-plating', optics: 'red-mesh', tuning: 'red-trace', boost: 8, experience: 130, value: 150, note: 'Wrapped in cell mesh and pinned with hull rivets, each of which held back the sea once. Nobody signed it out.' },
+  { numeral: 'I', level: 8, fittings: { 'copper-wire': 1 }, overdrive: 'scrap-plating', optics: 'rag-bundle', tuning: 'trace-dust', boost: 2, experience: 1.2, value: 12, note: 'Held together with copper wire and optimism.' },
+  { numeral: 'II', level: 20, fittings: { 'induction-coil': 1 }, overdrive: 'ferro-plating', optics: 'ballistic-cloth', tuning: 'culvert-trace', boost: 3, experience: 6, value: 30, note: 'Wound round an induction coil, with a ferro clamp that will outlive you.' },
+  { numeral: 'III', level: 30, fittings: { servo: 1 }, overdrive: 'plasteel-plating', optics: 'synth-weave', tuning: 'amber-trace', boost: 4, experience: 10, value: 60, note: 'Driven by a rebuilt lock-motor servo, still green at the edges. It holds true.' },
+  { numeral: 'IV', level: 40, fittings: { 'gyro-stabiliser': 1 }, overdrive: 'duralloy-plating', optics: 'tide-polymer', tuning: 'hull-trace', boost: 5, experience: 14, value: 100, note: 'Seated on a gyro stabiliser ground from crusher steel. It never wobbles.' },
+  { numeral: 'V', level: 45, fittings: { 'cell-mesh': 1, 'hull-rivets': 1 }, overdrive: 'sinter-plating', optics: 'red-mesh', tuning: 'red-trace', boost: 8, experience: 16, value: 150, note: 'Wrapped in cell mesh and pinned with hull rivets, each of which held back the sea once. Nobody signed it out.' },
 ];
 
 const KIT_LINES: readonly KitLine[] = [
@@ -528,35 +528,35 @@ function retiredLadderIds(tier: Material): [string, string][] {
 export const RENAMED_WARD_ITEMS: ReadonlyMap<string, string> = new Map([...RETIRED_COMPONENTS, ...MATERIAL_LADDER.flatMap(retiredLadderIds)].filter(([from, to]) => from !== to));
 
 export const WARD_RECIPES: readonly RecipeDefinition[] = [
-  recipe('refinery', 'refining', 'scrap-plating', 1, { 'scrap-metal': 2 }, 8),
-  recipe('refinery', 'refining', 'ferro-plating', 10, { 'silt-iron': 2 }, 20),
-  recipe('refinery', 'refining', 'ballistic-cloth', 10, { 'reed-bundle': 2 }, 18),
-  recipe('cooker', 'biochemistry', 'smoked-eel', 1, { 'basin-eel': 1 }, 8),
-  recipe('synthesiser', 'biochemistry', 'greens-poultice', 1, { 'allotment-greens': 2, 'trace-dust': 1 }, 12),
-  recipe('cooker', 'biochemistry', 'noodle-bowl', 5, { 'basin-eel': 1, 'allotment-greens': 1, 'day-old-loaf': 1 }, 22),
-  recipe('synthesiser', 'biochemistry', 'grip-tincture', 8, { 'hand-leaf-cutting': 1, 'trace-dust': 1 }, 26),
-  recipe('synthesiser', 'biochemistry', 'reed-tonic', 12, { 'reed-bundle': 2, 'culvert-trace': 1 }, 34),
-  recipe('cooker', 'biochemistry', 'eel-pie', 14, { 'basin-eel': 2, 'day-old-loaf': 1 }, 40),
-  recipe('synthesiser', 'biochemistry', 'amber-tincture', 20, { 'lab-culture': 2, 'amber-trace': 1 }, 50),
-  recipe('refinery', 'refining', 'induction-coil', 15, { 'copper-wire': 3 }, 28),
-  recipe('refinery', 'refining', 'plasteel-plating', 20, { 'ferro-plating': 1, 'heavy-scrap': 2 }, 40),
-  recipe('refinery', 'refining', 'synth-weave', 20, { 'lab-culture': 2 }, 38),
-  recipe('synthesiser', 'biochemistry', 'culture-salve', 22, { 'lab-culture': 2, 'amber-trace': 1 }, 56),
-  recipe('cooker', 'biochemistry', 'culture-cutlet', 24, { 'lab-culture': 2, 'day-old-loaf': 1 }, 62),
-  recipe('refinery', 'refining', 'servo', 25, { 'brass-fittings': 2 }, 46),
-  recipe('refinery', 'refining', 'duralloy-plating', 30, { 'hull-plate': 2 }, 64),
-  recipe('refinery', 'refining', 'tide-polymer', 30, { 'tide-weed': 2 }, 60),
-  recipe('cooker', 'biochemistry', 'tide-broth', 32, { 'tide-weed': 2, 'basin-eel': 1 }, 80),
-  recipe('refinery', 'refining', 'gyro-stabiliser', 35, { 'bearing-steel': 2 }, 72),
-  recipe('refinery', 'refining', 'sinter-plating', 40, { 'directorate-salvage': 2 }, 96),
-  recipe('refinery', 'refining', 'red-mesh', 40, { 'red-moss': 2 }, 90),
-  recipe('synthesiser', 'biochemistry', 'tide-tincture', 32, { 'tide-weed': 2, 'hull-trace': 1 }, 86),
-  recipe('cooker', 'biochemistry', 'moss-pasty', 44, { 'red-moss': 2, 'day-old-loaf': 1 }, 128),
-  recipe('synthesiser', 'biochemistry', 'red-salve', 42, { 'red-moss': 2, 'red-trace': 1 }, 120),
-  recipe('refinery', 'refining', 'vault-glass-plating', 50, { 'vault-residue': 2 }, 140),
-  recipe('refinery', 'refining', 'bloom-silk', 50, { 'vault-bloom': 2 }, 130),
-  recipe('cooker', 'biochemistry', 'bloom-chowder', 54, { 'vault-bloom': 2, 'basin-eel': 1 }, 180),
-  recipe('synthesiser', 'biochemistry', 'bloom-elixir', 52, { 'vault-bloom': 2, 'vault-trace': 1 }, 170),
+  recipe('refinery', 'refining', 'scrap-plating', 1, { 'scrap-metal': 2 }, 0.9),
+  recipe('refinery', 'refining', 'ferro-plating', 10, { 'silt-iron': 2 }, 1.4),
+  recipe('refinery', 'refining', 'ballistic-cloth', 10, { 'reed-bundle': 2 }, 1.4),
+  recipe('cooker', 'biochemistry', 'smoked-eel', 1, { 'basin-eel': 1 }, 0.9),
+  recipe('synthesiser', 'biochemistry', 'greens-poultice', 1, { 'allotment-greens': 2, 'trace-dust': 1 }, 0.9),
+  recipe('cooker', 'biochemistry', 'noodle-bowl', 5, { 'basin-eel': 1, 'allotment-greens': 1, 'day-old-loaf': 1 }, 1.1),
+  recipe('synthesiser', 'biochemistry', 'grip-tincture', 8, { 'hand-leaf-cutting': 1, 'trace-dust': 1 }, 1.3),
+  recipe('synthesiser', 'biochemistry', 'reed-tonic', 12, { 'reed-bundle': 2, 'culvert-trace': 1 }, 2.3),
+  recipe('cooker', 'biochemistry', 'eel-pie', 14, { 'basin-eel': 2, 'day-old-loaf': 1 }, 2),
+  recipe('synthesiser', 'biochemistry', 'amber-tincture', 20, { 'lab-culture': 2, 'amber-trace': 1 }, 4.5),
+  recipe('refinery', 'refining', 'induction-coil', 15, { 'copper-wire': 3 }, 2.8),
+  recipe('refinery', 'refining', 'plasteel-plating', 20, { 'ferro-plating': 1, 'heavy-scrap': 2 }, 6.2),
+  recipe('refinery', 'refining', 'synth-weave', 20, { 'lab-culture': 2 }, 3.2),
+  recipe('synthesiser', 'biochemistry', 'culture-salve', 22, { 'lab-culture': 2, 'amber-trace': 1 }, 4.9),
+  recipe('cooker', 'biochemistry', 'culture-cutlet', 24, { 'lab-culture': 2, 'day-old-loaf': 1 }, 4),
+  recipe('refinery', 'refining', 'servo', 25, { 'brass-fittings': 2 }, 3.6),
+  recipe('refinery', 'refining', 'duralloy-plating', 30, { 'hull-plate': 2 }, 5.2),
+  recipe('refinery', 'refining', 'tide-polymer', 30, { 'tide-weed': 2 }, 5.2),
+  recipe('cooker', 'biochemistry', 'tide-broth', 32, { 'tide-weed': 2, 'basin-eel': 1 }, 6.9),
+  recipe('refinery', 'refining', 'gyro-stabiliser', 35, { 'bearing-steel': 2 }, 5.8),
+  recipe('refinery', 'refining', 'sinter-plating', 40, { 'directorate-salvage': 2 }, 7.3),
+  recipe('refinery', 'refining', 'red-mesh', 40, { 'red-moss': 2 }, 7.3),
+  recipe('synthesiser', 'biochemistry', 'tide-tincture', 32, { 'tide-weed': 2, 'hull-trace': 1 }, 7.8),
+  recipe('cooker', 'biochemistry', 'moss-pasty', 44, { 'red-moss': 2, 'day-old-loaf': 1 }, 8.2),
+  recipe('synthesiser', 'biochemistry', 'red-salve', 42, { 'red-moss': 2, 'red-trace': 1 }, 11),
+  recipe('refinery', 'refining', 'vault-glass-plating', 50, { 'vault-residue': 2 }, 9.7),
+  recipe('refinery', 'refining', 'bloom-silk', 50, { 'vault-bloom': 2 }, 9.7),
+  recipe('cooker', 'biochemistry', 'bloom-chowder', 54, { 'vault-bloom': 2, 'basin-eel': 1 }, 12.9),
+  recipe('synthesiser', 'biochemistry', 'bloom-elixir', 52, { 'vault-bloom': 2, 'vault-trace': 1 }, 14.6),
   ...KIT_RECIPES,
   ...LADDERS.flatMap((ladder) => ladder.recipes),
 ];
