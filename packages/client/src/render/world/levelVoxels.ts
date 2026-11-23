@@ -3,6 +3,7 @@ import { DenseVolume, RaisedCanvas, type VoxelCanvas } from '../voxel/denseVolum
 import { darken, jitter, lighten, mix, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE, VOXEL_GLASS, VOXEL_SOLID } from '../voxel/voxelKinds.ts';
 import { decalColor } from './floorDecals.ts';
+import { blockMark, laneMark, trackPieceAt, trackRise, type TrackMark } from './trackPieces.ts';
 import { FLOOR_LAYERS, STEP_VOXELS, TILE_RESOLUTION, WALL_LAYERS, ZONE_VOLUME_HEIGHT } from './worldScale.ts';
 
 const R = TILE_RESOLUTION;
@@ -152,10 +153,10 @@ export function paintTileRows(volume: DenseVolume, layout: OwnedLayout, region: 
       else if (kind === 'fence') paintFence(canvas, layout, tx, ty);
       else if (kind === 'barrier') paintBarrier(canvas, layout, tx, ty);
       else if (kind === 'glass') paintGlass(canvas, tx, ty);
-      else if (kind === 'track') paintTrack(canvas, trackAxis(layout, tx, ty), tx, ty);
+      else if (kind === 'track') paintTrack(volume, layout, tx, ty, base);
       else paintFloor(canvas, kind, tx, ty, kind === 'door' ? doorAxis(layout, tx, ty) : 'x', decals?.get(tileKey({ x: tx, y: ty })), seamsOf(layout, kind, tx, ty), blendNeighborsOf(layout, kind, tx, ty), wallsBeside(layout, tx, ty), kerbsOf(layout, kind, tx, ty));
       if (kind === 'door') paintLintel(canvas, layout, tx, ty);
-      if (base > 0) paintEarth(volume, layout, kind, tx, ty, base);
+      if (base > 0 && kind !== 'track') paintEarth(volume, layout, kind, tx, ty, base);
     }
   }
   return volume;
@@ -829,24 +830,43 @@ function trackAxis(layout: TileLayout, tx: number, ty: number): Axis {
   return run(1, 0) + run(-1, 0) >= run(0, 1) + run(0, -1) ? 'x' : 'y';
 }
 
-function trackVoxel(along: number, across: number, grain: number): number | null {
-  if (across === 2 || across === R - 3) return jitter(COLORS.rail, 0.04, grain);
-  if (along % 4 === 1 && across >= 1 && across <= R - 2) return jitter(COLORS.sleeper, 0.06, grain);
+function markColor(mark: TrackMark, grain: number): number | null {
+  if (mark === 'rail') return jitter(COLORS.rail, 0.04, grain);
+  if (mark === 'sleeper') return jitter(COLORS.sleeper, 0.06, grain);
   return null;
 }
 
+const ballastColor = (grain: number): number => (grain > 0.7 ? COLORS.ballastStone : jitter(COLORS.ballast, 0.05, grain));
+
 function paintTrackVoxel(volume: VoxelCanvas, vx: number, vz: number, along: number, across: number): void {
   const grain = noise3(vx, FLOOR, vz, 17);
-  volume.set(vx, SUBFLOOR, vz, grain > 0.7 ? COLORS.ballastStone : jitter(COLORS.ballast, 0.05, grain));
-  const surface = trackVoxel(along, across, grain);
+  volume.set(vx, SUBFLOOR, vz, ballastColor(grain));
+  const surface = markColor(laneMark(along, across + 0.5, R), grain);
   if (surface === null) volume.clear(vx, FLOOR, vz);
   else volume.set(vx, FLOOR, vz, surface);
 }
 
-function paintTrack(volume: VoxelCanvas, axis: Axis, tx: number, ty: number): void {
+function paintTrack(volume: DenseVolume, layout: TileLayout, tx: number, ty: number, base: number): void {
+  const piece = trackPieceAt(layout, tx, ty);
+  const rise = piece.kind === 'straight' ? trackRise(layout, tx, ty, piece.axis) : () => 0;
+  let bottom = base;
+  for (const [dx, dy] of AROUND) {
+    const beside = layout.tileAt({ x: tx + dx, y: ty + dy });
+    bottom = Math.min(bottom, beside === 'void' ? 0 : tileBase(layout, tx + dx, ty + dy));
+  }
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
-      paintTrackVoxel(volume, tx * R + lx, ty * R + lz, axis === 'x' ? lx : lz, axis === 'x' ? lz : lx);
+      const vx = tx * R + lx;
+      const vz = ty * R + lz;
+      const grain = noise3(vx, FLOOR, vz, 17);
+      const along = piece.kind === 'straight' && piece.axis === 'y' ? lz : lx;
+      const across = piece.kind === 'straight' && piece.axis === 'y' ? lx : lz;
+      const lift = base + Math.round(rise((along + 0.5) / R - 0.5) * STEP_VOXELS);
+      const mark = piece.kind === 'block' ? blockMark(piece.open, vx - piece.x * R + 0.5, vz - piece.y * R + 0.5, R) : laneMark(along, across + 0.5, R);
+      for (let vy = Math.min(bottom, lift); vy < lift + SUBFLOOR; vy++) volume.set(vx, vy, vz, earthColor('track', vx, vy, vz, lift - vy));
+      volume.set(vx, lift + SUBFLOOR, vz, ballastColor(grain));
+      const surface = markColor(mark, grain);
+      if (surface !== null) volume.set(vx, lift + FLOOR, vz, surface);
     }
   }
 }

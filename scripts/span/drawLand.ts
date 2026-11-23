@@ -6,6 +6,7 @@ import { TILE_KINDS, type TileKindId } from '../../packages/shared/src/world/til
 import { codeAt, COLUMNS, HEIGHT, LAND_ID, MASSIF, padOf, PLACES, placeById, random, REGIONS, regionAtSquare, ROWS, SEAM_HALF, SQUARE, WIDTH } from './atlas.ts';
 import { BRIDGE_PLANS_FOR_LAND, bridgeTiles } from './bridges.ts';
 import { GATE_PLANS, isLandTile, isMassifTile, isRailTile, nearGate, nearPad, nearRail, railSegments, seamEdges, smooth } from './plan.ts';
+import { gradeRail } from './grade.ts';
 import { maskPolygon } from './trace.ts';
 
 const OUT = new URL('../../packages/shared/src/content/land/the-span.json', import.meta.url);
@@ -181,6 +182,14 @@ for (const gate of GATE_PLANS) {
   }
 }
 
+const graded = drawLand({ id: LAND_ID, squareSize: SQUARE, columns: COLUMNS, rows: ROWS, steps: [...steps] });
+const railRises = gradeRail((x, y) => (graded.tileAt({ x, y }) === 'rock' && graded.heightAt({ x, y }) === 15 ? relief.heightAt({ x, y }) : graded.heightAt({ x, y })));
+const layRail = (): void => {
+  for (const segment of railSegments()) fill(box(segment.x, segment.y, segment.width, segment.height), 'track');
+  for (const railRise of railRises) rise({ kind: 'rect', rect: railRise.rect }, railRise.height);
+};
+layRail();
+
 steps.push({ kind: 'soften', shape: box(0, 0, WIDTH, HEIGHT) } as LandStep);
 
 blobs(33, K, 4, 2, 4, 'water', 10, () => true);
@@ -208,7 +217,7 @@ ground(octagon(hull.x + hull.width + 4, hull.y + hull.height / 2, 10, 10), 'clad
 const massifRock = masked((x, y) => isMassifTile(x, y));
 if (massifRock) ground(massifRock, 'rock', 15);
 
-for (const segment of railSegments()) fill(box(segment.x, segment.y, segment.width, segment.height), 'track');
+layRail();
 
 const wards: LandStep[] = REGIONS.flatMap((region) => {
   const shape = squareMask((column, row) => codeAt(column, row) === region.code);
