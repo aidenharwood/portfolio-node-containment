@@ -162,7 +162,7 @@ export const FAR_SPAN_QUESTS: readonly QuestDefinition[] = [
     ...pays(
       600,
       [styleQuestPay(49, 30), questPay('psionics', 49, 12)],
-      [{ type: 'notify', text: 'Nakamura says the hymn was a lullaby, and the Span was the child. Captain Halloran at Last Post wants to know what it was keeping asleep.' }],
+      [{ type: 'notify', text: 'Nakamura says the hymn was a lullaby, and the Span was the child. Captain Halloran at Last Post wants to know what it was keeping asleep. Climb to the summit through the Spindle Seam. Once you have found the Last Post platform, the Spindle Funicular runs back up from the Choir.' }],
     ),
     questPoints: 2,
   },
@@ -672,7 +672,7 @@ export const FAR_SPAN_DIALOGUES: readonly DialogueDefinition[] = [
     },
     waiting: 'Vale in the Bunks, then Null. The registrar there will clear you for the lift. She will also know your name. Do not let it bother you.',
     done: 'Last Post, the last camp, and the first one to see an operative come back from Null with the same file. Probably the same file.',
-    chat: 'Last Post. Past here is Site Null, and past Null is the end of the Span. Nobody has come back from Null with the same file they went in with.',
+    chat: 'Last Post. Past here is Site Null, and past Null there is only the Spindle. Nobody has come back from Null with the same file they went in with.',
     chatOptions: [SHOPS.halloran],
   }),
   questTalk({

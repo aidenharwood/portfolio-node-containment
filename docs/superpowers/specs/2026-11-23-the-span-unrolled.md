@@ -29,7 +29,7 @@ row 13 ..................
 
 - **Every square is a land square of 64**, as before, and every square of a region is that region's ward. There are about 140 land districts.
 - **Tier follows distance, not column.** Inside a region, tier rises with walking distance from Site Kestrel, between the region's two tiers.
-- **Borders.** Halcyon meets Harrow, the Wreckfield and the Steppe at **Seams**: precursor bulkheads at the top step, crossed at their gates. Kestrel and Harrow share an open border along the Spill. The Steppe climbs onto the Spindle through the one pass in the Massif's ring. The Drop keeps Kestrel and the Steppe apart, and only the tram crosses it.
+- **Borders.** Every pair of neighbouring regions meets at a **Seam**: a precursor bulkhead at the top step, crossed at its three gates. There are five: Kestrel–Harrow (beside the Spill), Harrow–Halcyon, Halcyon–Wreckfield, Wreckfield–Steppe, and the Spindle Seam, where the Steppe climbs onto the Spindle through the one pass in the Massif's ring. The Drop keeps Kestrel and the Steppe apart, and nothing crosses it.
 
 ## Height
 
@@ -39,16 +39,16 @@ The plan has three new step kinds:
 - **`soften`** lowers walkable ground just enough that no walkable tile stands more than one step above any neighbour. Water pulls the land beside it down into beaches; rock and walls are left alone.
 - **`origin`** gives the plan world coordinates. Every step and every district square is in world coordinates, so growing the map west or north means lowering `origin` and widening the plan. No step and no district moves. That is how the Reach expands in any direction.
 
-Each region has its own relief band:
+Each region has its own relief band (`REGIONS` in `scripts/span/atlas.ts`; squares beside the Massif are lifted a little more):
 
 | Region | Relief |
 | - | - |
-| Kestrel | 2–6, rolling down to beaches and a lake |
-| Harrow | 3–11, climbing in terraces toward the Massif |
-| Halcyon | 4–8, with tower blocks rising to the top step |
-| Wreckfield | 1–5, around a crater lake and the hull |
-| Steppe | 7–12 |
-| Spindle | 11–14 under rock peaks |
+| Kestrel | 1–11, rolling down to beaches and a lake |
+| Harrow | 2–15, climbing in terraces toward the Massif |
+| Halcyon | 3–10, with tower blocks rising to the top step |
+| Wreckfield | 0–9, around a crater lake and the hull |
+| Steppe | 5–15 |
+| Spindle | 9–15 under rock peaks |
 
 Settlements and Sites stand on flat pads set at the lowest ground under them, so the land slopes down into every town.
 
@@ -56,7 +56,7 @@ Settlements and Sites stand on flat pads set at the lowest ground under them, so
 
 The **Span Transit** maglev comes back on the existing tram engine (stations, lines, discovery and boarding from the car). The track is drawn as land, so it is part of the world: a rail line you see, follow and cross on bridges.
 
-- **The Ring Line** runs through Kestrel Commons, Harrowgate, Neon Row, Rustwater and the Choir, and closes the loop over the Drop back to Kestrel.
+- **The Ring Line** runs through Kestrel Commons, Harrowgate, Neon Row, Rustwater and the Choir. It does not close over the Drop; the line ends at the Choir.
 - **The Spindle Funicular** runs from the Choir up to Last Post.
 - Every station is a walled, safe **terminal** building in its hub square, with the track running through it, one car on the platform and a departure board. Kestrel Commons is known from the start. Every other station is found by walking into it.
 - The track blocks walking. Bridges (deck assemblies) cross it at least once in every square it passes through.

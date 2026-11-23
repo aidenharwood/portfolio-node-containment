@@ -24,7 +24,7 @@ export const SPAN_LANDMARKS: readonly WorldObjectDefinition[] = [
   prop({ id: 'vesper-beacon', name: 'Vesper Beacon', examine: 'Site Vesper’s beacon, still turning, still lit, sweeping a Site that has not answered in a year.', model: 'lighthouse', footprint: { width: 3, height: 3 }, light: { radius: 7, color: '#c79bff', intensity: 0.9, beam: 2 }, furnishing: tall }),
   prop({ id: 'precursor-pylon', name: 'Precursor Pylon', examine: 'A pylon of the Quiet, bent like warm wax and humming a note just under hearing.', model: 'utilityPole', modelScale: 2.2, furnishing: { mount: 'free', homes: ['street'] } }),
   prop({ id: 'last-post-mast', name: 'Last Post Searchlight', examine: 'The last Directorate searchlight on the Span, trained on the Spindle. The operators log what it sees. Mostly it sees itself.', model: 'floodMast', modelScale: 1.8, light: { radius: 7, color: '#d8e8ff', intensity: 0.9 }, furnishing: tall }),
-  prop({ id: 'spindle-light', name: 'The Spindle', examine: 'The end of the Span: a precursor needle of dark glass with a light at the top that has never once gone out. Site Null was built at its foot.', model: 'lighthouse', modelScale: 1.6, footprint: { width: 3, height: 3 }, light: { radius: 8, color: '#7fd8ff', intensity: 1.1, beam: 2.4 }, furnishing: tall }),
+  prop({ id: 'spindle-light', name: 'The Spindle', examine: 'A precursor needle of dark glass on the summit of the Quiet Massif, seen from every shore of the Span, with a light at the top that has never once gone out. Site Null was built at its foot.', model: 'lighthouse', modelScale: 1.6, footprint: { width: 3, height: 3 }, light: { radius: 8, color: '#7fd8ff', intensity: 1.1, beam: 2.4 }, furnishing: tall }),
 ];
 
 export const SPAN_LANDMARK_PREFABS: readonly Prefab[] = [
@@ -49,15 +49,15 @@ export const SPAN_LANDMARK_PREFABS: readonly Prefab[] = [
 ];
 
 const SEAM_GATE_TEXT: Readonly<Record<string, string>> = {
-  'kestrel-north-gate': 'Past the Seam the land climbs in terraces toward the rim.',
-  'kestrel-gate': 'Past the Seam the land climbs in terraces toward the rim.',
-  'kestrel-south-gate': 'Past the Seam the land climbs in terraces toward the rim.',
+  'kestrel-north-gate': 'Past the Seam the land climbs in terraces toward the Massif.',
+  'kestrel-gate': 'Past the Seam the land climbs in terraces toward the Massif.',
+  'kestrel-south-gate': 'Past the Seam the land climbs in terraces toward the Massif.',
   'harrow-north-gate': 'Past the Seam, the glow of Halcyon.',
   'harrow-gate': 'Past the Seam, the glow of Halcyon.',
   'harrow-south-gate': 'Past the Seam, the glow of Halcyon.',
-  'halcyon-north-gate': 'Past the Seam, rust to the rim, and the wreck of the Meridian.',
-  'halcyon-gate': 'Past the Seam, rust to the rim, and the wreck of the Meridian.',
-  'halcyon-south-gate': 'Past the Seam, rust to the rim, and the wreck of the Meridian.',
+  'halcyon-north-gate': 'Past the Seam, rust to the coast, and the wreck of the Meridian.',
+  'halcyon-gate': 'Past the Seam, rust to the coast, and the wreck of the Meridian.',
+  'halcyon-south-gate': 'Past the Seam, rust to the coast, and the wreck of the Meridian.',
   'wreck-north-gate': 'Past the Seam the ground turns to glass.',
   'wreck-gate': 'Past the Seam the ground turns to glass.',
   'wreck-south-gate': 'Past the Seam the ground turns to glass.',

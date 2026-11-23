@@ -1,6 +1,6 @@
 # Containment Online
 
-A browser-based, point-and-click sci-fi MMO about containment. You are a fresh recruit of Intake Cohort 41 in the Meridian Directorate's Containment Service, posted to Site Kestrel at the far end of **the Span**. The Span is a precursor ring-habitat arc, and its builders, the Quiet, left it full of sealed reliquaries. The world is fully 3D voxels with a freely orbiting camera. You click to walk, hover for bubbles, right-click for every option, and train skills that level from XP. You carry a 28-slot inventory and an eleven-slot loadout.
+A browser-based, point-and-click sci-fi MMO about containment. You are a fresh recruit of Intake Cohort 41 in the Meridian Directorate's Containment Service, posted to Site Kestrel on the south coast of **the Span**. The Span is a precursor ring-habitat arc, and its builders, the Quiet, left it full of sealed reliquaries. The world is fully 3D voxels with a freely orbiting camera. You click to walk, hover for bubbles, right-click for every option, and train skills that level from XP. You carry a 28-slot inventory and an eleven-slot loadout.
 
 ## Quick start
 
@@ -37,13 +37,14 @@ Environment variables for the server: `GAME_SERVER_PORT` (default 7420), `DATABA
 - **Gathering and crafting:** gear and medicine are crafted from gathered stock. The refinery makes plating, the fabricator gear, the synthesiser medicine and the cooker food. Six gear ladders (scrap, ferro, plasteel, duralloy, sinter, vault-glass) follow the regions spinward, and each region's nodes and creatures supply the ladder you wear there.
 - **Economy and services:** every region has an outpost with a quartermaster, a storage locker, a contract board and an exchange mailbox. Kestrel Commons holds the player exchange. Daily and weekly contracts pay scrip, XP and commendations.
 - **Crowds:** levels overflow into layers, combat is single-way outside multi-combat areas, everyone who damages a creature gets credit, and respawns speed up when a layer is busy.
-- **The Span:** one overworld of 1024 × 384 tiles in 96 land squares, with three facility levels below ground. Six regions run west to east, each sealed from the next by a Seam bulkhead with three open gates:
+- **The Span:** one open island of 1152 × 896 tiles in 138 land squares, with three facility levels below ground. The Quiet Massif rises in the middle with the Spindle on its summit, and the land has hills, terraces, plateaus, coasts, a river and lakes. Six regions run clockwise round the Massif, each sealed from its neighbours by Seam bulkheads with open gates, and tier rises with walking distance from Site Kestrel:
   - **Kestrel Reach** (tiers 1–2): Site Kestrel, SC-V, Secure; Kestrel Commons; the Recruit Lines.
   - **Harrow Terraces** (3–5): Harrowgate and Site Orchard, SC-II, Strained.
   - **Halcyon** (6–7): a neon arcology under the Aurelian Spire; Site Gallowglass, SC-III, Breached, and its undercity.
   - **The Wreckfield** (8–9): Rustwater in the shadow of the crashed colony ship *Meridian*; Site Tallow, SC-IV, Overrun.
   - **The Glass Steppe** (10–11): the pilgrim Choir and Site Vesper, SC-IV, Lost.
-  - **The Spindle** (12–13): Last Post, and Site Null, SC-V, Inverted, with Null Below.
+  - **The Spindle** (12–13): on the Massif summit, reached from the Steppe. Last Post, and Site Null, SC-V, Inverted, with Null Below.
+- **The Span Transit:** a maglev on drawn track. The Ring Line runs Kestrel Commons, Harrowgate, Neon Row, Rustwater and the Choir, and the Spindle Funicular climbs from the Choir to Last Post. Each station is a terminal you find by walking into it, and bridges cross the track.
 - **Story:** six acts, and a side questline in every settlement.
   - *Intake*: kit, the yard, your first containment, the oath. Your file has a PREVIOUS INTAKE field.
   - *Strain*: Site Orchard's seed stock walks out of the vault. Put down the Orchard Keeper.
@@ -51,7 +52,7 @@ Environment variables for the server: `GAME_SERVER_PORT` (default 7420), `DATABA
   - *Overrun*: retake Site Tallow, find your own name on its casualty board, and face the Cohort.
   - *Lost*: Site Vesper went quiet. Break the hymn and defeat the Precentor.
   - *Inverted*: at Site Null the cells are on the outside. Face the Warden of Null, then choose to re-seal it or sign out of the Roster.
-- **Guidance:** one tracked quest draws a walking route, objective markers and a transit plan through the lifts. The world map is fully charted.
+- **Guidance:** one tracked quest draws a walking route, objective markers and a transit plan through the trams and lifts. The world map is fully charted.
 
 ## Repository layout
 

@@ -1,5 +1,7 @@
 # The Span: world and story rebuild
 
+> **Superseded in part:** the shape of the world described here (a 16 × 6 strip walked west to east between rim walls) is replaced by `2026-11-23-the-span-unrolled.md`: an open island round the Quiet Massif, with the Spindle on its summit and the Span Transit back. The story, creatures, quests, Sites and settlements below still stand.
+
 Written 2026-11-20. Replaces the Hollow Bay world (Low Ward, the Hinterland, Site Meridian) and all its quests. The engine, the furnishing kit, the gear ladders, the crafting chain, the gathering nodes and the creature and prop models are kept and repurposed.
 
 ## Pitch
@@ -27,16 +29,16 @@ You walk spinward (east), from the clean white Site where you trained, through f
 
 ## Regions
 
-The tiers follow `TIER_LEVEL_FLOORS` (1 to 13) and rise by column, west to east.
+The tiers follow `TIER_LEVEL_FLOORS` (1 to 13). They first rose by column, west to east; they now rise with walking distance from Site Kestrel, clockwise round the Massif.
 
-| Region | Columns | Tiers | Ground | Settlement | Site, SC, status | Below |
+| Region | Where | Tiers | Ground | Settlement | Site, SC, status | Below |
 | - | - | - | - | - | - | - |
-| Kestrel Reach (`kestrel-reach`) | 0–2 | 1–2 | Clean Directorate land: lawns, white paving, training yards, a lake | **Kestrel Commons**, a company town and the market hub | **Site Kestrel**, SC-V, Secure; looks like a training Site | Kestrel Intake (B1), T2 |
-| Harrow Terraces (`harrow-terraces`) | 3–5 | 3–5 | Stepped farm terraces up a precursor slope, irrigation channels, windpumps | **Harrowgate**, a farming town | **Site Orchard**, SC-II, Strained; its seed stock is getting out into the fields | none |
-| Halcyon (`halcyon`) | 6–8 | 6–7 | A neon arcology on asphalt: towers, holo billboards, food stalls, steam vents, alleys | **Halcyon Downtown**, under the Aurelian Combine's spire | **Site Gallowglass**, SC-III, Breached; gangs farm what got out | Gallowglass Undercity (B1), T7 |
-| The Wreckfield (`wreckfield`) | 9–11 | 8–9 | Rust flats, a scrap sea and the crashed hull of the *Meridian* | **Rustwater**, a scavenger town in the hull's shadow | **Site Tallow**, SC-IV, Overrun; where Cohort 41 died | Tallow Holding (B1), T9 |
-| The Glass Steppe (`glass-steppe`) | 12–13 | 10–11 | Precursor glass plains, broken pylons, glassy pools, alien soil | **the Choir**, a pilgrim enclave that sings to the reliquaries | **Site Vesper**, SC-IV, Lost; dark and silent | Vesper Deep (B1), T11 |
-| The Spindle (`the-spindle`) | 14–15 | 12–13 | The precursor terminus: dark plating, coolant, glass | **Last Post**, the final Directorate camp | **Site Null**, SC-V, Inverted (`uncanny`) | Null (B1), T13 |
+| Kestrel Reach (`kestrel-reach`) | the south coast | 1–2 | Clean Directorate land: lawns, white paving, training yards, a lake | **Kestrel Commons**, a company town and the market hub | **Site Kestrel**, SC-V, Secure; looks like a training Site | Kestrel Intake (B1), T2 |
+| Harrow Terraces (`harrow-terraces`) | the Massif's west flank | 3–5 | Stepped farm terraces up a precursor slope, irrigation channels, windpumps | **Harrowgate**, a farming town | **Site Orchard**, SC-II, Strained; its seed stock is getting out into the fields | none |
+| Halcyon (`halcyon`) | the north-west | 6–7 | A neon arcology on asphalt: towers, holo billboards, food stalls, steam vents, alleys | **Halcyon Downtown**, under the Aurelian Combine's spire | **Site Gallowglass**, SC-III, Breached; gangs farm what got out | Gallowglass Undercity (B1), T7 |
+| The Wreckfield (`wreckfield`) | the north-east coast | 8–9 | Rust flats, a scrap sea and the crashed hull of the *Meridian* | **Rustwater**, a scavenger town in the hull's shadow | **Site Tallow**, SC-IV, Overrun; where Cohort 41 died | Tallow Holding (B1), T9 |
+| The Glass Steppe (`glass-steppe`) | the east plateau | 10–11 | Precursor glass plains, broken pylons, glassy pools, alien soil | **the Choir**, a pilgrim enclave that sings to the reliquaries | **Site Vesper**, SC-IV, Lost; dark and silent | Vesper Deep (B1), T11 |
+| The Spindle (`the-spindle`) | the Massif's summit | 12–13 | The precursor terminus: dark plating, coolant, glass | **Last Post**, the final Directorate camp | **Site Null**, SC-V, Inverted (`uncanny`) | Null (B1), T13 |
 
 Every region has an outpost (a safe building with a storage locker, a quartermaster, an exchange mailbox and a contract board), a Site compound, a settlement and wild land. Kestrel Commons holds the exchange terminal, because it is the home region's hub.
 
