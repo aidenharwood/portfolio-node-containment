@@ -88,7 +88,17 @@ export type WorldObjectModel =
   | 'bellTower'
   | 'coolingTower'
   | 'divingBell'
-  | 'lighthouse';
+  | 'lighthouse'
+  | 'tramNoseLeft'
+  | 'tramNoseRight'
+  | 'tramDoor'
+  | 'tramWindow'
+  | 'bridgeSpan'
+  | 'bridgeEndLeft'
+  | 'bridgeEndRight'
+  | 'catwalkSpan'
+  | 'catwalkEnd'
+  | 'departureBoard';
 
 export interface ObjectInteraction {
   readonly verb: string;

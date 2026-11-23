@@ -4,6 +4,7 @@ import { jitter, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE } from '../voxel/voxelKinds.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 import { CITY_BUILDERS } from './cityModels.ts';
+import { TRANSIT_BUILDERS } from './transitModels.ts';
 
 export interface AnimatedPart {
   readonly model: VoxelModel;
@@ -28,6 +29,6 @@ const placeholder: ObjectBuilder = () => {
   return { base: model, animated: [], heightVoxels: PLACEHOLDER_HEIGHT + 1 };
 };
 
-const BUILDERS: Readonly<Record<WorldObjectModel, ObjectBuilder>> = { placeholder, ...CITY_BUILDERS };
+const BUILDERS: Readonly<Record<WorldObjectModel, ObjectBuilder>> = { placeholder, ...CITY_BUILDERS, ...TRANSIT_BUILDERS };
 
 export const buildObjectModel = (model: WorldObjectModel, seed: number): ObjectModelParts => BUILDERS[model](seed);

@@ -4,8 +4,9 @@ import { darken, jitter, lighten, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE, VOXEL_GLASS, type VoxelKind } from '../voxel/voxelKinds.ts';
 import { VoxelModel, type Paint } from '../voxel/voxelModel.ts';
 import type { AnimatedPart, ObjectModelParts } from './objectModels.ts';
+import type { TransitModel } from './transitModels.ts';
 
-type CityModel = Exclude<WorldObjectModel, 'placeholder'>;
+type CityModel = Exclude<WorldObjectModel, 'placeholder' | TransitModel>;
 type Builder = (seed: number) => ObjectModelParts;
 
 export const CITY = {
