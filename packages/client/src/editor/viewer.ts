@@ -2,6 +2,7 @@ import {
   findContentIssues,
   GAME_CONTENT,
   issuesFromMessages,
+  landOrigin,
   LAYOUT_CHOICES,
   MAX_TERRAIN_HEIGHT,
   LAYOUT_SOURCES,
@@ -347,11 +348,20 @@ function start(root: HTMLElement, services: ViewerServices): void {
     return found ? { districtId: found.districtId, local: found.local } : null;
   };
   const modifiersOf = (event?: { shiftKey: boolean; ctrlKey: boolean; metaKey?: boolean; altKey?: boolean }) => ({ shift: event?.shiftKey ?? false, ctrl: (event?.ctrlKey ?? false) || (event?.metaKey ?? false), alt: event?.altKey ?? false });
+  const landShift = (): TilePoint => {
+    const landPlan = controller.landPlan();
+    const offset = landPlan ? landOrigin(landPlan) : ORIGIN;
+    return { x: -offset.x, y: -offset.y };
+  };
+  const toPlan = (tile: TilePoint): TilePoint => {
+    const shift = landShift();
+    return { x: tile.x - shift.x, y: tile.y - shift.y };
+  };
   const landSelected = (): boolean => controller.selection?.kind === 'landStep' || controller.selection?.kind === 'landVertex';
   const editDown = (tile: TilePoint, modifiers: { shift: boolean; ctrl: boolean; alt?: boolean }): boolean => {
     if (controller.tool === 'land' || (controller.tool === 'select' && controller.onlyLand)) {
-      pointerOrigin = ORIGIN;
-      controller.pointerDown(tile, modifiers);
+      pointerOrigin = landShift();
+      controller.pointerDown(toPlan(tile), modifiers);
       return true;
     }
     const found = localOf(tile);
@@ -361,10 +371,10 @@ function start(root: HTMLElement, services: ViewerServices): void {
       landPlan !== null &&
       selection !== null &&
       (selection.kind === 'landStep' || selection.kind === 'landVertex') &&
-      (modifiers.alt === true || landHitsAt(landPlan, tile).some((hit) => hit.kind === 'landVertex' && hit.index === selection.index));
+      (modifiers.alt === true || landHitsAt(landPlan, toPlan(tile)).some((hit) => hit.kind === 'landVertex' && hit.index === selection.index));
     if (landPlan && (onSelectedLand || !found)) {
-      pointerOrigin = ORIGIN;
-      controller.selectLand(tile, modifiers);
+      pointerOrigin = landShift();
+      controller.selectLand(toPlan(tile), modifiers);
       return true;
     }
     if (!found) return false;
@@ -611,7 +621,7 @@ function start(root: HTMLElement, services: ViewerServices): void {
     const district = editorDocument.district(controller.district);
     const landPlan = controller.landPlan();
     const landWork = controller.tool === 'land' || landSelected();
-    const origin = landWork ? ORIGIN : editOrigin();
+    const origin = landWork ? landShift() : editOrigin();
     const selected = controller.selection;
     const landStep = landPlan && selected && (selected.kind === 'landStep' || selected.kind === 'landVertex') ? landPlan.steps[selected.index] : undefined;
     const landBox = landStep && selected ? (selected.kind === 'landVertex' ? { ...(landPointsOf(landStep)?.points[selected.vertex] ?? { x: 0, y: 0 }), width: 1, height: 1 } : landStepBounds(landStep)) : null;
@@ -619,7 +629,7 @@ function start(root: HTMLElement, services: ViewerServices): void {
     const draftPoints = controller.landDraft;
     const brushLine = controller.landBrush.step === 'line';
     const selectedPoints = landStep ? landPointsOf(landStep) : null;
-    const pathOf = (points: readonly TilePoint[], line: boolean) => points.map((point) => (line ? { x: point.x + 0.5, y: point.y + 0.5 } : point));
+    const pathOf = (points: readonly TilePoint[], line: boolean) => points.map((point) => ({ x: point.x + origin.x + (line ? 0.5 : 0), y: point.y + origin.y + (line ? 0.5 : 0) }));
     const path = editing && draftPoints ? { points: pathOf(draftPoints, brushLine), closed: false } : editing && selectedPoints ? { points: pathOf(selectedPoints.points, selectedPoints.kind === 'line'), closed: selectedPoints.kind === 'polygon' } : null;
     plan.showPath(path?.points ?? null, path?.closed);
     preview3d.overlay.showPath(path?.points ?? null, path?.closed);

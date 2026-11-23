@@ -1,5 +1,5 @@
 import { heightShade, shadeHex } from '../hud/heightShade.ts';
-import { footprintsOf, rectContains, type DistrictId, type GameContent, type LandMap, type LandStep, type PlanIssue, type ResolvedLevel, type TilePoint, type TileRect } from '@containment/shared';
+import { footprintsOf, landOrigin, landOriginSquare, rectContains, type DistrictId, type GameContent, type LandMap, type LandStep, type PlanIssue, type ResolvedLevel, type TilePoint, type TileRect } from '@containment/shared';
 import { planDrawList, tileColor, type PlanShape } from './planCanvas.ts';
 import type { PlanLayer } from './viewState.ts';
 
@@ -12,6 +12,8 @@ const STEP_COLOURS: Readonly<Record<LandStep['kind'], string>> = {
   ramp: '#f0d79a',
   ward: '#c78bff',
   gate: '#ffd23f',
+  relief: '#b98a5a',
+  soften: '#9fc7a0',
 };
 const ISSUE_PATTERN = /^(district|level|zone) ([^:]+): (.*)$/;
 const TILE_PATTERN = /(-?\d+),(-?\d+)/;
@@ -67,6 +69,8 @@ const stepLabel = (step: LandStep): string => {
   if (step.kind === 'rise') return 'rise ' + step.height;
   if (step.kind === 'ramp') return 'ramp ' + step.from + '-' + step.to;
   if (step.kind === 'ward') return 'ward ' + step.ward;
+  if (step.kind === 'relief') return 'relief ' + step.low + '-' + step.high;
+  if (step.kind === 'soften') return 'soften';
   return 'gate ' + step.id;
 };
 
@@ -77,22 +81,26 @@ export function landStepOutline(step: LandStep): { readonly kind: 'polygon' | 'p
 }
 
 export function landStepShapes(land: LandMap): PlanShape[] {
+  const origin = landOrigin(land.plan);
   return land.plan.steps.map((step, index) => {
-    const outline = landStepOutline(step);
+    const world = landStepOutline(step);
+    const outline = { kind: world.kind, points: world.points.map((point) => ({ x: point.x - origin.x, y: point.y - origin.y })) };
     return { ...outline, ...boxOf(outline.points), color: STEP_COLOURS[step.kind], label: stepLabel(step), step: index };
   });
 }
 
 function squareShapes(content: GameContent, level: ResolvedLevel, land: LandMap): PlanShape[] {
   const { squareSize, columns, rows } = land.plan;
+  const origin = landOriginSquare(land.plan);
   const shapes: PlanShape[] = [];
   for (let row = 0; row < rows; row++) {
     for (let column = 0; column < columns; column++) {
       const names = level.districts.flatMap((placed) => {
         const district = content.districts.get(placed.districtId);
-        return district?.square?.column === column && district.square.row === row ? [district.name] : [];
+        return district?.square?.column === column + origin.column && district.square.row === row + origin.row ? [district.name] : [];
       });
-      shapes.push({ kind: 'square', x: column * squareSize, y: row * squareSize, width: squareSize, height: squareSize, color: SQUARE_COLOUR, label: names.length > 0 ? names.join(' / ') : column + ',' + row });
+      const label = names.length > 0 ? names.join(' / ') : column + origin.column + ',' + (row + origin.row);
+      shapes.push({ kind: 'square', x: column * squareSize, y: row * squareSize, width: squareSize, height: squareSize, color: SQUARE_COLOUR, label });
     }
   }
   return shapes;

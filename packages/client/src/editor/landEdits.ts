@@ -29,13 +29,13 @@ function withStep(plan: LandPlan, index: number, change: (step: LandStep) => Lan
 
 const pointsOf = (step: LandStep): { readonly kind: 'polygon' | 'line'; readonly points: readonly TilePoint[] } | null => {
   if (step.kind === 'line') return { kind: 'line', points: step.points };
-  if ((step.kind === 'fill' || step.kind === 'rise' || step.kind === 'ward') && step.shape.kind === 'polygon') return { kind: 'polygon', points: step.shape.points };
+  if ((step.kind === 'fill' || step.kind === 'rise' || step.kind === 'ward' || step.kind === 'relief' || step.kind === 'soften') && step.shape.kind === 'polygon') return { kind: 'polygon', points: step.shape.points };
   return null;
 };
 
 const withPoints = (step: LandStep, points: readonly TilePoint[]): LandStep => {
   if (step.kind === 'line') return { ...step, points };
-  if (step.kind === 'fill' || step.kind === 'rise' || step.kind === 'ward') return { ...step, shape: { kind: 'polygon', points } };
+  if (step.kind === 'fill' || step.kind === 'rise' || step.kind === 'ward' || step.kind === 'relief' || step.kind === 'soften') return { ...step, shape: { kind: 'polygon', points } };
   return step;
 };
 

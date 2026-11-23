@@ -28,6 +28,8 @@ const STEP_SCHEMA = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('ramp'), rect, side: z.enum(SIDES), from: level, to: level }).strict(),
   z.object({ kind: z.literal('ward'), shape, ward: z.string() }).strict(),
   z.object({ kind: z.literal('gate'), id: z.string(), rect, tile }).strict(),
+  z.object({ kind: z.literal('relief'), shape, seed: int, low: level, high: level, scale: int.positive() }).strict(),
+  z.object({ kind: z.literal('soften'), shape }).strict(),
 ]);
 
 export const LAND_PLAN_SCHEMA = z
@@ -36,6 +38,7 @@ export const LAND_PLAN_SCHEMA = z
     squareSize: int.positive(),
     columns: int.positive(),
     rows: int.positive(),
+    origin: z.object({ column: int, row: int }).strict().optional(),
     steps: z.array(STEP_SCHEMA),
   })
   .strict();

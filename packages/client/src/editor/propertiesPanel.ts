@@ -47,6 +47,8 @@ const LAND_FIELDS: Readonly<Record<LandStep['kind'], Readonly<Record<string, Lan
   ramp: { side: 'side', from: 'number', to: 'number' },
   ward: { ward: 'ward' },
   gate: { id: 'text', tile: 'tile' },
+  relief: { seed: 'number', low: 'number', high: 'number', scale: 'number' },
+  soften: {},
 };
 
 const cornersOf = (rect: TileRect) => [
@@ -71,6 +73,8 @@ export function landStepName(step: LandStep): string {
   if (step.kind === 'rise') return 'rise to ' + step.height + ' (' + step.shape.kind + ')';
   if (step.kind === 'ramp') return 'ramp ' + step.from + '→' + step.to + ' ' + step.side;
   if (step.kind === 'ward') return 'ward ' + step.ward + ' (' + step.shape.kind + ')';
+  if (step.kind === 'relief') return 'relief ' + step.low + '→' + step.high + ' (' + step.shape.kind + ')';
+  if (step.kind === 'soften') return 'soften (' + step.shape.kind + ')';
   return 'gate ' + step.id;
 }
 

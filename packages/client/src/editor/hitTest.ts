@@ -138,7 +138,7 @@ const boxOf = (tiles: readonly TilePoint[]): Bounds | null => {
 
 export function landPointsOf(step: LandStep): { readonly kind: 'polygon' | 'line'; readonly points: readonly TilePoint[] } | null {
   if (step.kind === 'line') return { kind: 'line', points: step.points };
-  if ((step.kind === 'fill' || step.kind === 'rise' || step.kind === 'ward') && step.shape.kind === 'polygon') return { kind: 'polygon', points: step.shape.points };
+  if ((step.kind === 'fill' || step.kind === 'rise' || step.kind === 'ward' || step.kind === 'relief' || step.kind === 'soften') && step.shape.kind === 'polygon') return { kind: 'polygon', points: step.shape.points };
   return null;
 }
 

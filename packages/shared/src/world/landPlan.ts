@@ -2,6 +2,7 @@ import type { RegionId } from '../ids.ts';
 import { findCliffs, isInsideShape, rampHeightAt, type BlueprintBase, type ExitSide, type RoomShape } from './blueprint.ts';
 import type { TileLayout } from './district.ts';
 import { parseLandPlan } from './landSchema.ts';
+import { fractalNoise, fractalNoiseGrid } from './noise.ts';
 import type { TilePoint, TileRect } from './geometry.ts';
 import { TILE_KINDS, type TileKindId } from './tiles.ts';
 
@@ -17,13 +18,21 @@ export type LandStep =
   | { readonly kind: 'rise'; readonly shape: LandShape; readonly height: number }
   | { readonly kind: 'ramp'; readonly rect: TileRect; readonly side: ExitSide; readonly from: number; readonly to: number }
   | { readonly kind: 'ward'; readonly shape: LandShape; readonly ward: RegionId }
-  | { readonly kind: 'gate'; readonly id: string; readonly rect: TileRect; readonly tile: TileKindId };
+  | { readonly kind: 'gate'; readonly id: string; readonly rect: TileRect; readonly tile: TileKindId }
+  | { readonly kind: 'relief'; readonly shape: LandShape; readonly seed: number; readonly low: number; readonly high: number; readonly scale: number }
+  | { readonly kind: 'soften'; readonly shape: LandShape };
+
+export interface LandOrigin {
+  readonly column: number;
+  readonly row: number;
+}
 
 export interface LandPlan {
   readonly id: string;
   readonly squareSize: number;
   readonly columns: number;
   readonly rows: number;
+  readonly origin?: LandOrigin;
   readonly steps: readonly LandStep[];
 }
 
@@ -50,6 +59,44 @@ type Paint = (x: number, y: number) => void;
 
 const LINE_TOLERANCE = 1e-9;
 const MAX_WARDS = 255;
+const MAX_HEIGHT = 15;
+
+const NO_ORIGIN: LandOrigin = { column: 0, row: 0 };
+
+export const landOriginSquare = (plan: Pick<LandPlan, 'origin'>): LandOrigin => plan.origin ?? NO_ORIGIN;
+
+export function landOrigin(plan: Pick<LandPlan, 'origin' | 'squareSize'>): TilePoint {
+  const { column, row } = landOriginSquare(plan);
+  return { x: column * plan.squareSize, y: row * plan.squareSize };
+}
+
+export const worldTileOf = (plan: Pick<LandPlan, 'origin' | 'squareSize'>, local: TilePoint): TilePoint => {
+  const origin = landOrigin(plan);
+  return { x: local.x + origin.x, y: local.y + origin.y };
+};
+
+export const localTileOf = (plan: Pick<LandPlan, 'origin' | 'squareSize'>, world: TilePoint): TilePoint => {
+  const origin = landOrigin(plan);
+  return { x: world.x - origin.x, y: world.y - origin.y };
+};
+
+export function localSquareOf(plan: LandPlan, square: Pick<LandSquare, 'column' | 'row'>): { readonly column: number; readonly row: number } | undefined {
+  const origin = landOriginSquare(plan);
+  const column = square.column - origin.column;
+  const row = square.row - origin.row;
+  return Number.isInteger(column) && Number.isInteger(row) && column >= 0 && row >= 0 && column < plan.columns && row < plan.rows ? { column, row } : undefined;
+}
+
+export function describeLandExtent(plan: LandPlan, noun: string = 'plan'): string {
+  const origin = landOriginSquare(plan);
+  const at = origin.column === 0 && origin.row === 0 ? '' : ` from square ${origin.column},${origin.row}`;
+  return `the ${plan.columns}x${plan.rows} ${noun}${at}`;
+}
+
+const shiftPoint = (point: TilePoint, by: TilePoint): TilePoint => ({ x: point.x - by.x, y: point.y - by.y });
+const shiftRect = (rect: TileRect, by: TilePoint): TileRect => ({ ...rect, x: rect.x - by.x, y: rect.y - by.y });
+const shiftShape = (shape: LandShape, by: TilePoint): LandShape =>
+  shape.kind === 'polygon' ? { kind: 'polygon', points: shape.points.map((point) => shiftPoint(point, by)) } : { kind: shape.kind, rect: shiftRect(shape.rect, by) };
 
 const rectBounds = (rect: TileRect): Bounds => ({ left: rect.x, top: rect.y, right: rect.x + rect.width, bottom: rect.y + rect.height });
 
@@ -123,9 +170,67 @@ function paintLine(points: readonly TilePoint[], lineWidth: number, width: numbe
   }
 }
 
+function softenHeights(shape: LandShape, width: number, height: number, heights: Uint8Array, tiles: readonly TileKindId[]): void {
+  const mask = new Uint8Array(width * height);
+  let left = width;
+  let top = height;
+  let right = -1;
+  let bottom = -1;
+  paintShape(shape, width, height, (x, y) => {
+    if (!TILE_KINDS[tiles[y * width + x] as TileKindId].walkable) return;
+    mask[y * width + x] = 1;
+    left = Math.min(left, x);
+    top = Math.min(top, y);
+    right = Math.max(right, x);
+    bottom = Math.max(bottom, y);
+  });
+  if (right < 0) return;
+  const relax = (x: number, y: number): boolean => {
+    const index = y * width + x;
+    let lowest = heights[index] as number;
+    for (let ny = Math.max(0, y - 1); ny <= Math.min(height - 1, y + 1); ny++) {
+      for (let nx = Math.max(0, x - 1); nx <= Math.min(width - 1, x + 1); nx++) {
+        lowest = Math.min(lowest, (heights[ny * width + nx] as number) + 1);
+      }
+    }
+    if (lowest >= (heights[index] as number)) return false;
+    heights[index] = lowest;
+    return true;
+  };
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (let y = top; y <= bottom; y++) {
+      for (let x = left; x <= right; x++) if (mask[y * width + x] === 1 && relax(x, y)) changed = true;
+    }
+    for (let y = bottom; y >= top; y--) {
+      for (let x = right; x >= left; x--) if (mask[y * width + x] === 1 && relax(x, y)) changed = true;
+    }
+  }
+}
+
+export const reliefNoise = (seed: number, x: number, y: number, scale: number): number => fractalNoise(seed, x / scale, y / scale);
+
+type ReliefStep = Pick<Extract<LandStep, { kind: 'relief' }>, 'seed' | 'low' | 'high' | 'scale'>;
+
+const reliefLevel = (step: ReliefStep, noise: number): number => {
+  const level = Math.round(step.low + (step.high - step.low) * noise);
+  return level < 0 ? 0 : level > MAX_HEIGHT ? MAX_HEIGHT : level;
+};
+
+export const reliefHeight = (step: ReliefStep, x: number, y: number): number => reliefLevel(step, reliefNoise(step.seed, x, y, step.scale));
+
+function shapeBounds(shape: LandShape, width: number, height: number): Bounds {
+  const points = shape.kind === 'polygon' ? shape.points : [{ x: shape.rect.x, y: shape.rect.y }, { x: shape.rect.x + shape.rect.width, y: shape.rect.y + shape.rect.height }];
+  const xs = points.map((point) => point.x);
+  const ys = points.map((point) => point.y);
+  return { left: Math.max(0, Math.min(...xs)), top: Math.max(0, Math.min(...ys)), right: Math.min(width, Math.max(...xs) + 1), bottom: Math.min(height, Math.max(...ys) + 1) };
+}
+
 export function drawLand(source: LandPlan): LandMap {
   const plan = parseLandPlan(source);
   const { id, squareSize, columns, rows } = plan;
+  const origin = landOrigin(plan);
   const width = columns * squareSize;
   const height = rows * squareSize;
   const tiles: TileKindId[] = new Array<TileKindId>(width * height).fill('void');
@@ -150,25 +255,35 @@ export function drawLand(source: LandPlan): LandMap {
       throw new Error(`land ${id}: steps[${stepIndex}]: ${reason}`);
     };
     if (step.kind === 'fill') {
-      paintShape(step.shape, width, height, (x, y) => (tiles[y * width + x] = step.tile));
+      paintShape(shiftShape(step.shape, origin), width, height, (x, y) => (tiles[y * width + x] = step.tile));
     } else if (step.kind === 'line') {
-      paintLine(step.points, step.width, width, height, (x, y) => (tiles[y * width + x] = step.tile));
+      paintLine(step.points.map((point) => shiftPoint(point, origin)), step.width, width, height, (x, y) => (tiles[y * width + x] = step.tile));
     } else if (step.kind === 'rise') {
-      paintShape(step.shape, width, height, (x, y) => (heights[y * width + x] = step.height));
+      paintShape(shiftShape(step.shape, origin), width, height, (x, y) => (heights[y * width + x] = step.height));
+    } else if (step.kind === 'relief') {
+      const shape = shiftShape(step.shape, origin);
+      const bounds = shapeBounds(shape, width, height);
+      if (bounds.left < bounds.right && bounds.top < bounds.bottom) {
+        const noise = fractalNoiseGrid(step.seed, step.scale, bounds.left + origin.x, bounds.top + origin.y, bounds.right + origin.x, bounds.bottom + origin.y);
+        paintShape(shape, width, height, (x, y) => (heights[y * width + x] = reliefLevel(step, noise(x + origin.x, y + origin.y))));
+      }
+    } else if (step.kind === 'soften') {
+      softenHeights(shiftShape(step.shape, origin), width, height, heights, tiles);
     } else if (step.kind === 'ramp') {
+      const ramp = { ...step, rect: shiftRect(step.rect, origin) };
       try {
-        rampHeightAt(step, { x: step.rect.x, y: step.rect.y });
+        rampHeightAt(ramp, { x: ramp.rect.x, y: ramp.rect.y });
       } catch (error) {
         fail((error as Error).message);
       }
-      visitBounds(rectBounds(step.rect), width, height, () => true, (x, y) => (heights[y * width + x] = rampHeightAt(step, { x, y })));
+      visitBounds(rectBounds(ramp.rect), width, height, () => true, (x, y) => (heights[y * width + x] = rampHeightAt(ramp, { x, y })));
     } else if (step.kind === 'ward') {
       const ward = wardIndex(step.ward, fail);
-      paintShape(step.shape, width, height, (x, y) => (wards[y * width + x] = ward));
+      paintShape(shiftShape(step.shape, origin), width, height, (x, y) => (wards[y * width + x] = ward));
     } else {
-      const { rect } = step;
+      const rect = shiftRect(step.rect, origin);
       if (rect.x < 0 || rect.y < 0 || rect.x + rect.width > width || rect.y + rect.height > height) {
-        fail(`gate "${step.id}" at ${rect.x},${rect.y} ${rect.width}x${rect.height} is outside the ${width}x${height} plan`);
+        fail(`gate "${step.id}" at ${step.rect.x},${step.rect.y} ${step.rect.width}x${step.rect.height} is outside the ${width}x${height} plan${origin.x === 0 && origin.y === 0 ? '' : ` that starts at ${origin.x},${origin.y}`}`);
       }
       if (Object.hasOwn(gates, step.id)) fail(`gate "${step.id}" is named twice`);
       const covered: TilePoint[] = [];
@@ -222,22 +337,23 @@ function squareChanged(before: LandMap, after: LandMap, column: number, row: num
 
 export function changedSquares(before: LandMap, after: LandMap): LandSquare[] {
   const { squareSize, columns, rows } = after.plan;
-  const reshaped = before.plan.squareSize !== squareSize || before.plan.columns !== columns || before.plan.rows !== rows;
+  const origin = landOriginSquare(after.plan);
+  const was = landOriginSquare(before.plan);
+  const reshaped = before.plan.squareSize !== squareSize || before.plan.columns !== columns || before.plan.rows !== rows || was.column !== origin.column || was.row !== origin.row;
   const changed: LandSquare[] = [];
   for (let row = 0; row < rows; row++) {
     for (let column = 0; column < columns; column++) {
-      if (reshaped || squareChanged(before, after, column, row)) changed.push({ column, row });
+      if (reshaped || squareChanged(before, after, column, row)) changed.push({ column: column + origin.column, row: row + origin.row });
     }
   }
   return changed;
 }
 
 export function cutSquare(land: LandMap, square: LandSquare, ward?: RegionId): BlueprintBase {
-  const { id, squareSize, columns, rows } = land.plan;
-  const { column, row } = square;
-  if (!Number.isInteger(column) || !Number.isInteger(row) || column < 0 || row < 0 || column >= columns || row >= rows) {
-    throw new Error(`land ${id}: square ${column},${row} is outside the ${columns}x${rows} plan`);
-  }
+  const { id, squareSize } = land.plan;
+  const local = localSquareOf(land.plan, square);
+  if (!local) throw new Error(`land ${id}: square ${square.column},${square.row} is outside ${describeLandExtent(land.plan)}`);
+  const { column, row } = local;
   const tiles: TileKindId[] = [];
   const heights: number[] = [];
   for (let y = 0; y < squareSize; y++) {

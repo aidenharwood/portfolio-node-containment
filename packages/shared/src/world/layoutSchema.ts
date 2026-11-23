@@ -83,7 +83,7 @@ export const DISTRICT_LAYOUT_SCHEMA = z
     deadEnd: z.boolean().optional(),
     ambience: z.object({ darkness: z.number(), tint: z.string(), fog: z.string(), fixtures: z.enum(['working', 'failing']).optional(), sky: z.string().optional(), weather: z.array(z.enum(WEATHER_KINDS)).optional(), haze: z.number().min(0.3).max(3).optional() }).strict(),
     size: z.object({ width: int.positive(), height: int.positive() }).strict(),
-    square: z.object({ column: int.nonnegative(), row: int.nonnegative(), split: z.boolean().optional() }).strict().optional(),
+    square: z.object({ column: int, row: int, split: z.boolean().optional() }).strict().optional(),
     steps: z.array(STEP_SCHEMA),
     tiles: z.array(z.object({ x: int, y: int, tile }).strict()),
     heights: z.array(z.object({ x: int, y: int, height: int.nonnegative() }).strict()).optional(),
