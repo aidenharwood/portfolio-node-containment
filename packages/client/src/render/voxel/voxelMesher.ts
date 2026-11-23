@@ -1,5 +1,5 @@
 import { BufferAttribute, BufferGeometry, Color } from 'three';
-import { occludes, VOXEL_EMISSIVE, VOXEL_EMPTY, VOXEL_GLASS, type VoxelBounds, type VoxelSource } from './voxelKinds.ts';
+import { occludes, VOXEL_EMISSIVE, VOXEL_EMPTY, VOXEL_GLASS, type VoxelBounds, type VoxelGrid, type VoxelSource } from './voxelKinds.ts';
 
 export interface VoxelMeshes {
   readonly solid: BufferGeometry | null;
@@ -12,6 +12,7 @@ export interface MeshOptions {
   readonly origin: readonly [number, number, number];
   readonly clipBounds?: VoxelBounds;
   readonly groundY?: number;
+  readonly skipDown?: boolean;
 }
 
 type Vector = readonly [number, number, number];
@@ -31,6 +32,7 @@ const FACES: readonly FaceDefinition[] = [
   { normal: [0, 0, -1], axis: 2, corners: [[0, 0, 0], [0, 1, 0], [1, 1, 0], [1, 0, 0]] },
 ];
 
+const DOWN_FACE = 3;
 const AMBIENT_OCCLUSION = [0.5, 0.68, 0.84, 1];
 const EDGE_LIFT = 1.12;
 
@@ -160,11 +162,40 @@ function shouldEmitFace(kind: number, neighbor: number): boolean {
   return neighbor === VOXEL_GLASS;
 }
 
+const FACE_COUNT = FACE_PROBES.length;
+const PROBE_STRIDE = 15;
+const NORMALS = Int8Array.from(FACE_PROBES.flatMap((face) => face.normal));
+const CORNERS = Int8Array.from(FACE_PROBES.flatMap((face) => face.corners.flat()));
+const PROBES = Int8Array.from(FACE_PROBES.flatMap((face) => [0, 1, 2, 3].flatMap((corner) => [face.edgeU, face.edgeV, face.sideU, face.sideV, face.diagonal].flatMap((probes) => probes[corner] as Vector))));
 const occlusion = [3, 3, 3, 3];
 const lift = [1, 1, 1, 1];
 const buffers = { solid: new GeometryBuffer(), emissive: new GeometryBuffer(), glass: new GeometryBuffer() };
 
-export function meshVoxels(source: VoxelSource, bounds: VoxelBounds, options: MeshOptions, cells?: ArrayLike<number>): VoxelMeshes {
+type KindReader = (x: number, y: number, z: number) => number;
+
+function gridReaders(grid: VoxelGrid): { readonly kindAt: KindReader; readonly colorAt: KindReader } {
+  const { kinds, colors, width, height, depth, originX, originZ, ceiling } = grid;
+  const indexOf = (x: number, y: number, z: number): number => {
+    const lx = x - originX;
+    const lz = z - originZ;
+    if (lx < 0 || y < 0 || lz < 0 || lx >= width || y >= height || lz >= depth) return -1;
+    if (ceiling && y >= (ceiling[lz * width + lx] as number)) return -1;
+    return (y * depth + lz) * width + lx;
+  };
+  return {
+    kindAt: (x, y, z) => {
+      const index = indexOf(x, y, z);
+      return index < 0 ? VOXEL_EMPTY : (kinds[index] as number);
+    },
+    colorAt: (x, y, z) => {
+      const index = indexOf(x, y, z);
+      return index < 0 ? 0 : (colors[index] as number);
+    },
+  };
+}
+
+export function meshVoxels(source: VoxelSource | VoxelGrid, bounds: VoxelBounds, options: MeshOptions, cells?: ArrayLike<number>): VoxelMeshes {
+  const { kindAt, colorAt } = 'kinds' in source ? gridReaders(source) : { kindAt: (x: number, y: number, z: number) => source.kindAt(x, y, z), colorAt: (x: number, y: number, z: number) => source.colorAt(x, y, z) };
   buffers.solid.reset();
   buffers.emissive.reset();
   buffers.glass.reset();
@@ -174,45 +205,54 @@ export function meshVoxels(source: VoxelSource, bounds: VoxelBounds, options: Me
   const [maxX, maxY, maxZ] = bounds.max;
   const neighborKind = (x: number, y: number, z: number): number => {
     if (clip && (x < clip.min[0] || y < clip.min[1] || z < clip.min[2] || x >= clip.max[0] || y >= clip.max[1] || z >= clip.max[2])) return VOXEL_EMPTY;
-    return source.kindAt(x, y, z);
+    return kindAt(x, y, z);
   };
   const groundY = options.groundY ?? -Infinity;
-  const occludedAt = (x: number, y: number, z: number, offset: Vector): number => (y + offset[1] < groundY || occludes(source.kindAt(x + offset[0], y + offset[1], z + offset[2])) ? 1 : 0);
+  const skipFace = options.skipDown ? DOWN_FACE : -1;
+
+  const occludedAt = (x: number, y: number, z: number, at: number): number => {
+    const dy = PROBES[at + 1] as number;
+    return y + dy < groundY || occludes(kindAt(x + (PROBES[at] as number), y + dy, z + (PROBES[at + 2] as number))) ? 1 : 0;
+  };
 
   const emitVoxel = (x: number, y: number, z: number): void => {
-        const kind = source.kindAt(x, y, z);
-        if (kind === VOXEL_EMPTY) return;
-        const buffer = kind === VOXEL_EMISSIVE ? buffers.emissive : kind === VOXEL_GLASS ? buffers.glass : buffers.solid;
-        const [red, green, blue] = linearColor(source.colorAt(x, y, z));
-
-        for (let faceIndex = 0; faceIndex < FACE_PROBES.length; faceIndex++) {
-          const face = FACE_PROBES[faceIndex]!;
-          const [nx, ny, nz] = face.normal;
-          if (!shouldEmitFace(kind, neighborKind(x + nx, y + ny, z + nz))) continue;
-
-          for (let corner = 0; corner < 4; corner++) {
-            if (kind === VOXEL_EMISSIVE) {
-              occlusion[corner] = 3;
-              lift[corner] = 1;
-              continue;
-            }
-            lift[corner] = occludedAt(x, y, z, face.edgeU[corner]!) && occludedAt(x, y, z, face.edgeV[corner]!) ? 1 : EDGE_LIFT;
-            const sideU = occludedAt(x, y, z, face.sideU[corner]!);
-            const sideV = occludedAt(x, y, z, face.sideV[corner]!);
-            occlusion[corner] = sideU && sideV ? 0 : 3 - (sideU + sideV + occludedAt(x, y, z, face.diagonal[corner]!));
-          }
-          const base = buffer.vertexCount;
-          for (let corner = 0; corner < 4; corner++) {
-            const offset = face.corners[corner]!;
-            buffer.positions.push3(origin[0] + (x + offset[0]) * voxelSize, origin[1] + (y + offset[1]) * voxelSize, origin[2] + (z + offset[2]) * voxelSize);
-            buffer.normals.push3(nx, ny, nz);
-            const shade = AMBIENT_OCCLUSION[occlusion[corner]!]! * lift[corner]!;
-            buffer.colors.push3(red * shade, green * shade, blue * shade);
-          }
-          buffer.vertexCount += 4;
-          if (occlusion[0]! + occlusion[2]! < occlusion[1]! + occlusion[3]!) buffer.indices.push6(base + 1, base + 2, base + 3, base + 1, base + 3, base);
-          else buffer.indices.push6(base, base + 1, base + 2, base, base + 2, base + 3);
+    const kind = kindAt(x, y, z);
+    if (kind === VOXEL_EMPTY) return;
+    const buffer = kind === VOXEL_EMISSIVE ? buffers.emissive : kind === VOXEL_GLASS ? buffers.glass : buffers.solid;
+    const color = linearColor(colorAt(x, y, z));
+    const red = color[0];
+    const green = color[1];
+    const blue = color[2];
+    for (let faceIndex = 0; faceIndex < FACE_COUNT; faceIndex++) {
+      if (faceIndex === skipFace) continue;
+      const nx = NORMALS[faceIndex * 3] as number;
+      const ny = NORMALS[faceIndex * 3 + 1] as number;
+      const nz = NORMALS[faceIndex * 3 + 2] as number;
+      if (!shouldEmitFace(kind, neighborKind(x + nx, y + ny, z + nz))) continue;
+      for (let corner = 0; corner < 4; corner++) {
+        if (kind === VOXEL_EMISSIVE) {
+          occlusion[corner] = 3;
+          lift[corner] = 1;
+          continue;
         }
+        const at = (faceIndex * 4 + corner) * PROBE_STRIDE;
+        lift[corner] = occludedAt(x, y, z, at) && occludedAt(x, y, z, at + 3) ? 1 : EDGE_LIFT;
+        const sideU = occludedAt(x, y, z, at + 6);
+        const sideV = occludedAt(x, y, z, at + 9);
+        occlusion[corner] = sideU && sideV ? 0 : 3 - (sideU + sideV + occludedAt(x, y, z, at + 12));
+      }
+      const base = buffer.vertexCount;
+      for (let corner = 0; corner < 4; corner++) {
+        const at = (faceIndex * 4 + corner) * 3;
+        buffer.positions.push3(origin[0] + (x + (CORNERS[at] as number)) * voxelSize, origin[1] + (y + (CORNERS[at + 1] as number)) * voxelSize, origin[2] + (z + (CORNERS[at + 2] as number)) * voxelSize);
+        buffer.normals.push3(nx, ny, nz);
+        const shade = (AMBIENT_OCCLUSION[occlusion[corner] as number] as number) * (lift[corner] as number);
+        buffer.colors.push3(red * shade, green * shade, blue * shade);
+      }
+      buffer.vertexCount += 4;
+      if ((occlusion[0] as number) + (occlusion[2] as number) < (occlusion[1] as number) + (occlusion[3] as number)) buffer.indices.push6(base + 1, base + 2, base + 3, base + 1, base + 3, base);
+      else buffer.indices.push6(base, base + 1, base + 2, base, base + 2, base + 3);
+    }
   };
 
   if (cells) {

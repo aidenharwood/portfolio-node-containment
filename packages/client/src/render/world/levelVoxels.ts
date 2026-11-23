@@ -118,6 +118,22 @@ const besideKind = (layout: OwnedLayout, tx: number, ty: number, x: number, y: n
 
 export const tileBase = (layout: TileLayout, tx: number, ty: number): number => layout.heightAt({ x: tx, y: ty }) * STEP_VOXELS;
 
+const TRACK_SWAY = STEP_VOXELS / 2;
+const TRACK_SCAN = 8;
+
+export function groundTopAt(layout: TileLayout, tx: number, ty: number): number {
+  return tileBase(layout, tx, ty) + FLOOR_LAYERS + (layout.tileAt({ x: tx, y: ty }) === 'track' ? TRACK_SWAY : 0);
+}
+
+export function groundBottomAt(layout: TileLayout, tx: number, ty: number): number {
+  let bottom = tileBase(layout, tx, ty);
+  for (const [dx, dy] of AROUND) {
+    const beside = layout.tileAt({ x: tx + dx, y: ty + dy });
+    bottom = Math.min(bottom, beside === 'void' ? 0 : tileBase(layout, tx + dx, ty + dy));
+  }
+  return layout.tileAt({ x: tx, y: ty }) === 'track' ? Math.max(0, Math.min(bottom, tileBase(layout, tx, ty) - TRACK_SWAY)) : bottom;
+}
+
 export function regionTop(layout: TileLayout, region: TileRect): number {
   let top = 0;
   for (let ty = region.y - 1; ty <= region.y + region.height; ty++) {
@@ -824,7 +840,7 @@ function paintFence(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: nu
 function trackAxis(layout: TileLayout, tx: number, ty: number): Axis {
   const run = (dx: number, dy: number) => {
     let length = 0;
-    while (layout.tileAt({ x: tx + dx * (length + 1), y: ty + dy * (length + 1) }) === 'track') length++;
+    while (length < TRACK_SCAN && layout.tileAt({ x: tx + dx * (length + 1), y: ty + dy * (length + 1) }) === 'track') length++;
     return length;
   };
   return run(1, 0) + run(-1, 0) >= run(0, 1) + run(0, -1) ? 'x' : 'y';

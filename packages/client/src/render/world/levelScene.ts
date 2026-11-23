@@ -1,5 +1,6 @@
 import {
   assemblyInstanceOf,
+  CHUNK_SIZE,
   chunkKey,
   doorKeyOf,
   chunkKeyOf,
@@ -10,10 +11,11 @@ import {
   type TilePoint,
   type GameContent,
 } from '@containment/shared';
-import { AdditiveBlending, Group, MeshBasicMaterial, type Vector3 } from 'three';
+import { AdditiveBlending, Group, Mesh, MeshBasicMaterial, type Vector3 } from 'three';
 import type { ActiveZone } from '../../state/worldState.ts';
 import { chunkSignature, objectChanges, type ChunkSignature } from './chunkSignature.ts';
 import { planWallLighting, type FillLight, type SconceSpot, type WallLighting } from './wallLights.ts';
+import { buildChunkPlaceholder } from './chunkPlaceholder.ts';
 import { ChunkView, chunkRegion, type ChunkContents, type IndexedPlacement, type LightSource, type ObjectView, type WallPiece } from './chunkView.ts';
 
 export type { LightSource, ObjectView, WallPiece } from './chunkView.ts';
@@ -33,13 +35,22 @@ export const BUILD_RADIUS = 1;
 const RETAIN_RADIUS = 2;
 const BUILD_BUDGET_MS = 5;
 const SETTLE_DELAY_MS = 300;
+const CENTRE_BUDGET_SCALE = 3;
+const PLACEHOLDERS_PER_FRAME = 2;
+
+export const PREFETCH_RADIUS = 1;
+const HEADING_EASE = 0.2;
+const HEADING_MIN = 0.3;
+const AHEAD_ALIGNMENT = 0.45;
+const AHEAD_WEIGHT = 1.5;
 
 export interface StreamReach {
   readonly build: number;
   readonly retain: number;
+  readonly ahead?: number;
 }
 
-const DEFAULT_REACH: StreamReach = { build: BUILD_RADIUS, retain: RETAIN_RADIUS };
+const DEFAULT_REACH: StreamReach = { build: BUILD_RADIUS, retain: RETAIN_RADIUS, ahead: PREFETCH_RADIUS };
 
 function groupByChunk<T>(entries: readonly T[], positionOf: (entry: T) => TilePoint): Map<ChunkKey, T[]> {
   const grouped = new Map<ChunkKey, T[]>();
@@ -72,6 +83,9 @@ export class LevelScene {
   private deferredCentre: ChunkKey | null = null;
   private awaitingPaint = false;
   private pendingNearby = true;
+  private readonly placeholders = new Map<ChunkKey, { readonly coord: ChunkCoord; readonly group: Group }>();
+  private lastFocus: TilePoint | null = null;
+  private heading = { x: 0, y: 0 };
   private readonly ringMaterial = new MeshBasicMaterial({ color: 0xffb347, transparent: true, opacity: 0.8, blending: AdditiveBlending, depthWrite: false, toneMapped: false, fog: false });
 
   constructor(zone: ActiveZone, options: { readonly editable?: boolean; readonly content?: GameContent } = {}) {
@@ -176,8 +190,9 @@ export class LevelScene {
 
   stream(focus: TilePoint, budgetMs = BUILD_BUDGET_MS, reach: StreamReach = DEFAULT_REACH): void {
     const centre = chunkOf({ x: Math.round(focus.x), y: Math.round(focus.y) });
+    this.followHeading(focus);
     const centreView = this.ensureChunk(centre);
-    if (centreView && !centreView.ready && !this.retiring.has(chunkKey(centre))) {
+    if (centreView && !centreView.ready && !this.retiring.has(chunkKey(centre)) && !this.placeholders.has(chunkKey(centre))) {
       const key = chunkKey(centre);
       if (this.deferredCentre !== key) {
         this.deferredCentre = key;
@@ -197,9 +212,16 @@ export class LevelScene {
     for (let dy = -reach.build; dy <= reach.build; dy++) {
       for (let dx = -reach.build; dx <= reach.build; dx++) neighbours.push({ cx: centre.cx + dx, cy: centre.cy + dy });
     }
-    const deadline = performance.now() + budgetMs;
+    const centreWaiting = centreView !== null && !centreView.ready && !this.retiring.has(chunkKey(centre));
+    const deadline = performance.now() + budgetMs * (centreWaiting ? CENTRE_BUDGET_SCALE : 1);
     const settling = performance.now() >= this.settleAfter;
-    for (const coord of neighbours.sort((a, b) => Math.hypot(a.cx - centre.cx, a.cy - centre.cy) - Math.hypot(b.cx - centre.cx, b.cy - centre.cy))) {
+    const queue = [...neighbours, ...this.aheadOf(centre, reach)];
+    const score = (coord: ChunkCoord): number => {
+      const dx = coord.cx - centre.cx;
+      const dy = coord.cy - centre.cy;
+      return Math.hypot(dx, dy) - AHEAD_WEIGHT * (dx * this.heading.x + dy * this.heading.y);
+    };
+    for (const coord of queue.sort((a, b) => score(a) - score(b))) {
       if (performance.now() >= deadline) break;
       if (!settling && this.retiring.has(chunkKey(coord))) continue;
       const view = this.ensureChunk(coord);
@@ -209,6 +231,7 @@ export class LevelScene {
       const entry = this.chunks.get(chunkKey(coord));
       return entry ? !entry.view.ready : chunkRegion(coord, this.zone) !== null;
     });
+    this.showPlaceholders(centre, reach.retain);
     for (const [key, { coord, view }] of this.chunks) {
       if (chunkDistance(coord, centre) <= reach.retain) continue;
       for (const object of view.objects) this.objects.delete(object.instanceId);
@@ -218,6 +241,75 @@ export class LevelScene {
       this.shown.delete(key);
       this.retire(key);
     }
+  }
+
+  private aheadOf(centre: ChunkCoord, reach: StreamReach): ChunkCoord[] {
+    const ahead = Math.min(reach.ahead ?? 0, reach.retain - reach.build);
+    const strength = Math.hypot(this.heading.x, this.heading.y);
+    if (ahead <= 0 || strength < HEADING_MIN) return [];
+    const out: ChunkCoord[] = [];
+    const outer = reach.build + ahead;
+    for (let dy = -outer; dy <= outer; dy++) {
+      for (let dx = -outer; dx <= outer; dx++) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) <= reach.build) continue;
+        if ((dx * this.heading.x + dy * this.heading.y) / (Math.hypot(dx, dy) * strength) < AHEAD_ALIGNMENT) continue;
+        out.push({ cx: centre.cx + dx, cy: centre.cy + dy });
+      }
+    }
+    return out;
+  }
+
+  private followHeading(focus: TilePoint): void {
+    const last = this.lastFocus;
+    this.lastFocus = { x: focus.x, y: focus.y };
+    if (!last) return;
+    const dx = focus.x - last.x;
+    const dy = focus.y - last.y;
+    const length = Math.hypot(dx, dy);
+    if (length < 1e-3) return;
+    if (length > 2 * CHUNK_SIZE) {
+      this.heading = { x: 0, y: 0 };
+      return;
+    }
+    this.heading = { x: this.heading.x + (dx / length - this.heading.x) * HEADING_EASE, y: this.heading.y + (dy / length - this.heading.y) * HEADING_EASE };
+  }
+
+  private showPlaceholders(centre: ChunkCoord, radius: number): void {
+    for (const [key, { coord }] of this.placeholders) {
+      if (chunkDistance(coord, centre) <= radius && !this.displayed(key)) continue;
+      this.dropPlaceholder(key);
+    }
+    const ring: ChunkCoord[] = [];
+    for (let dy = -radius; dy <= radius; dy++) {
+      for (let dx = -radius; dx <= radius; dx++) ring.push({ cx: centre.cx + dx, cy: centre.cy + dy });
+    }
+    let allowance = this.placeholders.size === 0 ? Infinity : PLACEHOLDERS_PER_FRAME;
+    for (const coord of ring.sort((a, b) => chunkDistance(a, centre) - chunkDistance(b, centre))) {
+      if (allowance <= 0) return;
+      const key = chunkKey(coord);
+      if (this.placeholders.has(key) || this.displayed(key)) continue;
+      allowance--;
+      const region = chunkRegion(coord, this.zone);
+      if (!region) continue;
+      const group = buildChunkPlaceholder(this.zone.layout, region);
+      if (!group) continue;
+      this.placeholders.set(key, { coord, group });
+      this.root.add(group);
+    }
+  }
+
+  private dropPlaceholder(key: ChunkKey): void {
+    const placeholder = this.placeholders.get(key);
+    if (!placeholder) return;
+    placeholder.group.removeFromParent();
+    placeholder.group.traverse((child) => {
+      if (child instanceof Mesh) child.geometry.dispose();
+    });
+    this.placeholders.delete(key);
+  }
+
+  get placeholderChunks(): readonly ChunkKey[] {
+    return [...this.placeholders.keys()];
   }
 
   private readyViews(): ChunkView[] {
@@ -231,6 +323,7 @@ export class LevelScene {
     const signature = this.signatures.get(key);
     if (signature) this.shown.set(key, signature);
     this.root.add(view.root);
+    this.dropPlaceholder(key);
     for (const object of view.objects) this.objects.set(object.instanceId, object);
   }
 
@@ -293,6 +386,7 @@ export class LevelScene {
   }
 
   dispose(): void {
+    for (const key of [...this.placeholders.keys()]) this.dropPlaceholder(key);
     for (const { view } of this.chunks.values()) view.dispose();
     for (const view of this.retiring.values()) view.dispose();
     this.retiring.clear();

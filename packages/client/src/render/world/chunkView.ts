@@ -19,7 +19,7 @@ import { Box3, BoxGeometry, Color, Group, Matrix4, Mesh, MeshBasicMaterial, Quat
 import type { ActiveZone } from '../../state/worldState.ts';
 import { buildObjectModel, type AnimatedPart } from '../models/objectModels.ts';
 import { hex } from '../voxel/palette.ts';
-import { VOXEL_EMISSIVE, VOXEL_EMPTY, type VoxelBounds, type VoxelSource } from '../voxel/voxelKinds.ts';
+import { VOXEL_EMISSIVE, VOXEL_EMPTY, type VoxelBounds, type VoxelGrid } from '../voxel/voxelKinds.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 import { mergeVoxelGeometries, type VoxelGeometryPart } from '../voxel/mergeVoxelGeometry.ts';
 import { meshVoxels, type VoxelMeshes } from '../voxel/voxelMesher.ts';
@@ -32,7 +32,7 @@ import { decalsForLevel } from './floorDecals.ts';
 import { BEAM_GEOMETRY, createLightBeam } from './lightBeams.ts';
 import { buildFloorScatter } from './floorScatter.ts';
 import { groundAt } from './ground.ts';
-import { createTileVolume, paintTileRows, regionTop, tileBase, type OwnedLayout } from './levelVoxels.ts';
+import { createTileVolume, groundBottomAt, groundTopAt, paintTileRows, regionTop, tileBase, type OwnedLayout } from './levelVoxels.ts';
 import { FLOOR_LAYERS, MODEL_VOXEL_SIZE, TILE_RESOLUTION, ZONE_MESH_ORIGIN, ZONE_VOLUME_HEIGHT, ZONE_VOXEL_SIZE } from './worldScale.ts';
 
 export interface LightSource {
@@ -295,13 +295,33 @@ export class ChunkView {
     const groundTop = regionTop(layout, region) + FLOOR_LAYERS;
     const span = region.width + 2;
     const tops = new Int16Array(span * (region.height + 2));
+    const bottoms = new Int16Array(span * (region.height + 2));
     for (let ty = region.y - 1; ty <= lastRow; ty++) {
-      for (let tx = region.x - 1; tx <= region.x + region.width; tx++) tops[(ty - region.y + 1) * span + tx - region.x + 1] = tileBase(layout, tx, ty) + FLOOR_LAYERS;
+      for (let tx = region.x - 1; tx <= region.x + region.width; tx++) {
+        tops[(ty - region.y + 1) * span + tx - region.x + 1] = groundTopAt(layout, tx, ty);
+        bottoms[(ty - region.y + 1) * span + tx - region.x + 1] = groundBottomAt(layout, tx, ty);
+      }
     }
-    const topAt = (vx: number, vz: number): number => tops[(Math.floor(vz / R) - region.y + 1) * span + Math.floor(vx / R) - region.x + 1] ?? FLOOR_LAYERS;
-    const ground: VoxelSource = {
-      kindAt: (x, y, z) => (y < topAt(x, z) ? volume.kindAt(x, y, z) : VOXEL_EMPTY),
-      colorAt: (x, y, z) => volume.colorAt(x, y, z),
+    const ceiling = new Int16Array(volume.width * volume.depth);
+    for (let lz = 0; lz < volume.depth; lz++) {
+      for (let lx = 0; lx < volume.width; lx++) ceiling[lz * volume.width + lx] = tops[Math.floor(lz / R) * span + Math.floor(lx / R)] ?? FLOOR_LAYERS;
+    }
+    const ground: VoxelGrid = { kinds: volume.kinds, colors: volume.colors, width: volume.width, height: volume.height, depth: volume.depth, originX: volume.originX, originZ: volume.originZ, ceiling };
+    const groundCells = (strip: TileRect): number[] => {
+      const cells: number[] = [];
+      for (let ty = strip.y; ty < strip.y + strip.height; ty++) {
+        for (let tx = strip.x; tx < strip.x + strip.width; tx++) {
+          const at = (ty - region.y + 1) * span + tx - region.x + 1;
+          const bottom = bottoms[at] as number;
+          const top = tops[at] as number;
+          for (let vz = ty * R; vz < (ty + 1) * R; vz++) {
+            for (let vx = tx * R; vx < (tx + 1) * R; vx++) {
+              for (let vy = bottom; vy < top; vy++) if (volume.kindAt(vx, vy, vz) !== VOXEL_EMPTY) cells.push(vx, vy, vz);
+            }
+          }
+        }
+      }
+      return cells;
     };
     for (let row = region.y - 1; row <= lastRow; row += STRIP_ROWS) {
       this.steps.push(() => paintTileRows(volume, layout, region, row, row + STRIP_ROWS, decals));
@@ -314,7 +334,7 @@ export class ChunkView {
       const strip = { x: region.x, y: row, width: region.width, height: Math.min(STRIP_ROWS, lastRow - row) };
       this.steps.push(() => {
         const bounds = { min: [floorClip.min[0], 0, strip.y * R] as const, max: [floorClip.max[0], groundTop, (strip.y + strip.height) * R] as const };
-        const floor = createVoxelObject(meshVoxels(ground, bounds, { ...meshOptions, clipBounds: floorClip }), { castShadow: false });
+        const floor = createVoxelObject(meshVoxels(ground, bounds, { ...meshOptions, clipBounds: floorClip, skipDown: true }, groundCells(strip)), { castShadow: false });
         floor.name = 'floor';
         this.root.add(floor);
       });

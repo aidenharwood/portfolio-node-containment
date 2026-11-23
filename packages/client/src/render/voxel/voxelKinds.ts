@@ -10,6 +10,17 @@ export interface VoxelSource {
   colorAt(x: number, y: number, z: number): number;
 }
 
+export interface VoxelGrid {
+  readonly kinds: Uint8Array;
+  readonly colors: Uint32Array;
+  readonly width: number;
+  readonly height: number;
+  readonly depth: number;
+  readonly originX: number;
+  readonly originZ: number;
+  readonly ceiling?: Int16Array;
+}
+
 export interface VoxelBounds {
   readonly min: readonly [number, number, number];
   readonly max: readonly [number, number, number];

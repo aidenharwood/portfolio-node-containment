@@ -36,8 +36,8 @@ export class DenseVolume implements VoxelCanvas {
   readonly depth: number;
   readonly originX: number;
   readonly originZ: number;
-  private readonly kinds: Uint8Array;
-  private readonly colors: Uint32Array;
+  readonly kinds: Uint8Array;
+  readonly colors: Uint32Array;
 
   constructor(width: number, height: number, depth: number, originX = 0, originZ = 0) {
     this.width = width;
