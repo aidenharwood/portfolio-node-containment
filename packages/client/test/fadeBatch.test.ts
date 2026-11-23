@@ -32,7 +32,7 @@ const drawnTriangles = (batch: FadeBatch): number[][] => {
 
 test('fading a piece removes only its triangles from the merged mesh and shows a faded copy', () => {
   const pieces = [block(0), block(4), block(8)];
-  const batch = new FadeBatch(pieces);
+  const batch = FadeBatch.of(pieces);
   const perPiece = pieces[0]!.solid!.index!.count / 3;
   const all = drawnTriangles(batch);
   assert.equal(all.length, perPiece * 3);
@@ -46,7 +46,7 @@ test('fading a piece removes only its triangles from the merged mesh and shows a
   assert.equal(faded.length, 1);
   assert.equal(faded[0]!.visible && faded[0]!.parent!.visible, true);
   assert.equal(faded[0]!.castShadow, false);
-  assert.equal(faded[0]!.geometry, pieces[1]!.solid);
+  assert.deepEqual([...faded[0]!.geometry.index!.array], all.slice(perPiece, perPiece * 2).flat());
 
   batch.setFaded(1, false);
   batch.flush();
@@ -55,7 +55,7 @@ test('fading a piece removes only its triangles from the merged mesh and shows a
 });
 
 test('batch options carry over to the merged and faded meshes', () => {
-  const batch = new FadeBatch([block(0), block(2)], { castShadow: false, receiveShadow: false });
+  const batch = FadeBatch.of([block(0), block(2)], { castShadow: false, receiveShadow: false });
   batch.setFaded(0, true);
   batch.flush();
   for (const mesh of meshes(batch.root)) {

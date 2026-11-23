@@ -15,16 +15,17 @@ import {
   type TileRect,
   type WorldObjectDefinition,
 } from '@containment/shared';
-import { Box3, BoxGeometry, Color, Group, Matrix4, Mesh, MeshBasicMaterial, Quaternion, RingGeometry, Vector3, type BufferGeometry, type Material, type Object3D } from 'three';
+import { Box3, BoxGeometry, Color, DataTexture, Group, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, NearestFilter, Quaternion, RGBAFormat, RingGeometry, SRGBColorSpace, UnsignedByteType, Vector3, type BufferGeometry, type Material, type Object3D } from 'three';
 import type { ActiveZone } from '../../state/worldState.ts';
 import { buildObjectModel, type AnimatedPart } from '../models/objectModels.ts';
 import { hex } from '../voxel/palette.ts';
-import { VOXEL_EMISSIVE, VOXEL_EMPTY, type VoxelBounds, type VoxelGrid } from '../voxel/voxelKinds.ts';
+import { VOXEL_EMISSIVE, type VoxelBounds } from '../voxel/voxelKinds.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 import { mergeVoxelGeometries, type VoxelGeometryPart } from '../voxel/mergeVoxelGeometry.ts';
-import { meshVoxels, type VoxelMeshes } from '../voxel/voxelMesher.ts';
+import type { VoxelMeshes } from '../voxel/voxelMesher.ts';
+import { receiveFieldLights } from '../voxel/fieldLights.ts';
 import { createVoxelObject, type VoxelLayer, type VoxelObjectOptions } from '../voxel/voxelMaterials.ts';
-import { FadeBatch } from './fadeBatch.ts';
+import { FadeBatch, type TopMaterials } from './fadeBatch.ts';
 import { createFootprintShadows, type Footprint } from './footprintShadows.ts';
 import { FACING_STEP, type FillLight, type SconceSpot } from './wallLights.ts';
 import { LiquidSurface, WATER_PALETTE } from './liquidSurface.ts';
@@ -32,8 +33,9 @@ import { decalsForLevel } from './floorDecals.ts';
 import { BEAM_GEOMETRY, createLightBeam } from './lightBeams.ts';
 import { buildFloorScatter } from './floorScatter.ts';
 import { groundAt } from './ground.ts';
-import { createTileVolume, groundBottomAt, groundTopAt, paintTileRows, regionTop, tileBase, type OwnedLayout } from './levelVoxels.ts';
-import { FLOOR_LAYERS, MODEL_VOXEL_SIZE, TILE_RESOLUTION, ZONE_MESH_ORIGIN, ZONE_VOLUME_HEIGHT, ZONE_VOXEL_SIZE } from './worldScale.ts';
+import { BAND_ROWS, bandsOf, hasStructure, ownedLayoutOf, planChunkStructure, STRIP_ROWS, type ChunkStructure, type TopTexels } from './chunkStructure.ts';
+import type { StructureJob } from './chunkMesher.ts';
+import { MODEL_VOXEL_SIZE } from './worldScale.ts';
 
 export interface LightSource {
   readonly position: Vector3;
@@ -96,28 +98,6 @@ export function chunkRegion(chunk: ChunkCoord, zone: ActiveZone): TileRect | nul
   return { x, y, width, height };
 }
 
-function ownedLayoutOf(zone: ActiveZone): OwnedLayout {
-  const { layout, definition } = zone;
-  if (!definition.definition.land) return layout;
-  const owners = definition.layout;
-  return {
-    width: layout.width,
-    height: layout.height,
-    tileAt: (point) => layout.tileAt(point),
-    heightAt: (point) => layout.heightAt(point),
-    ownerAt: (point) => owners.districtAt(point) ?? owners.connectorAt(point),
-  };
-}
-
-function hasStructure(zone: ActiveZone, region: TileRect): boolean {
-  for (let y = region.y; y < region.y + region.height; y++) {
-    for (let x = region.x; x < region.x + region.width; x++) {
-      if (zone.layout.tileAt({ x, y }) !== 'void') return true;
-    }
-  }
-  return false;
-}
-
 interface ObjectMeshes {
   readonly base: VoxelMeshes;
   readonly animated: readonly { readonly meshes: VoxelMeshes; readonly spec: AnimatedPart }[];
@@ -140,14 +120,6 @@ const UP = new Vector3(0, 1, 0);
 const MODEL_VARIANTS = 8;
 const SHADOW_MIN_VOXELS = 3;
 const SHADOW_BASE_LAYERS = 4;
-const STRIP_ROWS = 2;
-const BAND_ROWS = 8;
-
-const bandsOf = (region: TileRect): number[] => {
-  const bands: number[] = [];
-  for (let band = Math.floor(region.y / BAND_ROWS); band <= Math.floor((region.y + region.height - 1) / BAND_ROWS); band++) bands.push(band);
-  return bands;
-};
 export const decorBandOf = (lastRow: number, region: TileRect): number => {
   const bands = bandsOf(region);
   return Math.min(Math.floor(lastRow / BAND_ROWS), bands[bands.length - 1] as number);
@@ -206,20 +178,25 @@ export class ChunkView {
   private readonly decor = new Map<number, Record<VoxelLayer, VoxelGeometryPart[]>>();
   private readonly fixturePieces: { readonly tile: TilePoint; readonly meshes: VoxelMeshes }[] = [];
   private readonly batches: FadeBatch[] = [];
-  private readonly steps: ((() => void) | undefined)[] = [];
+  private readonly steps: (((deadline: number) => boolean | void) | undefined)[] = [];
+  private structure: ChunkStructure | null = null;
+  private job: StructureJob | null = null;
+  private readonly topTextures: DataTexture[] = [];
+  private readonly topMaterials: MeshLambertMaterial[] = [];
+  private floorTops: MeshLambertMaterial | null = null;
+  private wallTops: TopMaterials | null = null;
   private nextStep = 0;
   private readonly separateObjects: boolean;
   private readonly objectLights = new Map<InstanceId, LightSource[]>();
   private readonly footprints: Footprint[] = [];
   private readonly layout: ActiveZone['layout'];
 
-  constructor(zone: ActiveZone, region: TileRect, contents: ChunkContents, ringMaterial: Material, options: { readonly separateObjects?: boolean; readonly content?: GameContent } = {}) {
+  constructor(zone: ActiveZone, region: TileRect, contents: ChunkContents, ringMaterial: Material, options: { readonly separateObjects?: boolean; readonly content?: GameContent; readonly requestStructure?: (region: TileRect) => StructureJob } = {}) {
     this.content = options.content ?? GAME_CONTENT;
     this.layout = zone.layout;
     this.ringMaterial = ringMaterial;
     this.region = region;
     this.separateObjects = options.separateObjects ?? false;
-    if (hasStructure(zone, region)) this.planStructure(zone, region, new Set(contents.objects.flatMap(({ placement }) => objectFootprintTiles(this.content.worldObjects.get(placement.objectId), placement).map(tileKey))));
     contents.objects.forEach(({ placement, index }) => this.steps.push(() => this.addObject(placement, index)));
     bandsOf(region).forEach((band) => this.steps.push(() => this.buildDecor(band)));
     contents.sconces.forEach((spot) => this.steps.push(() => this.addSconce(spot)));
@@ -241,6 +218,7 @@ export class ChunkView {
         });
       });
     });
+    if (hasStructure(zone.layout, region)) this.planStructure(zone, region, new Set(contents.objects.flatMap(({ placement }) => objectFootprintTiles(this.content.worldObjects.get(placement.objectId), placement).map(tileKey))), options.requestStructure);
   }
 
   get ready(): boolean {
@@ -248,13 +226,13 @@ export class ChunkView {
   }
 
   build(deadline: number): boolean {
-    do {
+    while (this.nextStep < this.steps.length) {
       const step = this.steps[this.nextStep];
-      if (!step) break;
+      if (step && step(deadline) === false) break;
       this.steps[this.nextStep] = undefined;
       this.nextStep++;
-      step();
-    } while (performance.now() < deadline);
+      if (performance.now() >= deadline) break;
+    }
     return this.ready;
   }
 
@@ -267,9 +245,7 @@ export class ChunkView {
     for (const batch of this.batches) batch.flush();
   }
 
-  private addBatch(name: string, tiles: readonly TilePoint[], pieces: readonly VoxelMeshes[], options: VoxelObjectOptions, into: WallPiece[]): void {
-    if (pieces.length === 0) return;
-    const batch = new FadeBatch(pieces, options);
+  private addBatch(name: string, tiles: readonly TilePoint[], batch: FadeBatch, into: WallPiece[]): void {
     batch.root.name = name;
     this.root.add(batch.root);
     this.batches.push(batch);
@@ -283,61 +259,16 @@ export class ChunkView {
     });
     this.coolant?.dispose();
     this.water?.dispose();
+    this.job?.cancel();
+    for (const texture of this.topTextures) texture.dispose();
+    for (const material of this.topMaterials) material.dispose();
   }
 
-  private planStructure(zone: ActiveZone, region: TileRect, occupied: ReadonlySet<string>): void {
-    const layout = ownedLayoutOf(zone);
+  private planStructure(zone: ActiveZone, region: TileRect, occupied: ReadonlySet<string>, request: ((region: TileRect) => StructureJob) | undefined): void {
+    const layout = ownedLayoutOf(zone.definition, zone.layout);
     const decals = decalsForLevel(zone.definition);
-    const volume = createTileVolume(region, layout);
-    const meshOptions = { voxelSize: ZONE_VOXEL_SIZE, origin: ZONE_MESH_ORIGIN };
-    const R = TILE_RESOLUTION;
-    const lastRow = region.y + region.height;
-    const groundTop = regionTop(layout, region) + FLOOR_LAYERS;
-    const span = region.width + 2;
-    const tops = new Int16Array(span * (region.height + 2));
-    const bottoms = new Int16Array(span * (region.height + 2));
-    for (let ty = region.y - 1; ty <= lastRow; ty++) {
-      for (let tx = region.x - 1; tx <= region.x + region.width; tx++) {
-        tops[(ty - region.y + 1) * span + tx - region.x + 1] = groundTopAt(layout, tx, ty);
-        bottoms[(ty - region.y + 1) * span + tx - region.x + 1] = groundBottomAt(layout, tx, ty);
-      }
-    }
-    const ceiling = new Int16Array(volume.width * volume.depth);
-    for (let lz = 0; lz < volume.depth; lz++) {
-      for (let lx = 0; lx < volume.width; lx++) ceiling[lz * volume.width + lx] = tops[Math.floor(lz / R) * span + Math.floor(lx / R)] ?? FLOOR_LAYERS;
-    }
-    const ground: VoxelGrid = { kinds: volume.kinds, colors: volume.colors, width: volume.width, height: volume.height, depth: volume.depth, originX: volume.originX, originZ: volume.originZ, ceiling };
-    const groundCells = (strip: TileRect): number[] => {
-      const cells: number[] = [];
-      for (let ty = strip.y; ty < strip.y + strip.height; ty++) {
-        for (let tx = strip.x; tx < strip.x + strip.width; tx++) {
-          const at = (ty - region.y + 1) * span + tx - region.x + 1;
-          const bottom = bottoms[at] as number;
-          const top = tops[at] as number;
-          for (let vz = ty * R; vz < (ty + 1) * R; vz++) {
-            for (let vx = tx * R; vx < (tx + 1) * R; vx++) {
-              for (let vy = bottom; vy < top; vy++) if (volume.kindAt(vx, vy, vz) !== VOXEL_EMPTY) cells.push(vx, vy, vz);
-            }
-          }
-        }
-      }
-      return cells;
-    };
-    for (let row = region.y - 1; row <= lastRow; row += STRIP_ROWS) {
-      this.steps.push(() => paintTileRows(volume, layout, region, row, row + STRIP_ROWS, decals));
-    }
-    const floorClip = {
-      min: [region.x * R, 0, region.y * R] as const,
-      max: [(region.x + region.width) * R, groundTop, lastRow * R] as const,
-    };
-    for (let row = region.y; row < lastRow; row += STRIP_ROWS) {
-      const strip = { x: region.x, y: row, width: region.width, height: Math.min(STRIP_ROWS, lastRow - row) };
-      this.steps.push(() => {
-        const bounds = { min: [floorClip.min[0], 0, strip.y * R] as const, max: [floorClip.max[0], groundTop, (strip.y + strip.height) * R] as const };
-        const floor = createVoxelObject(meshVoxels(ground, bounds, { ...meshOptions, clipBounds: floorClip, skipDown: true }, groundCells(strip)), { castShadow: false });
-        floor.name = 'floor';
-        this.root.add(floor);
-      });
+    for (let row = region.y; row < region.y + region.height; row += STRIP_ROWS) {
+      const strip = { x: region.x, y: row, width: region.width, height: Math.min(STRIP_ROWS, region.y + region.height - row) };
       this.steps.push(() => {
         const scatter = buildFloorScatter(layout, strip, (tile) => occupied.has(tileKey(tile)), decals);
         if (scatter.isEmpty) return;
@@ -346,34 +277,80 @@ export class ChunkView {
         this.root.add(litter);
       });
     }
-
-    const walls = new Map<number, { readonly tiles: TilePoint[]; readonly pieces: VoxelMeshes[] }>();
-    for (let ty = region.y; ty < lastRow; ty++) {
-      const band = walls.get(Math.floor(ty / BAND_ROWS)) ?? { tiles: [], pieces: [] };
-      walls.set(Math.floor(ty / BAND_ROWS), band);
-      this.steps.push(() => {
-        for (let tx = region.x; tx < region.x + region.width; tx++) {
-          const kind = layout.tileAt({ x: tx, y: ty });
-          if (TILE_KINDS[kind].structure !== 'wall' && kind !== 'door') continue;
-          const base = tileBase(layout, tx, ty);
-          const bounds = {
-            min: [tx * R, base + FLOOR_LAYERS, ty * R] as const,
-            max: [(tx + 1) * R, base + ZONE_VOLUME_HEIGHT, (ty + 1) * R] as const,
-          };
-          const meshes = meshVoxels(volume, bounds, meshOptions);
-          if (!meshes.solid && !meshes.emissive && !meshes.glass) continue;
-          band.tiles.push({ x: tx, y: ty });
-          band.pieces.push(meshes);
-        }
+    const local = (): void => {
+      const plan = planChunkStructure(layout, decals, region);
+      this.steps.splice(this.nextStep + 1, 0, ...plan.steps, () => {
+        this.structure = plan.result();
       });
+    };
+    const job = request?.(region) ?? null;
+    this.job = job;
+    if (job) {
+      this.steps.push((deadline) => {
+        if (job.structure) {
+          this.structure = job.structure;
+          return true;
+        }
+        if (!job.failed && deadline !== Infinity) return false;
+        job.cancel();
+        local();
+        return true;
+      });
+    } else {
+      this.steps.push(local);
     }
-    for (const band of walls.values()) this.steps.push(() => this.addBatch('walls', band.tiles, band.pieces, {}, this.walls));
+    this.steps.push(() => this.addFloors());
+    bandsOf(region).forEach((_, band) => this.steps.push(() => this.addWallBand(band)));
     this.steps.push(() => {
+      this.structure = null;
       this.coolant = LiquidSurface.build(layout, 'coolant', region);
       if (this.coolant) this.root.add(this.coolant.mesh);
       this.water = LiquidSurface.build(layout, 'water', region, WATER_PALETTE);
       if (this.water) this.root.add(this.water.mesh);
     });
+  }
+
+  private addFloors(): void {
+    const structure = this.structure;
+    if (!structure) return;
+    if (structure.tops) this.floorTops = this.topMaterial(this.topTexture(structure.tops), false);
+    if (structure.wallTops) {
+      const texture = this.topTexture(structure.wallTops);
+      this.wallTops = { material: this.topMaterial(texture, false), fadedMaterial: this.topMaterial(texture, true) };
+    }
+    for (const { meshes, tops } of structure.floors) {
+      const floor = createVoxelObject(meshes, { castShadow: false });
+      if (tops && this.floorTops) {
+        const mesh = new Mesh(tops, this.floorTops);
+        mesh.name = 'tops';
+        mesh.receiveShadow = true;
+        floor.add(mesh);
+      }
+      floor.name = 'floor';
+      this.root.add(floor);
+    }
+  }
+
+  private addWallBand(band: number): void {
+    const walls = this.structure?.walls[band];
+    if (walls && walls.parts.count > 0) this.addBatch('walls', walls.tiles, new FadeBatch(walls.parts, {}, this.wallTops), this.walls);
+  }
+
+  private topTexture(texels: TopTexels): DataTexture {
+    const texture = new DataTexture(texels.data, texels.width, texels.height, RGBAFormat, UnsignedByteType);
+    texture.colorSpace = SRGBColorSpace;
+    texture.magFilter = NearestFilter;
+    texture.minFilter = NearestFilter;
+    texture.generateMipmaps = false;
+    texture.needsUpdate = true;
+    this.topTextures.push(texture);
+    return texture;
+  }
+
+  private topMaterial(map: DataTexture, faded: boolean): MeshLambertMaterial {
+    const material = receiveFieldLights(faded ? new MeshLambertMaterial({ map, transparent: true, opacity: 0.16, depthWrite: false }) : new MeshLambertMaterial({ map }));
+    this.topMaterials.push(material);
+    return material;
   }
 
   placeObject(placement: ObjectPlacement, index: number): ObjectView | null {
@@ -502,13 +479,17 @@ export class ChunkView {
   }
 
   private buildFixtures(): void {
-    this.addBatch(
-      'wallFixtures',
-      this.fixturePieces.map(({ tile }) => tile),
-      this.fixturePieces.map(({ meshes }) => meshes),
-      { castShadow: false, receiveShadow: false },
-      this.fixtures,
-    );
+    if (this.fixturePieces.length > 0) {
+      this.addBatch(
+        'wallFixtures',
+        this.fixturePieces.map(({ tile }) => tile),
+        FadeBatch.of(
+          this.fixturePieces.map(({ meshes }) => meshes),
+          { castShadow: false, receiveShadow: false },
+        ),
+        this.fixtures,
+      );
+    }
     this.fixturePieces.length = 0;
   }
 

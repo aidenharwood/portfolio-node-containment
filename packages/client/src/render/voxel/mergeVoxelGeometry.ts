@@ -16,7 +16,9 @@ export function mergeVoxelGeometries(parts: readonly VoxelGeometryPart[]): Buffe
   }
   const positions = new Float32Array(vertices * 3);
   const normals = new Float32Array(vertices * 3);
-  const colors = new Float32Array(vertices * 3);
+  const extras = Object.entries(parts[0]?.geometry.attributes ?? {})
+    .filter(([name]) => name !== 'position' && name !== 'normal')
+    .map(([name, attribute]) => ({ name, size: attribute.itemSize, array: new Float32Array(vertices * attribute.itemSize) }));
   const index = vertices > 65535 ? new Uint32Array(indices) : new Uint16Array(indices);
   let vertexOffset = 0;
   let indexOffset = 0;
@@ -52,7 +54,7 @@ export function mergeVoxelGeometries(parts: readonly VoxelGeometryPart[]): Buffe
       positions.set(sourcePositions, target);
       normals.set(sourceNormals, target);
     }
-    colors.set(geometry.attributes.color!.array as Float32Array, target);
+    for (const extra of extras) extra.array.set(geometry.attributes[extra.name]!.array as Float32Array, vertexOffset * extra.size);
     const sourceIndex = geometry.index!.array;
     for (let entry = 0; entry < sourceIndex.length; entry++) index[indexOffset + entry] = sourceIndex[entry]! + vertexOffset;
     vertexOffset += count;
@@ -61,7 +63,7 @@ export function mergeVoxelGeometries(parts: readonly VoxelGeometryPart[]): Buffe
   const merged = new BufferGeometry();
   merged.setAttribute('position', new BufferAttribute(positions, 3));
   merged.setAttribute('normal', new BufferAttribute(normals, 3));
-  merged.setAttribute('color', new BufferAttribute(colors, 3));
+  for (const extra of extras) merged.setAttribute(extra.name, new BufferAttribute(extra.array, extra.size));
   merged.setIndex(new BufferAttribute(index, 1));
   merged.computeBoundingBox();
   merged.computeBoundingSphere();

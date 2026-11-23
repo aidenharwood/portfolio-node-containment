@@ -25,12 +25,12 @@ const withFrames = (run: () => void): void => {
   }
 };
 
-test('every chunk in reach that is not built yet stands in as a placeholder, and loses it once built', () => {
+test('every chunk queued to build that is not built yet stands in as a placeholder, and loses it once built', () => {
   withFrames(() => {
     const scene = new LevelScene(wilds, { content: FIXTURE_CONTENT });
     const focus = { x: 48, y: 16 };
-    scene.stream(focus, Infinity, { build: 0, retain: 1 });
-    scene.stream(focus, Infinity, { build: 0, retain: 1 });
+    scene.stream(focus, 0, { build: 1, retain: 1 });
+    scene.stream(focus, 0, { build: 1, retain: 1 });
     const centre = chunkKey(chunkOf(focus));
     assert.deepEqual(scene.builtChunks, [centre]);
     assert.ok(!scene.placeholderChunks.includes(centre));

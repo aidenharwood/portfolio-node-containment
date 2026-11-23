@@ -13,7 +13,10 @@ export interface MeshOptions {
   readonly clipBounds?: VoxelBounds;
   readonly groundY?: number;
   readonly skipDown?: boolean;
+  readonly topSink?: TopSink;
 }
+
+export type TopSink = (x: number, y: number, z: number, color: number, shade: number) => boolean;
 
 type Vector = readonly [number, number, number];
 
@@ -32,6 +35,7 @@ const FACES: readonly FaceDefinition[] = [
   { normal: [0, 0, -1], axis: 2, corners: [[0, 0, 0], [0, 1, 0], [1, 1, 0], [1, 0, 0]] },
 ];
 
+const UP_FACE = 2;
 const DOWN_FACE = 3;
 const AMBIENT_OCCLUSION = [0.5, 0.68, 0.84, 1];
 const EDGE_LIFT = 1.12;
@@ -209,6 +213,7 @@ export function meshVoxels(source: VoxelSource | VoxelGrid, bounds: VoxelBounds,
   };
   const groundY = options.groundY ?? -Infinity;
   const skipFace = options.skipDown ? DOWN_FACE : -1;
+  const topSink = options.topSink;
 
   const occludedAt = (x: number, y: number, z: number, at: number): number => {
     const dy = PROBES[at + 1] as number;
@@ -240,6 +245,9 @@ export function meshVoxels(source: VoxelSource | VoxelGrid, bounds: VoxelBounds,
         const sideU = occludedAt(x, y, z, at + 6);
         const sideV = occludedAt(x, y, z, at + 9);
         occlusion[corner] = sideU && sideV ? 0 : 3 - (sideU + sideV + occludedAt(x, y, z, at + 12));
+      }
+      if (topSink && faceIndex === UP_FACE && kind !== VOXEL_EMISSIVE && kind !== VOXEL_GLASS && occlusion[0] === occlusion[1] && occlusion[0] === occlusion[2] && occlusion[0] === occlusion[3] && lift[0] === lift[1] && lift[0] === lift[2] && lift[0] === lift[3]) {
+        if (topSink(x, y, z, colorAt(x, y, z), (AMBIENT_OCCLUSION[occlusion[0] as number] as number) * (lift[0] as number))) continue;
       }
       const base = buffer.vertexCount;
       for (let corner = 0; corner < 4; corner++) {

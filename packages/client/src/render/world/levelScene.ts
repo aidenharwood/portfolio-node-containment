@@ -10,12 +10,14 @@ import {
   type InstanceId,
   type TilePoint,
   type GameContent,
+  GAME_CONTENT,
 } from '@containment/shared';
 import { AdditiveBlending, Group, Mesh, MeshBasicMaterial, type Vector3 } from 'three';
 import type { ActiveZone } from '../../state/worldState.ts';
 import { chunkSignature, objectChanges, type ChunkSignature } from './chunkSignature.ts';
 import { planWallLighting, type FillLight, type SconceSpot, type WallLighting } from './wallLights.ts';
 import { buildChunkPlaceholder } from './chunkPlaceholder.ts';
+import { chunkMesherPool, type ChunkMesherPool } from './chunkMesher.ts';
 import { ChunkView, chunkRegion, type ChunkContents, type IndexedPlacement, type LightSource, type ObjectView, type WallPiece } from './chunkView.ts';
 
 export type { LightSource, ObjectView, WallPiece } from './chunkView.ts';
@@ -51,6 +53,7 @@ export interface StreamReach {
 }
 
 const DEFAULT_REACH: StreamReach = { build: BUILD_RADIUS, retain: RETAIN_RADIUS, ahead: PREFETCH_RADIUS };
+const WORKER_REACH: StreamReach = { build: 2, retain: 3, ahead: 1 };
 
 function groupByChunk<T>(entries: readonly T[], positionOf: (entry: T) => TilePoint): Map<ChunkKey, T[]> {
   const grouped = new Map<ChunkKey, T[]>();
@@ -86,12 +89,15 @@ export class LevelScene {
   private readonly placeholders = new Map<ChunkKey, { readonly coord: ChunkCoord; readonly group: Group }>();
   private lastFocus: TilePoint | null = null;
   private heading = { x: 0, y: 0 };
+  private centre: ChunkCoord | null = null;
+  private readonly mesher: ChunkMesherPool | null;
   private readonly ringMaterial = new MeshBasicMaterial({ color: 0xffb347, transparent: true, opacity: 0.8, blending: AdditiveBlending, depthWrite: false, toneMapped: false, fog: false });
 
   constructor(zone: ActiveZone, options: { readonly editable?: boolean; readonly content?: GameContent } = {}) {
     this.zone = zone;
     this.content = options.content;
     this.editable = options.editable ?? false;
+    this.mesher = !this.editable && GAME_CONTENT.levels.get(zone.definition.id) === zone.definition ? chunkMesherPool() : null;
     this.lighting = planWallLighting(zone);
     this.objectsByChunk = groupByChunk(zone.definition.objects.map((placement, index) => ({ placement, index })), ({ placement }) => placement.position);
     this.sconcesByChunk = groupByChunk(this.lighting.sconces, (spot) => spot.floor);
@@ -188,11 +194,14 @@ export class LevelScene {
     return [...this.readyViews(), ...this.retiring.values()].flatMap((view) => view.lights);
   }
 
-  stream(focus: TilePoint, budgetMs = BUILD_BUDGET_MS, reach: StreamReach = DEFAULT_REACH): void {
+  stream(focus: TilePoint, budgetMs = BUILD_BUDGET_MS, reachOverride?: StreamReach): void {
+    const reach = reachOverride ?? (this.mesher ? WORKER_REACH : DEFAULT_REACH);
     const centre = chunkOf({ x: Math.round(focus.x), y: Math.round(focus.y) });
+    this.centre = centre;
     this.followHeading(focus);
     const centreView = this.ensureChunk(centre);
-    if (centreView && !centreView.ready && !this.retiring.has(chunkKey(centre)) && !this.placeholders.has(chunkKey(centre))) {
+    if (this.mesher && centreView && !centreView.ready && !this.displayed(chunkKey(centre))) this.placeholderFor(centre);
+    if (!this.mesher && centreView && !centreView.ready && !this.retiring.has(chunkKey(centre)) && !this.placeholders.has(chunkKey(centre))) {
       const key = chunkKey(centre);
       if (this.deferredCentre !== key) {
         this.deferredCentre = key;
@@ -216,22 +225,20 @@ export class LevelScene {
     const deadline = performance.now() + budgetMs * (centreWaiting ? CENTRE_BUDGET_SCALE : 1);
     const settling = performance.now() >= this.settleAfter;
     const queue = [...neighbours, ...this.aheadOf(centre, reach)];
-    const score = (coord: ChunkCoord): number => {
-      const dx = coord.cx - centre.cx;
-      const dy = coord.cy - centre.cy;
-      return Math.hypot(dx, dy) - AHEAD_WEIGHT * (dx * this.heading.x + dy * this.heading.y);
-    };
-    for (const coord of queue.sort((a, b) => score(a) - score(b))) {
+    queue.sort((a, b) => this.priorityOf(a) - this.priorityOf(b));
+    if (this.mesher) for (const coord of queue) this.ensureChunk(coord);
+    for (const coord of queue) {
       if (performance.now() >= deadline) break;
       if (!settling && this.retiring.has(chunkKey(coord))) continue;
       const view = this.ensureChunk(coord);
       if (view && !view.ready) this.buildChunk(view, deadline);
     }
     this.pendingNearby = neighbours.some((coord) => {
+      if (chunkDistance(coord, centre) > BUILD_RADIUS) return false;
       const entry = this.chunks.get(chunkKey(coord));
       return entry ? !entry.view.ready : chunkRegion(coord, this.zone) !== null;
     });
-    this.showPlaceholders(centre, reach.retain);
+    this.showPlaceholders(queue);
     for (const [key, { coord, view }] of this.chunks) {
       if (chunkDistance(coord, centre) <= reach.retain) continue;
       for (const object of view.objects) this.objects.delete(object.instanceId);
@@ -259,6 +266,15 @@ export class LevelScene {
     return out;
   }
 
+  private priorityOf(coord: ChunkCoord): number {
+    const centre = this.centre;
+    if (!centre) return 0;
+    const dx = coord.cx - centre.cx;
+    const dy = coord.cy - centre.cy;
+    if (dx === 0 && dy === 0) return -Infinity;
+    return Math.hypot(dx, dy) - AHEAD_WEIGHT * (dx * this.heading.x + dy * this.heading.y);
+  }
+
   private followHeading(focus: TilePoint): void {
     const last = this.lastFocus;
     this.lastFocus = { x: focus.x, y: focus.y };
@@ -274,28 +290,31 @@ export class LevelScene {
     this.heading = { x: this.heading.x + (dx / length - this.heading.x) * HEADING_EASE, y: this.heading.y + (dy / length - this.heading.y) * HEADING_EASE };
   }
 
-  private showPlaceholders(centre: ChunkCoord, radius: number): void {
-    for (const [key, { coord }] of this.placeholders) {
-      if (chunkDistance(coord, centre) <= radius && !this.displayed(key)) continue;
+  private showPlaceholders(wanted: readonly ChunkCoord[]): void {
+    const keep = new Set(wanted.map(chunkKey));
+    for (const key of [...this.placeholders.keys()]) {
+      if (keep.has(key) && !this.displayed(key)) continue;
       this.dropPlaceholder(key);
     }
-    const ring: ChunkCoord[] = [];
-    for (let dy = -radius; dy <= radius; dy++) {
-      for (let dx = -radius; dx <= radius; dx++) ring.push({ cx: centre.cx + dx, cy: centre.cy + dy });
-    }
     let allowance = this.placeholders.size === 0 ? Infinity : PLACEHOLDERS_PER_FRAME;
-    for (const coord of ring.sort((a, b) => chunkDistance(a, centre) - chunkDistance(b, centre))) {
+    for (const coord of wanted) {
       if (allowance <= 0) return;
       const key = chunkKey(coord);
       if (this.placeholders.has(key) || this.displayed(key)) continue;
       allowance--;
-      const region = chunkRegion(coord, this.zone);
-      if (!region) continue;
-      const group = buildChunkPlaceholder(this.zone.layout, region);
-      if (!group) continue;
-      this.placeholders.set(key, { coord, group });
-      this.root.add(group);
+      this.placeholderFor(coord);
     }
+  }
+
+  private placeholderFor(coord: ChunkCoord): void {
+    const key = chunkKey(coord);
+    if (this.placeholders.has(key)) return;
+    const region = chunkRegion(coord, this.zone);
+    if (!region) return;
+    const group = buildChunkPlaceholder(this.zone.layout, region);
+    if (!group) return;
+    this.placeholders.set(key, { coord, group });
+    this.root.add(group);
   }
 
   private dropPlaceholder(key: ChunkKey): void {
@@ -408,7 +427,10 @@ export class LevelScene {
       sconces: this.sconcesByChunk.get(key) ?? [],
       fills: this.fillsByChunk.get(key) ?? [],
     };
-    const view = new ChunkView(this.zone, region, contents, this.ringMaterial, { separateObjects: this.editable, ...(this.content ? { content: this.content } : {}) });
+    const mesher = this.mesher;
+    const levelId = this.zone.definition.id;
+    const requestStructure = mesher ? (area: typeof region) => mesher.request(levelId, area, () => this.priorityOf(coord)) : undefined;
+    const view = new ChunkView(this.zone, region, contents, this.ringMaterial, { separateObjects: this.editable, ...(this.content ? { content: this.content } : {}), ...(requestStructure ? { requestStructure } : {}) });
     this.chunks.set(key, { coord, view });
     if (this.editable) this.signatures.set(key, chunkSignature(this.zone, coord, this.lighting));
     return view;

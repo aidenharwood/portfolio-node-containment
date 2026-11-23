@@ -23,6 +23,7 @@ import { hex, lighten } from './voxel/palette.ts';
 import { copyAmbience, createBlendedAmbience, easeAmbience, sampleAmbience } from './world/ambienceBlend.ts';
 import { SceneLook } from './sceneLook.ts';
 import { LevelScene } from './world/levelScene.ts';
+import { chunkMesherPool } from './world/chunkMesher.ts';
 import { WeatherLayer } from './world/weatherLayer.ts';
 import { SkyMask } from './world/skyMask.ts';
 import { setFieldSkyMask } from './voxel/fieldLights.ts';
@@ -159,6 +160,7 @@ export class GameRenderer {
     this.canvas = canvas;
     this.world = world;
     this.look = new SceneLook(canvas, this.scene, this.cameraRig.camera);
+    chunkMesherPool();
     this.stopHitListener = world.onCombatHit((event) => this.pendingHits.push({ event, launched: false, impacted: false, lastTip: null }));
     this.stopEffectListener = world.onEffect((event) => this.worldEffect(event));
     this.weather = new WeatherLayer(this.skyMask);
