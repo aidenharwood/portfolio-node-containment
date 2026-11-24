@@ -2,7 +2,9 @@ import { isBuildingWall, isOutdoorFloor, TILE_KINDS, tileKey, type DecalCell, ty
 import { DenseVolume, RaisedCanvas, type VoxelCanvas } from '../voxel/denseVolume.ts';
 import { darken, jitter, lighten, mix, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE, VOXEL_EMPTY, VOXEL_GLASS, VOXEL_SOLID, type VoxelKind } from '../voxel/voxelKinds.ts';
+import { doorGround, doorSpot, doorwayAt, frameVoxel, gatePostVoxel, revealVoxel, seamPylonVoxel, thresholdVoxel, type Doorway } from './doorways.ts';
 import { decalColor } from './floorDecals.ts';
+import { WALL_PALETTE } from './wallPalette.ts';
 import { blockMark, laneMark, trackPieceAt, trackRise, type TrackMark } from './trackPieces.ts';
 import { FLOOR_LAYERS, STEP_VOXELS, TILE_RESOLUTION, WALL_LAYERS, ZONE_VOLUME_HEIGHT } from './worldScale.ts';
 
@@ -56,8 +58,6 @@ const COLORS = {
   statusLed: 0x3fbf7f,
   glass: 0x8feaff,
   glassFrame: 0x33434e,
-  lintel: 0x26343e,
-  lintelLight: 0x7cf29a,
   ballast: 0x15191b,
   ballastStone: 0x22272a,
   rail: 0x8a9aa6,
@@ -174,8 +174,8 @@ export function paintTileRows(volume: DenseVolume, layout: OwnedLayout, region: 
       else if (kind === 'barrier') paintBarrier(canvas, layout, tx, ty);
       else if (kind === 'glass') paintGlass(canvas, tx, ty);
       else if (kind === 'track') paintTrack(volume, layout, tx, ty, base);
-      else paintFloor(canvas, kind, tx, ty, kind === 'door' ? doorAxis(layout, tx, ty) : 'x', decals?.get(tileKey({ x: tx, y: ty })), seamsOf(layout, kind, tx, ty), blendNeighborsOf(layout, kind, tx, ty), wallsBeside(layout, tx, ty), kerbsOf(layout, kind, tx, ty));
-      if (kind === 'door') paintLintel(canvas, layout, tx, ty);
+      else if (kind === 'door') paintDoorway(canvas, layout, tx, ty);
+      else paintFloor(canvas, kind, tx, ty, 'x', decals?.get(tileKey({ x: tx, y: ty })), seamsOf(layout, kind, tx, ty), blendNeighborsOf(layout, kind, tx, ty), wallsBeside(layout, tx, ty), kerbsOf(layout, kind, tx, ty));
       if (LAND.has(kind)) shadeLand(canvas, layout, kind, tx, ty);
       if (base > 0 && kind !== 'track') paintEarth(volume, layout, kind, tx, ty, base);
       if (SLOPED.has(kind)) slopeLand(volume, layout, tx, ty, base);
@@ -583,7 +583,7 @@ function paintFloor(volume: VoxelCanvas, kind: TileKindId, tx: number, ty: numbe
         volume.set(vx, FLOOR + 1, vz, jitter(COLORS.kerbTop, 0.03, grain));
         continue;
       }
-      const decal = cells && kind !== 'door' ? decalColor(cells, lx, lz, surface.color, noise3(vx, FLOOR, vz, 3)) : null;
+      const decal = cells ? decalColor(cells, lx, lz, surface.color, noise3(vx, FLOOR, vz, 3)) : null;
       if (decal) volume.set(vx, FLOOR, vz, decal.color, decal.emissive ? VOXEL_EMISSIVE : VOXEL_SOLID);
       else volume.set(vx, FLOOR, vz, surface.kind === VOXEL_SOLID ? weathered(surface.color, kind, vx, vz, lx, lz, walls) : surface.color, surface.kind);
     }
@@ -616,19 +616,51 @@ function smoothNoise(x: number, z: number, scale: number, salt: number): number 
   return top * (1 - fz) + bottom * fz;
 }
 
-function doorwayRunsAlongX(layout: OwnedLayout, tx: number, ty: number): boolean {
-  const walledBeyond = (dx: number): boolean => {
-    let x = tx + dx;
-    while (besideKind(layout, tx, ty, x, ty) === 'door') x += dx;
-    const neighbor = besideKind(layout, tx, ty, x, ty);
-    return neighbor === 'void' || isWallKind(neighbor);
-  };
-  return walledBeyond(-1) || walledBeyond(1);
+const doorwayOf = (layout: OwnedLayout, tx: number, ty: number): Doorway => doorwayAt((x, y) => besideKind(layout, tx, ty, x, y), tx, ty);
+
+function paintDoorway(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number): void {
+  const door = doorwayOf(layout, tx, ty);
+  const ground = doorGround(door);
+  const tile: FloorTile = { tx, ty, tone: noise3(tx, ty, 0, 11), axis: door.alongX ? 'y' : 'x' };
+  for (let lz = 0; lz < R; lz++) {
+    for (let lx = 0; lx < R; lx++) {
+      const vx = tx * R + lx;
+      const vz = ty * R + lz;
+      const spot = doorSpot(door, lx, lz);
+      volume.set(vx, SUBFLOOR, vz, COLORS.subfloor);
+      const floor = thresholdVoxel(door, spot, noise3(vx, FLOOR, vz, 3)) ?? floorVoxel(ground, lx, lz, vx, vz, tile);
+      volume.set(vx, FLOOR, vz, floor?.color ?? COLORS.gravel, floor?.kind ?? VOXEL_SOLID);
+      for (let h = 0; h < WALL_LAYERS; h++) {
+        const frame = frameVoxel(door, spot, h, noise3(vx, FLOOR_LAYERS + h, vz, 5));
+        if (frame) volume.set(vx, FLOOR_LAYERS + h, vz, frame.color, frame.kind);
+      }
+    }
+  }
 }
 
-function doorAxis(layout: OwnedLayout, tx: number, ty: number): Axis {
-  return doorwayRunsAlongX(layout, tx, ty) ? 'y' : 'x';
+function doorSides(layout: OwnedLayout, tx: number, ty: number): Set<Side> {
+  const sides = new Set<Side>();
+  for (const side of SIDES) {
+    const [dx, dy] = OUTWARD[side];
+    if (besideKind(layout, tx, ty, tx + dx, ty + dy) === 'door') sides.add(side);
+  }
+  return sides;
 }
+
+function faceDepth(side: Side, lx: number, lz: number): number {
+  switch (side) {
+    case 'north':
+      return lz;
+    case 'south':
+      return R - 1 - lz;
+    case 'west':
+      return lx;
+    case 'east':
+      return R - 1 - lx;
+  }
+}
+
+const faceAlong = (side: Side, lx: number, lz: number): number => (side === 'north' || side === 'south' ? lx : lz);
 
 function floorVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: number, tile: FloorTile): FloorVoxel | null {
   const solid = (color: number): FloorVoxel => ({ color, kind: VOXEL_SOLID });
@@ -718,11 +750,6 @@ function floorVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: nu
     }
     case 'hazard':
       return solid(even(Math.floor((vx + vz) / 4)) ? COLORS.hazardYellow : COLORS.hazardBlack);
-    case 'door': {
-      const across = tile.axis === 'x' ? lz : lx;
-      if (across === 0 || across === R - 1) return solid(COLORS.grateFrame);
-      return solid(COLORS.plating);
-    }
     default:
       return null;
   }
@@ -751,12 +778,7 @@ function outerSide(lx: number, lz: number, open: Set<Side>): { side: Side; u: nu
 
 const SIDE_SALT: Readonly<Record<Side, number>> = { north: 1, south: 2, east: 3, west: 4 };
 
-const MATERIAL = {
-  brick: { body: 0x6e3b2e, joint: 0x5e3327, cap: 0x7a756d, plinth: 0x3a3734, dado: 0x4a2a28 },
-  blockwork: { body: 0x5a5f63, joint: 0x45494c, cap: 0x6e7174, plinth: 0x34383b, dado: 0x34403f },
-  cladding: { body: 0x3e5560, joint: 0x4d6772, cap: 0x55656c, plinth: 0x2a3034, dado: 0x2f3c34 },
-  wall: { body: 0xd8d6cc, joint: 0xb4b2a8, cap: 0xe4e2d8, plinth: 0x2a2a2a, dado: 0x2a3a45 },
-} as const satisfies Record<WallMaterialId, { body: number; joint: number; cap: number; plinth: number; dado: number }>;
+const MATERIAL = WALL_PALETTE;
 
 const FACADE = {
   band: 0xe86a1c,
@@ -776,6 +798,8 @@ interface FaceVoxel {
 }
 
 const OUTWARD: Readonly<Record<Side, readonly [number, number]>> = { north: [0, -1], south: [0, 1], west: [-1, 0], east: [1, 0] };
+
+const SIDES: readonly Side[] = ['north', 'south', 'west', 'east'];
 
 function facesOutdoors(layout: OwnedLayout, tx: number, ty: number, side: Side): boolean {
   const [dx, dy] = OUTWARD[side];
@@ -860,6 +884,7 @@ function paintWall(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: num
   const open = openSides(layout, tx, ty);
   const palette = MATERIAL[material];
   const outdoors = new Set([...open].filter((side) => facesOutdoors(layout, tx, ty, side)));
+  const jambs = doorSides(layout, tx, ty);
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
       const vx = tx * R + lx;
@@ -883,6 +908,11 @@ function paintWall(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: num
         }
         if (!outer) {
           volume.set(vx, vy, vz, jitter(facility ? COLORS.wallBody : darken(palette.body, 0.35), 0.02, grain));
+          continue;
+        }
+        if (jambs.has(outer.side)) {
+          const reveal = revealVoxel(material, h, outer.u, grain);
+          volume.set(vx, vy, vz, reveal.color, reveal.kind);
           continue;
         }
         if (facility) {
@@ -931,6 +961,35 @@ function paintRock(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: num
         const color = strata > 0.66 ? COLORS.rockLight : strata < 0.3 ? COLORS.rockDark : COLORS.rock;
         const top = h === crest;
         volume.set(vx, vy, vz, top && noise3(vx, vz, h, 107) > 0.55 ? COLORS.moss : jitter(color, 0.05, noise3(vx, vy, vz, 109)));
+      }
+    }
+  }
+  for (const side of doorSides(layout, tx, ty)) {
+    for (let lz = 0; lz < R; lz++) {
+      for (let lx = 0; lx < R; lx++) {
+        const depth = faceDepth(side, lx, lz);
+        if (depth > 1) continue;
+        for (let h = 0; h < WALL_LAYERS; h++) {
+          const pylon = seamPylonVoxel(h, faceAlong(side, lx, lz), depth);
+          volume.set(tx * R + lx, FLOOR_LAYERS + h, ty * R + lz, pylon.color, pylon.kind);
+        }
+      }
+    }
+  }
+}
+
+function paintGatePosts(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number, style: 'fence' | 'barrier'): void {
+  const middle = R / 2;
+  for (const side of doorSides(layout, tx, ty)) {
+    for (let lz = 0; lz < R; lz++) {
+      for (let lx = 0; lx < R; lx++) {
+        const along = faceAlong(side, lx, lz);
+        const reach = style === 'barrier' ? 2 : 1;
+        if (faceDepth(side, lx, lz) > 1 || along < middle - reach || along >= middle + reach) continue;
+        for (let h = 0; h < WALL_LAYERS; h++) {
+          const post = gatePostVoxel(style, h);
+          if (post) volume.set(tx * R + lx, FLOOR_LAYERS + h, ty * R + lz, post.color, post.kind);
+        }
       }
     }
   }
@@ -997,6 +1056,7 @@ function paintBarrier(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: 
       }
     }
   }
+  paintGatePosts(volume, layout, tx, ty, 'barrier');
 }
 
 function fenceAxis(layout: OwnedLayout, tx: number, ty: number): Axis {
@@ -1031,6 +1091,7 @@ function paintFence(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: nu
       if (top || (along + h) % 3 === 0) volume.set(tx * R + lx, vy, ty * R + lz, top ? COLORS.fencePost : COLORS.fenceWire);
     }
   }
+  paintGatePosts(volume, layout, tx, ty, 'fence');
 }
 
 function trackAxis(layout: TileLayout, tx: number, ty: number): Axis {
@@ -1184,16 +1245,3 @@ function paintGlass(volume: VoxelCanvas, tx: number, ty: number): void {
   }
 }
 
-function paintLintel(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number): void {
-  const alongX = doorwayRunsAlongX(layout, tx, ty);
-  for (let along = 0; along < R; along++) {
-    for (let across = 3; across <= 4; across++) {
-      const lx = alongX ? along : across;
-      const lz = alongX ? across : along;
-      for (let h = WALL_LAYERS - 3; h < WALL_LAYERS; h++) {
-        const light = h === WALL_LAYERS - 3 && along >= 2 && along <= 5;
-        volume.set(tx * R + lx, FLOOR_LAYERS + h, ty * R + lz, light ? COLORS.lintelLight : COLORS.lintel, light ? VOXEL_EMISSIVE : VOXEL_SOLID);
-      }
-    }
-  }
-}

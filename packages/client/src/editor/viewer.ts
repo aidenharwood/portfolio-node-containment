@@ -237,6 +237,15 @@ function start(root: HTMLElement, services: ViewerServices): void {
   const preview3d = new PreviewView(preview);
   const controller = new EditController(editorDocument, state.district);
   const properties = new PropertiesPanel(base, controller);
+  let refreshQueued = 0;
+  const refreshEditing = (): void => {
+    if (refreshQueued) return;
+    refreshQueued = window.requestAnimationFrame(() => {
+      refreshQueued = 0;
+      refreshEditingNow();
+    });
+  };
+
   const palette = new Palette(
     paletteEntries(base),
     (entry) => {
@@ -541,15 +550,6 @@ function start(root: HTMLElement, services: ViewerServices): void {
     const id = entry.object ?? entry.npc ?? entry.creature ?? entry.prefab ?? entry.assembly ?? entry.kind;
     const known = typeof id === 'string' ? (base.worldObjects.get(id)?.name ?? base.npcs.get(id)?.name ?? base.creatures.get(id)?.name) : undefined;
     return known ?? (typeof id === 'string' ? id : ref.collection === 'lights' ? 'Light' : ref.collection);
-  };
-
-  let refreshQueued = 0;
-  const refreshEditing = (): void => {
-    if (refreshQueued) return;
-    refreshQueued = window.requestAnimationFrame(() => {
-      refreshQueued = 0;
-      refreshEditingNow();
-    });
   };
 
   const draggedModel = (): { readonly key: string; build(): Object3D | null } | undefined => {
