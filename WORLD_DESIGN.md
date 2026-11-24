@@ -76,6 +76,8 @@ A megastructure is a giant prefab that crosses land squares: a maglev guideway, 
 - No footing stands more than `MEGASTRUCTURE_DROP` steps below the datum. **Checked.**
 - Ground under it stays reachable (`findLevelIssues` counts its footings). **Checked.**
 
+The layout generator reads `SPAN_MEGASTRUCTURES` (`scripts/span/megastructures.ts`, through `megastructurePieces`): props, creatures, nodes, points of interest and lamps keep off every piece and a ring of `MEGASTRUCTURE_CLEARANCE` tiles round each footing, and footpaths may pass under overhead pieces but never through a footing.
+
 Give each region at most one or two, where its theme wants something seen from far off, and keep them clear of towns' pads and Seams.
 
 ### Placement

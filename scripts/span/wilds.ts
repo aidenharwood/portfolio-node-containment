@@ -13,6 +13,7 @@ import { WILD_KIT, WILD_LANDMARK_SIZES } from '../../packages/shared/src/content
 import { random } from './atlas.ts';
 import type { BuildingSpec } from './places.ts';
 import { recipeOf } from './recipes.ts';
+import { megastructureGround } from './megastructures.ts';
 
 type Wall = BuildingSpec['wall'];
 type Kind = 'home' | 'office' | 'workshop' | 'canteen' | 'hall' | 'lab' | 'dorm' | 'holding' | 'shop' | 'clinic';
@@ -417,6 +418,11 @@ export function dressWild(layout: DistrictLayout, land: LandMap): DistrictLayout
   for (const [name, anchor] of Object.entries(layout.anchors)) {
     const point = roomPoint(anchor);
     if (point && name !== 'start') fixed.push(grow({ x: point.x, y: point.y, width: 1, height: 1 }, 3));
+  }
+  const giants = megastructureGround(layout.square);
+  for (const tile of [...giants.footings, ...giants.overhead]) {
+    const [x, y] = tile.split(',').map(Number) as [number, number];
+    fixed.push({ x, y, width: 1, height: 1 });
   }
   const zones: Rect[] = [];
   const open = (x: number, y: number): boolean => OPEN_GROUND.has(tileAt(x, y));

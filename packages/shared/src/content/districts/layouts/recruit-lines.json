@@ -35,7 +35,7 @@
     { "room": "lines-cottage-3", "name": "Number Twelve", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 51, "dy": 49 }
+    "start": { "room": "ground", "dx": 36, "dy": 41 }
   },
   "objects": [
     { "id": "recruit-lines-quest-cohort-bell-rope", "object": "cohort-bell-rope", "at": { "room": "ground", "dx": 41, "dy": 39 } },
@@ -80,9 +80,9 @@
     { "id": "recruit-lines-flood-mast-38", "object": "flood-mast", "at": { "room": "ground", "dx": 54, "dy": 42 } },
     { "id": "recruit-lines-checkpoint-barrier-39", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 4, "dy": 31 } },
     { "id": "recruit-lines-barricade-40", "object": "barricade", "at": { "room": "ground", "dx": 13, "dy": 4 } },
-    { "id": "recruit-lines-street-bench-41", "object": "street-bench", "at": { "room": "ground", "dx": 40, "dy": 45 }, "facing": "south" },
-    { "id": "recruit-lines-street-bench-42", "object": "street-bench", "at": { "room": "ground", "dx": 33, "dy": 25 }, "facing": "south" },
-    { "id": "recruit-lines-street-bench-43", "object": "street-bench", "at": { "room": "ground", "dx": 12, "dy": 26 }, "facing": "south" },
+    { "id": "recruit-lines-street-bench-41", "object": "street-bench", "at": { "room": "ground", "dx": 33, "dy": 25 }, "facing": "south" },
+    { "id": "recruit-lines-street-bench-42", "object": "street-bench", "at": { "room": "ground", "dx": 12, "dy": 26 }, "facing": "south" },
+    { "id": "recruit-lines-street-bench-43", "object": "street-bench", "at": { "room": "ground", "dx": 18, "dy": 24 }, "facing": "south" },
     { "id": "recruit-lines-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 21 }, "facing": "south" },
     { "id": "recruit-lines-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 18, "dy": 21 }, "facing": "south" },
     { "id": "recruit-lines-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 19 }, "facing": "south" },

@@ -1,6 +1,6 @@
 import type { DistrictId } from '../ids.ts';
 import { dressingObjectOf } from '../content/districts/furnish.ts';
-import { pieceTiles, rotationOf, turnsOf, type Turn } from '../content/districts/prefabTurns.ts';
+import { rotationOf, turnsOf, type Turn } from '../content/districts/prefabTurns.ts';
 import { PREFABS } from '../content/prefabs/index.ts';
 import type { DistrictDefinition, ObjectPlacement, TileLayout } from './district.ts';
 import { rectContains, type Facing, type TilePoint } from './geometry.ts';
@@ -30,6 +30,25 @@ export function megastructureTurn(prefab: string, facing: Facing): Turn | undefi
   return found ? turnsOf(found, dressingObjectOf)[rotationOf(facing)] : undefined;
 }
 
+export interface MegastructurePiece {
+  readonly objectId: string;
+  readonly position: TilePoint;
+  readonly facing: Facing;
+  readonly blocks: boolean;
+  readonly tiles: readonly TilePoint[];
+}
+
+export function megastructurePieces(prefab: string, facing: Facing, origin: TilePoint): MegastructurePiece[] {
+  const turn = megastructureTurn(prefab, facing);
+  if (!turn) throw new Error(`Unknown megastructure prefab "${prefab}".`);
+  return turn.pieces.map((piece) => {
+    const position = { x: origin.x + piece.dx, y: origin.y + piece.dy };
+    const tiles: TilePoint[] = [];
+    for (let dy = 0; dy < piece.height; dy++) for (let dx = 0; dx < piece.width; dx++) tiles.push({ x: position.x + dx, y: position.y + dy });
+    return { objectId: piece.objectId, position, facing: piece.facing, blocks: dressingObjectOf(piece.objectId)?.blocksMovement ?? true, tiles };
+  });
+}
+
 export function resolveMegastructure(
   placement: MegastructurePlacement,
   districtOf: (id: DistrictId) => DistrictDefinition | undefined,
@@ -40,14 +59,15 @@ export function resolveMegastructure(
     throw new Error(`Megastructure "${placement.id}": ${reason}`);
   };
   const facing = placement.facing ?? 'south';
-  const turn = megastructureTurn(placement.prefab, facing) ?? fail(`unknown prefab "${placement.prefab}".`);
+  if (!megastructureTurn(placement.prefab, facing)) fail(`unknown prefab "${placement.prefab}".`);
   const district = districtOf(placement.at.districtId) ?? fail(`unknown district "${placement.at.districtId}".`);
   const offset = originOf(district.id) ?? fail(`district "${district.id}" is not on the level.`);
   const rect = district.rooms?.[placement.at.room] ?? fail(`district "${district.id}" has no room "${placement.at.room}".`);
   const local = { x: rect.x + placement.at.dx, y: rect.y + placement.at.dy };
   if (!rectContains(rect, local)) fail(`its anchor ${placement.at.dx},${placement.at.dy} lies outside room "${placement.at.room}".`);
   const origin = { x: offset.x + local.x, y: offset.y + local.y };
-  const datum = Math.max(...pieceTiles(origin, turn).map((tile) => layout.heightAt(tile)));
+  const pieces = megastructurePieces(placement.prefab, facing, origin);
+  const datum = Math.max(...pieces.flatMap((piece) => piece.tiles.map((tile) => layout.heightAt(tile))));
   return {
     id: placement.id,
     prefab: placement.prefab,
@@ -56,10 +76,10 @@ export function resolveMegastructure(
     origin,
     facing,
     datum,
-    objects: turn.pieces.map((piece, index) => ({
+    objects: pieces.map((piece, index) => ({
       instanceId: `${placement.id}/${index + 1}`,
       objectId: piece.objectId,
-      position: { x: origin.x + piece.dx, y: origin.y + piece.dy },
+      position: piece.position,
       facing: piece.facing,
       datum,
     })),

@@ -33,6 +33,7 @@ registerFurnishingKit({ objects: [...SPINWARD_OBJECTS, ...FAR_SPAN_OBJECTS].map(
 const EXTRAS: Readonly<Record<string, readonly string[]>> = Object.fromEntries([...new Set([...Object.keys(SPINWARD_EXTRAS), ...Object.keys(FAR_SPAN_EXTRAS)])].map((key) => [key, [...(SPINWARD_EXTRAS[key] ?? []), ...(FAR_SPAN_EXTRAS[key] ?? [])]]));
 import { safeNodes } from './safeNodes.ts';
 import { lightStreets } from './streetLights.ts';
+import { knowSquares, megastructureGround, reservedBy } from './megastructures.ts';
 
 registerFurnishingKit(CITY_KIT);
 registerFurnishingKit(LANDMARK_KIT);
@@ -314,12 +315,19 @@ function nameFor(cut: Cut, place: PlaceSquare | undefined): { id: string; name: 
   }
 }
 
+const NAMES = new Map(all.map((cut) => {
+  const named = nameFor(cut, PLACE_SPECS[placeAt(cut.column, cut.row)?.id ?? '']);
+  usedIds.add(named.id);
+  return [cut, named] as const;
+}));
+knowSquares([...NAMES].map(([cut, named]) => [named.id, { column: cut.column, row: cut.row }] as const));
+
 function layoutFor(cut: Cut): DistrictLayout {
   const key = cut.column + ',' + cut.row;
   const place = PLACE_SPECS[placeAt(cut.column, cut.row)?.id ?? ''];
   const station = placeAt(cut.column, cut.row)?.station;
-  const { id, name } = nameFor(cut, place);
-  usedIds.add(id);
+  const { id, name } = NAMES.get(cut)!;
+  const giants = megastructureGround(cut);
   const tier = TIERS.get(key)!;
   const region = REGIONS.find((entry) => entry.id === cut.region)!;
   const next = random(cut.column * 977 + cut.row * 131 + 7);
@@ -392,7 +400,7 @@ function layoutFor(cut: Cut): DistrictLayout {
   const taken: { x: number; y: number; r: number }[] = [];
   const clear = (x: number, y: number, w: number, h: number, ring: number): boolean => {
     for (let dy = -ring; dy < h + ring; dy++) for (let dx = -ring; dx < w + ring; dx++) {
-      if (!walkableAt(x + dx, y + dy) || inBuilding(x + dx, y + dy)) return false;
+      if (!walkableAt(x + dx, y + dy) || inBuilding(x + dx, y + dy) || reservedBy(giants, x + dx, y + dy)) return false;
     }
     if (doorTiles.some((door) => Math.abs(door.x - x) < 5 && Math.abs(door.y - y) < 5)) return false;
     if (gateTiles.some((gate) => Math.abs(gate.x - x) < 9 && Math.abs(gate.y - y) < 9)) return false;

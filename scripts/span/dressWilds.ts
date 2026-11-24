@@ -13,12 +13,19 @@ import { TRANSIT_KIT } from '../../packages/shared/src/content/catalog/transit.t
 import { SPAN_KIT } from '../../packages/shared/src/content/span/objects.ts';
 import { WILD_KIT } from '../../packages/shared/src/content/span/wilds.ts';
 import { dressWild, isDressed, WILD_POIS } from './wilds.ts';
+import { knowSquares } from './megastructures.ts';
+import { LAYOUT_SOURCES } from '../../packages/shared/src/content/districts/layouts/index.ts';
 
 registerFurnishingKit(CITY_KIT);
 registerFurnishingKit(LANDMARK_KIT);
 registerFurnishingKit(TRANSIT_KIT);
 registerFurnishingKit(SPAN_KIT);
 registerFurnishingKit(WILD_KIT);
+
+knowSquares(Object.entries(LAYOUT_SOURCES).flatMap(([id, source]) => {
+  const square = (source as { square?: { column: number; row: number } }).square;
+  return square ? [[id, square] as const] : [];
+}));
 
 const OUT = join(import.meta.dirname, '../../packages/shared/src/content/districts/layouts');
 const land = drawLand(parseLandPlan(landSource));

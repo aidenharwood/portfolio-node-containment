@@ -17,6 +17,7 @@ import { SPAN_REGIONS } from '../../packages/shared/src/content/span/people.ts';
 import { SPAN_QUEST_OBJECTS } from '../../packages/shared/src/content/span/quests/index.ts';
 import { PAD_INSET, PLACES } from './atlas.ts';
 import { WILD_POIS } from './wilds.ts';
+import { megastructureGround } from './megastructures.ts';
 
 type Placement = DistrictLayout['objects'][number];
 type Step = DistrictLayout['steps'][number];
@@ -147,6 +148,18 @@ function groundOf(layout: DistrictLayout, land: LandMap): Ground {
     for (const tile of tilesOf({ x: assembly.at.dx, y: assembly.at.dy, width: 4, height: 4 })) {
       block(tile, 2);
       occupied.add(key(tile));
+    }
+  }
+  if (layout.square) {
+    const giants = megastructureGround(layout.square);
+    for (const tile of giants.footings) {
+      const [x, y] = tile.split(',').map(Number) as [number, number];
+      blocked.add(key({ x, y }));
+      occupied.add(key({ x, y }));
+    }
+    for (const tile of giants.overhead) {
+      const [x, y] = tile.split(',').map(Number) as [number, number];
+      blocked.add(key({ x, y }));
     }
   }
   const doors: TilePoint[] = [];
