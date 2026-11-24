@@ -11,9 +11,9 @@
   "steps": [
     { "kind": "rise", "rect": { "x": 27, "y": 17, "width": 14, "height": 10 }, "height": 7 },
     { "kind": "building", "id": "courier-office", "rect": { "x": 28, "y": 18, "width": 12, "height": 8 }, "floor": "carpet", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "patch", "rect": { "x": 30, "y": 27, "width": 8, "height": 2 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 33, "y": 27, "width": 2, "height": 2 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 33, "y": 28, "width": 12, "height": 2 }, "tile": "paving" }
+    { "kind": "patch", "rect": { "x": 30, "y": 27, "width": 8, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 33, "y": 27, "width": 2, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 33, "y": 28, "width": 12, "height": 2 }, "tile": "concrete" }
   ],
   "tiles": [],
   "areas": [
@@ -25,14 +25,14 @@
   },
   "objects": [
     { "id": "data-docks-quest-combine-camera", "object": "combine-camera", "at": { "room": "ground", "dx": 48, "dy": 40 } },
-    { "id": "data-docks-food-stall-2", "object": "food-stall", "at": { "room": "ground", "dx": 50, "dy": 15 } },
-    { "id": "data-docks-food-stall-3", "object": "food-stall", "at": { "room": "ground", "dx": 48, "dy": 35 } },
-    { "id": "data-docks-holo-billboard-4", "object": "holo-billboard", "at": { "room": "ground", "dx": 55, "dy": 53 } },
-    { "id": "data-docks-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 9, "dy": 27 } },
+    { "id": "data-docks-utility-pole-1", "object": "utility-pole", "at": { "room": "ground", "dx": 12, "dy": 50 } },
+    { "id": "data-docks-food-stall-2", "object": "food-stall", "at": { "room": "ground", "dx": 55, "dy": 53 } },
+    { "id": "data-docks-holo-billboard-3", "object": "holo-billboard", "at": { "room": "ground", "dx": 54, "dy": 13 } },
+    { "id": "data-docks-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 9, "dy": 27 } },
     { "id": "data-docks-harrow-gate-leaf-0", "object": "harrow-gate-leaf", "at": { "room": "ground", "dx": 20, "dy": 63 }, "facing": "south" },
     { "id": "data-docks-harrow-gate-leaf-1", "object": "harrow-gate-leaf", "at": { "room": "ground", "dx": 21, "dy": 63 }, "facing": "south" },
-    { "id": "data-docks-culture-bench-10", "object": "culture-bench", "at": { "room": "ground", "dx": 3, "dy": 56 } },
-    { "id": "data-docks-amber-trace-11", "object": "amber-trace", "at": { "room": "ground", "dx": 60, "dy": 3 } },
+    { "id": "data-docks-culture-bench-8", "object": "culture-bench", "at": { "room": "ground", "dx": 3, "dy": 56 } },
+    { "id": "data-docks-amber-trace-9", "object": "amber-trace", "at": { "room": "ground", "dx": 60, "dy": 3 } },
     { "id": "courier-office-shelving-0", "object": "shelving", "at": { "room": "courier-office", "dx": 1, "dy": 0 }, "facing": "south" },
     { "id": "courier-office-shelving-1", "object": "shelving", "at": { "room": "courier-office", "dx": 2, "dy": 0 }, "facing": "south" },
     { "id": "courier-office-notice-board-2", "object": "notice-board", "at": { "room": "courier-office", "dx": 6, "dy": 0 }, "facing": "south" },
@@ -43,24 +43,25 @@
     { "id": "courier-office-chair-7", "object": "chair", "at": { "room": "courier-office", "dx": 3, "dy": 2 }, "facing": "south" },
     { "id": "courier-office-chair-8", "object": "chair", "at": { "room": "courier-office", "dx": 4, "dy": 2 }, "facing": "south" },
     { "id": "data-docks-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 54, "dy": 24 } },
-    { "id": "data-docks-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 27 }, "facing": "south" },
-    { "id": "data-docks-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 27 }, "facing": "south" }
+    { "id": "data-docks-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 29, "dy": 27 }, "facing": "east" },
+    { "id": "data-docks-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 27 }, "facing": "west" },
+    { "id": "data-docks-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 36, "dy": 30 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [
     { "id": "courier-office-courier-dash", "npc": "courier-dash", "at": { "room": "courier-office", "dx": 8, "dy": 3 } }
   ],
   "creatures": [
-    { "id": "data-docks-neon-moth-0", "creature": "neon-moth", "at": { "room": "ground", "dx": 57, "dy": 33 } },
-    { "id": "data-docks-holo-shill-1", "creature": "holo-shill", "at": { "room": "ground", "dx": 18, "dy": 22 } },
-    { "id": "data-docks-neon-moth-2", "creature": "neon-moth", "at": { "room": "ground", "dx": 42, "dy": 47 } },
-    { "id": "data-docks-holo-shill-3", "creature": "holo-shill", "at": { "room": "ground", "dx": 54, "dy": 29 } },
-    { "id": "data-docks-holo-shill-5", "creature": "holo-shill", "at": { "room": "ground", "dx": 21, "dy": 31 } },
-    { "id": "data-docks-neon-moth-6", "creature": "neon-moth", "at": { "room": "ground", "dx": 58, "dy": 11 } },
-    { "id": "data-docks-holo-shill-7", "creature": "holo-shill", "at": { "room": "ground", "dx": 10, "dy": 48 } },
-    { "id": "data-docks-neon-moth-8", "creature": "neon-moth", "at": { "room": "ground", "dx": 51, "dy": 9 } },
-    { "id": "data-docks-holo-shill-9", "creature": "holo-shill", "at": { "room": "ground", "dx": 48, "dy": 50 } },
-    { "id": "data-docks-holo-shill-11", "creature": "holo-shill", "at": { "room": "ground", "dx": 22, "dy": 10 } },
+    { "id": "data-docks-neon-moth-0", "creature": "neon-moth", "at": { "room": "ground", "dx": 23, "dy": 37 } },
+    { "id": "data-docks-holo-shill-1", "creature": "holo-shill", "at": { "room": "ground", "dx": 57, "dy": 33 } },
+    { "id": "data-docks-neon-moth-2", "creature": "neon-moth", "at": { "room": "ground", "dx": 18, "dy": 22 } },
+    { "id": "data-docks-holo-shill-3", "creature": "holo-shill", "at": { "room": "ground", "dx": 42, "dy": 47 } },
+    { "id": "data-docks-neon-moth-4", "creature": "neon-moth", "at": { "room": "ground", "dx": 54, "dy": 29 } },
+    { "id": "data-docks-neon-moth-6", "creature": "neon-moth", "at": { "room": "ground", "dx": 21, "dy": 31 } },
+    { "id": "data-docks-holo-shill-7", "creature": "holo-shill", "at": { "room": "ground", "dx": 48, "dy": 50 } },
+    { "id": "data-docks-neon-moth-8", "creature": "neon-moth", "at": { "room": "ground", "dx": 27, "dy": 40 } },
+    { "id": "data-docks-neon-moth-10", "creature": "neon-moth", "at": { "room": "ground", "dx": 22, "dy": 10 } },
+    { "id": "data-docks-holo-shill-11", "creature": "holo-shill", "at": { "room": "ground", "dx": 49, "dy": 32 } },
     { "id": "data-docks-neon-moth-12", "creature": "neon-moth", "at": { "room": "ground", "dx": 11, "dy": 21 } }
   ],
   "lights": [],

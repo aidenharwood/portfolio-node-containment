@@ -13,9 +13,9 @@
     { "kind": "building", "id": "rim-bunks", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 32, "y": 39, "width": 8, "height": 2 }, "tile": "plating" },
     { "kind": "patch", "rect": { "x": 35, "y": 39, "width": 2, "height": 2 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 27, "y": 40, "width": 10, "height": 2 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 26, "y": 26, "width": 2, "height": 16 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 26, "y": 25, "width": 8, "height": 2 }, "tile": "plating" }
+    { "kind": "patch", "rect": { "x": 35, "y": 40, "width": 10, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 44, "y": 26, "width": 2, "height": 16 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 37, "y": 25, "width": 9, "height": 2 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -23,13 +23,15 @@
     { "room": "rim-bunks", "name": "Rim Bunks", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 18, "dy": 10 }
+    "start": { "room": "ground", "dx": 18, "dy": 41 }
   },
   "objects": [
-    { "id": "spindle-rim-steam-vent-2", "object": "steam-vent", "at": { "room": "ground", "dx": 46, "dy": 10 } },
-    { "id": "spindle-rim-flood-mast-4", "object": "flood-mast", "at": { "room": "ground", "dx": 30, "dy": 8 } },
-    { "id": "spindle-rim-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 24, "dy": 57 } },
-    { "id": "spindle-rim-vault-trace-9", "object": "vault-trace", "at": { "room": "ground", "dx": 60, "dy": 46 } },
+    { "id": "spindle-rim-checkpoint-barrier-0", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 39, "dy": 15 } },
+    { "id": "spindle-rim-precursor-pylon-1", "object": "precursor-pylon", "at": { "room": "ground", "dx": 55, "dy": 46 } },
+    { "id": "spindle-rim-flood-mast-2", "object": "flood-mast", "at": { "room": "ground", "dx": 30, "dy": 8 } },
+    { "id": "spindle-rim-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 24, "dy": 57 } },
+    { "id": "spindle-rim-vault-bloom-6", "object": "vault-bloom", "at": { "room": "ground", "dx": 60, "dy": 16 } },
+    { "id": "spindle-rim-vault-trace-7", "object": "vault-trace", "at": { "room": "ground", "dx": 14, "dy": 56 } },
     { "id": "rim-bunks-bed-0", "object": "bed", "at": { "room": "rim-bunks", "dx": 1, "dy": 0 } },
     { "id": "rim-bunks-bed-1", "object": "bed", "at": { "room": "rim-bunks", "dx": 3, "dy": 0 } },
     { "id": "rim-bunks-bed-2", "object": "bed", "at": { "room": "rim-bunks", "dx": 5, "dy": 0 } },
@@ -42,34 +44,31 @@
     { "id": "rim-bunks-bed-9", "object": "bed", "at": { "room": "rim-bunks", "dx": 11, "dy": 5 } },
     { "id": "rim-bunks-storage-locker-10", "object": "storage-locker", "at": { "room": "rim-bunks", "dx": 0, "dy": 3 }, "facing": "east" },
     { "id": "spindle-rim-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 41, "dy": 24 } },
-    { "id": "spindle-rim-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 39 }, "facing": "south" },
-    { "id": "spindle-rim-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 39 }, "facing": "south" },
-    { "id": "spindle-rim-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 33, "dy": 42 }, "facing": "north" },
-    { "id": "spindle-rim-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 42 }, "facing": "north" },
-    { "id": "spindle-rim-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 39 }, "facing": "east" },
-    { "id": "spindle-rim-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 35 }, "facing": "east" },
-    { "id": "spindle-rim-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 27 }, "facing": "east" },
-    { "id": "spindle-rim-street-lamp-7", "object": "street-lamp", "at": { "room": "ground", "dx": 28, "dy": 27 }, "facing": "north" }
+    { "id": "spindle-rim-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 39 }, "facing": "east" },
+    { "id": "spindle-rim-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 42 }, "facing": "north" },
+    { "id": "spindle-rim-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 46, "dy": 38 }, "facing": "west" },
+    { "id": "spindle-rim-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 46, "dy": 30 }, "facing": "west" },
+    { "id": "spindle-rim-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 41, "dy": 27 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [
     { "id": "rim-bunks-rim-scout-kaz", "npc": "rim-scout-kaz", "at": { "room": "rim-bunks", "dx": 6, "dy": 3 } }
   ],
   "creatures": [
-    { "id": "spindle-rim-null-stalker-0", "creature": "null-stalker", "at": { "room": "ground", "dx": 14, "dy": 56 } },
-    { "id": "spindle-rim-coolant-wraith-2", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 54, "dy": 23 } },
-    { "id": "spindle-rim-null-stalker-3", "creature": "null-stalker", "at": { "room": "ground", "dx": 16, "dy": 17 } },
-    { "id": "spindle-rim-null-echo-4", "creature": "null-echo", "at": { "room": "ground", "dx": 40, "dy": 45 } },
-    { "id": "spindle-rim-coolant-wraith-5", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 50, "dy": 48 } },
-    { "id": "spindle-rim-null-stalker-6", "creature": "null-stalker", "at": { "room": "ground", "dx": 19, "dy": 21 } },
-    { "id": "spindle-rim-null-echo-7", "creature": "null-echo", "at": { "room": "ground", "dx": 19, "dy": 5 } },
-    { "id": "spindle-rim-coolant-wraith-8", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 53, "dy": 60 } },
-    { "id": "spindle-rim-null-stalker-9", "creature": "null-stalker", "at": { "room": "ground", "dx": 50, "dy": 27 } },
-    { "id": "spindle-rim-null-echo-10", "creature": "null-echo", "at": { "room": "ground", "dx": 26, "dy": 17 } },
-    { "id": "spindle-rim-coolant-wraith-11", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 60, "dy": 55 } },
-    { "id": "spindle-rim-null-stalker-12", "creature": "null-stalker", "at": { "room": "ground", "dx": 7, "dy": 34 } },
-    { "id": "spindle-rim-null-echo-13", "creature": "null-echo", "at": { "room": "ground", "dx": 36, "dy": 16 } },
-    { "id": "spindle-rim-coolant-wraith-14", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 11, "dy": 29 } }
+    { "id": "spindle-rim-null-echo-1", "creature": "null-echo", "at": { "room": "ground", "dx": 54, "dy": 23 } },
+    { "id": "spindle-rim-coolant-wraith-2", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 16, "dy": 17 } },
+    { "id": "spindle-rim-null-stalker-3", "creature": "null-stalker", "at": { "room": "ground", "dx": 40, "dy": 45 } },
+    { "id": "spindle-rim-null-echo-4", "creature": "null-echo", "at": { "room": "ground", "dx": 48, "dy": 14 } },
+    { "id": "spindle-rim-coolant-wraith-5", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 50, "dy": 51 } },
+    { "id": "spindle-rim-null-stalker-6", "creature": "null-stalker", "at": { "room": "ground", "dx": 15, "dy": 37 } },
+    { "id": "spindle-rim-null-echo-7", "creature": "null-echo", "at": { "room": "ground", "dx": 12, "dy": 45 } },
+    { "id": "spindle-rim-coolant-wraith-8", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 19, "dy": 21 } },
+    { "id": "spindle-rim-null-stalker-9", "creature": "null-stalker", "at": { "room": "ground", "dx": 19, "dy": 5 } },
+    { "id": "spindle-rim-null-echo-10", "creature": "null-echo", "at": { "room": "ground", "dx": 53, "dy": 60 } },
+    { "id": "spindle-rim-coolant-wraith-11", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 50, "dy": 27 } },
+    { "id": "spindle-rim-null-stalker-12", "creature": "null-stalker", "at": { "room": "ground", "dx": 26, "dy": 17 } },
+    { "id": "spindle-rim-null-echo-13", "creature": "null-echo", "at": { "room": "ground", "dx": 60, "dy": 55 } },
+    { "id": "spindle-rim-coolant-wraith-14", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 7, "dy": 34 } }
   ],
   "lights": [],
   "decals": [],

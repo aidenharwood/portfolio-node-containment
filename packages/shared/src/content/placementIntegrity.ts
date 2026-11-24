@@ -312,10 +312,10 @@ function rhythmsIn(markers: readonly Marker[]): { name: string; count: number; g
   return found;
 }
 
-function findKerbIssues(scene: Scene): void {
+function findKerbIssues(scene: Scene, ground: TileKindId | undefined): void {
   for (const item of scene.placed) {
-    if (!item.profile?.kerbside || isKerb(scene.kindAt, item.placement.position)) continue;
-    scene.report(`"${item.placement.instanceId}" at ${at(item.placement.position)} (${item.definition.name}) stands away from any road or path; stand it on the kerb, beside the edge of a paved way`);
+    if (!item.profile?.kerbside || isKerb(scene.kindAt, item.placement.position, ground)) continue;
+    scene.report(`"${item.placement.instanceId}" at ${at(item.placement.position)} (${item.definition.name}) stands away from any road or path; stand it on the kerb, beside a road, path or pavement laid over the ground`);
   }
 }
 
@@ -393,7 +393,7 @@ export function findDistrictPlacementIssues(content: GameContent, district: Dist
       findSeatIssues(scene);
     }
     findRhythmIssues(scene);
-    findKerbIssues(scene);
+    findKerbIssues(scene, content.regions.get(district.region)?.ground);
   }
   return issues;
 }

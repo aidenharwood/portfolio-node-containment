@@ -11,8 +11,8 @@
   "steps": [
     { "kind": "rise", "rect": { "x": 24, "y": 3, "width": 14, "height": 10 }, "height": 8 },
     { "kind": "building", "id": "heights-lobby", "rect": { "x": 25, "y": 4, "width": 12, "height": 8 }, "floor": "carpet", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "patch", "rect": { "x": 27, "y": 13, "width": 8, "height": 2 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 30, "y": 13, "width": 2, "height": 7 }, "tile": "paving" }
+    { "kind": "patch", "rect": { "x": 27, "y": 13, "width": 8, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 30, "y": 13, "width": 2, "height": 7 }, "tile": "concrete" }
   ],
   "tiles": [],
   "areas": [
@@ -20,16 +20,16 @@
     { "room": "heights-lobby", "name": "Heights Lobby", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 27, "dy": 25 }
+    "start": { "room": "ground", "dx": 56, "dy": 59 }
   },
   "objects": [
+    { "id": "spire-heights-food-stall-1", "object": "food-stall", "at": { "room": "ground", "dx": 32, "dy": 32 } },
     { "id": "spire-heights-utility-pole-2", "object": "utility-pole", "at": { "room": "ground", "dx": 24, "dy": 31 } },
-    { "id": "spire-heights-bollard-4", "object": "bollard", "at": { "room": "ground", "dx": 48, "dy": 28 } },
-    { "id": "spire-heights-utility-pole-5", "object": "utility-pole", "at": { "room": "ground", "dx": 40, "dy": 49 } },
-    { "id": "spire-heights-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 58, "dy": 6 } },
-    { "id": "spire-heights-culture-bench-7", "object": "culture-bench", "at": { "room": "ground", "dx": 58, "dy": 42 } },
-    { "id": "spire-heights-amber-trace-8", "object": "amber-trace", "at": { "room": "ground", "dx": 15, "dy": 29 } },
-    { "id": "spire-heights-scrap-heap-9", "object": "scrap-heap", "at": { "room": "ground", "dx": 48, "dy": 54 } },
+    { "id": "spire-heights-litter-bin-3", "object": "litter-bin", "at": { "room": "ground", "dx": 28, "dy": 54 } },
+    { "id": "spire-heights-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 11, "dy": 11 } },
+    { "id": "spire-heights-culture-bench-5", "object": "culture-bench", "at": { "room": "ground", "dx": 40, "dy": 49 } },
+    { "id": "spire-heights-amber-trace-6", "object": "amber-trace", "at": { "room": "ground", "dx": 58, "dy": 6 } },
+    { "id": "spire-heights-scrap-heap-7", "object": "scrap-heap", "at": { "room": "ground", "dx": 58, "dy": 42 } },
     { "id": "heights-lobby-shelving-0", "object": "shelving", "at": { "room": "heights-lobby", "dx": 1, "dy": 0 }, "facing": "south" },
     { "id": "heights-lobby-shelving-1", "object": "shelving", "at": { "room": "heights-lobby", "dx": 2, "dy": 0 }, "facing": "south" },
     { "id": "heights-lobby-notice-board-2", "object": "notice-board", "at": { "room": "heights-lobby", "dx": 6, "dy": 0 }, "facing": "south" },
@@ -40,9 +40,8 @@
     { "id": "heights-lobby-chair-7", "object": "chair", "at": { "room": "heights-lobby", "dx": 3, "dy": 2 }, "facing": "south" },
     { "id": "heights-lobby-chair-8", "object": "chair", "at": { "room": "heights-lobby", "dx": 4, "dy": 2 }, "facing": "south" },
     { "id": "spire-heights-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 39, "dy": 23 } },
-    { "id": "spire-heights-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 13 }, "facing": "south" },
-    { "id": "spire-heights-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 13 }, "facing": "south" },
-    { "id": "spire-heights-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 16 }, "facing": "east" }
+    { "id": "spire-heights-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 26, "dy": 13 }, "facing": "east" },
+    { "id": "spire-heights-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 35, "dy": 13 }, "facing": "west" }
   ],
   "assemblies": [
     { "id": "spire-heights-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 19, "dy": 22 }, "facing": "east", "span": 2 },
@@ -52,17 +51,17 @@
     { "id": "heights-lobby-doorman-vik", "npc": "doorman-vik", "at": { "room": "heights-lobby", "dx": 8, "dy": 3 } }
   ],
   "creatures": [
-    { "id": "spire-heights-neon-moth-0", "creature": "neon-moth", "at": { "room": "ground", "dx": 50, "dy": 19 } },
-    { "id": "spire-heights-holo-shill-1", "creature": "holo-shill", "at": { "room": "ground", "dx": 29, "dy": 45 } },
-    { "id": "spire-heights-neon-moth-2", "creature": "neon-moth", "at": { "room": "ground", "dx": 57, "dy": 54 } },
-    { "id": "spire-heights-holo-shill-3", "creature": "holo-shill", "at": { "room": "ground", "dx": 9, "dy": 9 } },
-    { "id": "spire-heights-holo-shill-5", "creature": "holo-shill", "at": { "room": "ground", "dx": 35, "dy": 40 } },
-    { "id": "spire-heights-holo-shill-7", "creature": "holo-shill", "at": { "room": "ground", "dx": 55, "dy": 31 } },
-    { "id": "spire-heights-neon-moth-8", "creature": "neon-moth", "at": { "room": "ground", "dx": 35, "dy": 57 } },
-    { "id": "spire-heights-holo-shill-9", "creature": "holo-shill", "at": { "room": "ground", "dx": 23, "dy": 52 } },
-    { "id": "spire-heights-neon-moth-10", "creature": "neon-moth", "at": { "room": "ground", "dx": 56, "dy": 59 } },
-    { "id": "spire-heights-holo-shill-11", "creature": "holo-shill", "at": { "room": "ground", "dx": 28, "dy": 59 } },
-    { "id": "spire-heights-neon-moth-12", "creature": "neon-moth", "at": { "room": "ground", "dx": 31, "dy": 51 } }
+    { "id": "spire-heights-neon-moth-0", "creature": "neon-moth", "at": { "room": "ground", "dx": 18, "dy": 17 } },
+    { "id": "spire-heights-holo-shill-1", "creature": "holo-shill", "at": { "room": "ground", "dx": 25, "dy": 20 } },
+    { "id": "spire-heights-neon-moth-2", "creature": "neon-moth", "at": { "room": "ground", "dx": 18, "dy": 38 } },
+    { "id": "spire-heights-holo-shill-3", "creature": "holo-shill", "at": { "room": "ground", "dx": 15, "dy": 29 } },
+    { "id": "spire-heights-neon-moth-4", "creature": "neon-moth", "at": { "room": "ground", "dx": 48, "dy": 54 } },
+    { "id": "spire-heights-holo-shill-5", "creature": "holo-shill", "at": { "room": "ground", "dx": 50, "dy": 19 } },
+    { "id": "spire-heights-neon-moth-6", "creature": "neon-moth", "at": { "room": "ground", "dx": 29, "dy": 45 } },
+    { "id": "spire-heights-holo-shill-7", "creature": "holo-shill", "at": { "room": "ground", "dx": 57, "dy": 54 } },
+    { "id": "spire-heights-holo-shill-9", "creature": "holo-shill", "at": { "room": "ground", "dx": 35, "dy": 40 } },
+    { "id": "spire-heights-holo-shill-11", "creature": "holo-shill", "at": { "room": "ground", "dx": 55, "dy": 31 } },
+    { "id": "spire-heights-neon-moth-12", "creature": "neon-moth", "at": { "room": "ground", "dx": 35, "dy": 57 } }
   ],
   "lights": [],
   "decals": [],

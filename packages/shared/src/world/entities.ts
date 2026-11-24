@@ -21,6 +21,7 @@ export interface NpcDefinition {
 export type WorldObjectModel =
   | 'placeholder'
   | 'streetLamp'
+  | 'pathLight'
   | 'bollard'
   | 'streetBench'
   | 'litterBin'

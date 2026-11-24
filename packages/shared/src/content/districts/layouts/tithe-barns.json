@@ -11,7 +11,6 @@
   "steps": [
     { "kind": "rise", "rect": { "x": 32, "y": 25, "width": 14, "height": 10 }, "height": 6 },
     { "kind": "building", "id": "tithe-office", "rect": { "x": 33, "y": 26, "width": 12, "height": 8 }, "floor": "carpet", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "patch", "rect": { "x": 35, "y": 35, "width": 8, "height": 2 }, "tile": "gravel" },
     { "kind": "patch", "rect": { "x": 38, "y": 35, "width": 2, "height": 4 }, "tile": "gravel" },
     { "kind": "patch", "rect": { "x": 38, "y": 38, "width": 11, "height": 2 }, "tile": "gravel" },
     { "kind": "patch", "rect": { "x": 48, "y": 35, "width": 2, "height": 5 }, "tile": "gravel" }
@@ -22,16 +21,17 @@
     { "room": "tithe-office", "name": "Tithe Office", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 43, "dy": 58 }
+    "start": { "room": "ground", "dx": 38, "dy": 13 }
   },
   "objects": [
     { "id": "tithe-barns-quest-tithe-ledger", "object": "tithe-ledger", "at": { "room": "ground", "dx": 41, "dy": 37 } },
-    { "id": "tithe-barns-washing-line-2", "object": "washing-line", "at": { "room": "ground", "dx": 20, "dy": 47 } },
-    { "id": "tithe-barns-burn-barrel-3", "object": "burn-barrel", "at": { "room": "ground", "dx": 25, "dy": 43 } },
-    { "id": "tithe-barns-washing-line-4", "object": "washing-line", "at": { "room": "ground", "dx": 6, "dy": 10 } },
-    { "id": "tithe-barns-washing-line-5", "object": "washing-line", "at": { "room": "ground", "dx": 35, "dy": 57 } },
-    { "id": "tithe-barns-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 28, "dy": 16 } },
-    { "id": "tithe-barns-lock-gear-7", "object": "lock-gear", "at": { "room": "ground", "dx": 57, "dy": 28 } },
+    { "id": "tithe-barns-windpump-0", "object": "windpump", "at": { "room": "ground", "dx": 26, "dy": 58 } },
+    { "id": "tithe-barns-street-tree-1", "object": "street-tree", "at": { "room": "ground", "dx": 15, "dy": 20 } },
+    { "id": "tithe-barns-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 19, "dy": 6 } },
+    { "id": "tithe-barns-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 35, "dy": 57 } },
+    { "id": "tithe-barns-lock-gear-5", "object": "lock-gear", "at": { "room": "ground", "dx": 28, "dy": 16 } },
+    { "id": "tithe-barns-dredge-spot-6", "object": "dredge-spot", "at": { "room": "ground", "dx": 57, "dy": 28 } },
+    { "id": "tithe-barns-reed-bed-7", "object": "reed-bed", "at": { "room": "ground", "dx": 47, "dy": 14 } },
     { "id": "tithe-office-shelving-0", "object": "shelving", "at": { "room": "tithe-office", "dx": 1, "dy": 0 }, "facing": "south" },
     { "id": "tithe-office-shelving-1", "object": "shelving", "at": { "room": "tithe-office", "dx": 2, "dy": 0 }, "facing": "south" },
     { "id": "tithe-office-notice-board-2", "object": "notice-board", "at": { "room": "tithe-office", "dx": 6, "dy": 0 }, "facing": "south" },
@@ -42,32 +42,30 @@
     { "id": "tithe-office-chair-7", "object": "chair", "at": { "room": "tithe-office", "dx": 3, "dy": 2 }, "facing": "south" },
     { "id": "tithe-office-chair-8", "object": "chair", "at": { "room": "tithe-office", "dx": 4, "dy": 2 }, "facing": "south" },
     { "id": "tithe-barns-poi-harrow-tithe-box-0", "object": "harrow-tithe-box", "at": { "room": "ground", "dx": 53, "dy": 25 } },
-    { "id": "tithe-barns-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 35, "dy": 35 }, "facing": "south" },
-    { "id": "tithe-barns-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 42, "dy": 35 }, "facing": "south" },
-    { "id": "tithe-barns-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 40 }, "facing": "north" },
-    { "id": "tithe-barns-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 40 }, "facing": "north" }
+    { "id": "tithe-barns-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 37 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [
     { "id": "tithe-office-tithe-clerk-oswin", "npc": "tithe-clerk-oswin", "at": { "room": "tithe-office", "dx": 8, "dy": 3 } }
   ],
   "creatures": [
-    { "id": "tithe-barns-barn-crawler-0", "creature": "barn-crawler", "at": { "room": "ground", "dx": 33, "dy": 11 } },
-    { "id": "tithe-barns-seed-mite-1", "creature": "seed-mite", "at": { "room": "ground", "dx": 48, "dy": 51 } },
-    { "id": "tithe-barns-barn-crawler-2", "creature": "barn-crawler", "at": { "room": "ground", "dx": 54, "dy": 20 } },
-    { "id": "tithe-barns-seed-mite-3", "creature": "seed-mite", "at": { "room": "ground", "dx": 15, "dy": 4 } },
+    { "id": "tithe-barns-barn-crawler-0", "creature": "barn-crawler", "at": { "room": "ground", "dx": 57, "dy": 9 } },
+    { "id": "tithe-barns-seed-mite-1", "creature": "seed-mite", "at": { "room": "ground", "dx": 33, "dy": 11 } },
+    { "id": "tithe-barns-barn-crawler-2", "creature": "barn-crawler", "at": { "room": "ground", "dx": 48, "dy": 51 } },
+    { "id": "tithe-barns-seed-mite-3", "creature": "seed-mite", "at": { "room": "ground", "dx": 54, "dy": 20 } },
     { "id": "tithe-barns-barn-crawler-4", "creature": "barn-crawler", "at": { "room": "ground", "dx": 58, "dy": 17 } },
     { "id": "tithe-barns-seed-mite-5", "creature": "seed-mite", "at": { "room": "ground", "dx": 40, "dy": 41 } },
-    { "id": "tithe-barns-seed-mite-7", "creature": "seed-mite", "at": { "room": "ground", "dx": 19, "dy": 24 } },
-    { "id": "tithe-barns-barn-crawler-8", "creature": "barn-crawler", "at": { "room": "ground", "dx": 20, "dy": 10 } },
-    { "id": "tithe-barns-seed-mite-9", "creature": "seed-mite", "at": { "room": "ground", "dx": 28, "dy": 54 } },
-    { "id": "tithe-barns-barn-crawler-10", "creature": "barn-crawler", "at": { "room": "ground", "dx": 18, "dy": 57 } },
-    { "id": "tithe-barns-seed-mite-11", "creature": "seed-mite", "at": { "room": "ground", "dx": 4, "dy": 38 } },
-    { "id": "tithe-barns-barn-crawler-12", "creature": "barn-crawler", "at": { "room": "ground", "dx": 25, "dy": 7 } },
-    { "id": "tithe-barns-seed-mite-13", "creature": "seed-mite", "at": { "room": "ground", "dx": 15, "dy": 13 } },
+    { "id": "tithe-barns-seed-mite-7", "creature": "seed-mite", "at": { "room": "ground", "dx": 18, "dy": 57 } },
+    { "id": "tithe-barns-barn-crawler-8", "creature": "barn-crawler", "at": { "room": "ground", "dx": 4, "dy": 38 } },
+    { "id": "tithe-barns-seed-mite-9", "creature": "seed-mite", "at": { "room": "ground", "dx": 23, "dy": 24 } },
+    { "id": "tithe-barns-barn-crawler-10", "creature": "barn-crawler", "at": { "room": "ground", "dx": 25, "dy": 7 } },
+    { "id": "tithe-barns-seed-mite-11", "creature": "seed-mite", "at": { "room": "ground", "dx": 52, "dy": 48 } },
+    { "id": "tithe-barns-barn-crawler-12", "creature": "barn-crawler", "at": { "room": "ground", "dx": 15, "dy": 13 } },
+    { "id": "tithe-barns-seed-mite-13", "creature": "seed-mite", "at": { "room": "ground", "dx": 60, "dy": 49 } },
     { "id": "tithe-barns-barn-crawler-14", "creature": "barn-crawler", "at": { "room": "ground", "dx": 14, "dy": 39 } },
     { "id": "tithe-barns-seed-mite-15", "creature": "seed-mite", "at": { "room": "ground", "dx": 13, "dy": 45 } },
-    { "id": "tithe-barns-seed-mite-17", "creature": "seed-mite", "at": { "room": "ground", "dx": 38, "dy": 13 } }
+    { "id": "tithe-barns-barn-crawler-16", "creature": "barn-crawler", "at": { "room": "ground", "dx": 18, "dy": 49 } },
+    { "id": "tithe-barns-seed-mite-17", "creature": "seed-mite", "at": { "room": "ground", "dx": 56, "dy": 45 } }
   ],
   "lights": [],
   "decals": [],

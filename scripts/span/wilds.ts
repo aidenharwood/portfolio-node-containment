@@ -290,16 +290,15 @@ export const WILD_OVERRIDES: Readonly<Record<string, WildOverride>> = {
     topUp: true,
     at: { x: 9, y: 48 },
     landmarkAt: { x: 23, y: 54 },
-    omit: ['crater-shore-street-lamp-0', 'crater-shore-barricade-6', 'crater-shore-hull-knocker-2', 'crater-shore-bilge-wraith-0', 'crater-shore-misprint-1', 'crater-shore-bilge-wraith-9'],
+    omit: ['crater-shore-barricade-6', 'crater-shore-hull-knocker-2', 'crater-shore-bilge-wraith-0', 'crater-shore-misprint-1', 'crater-shore-bilge-wraith-9'],
     place: {
-      'crater-shore-poi-street-lamp-3': { x: 9, y: 42 },
       'crater-shore-poi-bilge-wraith-0': { x: 22, y: 39 },
       'crater-shore-poi-rustling-1': { x: 23, y: 46 },
       'crater-shore-poi-hull-knocker-2': { x: 16, y: 40 },
-      'crater-shore-poi-bilge-wraith-3': { x: 50, y: 39 },
     },
   },
   'halcyon-strand': { packFirst: true },
+  'hull-shadow': { topUp: true },
   'hollow-pylons': {
     packFirst: true,
     topUp: true,
@@ -307,10 +306,6 @@ export const WILD_OVERRIDES: Readonly<Record<string, WildOverride>> = {
     landmarkAt: { x: 29, y: 48 },
     start: { x: 38, y: 40 },
     omit: ['hollow-pylons-ledge-milestone-2', 'hollow-pylons-shard-wisp-12'],
-    place: {
-      'hollow-pylons-poi-red-moss-1': { x: 48, y: 32 },
-      'hollow-pylons-poi-red-trace-2': { x: 23, y: 23 },
-    },
   },
   'signal-street': { packFirst: true },
   'sprawl-north': { packFirst: true },
@@ -516,10 +511,6 @@ export function dressWild(layout: DistrictLayout, land: LandMap): DistrictLayout
   const creatures = layout.creatures.filter((creature) => !(generated(creature.id, creature.creature) && cleared(roomPoint(creature.at), LARGE.has(creature.creature) ? 2 : 1, LARGE.has(creature.creature) ? 2 : 1)));
   const decals = layout.decals.filter((decal) => !cleared(roomPoint(decal.at), decal.width, decal.height));
 
-  if (!objects.some((object) => object.object === 'street-lamp')) {
-    const lamp = smalls.length;
-    if (putSmall('street-lamp', { x: centre.x, y: building.y + building.h + 4 }, 20, 3)) objects.push(smalls.splice(lamp, 1)[0]!);
-  }
   let walkable = 0;
   for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) if (TILE_KINDS[tileAt(x, y)].walkable) walkable++;
   const pool = CREATURES_BY_TIER[layout.tier] ?? [];

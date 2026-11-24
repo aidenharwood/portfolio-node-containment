@@ -22,16 +22,15 @@
     { "room": "pilgrim-steps-rest", "name": "Pilgrim Steps Rest", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 7, "dy": 45 }
+    "start": { "room": "ground", "dx": 8, "dy": 26 }
   },
   "objects": [
+    { "id": "pilgrim-steps-burn-barrel-0", "object": "burn-barrel", "at": { "room": "ground", "dx": 38, "dy": 48 } },
     { "id": "pilgrim-steps-precursor-pylon-2", "object": "precursor-pylon", "at": { "room": "ground", "dx": 37, "dy": 25 } },
     { "id": "pilgrim-steps-ledge-milestone-3", "object": "ledge-milestone", "at": { "room": "ground", "dx": 14, "dy": 30 } },
-    { "id": "pilgrim-steps-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 15, "dy": 16 } },
-    { "id": "pilgrim-steps-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 35, "dy": 19 } },
-    { "id": "pilgrim-steps-red-trace-7", "object": "red-trace", "at": { "room": "ground", "dx": 41, "dy": 8 } },
-    { "id": "pilgrim-steps-sprung-cell-door-8", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 58, "dy": 28 } },
-    { "id": "pilgrim-steps-directorate-salvage-9", "object": "directorate-salvage", "at": { "room": "ground", "dx": 54, "dy": 17 } },
+    { "id": "pilgrim-steps-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 57, "dy": 15 } },
+    { "id": "pilgrim-steps-red-trace-5", "object": "red-trace", "at": { "room": "ground", "dx": 16, "dy": 39 } },
+    { "id": "pilgrim-steps-directorate-salvage-7", "object": "directorate-salvage", "at": { "room": "ground", "dx": 35, "dy": 19 } },
     { "id": "pilgrim-steps-rest-ward-cooker-0", "object": "ward-cooker", "at": { "room": "pilgrim-steps-rest", "dx": 1, "dy": 0 } },
     { "id": "pilgrim-steps-rest-shelving-1", "object": "shelving", "at": { "room": "pilgrim-steps-rest", "dx": 3, "dy": 0 }, "facing": "south" },
     { "id": "pilgrim-steps-rest-vending-machine-2", "object": "vending-machine", "at": { "room": "pilgrim-steps-rest", "dx": 11, "dy": 0 }, "facing": "south" },
@@ -45,11 +44,9 @@
     { "id": "pilgrim-steps-rest-table-10", "object": "table", "at": { "room": "pilgrim-steps-rest", "dx": 9, "dy": 6 } },
     { "id": "pilgrim-steps-rest-chair-11", "object": "chair", "at": { "room": "pilgrim-steps-rest", "dx": 9, "dy": 5 }, "facing": "south" },
     { "id": "pilgrim-steps-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 56, "dy": 33 } },
-    { "id": "pilgrim-steps-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 39 }, "facing": "south" },
-    { "id": "pilgrim-steps-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 39 }, "facing": "south" },
-    { "id": "pilgrim-steps-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 42 }, "facing": "north" },
-    { "id": "pilgrim-steps-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 42 }, "facing": "north" },
-    { "id": "pilgrim-steps-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 47, "dy": 40 }, "facing": "west" }
+    { "id": "pilgrim-steps-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 40, "dy": 39 }, "facing": "west" },
+    { "id": "pilgrim-steps-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 42 }, "facing": "north" },
+    { "id": "pilgrim-steps-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 39 }, "facing": "west" }
   ],
   "assemblies": [
     { "id": "pilgrim-steps-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 6, "dy": 51 }, "span": 2 },
@@ -60,17 +57,17 @@
     { "id": "pilgrim-steps-rest-pilgrim-warden-oda", "npc": "pilgrim-warden-oda", "at": { "room": "pilgrim-steps-rest", "dx": 2, "dy": 2 } }
   ],
   "creatures": [
-    { "id": "pilgrim-steps-prism-hound-0", "creature": "prism-hound", "at": { "room": "ground", "dx": 22, "dy": 30 } },
-    { "id": "pilgrim-steps-shard-wisp-1", "creature": "shard-wisp", "at": { "room": "ground", "dx": 10, "dy": 8 } },
-    { "id": "pilgrim-steps-prism-hound-2", "creature": "prism-hound", "at": { "room": "ground", "dx": 16, "dy": 23 } },
-    { "id": "pilgrim-steps-shard-wisp-3", "creature": "shard-wisp", "at": { "room": "ground", "dx": 21, "dy": 45 } },
-    { "id": "pilgrim-steps-prism-hound-6", "creature": "prism-hound", "at": { "room": "ground", "dx": 42, "dy": 19 } },
-    { "id": "pilgrim-steps-shard-wisp-7", "creature": "shard-wisp", "at": { "room": "ground", "dx": 17, "dy": 42 } },
-    { "id": "pilgrim-steps-shard-wisp-9", "creature": "shard-wisp", "at": { "room": "ground", "dx": 43, "dy": 50 } },
-    { "id": "pilgrim-steps-prism-hound-10", "creature": "prism-hound", "at": { "room": "ground", "dx": 22, "dy": 50 } },
-    { "id": "pilgrim-steps-shard-wisp-11", "creature": "shard-wisp", "at": { "room": "ground", "dx": 8, "dy": 26 } },
-    { "id": "pilgrim-steps-prism-hound-12", "creature": "prism-hound", "at": { "room": "ground", "dx": 15, "dy": 50 } },
-    { "id": "pilgrim-steps-shard-wisp-13", "creature": "shard-wisp", "at": { "room": "ground", "dx": 54, "dy": 10 } }
+    { "id": "pilgrim-steps-prism-hound-0", "creature": "prism-hound", "at": { "room": "ground", "dx": 41, "dy": 8 } },
+    { "id": "pilgrim-steps-shard-wisp-1", "creature": "shard-wisp", "at": { "room": "ground", "dx": 58, "dy": 28 } },
+    { "id": "pilgrim-steps-prism-hound-2", "creature": "prism-hound", "at": { "room": "ground", "dx": 22, "dy": 30 } },
+    { "id": "pilgrim-steps-shard-wisp-3", "creature": "shard-wisp", "at": { "room": "ground", "dx": 10, "dy": 8 } },
+    { "id": "pilgrim-steps-prism-hound-4", "creature": "prism-hound", "at": { "room": "ground", "dx": 16, "dy": 23 } },
+    { "id": "pilgrim-steps-shard-wisp-5", "creature": "shard-wisp", "at": { "room": "ground", "dx": 21, "dy": 45 } },
+    { "id": "pilgrim-steps-prism-hound-6", "creature": "prism-hound", "at": { "room": "ground", "dx": 45, "dy": 12 } },
+    { "id": "pilgrim-steps-shard-wisp-7", "creature": "shard-wisp", "at": { "room": "ground", "dx": 18, "dy": 15 } },
+    { "id": "pilgrim-steps-shard-wisp-9", "creature": "shard-wisp", "at": { "room": "ground", "dx": 14, "dy": 11 } },
+    { "id": "pilgrim-steps-shard-wisp-11", "creature": "shard-wisp", "at": { "room": "ground", "dx": 42, "dy": 19 } },
+    { "id": "pilgrim-steps-shard-wisp-13", "creature": "shard-wisp", "at": { "room": "ground", "dx": 22, "dy": 50 } }
   ],
   "lights": [],
   "decals": [],

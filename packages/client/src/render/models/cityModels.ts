@@ -16,6 +16,9 @@ export const CITY = {
   concrete: 0x77736b,
   sodium: 0xffb35a,
   lamp: 0xffe2a8,
+  led: 0xfff0d8,
+  cyan: 0x4fe3ff,
+  graphite: 0x2a3138,
   wood: 0x7a5a3a,
   darkWood: 0x4a3424,
   panel: 0xd8d6cc,
@@ -78,19 +81,28 @@ const flicker = (part: Object3D, time: number, seed: number) => {
 };
 
 const streetLamp: Builder = () => {
-  const graphite = 0x2a3138;
   const model = new VoxelModel()
     .fill(-2, 0, -2, 1, 1, 1, grain(CITY.darkSteel, 0.02))
     .fill(-2, 2, -2, 1, 2, 1, lighten(CITY.darkSteel, 0.25))
-    .fill(-1, 3, -1, 0, 40, 0, grain(graphite, 0.015))
+    .fill(-1, 3, -1, 0, 40, 0, grain(CITY.graphite, 0.015))
     .fill(-1, 6, 1, 0, 9, 1, CITY.band)
-    .fill(-1, 22, 1, 0, 34, 1, 0x4fe3ff)
-    .fill(-1, 38, 1, 0, 40, 2, graphite)
-    .fill(-1, 40, 3, 0, 41, 6, graphite)
-    .fill(-2, 39, 7, 1, 41, 12, graphite)
-    .fill(-2, 38, 7, 1, 38, 12, 0xfff0d8, VOXEL_EMISSIVE)
-    .fill(-2, 39, 13, 1, 40, 13, 0x4fe3ff, VOXEL_EMISSIVE);
+    .fill(-1, 22, 1, 0, 34, 1, CITY.cyan)
+    .fill(-1, 38, 1, 0, 40, 2, CITY.graphite)
+    .fill(-1, 40, 3, 0, 41, 6, CITY.graphite)
+    .fill(-2, 39, 7, 1, 41, 12, CITY.graphite)
+    .fill(-2, 38, 7, 1, 38, 12, CITY.led, VOXEL_EMISSIVE)
+    .fill(-2, 39, 13, 1, 40, 13, CITY.cyan, VOXEL_EMISSIVE);
   return parts(model, 42);
+};
+
+const pathLight: Builder = () => {
+  const model = new VoxelModel()
+    .fill(-2, 0, -2, 1, 1, 1, grain(CITY.darkSteel, 0.02))
+    .fill(-1, 2, -1, 0, 11, 0, grain(CITY.graphite, 0.015))
+    .fill(-2, 12, -2, 1, 13, 1, CITY.led, VOXEL_EMISSIVE)
+    .fill(-2, 14, -2, 1, 14, 1, CITY.graphite)
+    .fill(-1, 5, 1, 0, 6, 1, CITY.band);
+  return parts(model, 15);
 };
 
 const bollard: Builder = () => {
@@ -980,6 +992,7 @@ const lighthouse: Builder = () => {
 
 export const CITY_BUILDERS: Readonly<Record<CityModel, Builder>> = {
   streetLamp,
+  pathLight,
   bollard,
   streetBench,
   litterBin,

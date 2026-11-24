@@ -8,7 +8,7 @@ import { setPiece } from '../src/content/districts/setPiece.ts';
 import { findPlacementIssues } from '../src/content/placementIntegrity.ts';
 import { DRESSING_THEMES } from '../src/content/prefabs/types.ts';
 import type { Facing } from '../src/world/geometry.ts';
-import { drawBlueprint, link, room } from '../src/world/blueprint.ts';
+import { drawBlueprint, link, patch, room } from '../src/world/blueprint.ts';
 import { FIXTURE_CONTENT } from './fixtures/world/index.ts';
 
 const plan = drawBlueprint({ width: 40, height: 26 }, [room('hall', 1, 1, 20, 20, 'plating'), room('annex', 24, 1, 10, 8, 'ceramic'), link('hall', 'annex', 2, 'door')]);
@@ -150,12 +150,16 @@ describe('placement rules', () => {
     assert.deepEqual(about(issuesOf(backwards, { hall: 'archive', annex: 'ward' }, { condition: 'uncanny' }), 'nothing behind it'), []);
   });
 
-  test('a kerbside lamp out in the open is reported, and one at the edge of the way is not', () => {
+  test('a kerbside lamp stands beside a laid way, not in the road, out on the grass or against a wall', () => {
     const lamp: WorldObjectDefinition = { id: 'kerb-lamp', name: 'Kerb Lamp', examine: '', model: 'placeholder', blocksMovement: true, interactions: [], furnishing: { mount: 'free', homes: DRESSING_THEMES, kerbside: true } };
     const objects = new Map([...FIXTURE_CONTENT.worldObjects, ['kerb-lamp', lamp]]);
-    const issuesWith = (dx: number, dy: number): string[] => about(findPlacementIssues(contentWith(furnish(plan, baseDistrict({ objects: [...SIGNED, place('lamp', 'kerb-lamp', 'hall', dx, dy)] }), { hall: 'civic', annex: 'ward' }), objects)), '"lamp"', 'away from any road or path');
-    assert.equal(issuesWith(10, 14).length, 1);
-    assert.deepEqual(issuesWith(10, 0), []);
+    const street = drawBlueprint({ width: 40, height: 26 }, [room('hall', 1, 1, 20, 20, 'grass'), room('annex', 24, 1, 10, 8, 'ceramic'), link('hall', 'annex', 2, 'door'), patch(1, 12, 20, 3, 'paving')]);
+    const issuesWith = (dx: number, dy: number): string[] => about(findPlacementIssues(contentWith(furnish(street, baseDistrict({ map: street.map, rooms: street.rooms, exits: street.exits, objects: [...SIGNED, place('lamp', 'kerb-lamp', 'hall', dx, dy)] }), { hall: 'civic', annex: 'ward' }), objects)), '"lamp"', 'away from any road or path');
+    assert.deepEqual(issuesWith(10, 10), []);
+    assert.deepEqual(issuesWith(10, 14), []);
+    assert.equal(issuesWith(10, 12).length, 1);
+    assert.equal(issuesWith(10, 3).length, 1);
+    assert.equal(issuesWith(0, 5).length, 1);
   });
 
   test('an object players use that dressing has boxed in is reported', () => {

@@ -11,10 +11,10 @@
   "steps": [
     { "kind": "rise", "rect": { "x": 26, "y": 25, "width": 14, "height": 10 }, "height": 6 },
     { "kind": "building", "id": "stacks-reading-room", "rect": { "x": 27, "y": 26, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "patch", "rect": { "x": 29, "y": 35, "width": 8, "height": 2 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 32, "y": 35, "width": 2, "height": 2 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 32, "y": 36, "width": 11, "height": 2 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 42, "y": 35, "width": 2, "height": 3 }, "tile": "paving" }
+    { "kind": "patch", "rect": { "x": 29, "y": 35, "width": 8, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 32, "y": 35, "width": 2, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 32, "y": 36, "width": 11, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 42, "y": 35, "width": 2, "height": 3 }, "tile": "concrete" }
   ],
   "tiles": [],
   "areas": [
@@ -22,11 +22,13 @@
     { "room": "stacks-reading-room", "name": "Stacks Reading Room", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 31, "dy": 58 }
+    "start": { "room": "ground", "dx": 10, "dy": 26 }
   },
   "objects": [
-    { "id": "the-stacks-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 50, "dy": 56 } },
-    { "id": "the-stacks-holo-billboard-4", "object": "holo-billboard", "at": { "room": "ground", "dx": 4, "dy": 27 } },
+    { "id": "the-stacks-bollard-0", "object": "bollard", "at": { "room": "ground", "dx": 14, "dy": 34 } },
+    { "id": "the-stacks-bollard-1", "object": "bollard", "at": { "room": "ground", "dx": 29, "dy": 53 } },
+    { "id": "the-stacks-litter-bin-2", "object": "litter-bin", "at": { "room": "ground", "dx": 4, "dy": 27 } },
+    { "id": "the-stacks-scrap-heap-5", "object": "scrap-heap", "at": { "room": "ground", "dx": 18, "dy": 58 } },
     { "id": "stacks-reading-room-lab-bench-0", "object": "lab-bench", "at": { "room": "stacks-reading-room", "dx": 2, "dy": 3 } },
     { "id": "stacks-reading-room-lab-bench-1", "object": "lab-bench", "at": { "room": "stacks-reading-room", "dx": 3, "dy": 3 } },
     { "id": "stacks-reading-room-lab-bench-2", "object": "lab-bench", "at": { "room": "stacks-reading-room", "dx": 4, "dy": 3 } },
@@ -36,29 +38,28 @@
     { "id": "stacks-reading-room-shelving-6", "object": "shelving", "at": { "room": "stacks-reading-room", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "the-stacks-poi-halcyon-lockbox-0", "object": "halcyon-lockbox", "at": { "room": "ground", "dx": 53, "dy": 34 } },
     { "id": "the-stacks-poi-crusher-housing-1", "object": "crusher-housing", "at": { "room": "ground", "dx": 33, "dy": 42 } },
-    { "id": "the-stacks-poi-scrap-heap-2", "object": "scrap-heap", "at": { "room": "ground", "dx": 19, "dy": 15 } },
-    { "id": "the-stacks-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 35 }, "facing": "south" },
-    { "id": "the-stacks-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 35 }, "facing": "south" },
-    { "id": "the-stacks-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 38 }, "facing": "north" },
-    { "id": "the-stacks-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 38 }, "facing": "north" }
+    { "id": "the-stacks-poi-scrap-heap-2", "object": "scrap-heap", "at": { "room": "ground", "dx": 17, "dy": 32 } },
+    { "id": "the-stacks-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 28, "dy": 35 }, "facing": "east" },
+    { "id": "the-stacks-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 37, "dy": 35 }, "facing": "west" },
+    { "id": "the-stacks-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 35, "dy": 38 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [
     { "id": "stacks-reading-room-archivist-quell", "npc": "archivist-quell", "at": { "room": "stacks-reading-room", "dx": 7, "dy": 2 } }
   ],
   "creatures": [
-    { "id": "the-stacks-ad-wraith-0", "creature": "ad-wraith", "at": { "room": "ground", "dx": 57, "dy": 58 } },
-    { "id": "the-stacks-glass-hound-1", "creature": "glass-hound", "at": { "room": "ground", "dx": 17, "dy": 38 } },
-    { "id": "the-stacks-vent-moth-2", "creature": "vent-moth", "at": { "room": "ground", "dx": 36, "dy": 18 } },
-    { "id": "the-stacks-ad-wraith-3", "creature": "ad-wraith", "at": { "room": "ground", "dx": 11, "dy": 30 } },
-    { "id": "the-stacks-glass-hound-4", "creature": "glass-hound", "at": { "room": "ground", "dx": 32, "dy": 21 } },
-    { "id": "the-stacks-ad-wraith-6", "creature": "ad-wraith", "at": { "room": "ground", "dx": 28, "dy": 49 } },
-    { "id": "the-stacks-vent-moth-8", "creature": "vent-moth", "at": { "room": "ground", "dx": 57, "dy": 49 } },
-    { "id": "the-stacks-ad-wraith-9", "creature": "ad-wraith", "at": { "room": "ground", "dx": 4, "dy": 58 } },
-    { "id": "the-stacks-vent-moth-11", "creature": "vent-moth", "at": { "room": "ground", "dx": 6, "dy": 14 } },
-    { "id": "the-stacks-glass-hound-13", "creature": "glass-hound", "at": { "room": "ground", "dx": 8, "dy": 40 } },
-    { "id": "the-stacks-poi-ad-wraith-0", "creature": "ad-wraith", "at": { "room": "ground", "dx": 27, "dy": 41 } },
-    { "id": "the-stacks-poi-glass-hound-1", "creature": "glass-hound", "at": { "room": "ground", "dx": 38, "dy": 41 } }
+    { "id": "the-stacks-ad-wraith-0", "creature": "ad-wraith", "at": { "room": "ground", "dx": 46, "dy": 56 } },
+    { "id": "the-stacks-glass-hound-1", "creature": "glass-hound", "at": { "room": "ground", "dx": 45, "dy": 27 } },
+    { "id": "the-stacks-vent-moth-2", "creature": "vent-moth", "at": { "room": "ground", "dx": 57, "dy": 58 } },
+    { "id": "the-stacks-ad-wraith-3", "creature": "ad-wraith", "at": { "room": "ground", "dx": 20, "dy": 15 } },
+    { "id": "the-stacks-glass-hound-4", "creature": "glass-hound", "at": { "room": "ground", "dx": 36, "dy": 18 } },
+    { "id": "the-stacks-vent-moth-5", "creature": "vent-moth", "at": { "room": "ground", "dx": 51, "dy": 55 } },
+    { "id": "the-stacks-ad-wraith-6", "creature": "ad-wraith", "at": { "room": "ground", "dx": 32, "dy": 21 } },
+    { "id": "the-stacks-ad-wraith-9", "creature": "ad-wraith", "at": { "room": "ground", "dx": 35, "dy": 52 } },
+    { "id": "the-stacks-glass-hound-10", "creature": "glass-hound", "at": { "room": "ground", "dx": 30, "dy": 41 } },
+    { "id": "the-stacks-vent-moth-11", "creature": "vent-moth", "at": { "room": "ground", "dx": 57, "dy": 49 } },
+    { "id": "the-stacks-ad-wraith-12", "creature": "ad-wraith", "at": { "room": "ground", "dx": 4, "dy": 58 } },
+    { "id": "the-stacks-poi-ad-wraith-0", "creature": "ad-wraith", "at": { "room": "ground", "dx": 37, "dy": 41 } }
   ],
   "lights": [],
   "decals": [],

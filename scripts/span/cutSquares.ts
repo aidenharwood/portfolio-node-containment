@@ -426,10 +426,6 @@ function layoutFor(cut: Cut): DistrictLayout {
     taken.push({ x: spot.x + 1, y: spot.y + 1, r: 5 });
   }
 
-  const lampCount = place ? 4 : 2;
-  let lamps = 0;
-  for (let attempt = 0; attempt < 10 && lamps < lampCount; attempt++) if (putObject('street-lamp', 7)) lamps++;
-  if (lamps === 0) throw new Error(id + ': nowhere to stand a street lamp');
   const props = PROPS[cut.region] ?? [];
   const propCount = place ? 6 : 4;
   for (let index = 0; index < propCount; index++) putObject(props[Math.floor(next() * props.length)]!, 6);

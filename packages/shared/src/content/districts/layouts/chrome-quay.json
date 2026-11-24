@@ -11,10 +11,10 @@
   "steps": [
     { "kind": "rise", "rect": { "x": 29, "y": 30, "width": 14, "height": 10 }, "height": 7 },
     { "kind": "building", "id": "chrome-quay-works", "rect": { "x": 30, "y": 31, "width": 12, "height": 8 }, "floor": "concrete", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "patch", "rect": { "x": 32, "y": 40, "width": 8, "height": 2 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 35, "y": 40, "width": 2, "height": 2 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 35, "y": 41, "width": 11, "height": 2 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 45, "y": 37, "width": 2, "height": 6 }, "tile": "paving" }
+    { "kind": "patch", "rect": { "x": 32, "y": 40, "width": 8, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 35, "y": 40, "width": 2, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 35, "y": 41, "width": 11, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 45, "y": 37, "width": 2, "height": 6 }, "tile": "concrete" }
   ],
   "tiles": [],
   "areas": [
@@ -22,18 +22,15 @@
     { "room": "chrome-quay-works", "name": "Chrome Quay Works", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 40, "dy": 47 }
+    "start": { "room": "ground", "dx": 5, "dy": 55 }
   },
   "objects": [
-    { "id": "chrome-quay-litter-bin-2", "object": "litter-bin", "at": { "room": "ground", "dx": 39, "dy": 6 } },
-    { "id": "chrome-quay-steam-vent-3", "object": "steam-vent", "at": { "room": "ground", "dx": 27, "dy": 15 } },
-    { "id": "chrome-quay-parked-car-4", "object": "parked-car", "at": { "room": "ground", "dx": 32, "dy": 19 } },
-    { "id": "chrome-quay-utility-pole-5", "object": "utility-pole", "at": { "room": "ground", "dx": 4, "dy": 21 } },
-    { "id": "chrome-quay-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 20, "dy": 44 } },
+    { "id": "chrome-quay-utility-pole-0", "object": "utility-pole", "at": { "room": "ground", "dx": 3, "dy": 9 } },
+    { "id": "chrome-quay-holo-billboard-2", "object": "holo-billboard", "at": { "room": "ground", "dx": 35, "dy": 27 } },
+    { "id": "chrome-quay-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 19, "dy": 58 } },
     { "id": "chrome-quay-halcyon-gate-leaf-0", "object": "halcyon-gate-leaf", "at": { "room": "ground", "dx": 63, "dy": 24 }, "facing": "east" },
     { "id": "chrome-quay-halcyon-gate-leaf-1", "object": "halcyon-gate-leaf", "at": { "room": "ground", "dx": 63, "dy": 25 }, "facing": "east" },
-    { "id": "chrome-quay-amber-trace-9", "object": "amber-trace", "at": { "room": "ground", "dx": 28, "dy": 7 } },
-    { "id": "chrome-quay-crusher-housing-10", "object": "crusher-housing", "at": { "room": "ground", "dx": 22, "dy": 38 } },
+    { "id": "chrome-quay-crusher-housing-8", "object": "crusher-housing", "at": { "room": "ground", "dx": 20, "dy": 44 } },
     { "id": "chrome-quay-works-ward-refinery-0", "object": "ward-refinery", "at": { "room": "chrome-quay-works", "dx": 1, "dy": 1 } },
     { "id": "chrome-quay-works-ward-fabricator-1", "object": "ward-fabricator", "at": { "room": "chrome-quay-works", "dx": 4, "dy": 1 } },
     { "id": "chrome-quay-works-ward-synthesiser-2", "object": "ward-synthesiser", "at": { "room": "chrome-quay-works", "dx": 7, "dy": 1 } },
@@ -42,10 +39,10 @@
     { "id": "chrome-quay-works-table-5", "object": "table", "at": { "room": "chrome-quay-works", "dx": 10, "dy": 5 } },
     { "id": "chrome-quay-works-chair-6", "object": "chair", "at": { "room": "chrome-quay-works", "dx": 10, "dy": 4 }, "facing": "south" },
     { "id": "chrome-quay-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 48, "dy": 41 } },
-    { "id": "chrome-quay-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 40 }, "facing": "south" },
-    { "id": "chrome-quay-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 40 }, "facing": "south" },
-    { "id": "chrome-quay-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 43 }, "facing": "north" },
-    { "id": "chrome-quay-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 43 }, "facing": "north" }
+    { "id": "chrome-quay-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 40 }, "facing": "east" },
+    { "id": "chrome-quay-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 40, "dy": 40 }, "facing": "west" },
+    { "id": "chrome-quay-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 43 }, "facing": "north" },
+    { "id": "chrome-quay-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 44, "dy": 40 }, "facing": "east" }
   ],
   "assemblies": [
     { "id": "chrome-quay-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 22, "dy": 51 }, "span": 2 },
@@ -53,20 +50,21 @@
   ],
   "npcs": [],
   "creatures": [
-    { "id": "chrome-quay-glass-hound-1", "creature": "glass-hound", "at": { "room": "ground", "dx": 46, "dy": 22 } },
-    { "id": "chrome-quay-vent-moth-2", "creature": "vent-moth", "at": { "room": "ground", "dx": 10, "dy": 44 } },
-    { "id": "chrome-quay-ad-wraith-3", "creature": "ad-wraith", "at": { "room": "ground", "dx": 41, "dy": 27 } },
-    { "id": "chrome-quay-glass-hound-4", "creature": "glass-hound", "at": { "room": "ground", "dx": 21, "dy": 20 } },
-    { "id": "chrome-quay-vent-moth-5", "creature": "vent-moth", "at": { "room": "ground", "dx": 33, "dy": 13 } },
-    { "id": "chrome-quay-ad-wraith-6", "creature": "ad-wraith", "at": { "room": "ground", "dx": 48, "dy": 5 } },
-    { "id": "chrome-quay-vent-moth-8", "creature": "vent-moth", "at": { "room": "ground", "dx": 36, "dy": 57 } },
-    { "id": "chrome-quay-ad-wraith-9", "creature": "ad-wraith", "at": { "room": "ground", "dx": 54, "dy": 47 } },
-    { "id": "chrome-quay-glass-hound-10", "creature": "glass-hound", "at": { "room": "ground", "dx": 51, "dy": 40 } },
-    { "id": "chrome-quay-vent-moth-11", "creature": "vent-moth", "at": { "room": "ground", "dx": 38, "dy": 12 } },
-    { "id": "chrome-quay-ad-wraith-12", "creature": "ad-wraith", "at": { "room": "ground", "dx": 5, "dy": 55 } },
-    { "id": "chrome-quay-glass-hound-13", "creature": "glass-hound", "at": { "room": "ground", "dx": 3, "dy": 42 } },
-    { "id": "chrome-quay-vent-moth-14", "creature": "vent-moth", "at": { "room": "ground", "dx": 22, "dy": 9 } },
-    { "id": "chrome-quay-ad-wraith-15", "creature": "ad-wraith", "at": { "room": "ground", "dx": 13, "dy": 58 } }
+    { "id": "chrome-quay-ad-wraith-0", "creature": "ad-wraith", "at": { "room": "ground", "dx": 22, "dy": 38 } },
+    { "id": "chrome-quay-glass-hound-1", "creature": "glass-hound", "at": { "room": "ground", "dx": 11, "dy": 38 } },
+    { "id": "chrome-quay-vent-moth-2", "creature": "vent-moth", "at": { "room": "ground", "dx": 46, "dy": 22 } },
+    { "id": "chrome-quay-ad-wraith-3", "creature": "ad-wraith", "at": { "room": "ground", "dx": 10, "dy": 44 } },
+    { "id": "chrome-quay-glass-hound-4", "creature": "glass-hound", "at": { "room": "ground", "dx": 36, "dy": 19 } },
+    { "id": "chrome-quay-vent-moth-5", "creature": "vent-moth", "at": { "room": "ground", "dx": 41, "dy": 27 } },
+    { "id": "chrome-quay-ad-wraith-6", "creature": "ad-wraith", "at": { "room": "ground", "dx": 21, "dy": 20 } },
+    { "id": "chrome-quay-glass-hound-7", "creature": "glass-hound", "at": { "room": "ground", "dx": 33, "dy": 13 } },
+    { "id": "chrome-quay-vent-moth-8", "creature": "vent-moth", "at": { "room": "ground", "dx": 12, "dy": 31 } },
+    { "id": "chrome-quay-ad-wraith-9", "creature": "ad-wraith", "at": { "room": "ground", "dx": 48, "dy": 5 } },
+    { "id": "chrome-quay-glass-hound-10", "creature": "glass-hound", "at": { "room": "ground", "dx": 13, "dy": 23 } },
+    { "id": "chrome-quay-ad-wraith-12", "creature": "ad-wraith", "at": { "room": "ground", "dx": 36, "dy": 57 } },
+    { "id": "chrome-quay-glass-hound-13", "creature": "glass-hound", "at": { "room": "ground", "dx": 54, "dy": 47 } },
+    { "id": "chrome-quay-vent-moth-14", "creature": "vent-moth", "at": { "room": "ground", "dx": 39, "dy": 7 } },
+    { "id": "chrome-quay-ad-wraith-15", "creature": "ad-wraith", "at": { "room": "ground", "dx": 38, "dy": 12 } }
   ],
   "lights": [],
   "decals": [],

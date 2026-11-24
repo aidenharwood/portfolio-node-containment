@@ -22,15 +22,15 @@
     { "room": "axle-bunks", "name": "Axle Bunks", "safe": false }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 43, "dy": 16 }
+    "start": { "room": "ground", "dx": 53, "dy": 27 }
   },
   "objects": [
+    { "id": "axle-flats-steam-vent-0", "object": "steam-vent", "at": { "room": "ground", "dx": 7, "dy": 23 } },
+    { "id": "axle-flats-steam-vent-1", "object": "steam-vent", "at": { "room": "ground", "dx": 10, "dy": 32 } },
     { "id": "axle-flats-flood-mast-2", "object": "flood-mast", "at": { "room": "ground", "dx": 32, "dy": 49 } },
-    { "id": "axle-flats-checkpoint-barrier-3", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 9, "dy": 21 } },
-    { "id": "axle-flats-steam-vent-5", "object": "steam-vent", "at": { "room": "ground", "dx": 30, "dy": 19 } },
-    { "id": "axle-flats-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 16, "dy": 4 } },
-    { "id": "axle-flats-vault-trace-7", "object": "vault-trace", "at": { "room": "ground", "dx": 10, "dy": 47 } },
-    { "id": "axle-flats-vault-residue-9", "object": "vault-residue", "at": { "room": "ground", "dx": 46, "dy": 25 } },
+    { "id": "axle-flats-checkpoint-barrier-3", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 20, "dy": 33 } },
+    { "id": "axle-flats-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 30, "dy": 19 } },
+    { "id": "axle-flats-vault-trace-5", "object": "vault-trace", "at": { "room": "ground", "dx": 16, "dy": 4 } },
     { "id": "axle-bunks-bed-0", "object": "bed", "at": { "room": "axle-bunks", "dx": 1, "dy": 0 } },
     { "id": "axle-bunks-bed-1", "object": "bed", "at": { "room": "axle-bunks", "dx": 3, "dy": 0 } },
     { "id": "axle-bunks-bed-2", "object": "bed", "at": { "room": "axle-bunks", "dx": 5, "dy": 0 } },
@@ -43,26 +43,26 @@
     { "id": "axle-bunks-bed-9", "object": "bed", "at": { "room": "axle-bunks", "dx": 11, "dy": 5 } },
     { "id": "axle-bunks-storage-locker-10", "object": "storage-locker", "at": { "room": "axle-bunks", "dx": 0, "dy": 3 }, "facing": "east" },
     { "id": "axle-flats-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 48, "dy": 40 } },
-    { "id": "axle-flats-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 40 }, "facing": "south" },
-    { "id": "axle-flats-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 40 }, "facing": "south" },
-    { "id": "axle-flats-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 43 }, "facing": "north" }
+    { "id": "axle-flats-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 40 }, "facing": "east" },
+    { "id": "axle-flats-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 40, "dy": 40 }, "facing": "west" },
+    { "id": "axle-flats-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 44, "dy": 40 }, "facing": "east" }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "axle-flats-coolant-wraith-0", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 20, "dy": 33 } },
+    { "id": "axle-flats-coolant-wraith-0", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 46, "dy": 25 } },
     { "id": "axle-flats-cell-breaker-1", "creature": "cell-breaker", "at": { "room": "ground", "dx": 17, "dy": 20 } },
     { "id": "axle-flats-coolant-wraith-2", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 22, "dy": 39 } },
     { "id": "axle-flats-cell-breaker-3", "creature": "cell-breaker", "at": { "room": "ground", "dx": 32, "dy": 11 } },
     { "id": "axle-flats-coolant-wraith-4", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 54, "dy": 43 } },
     { "id": "axle-flats-cell-breaker-5", "creature": "cell-breaker", "at": { "room": "ground", "dx": 38, "dy": 53 } },
     { "id": "axle-flats-cell-breaker-7", "creature": "cell-breaker", "at": { "room": "ground", "dx": 23, "dy": 12 } },
-    { "id": "axle-flats-coolant-wraith-8", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 40, "dy": 5 } },
-    { "id": "axle-flats-cell-breaker-9", "creature": "cell-breaker", "at": { "room": "ground", "dx": 23, "dy": 44 } },
-    { "id": "axle-flats-cell-breaker-11", "creature": "cell-breaker", "at": { "room": "ground", "dx": 5, "dy": 38 } },
-    { "id": "axle-flats-coolant-wraith-12", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 17, "dy": 43 } },
-    { "id": "axle-flats-cell-breaker-13", "creature": "cell-breaker", "at": { "room": "ground", "dx": 53, "dy": 27 } },
-    { "id": "axle-flats-coolant-wraith-14", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 16, "dy": 28 } },
+    { "id": "axle-flats-coolant-wraith-8", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 20, "dy": 52 } },
+    { "id": "axle-flats-cell-breaker-9", "creature": "cell-breaker", "at": { "room": "ground", "dx": 40, "dy": 5 } },
+    { "id": "axle-flats-coolant-wraith-10", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 23, "dy": 44 } },
+    { "id": "axle-flats-coolant-wraith-12", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 5, "dy": 38 } },
+    { "id": "axle-flats-cell-breaker-13", "creature": "cell-breaker", "at": { "room": "ground", "dx": 17, "dy": 43 } },
+    { "id": "axle-flats-coolant-wraith-14", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 47, "dy": 20 } },
     { "id": "axle-bunks-cell-breaker-0", "creature": "cell-breaker", "at": { "room": "axle-bunks", "dx": 6, "dy": 3 } },
     { "id": "axle-bunks-cell-breaker-1", "creature": "cell-breaker", "at": { "room": "axle-bunks", "dx": 2, "dy": 3 } }
   ],

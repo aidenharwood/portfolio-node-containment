@@ -11,10 +11,10 @@
   "steps": [
     { "kind": "rise", "rect": { "x": 29, "y": 29, "width": 14, "height": 10 }, "height": 5 },
     { "kind": "building", "id": "signal-street-repair", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "concrete", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "patch", "rect": { "x": 32, "y": 39, "width": 8, "height": 2 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 35, "y": 39, "width": 2, "height": 2 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 35, "y": 40, "width": 11, "height": 2 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 45, "y": 35, "width": 2, "height": 7 }, "tile": "paving" }
+    { "kind": "patch", "rect": { "x": 32, "y": 39, "width": 8, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 35, "y": 39, "width": 2, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 35, "y": 40, "width": 11, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 45, "y": 35, "width": 2, "height": 7 }, "tile": "concrete" }
   ],
   "tiles": [],
   "areas": [
@@ -22,14 +22,16 @@
     { "room": "signal-street-repair", "name": "Signal Street Repair", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 42, "dy": 6 }
+    "start": { "room": "ground", "dx": 22, "dy": 24 }
   },
   "objects": [
-    { "id": "signal-street-steam-vent-2", "object": "steam-vent", "at": { "room": "ground", "dx": 11, "dy": 57 } },
-    { "id": "signal-street-food-stall-3", "object": "food-stall", "at": { "room": "ground", "dx": 35, "dy": 9 } },
-    { "id": "signal-street-holo-billboard-4", "object": "holo-billboard", "at": { "room": "ground", "dx": 43, "dy": 44 } },
-    { "id": "signal-street-steam-vent-5", "object": "steam-vent", "at": { "room": "ground", "dx": 5, "dy": 33 } },
-    { "id": "signal-street-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 56, "dy": 45 } },
+    { "id": "signal-street-litter-bin-0", "object": "litter-bin", "at": { "room": "ground", "dx": 37, "dy": 20 } },
+    { "id": "signal-street-bollard-1", "object": "bollard", "at": { "room": "ground", "dx": 35, "dy": 9 } },
+    { "id": "signal-street-holo-billboard-2", "object": "holo-billboard", "at": { "room": "ground", "dx": 43, "dy": 44 } },
+    { "id": "signal-street-steam-vent-3", "object": "steam-vent", "at": { "room": "ground", "dx": 21, "dy": 41 } },
+    { "id": "signal-street-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 5, "dy": 33 } },
+    { "id": "signal-street-scrap-heap-5", "object": "scrap-heap", "at": { "room": "ground", "dx": 56, "dy": 45 } },
+    { "id": "signal-street-amber-trace-7", "object": "amber-trace", "at": { "room": "ground", "dx": 50, "dy": 44 } },
     { "id": "signal-street-repair-ward-refinery-0", "object": "ward-refinery", "at": { "room": "signal-street-repair", "dx": 1, "dy": 1 } },
     { "id": "signal-street-repair-ward-fabricator-1", "object": "ward-fabricator", "at": { "room": "signal-street-repair", "dx": 4, "dy": 1 } },
     { "id": "signal-street-repair-ward-synthesiser-2", "object": "ward-synthesiser", "at": { "room": "signal-street-repair", "dx": 7, "dy": 1 } },
@@ -40,11 +42,10 @@
     { "id": "signal-street-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 55, "dy": 32 } },
     { "id": "signal-street-poi-amber-trace-1", "object": "amber-trace", "at": { "room": "ground", "dx": 14, "dy": 27 } },
     { "id": "signal-street-poi-crusher-housing-2", "object": "crusher-housing", "at": { "room": "ground", "dx": 24, "dy": 31 } },
-    { "id": "signal-street-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 39 }, "facing": "south" },
-    { "id": "signal-street-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 39 }, "facing": "south" },
-    { "id": "signal-street-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 42 }, "facing": "north" },
-    { "id": "signal-street-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 42 }, "facing": "north" },
-    { "id": "signal-street-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 47, "dy": 40 }, "facing": "west" }
+    { "id": "signal-street-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 39 }, "facing": "east" },
+    { "id": "signal-street-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 40, "dy": 39 }, "facing": "west" },
+    { "id": "signal-street-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 42 }, "facing": "north" },
+    { "id": "signal-street-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 39 }, "facing": "west" }
   ],
   "assemblies": [
     { "id": "signal-street-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 6, "dy": 51 }, "span": 2 },
@@ -56,17 +57,17 @@
     { "id": "signal-street-ad-wraith-0", "creature": "ad-wraith", "at": { "room": "ground", "dx": 15, "dy": 43 } },
     { "id": "signal-street-alley-crawler-2", "creature": "alley-crawler", "at": { "room": "ground", "dx": 48, "dy": 4 } },
     { "id": "signal-street-ad-wraith-3", "creature": "ad-wraith", "at": { "room": "ground", "dx": 28, "dy": 25 } },
-    { "id": "signal-street-vent-moth-4", "creature": "vent-moth", "at": { "room": "ground", "dx": 59, "dy": 38 } },
-    { "id": "signal-street-ad-wraith-6", "creature": "ad-wraith", "at": { "room": "ground", "dx": 53, "dy": 59 } },
-    { "id": "signal-street-vent-moth-7", "creature": "vent-moth", "at": { "room": "ground", "dx": 60, "dy": 29 } },
-    { "id": "signal-street-ad-wraith-9", "creature": "ad-wraith", "at": { "room": "ground", "dx": 9, "dy": 46 } },
-    { "id": "signal-street-vent-moth-10", "creature": "vent-moth", "at": { "room": "ground", "dx": 8, "dy": 7 } },
-    { "id": "signal-street-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 21, "dy": 45 } },
-    { "id": "signal-street-ad-wraith-12", "creature": "ad-wraith", "at": { "room": "ground", "dx": 18, "dy": 4 } },
-    { "id": "signal-street-vent-moth-13", "creature": "vent-moth", "at": { "room": "ground", "dx": 8, "dy": 19 } },
-    { "id": "signal-street-alley-crawler-14", "creature": "alley-crawler", "at": { "room": "ground", "dx": 45, "dy": 26 } },
-    { "id": "signal-street-ad-wraith-15", "creature": "ad-wraith", "at": { "room": "ground", "dx": 32, "dy": 16 } },
-    { "id": "signal-street-vent-moth-16", "creature": "vent-moth", "at": { "room": "ground", "dx": 22, "dy": 24 } }
+    { "id": "signal-street-vent-moth-4", "creature": "vent-moth", "at": { "room": "ground", "dx": 18, "dy": 33 } },
+    { "id": "signal-street-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 59, "dy": 38 } },
+    { "id": "signal-street-vent-moth-7", "creature": "vent-moth", "at": { "room": "ground", "dx": 53, "dy": 59 } },
+    { "id": "signal-street-alley-crawler-8", "creature": "alley-crawler", "at": { "room": "ground", "dx": 13, "dy": 57 } },
+    { "id": "signal-street-ad-wraith-9", "creature": "ad-wraith", "at": { "room": "ground", "dx": 60, "dy": 29 } },
+    { "id": "signal-street-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 9, "dy": 46 } },
+    { "id": "signal-street-ad-wraith-12", "creature": "ad-wraith", "at": { "room": "ground", "dx": 8, "dy": 7 } },
+    { "id": "signal-street-vent-moth-13", "creature": "vent-moth", "at": { "room": "ground", "dx": 18, "dy": 4 } },
+    { "id": "signal-street-alley-crawler-14", "creature": "alley-crawler", "at": { "room": "ground", "dx": 8, "dy": 19 } },
+    { "id": "signal-street-ad-wraith-15", "creature": "ad-wraith", "at": { "room": "ground", "dx": 45, "dy": 26 } },
+    { "id": "signal-street-vent-moth-16", "creature": "vent-moth", "at": { "room": "ground", "dx": 32, "dy": 16 } }
   ],
   "lights": [],
   "decals": [],

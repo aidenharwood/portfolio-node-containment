@@ -22,13 +22,13 @@
     { "room": "vigil-house", "name": "Vigil House", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 19, "dy": 10 }
+    "start": { "room": "ground", "dx": 51, "dy": 56 }
   },
   "objects": [
+    { "id": "candle-flats-barricade-0", "object": "barricade", "at": { "room": "ground", "dx": 6, "dy": 34 } },
+    { "id": "candle-flats-precursor-pylon-1", "object": "precursor-pylon", "at": { "room": "ground", "dx": 46, "dy": 30 } },
     { "id": "candle-flats-flood-mast-2", "object": "flood-mast", "at": { "room": "ground", "dx": 57, "dy": 44 } },
-    { "id": "candle-flats-precursor-pylon-4", "object": "precursor-pylon", "at": { "room": "ground", "dx": 21, "dy": 18 } },
-    { "id": "candle-flats-ledge-milestone-5", "object": "ledge-milestone", "at": { "room": "ground", "dx": 56, "dy": 35 } },
-    { "id": "candle-flats-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 43, "dy": 55 } },
+    { "id": "candle-flats-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 13, "dy": 21 } },
     { "id": "vigil-house-notice-board-0", "object": "notice-board", "at": { "room": "vigil-house", "dx": 5, "dy": 0 }, "facing": "south" },
     { "id": "vigil-house-table-1", "object": "table", "at": { "room": "vigil-house", "dx": 6, "dy": 1 } },
     { "id": "vigil-house-street-bench-2", "object": "street-bench", "at": { "room": "vigil-house", "dx": 2, "dy": 4 }, "facing": "north" },
@@ -38,13 +38,12 @@
     { "id": "vigil-house-street-bench-6", "object": "street-bench", "at": { "room": "vigil-house", "dx": 2, "dy": 6 }, "facing": "north" },
     { "id": "vigil-house-street-bench-7", "object": "street-bench", "at": { "room": "vigil-house", "dx": 9, "dy": 6 }, "facing": "north" },
     { "id": "candle-flats-poi-steppe-reliquary-0", "object": "steppe-reliquary", "at": { "room": "ground", "dx": 48, "dy": 43 } },
-    { "id": "candle-flats-poi-red-trace-1", "object": "red-trace", "at": { "room": "ground", "dx": 23, "dy": 42 } },
+    { "id": "candle-flats-poi-red-trace-1", "object": "red-trace", "at": { "room": "ground", "dx": 24, "dy": 7 } },
     { "id": "candle-flats-poi-sprung-cell-door-2", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 29, "dy": 24 } },
-    { "id": "candle-flats-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 41 }, "facing": "south" },
-    { "id": "candle-flats-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 41 }, "facing": "south" },
-    { "id": "candle-flats-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 44 }, "facing": "north" },
-    { "id": "candle-flats-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 44 }, "facing": "north" },
-    { "id": "candle-flats-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 42 }, "facing": "west" }
+    { "id": "candle-flats-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 30, "dy": 41 }, "facing": "east" },
+    { "id": "candle-flats-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 39, "dy": 41 }, "facing": "west" },
+    { "id": "candle-flats-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 37, "dy": 44 }, "facing": "north" },
+    { "id": "candle-flats-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 46, "dy": 41 }, "facing": "west" }
   ],
   "assemblies": [
     { "id": "candle-flats-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 18, "dy": 51 }, "span": 2 }
@@ -53,22 +52,22 @@
     { "id": "vigil-house-vigil-keeper-sol", "npc": "vigil-keeper-sol", "at": { "room": "vigil-house", "dx": 6, "dy": 2 } }
   ],
   "creatures": [
-    { "id": "candle-flats-choir-echo-0", "creature": "choir-echo", "at": { "room": "ground", "dx": 6, "dy": 6 } },
-    { "id": "candle-flats-red-twin-1", "creature": "red-twin", "at": { "room": "ground", "dx": 59, "dy": 24 } },
-    { "id": "candle-flats-shard-wisp-2", "creature": "shard-wisp", "at": { "room": "ground", "dx": 23, "dy": 45 } },
-    { "id": "candle-flats-choir-echo-3", "creature": "choir-echo", "at": { "room": "ground", "dx": 8, "dy": 18 } },
-    { "id": "candle-flats-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 39, "dy": 9 } },
-    { "id": "candle-flats-choir-echo-6", "creature": "choir-echo", "at": { "room": "ground", "dx": 14, "dy": 5 } },
-    { "id": "candle-flats-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 5, "dy": 44 } },
-    { "id": "candle-flats-shard-wisp-8", "creature": "shard-wisp", "at": { "room": "ground", "dx": 18, "dy": 37 } },
-    { "id": "candle-flats-choir-echo-9", "creature": "choir-echo", "at": { "room": "ground", "dx": 24, "dy": 57 } },
-    { "id": "candle-flats-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 27, "dy": 21 } },
-    { "id": "candle-flats-shard-wisp-11", "creature": "shard-wisp", "at": { "room": "ground", "dx": 24, "dy": 37 } },
-    { "id": "candle-flats-red-twin-13", "creature": "red-twin", "at": { "room": "ground", "dx": 32, "dy": 24 } },
-    { "id": "candle-flats-shard-wisp-14", "creature": "shard-wisp", "at": { "room": "ground", "dx": 57, "dy": 16 } },
-    { "id": "candle-flats-choir-echo-15", "creature": "choir-echo", "at": { "room": "ground", "dx": 54, "dy": 55 } },
-    { "id": "candle-flats-red-twin-16", "creature": "red-twin", "at": { "room": "ground", "dx": 10, "dy": 28 } },
-    { "id": "candle-flats-shard-wisp-17", "creature": "shard-wisp", "at": { "room": "ground", "dx": 13, "dy": 56 } }
+    { "id": "candle-flats-choir-echo-0", "creature": "choir-echo", "at": { "room": "ground", "dx": 43, "dy": 55 } },
+    { "id": "candle-flats-red-twin-1", "creature": "red-twin", "at": { "room": "ground", "dx": 21, "dy": 28 } },
+    { "id": "candle-flats-shard-wisp-2", "creature": "shard-wisp", "at": { "room": "ground", "dx": 48, "dy": 60 } },
+    { "id": "candle-flats-choir-echo-3", "creature": "choir-echo", "at": { "room": "ground", "dx": 6, "dy": 6 } },
+    { "id": "candle-flats-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 59, "dy": 24 } },
+    { "id": "candle-flats-shard-wisp-5", "creature": "shard-wisp", "at": { "room": "ground", "dx": 23, "dy": 45 } },
+    { "id": "candle-flats-choir-echo-6", "creature": "choir-echo", "at": { "room": "ground", "dx": 39, "dy": 9 } },
+    { "id": "candle-flats-shard-wisp-8", "creature": "shard-wisp", "at": { "room": "ground", "dx": 14, "dy": 5 } },
+    { "id": "candle-flats-choir-echo-9", "creature": "choir-echo", "at": { "room": "ground", "dx": 5, "dy": 44 } },
+    { "id": "candle-flats-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 18, "dy": 37 } },
+    { "id": "candle-flats-shard-wisp-11", "creature": "shard-wisp", "at": { "room": "ground", "dx": 44, "dy": 24 } },
+    { "id": "candle-flats-choir-echo-12", "creature": "choir-echo", "at": { "room": "ground", "dx": 24, "dy": 57 } },
+    { "id": "candle-flats-red-twin-13", "creature": "red-twin", "at": { "room": "ground", "dx": 27, "dy": 21 } },
+    { "id": "candle-flats-shard-wisp-14", "creature": "shard-wisp", "at": { "room": "ground", "dx": 24, "dy": 37 } },
+    { "id": "candle-flats-red-twin-16", "creature": "red-twin", "at": { "room": "ground", "dx": 32, "dy": 24 } },
+    { "id": "candle-flats-shard-wisp-17", "creature": "shard-wisp", "at": { "room": "ground", "dx": 57, "dy": 16 } }
   ],
   "lights": [],
   "decals": [],
