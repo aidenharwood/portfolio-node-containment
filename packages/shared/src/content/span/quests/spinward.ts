@@ -201,7 +201,7 @@ export const SPINWARD_QUESTS: readonly QuestDefinition[] = [
     recommendedLevel: 13,
     steps: [
       { id: 'coats', journal: 'Contain three scarecoats on the terraces. They walk the fields north of the Lanes.', objectives: [{ type: 'contain', creatureId: 'scarecoat', count: 3, label: 'Contain scarecoats' }] },
-      { id: 'greaves', journal: 'Tell Farmer Greaves at Furrow Cottage that his field is standing still.', objectives: [{ type: 'talkTo', npcId: 'farmer-greaves', label: 'Talk to Farmer Greaves' }] },
+      { id: 'greaves', journal: 'Tell Farmer Greaves at Furrow Hab that his field is standing still.', objectives: [{ type: 'talkTo', npcId: 'farmer-greaves', label: 'Talk to Farmer Greaves' }] },
     ],
     ...paid([scrip(120), questPay('containment', 13, 2)]),
   },
@@ -216,7 +216,7 @@ export const SPINWARD_QUESTS: readonly QuestDefinition[] = [
     steps: [
       { id: 'eels', journal: 'Clear five furrow eels off the low terraces.', objectives: [{ type: 'defeat', creatureId: 'furrow-eel', count: 5, label: 'Defeat furrow eels' }] },
       { id: 'sluice', journal: 'Free the jammed sluice gate on Sluice Row.', objectives: [{ type: 'interactWith', objectId: 'jammed-sluice', label: 'Free the sluice gate' }] },
-      { id: 'adaeze', journal: 'Tell Adaeze Okoro at Sluice Cottage the water is running.', objectives: [{ type: 'talkTo', npcId: 'farmer-adaeze', label: 'Talk to Adaeze' }] },
+      { id: 'adaeze', journal: 'Tell Adaeze Okoro at Sluice Hab the water is running.', objectives: [{ type: 'talkTo', npcId: 'farmer-adaeze', label: 'Talk to Adaeze' }] },
     ],
     ...paid([scrip(90), styleQuestPay(9, 2)]),
   },
@@ -230,7 +230,7 @@ export const SPINWARD_QUESTS: readonly QuestDefinition[] = [
     recommendedLevel: 8,
     steps: [
       { id: 'reeds', journal: 'Cut four reed bundles from the reed beds.', objectives: [{ type: 'gather', itemId: 'reed-bundle', count: 4, label: 'Gather reed bundles' }] },
-      { id: 'wynn', journal: 'Bring the reeds to Ada Wynn in the apothecary, Harrowgate.', objectives: [{ type: 'signal', signal: 'wynn-reeds', npcId: 'apothecary-wynn', label: 'Give Ada Wynn the reeds' }] },
+      { id: 'wynn', journal: 'Bring the reeds to Ada Wynn in the dispensary, Harrowgate.', objectives: [{ type: 'signal', signal: 'wynn-reeds', npcId: 'apothecary-wynn', label: 'Give Ada Wynn the reeds' }] },
     ],
     ...paid([scrip(70), questPay('biochemistry', 8, 2), questPay('salvage', 8, 1)]),
   },

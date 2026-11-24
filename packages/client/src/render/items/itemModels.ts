@@ -770,16 +770,12 @@ const panel: ItemBuilder = ({ primary, secondary }) => {
 
 const lantern: ItemBuilder = ({ primary, secondary, emissive }) => {
   const model = new VoxelModel();
-  const flame = emissive ?? 0xffc04f;
-  model.fill(-3, 0, -3, 3, 1, 3, grain(primary));
-  for (const x of [-3, 3]) for (const z of [-3, 3]) model.fill(x, 2, z, x, 8, z, primary);
-  for (const side of [-3, 3]) {
-    model.fill(-2, 2, side, 2, 8, side, lighten(secondary, 0.3), VOXEL_GLASS);
-    model.fill(side, 2, -2, side, 8, 2, lighten(secondary, 0.3), VOXEL_GLASS);
-  }
-  model.fill(-1, 3, -1, 1, 6, 1, flame, VOXEL_EMISSIVE);
-  model.fill(-3, 9, -3, 3, 9, 3, primary).fill(-2, 10, -2, 2, 10, 2, primary).fill(-1, 11, -1, 1, 11, 1, lighten(primary, 0.15));
-  model.fill(-2, 12, 0, -2, 13, 0, primary).fill(2, 12, 0, 2, 13, 0, primary).fill(-1, 14, 0, 1, 14, 0, primary);
+  const glow = emissive ?? 0x7fe8ff;
+  model.fill(-3, 0, -3, 2, 2, 2, grain(primary)).fill(-3, 2, -3, 2, 2, 2, darken(primary, 0.15));
+  model.fill(-2, 3, -2, 1, 10, 1, lighten(secondary, 0.3), VOXEL_GLASS).fill(-1, 3, -1, 0, 10, 0, glow, VOXEL_EMISSIVE);
+  for (const x of [-3, 2]) model.fill(x, 3, -1, x, 10, 0, darken(primary, 0.1));
+  model.fill(-3, 11, -3, 2, 12, 2, grain(primary)).set(2, 12, 0, glow, VOXEL_EMISSIVE);
+  model.fill(-2, 13, 0, -2, 15, 0, secondary).fill(1, 13, 0, 1, 15, 0, secondary).fill(-1, 16, 0, 0, 16, 0, secondary);
   return model;
 };
 

@@ -5,7 +5,7 @@
   "tier": 8,
   "region": "wreckfield",
   "condition": "breached",
-  "ambience": { "darkness": 0.4, "tint": "#5a3a28", "fog": "#4a3424", "sky": "#8a6a50", "weather": ["dust", "embers"], "haze": 1.2 },
+  "ambience": { "darkness": 0.4, "tint": "#4e3e36", "fog": "#3a3430", "sky": "#6a6660", "weather": ["dust", "embers"], "haze": 1.2 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 11, "row": 1 },
   "steps": [

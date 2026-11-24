@@ -52,8 +52,8 @@ type Kind = Omit<BuildingSpec, 'x' | 'y' | 'w' | 'h' | 'id' | 'name'> & { readon
 const b = (id: string, name: string, slot: Slot, kind: Kind, top?: number, second?: number): BuildingSpec => ({ id, name, ...at(slot, top, second), w: kind.w ?? 12, h: kind.h ?? 8, ...kind });
 
 const outpost = (npc: string, mail: 'market-mailbox' | 'exchange-post' = 'market-mailbox', wall: BuildingSpec['wall'] = 'wall'): Kind => ({ floor: 'boards', wall, theme: 'office', also: ['shop'], safe: true, recipe: 'outpost', npcs: [npc], mail });
-const shop = (npcs: readonly string[], wall: BuildingSpec['wall'] = 'brick', neon = false): Kind => ({ floor: 'boards', wall, theme: 'shop', safe: true, recipe: 'shop', npcs, neon });
-const canteen = (npcs: readonly string[], wall: BuildingSpec['wall'] = 'brick', neon = false): Kind => ({ floor: 'ceramic', wall, theme: 'canteen', safe: true, recipe: 'canteen', npcs, neon });
+const shop = (npcs: readonly string[], wall: BuildingSpec['wall'] = 'blockwork', neon = false): Kind => ({ floor: 'boards', wall, theme: 'shop', safe: true, recipe: 'shop', npcs, neon });
+const canteen = (npcs: readonly string[], wall: BuildingSpec['wall'] = 'blockwork', neon = false): Kind => ({ floor: 'ceramic', wall, theme: 'canteen', safe: true, recipe: 'canteen', npcs, neon });
 const workshop = (npcs: readonly string[], wall: BuildingSpec['wall'] = 'blockwork'): Kind => ({ floor: 'concrete', wall, theme: 'works', safe: true, recipe: 'workshop', npcs });
 const clinic = (npcs: readonly string[], wall: BuildingSpec['wall'] = 'wall'): Kind => ({ floor: 'ceramic', wall, theme: 'medical', safe: true, recipe: 'clinic', npcs });
 const dorm = (npcs: readonly string[], safe = true, creatures: readonly string[] = []): Kind => ({ floor: 'boards', wall: 'wall', theme: 'dormitory', safe, recipe: 'dormitory', npcs, creatures });
@@ -61,8 +61,8 @@ const holding = (npcs: readonly string[], safe = true, creatures: readonly strin
 const headhouse = (lift: string, npcs: readonly string[] = [], safe = true, creatures: readonly string[] = [], anchor?: string): Kind => ({ floor: 'plating', wall: 'wall', theme: 'transit', safe, recipe: 'headhouse', npcs, lift, creatures, ...(anchor ? { anchor } : {}) });
 const office = (npcs: readonly string[], safe = true, creatures: readonly string[] = [], wall: BuildingSpec['wall'] = 'wall'): Kind => ({ floor: 'carpet', wall, theme: 'office', safe, recipe: 'office', npcs, creatures });
 const lab = (npcs: readonly string[], safe = true, nodes: readonly string[] = [], creatures: readonly string[] = []): Kind => ({ floor: 'ceramic', wall: 'wall', theme: 'lab', safe, recipe: 'lab', npcs, nodes, creatures });
-const home = (npcs: readonly string[] = [], wall: BuildingSpec['wall'] = 'brick'): Kind => ({ floor: 'boards', wall, theme: 'home', safe: true, recipe: 'home', npcs, w: 8, h: 6 });
-const hall = (npcs: readonly string[], wall: BuildingSpec['wall'] = 'brick'): Kind => ({ floor: 'terrazzo', wall, theme: 'civic', safe: true, recipe: 'hall', npcs });
+const home = (npcs: readonly string[] = [], wall: BuildingSpec['wall'] = 'blockwork'): Kind => ({ floor: 'boards', wall, theme: 'home', safe: true, recipe: 'home', npcs, w: 8, h: 6 });
+const hall = (npcs: readonly string[], wall: BuildingSpec['wall'] = 'blockwork'): Kind => ({ floor: 'terrazzo', wall, theme: 'civic', safe: true, recipe: 'hall', npcs });
 const yard = (id: string, name: string, x: number, y: number, w: number, h: number, creatures: readonly string[], options: Partial<BuildingSpec> = {}): BuildingSpec => ({ id, name, x, y, w, h, floor: 'gravel', wall: 'wall', edge: 'fence', door: 'north', theme: 'street', safe: false, recipe: 'yard', creatures, ...options });
 
 export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
@@ -90,7 +90,7 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     groundSafe: true,
     buildings: [
       b('commons-stores', 'Commons Stores', [0, 0], outpost('quartermaster-okonkwo', 'exchange-post')),
-      b('the-mess', 'The Mess', [1, 0], canteen(['cook-tavi'])),
+      b('the-mess', 'The Mess', [1, 0], canteen(['cook-tavi'], 'wall')),
       b('fabrication-shed', 'Fabrication Shed', [2, 0], workshop(['technician-oduya'])),
       b('commons-clinic', 'Commons Clinic', [0, 1], clinic(['medic-sauer'])),
       b('barracks-41', 'Barracks 41', [1, 1], dorm(['recruit-dace'])),
@@ -118,23 +118,23 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
     groundSafe: true,
     buildings: [
       b('coop-stores', 'Co-op Stores', [0, 0], outpost('steward-tull', 'market-mailbox', 'brick')),
-      b('harrow-apothecary', 'Wynn’s Apothecary', [1, 0], shop(['apothecary-wynn'])),
-      b('harrow-smithy', 'The Smithy', [2, 0], workshop(['smith-keane'], 'brick')),
-      b('the-plough', 'The Plough', [0, 1], canteen(['publican-dorrit'])),
-      b('coop-hall', 'Co-op Hall', [1, 1], hall(['reeve-halvard'])),
+      b('harrow-apothecary', 'Wynn’s Dispensary', [1, 0], shop(['apothecary-wynn'], 'brick')),
+      b('harrow-smithy', 'Co-op Fab Shop', [2, 0], workshop(['smith-keane'], 'brick')),
+      b('the-plough', 'The Plough', [0, 1], canteen(['publican-dorrit'], 'brick')),
+      b('coop-hall', 'Co-op Hall', [1, 1], hall(['reeve-halvard'], 'brick')),
     ],
     landmark: { prefab: 'landmark-harrow-windpump', at: { x: 45, y: 33 } },
   },
   'harrow-lanes': {
     id: 'harrow-lanes',
     name: 'Harrow Lanes',
-    subtitle: 'Harrow Terraces · cottages and the bakery',
+    subtitle: 'Harrow Terraces · habs and the bakery',
     groundSafe: true,
     buildings: [
-      b('harrow-bakery', 'Ostrowski’s Bakery', [0, 0], shop(['baker-ostrowski'])),
-      b('lanes-cottage-1', 'Furrow Cottage', [1, 0], home(['farmer-greaves'])),
-      b('lanes-cottage-2', 'Sluice Cottage', [2, 0], home(['farmer-adaeze'])),
-      b('lanes-cottage-3', 'Mill Cottage', [0, 1], home()),
+      b('harrow-bakery', 'Ostrowski’s Protein Bakery', [0, 0], shop(['baker-ostrowski'], 'brick')),
+      b('lanes-cottage-1', 'Furrow Hab', [1, 0], home(['farmer-greaves'], 'brick')),
+      b('lanes-cottage-2', 'Sluice Hab', [2, 0], home(['farmer-adaeze'], 'brick')),
+      b('lanes-cottage-3', 'Mill Hab', [0, 1], home([], 'brick')),
       b('lanes-clinic', 'Lanes Surgery', [1, 1], clinic(['doctor-amsel'], 'brick')),
     ],
     landmark: { prefab: 'landmark-grain-silo', at: { x: 44, y: 32 } },

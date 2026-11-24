@@ -29,9 +29,9 @@ const station = (id: string, name: string, examine: string, model: WorldObjectMo
 
 export const WARD_SPOTS: readonly WorldObjectDefinition[] = [
   spot('scrap-pile', 'Scrap Pile', 'A heap of bent metal somebody left for anyone who wants it.', 'scrapPile', 'Salvage', source('salvage', 1, 'scrap-metal', 0.9, 'Salvaging')),
-  spot('cable-drum', 'Cable Drum', 'A wooden drum of old signal cable, left to rot by the towpath. The copper inside is still good.', 'scrapPile', 'Salvage', source('salvage', 5, 'copper-wire', 1.1, 'Stripping cable', 4, 40)),
+  spot('cable-drum', 'Cable Drum', 'A polymer reel of old signal cable, left to weather by the towpath. The copper inside is still good.', 'scrapPile', 'Salvage', source('salvage', 5, 'copper-wire', 1.1, 'Stripping cable', 4, 40)),
   spot('dredge-spot', 'Dredge Winch', 'A rusty winch over the basin. Drop the hook, haul up silt and whatever is in it.', 'dredgeWinch', 'Dredge', source('salvage', 10, 'silt-iron', 1.4, 'Dredging', 5, 50)),
-  spot('eel-trap', 'Eel Trap', 'A wicker trap on a rope, hung off the quay.', 'eelTrap', 'Check', source('biochemistry', 1, 'basin-eel', 0.9, 'Checking the trap', 3, 40)),
+  spot('eel-trap', 'Eel Trap', 'A wire-mesh trap on a cable, hung off the quay.', 'eelTrap', 'Check', source('biochemistry', 1, 'basin-eel', 0.9, 'Checking the trap', 3, 40)),
   spot('reed-bed', 'Reed Bed', 'Tough reeds growing thick along the canal bank.', 'reedBed', 'Cut', source('biochemistry', 10, 'reed-bundle', 1.4, 'Cutting reeds', 5, 50)),
   spot('faint-trace', 'Faint Trace', 'A smear of glowing dust where something passed through.', 'anomalyTrace', 'Study', source('research', 1, 'trace-dust', 0.9, 'Studying the trace', 3, 60), false),
   spot('culvert-trace', 'Culvert Trace', 'A bright smear of residue on the culvert stones. It hums.', 'anomalyTrace', 'Study', source('research', 10, 'culvert-trace', 1.4, 'Studying the trace', 3, 70), false),
@@ -55,7 +55,7 @@ export const WARD_SPOTS: readonly WorldObjectDefinition[] = [
 export const SCRAP_HEAP_SALVAGE = { verb: 'Salvage', effects: [], gather: { attemptTicks: 5, ...source('salvage', 20, 'heavy-scrap', 2, 'Salvaging', 5, 60) } } as const;
 
 export const WARD_STATIONS: readonly WorldObjectDefinition[] = [
-  station('ward-refinery', 'Refinery', 'A brick furnace. Fenwick lets anyone use it, for a nod.', 'refinery', 'refinery', 'Refine'),
+  station('ward-refinery', 'Refinery', 'An induction furnace with a crucible behind glass. Fenwick lets anyone use it, for a nod.', 'refinery', 'refinery', 'Refine'),
   station('ward-fabricator', 'Fabricator', 'A workbench with a press arm and a lot of clamps.', 'fabricator', 'fabricator', 'Assemble'),
   station('ward-synthesiser', 'Synthesiser', 'Two glass vats, a burner and a lot of tubing.', 'synthesiser', 'synthesiser', 'Synthesise'),
   station('ward-cooker', 'Cooker', 'A gas range with three burners, a stockpot and a wok that has never been fully clean.', 'cooker', 'cooker', 'Cook', ['canteen', 'shop', 'street', 'home']),

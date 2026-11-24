@@ -51,7 +51,7 @@ export const SPAN_CREATURES: readonly CreatureDefinition[] = [
     respawnTicks: 12,
     experience: killExperience(1, 5),
     loot: [{ itemId: 'trace-dust', count: 1, chance: 0.5 }],
-    containment: { containmentClass: 'safe', procedures: 'Wear it down gently. Seal it in any crate. It likes warm light and will follow a torch home.', loot: [{ itemId: 'trace-dust', count: 2, chance: 1 }] },
+    containment: { containmentClass: 'safe', procedures: 'Wear it down gently. Seal it in any crate. It likes warm light and will follow a flashlight home.', loot: [{ itemId: 'trace-dust', count: 2, chance: 1 }] },
   }),
   beast({ id: 'lawn-rat', name: 'Lawn Rat', examine: 'A fat rat that lives under the Commons lawns. It has never been hungry and it is not afraid of you.', model: 'canalRat', level: 2, wander: 3, loot: [{ itemId: 'rag-bundle', count: 1, chance: 0.4 }, { itemId: 'scrap-metal', count: 1, chance: 0.2 }, { itemId: 'ratcatchers-gloves', count: 1, chance: 0.01 }] }),
   beast({ id: 'courtyard-gull', name: 'Courtyard Gull', examine: 'A gull that has never seen a sea. It thinks the lake is one and it thinks you are lunch.', model: 'pigeon', level: 1, wander: 3, loot: [{ itemId: 'rag-bundle', count: 1, chance: 0.3 }, { itemId: 'feather-cap', count: 1, chance: 0.01 }] }),

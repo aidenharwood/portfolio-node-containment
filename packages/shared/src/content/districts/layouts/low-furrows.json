@@ -5,7 +5,7 @@
   "tier": 5,
   "region": "harrow-terraces",
   "condition": "overgrown",
-  "ambience": { "darkness": 0.2, "tint": "#e4dcb8", "fog": "#d8d0a8", "sky": "#b8d8c0", "weather": ["dust"], "haze": 0.8 },
+  "ambience": { "darkness": 0.2, "tint": "#d8e4d4", "fog": "#c8d8d0", "sky": "#a8d0c8", "weather": ["dust"], "haze": 0.8 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 1, "row": 5 },
   "steps": [
@@ -15,7 +15,7 @@
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Low Furrows" },
-    { "room": "furrow-croft", "name": "Furrow Croft", "safe": true }
+    { "room": "furrow-croft", "name": "Low Furrows Hab", "safe": true }
   ],
   "anchors": {
     "start": { "room": "ground", "dx": 18, "dy": 30 }

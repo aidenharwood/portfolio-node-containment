@@ -12,7 +12,7 @@
     { "kind": "building", "id": "tram-terminal", "rect": { "x": 14, "y": 49, "width": 36, "height": 5 }, "floor": "terrazzo", "wall": "wall", "doors": [{ "side": "north", "width": 2, "offset": 16 }] },
     { "kind": "track", "points": [{ "x": 0, "y": 52 }, { "x": 62, "y": 52 }] },
     { "kind": "building", "id": "commons-stores", "rect": { "x": 9, "y": 10, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "building", "id": "the-mess", "rect": { "x": 25, "y": 10, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "the-mess", "rect": { "x": 25, "y": 10, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "fabrication-shed", "rect": { "x": 41, "y": 10, "width": 12, "height": 8 }, "floor": "concrete", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "commons-clinic", "rect": { "x": 9, "y": 31, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "building", "id": "barracks-41", "rect": { "x": 25, "y": 31, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
