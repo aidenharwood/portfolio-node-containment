@@ -1,4 +1,5 @@
 import type { CreatureId } from '../combat/creatures.ts';
+import type { CombatStyle } from '../combat/weapons.ts';
 import type { AreaId, ItemId, NpcId, QuestId, WorldObjectId, DistrictId } from '../ids.ts';
 import type { QuestStanding } from '../rules/conditions.ts';
 import { objectiveGoal, type QuestDefinition, type QuestMeasure, type QuestObjective, type QuestStepDefinition } from './questDefinition.ts';
@@ -20,7 +21,7 @@ export type QuestEvent =
   | { readonly type: 'signal'; readonly signal: string }
   | { readonly type: 'loadoutChanged' }
   | { readonly type: 'standingChanged' }
-  | { readonly type: 'defeated'; readonly creatureId: CreatureId }
+  | { readonly type: 'defeated'; readonly creatureId: CreatureId; readonly style?: CombatStyle }
   | { readonly type: 'contained'; readonly creatureId: CreatureId }
   | { readonly type: 'usedItem'; readonly itemId: ItemId }
   | { readonly type: 'gathered'; readonly itemId: ItemId; readonly count: number }
@@ -51,7 +52,7 @@ function progressFromEvent(objective: QuestObjective, current: number, event: Qu
     case 'signal':
       return event.type === 'signal' && event.signal === objective.signal ? current + 1 : current;
     case 'defeat':
-      return event.type === 'defeated' && event.creatureId === objective.creatureId ? current + 1 : current;
+      return event.type === 'defeated' && event.creatureId === objective.creatureId && (objective.style === undefined || event.style === objective.style) ? current + 1 : current;
     case 'contain':
       return event.type === 'contained' && event.creatureId === objective.creatureId ? current + 1 : current;
     case 'useItem':

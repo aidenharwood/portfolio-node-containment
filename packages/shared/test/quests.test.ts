@@ -24,6 +24,21 @@ const probeWith = (widgets: number): QuestStateProbe => ({
 });
 
 describe('quest progression', () => {
+  test('a defeat objective with a style counts only kills made in that style', () => {
+    const drill: QuestDefinition = { id: 'drill', name: 'Drill', category: 'tutorial', summary: '', rewards: [], rewardSummary: [], steps: [
+      { id: 'shoot', journal: '', objectives: [{ type: 'defeat', creatureId: 'decoy', count: 1, style: 'ranged', label: '' }] },
+      { id: 'any', journal: '', objectives: [{ type: 'defeat', creatureId: 'decoy', count: 1, label: '' }] },
+    ] };
+    const started = startQuest(drill, probeWith(0)).progress;
+    const swung = advanceQuest(drill, started, { type: 'defeated', creatureId: 'decoy', style: 'melee' }, probeWith(0)).progress;
+    assert.equal(swung.stepIndex, 0);
+    const unstyled = advanceQuest(drill, started, { type: 'defeated', creatureId: 'decoy' }, probeWith(0)).progress;
+    assert.equal(unstyled.stepIndex, 0);
+    const shot = advanceQuest(drill, swung, { type: 'defeated', creatureId: 'decoy', style: 'ranged' }, probeWith(0)).progress;
+    assert.equal(shot.stepId, 'any');
+    assert.equal(advanceQuest(drill, shot, { type: 'defeated', creatureId: 'decoy', style: 'psionic' }, probeWith(0)).progress.status, 'completed');
+  });
+
   test('a reach objective follows the measured level and completes once it is met', () => {
     const gated: QuestDefinition = { id: 'gated', name: 'Gated', category: 'main', summary: '', rewards: [], rewardSummary: [], steps: [
       { id: 'ready', journal: '', objectives: [{ type: 'reach', measure: 'research', level: 25, label: '' }] },

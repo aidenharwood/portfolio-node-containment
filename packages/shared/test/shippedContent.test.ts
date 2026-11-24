@@ -68,7 +68,8 @@ test('every quest names people, creatures and objects that stand somewhere in th
   const districts = [...GAME_CONTENT.districts.values()];
   const npcs = new Set(districts.flatMap((district) => district.npcs.map((npc) => npc.npcId)));
   const creatures = new Set(districts.flatMap((district) => (district.creatures ?? []).map((creature) => creature.creatureId)));
-  const objects = new Set(districts.flatMap((district) => district.objects.map((object) => object.objectId)));
+  const assembled = districts.flatMap((district) => (district.assemblies ?? []).flatMap((placement) => Object.values(GAME_CONTENT.assemblies.get(placement.assemblyId)?.pieces ?? {}).map((piece) => piece.objectId)));
+  const objects = new Set([...districts.flatMap((district) => district.objects.map((object) => object.objectId)), ...assembled]);
   for (const quest of GAME_CONTENT.quests.values()) {
     if (quest.offeredBy) assert.ok(npcs.has(quest.offeredBy), `${quest.id} is offered by someone placed`);
     for (const step of quest.steps) {

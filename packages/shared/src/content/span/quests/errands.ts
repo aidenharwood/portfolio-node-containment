@@ -21,7 +21,7 @@ export const ERRAND_QUESTS: readonly QuestDefinition[] = [
     category: 'side',
     summary: 'Block K holds a coat that sulks. It has turned its collar to the wall and stopped eating light, and Duty Warden Achebe would like it cheered up before it does something drastic, like leave.',
     offeredBy: 'warden-achebe',
-    offerRequires: ['report-for-intake'],
+    offerRequires: ['the-oath'],
     recommendedLevel: 4,
     steps: [
       { id: 'cell', journal: 'Look in on the sulking coat in its cell in Holding Block K, Site Kestrel.', objectives: [{ type: 'interactWith', objectId: 'sulking-coat-cell', label: 'Look in on the coat' }] },
@@ -37,7 +37,7 @@ export const ERRAND_QUESTS: readonly QuestDefinition[] = [
     category: 'side',
     summary: 'Range Master Brandt qualifies every recruit on the coil pistol. Nobody has failed. Several have been asked to go round again until they stopped failing.',
     offeredBy: 'range-master-brandt',
-    offerRequires: ['report-for-intake'],
+    offerRequires: ['the-oath'],
     recommendedLevel: 5,
     steps: [
       { id: 'draw', journal: 'Draw your scrap coil pistol and hold it like you mean it.', objectives: [{ type: 'equipItem', itemId: 'scrap-coil-pistol', label: 'Equip the coil pistol' }] },
@@ -58,7 +58,7 @@ export const ERRAND_QUESTS: readonly QuestDefinition[] = [
     category: 'side',
     summary: 'The courtyard gulls have decided Kestrel Lake is a sea and the Lines Store is a fishing boat. Pim would like his eels back.',
     offeredBy: 'storekeeper-pim',
-    offerRequires: ['report-for-intake'],
+    offerRequires: ['the-oath'],
     recommendedLevel: 2,
     steps: [
       { id: 'gulls', journal: 'See off six courtyard gulls around Kestrel Lake, east of the Site.', objectives: [{ type: 'defeat', creatureId: 'courtyard-gull', count: 6, label: 'Defeat courtyard gulls' }] },
@@ -312,7 +312,7 @@ export const ERRAND_DIALOGUES: readonly DialogueDefinition[] = [
     {
       npc: 'warden-achebe',
       questId: 'the-coat-that-sulks',
-      offer: { text: 'You have a gentle face. Good. KST-114 is a greatcoat. It eats light, it keeps warm, and since the hounds started howling it has turned its collar to the wall and stopped eating. A coat that stops eating starts walking. Cheer it up.', accept: 'I will cheer up a coat.', requires: ['report-for-intake'] },
+      offer: { text: 'You have a gentle face. Good. KST-114 is a greatcoat. It eats light, it keeps warm, and since the hounds started howling it has turned its collar to the wall and stopped eating. A coat that stops eating starts walking. Cheer it up.', accept: 'I will cheer up a coat.', requires: ['the-oath'] },
       waiting: 'Look in on it, quiet the hounds, then rags for a lining. It is vain. Most coats are.',
       hand: { stepId: 'hand', text: 'Rags? Let me see them. Clean ones.', option: 'Three rag bundles.', items: [], signal: 'coat-lined', thanks: 'There. A new lining, and the hounds quiet. Look at it: collar out, buttons done up. That is a coat that feels seen.' },
       done: 'KST-114 is eating light again. It sat on my chair this morning. I let it.',
@@ -323,7 +323,7 @@ export const ERRAND_DIALOGUES: readonly DialogueDefinition[] = [
   questTalk({
     npc: 'range-master-brandt',
     questId: 'range-day',
-    offer: { text: 'Recruit. You have a coil pistol and the look of someone who has never fired it. Qualification: three targets, live fire on the rats, and Marksmanship 8. Nobody fails my range. They just keep coming back.', accept: 'Sign me up.', requires: ['report-for-intake'] },
+    offer: { text: 'Recruit. You have a coil pistol and the look of someone who has never fired it. Qualification: three targets, live fire on the rats, and Marksmanship 8. Nobody fails my range. They just keep coming back.', accept: 'Sign me up.', requires: ['the-oath'] },
     waiting: 'Targets on the Firing Line and Range Road. Rats wherever rats are. Then Marksmanship 8. Shoot from range, not from hope.',
     report: { stepId: 'brandt', text: 'Marksmanship 8 and a stake you only hit once. Qualified. Here is a carbine. Point the narrow end at the problem.' },
     done: 'You are on my board as qualified. Your name is also on it from two years ago. Also qualified. Consistent.',
@@ -333,7 +333,7 @@ export const ERRAND_DIALOGUES: readonly DialogueDefinition[] = [
     {
       npc: 'storekeeper-pim',
       questId: 'gull-weather',
-      offer: { text: 'The gulls. Have you seen them? They have never seen a sea, they think the Lake is one, and they think my eel tank is the catch of the day. Chase them off and bring me three eels, and the gossip is free for a month.', accept: 'Gulls off, eels in.', requires: ['report-for-intake'] },
+      offer: { text: 'The gulls. Have you seen them? They have never seen a sea, they think the Lake is one, and they think my eel tank is the catch of the day. Chase them off and bring me three eels, and the gossip is free for a month.', accept: 'Gulls off, eels in.', requires: ['the-oath'] },
       waiting: 'Six gulls off the Lake, three eels out of the traps. The traps are on the shores and quays. Bring a bucket.',
       hand: { stepId: 'hand', text: 'Are those eels? Proper ones?', option: 'Three basin eels.', items: [], signal: 'pim-eels', thanks: 'Lovely. Here, smoked ones, from the last lot. And the gossip: the Lift Warden had a brother. Ask her about the old lift book. Do not tell her I said.' },
       done: 'No gulls on the roof for a week. They will be back. So will you, I expect.',

@@ -140,7 +140,7 @@ export const SPINWARD_QUESTS: readonly QuestDefinition[] = [
     category: 'side',
     summary: 'Recruit Dace found her own name scratched into a bunk in Barracks 41. The scratches are two years old.',
     offeredBy: 'recruit-dace',
-    offerRequires: ['report-for-intake'],
+    offerRequires: ['the-oath'],
     recommendedLevel: 2,
     steps: [
       { id: 'frame', journal: 'Find the old bunk frame Stores dragged out onto the Commons for scrap, and read the names on it.', objectives: [{ type: 'interactWith', objectId: 'barracks-bunk-frame', label: 'Read the bunk frame' }] },
@@ -155,7 +155,7 @@ export const SPINWARD_QUESTS: readonly QuestDefinition[] = [
     category: 'side',
     summary: 'Mrs Hale’s son came back from Tallow and does not remember the garden. She would like him to.',
     offeredBy: 'widow-hale',
-    offerRequires: ['report-for-intake'],
+    offerRequires: ['the-oath'],
     recommendedLevel: 2,
     steps: [
       { id: 'tobin', journal: 'Old Tobin at Number Twelve knew the Hale boy. Ask him about the garden.', objectives: [{ type: 'talkTo', npcId: 'old-man-tobin', label: 'Talk to Old Tobin' }], onComplete: [{ type: 'giveItem', itemId: 'hale-seed-tin' }] },
@@ -169,7 +169,7 @@ export const SPINWARD_QUESTS: readonly QuestDefinition[] = [
     category: 'side',
     summary: 'Medic Sauer keeps a drawer of heart traces. Yours matches one of them. She wants a control sample.',
     offeredBy: 'medic-sauer',
-    offerRequires: ['report-for-intake'],
+    offerRequires: ['the-oath'],
     recommendedLevel: 5,
     steps: [
       { id: 'mites', journal: 'Contain three grounds mites around Kestrel. Sauer wants something alive that has never been reprinted.', objectives: [{ type: 'contain', creatureId: 'grounds-mite', count: 3, label: 'Contain grounds mites' }] },
@@ -183,7 +183,7 @@ export const SPINWARD_QUESTS: readonly QuestDefinition[] = [
     category: 'side',
     summary: 'The Training Yard drones have started hitting back. Technician Oduya needs a governor built, and her hands are full.',
     offeredBy: 'technician-oduya',
-    offerRequires: ['report-for-intake'],
+    offerRequires: ['the-oath'],
     recommendedLevel: 8,
     steps: [
       { id: 'build', journal: 'Assemble a drone governor at a fabricator, from scrap plating and trace dust.', objectives: [{ type: 'craft', itemId: 'drone-governor', count: 1, label: 'Assemble a drone governor' }] },
@@ -415,7 +415,7 @@ const SIDE_DIALOGUES: readonly DialogueDefinition[] = [
   questTalk({
     npc: 'recruit-dace',
     questId: 'names-in-the-bunks',
-    offer: { text: 'You want to see something? Stores dragged the old bunk frames out onto the Commons for scrap. Mine has names scratched in the rail. One of them is DACE. It is my handwriting. I have never held a knife that small.', accept: 'Show me the frame.', requires: ['report-for-intake'] },
+    offer: { text: 'You want to see something? Stores dragged the old bunk frames out onto the Commons for scrap. Mine has names scratched in the rail. One of them is DACE. It is my handwriting. I have never held a knife that small.', accept: 'Show me the frame.', requires: ['the-oath'] },
     waiting: 'Read the frame. Then ask Marr. He reads the names every morning. He would know if mine is one of them.',
     done: 'So I am on the list twice. Once dead, once breathing. I will stop scratching names in things.',
     chat: 'They gave us the old barracks. Forty-one. There’s names scratched in the bunks already, and one of them is mine.',
@@ -432,7 +432,7 @@ const SIDE_DIALOGUES: readonly DialogueDefinition[] = [
   questTalk({
     npc: 'widow-hale',
     questId: 'table-for-two',
-    offer: { text: 'My son went to Tallow with Forty-one. He came back last spring. He does not remember the garden, and he planted it. Old Tobin was here the day he did. Ask him. Perhaps a thing from it will help.', accept: 'I will ask Tobin.', requires: ['report-for-intake'] },
+    offer: { text: 'My son went to Tallow with Forty-one. He came back last spring. He does not remember the garden, and he planted it. Old Tobin was here the day he did. Ask him. Perhaps a thing from it will help.', accept: 'I will ask Tobin.', requires: ['the-oath'] },
     waiting: 'Tobin is at Number Twelve. He talks a great deal. Some of it is true.',
     hand: { stepId: 'hale', text: 'Is that his? Give it here.', option: 'Hand over the seed tin.', items: ['hale-seed-tin'], signal: 'hale-tin-returned', thanks: 'His handwriting. Runner beans, sown the spring after Tallow. He was dead that spring. Well. I will lay the table for two again, and we will plant them, and he can remember it from now on.' },
     done: 'The beans came up. He said they were the first thing he ever grew. I let him think so.',
@@ -449,7 +449,7 @@ const SIDE_DIALOGUES: readonly DialogueDefinition[] = [
   questTalk({
     npc: 'medic-sauer',
     questId: 'heartbeat',
-    offer: { text: 'Your heart trace matches one in my drawer, dated two years ago, to the beat. I need a control: something alive that nobody ever printed. Grounds mites will do. Contain three.', accept: 'Three mites, coming up.', requires: ['report-for-intake'] },
+    offer: { text: 'Your heart trace matches one in my drawer, dated two years ago, to the beat. I need a control: something alive that nobody ever printed. Grounds mites will do. Contain three.', accept: 'Three mites, coming up.', requires: ['the-oath'] },
     waiting: 'Three grounds mites, contained, not squashed. They are around the lawns and the drill field.',
     done: 'The mites have messy, original heartbeats. Yours is very clean. Too clean. I have filed it next to the old one. Do not lose sleep. Or do, and come and see me.',
     chat: 'Sit. Breathe. You came out of Intake with a heartbeat I have heard before.',
@@ -458,7 +458,7 @@ const SIDE_DIALOGUES: readonly DialogueDefinition[] = [
   questTalk({
     npc: 'technician-oduya',
     questId: 'governor',
-    offer: { text: 'The yard drones have learned to hit back. Something in the firmware, or something in the drones. I need a governor on the lead unit, and you are the only recruit in the Shed who can hold a fabricator the right way up.', accept: 'I will build it.', requires: ['report-for-intake'], conditions: [{ type: 'skillLevel', skill: 'engineering', atLeast: 8 }], notReady: 'I need someone with Engineering 8 for this one. Come back when you can hold a press arm without crying.' },
+    offer: { text: 'The yard drones have learned to hit back. Something in the firmware, or something in the drones. I need a governor on the lead unit, and you are the only recruit in the Shed who can hold a fabricator the right way up.', accept: 'I will build it.', requires: ['the-oath'], conditions: [{ type: 'skillLevel', skill: 'engineering', atLeast: 8 }], notReady: 'I need someone with Engineering 8 for this one. Come back when you can hold a press arm without crying.' },
     waiting: 'Two scrap plating, two trace dust, a fabricator. The rack sells both if you are short.',
     hand: { stepId: 'fit', text: 'Is that the governor?', option: 'Hand over the drone governor.', items: ['drone-governor'], signal: 'governor-fitted', thanks: 'Clean welds. The drone has gone back to being hit for a living, and it seems relieved.' },
     done: 'The drones log every blow for your file. That governor of yours is in the logs too. It will outlive both of us.',

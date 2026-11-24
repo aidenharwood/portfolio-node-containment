@@ -102,6 +102,20 @@ describe('combat', () => {
     assert.deepEqual(saved.location, anchor('fx-field', 'recovery'));
   });
 
+  test('a defeat reaches quests with the style of the weapon that made it', () => {
+    for (const [primary, style] of [['dart-pistol', 'ranged'], [null, 'melee']] as const) {
+      const harness = createHarness({ prepare: prepared(NEAR_MITE, {}, { ...veteranSkills(), ...(primary ? { equipment: { primary } } : {}) }) });
+      const styles: unknown[] = [];
+      const raise = harness.gameplay.raiseQuestEvent.bind(harness.gameplay);
+      harness.gameplay.raiseQuestEvent = (player, event) => {
+        if (event.type === 'defeated') styles.push(event.style);
+        raise(player, event);
+      };
+      defeat(harness, 'field-mite-a');
+      assert.deepEqual(styles, [style]);
+    }
+  });
+
   test('creatures give up the chase beyond their leash and heal', () => {
     const harness = createHarness({
       prepare: prepared(NEAR_MITE, {}, veteranSkills()),

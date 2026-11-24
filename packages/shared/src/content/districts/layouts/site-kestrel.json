@@ -132,10 +132,11 @@
   "creatures": [
     { "id": "training-yard-training-drone-0", "creature": "training-drone", "at": { "room": "training-yard", "dx": 5, "dy": 4 } },
     { "id": "training-yard-training-drone-1", "creature": "training-drone", "at": { "room": "training-yard", "dx": 11, "dy": 4 } },
-    { "id": "training-yard-training-drone-2", "creature": "training-drone", "at": { "room": "training-yard", "dx": 17, "dy": 4 } },
-    { "id": "training-yard-sim-wisp-3", "creature": "sim-wisp", "at": { "room": "training-yard", "dx": 23, "dy": 4 } },
-    { "id": "training-yard-sim-wisp-4", "creature": "sim-wisp", "at": { "room": "training-yard", "dx": 29, "dy": 4 } },
-    { "id": "training-yard-sim-wisp-5", "creature": "sim-wisp", "at": { "room": "training-yard", "dx": 35, "dy": 4 } }
+    { "id": "training-yard-echo-decoy-2", "creature": "echo-decoy", "at": { "room": "training-yard", "dx": 17, "dy": 4 } },
+    { "id": "training-yard-echo-decoy-3", "creature": "echo-decoy", "at": { "room": "training-yard", "dx": 23, "dy": 4 } },
+    { "id": "training-yard-plated-drone-4", "creature": "plated-drone", "at": { "room": "training-yard", "dx": 29, "dy": 4 } },
+    { "id": "training-yard-plated-drone-5", "creature": "plated-drone", "at": { "room": "training-yard", "dx": 35, "dy": 4 } },
+    { "id": "training-yard-sim-wisp-6", "creature": "sim-wisp", "at": { "room": "training-yard", "dx": 5, "dy": 8 } }
   ],
   "lights": [],
   "decals": [],

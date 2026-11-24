@@ -13,7 +13,7 @@ describe('quest requirements', () => {
     assert.ok(quest);
     const requirements = questRequirements(quest, {}, fresh, GAME_CONTENT);
     const labels = requirements.map((requirement) => requirement.label);
-    assert.ok(labels.includes(`Complete ${GAME_CONTENT.quests.get('report-for-intake')?.name}`));
+    assert.ok(labels.includes(`Complete ${GAME_CONTENT.quests.get('the-oath')?.name}`));
     assert.ok(labels.includes('Engineering level 8'));
     assert.ok(requirements.every((requirement) => !requirement.met || requirement.recommended));
   });
@@ -21,7 +21,7 @@ describe('quest requirements', () => {
   test('a completed prerequisite is met', () => {
     const quest = GAME_CONTENT.quests.get('governor');
     assert.ok(quest);
-    const requirements = questRequirements(quest, done('report-for-intake'), fresh, GAME_CONTENT);
+    const requirements = questRequirements(quest, done('the-oath'), fresh, GAME_CONTENT);
     assert.ok(requirements.filter((requirement) => requirement.label.startsWith('Complete')).every((requirement) => requirement.met));
   });
 });
