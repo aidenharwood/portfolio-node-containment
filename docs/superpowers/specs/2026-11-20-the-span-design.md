@@ -48,7 +48,7 @@ Every creature model is reused under new ids, names and levels, one band per reg
 
 | Region | Creatures (model) | Boss | Elite (holding cell) |
 | - | - | - | - |
-| Kestrel | training drone, sim-wisp (crateWisp), lawn rat (canalRat), courtyard gull (pigeon), feral hound and seam boar (strayDog), grounds mite (gutterMite), drill sentry (trainingDrone) | none; the tutorial ends on a contained wisp | the Drill Master, in Kestrel Intake's Roster Holding |
+| Kestrel | training drone and plated drone (trainingDrone), echo decoy (vaultEcho), sim-wisp (crateWisp), lawn rat (canalRat), courtyard gull (pigeon), feral hound and seam boar (strayDog), grounds mite (gutterMite), drill sentry (trainingDrone) | none; the tutorial ends on a contained wisp and three Commons quests | the Drill Master, in Kestrel Intake's Roster Holding |
 | Terraces | crop magpie (scrapMagpie), furrow eel and ditch leech (siltEel), seed mite (gutterMite), scarecoat and windpump wight (lineMimic), thornback (strayDog), barn crawler (scrapCrawler) | **The Orchard Keeper** (lamplighter), level 19 | the Thornback Matriarch, in the Seed Vault |
 | Halcyon | neon moth and vent moth (mothLantern), alley crawler (scrapCrawler), ad-wraith and holo-shill (vaultEcho), glass hound | **Mr Brightly**, a breached SC-III (redTwin) | the Chrome Crawler, in Gallowglass Holding |
 | Wreckfield | rustling, hull knocker and ballast crab (hullKnocker), bilge wraith (tideWraith), misprint (lineMimic) | **The Cohort** (cellBreaker) | the Bosun (rustling), in Tallow Holding |
@@ -73,7 +73,8 @@ Each node is placed in the region whose tier first covers its level. Item ids st
 ## Story
 
 **Act I, Intake (Kestrel).**
-- *Report for Intake*: the tutorial covers kit, the yard, a training drone, containing a sim-wisp, the canteen and the oath.
+- *Report for Intake*: kit, then a win with baton, pistol and focus in the yard, each against a target weak to it, a study and a contained sim-wisp.
+- *Commons Rounds*, *Make Do* and *The Oath*: eating, the locker, board, exchange, tram, Clinic and shops; gathering, refining, fabricating, synthesising and cooking; then the oath.
 - *Paper Trail*: your file has a field nobody will explain.
 
 **Act II, Strain (Terraces).**

@@ -283,6 +283,8 @@ export const INTAKE_DIALOGUES: readonly DialogueDefinition[] = [
       { node: 'refine', conditions: craft('refine') },
       { node: 'fabricate', conditions: craft('fabricate') },
       { node: 'synthesise', conditions: craft('synthesise') },
+      { node: 'cook', conditions: craft('cook') },
+      { node: 'early', conditions: at(COMMONS_QUEST_ID) },
     ],
     nodes: {
       start: say('Everything you wear on the Span, somebody made. Today that is you. Raw stock first: Kestrel Lake, east of the Site. Scrap off the heaps is Salvage. Greens off the allotment is Biochemistry. That glow on the ground is a faint trace; sampling it is Research.', 'start-2'),
@@ -291,6 +293,8 @@ export const INTAKE_DIALOGUES: readonly DialogueDefinition[] = [
       refine: say('Refinery. Two scrap in, one plate out. That is Refining, and it never gets more interesting than that.'),
       fabricate: say('Fabricator. One plate makes a pair of gauntlets. Better gear needs better plate, and better plate needs a better operative. Put them on.'),
       synthesise: say('Synthesiser. Two greens and a pinch of trace makes a poultice. Keep it for a bad day.'),
+      cook: say('Last one is Tavi’s. The cooker in the Mess. Eel on, lid down. Then Lune wants you, and Vale after her.'),
+      early: say('Okonkwo has you first. Do her rounds, then come back and I will teach you to make things.'),
     },
   },
   {
