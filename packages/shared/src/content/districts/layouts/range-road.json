@@ -10,7 +10,12 @@
   "square": { "column": 7, "row": 10 },
   "steps": [
     { "kind": "rise", "rect": { "x": 30, "y": 31, "width": 14, "height": 10 }, "height": 5 },
-    { "kind": "building", "id": "range-office", "rect": { "x": 31, "y": 32, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "range-office", "rect": { "x": 31, "y": 32, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 33, "y": 41, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 36, "y": 41, "width": 2, "height": 4 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 36, "y": 44, "width": 10, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 45, "y": 28, "width": 2, "height": 18 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 42, "y": 27, "width": 5, "height": 2 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -22,8 +27,6 @@
   },
   "objects": [
     { "id": "range-road-quest-range-target", "object": "range-target", "at": { "room": "ground", "dx": 41, "dy": 43 } },
-    { "id": "range-road-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 25 } },
-    { "id": "range-road-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 57, "dy": 19 } },
     { "id": "range-road-bollard-2", "object": "bollard", "at": { "room": "ground", "dx": 27, "dy": 17 } },
     { "id": "range-road-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 5, "dy": 52 } },
     { "id": "range-road-street-tree-4", "object": "street-tree", "at": { "room": "ground", "dx": 20, "dy": 42 } },
@@ -42,7 +45,15 @@
     { "id": "range-office-table-6", "object": "table", "at": { "room": "range-office", "dx": 4, "dy": 3 } },
     { "id": "range-office-chair-7", "object": "chair", "at": { "room": "range-office", "dx": 3, "dy": 2 }, "facing": "south" },
     { "id": "range-office-chair-8", "object": "chair", "at": { "room": "range-office", "dx": 4, "dy": 2 }, "facing": "south" },
-    { "id": "range-road-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 46, "dy": 25 } }
+    { "id": "range-road-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 46, "dy": 25 } },
+    { "id": "range-road-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 33, "dy": 41 }, "facing": "south" },
+    { "id": "range-road-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 41 }, "facing": "south" },
+    { "id": "range-road-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 46 }, "facing": "north" },
+    { "id": "range-road-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 46 }, "facing": "north" },
+    { "id": "range-road-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 43 }, "facing": "south" },
+    { "id": "range-road-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 47, "dy": 41 }, "facing": "west" },
+    { "id": "range-road-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 47, "dy": 37 }, "facing": "west" },
+    { "id": "range-road-street-lamp-7", "object": "street-lamp", "at": { "room": "ground", "dx": 47, "dy": 29 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],

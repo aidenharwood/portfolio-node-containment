@@ -12,6 +12,7 @@ export interface FurnishingProfile {
   readonly backless?: boolean;
   readonly backstop?: boolean;
   readonly inRows?: boolean;
+  readonly kerbside?: boolean;
 }
 
 const SIGNATURES: Partial<Record<DressingTheme, readonly WorldObjectId[]>> = {};

@@ -119,7 +119,7 @@ export function recipeOf(building: BuildingSpec): Recipe {
       break;
     case 'yard': {
       const garden = building.theme === 'garden';
-      if (!garden) { put('street-lamp', 1, 1); put('street-lamp', w - 2, h - 2); put('flood-mast', w - 2, 1); }
+      if (!garden) { put('flood-mast', 1, 1); put('bollard', w - 2, h - 2); put('flood-mast', w - 2, 1); }
       put('barricade', Math.floor(w / 2) + 4, h - 3); put('barricade', 3, h - 3);
       if (garden) { put('allotment-bed', 2, 2); put('allotment-bed', w - 4, h - 2); put('reed-bed', Math.floor(w / 2), 2); }
       const spots: [number, number][] = [];

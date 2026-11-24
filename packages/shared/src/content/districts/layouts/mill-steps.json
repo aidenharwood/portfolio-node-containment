@@ -10,7 +10,12 @@
   "square": { "column": 3, "row": 6 },
   "steps": [
     { "kind": "rise", "rect": { "x": 28, "y": 30, "width": 14, "height": 10 }, "height": 9 },
-    { "kind": "building", "id": "terrace-mill", "rect": { "x": 29, "y": 31, "width": 12, "height": 8 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "terrace-mill", "rect": { "x": 29, "y": 31, "width": 12, "height": 8 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 31, "y": 40, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 34, "y": 40, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 34, "y": 41, "width": 10, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 43, "y": 27, "width": 2, "height": 16 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 39, "y": 26, "width": 6, "height": 2 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +26,6 @@
     "start": { "room": "ground", "dx": 3, "dy": 39 }
   },
   "objects": [
-    { "id": "mill-steps-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 22, "dy": 30 } },
-    { "id": "mill-steps-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 58, "dy": 46 } },
     { "id": "mill-steps-windpump-2", "object": "windpump", "at": { "room": "ground", "dx": 56, "dy": 58 } },
     { "id": "mill-steps-burn-barrel-3", "object": "burn-barrel", "at": { "room": "ground", "dx": 40, "dy": 50 } },
     { "id": "mill-steps-utility-pole-4", "object": "utility-pole", "at": { "room": "ground", "dx": 14, "dy": 26 } },
@@ -38,7 +41,16 @@
     { "id": "terrace-mill-shelving-4", "object": "shelving", "at": { "room": "terrace-mill", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "terrace-mill-table-5", "object": "table", "at": { "room": "terrace-mill", "dx": 10, "dy": 5 } },
     { "id": "terrace-mill-chair-6", "object": "chair", "at": { "room": "terrace-mill", "dx": 10, "dy": 4 }, "facing": "south" },
-    { "id": "mill-steps-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 30, "dy": 24 } }
+    { "id": "mill-steps-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 30, "dy": 24 } },
+    { "id": "mill-steps-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 40 }, "facing": "south" },
+    { "id": "mill-steps-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 40 }, "facing": "south" },
+    { "id": "mill-steps-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 43 }, "facing": "north" },
+    { "id": "mill-steps-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 43 }, "facing": "north" },
+    { "id": "mill-steps-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 42, "dy": 40 }, "facing": "east" },
+    { "id": "mill-steps-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 36 }, "facing": "west" },
+    { "id": "mill-steps-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 32 }, "facing": "west" },
+    { "id": "mill-steps-street-lamp-7", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 28 }, "facing": "west" },
+    { "id": "mill-steps-street-lamp-8", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 25 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [

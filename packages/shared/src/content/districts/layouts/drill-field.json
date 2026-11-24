@@ -10,7 +10,12 @@
   "square": { "column": 2, "row": 10 },
   "steps": [
     { "kind": "rise", "rect": { "x": 40, "y": 37, "width": 14, "height": 10 }, "height": 7 },
-    { "kind": "building", "id": "drill-hall-bunks", "rect": { "x": 41, "y": 38, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "drill-hall-bunks", "rect": { "x": 41, "y": 38, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 43, "y": 47, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 46, "y": 47, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 46, "y": 48, "width": 10, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 55, "y": 33, "width": 2, "height": 17 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 50, "y": 32, "width": 7, "height": 2 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +26,6 @@
     "start": { "room": "ground", "dx": 13, "dy": 41 }
   },
   "objects": [
-    { "id": "drill-field-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 28, "dy": 20 } },
-    { "id": "drill-field-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 12, "dy": 15 } },
     { "id": "drill-field-litter-bin-3", "object": "litter-bin", "at": { "room": "ground", "dx": 49, "dy": 12 } },
     { "id": "drill-field-checkpoint-barrier-4", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 27, "dy": 6 } },
     { "id": "drill-field-street-tree-5", "object": "street-tree", "at": { "room": "ground", "dx": 41, "dy": 27 } },
@@ -41,7 +44,16 @@
     { "id": "drill-hall-bunks-bed-8", "object": "bed", "at": { "room": "drill-hall-bunks", "dx": 9, "dy": 5 } },
     { "id": "drill-hall-bunks-bed-9", "object": "bed", "at": { "room": "drill-hall-bunks", "dx": 11, "dy": 5 } },
     { "id": "drill-hall-bunks-storage-locker-10", "object": "storage-locker", "at": { "room": "drill-hall-bunks", "dx": 0, "dy": 3 }, "facing": "east" },
-    { "id": "drill-field-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 55, "dy": 29 } }
+    { "id": "drill-field-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 55, "dy": 29 } },
+    { "id": "drill-field-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 47 }, "facing": "south" },
+    { "id": "drill-field-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 50, "dy": 47 }, "facing": "south" },
+    { "id": "drill-field-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 50 }, "facing": "north" },
+    { "id": "drill-field-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 52, "dy": 50 }, "facing": "north" },
+    { "id": "drill-field-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 54, "dy": 47 }, "facing": "east" },
+    { "id": "drill-field-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 57, "dy": 43 }, "facing": "west" },
+    { "id": "drill-field-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 57, "dy": 39 }, "facing": "west" },
+    { "id": "drill-field-street-lamp-7", "object": "street-lamp", "at": { "room": "ground", "dx": 57, "dy": 35 }, "facing": "west" },
+    { "id": "drill-field-street-lamp-8", "object": "street-lamp", "at": { "room": "ground", "dx": 54, "dy": 31 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [],

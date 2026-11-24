@@ -10,7 +10,11 @@
   "square": { "column": 3, "row": 5 },
   "steps": [
     { "kind": "rise", "rect": { "x": 32, "y": 25, "width": 14, "height": 10 }, "height": 6 },
-    { "kind": "building", "id": "tithe-office", "rect": { "x": 33, "y": 26, "width": 12, "height": 8 }, "floor": "carpet", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "tithe-office", "rect": { "x": 33, "y": 26, "width": 12, "height": 8 }, "floor": "carpet", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 35, "y": 35, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 38, "y": 35, "width": 2, "height": 4 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 38, "y": 38, "width": 11, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 48, "y": 35, "width": 2, "height": 5 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -22,8 +26,6 @@
   },
   "objects": [
     { "id": "tithe-barns-quest-tithe-ledger", "object": "tithe-ledger", "at": { "room": "ground", "dx": 41, "dy": 37 } },
-    { "id": "tithe-barns-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 26 } },
-    { "id": "tithe-barns-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 58, "dy": 49 } },
     { "id": "tithe-barns-washing-line-2", "object": "washing-line", "at": { "room": "ground", "dx": 20, "dy": 47 } },
     { "id": "tithe-barns-burn-barrel-3", "object": "burn-barrel", "at": { "room": "ground", "dx": 25, "dy": 43 } },
     { "id": "tithe-barns-washing-line-4", "object": "washing-line", "at": { "room": "ground", "dx": 6, "dy": 10 } },
@@ -39,7 +41,11 @@
     { "id": "tithe-office-table-6", "object": "table", "at": { "room": "tithe-office", "dx": 4, "dy": 3 } },
     { "id": "tithe-office-chair-7", "object": "chair", "at": { "room": "tithe-office", "dx": 3, "dy": 2 }, "facing": "south" },
     { "id": "tithe-office-chair-8", "object": "chair", "at": { "room": "tithe-office", "dx": 4, "dy": 2 }, "facing": "south" },
-    { "id": "tithe-barns-poi-harrow-tithe-box-0", "object": "harrow-tithe-box", "at": { "room": "ground", "dx": 53, "dy": 25 } }
+    { "id": "tithe-barns-poi-harrow-tithe-box-0", "object": "harrow-tithe-box", "at": { "room": "ground", "dx": 53, "dy": 25 } },
+    { "id": "tithe-barns-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 35, "dy": 35 }, "facing": "south" },
+    { "id": "tithe-barns-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 42, "dy": 35 }, "facing": "south" },
+    { "id": "tithe-barns-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 40 }, "facing": "north" },
+    { "id": "tithe-barns-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 40 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [

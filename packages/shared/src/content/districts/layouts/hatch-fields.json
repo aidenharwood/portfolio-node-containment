@@ -10,7 +10,11 @@
   "square": { "column": 10, "row": 3 },
   "steps": [
     { "kind": "rise", "rect": { "x": 30, "y": 29, "width": 14, "height": 10 }, "height": 4 },
-    { "kind": "building", "id": "hatch-bunker", "rect": { "x": 31, "y": 30, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "hatch-bunker", "rect": { "x": 31, "y": 30, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 33, "y": 39, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 36, "y": 39, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 36, "y": 40, "width": 12, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 47, "y": 39, "width": 2, "height": 3 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +25,6 @@
     "start": { "room": "ground", "dx": 53, "dy": 52 }
   },
   "objects": [
-    { "id": "hatch-fields-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 29 } },
-    { "id": "hatch-fields-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 47, "dy": 15 } },
     { "id": "hatch-fields-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 60, "dy": 36 } },
     { "id": "hatch-fields-parked-car-4", "object": "parked-car", "at": { "room": "ground", "dx": 40, "dy": 45 } },
     { "id": "hatch-fields-burn-barrel-5", "object": "burn-barrel", "at": { "room": "ground", "dx": 14, "dy": 16 } },
@@ -35,7 +37,12 @@
     { "id": "hatch-bunker-keycard-reader-3", "object": "keycard-reader", "at": { "room": "hatch-bunker", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "hatch-bunker-security-camera-4", "object": "security-camera", "at": { "room": "hatch-bunker", "dx": 0, "dy": 0 }, "facing": "south" },
     { "id": "hatch-bunker-lab-bench-5", "object": "lab-bench", "at": { "room": "hatch-bunker", "dx": 10, "dy": 4 } },
-    { "id": "hatch-fields-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 49, "dy": 43 } }
+    { "id": "hatch-fields-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 49, "dy": 43 } },
+    { "id": "hatch-fields-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 33, "dy": 39 }, "facing": "south" },
+    { "id": "hatch-fields-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 39 }, "facing": "south" },
+    { "id": "hatch-fields-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 42 }, "facing": "north" },
+    { "id": "hatch-fields-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 42, "dy": 42 }, "facing": "north" },
+    { "id": "hatch-fields-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 39 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [],

@@ -49,10 +49,6 @@
     { "id": "alley-flat-shelving-2", "object": "shelving", "at": { "room": "alley-flat", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "alley-flat-table-3", "object": "table", "at": { "room": "alley-flat", "dx": 5, "dy": 3 } },
     { "id": "alley-flat-chair-4", "object": "chair", "at": { "room": "alley-flat", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "glasshouse-alley-street-lamp-25", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 42 } },
-    { "id": "glasshouse-alley-street-lamp-26", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 3 } },
-    { "id": "glasshouse-alley-street-lamp-27", "object": "street-lamp", "at": { "room": "ground", "dx": 13, "dy": 49 } },
-    { "id": "glasshouse-alley-street-lamp-28", "object": "street-lamp", "at": { "room": "ground", "dx": 56, "dy": 14 } },
     { "id": "glasshouse-alley-food-stall-29", "object": "food-stall", "at": { "room": "ground", "dx": 17, "dy": 41 } },
     { "id": "glasshouse-alley-holo-billboard-30", "object": "holo-billboard", "at": { "room": "ground", "dx": 30, "dy": 52 } },
     { "id": "glasshouse-alley-bollard-31", "object": "bollard", "at": { "room": "ground", "dx": 58, "dy": 6 } },
@@ -62,7 +58,13 @@
     { "id": "glasshouse-alley-barricade-35", "object": "barricade", "at": { "room": "ground", "dx": 46, "dy": 50 } },
     { "id": "glasshouse-alley-street-bench-36", "object": "street-bench", "at": { "room": "ground", "dx": 3, "dy": 26 }, "facing": "south" },
     { "id": "glasshouse-alley-street-bench-37", "object": "street-bench", "at": { "room": "ground", "dx": 39, "dy": 25 }, "facing": "south" },
-    { "id": "glasshouse-alley-street-bench-38", "object": "street-bench", "at": { "room": "ground", "dx": 24, "dy": 52 }, "facing": "south" }
+    { "id": "glasshouse-alley-street-bench-38", "object": "street-bench", "at": { "room": "ground", "dx": 24, "dy": 52 }, "facing": "south" },
+    { "id": "glasshouse-alley-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 19 }, "facing": "south" },
+    { "id": "glasshouse-alley-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 18, "dy": 19 }, "facing": "south" },
+    { "id": "glasshouse-alley-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 19 }, "facing": "south" },
+    { "id": "glasshouse-alley-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 19 }, "facing": "south" },
+    { "id": "glasshouse-alley-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 17 }, "facing": "south" },
+    { "id": "glasshouse-alley-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 17 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [

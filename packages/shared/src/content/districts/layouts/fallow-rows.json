@@ -10,7 +10,11 @@
   "square": { "column": 2, "row": 8 },
   "steps": [
     { "kind": "rise", "rect": { "x": 25, "y": 32, "width": 14, "height": 10 }, "height": 7 },
-    { "kind": "building", "id": "fallow-byre", "rect": { "x": 26, "y": 33, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "fallow-byre", "rect": { "x": 26, "y": 33, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 28, "y": 42, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 31, "y": 42, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 31, "y": 43, "width": 12, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 42, "y": 39, "width": 2, "height": 6 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -22,8 +26,6 @@
   },
   "objects": [
     { "id": "fallow-rows-quest-magpie-nest", "object": "magpie-nest", "at": { "room": "ground", "dx": 41, "dy": 40 } },
-    { "id": "fallow-rows-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 19 } },
-    { "id": "fallow-rows-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 24, "dy": 14 } },
     { "id": "fallow-rows-street-tree-2", "object": "street-tree", "at": { "room": "ground", "dx": 60, "dy": 53 } },
     { "id": "fallow-rows-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 49, "dy": 45 } },
     { "id": "fallow-rows-street-tree-4", "object": "street-tree", "at": { "room": "ground", "dx": 59, "dy": 44 } },
@@ -37,7 +39,12 @@
     { "id": "fallow-byre-keycard-reader-3", "object": "keycard-reader", "at": { "room": "fallow-byre", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "fallow-byre-security-camera-4", "object": "security-camera", "at": { "room": "fallow-byre", "dx": 0, "dy": 0 }, "facing": "south" },
     { "id": "fallow-byre-lab-bench-5", "object": "lab-bench", "at": { "room": "fallow-byre", "dx": 10, "dy": 4 } },
-    { "id": "fallow-rows-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 45, "dy": 29 } }
+    { "id": "fallow-rows-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 45, "dy": 29 } },
+    { "id": "fallow-rows-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 28, "dy": 42 }, "facing": "south" },
+    { "id": "fallow-rows-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 35, "dy": 42 }, "facing": "south" },
+    { "id": "fallow-rows-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 33, "dy": 45 }, "facing": "north" },
+    { "id": "fallow-rows-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 45 }, "facing": "north" },
+    { "id": "fallow-rows-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 42 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [],

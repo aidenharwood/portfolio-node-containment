@@ -10,7 +10,11 @@
   "square": { "column": 12, "row": 1 },
   "steps": [
     { "kind": "rise", "rect": { "x": 29, "y": 29, "width": 14, "height": 10 }, "height": 3 },
-    { "kind": "building", "id": "scrap-sea-forge", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "concrete", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "scrap-sea-forge", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "concrete", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 32, "y": 39, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 35, "y": 39, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 35, "y": 40, "width": 11, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 45, "y": 36, "width": 2, "height": 6 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +25,6 @@
     "start": { "room": "ground", "dx": 3, "dy": 47 }
   },
   "objects": [
-    { "id": "scrap-sea-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 43 } },
-    { "id": "scrap-sea-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 21, "dy": 19 } },
     { "id": "scrap-sea-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 7, "dy": 57 } },
     { "id": "scrap-sea-parked-car-3", "object": "parked-car", "at": { "room": "ground", "dx": 7, "dy": 19 } },
     { "id": "scrap-sea-utility-pole-5", "object": "utility-pole", "at": { "room": "ground", "dx": 41, "dy": 25 } },
@@ -34,7 +36,12 @@
     { "id": "scrap-sea-forge-shelving-4", "object": "shelving", "at": { "room": "scrap-sea-forge", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "scrap-sea-forge-table-5", "object": "table", "at": { "room": "scrap-sea-forge", "dx": 10, "dy": 5 } },
     { "id": "scrap-sea-forge-chair-6", "object": "chair", "at": { "room": "scrap-sea-forge", "dx": 10, "dy": 4 }, "facing": "south" },
-    { "id": "scrap-sea-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 55, "dy": 35 } }
+    { "id": "scrap-sea-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 55, "dy": 35 } },
+    { "id": "scrap-sea-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 39 }, "facing": "south" },
+    { "id": "scrap-sea-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 39 }, "facing": "south" },
+    { "id": "scrap-sea-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 42 }, "facing": "north" },
+    { "id": "scrap-sea-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 42 }, "facing": "north" },
+    { "id": "scrap-sea-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 47, "dy": 40 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],

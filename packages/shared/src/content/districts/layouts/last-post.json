@@ -85,10 +85,6 @@
     { "id": "last-post-bunks-bed-8", "object": "bed", "at": { "room": "last-post-bunks", "dx": 9, "dy": 5 } },
     { "id": "last-post-bunks-bed-9", "object": "bed", "at": { "room": "last-post-bunks", "dx": 11, "dy": 5 } },
     { "id": "last-post-bunks-storage-locker-10", "object": "storage-locker", "at": { "room": "last-post-bunks", "dx": 0, "dy": 3 }, "facing": "east" },
-    { "id": "last-post-street-lamp-52", "object": "street-lamp", "at": { "room": "ground", "dx": 3, "dy": 29 } },
-    { "id": "last-post-street-lamp-53", "object": "street-lamp", "at": { "room": "ground", "dx": 47, "dy": 4 } },
-    { "id": "last-post-street-lamp-54", "object": "street-lamp", "at": { "room": "ground", "dx": 6, "dy": 48 } },
-    { "id": "last-post-street-lamp-55", "object": "street-lamp", "at": { "room": "ground", "dx": 60, "dy": 22 } },
     { "id": "last-post-flood-mast-56", "object": "flood-mast", "at": { "room": "ground", "dx": 58, "dy": 41 } },
     { "id": "last-post-flood-mast-57", "object": "flood-mast", "at": { "room": "ground", "dx": 8, "dy": 21 } },
     { "id": "last-post-checkpoint-barrier-58", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 51, "dy": 28 } },
@@ -98,7 +94,19 @@
     { "id": "last-post-barricade-62", "object": "barricade", "at": { "room": "ground", "dx": 56, "dy": 49 } },
     { "id": "last-post-street-bench-63", "object": "street-bench", "at": { "room": "ground", "dx": 22, "dy": 3 }, "facing": "south" },
     { "id": "last-post-street-bench-64", "object": "street-bench", "at": { "room": "ground", "dx": 38, "dy": 60 }, "facing": "south" },
-    { "id": "last-post-street-bench-65", "object": "street-bench", "at": { "room": "ground", "dx": 15, "dy": 6 }, "facing": "south" }
+    { "id": "last-post-street-bench-65", "object": "street-bench", "at": { "room": "ground", "dx": 15, "dy": 6 }, "facing": "south" },
+    { "id": "last-post-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 47 }, "facing": "north" },
+    { "id": "last-post-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 47 }, "facing": "north" },
+    { "id": "last-post-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 19 }, "facing": "south" },
+    { "id": "last-post-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 18, "dy": 19 }, "facing": "south" },
+    { "id": "last-post-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 19 }, "facing": "south" },
+    { "id": "last-post-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 19 }, "facing": "south" },
+    { "id": "last-post-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 19 }, "facing": "south" },
+    { "id": "last-post-street-lamp-7", "object": "street-lamp", "at": { "room": "ground", "dx": 50, "dy": 19 }, "facing": "south" },
+    { "id": "last-post-street-lamp-8", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 40 }, "facing": "south" },
+    { "id": "last-post-street-lamp-9", "object": "street-lamp", "at": { "room": "ground", "dx": 18, "dy": 40 }, "facing": "south" },
+    { "id": "last-post-street-lamp-10", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 40 }, "facing": "south" },
+    { "id": "last-post-street-lamp-11", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 40 }, "facing": "south" }
   ],
   "assemblies": [
     { "id": "last-post-tram-car", "assembly": "tram-car", "at": { "room": "tram-terminal", "dx": 14, "dy": 3 } }

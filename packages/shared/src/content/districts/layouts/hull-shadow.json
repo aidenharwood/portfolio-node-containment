@@ -10,7 +10,9 @@
   "square": { "column": 10, "row": 1 },
   "steps": [
     { "kind": "rise", "rect": { "x": 5, "y": 26, "width": 10, "height": 8 }, "height": 5 },
-    { "kind": "building", "id": "hull-shadow-shack", "rect": { "x": 6, "y": 27, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "hull-shadow-shack", "rect": { "x": 6, "y": 27, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 6, "y": 34, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 9, "y": 34, "width": 2, "height": 7 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -21,7 +23,6 @@
     "start": { "room": "ground", "dx": 46, "dy": 23 }
   },
   "objects": [
-    { "id": "hull-shadow-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 58, "dy": 60 } },
     { "id": "hull-shadow-magnet-crane-2", "object": "magnet-crane", "at": { "room": "ground", "dx": 5, "dy": 18 } },
     { "id": "hull-shadow-parked-car-3", "object": "parked-car", "at": { "room": "ground", "dx": 22, "dy": 59 } },
     { "id": "hull-shadow-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 19, "dy": 17 } },
@@ -34,7 +35,10 @@
     { "id": "hull-shadow-shack-shelving-2", "object": "shelving", "at": { "room": "hull-shadow-shack", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "hull-shadow-shack-table-3", "object": "table", "at": { "room": "hull-shadow-shack", "dx": 5, "dy": 3 } },
     { "id": "hull-shadow-shack-chair-4", "object": "chair", "at": { "room": "hull-shadow-shack", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "hull-shadow-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 7, "dy": 50 } }
+    { "id": "hull-shadow-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 7, "dy": 50 } },
+    { "id": "hull-shadow-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 6, "dy": 34 }, "facing": "south" },
+    { "id": "hull-shadow-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 13, "dy": 34 }, "facing": "south" },
+    { "id": "hull-shadow-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 8, "dy": 37 }, "facing": "east" }
   ],
   "assemblies": [],
   "npcs": [],

@@ -10,7 +10,11 @@
   "square": { "column": 15, "row": 5 },
   "steps": [
     { "kind": "rise", "rect": { "x": 33, "y": 27, "width": 14, "height": 10 }, "height": 8 },
-    { "kind": "building", "id": "moor-cells", "rect": { "x": 34, "y": 28, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "moor-cells", "rect": { "x": 34, "y": 28, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 36, "y": 37, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 39, "y": 37, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 39, "y": 38, "width": 11, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 49, "y": 36, "width": 2, "height": 4 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +25,6 @@
     "start": { "room": "ground", "dx": 54, "dy": 6 }
   },
   "objects": [
-    { "id": "refraction-moor-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 53, "dy": 26 } },
-    { "id": "refraction-moor-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 13 } },
     { "id": "refraction-moor-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 14, "dy": 59 } },
     { "id": "refraction-moor-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 18, "dy": 29 } },
     { "id": "refraction-moor-directorate-salvage-7", "object": "directorate-salvage", "at": { "room": "ground", "dx": 41, "dy": 5 } },
@@ -34,7 +36,12 @@
     { "id": "moor-cells-keycard-reader-3", "object": "keycard-reader", "at": { "room": "moor-cells", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "moor-cells-security-camera-4", "object": "security-camera", "at": { "room": "moor-cells", "dx": 0, "dy": 0 }, "facing": "south" },
     { "id": "moor-cells-lab-bench-5", "object": "lab-bench", "at": { "room": "moor-cells", "dx": 10, "dy": 4 } },
-    { "id": "refraction-moor-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 56, "dy": 40 } }
+    { "id": "refraction-moor-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 56, "dy": 40 } },
+    { "id": "refraction-moor-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 37 }, "facing": "south" },
+    { "id": "refraction-moor-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 37 }, "facing": "south" },
+    { "id": "refraction-moor-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 40 }, "facing": "north" },
+    { "id": "refraction-moor-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 40 }, "facing": "north" },
+    { "id": "refraction-moor-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 51, "dy": 38 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],

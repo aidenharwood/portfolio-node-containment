@@ -10,7 +10,11 @@
   "square": { "column": 9, "row": 1 },
   "steps": [
     { "kind": "rise", "rect": { "x": 28, "y": 29, "width": 10, "height": 8 }, "height": 5 },
-    { "kind": "building", "id": "gardens-flat", "rect": { "x": 29, "y": 30, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "gardens-flat", "rect": { "x": 29, "y": 30, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 29, "y": 37, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 32, "y": 37, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 32, "y": 38, "width": 9, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 40, "y": 35, "width": 2, "height": 5 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +25,6 @@
     "start": { "room": "ground", "dx": 43, "dy": 7 }
   },
   "objects": [
-    { "id": "holo-gardens-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 9, "dy": 25 } },
-    { "id": "holo-gardens-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 13, "dy": 32 } },
     { "id": "holo-gardens-parked-car-2", "object": "parked-car", "at": { "room": "ground", "dx": 38, "dy": 51 } },
     { "id": "holo-gardens-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 34, "dy": 24 } },
     { "id": "holo-gardens-halcyon-north-gate-leaf-0", "object": "halcyon-north-gate-leaf", "at": { "room": "ground", "dx": 63, "dy": 30 }, "facing": "east" },
@@ -34,7 +36,11 @@
     { "id": "gardens-flat-shelving-2", "object": "shelving", "at": { "room": "gardens-flat", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "gardens-flat-table-3", "object": "table", "at": { "room": "gardens-flat", "dx": 5, "dy": 3 } },
     { "id": "gardens-flat-chair-4", "object": "chair", "at": { "room": "gardens-flat", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "holo-gardens-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 42, "dy": 39 } }
+    { "id": "holo-gardens-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 42, "dy": 39 } },
+    { "id": "holo-gardens-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 37 }, "facing": "south" },
+    { "id": "holo-gardens-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 37 }, "facing": "south" },
+    { "id": "holo-gardens-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 40 }, "facing": "north" },
+    { "id": "holo-gardens-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 40 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],

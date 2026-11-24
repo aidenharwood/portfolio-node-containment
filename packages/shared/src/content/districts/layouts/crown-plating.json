@@ -10,7 +10,11 @@
   "square": { "column": 7, "row": 7 },
   "steps": [
     { "kind": "rise", "rect": { "x": 28, "y": 29, "width": 14, "height": 10 }, "height": 11 },
-    { "kind": "building", "id": "crown-lab", "rect": { "x": 29, "y": 30, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "crown-lab", "rect": { "x": 29, "y": 30, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 31, "y": 39, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 34, "y": 39, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 34, "y": 40, "width": 11, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 44, "y": 38, "width": 2, "height": 4 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -21,7 +25,6 @@
     "start": { "room": "ground", "dx": 39, "dy": 7 }
   },
   "objects": [
-    { "id": "crown-plating-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 59, "dy": 47 } },
     { "id": "crown-plating-barricade-3", "object": "barricade", "at": { "room": "ground", "dx": 42, "dy": 51 } },
     { "id": "crown-plating-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 13, "dy": 44 } },
     { "id": "crown-plating-checkpoint-barrier-5", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 51, "dy": 5 } },
@@ -35,7 +38,12 @@
     { "id": "crown-lab-shelving-5", "object": "shelving", "at": { "room": "crown-lab", "dx": 10, "dy": 0 }, "facing": "south" },
     { "id": "crown-lab-shelving-6", "object": "shelving", "at": { "room": "crown-lab", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "crown-lab-vault-trace-7", "object": "vault-trace", "at": { "room": "crown-lab", "dx": 10, "dy": 5 } },
-    { "id": "crown-plating-poi-spindle-vault-drawer-0", "object": "spindle-vault-drawer", "at": { "room": "ground", "dx": 47, "dy": 42 } }
+    { "id": "crown-plating-poi-spindle-vault-drawer-0", "object": "spindle-vault-drawer", "at": { "room": "ground", "dx": 47, "dy": 42 } },
+    { "id": "crown-plating-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 39 }, "facing": "south" },
+    { "id": "crown-plating-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 39 }, "facing": "south" },
+    { "id": "crown-plating-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 42 }, "facing": "north" },
+    { "id": "crown-plating-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 42 }, "facing": "north" },
+    { "id": "crown-plating-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 40 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],

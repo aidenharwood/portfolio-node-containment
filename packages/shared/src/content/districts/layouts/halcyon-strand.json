@@ -10,7 +10,10 @@
   "square": { "column": 9, "row": 3 },
   "steps": [
     { "kind": "rise", "rect": { "x": 30, "y": 28, "width": 10, "height": 8 }, "height": 6 },
-    { "kind": "building", "id": "strand-flat", "rect": { "x": 31, "y": 29, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "strand-flat", "rect": { "x": 31, "y": 29, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 31, "y": 36, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 34, "y": 36, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 34, "y": 37, "width": 10, "height": 2 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +24,6 @@
     "start": { "room": "ground", "dx": 58, "dy": 6 }
   },
   "objects": [
-    { "id": "halcyon-strand-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 17, "dy": 29 } },
-    { "id": "halcyon-strand-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 49, "dy": 39 } },
     { "id": "halcyon-strand-food-stall-2", "object": "food-stall", "at": { "room": "ground", "dx": 22, "dy": 53 } },
     { "id": "halcyon-strand-holo-billboard-3", "object": "holo-billboard", "at": { "room": "ground", "dx": 20, "dy": 21 } },
     { "id": "halcyon-strand-litter-bin-4", "object": "litter-bin", "at": { "room": "ground", "dx": 58, "dy": 13 } },
@@ -36,7 +37,11 @@
     { "id": "strand-flat-chair-4", "object": "chair", "at": { "room": "strand-flat", "dx": 5, "dy": 2 }, "facing": "south" },
     { "id": "halcyon-strand-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 46, "dy": 41 } },
     { "id": "halcyon-strand-poi-scrap-heap-1", "object": "scrap-heap", "at": { "room": "ground", "dx": 24, "dy": 30 } },
-    { "id": "halcyon-strand-poi-culture-bench-2", "object": "culture-bench", "at": { "room": "ground", "dx": 24, "dy": 36 } }
+    { "id": "halcyon-strand-poi-culture-bench-2", "object": "culture-bench", "at": { "room": "ground", "dx": 24, "dy": 36 } },
+    { "id": "halcyon-strand-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 36 }, "facing": "south" },
+    { "id": "halcyon-strand-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 36 }, "facing": "south" },
+    { "id": "halcyon-strand-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 39 }, "facing": "north" },
+    { "id": "halcyon-strand-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 39 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],

@@ -10,7 +10,10 @@
   "square": { "column": 16, "row": 3 },
   "steps": [
     { "kind": "rise", "rect": { "x": 35, "y": 40, "width": 14, "height": 10 }, "height": 5 },
-    { "kind": "building", "id": "ballast-hold", "rect": { "x": 36, "y": 41, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "ballast-hold", "rect": { "x": 36, "y": 41, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 38, "y": 50, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 41, "y": 50, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 30, "y": 51, "width": 13, "height": 2 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -22,7 +25,6 @@
   },
   "objects": [
     { "id": "ballast-strand-quest-spill-container", "object": "spill-container", "at": { "room": "ground", "dx": 42, "dy": 39 } },
-    { "id": "ballast-strand-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 51, "dy": 39 } },
     { "id": "ballast-strand-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 19, "dy": 40 } },
     { "id": "ballast-strand-burn-barrel-3", "object": "burn-barrel", "at": { "room": "ground", "dx": 48, "dy": 55 } },
     { "id": "ballast-strand-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 8, "dy": 44 } },
@@ -38,7 +40,11 @@
     { "id": "ballast-hold-keycard-reader-3", "object": "keycard-reader", "at": { "room": "ballast-hold", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "ballast-hold-security-camera-4", "object": "security-camera", "at": { "room": "ballast-hold", "dx": 0, "dy": 0 }, "facing": "south" },
     { "id": "ballast-hold-lab-bench-5", "object": "lab-bench", "at": { "room": "ballast-hold", "dx": 10, "dy": 4 } },
-    { "id": "ballast-strand-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 25, "dy": 41 } }
+    { "id": "ballast-strand-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 25, "dy": 41 } },
+    { "id": "ballast-strand-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 50 }, "facing": "south" },
+    { "id": "ballast-strand-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 50 }, "facing": "south" },
+    { "id": "ballast-strand-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 53 }, "facing": "north" },
+    { "id": "ballast-strand-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 35, "dy": 53 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],

@@ -10,7 +10,12 @@
   "square": { "column": 1, "row": 6 },
   "steps": [
     { "kind": "rise", "rect": { "x": 29, "y": 29, "width": 14, "height": 10 }, "height": 12 },
-    { "kind": "building", "id": "drovers-rest", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "drovers-rest", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 32, "y": 39, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 35, "y": 39, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 35, "y": 40, "width": 10, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 44, "y": 26, "width": 2, "height": 16 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 43, "y": 25, "width": 3, "height": 2 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +26,6 @@
     "start": { "room": "ground", "dx": 52, "dy": 10 }
   },
   "objects": [
-    { "id": "drovers-way-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 16, "dy": 40 } },
-    { "id": "drovers-way-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 20 } },
     { "id": "drovers-way-washing-line-2", "object": "washing-line", "at": { "room": "ground", "dx": 36, "dy": 16 } },
     { "id": "drovers-way-washing-line-3", "object": "washing-line", "at": { "room": "ground", "dx": 15, "dy": 11 } },
     { "id": "drovers-way-street-tree-4", "object": "street-tree", "at": { "room": "ground", "dx": 26, "dy": 47 } },
@@ -41,7 +44,15 @@
     { "id": "drovers-rest-chair-9", "object": "chair", "at": { "room": "drovers-rest", "dx": 10, "dy": 2 }, "facing": "south" },
     { "id": "drovers-rest-table-10", "object": "table", "at": { "room": "drovers-rest", "dx": 9, "dy": 6 } },
     { "id": "drovers-rest-chair-11", "object": "chair", "at": { "room": "drovers-rest", "dx": 9, "dy": 5 }, "facing": "south" },
-    { "id": "drovers-way-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 47, "dy": 26 } }
+    { "id": "drovers-way-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 47, "dy": 26 } },
+    { "id": "drovers-way-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 39 }, "facing": "south" },
+    { "id": "drovers-way-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 39 }, "facing": "south" },
+    { "id": "drovers-way-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 42 }, "facing": "north" },
+    { "id": "drovers-way-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 42 }, "facing": "north" },
+    { "id": "drovers-way-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 39 }, "facing": "east" },
+    { "id": "drovers-way-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 35 }, "facing": "west" },
+    { "id": "drovers-way-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 31 }, "facing": "west" },
+    { "id": "drovers-way-street-lamp-7", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 27 }, "facing": "east" }
   ],
   "assemblies": [
     { "id": "drovers-way-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 30, "dy": 51 }, "span": 2 },

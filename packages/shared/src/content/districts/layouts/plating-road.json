@@ -10,7 +10,11 @@
   "square": { "column": 8, "row": 6 },
   "steps": [
     { "kind": "rise", "rect": { "x": 29, "y": 29, "width": 14, "height": 10 }, "height": 13 },
-    { "kind": "building", "id": "plating-cells", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "plating-cells", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 32, "y": 39, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 35, "y": 39, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 35, "y": 40, "width": 11, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 45, "y": 37, "width": 2, "height": 5 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +25,6 @@
     "start": { "room": "ground", "dx": 27, "dy": 46 }
   },
   "objects": [
-    { "id": "plating-road-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 6, "dy": 6 } },
-    { "id": "plating-road-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 26, "dy": 38 } },
     { "id": "plating-road-flood-mast-2", "object": "flood-mast", "at": { "room": "ground", "dx": 15, "dy": 8 } },
     { "id": "plating-road-barricade-3", "object": "barricade", "at": { "room": "ground", "dx": 7, "dy": 17 } },
     { "id": "plating-road-precursor-pylon-4", "object": "precursor-pylon", "at": { "room": "ground", "dx": 29, "dy": 14 } },
@@ -36,7 +38,12 @@
     { "id": "plating-cells-keycard-reader-3", "object": "keycard-reader", "at": { "room": "plating-cells", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "plating-cells-security-camera-4", "object": "security-camera", "at": { "room": "plating-cells", "dx": 0, "dy": 0 }, "facing": "south" },
     { "id": "plating-cells-lab-bench-5", "object": "lab-bench", "at": { "room": "plating-cells", "dx": 10, "dy": 4 } },
-    { "id": "plating-road-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 55, "dy": 36 } }
+    { "id": "plating-road-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 55, "dy": 36 } },
+    { "id": "plating-road-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 39 }, "facing": "south" },
+    { "id": "plating-road-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 39 }, "facing": "south" },
+    { "id": "plating-road-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 42 }, "facing": "north" },
+    { "id": "plating-road-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 42 }, "facing": "north" },
+    { "id": "plating-road-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 47, "dy": 40 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],

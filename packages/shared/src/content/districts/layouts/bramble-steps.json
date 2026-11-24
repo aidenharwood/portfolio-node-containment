@@ -10,7 +10,12 @@
   "square": { "column": 1, "row": 7 },
   "steps": [
     { "kind": "rise", "rect": { "x": 30, "y": 30, "width": 14, "height": 10 }, "height": 8 },
-    { "kind": "building", "id": "pickers-barracks", "rect": { "x": 31, "y": 31, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "pickers-barracks", "rect": { "x": 31, "y": 31, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 33, "y": 40, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 36, "y": 40, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 28, "y": 41, "width": 10, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 27, "y": 27, "width": 2, "height": 16 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 27, "y": 26, "width": 7, "height": 2 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -21,7 +26,6 @@
     "start": { "room": "ground", "dx": 26, "dy": 20 }
   },
   "objects": [
-    { "id": "bramble-steps-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 60, "dy": 7 } },
     { "id": "bramble-steps-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 18, "dy": 41 } },
     { "id": "bramble-steps-windpump-3", "object": "windpump", "at": { "room": "ground", "dx": 41, "dy": 16 } },
     { "id": "bramble-steps-utility-pole-4", "object": "utility-pole", "at": { "room": "ground", "dx": 33, "dy": 15 } },
@@ -39,7 +43,16 @@
     { "id": "pickers-barracks-bed-8", "object": "bed", "at": { "room": "pickers-barracks", "dx": 9, "dy": 5 } },
     { "id": "pickers-barracks-bed-9", "object": "bed", "at": { "room": "pickers-barracks", "dx": 11, "dy": 5 } },
     { "id": "pickers-barracks-storage-locker-10", "object": "storage-locker", "at": { "room": "pickers-barracks", "dx": 0, "dy": 3 }, "facing": "east" },
-    { "id": "bramble-steps-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 42, "dy": 25 } }
+    { "id": "bramble-steps-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 42, "dy": 25 } },
+    { "id": "bramble-steps-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 33, "dy": 40 }, "facing": "south" },
+    { "id": "bramble-steps-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 40 }, "facing": "south" },
+    { "id": "bramble-steps-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 43 }, "facing": "north" },
+    { "id": "bramble-steps-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 43 }, "facing": "north" },
+    { "id": "bramble-steps-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 40 }, "facing": "west" },
+    { "id": "bramble-steps-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 26, "dy": 36 }, "facing": "east" },
+    { "id": "bramble-steps-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 26, "dy": 32 }, "facing": "east" },
+    { "id": "bramble-steps-street-lamp-7", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 28 }, "facing": "west" },
+    { "id": "bramble-steps-street-lamp-8", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 25 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [],

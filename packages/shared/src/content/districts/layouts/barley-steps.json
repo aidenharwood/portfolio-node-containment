@@ -10,7 +10,11 @@
   "square": { "column": 4, "row": 4 },
   "steps": [
     { "kind": "rise", "rect": { "x": 32, "y": 20, "width": 14, "height": 10 }, "height": 9 },
-    { "kind": "building", "id": "harvest-bunkhouse", "rect": { "x": 33, "y": 21, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "harvest-bunkhouse", "rect": { "x": 33, "y": 21, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 35, "y": 30, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 38, "y": 30, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 38, "y": 31, "width": 11, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 48, "y": 25, "width": 2, "height": 8 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +25,6 @@
     "start": { "room": "ground", "dx": 32, "dy": 55 }
   },
   "objects": [
-    { "id": "barley-steps-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 7, "dy": 56 } },
-    { "id": "barley-steps-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 21, "dy": 32 } },
     { "id": "barley-steps-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 22, "dy": 60 } },
     { "id": "barley-steps-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 31, "dy": 14 } },
     { "id": "barley-steps-street-tree-5", "object": "street-tree", "at": { "room": "ground", "dx": 47, "dy": 41 } },
@@ -40,7 +42,13 @@
     { "id": "harvest-bunkhouse-bed-8", "object": "bed", "at": { "room": "harvest-bunkhouse", "dx": 9, "dy": 5 } },
     { "id": "harvest-bunkhouse-bed-9", "object": "bed", "at": { "room": "harvest-bunkhouse", "dx": 11, "dy": 5 } },
     { "id": "harvest-bunkhouse-storage-locker-10", "object": "storage-locker", "at": { "room": "harvest-bunkhouse", "dx": 0, "dy": 3 }, "facing": "east" },
-    { "id": "barley-steps-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 54, "dy": 29 } }
+    { "id": "barley-steps-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 54, "dy": 29 } },
+    { "id": "barley-steps-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 35, "dy": 30 }, "facing": "south" },
+    { "id": "barley-steps-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 42, "dy": 30 }, "facing": "south" },
+    { "id": "barley-steps-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 33 }, "facing": "north" },
+    { "id": "barley-steps-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 33 }, "facing": "north" },
+    { "id": "barley-steps-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 50, "dy": 31 }, "facing": "west" },
+    { "id": "barley-steps-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 50, "dy": 27 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],

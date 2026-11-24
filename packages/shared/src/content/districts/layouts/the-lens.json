@@ -10,7 +10,9 @@
   "square": { "column": 13, "row": 5 },
   "steps": [
     { "kind": "rise", "rect": { "x": 19, "y": 28, "width": 14, "height": 10 }, "height": 10 },
-    { "kind": "building", "id": "lens-observatory", "rect": { "x": 20, "y": 29, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "lens-observatory", "rect": { "x": 20, "y": 29, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 22, "y": 38, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 25, "y": 38, "width": 2, "height": 7 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -22,8 +24,6 @@
   },
   "objects": [
     { "id": "the-lens-quest-lens-mount", "object": "lens-mount", "at": { "room": "ground", "dx": 37, "dy": 39 } },
-    { "id": "the-lens-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 55, "dy": 13 } },
-    { "id": "the-lens-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 40 } },
     { "id": "the-lens-flood-mast-2", "object": "flood-mast", "at": { "room": "ground", "dx": 26, "dy": 54 } },
     { "id": "the-lens-precursor-pylon-3", "object": "precursor-pylon", "at": { "room": "ground", "dx": 24, "dy": 3 } },
     { "id": "the-lens-flood-mast-4", "object": "flood-mast", "at": { "room": "ground", "dx": 30, "dy": 25 } },
@@ -38,7 +38,10 @@
     { "id": "lens-observatory-shelving-4", "object": "shelving", "at": { "room": "lens-observatory", "dx": 9, "dy": 0 }, "facing": "south" },
     { "id": "lens-observatory-shelving-5", "object": "shelving", "at": { "room": "lens-observatory", "dx": 10, "dy": 0 }, "facing": "south" },
     { "id": "lens-observatory-shelving-6", "object": "shelving", "at": { "room": "lens-observatory", "dx": 11, "dy": 0 }, "facing": "south" },
-    { "id": "the-lens-poi-steppe-reliquary-0", "object": "steppe-reliquary", "at": { "room": "ground", "dx": 32, "dy": 46 } }
+    { "id": "the-lens-poi-steppe-reliquary-0", "object": "steppe-reliquary", "at": { "room": "ground", "dx": 32, "dy": 46 } },
+    { "id": "the-lens-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 22, "dy": 38 }, "facing": "south" },
+    { "id": "the-lens-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 38 }, "facing": "south" },
+    { "id": "the-lens-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 24, "dy": 41 }, "facing": "east" }
   ],
   "assemblies": [
     { "id": "the-lens-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 39, "dy": 14 }, "facing": "east", "span": 2 },

@@ -10,7 +10,12 @@
   "square": { "column": 6, "row": 3 },
   "steps": [
     { "kind": "rise", "rect": { "x": 36, "y": 29, "width": 14, "height": 10 }, "height": 6 },
-    { "kind": "building", "id": "pylon-park-lab", "rect": { "x": 37, "y": 30, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "pylon-park-lab", "rect": { "x": 37, "y": 30, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 39, "y": 39, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 42, "y": 39, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 42, "y": 40, "width": 10, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 51, "y": 26, "width": 2, "height": 16 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 47, "y": 25, "width": 6, "height": 2 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +26,6 @@
     "start": { "room": "ground", "dx": 3, "dy": 51 }
   },
   "objects": [
-    { "id": "pylon-park-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 13 } },
-    { "id": "pylon-park-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 56, "dy": 44 } },
     { "id": "pylon-park-holo-billboard-2", "object": "holo-billboard", "at": { "room": "ground", "dx": 59, "dy": 29 } },
     { "id": "pylon-park-utility-pole-4", "object": "utility-pole", "at": { "room": "ground", "dx": 13, "dy": 20 } },
     { "id": "pylon-park-holo-billboard-5", "object": "holo-billboard", "at": { "room": "ground", "dx": 54, "dy": 19 } },
@@ -37,7 +40,16 @@
     { "id": "pylon-park-lab-shelving-5", "object": "shelving", "at": { "room": "pylon-park-lab", "dx": 10, "dy": 0 }, "facing": "south" },
     { "id": "pylon-park-lab-shelving-6", "object": "shelving", "at": { "room": "pylon-park-lab", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "pylon-park-lab-amber-trace-7", "object": "amber-trace", "at": { "room": "pylon-park-lab", "dx": 10, "dy": 5 } },
-    { "id": "pylon-park-poi-halcyon-lockbox-0", "object": "halcyon-lockbox", "at": { "room": "ground", "dx": 51, "dy": 22 } }
+    { "id": "pylon-park-poi-halcyon-lockbox-0", "object": "halcyon-lockbox", "at": { "room": "ground", "dx": 51, "dy": 22 } },
+    { "id": "pylon-park-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 39 }, "facing": "south" },
+    { "id": "pylon-park-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 39 }, "facing": "south" },
+    { "id": "pylon-park-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 42 }, "facing": "north" },
+    { "id": "pylon-park-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 42 }, "facing": "north" },
+    { "id": "pylon-park-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 50, "dy": 39 }, "facing": "east" },
+    { "id": "pylon-park-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 53, "dy": 35 }, "facing": "west" },
+    { "id": "pylon-park-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 53, "dy": 31 }, "facing": "west" },
+    { "id": "pylon-park-street-lamp-7", "object": "street-lamp", "at": { "room": "ground", "dx": 53, "dy": 27 }, "facing": "west" },
+    { "id": "pylon-park-street-lamp-8", "object": "street-lamp", "at": { "room": "ground", "dx": 49, "dy": 24 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [],

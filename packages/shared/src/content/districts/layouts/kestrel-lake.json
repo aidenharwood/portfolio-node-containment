@@ -10,7 +10,10 @@
   "square": { "column": 6, "row": 10 },
   "steps": [
     { "kind": "rise", "rect": { "x": 31, "y": 29, "width": 10, "height": 8 }, "height": 7 },
-    { "kind": "building", "id": "lake-boathouse", "rect": { "x": 32, "y": 30, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "lake-boathouse", "rect": { "x": 32, "y": 30, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 32, "y": 37, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 35, "y": 37, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 35, "y": 38, "width": 10, "height": 2 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +24,6 @@
     "start": { "room": "ground", "dx": 39, "dy": 55 }
   },
   "objects": [
-    { "id": "kestrel-lake-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 47 } },
-    { "id": "kestrel-lake-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 21, "dy": 9 } },
     { "id": "kestrel-lake-flood-mast-2", "object": "flood-mast", "at": { "room": "ground", "dx": 23, "dy": 29 } },
     { "id": "kestrel-lake-checkpoint-barrier-4", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 5, "dy": 26 } },
     { "id": "kestrel-lake-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 31, "dy": 14 } },
@@ -35,7 +36,11 @@
     { "id": "lake-boathouse-shelving-2", "object": "shelving", "at": { "room": "lake-boathouse", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "lake-boathouse-table-3", "object": "table", "at": { "room": "lake-boathouse", "dx": 5, "dy": 3 } },
     { "id": "lake-boathouse-chair-4", "object": "chair", "at": { "room": "lake-boathouse", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "kestrel-lake-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 53, "dy": 34 } }
+    { "id": "kestrel-lake-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 53, "dy": 34 } },
+    { "id": "kestrel-lake-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 37 }, "facing": "south" },
+    { "id": "kestrel-lake-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 37 }, "facing": "south" },
+    { "id": "kestrel-lake-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 40 }, "facing": "north" },
+    { "id": "kestrel-lake-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 40 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],

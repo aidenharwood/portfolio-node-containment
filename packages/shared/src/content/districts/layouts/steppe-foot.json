@@ -10,7 +10,11 @@
   "square": { "column": 12, "row": 11 },
   "steps": [
     { "kind": "rise", "rect": { "x": 30, "y": 30, "width": 14, "height": 10 }, "height": 11 },
-    { "kind": "building", "id": "steppe-foot-glassworks", "rect": { "x": 31, "y": 31, "width": 12, "height": 8 }, "floor": "concrete", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "steppe-foot-glassworks", "rect": { "x": 31, "y": 31, "width": 12, "height": 8 }, "floor": "concrete", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 33, "y": 40, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 36, "y": 40, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 36, "y": 41, "width": 11, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 46, "y": 40, "width": 2, "height": 3 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +25,6 @@
     "start": { "room": "ground", "dx": 20, "dy": 13 }
   },
   "objects": [
-    { "id": "steppe-foot-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 55, "dy": 31 } },
-    { "id": "steppe-foot-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 55, "dy": 3 } },
     { "id": "steppe-foot-burn-barrel-3", "object": "burn-barrel", "at": { "room": "ground", "dx": 50, "dy": 18 } },
     { "id": "steppe-foot-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 9, "dy": 51 } },
     { "id": "steppe-foot-flood-mast-5", "object": "flood-mast", "at": { "room": "ground", "dx": 41, "dy": 10 } },
@@ -35,7 +37,11 @@
     { "id": "steppe-foot-glassworks-shelving-4", "object": "shelving", "at": { "room": "steppe-foot-glassworks", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "steppe-foot-glassworks-table-5", "object": "table", "at": { "room": "steppe-foot-glassworks", "dx": 10, "dy": 5 } },
     { "id": "steppe-foot-glassworks-chair-6", "object": "chair", "at": { "room": "steppe-foot-glassworks", "dx": 10, "dy": 4 }, "facing": "south" },
-    { "id": "steppe-foot-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 51, "dy": 44 } }
+    { "id": "steppe-foot-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 51, "dy": 44 } },
+    { "id": "steppe-foot-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 33, "dy": 40 }, "facing": "south" },
+    { "id": "steppe-foot-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 40 }, "facing": "south" },
+    { "id": "steppe-foot-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 43 }, "facing": "north" },
+    { "id": "steppe-foot-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 42, "dy": 43 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],

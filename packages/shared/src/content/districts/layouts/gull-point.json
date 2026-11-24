@@ -10,7 +10,10 @@
   "square": { "column": 5, "row": 12 },
   "steps": [
     { "kind": "rise", "rect": { "x": 30, "y": 27, "width": 10, "height": 8 }, "height": 4 },
-    { "kind": "building", "id": "keepers-cottage", "rect": { "x": 31, "y": 28, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "keepers-cottage", "rect": { "x": 31, "y": 28, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 31, "y": 35, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 34, "y": 35, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 34, "y": 36, "width": 10, "height": 2 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -21,7 +24,6 @@
     "start": { "room": "ground", "dx": 14, "dy": 4 }
   },
   "objects": [
-    { "id": "gull-point-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 55, "dy": 53 } },
     { "id": "gull-point-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 23, "dy": 38 } },
     { "id": "gull-point-street-tree-4", "object": "street-tree", "at": { "room": "ground", "dx": 55, "dy": 16 } },
     { "id": "gull-point-flood-mast-5", "object": "flood-mast", "at": { "room": "ground", "dx": 39, "dy": 52 } },
@@ -35,7 +37,11 @@
     { "id": "keepers-cottage-shelving-2", "object": "shelving", "at": { "room": "keepers-cottage", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "keepers-cottage-table-3", "object": "table", "at": { "room": "keepers-cottage", "dx": 5, "dy": 3 } },
     { "id": "keepers-cottage-chair-4", "object": "chair", "at": { "room": "keepers-cottage", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "gull-point-poi-kestrel-survey-locker-0", "object": "kestrel-survey-locker", "at": { "room": "ground", "dx": 47, "dy": 27 } }
+    { "id": "gull-point-poi-kestrel-survey-locker-0", "object": "kestrel-survey-locker", "at": { "room": "ground", "dx": 47, "dy": 27 } },
+    { "id": "gull-point-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 35 }, "facing": "south" },
+    { "id": "gull-point-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 35 }, "facing": "south" },
+    { "id": "gull-point-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 38 }, "facing": "north" },
+    { "id": "gull-point-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 38 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [

@@ -10,7 +10,11 @@
   "square": { "column": 4, "row": 6 },
   "steps": [
     { "kind": "rise", "rect": { "x": 28, "y": 29, "width": 10, "height": 8 }, "height": 12 },
-    { "kind": "building", "id": "downs-cottage", "rect": { "x": 29, "y": 30, "width": 8, "height": 6 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "downs-cottage", "rect": { "x": 29, "y": 30, "width": 8, "height": 6 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 29, "y": 37, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 32, "y": 37, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 32, "y": 38, "width": 9, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 40, "y": 34, "width": 2, "height": 6 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +25,6 @@
     "start": { "room": "ground", "dx": 47, "dy": 51 }
   },
   "objects": [
-    { "id": "harrow-downs-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 19, "dy": 50 } },
-    { "id": "harrow-downs-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 15, "dy": 5 } },
     { "id": "harrow-downs-washing-line-2", "object": "washing-line", "at": { "room": "ground", "dx": 19, "dy": 31 } },
     { "id": "harrow-downs-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 30, "dy": 10 } },
     { "id": "harrow-downs-street-tree-4", "object": "street-tree", "at": { "room": "ground", "dx": 32, "dy": 21 } },
@@ -36,7 +38,12 @@
     { "id": "downs-cottage-shelving-2", "object": "shelving", "at": { "room": "downs-cottage", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "downs-cottage-table-3", "object": "table", "at": { "room": "downs-cottage", "dx": 5, "dy": 3 } },
     { "id": "downs-cottage-chair-4", "object": "chair", "at": { "room": "downs-cottage", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "harrow-downs-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 50, "dy": 33 } }
+    { "id": "harrow-downs-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 50, "dy": 33 } },
+    { "id": "harrow-downs-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 37 }, "facing": "south" },
+    { "id": "harrow-downs-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 37 }, "facing": "south" },
+    { "id": "harrow-downs-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 40 }, "facing": "north" },
+    { "id": "harrow-downs-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 40 }, "facing": "north" },
+    { "id": "harrow-downs-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 36 }, "facing": "east" }
   ],
   "assemblies": [],
   "npcs": [],

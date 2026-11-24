@@ -64,10 +64,6 @@
     { "id": "plaza-flat-1-shelving-2", "object": "shelving", "at": { "room": "plaza-flat-1", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "plaza-flat-1-table-3", "object": "table", "at": { "room": "plaza-flat-1", "dx": 5, "dy": 3 } },
     { "id": "plaza-flat-1-chair-4", "object": "chair", "at": { "room": "plaza-flat-1", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "spire-plaza-street-lamp-37", "object": "street-lamp", "at": { "room": "ground", "dx": 5, "dy": 58 } },
-    { "id": "spire-plaza-street-lamp-38", "object": "street-lamp", "at": { "room": "ground", "dx": 20, "dy": 57 } },
-    { "id": "spire-plaza-street-lamp-39", "object": "street-lamp", "at": { "room": "ground", "dx": 12, "dy": 55 } },
-    { "id": "spire-plaza-street-lamp-40", "object": "street-lamp", "at": { "room": "ground", "dx": 12, "dy": 26 } },
     { "id": "spire-plaza-bollard-41", "object": "bollard", "at": { "room": "ground", "dx": 25, "dy": 36 } },
     { "id": "spire-plaza-parked-car-42", "object": "parked-car", "at": { "room": "ground", "dx": 52, "dy": 42 } },
     { "id": "spire-plaza-litter-bin-43", "object": "litter-bin", "at": { "room": "ground", "dx": 56, "dy": 21 } },
@@ -79,7 +75,15 @@
     { "id": "spire-plaza-street-bench-49", "object": "street-bench", "at": { "room": "ground", "dx": 55, "dy": 6 }, "facing": "south" },
     { "id": "spire-plaza-street-bench-50", "object": "street-bench", "at": { "room": "ground", "dx": 60, "dy": 60 }, "facing": "south" },
     { "id": "spire-plaza-smiling-fridge-51", "object": "smiling-fridge", "at": { "room": "ground", "dx": 43, "dy": 24 } },
-    { "id": "spire-plaza-dead-screen-52", "object": "dead-screen", "at": { "room": "ground", "dx": 32, "dy": 53 } }
+    { "id": "spire-plaza-dead-screen-52", "object": "dead-screen", "at": { "room": "ground", "dx": 32, "dy": 53 } },
+    { "id": "spire-plaza-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 19 }, "facing": "south" },
+    { "id": "spire-plaza-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 18, "dy": 19 }, "facing": "south" },
+    { "id": "spire-plaza-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 19 }, "facing": "south" },
+    { "id": "spire-plaza-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 19 }, "facing": "south" },
+    { "id": "spire-plaza-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 19 }, "facing": "south" },
+    { "id": "spire-plaza-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 50, "dy": 19 }, "facing": "south" },
+    { "id": "spire-plaza-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 9, "dy": 38 }, "facing": "south" },
+    { "id": "spire-plaza-street-lamp-7", "object": "street-lamp", "at": { "room": "ground", "dx": 16, "dy": 38 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [

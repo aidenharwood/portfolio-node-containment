@@ -10,7 +10,12 @@
   "square": { "column": 6, "row": 11 },
   "steps": [
     { "kind": "rise", "rect": { "x": 19, "y": 26, "width": 10, "height": 8 }, "height": 5 },
-    { "kind": "building", "id": "gardeners-shed", "rect": { "x": 20, "y": 27, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "gardeners-shed", "rect": { "x": 20, "y": 27, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 20, "y": 34, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 23, "y": 34, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 17, "y": 35, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 16, "y": 23, "width": 2, "height": 14 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 16, "y": 22, "width": 8, "height": 2 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +26,6 @@
     "start": { "room": "ground", "dx": 32, "dy": 14 }
   },
   "objects": [
-    { "id": "lower-lawns-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 17 } },
-    { "id": "lower-lawns-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 24 } },
     { "id": "lower-lawns-street-tree-2", "object": "street-tree", "at": { "room": "ground", "dx": 58, "dy": 23 } },
     { "id": "lower-lawns-flood-mast-3", "object": "flood-mast", "at": { "room": "ground", "dx": 3, "dy": 13 } },
     { "id": "lower-lawns-street-tree-5", "object": "street-tree", "at": { "room": "ground", "dx": 57, "dy": 37 } },
@@ -35,7 +38,15 @@
     { "id": "gardeners-shed-shelving-2", "object": "shelving", "at": { "room": "gardeners-shed", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "gardeners-shed-table-3", "object": "table", "at": { "room": "gardeners-shed", "dx": 5, "dy": 3 } },
     { "id": "gardeners-shed-chair-4", "object": "chair", "at": { "room": "gardeners-shed", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "lower-lawns-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 32, "dy": 19 } }
+    { "id": "lower-lawns-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 32, "dy": 19 } },
+    { "id": "lower-lawns-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 20, "dy": 34 }, "facing": "south" },
+    { "id": "lower-lawns-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 34 }, "facing": "south" },
+    { "id": "lower-lawns-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 21, "dy": 37 }, "facing": "north" },
+    { "id": "lower-lawns-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 17, "dy": 37 }, "facing": "north" },
+    { "id": "lower-lawns-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 15, "dy": 32 }, "facing": "east" },
+    { "id": "lower-lawns-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 15, "dy": 28 }, "facing": "east" },
+    { "id": "lower-lawns-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 15, "dy": 24 }, "facing": "east" },
+    { "id": "lower-lawns-street-lamp-7", "object": "street-lamp", "at": { "room": "ground", "dx": 18, "dy": 24 }, "facing": "north" }
   ],
   "assemblies": [
     { "id": "lower-lawns-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 6, "dy": 51 }, "span": 2 },

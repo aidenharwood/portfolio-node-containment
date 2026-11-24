@@ -10,7 +10,11 @@
   "square": { "column": 11, "row": 1 },
   "steps": [
     { "kind": "rise", "rect": { "x": 28, "y": 29, "width": 14, "height": 10 }, "height": 4 },
-    { "kind": "building", "id": "forecastle-camp", "rect": { "x": 29, "y": 30, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "forecastle-camp", "rect": { "x": 29, "y": 30, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 31, "y": 39, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 34, "y": 39, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 34, "y": 40, "width": 11, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 44, "y": 38, "width": 2, "height": 4 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -22,8 +26,6 @@
   },
   "objects": [
     { "id": "the-bow-quest-meridian-nameplate", "object": "meridian-nameplate", "at": { "room": "ground", "dx": 41, "dy": 39 } },
-    { "id": "the-bow-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 58, "dy": 34 } },
-    { "id": "the-bow-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 58, "dy": 47 } },
     { "id": "the-bow-magnet-crane-2", "object": "magnet-crane", "at": { "room": "ground", "dx": 53, "dy": 8 } },
     { "id": "the-bow-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 37, "dy": 20 } },
     { "id": "the-bow-utility-pole-4", "object": "utility-pole", "at": { "room": "ground", "dx": 45, "dy": 25 } },
@@ -41,7 +43,11 @@
     { "id": "forecastle-camp-bed-8", "object": "bed", "at": { "room": "forecastle-camp", "dx": 9, "dy": 5 } },
     { "id": "forecastle-camp-bed-9", "object": "bed", "at": { "room": "forecastle-camp", "dx": 11, "dy": 5 } },
     { "id": "forecastle-camp-storage-locker-10", "object": "storage-locker", "at": { "room": "forecastle-camp", "dx": 0, "dy": 3 }, "facing": "east" },
-    { "id": "the-bow-poi-wreck-strongroom-0", "object": "wreck-strongroom", "at": { "room": "ground", "dx": 49, "dy": 28 } }
+    { "id": "the-bow-poi-wreck-strongroom-0", "object": "wreck-strongroom", "at": { "room": "ground", "dx": 49, "dy": 28 } },
+    { "id": "the-bow-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 39 }, "facing": "south" },
+    { "id": "the-bow-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 39 }, "facing": "south" },
+    { "id": "the-bow-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 42 }, "facing": "north" },
+    { "id": "the-bow-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 40 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [

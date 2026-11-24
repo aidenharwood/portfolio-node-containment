@@ -10,7 +10,12 @@
   "square": { "column": 4, "row": 12 },
   "steps": [
     { "kind": "rise", "rect": { "x": 28, "y": 25, "width": 14, "height": 10 }, "height": 7 },
-    { "kind": "building", "id": "net-loft", "rect": { "x": 29, "y": 26, "width": 12, "height": 8 }, "floor": "concrete", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "net-loft", "rect": { "x": 29, "y": 26, "width": 12, "height": 8 }, "floor": "concrete", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 31, "y": 35, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 34, "y": 35, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 34, "y": 36, "width": 10, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 43, "y": 22, "width": 2, "height": 16 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 37, "y": 21, "width": 8, "height": 2 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +26,6 @@
     "start": { "room": "ground", "dx": 35, "dy": 37 }
   },
   "objects": [
-    { "id": "brim-shore-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 8, "dy": 27 } },
-    { "id": "brim-shore-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 15, "dy": 49 } },
     { "id": "brim-shore-litter-bin-2", "object": "litter-bin", "at": { "room": "ground", "dx": 19, "dy": 38 } },
     { "id": "brim-shore-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 8, "dy": 7 } },
     { "id": "brim-shore-bollard-4", "object": "bollard", "at": { "room": "ground", "dx": 39, "dy": 40 } },
@@ -39,7 +42,14 @@
     { "id": "net-loft-shelving-4", "object": "shelving", "at": { "room": "net-loft", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "net-loft-table-5", "object": "table", "at": { "room": "net-loft", "dx": 10, "dy": 5 } },
     { "id": "net-loft-chair-6", "object": "chair", "at": { "room": "net-loft", "dx": 10, "dy": 4 }, "facing": "south" },
-    { "id": "brim-shore-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 35, "dy": 13 } }
+    { "id": "brim-shore-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 35, "dy": 13 } },
+    { "id": "brim-shore-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 35 }, "facing": "south" },
+    { "id": "brim-shore-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 35 }, "facing": "south" },
+    { "id": "brim-shore-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 38 }, "facing": "north" },
+    { "id": "brim-shore-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 35 }, "facing": "west" },
+    { "id": "brim-shore-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 31 }, "facing": "west" },
+    { "id": "brim-shore-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 27 }, "facing": "west" },
+    { "id": "brim-shore-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 42, "dy": 23 }, "facing": "east" }
   ],
   "assemblies": [],
   "npcs": [],

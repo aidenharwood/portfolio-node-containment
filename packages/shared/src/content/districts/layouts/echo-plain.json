@@ -10,7 +10,11 @@
   "square": { "column": 16, "row": 6 },
   "steps": [
     { "kind": "rise", "rect": { "x": 28, "y": 28, "width": 14, "height": 10 }, "height": 11 },
-    { "kind": "building", "id": "echo-cells", "rect": { "x": 29, "y": 29, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "echo-cells", "rect": { "x": 29, "y": 29, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 31, "y": 38, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 34, "y": 38, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 34, "y": 39, "width": 11, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 44, "y": 37, "width": 2, "height": 4 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +25,6 @@
     "start": { "room": "ground", "dx": 35, "dy": 40 }
   },
   "objects": [
-    { "id": "echo-plain-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 19, "dy": 59 } },
-    { "id": "echo-plain-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 5, "dy": 57 } },
     { "id": "echo-plain-precursor-pylon-2", "object": "precursor-pylon", "at": { "room": "ground", "dx": 36, "dy": 58 } },
     { "id": "echo-plain-ledge-milestone-3", "object": "ledge-milestone", "at": { "room": "ground", "dx": 32, "dy": 23 } },
     { "id": "echo-plain-precursor-pylon-4", "object": "precursor-pylon", "at": { "room": "ground", "dx": 20, "dy": 18 } },
@@ -35,7 +37,11 @@
     { "id": "echo-cells-keycard-reader-3", "object": "keycard-reader", "at": { "room": "echo-cells", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "echo-cells-security-camera-4", "object": "security-camera", "at": { "room": "echo-cells", "dx": 0, "dy": 0 }, "facing": "south" },
     { "id": "echo-cells-lab-bench-5", "object": "lab-bench", "at": { "room": "echo-cells", "dx": 10, "dy": 4 } },
-    { "id": "echo-plain-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 54, "dy": 31 } }
+    { "id": "echo-plain-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 54, "dy": 31 } },
+    { "id": "echo-plain-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 38 }, "facing": "south" },
+    { "id": "echo-plain-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 38 }, "facing": "south" },
+    { "id": "echo-plain-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 41 }, "facing": "north" },
+    { "id": "echo-plain-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 39 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],

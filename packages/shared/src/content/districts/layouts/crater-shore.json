@@ -10,7 +10,10 @@
   "square": { "column": 14, "row": 3 },
   "steps": [
     { "kind": "rise", "rect": { "x": 8, "y": 47, "width": 10, "height": 8 }, "height": 4 },
-    { "kind": "building", "id": "hermits-hut", "rect": { "x": 9, "y": 48, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "hermits-hut", "rect": { "x": 9, "y": 48, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 9, "y": 55, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 12, "y": 55, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 12, "y": 56, "width": 10, "height": 2 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -28,7 +31,6 @@
     { "id": "crater-shore-barricade-5", "object": "barricade", "at": { "room": "ground", "dx": 52, "dy": 40 } },
     { "id": "crater-shore-wreck-gate-leaf-0", "object": "wreck-gate-leaf", "at": { "room": "ground", "dx": 44, "dy": 63 }, "facing": "south" },
     { "id": "crater-shore-wreck-gate-leaf-1", "object": "wreck-gate-leaf", "at": { "room": "ground", "dx": 45, "dy": 63 }, "facing": "south" },
-    { "id": "crater-shore-poi-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 9, "dy": 42 } },
     { "id": "hermits-hut-bed-0", "object": "bed", "at": { "room": "hermits-hut", "dx": 1, "dy": 0 } },
     { "id": "hermits-hut-washer-1", "object": "washer", "at": { "room": "hermits-hut", "dx": 4, "dy": 0 }, "facing": "south" },
     { "id": "hermits-hut-shelving-2", "object": "shelving", "at": { "room": "hermits-hut", "dx": 6, "dy": 0 }, "facing": "south" },
@@ -36,7 +38,11 @@
     { "id": "hermits-hut-chair-4", "object": "chair", "at": { "room": "hermits-hut", "dx": 5, "dy": 2 }, "facing": "south" },
     { "id": "crater-shore-poi-wreck-strongroom-0", "object": "wreck-strongroom", "at": { "room": "ground", "dx": 31, "dy": 56 } },
     { "id": "crater-shore-poi-tide-weed-1", "object": "tide-weed", "at": { "room": "ground", "dx": 55, "dy": 9 } },
-    { "id": "crater-shore-poi-hull-trace-2", "object": "hull-trace", "at": { "room": "ground", "dx": 24, "dy": 7 } }
+    { "id": "crater-shore-poi-hull-trace-2", "object": "hull-trace", "at": { "room": "ground", "dx": 24, "dy": 7 } },
+    { "id": "crater-shore-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 9, "dy": 55 }, "facing": "south" },
+    { "id": "crater-shore-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 16, "dy": 55 }, "facing": "south" },
+    { "id": "crater-shore-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 14, "dy": 58 }, "facing": "north" },
+    { "id": "crater-shore-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 18, "dy": 58 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [

@@ -10,7 +10,11 @@
   "square": { "column": 7, "row": 8 },
   "steps": [
     { "kind": "rise", "rect": { "x": 29, "y": 23, "width": 14, "height": 10 }, "height": 10 },
-    { "kind": "building", "id": "hush-hall", "rect": { "x": 30, "y": 24, "width": 12, "height": 8 }, "floor": "terrazzo", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "hush-hall", "rect": { "x": 30, "y": 24, "width": 12, "height": 8 }, "floor": "terrazzo", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 32, "y": 33, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 35, "y": 33, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 35, "y": 34, "width": 11, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 45, "y": 32, "width": 2, "height": 4 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +25,6 @@
     "start": { "room": "ground", "dx": 8, "dy": 50 }
   },
   "objects": [
-    { "id": "hush-plateau-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 22, "dy": 23 } },
-    { "id": "hush-plateau-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 47 } },
     { "id": "hush-plateau-checkpoint-barrier-2", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 60, "dy": 19 } },
     { "id": "hush-plateau-checkpoint-barrier-3", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 12, "dy": 45 } },
     { "id": "hush-plateau-steam-vent-4", "object": "steam-vent", "at": { "room": "ground", "dx": 55, "dy": 35 } },
@@ -36,7 +38,12 @@
     { "id": "hush-hall-street-bench-5", "object": "street-bench", "at": { "room": "hush-hall", "dx": 10, "dy": 4 }, "facing": "north" },
     { "id": "hush-hall-street-bench-6", "object": "street-bench", "at": { "room": "hush-hall", "dx": 2, "dy": 6 }, "facing": "north" },
     { "id": "hush-hall-street-bench-7", "object": "street-bench", "at": { "room": "hush-hall", "dx": 9, "dy": 6 }, "facing": "north" },
-    { "id": "hush-plateau-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 56, "dy": 29 } }
+    { "id": "hush-plateau-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 56, "dy": 29 } },
+    { "id": "hush-plateau-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 33 }, "facing": "south" },
+    { "id": "hush-plateau-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 33 }, "facing": "south" },
+    { "id": "hush-plateau-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 36 }, "facing": "north" },
+    { "id": "hush-plateau-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 36 }, "facing": "north" },
+    { "id": "hush-plateau-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 47, "dy": 34 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],

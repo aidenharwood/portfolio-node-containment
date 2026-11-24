@@ -10,7 +10,10 @@
   "square": { "column": 3, "row": 3 },
   "steps": [
     { "kind": "rise", "rect": { "x": 27, "y": 17, "width": 14, "height": 10 }, "height": 7 },
-    { "kind": "building", "id": "courier-office", "rect": { "x": 28, "y": 18, "width": 12, "height": 8 }, "floor": "carpet", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "courier-office", "rect": { "x": 28, "y": 18, "width": 12, "height": 8 }, "floor": "carpet", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 30, "y": 27, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 33, "y": 27, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 33, "y": 28, "width": 12, "height": 2 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -22,8 +25,6 @@
   },
   "objects": [
     { "id": "data-docks-quest-combine-camera", "object": "combine-camera", "at": { "room": "ground", "dx": 48, "dy": 40 } },
-    { "id": "data-docks-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 36 } },
-    { "id": "data-docks-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 26, "dy": 53 } },
     { "id": "data-docks-food-stall-2", "object": "food-stall", "at": { "room": "ground", "dx": 50, "dy": 15 } },
     { "id": "data-docks-food-stall-3", "object": "food-stall", "at": { "room": "ground", "dx": 48, "dy": 35 } },
     { "id": "data-docks-holo-billboard-4", "object": "holo-billboard", "at": { "room": "ground", "dx": 55, "dy": 53 } },
@@ -41,7 +42,9 @@
     { "id": "courier-office-table-6", "object": "table", "at": { "room": "courier-office", "dx": 4, "dy": 3 } },
     { "id": "courier-office-chair-7", "object": "chair", "at": { "room": "courier-office", "dx": 3, "dy": 2 }, "facing": "south" },
     { "id": "courier-office-chair-8", "object": "chair", "at": { "room": "courier-office", "dx": 4, "dy": 2 }, "facing": "south" },
-    { "id": "data-docks-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 54, "dy": 24 } }
+    { "id": "data-docks-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 54, "dy": 24 } },
+    { "id": "data-docks-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 27 }, "facing": "south" },
+    { "id": "data-docks-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 27 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [

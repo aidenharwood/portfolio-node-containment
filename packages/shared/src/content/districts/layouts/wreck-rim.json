@@ -10,7 +10,11 @@
   "square": { "column": 11, "row": 3 },
   "steps": [
     { "kind": "rise", "rect": { "x": 29, "y": 30, "width": 10, "height": 8 }, "height": 4 },
-    { "kind": "building", "id": "rim-shack", "rect": { "x": 30, "y": 31, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "rim-shack", "rect": { "x": 30, "y": 31, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 30, "y": 38, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 33, "y": 38, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 33, "y": 39, "width": 9, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 41, "y": 35, "width": 2, "height": 6 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -21,7 +25,6 @@
     "start": { "room": "ground", "dx": 34, "dy": 40 }
   },
   "objects": [
-    { "id": "wreck-rim-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 50 } },
     { "id": "wreck-rim-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 24, "dy": 45 } },
     { "id": "wreck-rim-burn-barrel-3", "object": "burn-barrel", "at": { "room": "ground", "dx": 60, "dy": 18 } },
     { "id": "wreck-rim-utility-pole-4", "object": "utility-pole", "at": { "room": "ground", "dx": 3, "dy": 31 } },
@@ -34,7 +37,11 @@
     { "id": "rim-shack-shelving-2", "object": "shelving", "at": { "room": "rim-shack", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "rim-shack-table-3", "object": "table", "at": { "room": "rim-shack", "dx": 5, "dy": 3 } },
     { "id": "rim-shack-chair-4", "object": "chair", "at": { "room": "rim-shack", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "wreck-rim-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 51, "dy": 35 } }
+    { "id": "wreck-rim-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 51, "dy": 35 } },
+    { "id": "wreck-rim-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 38 }, "facing": "south" },
+    { "id": "wreck-rim-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 38 }, "facing": "south" },
+    { "id": "wreck-rim-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 41 }, "facing": "north" },
+    { "id": "wreck-rim-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 37 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],

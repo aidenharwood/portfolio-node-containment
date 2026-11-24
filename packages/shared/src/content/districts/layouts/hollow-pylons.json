@@ -10,7 +10,9 @@
   "square": { "column": 14, "row": 7 },
   "steps": [
     { "kind": "rise", "rect": { "x": 20, "y": 30, "width": 14, "height": 10 }, "height": 11 },
-    { "kind": "building", "id": "tuning-station", "rect": { "x": 21, "y": 31, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "tuning-station", "rect": { "x": 21, "y": 31, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 23, "y": 40, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 26, "y": 40, "width": 2, "height": 7 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -22,8 +24,6 @@
   },
   "objects": [
     { "id": "hollow-pylons-quest-pylon-tuner", "object": "pylon-tuner", "at": { "room": "ground", "dx": 41, "dy": 38 } },
-    { "id": "hollow-pylons-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 20, "dy": 19 } },
-    { "id": "hollow-pylons-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 14, "dy": 26 } },
     { "id": "hollow-pylons-ledge-milestone-3", "object": "ledge-milestone", "at": { "room": "ground", "dx": 45, "dy": 43 } },
     { "id": "hollow-pylons-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 45, "dy": 22 } },
     { "id": "hollow-pylons-ledge-milestone-5", "object": "ledge-milestone", "at": { "room": "ground", "dx": 52, "dy": 23 } },
@@ -37,7 +37,10 @@
     { "id": "tuning-station-shelving-6", "object": "shelving", "at": { "room": "tuning-station", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "hollow-pylons-poi-steppe-reliquary-0", "object": "steppe-reliquary", "at": { "room": "ground", "dx": 30, "dy": 56 } },
     { "id": "hollow-pylons-poi-red-moss-1", "object": "red-moss", "at": { "room": "ground", "dx": 48, "dy": 32 } },
-    { "id": "hollow-pylons-poi-red-trace-2", "object": "red-trace", "at": { "room": "ground", "dx": 23, "dy": 23 } }
+    { "id": "hollow-pylons-poi-red-trace-2", "object": "red-trace", "at": { "room": "ground", "dx": 23, "dy": 23 } },
+    { "id": "hollow-pylons-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 23, "dy": 40 }, "facing": "south" },
+    { "id": "hollow-pylons-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 40 }, "facing": "south" },
+    { "id": "hollow-pylons-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 43 }, "facing": "east" }
   ],
   "assemblies": [],
   "npcs": [

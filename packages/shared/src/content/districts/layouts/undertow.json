@@ -10,7 +10,11 @@
   "square": { "column": 4, "row": 1 },
   "steps": [
     { "kind": "rise", "rect": { "x": 31, "y": 25, "width": 14, "height": 10 }, "height": 4 },
-    { "kind": "building", "id": "undertow-pump-lab", "rect": { "x": 32, "y": 26, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "undertow-pump-lab", "rect": { "x": 32, "y": 26, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 34, "y": 35, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 37, "y": 35, "width": 2, "height": 4 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 37, "y": 38, "width": 11, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 47, "y": 32, "width": 2, "height": 8 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -22,8 +26,6 @@
   },
   "objects": [
     { "id": "undertow-quest-sola-camera", "object": "sola-camera", "at": { "room": "ground", "dx": 41, "dy": 37 } },
-    { "id": "undertow-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 53, "dy": 52 } },
-    { "id": "undertow-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 26, "dy": 19 } },
     { "id": "undertow-parked-car-2", "object": "parked-car", "at": { "room": "ground", "dx": 52, "dy": 12 } },
     { "id": "undertow-bollard-3", "object": "bollard", "at": { "room": "ground", "dx": 59, "dy": 36 } },
     { "id": "undertow-litter-bin-5", "object": "litter-bin", "at": { "room": "ground", "dx": 41, "dy": 59 } },
@@ -38,7 +40,11 @@
     { "id": "undertow-pump-lab-shelving-5", "object": "shelving", "at": { "room": "undertow-pump-lab", "dx": 10, "dy": 0 }, "facing": "south" },
     { "id": "undertow-pump-lab-shelving-6", "object": "shelving", "at": { "room": "undertow-pump-lab", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "undertow-pump-lab-culture-bench-7", "object": "culture-bench", "at": { "room": "undertow-pump-lab", "dx": 10, "dy": 5 } },
-    { "id": "undertow-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 53, "dy": 36 } }
+    { "id": "undertow-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 53, "dy": 36 } },
+    { "id": "undertow-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 35 }, "facing": "south" },
+    { "id": "undertow-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 35 }, "facing": "south" },
+    { "id": "undertow-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 37 }, "facing": "south" },
+    { "id": "undertow-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 49, "dy": 36 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],

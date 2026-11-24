@@ -10,7 +10,11 @@
   "square": { "column": 16, "row": 2 },
   "steps": [
     { "kind": "rise", "rect": { "x": 27, "y": 32, "width": 14, "height": 10 }, "height": 4 },
-    { "kind": "building", "id": "tally-shed", "rect": { "x": 28, "y": 33, "width": 12, "height": 8 }, "floor": "carpet", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "tally-shed", "rect": { "x": 28, "y": 33, "width": 12, "height": 8 }, "floor": "carpet", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 30, "y": 42, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 33, "y": 42, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 33, "y": 43, "width": 11, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 43, "y": 36, "width": 2, "height": 9 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -23,8 +27,6 @@
   "objects": [
     { "id": "cargo-spill-quest-spill-container-2", "object": "spill-container", "at": { "room": "ground", "dx": 47, "dy": 39 } },
     { "id": "cargo-spill-quest-spill-container", "object": "spill-container", "at": { "room": "ground", "dx": 39, "dy": 39 } },
-    { "id": "cargo-spill-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 16, "dy": 13 } },
-    { "id": "cargo-spill-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 26, "dy": 47 } },
     { "id": "cargo-spill-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 4, "dy": 41 } },
     { "id": "cargo-spill-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 23, "dy": 11 } },
     { "id": "cargo-spill-utility-pole-4", "object": "utility-pole", "at": { "room": "ground", "dx": 47, "dy": 50 } },
@@ -40,7 +42,13 @@
     { "id": "tally-shed-table-6", "object": "table", "at": { "room": "tally-shed", "dx": 4, "dy": 3 } },
     { "id": "tally-shed-chair-7", "object": "chair", "at": { "room": "tally-shed", "dx": 3, "dy": 2 }, "facing": "south" },
     { "id": "tally-shed-chair-8", "object": "chair", "at": { "room": "tally-shed", "dx": 4, "dy": 2 }, "facing": "south" },
-    { "id": "cargo-spill-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 45, "dy": 40 } }
+    { "id": "cargo-spill-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 45, "dy": 40 } },
+    { "id": "cargo-spill-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 42 }, "facing": "south" },
+    { "id": "cargo-spill-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 42 }, "facing": "south" },
+    { "id": "cargo-spill-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 35, "dy": 45 }, "facing": "north" },
+    { "id": "cargo-spill-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 45 }, "facing": "north" },
+    { "id": "cargo-spill-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 43 }, "facing": "west" },
+    { "id": "cargo-spill-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 42, "dy": 39 }, "facing": "east" }
   ],
   "assemblies": [],
   "npcs": [

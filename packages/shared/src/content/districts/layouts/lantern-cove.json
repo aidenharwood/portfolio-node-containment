@@ -10,7 +10,12 @@
   "square": { "column": 7, "row": 12 },
   "steps": [
     { "kind": "rise", "rect": { "x": 28, "y": 29, "width": 10, "height": 8 }, "height": 6 },
-    { "kind": "building", "id": "boatmans-hut", "rect": { "x": 29, "y": 30, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "boatmans-hut", "rect": { "x": 29, "y": 30, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 29, "y": 37, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 32, "y": 37, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 26, "y": 38, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 25, "y": 25, "width": 2, "height": 15 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 25, "y": 24, "width": 4, "height": 2 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -21,7 +26,6 @@
     "start": { "room": "ground", "dx": 51, "dy": 50 }
   },
   "objects": [
-    { "id": "lantern-cove-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 17, "dy": 49 } },
     { "id": "lantern-cove-flood-mast-2", "object": "flood-mast", "at": { "room": "ground", "dx": 46, "dy": 45 } },
     { "id": "lantern-cove-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 39, "dy": 9 } },
     { "id": "lantern-cove-street-tree-4", "object": "street-tree", "at": { "room": "ground", "dx": 50, "dy": 21 } },
@@ -36,7 +40,13 @@
     { "id": "boatmans-hut-shelving-2", "object": "shelving", "at": { "room": "boatmans-hut", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "boatmans-hut-table-3", "object": "table", "at": { "room": "boatmans-hut", "dx": 5, "dy": 3 } },
     { "id": "boatmans-hut-chair-4", "object": "chair", "at": { "room": "boatmans-hut", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "lantern-cove-poi-kestrel-survey-locker-0", "object": "kestrel-survey-locker", "at": { "room": "ground", "dx": 36, "dy": 23 } }
+    { "id": "lantern-cove-poi-kestrel-survey-locker-0", "object": "kestrel-survey-locker", "at": { "room": "ground", "dx": 36, "dy": 23 } },
+    { "id": "lantern-cove-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 37 }, "facing": "south" },
+    { "id": "lantern-cove-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 37 }, "facing": "south" },
+    { "id": "lantern-cove-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 40 }, "facing": "north" },
+    { "id": "lantern-cove-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 24, "dy": 35 }, "facing": "east" },
+    { "id": "lantern-cove-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 24, "dy": 31 }, "facing": "east" },
+    { "id": "lantern-cove-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 27 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [

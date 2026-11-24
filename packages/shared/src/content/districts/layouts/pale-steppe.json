@@ -10,7 +10,11 @@
   "square": { "column": 13, "row": 10 },
   "steps": [
     { "kind": "rise", "rect": { "x": 30, "y": 32, "width": 14, "height": 10 }, "height": 10 },
-    { "kind": "building", "id": "pale-barracks", "rect": { "x": 31, "y": 33, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "pale-barracks", "rect": { "x": 31, "y": 33, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 33, "y": 42, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 36, "y": 42, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 36, "y": 43, "width": 11, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 46, "y": 37, "width": 2, "height": 8 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +25,6 @@
     "start": { "room": "ground", "dx": 39, "dy": 6 }
   },
   "objects": [
-    { "id": "pale-steppe-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 37 } },
-    { "id": "pale-steppe-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 59, "dy": 11 } },
     { "id": "pale-steppe-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 25, "dy": 19 } },
     { "id": "pale-steppe-precursor-pylon-3", "object": "precursor-pylon", "at": { "room": "ground", "dx": 40, "dy": 51 } },
     { "id": "pale-steppe-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 5, "dy": 21 } },
@@ -40,7 +42,13 @@
     { "id": "pale-barracks-bed-8", "object": "bed", "at": { "room": "pale-barracks", "dx": 9, "dy": 5 } },
     { "id": "pale-barracks-bed-9", "object": "bed", "at": { "room": "pale-barracks", "dx": 11, "dy": 5 } },
     { "id": "pale-barracks-storage-locker-10", "object": "storage-locker", "at": { "room": "pale-barracks", "dx": 0, "dy": 3 }, "facing": "east" },
-    { "id": "pale-steppe-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 49, "dy": 41 } }
+    { "id": "pale-steppe-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 49, "dy": 41 } },
+    { "id": "pale-steppe-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 33, "dy": 42 }, "facing": "south" },
+    { "id": "pale-steppe-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 42 }, "facing": "south" },
+    { "id": "pale-steppe-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 45 }, "facing": "north" },
+    { "id": "pale-steppe-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 42, "dy": 45 }, "facing": "north" },
+    { "id": "pale-steppe-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 43 }, "facing": "west" },
+    { "id": "pale-steppe-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 39 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],

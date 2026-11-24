@@ -10,7 +10,12 @@
   "square": { "column": 11, "row": 5 },
   "steps": [
     { "kind": "rise", "rect": { "x": 30, "y": 31, "width": 14, "height": 10 }, "height": 12 },
-    { "kind": "building", "id": "seam-watch", "rect": { "x": 31, "y": 32, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "seam-watch", "rect": { "x": 31, "y": 32, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 33, "y": 41, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 36, "y": 41, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 36, "y": 42, "width": 10, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 45, "y": 28, "width": 2, "height": 16 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 42, "y": 27, "width": 5, "height": 2 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +26,6 @@
     "start": { "room": "ground", "dx": 55, "dy": 22 }
   },
   "objects": [
-    { "id": "final-seam-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 59 } },
-    { "id": "final-seam-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 12 } },
     { "id": "final-seam-steam-vent-2", "object": "steam-vent", "at": { "room": "ground", "dx": 6, "dy": 20 } },
     { "id": "final-seam-steam-vent-3", "object": "steam-vent", "at": { "room": "ground", "dx": 22, "dy": 22 } },
     { "id": "final-seam-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 33, "dy": 49 } },
@@ -40,7 +43,14 @@
     { "id": "seam-watch-table-6", "object": "table", "at": { "room": "seam-watch", "dx": 4, "dy": 3 } },
     { "id": "seam-watch-chair-7", "object": "chair", "at": { "room": "seam-watch", "dx": 3, "dy": 2 }, "facing": "south" },
     { "id": "seam-watch-chair-8", "object": "chair", "at": { "room": "seam-watch", "dx": 4, "dy": 2 }, "facing": "south" },
-    { "id": "final-seam-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 47, "dy": 26 } }
+    { "id": "final-seam-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 47, "dy": 26 } },
+    { "id": "final-seam-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 33, "dy": 41 }, "facing": "south" },
+    { "id": "final-seam-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 41 }, "facing": "south" },
+    { "id": "final-seam-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 44 }, "facing": "north" },
+    { "id": "final-seam-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 42, "dy": 44 }, "facing": "north" },
+    { "id": "final-seam-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 41 }, "facing": "east" },
+    { "id": "final-seam-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 47, "dy": 33 }, "facing": "west" },
+    { "id": "final-seam-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 29 }, "facing": "east" }
   ],
   "assemblies": [],
   "npcs": [],

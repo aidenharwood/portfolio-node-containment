@@ -10,7 +10,12 @@
   "square": { "column": 10, "row": 8 },
   "steps": [
     { "kind": "rise", "rect": { "x": 29, "y": 29, "width": 14, "height": 10 }, "height": 11 },
-    { "kind": "building", "id": "sentry-post", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "sentry-post", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 32, "y": 39, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 35, "y": 39, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 27, "y": 40, "width": 10, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 26, "y": 26, "width": 2, "height": 16 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 26, "y": 25, "width": 6, "height": 2 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -22,7 +27,6 @@
   },
   "objects": [
     { "id": "sealed-ground-quest-checkpoint-seal", "object": "checkpoint-seal", "at": { "room": "ground", "dx": 37, "dy": 39 } },
-    { "id": "sealed-ground-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 47 } },
     { "id": "sealed-ground-checkpoint-barrier-2", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 43, "dy": 10 } },
     { "id": "sealed-ground-steam-vent-3", "object": "steam-vent", "at": { "room": "ground", "dx": 7, "dy": 34 } },
     { "id": "sealed-ground-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 9, "dy": 13 } },
@@ -39,7 +43,16 @@
     { "id": "sentry-post-table-6", "object": "table", "at": { "room": "sentry-post", "dx": 4, "dy": 3 } },
     { "id": "sentry-post-chair-7", "object": "chair", "at": { "room": "sentry-post", "dx": 3, "dy": 2 }, "facing": "south" },
     { "id": "sentry-post-chair-8", "object": "chair", "at": { "room": "sentry-post", "dx": 4, "dy": 2 }, "facing": "south" },
-    { "id": "sealed-ground-poi-spindle-vault-drawer-0", "object": "spindle-vault-drawer", "at": { "room": "ground", "dx": 40, "dy": 20 } }
+    { "id": "sealed-ground-poi-spindle-vault-drawer-0", "object": "spindle-vault-drawer", "at": { "room": "ground", "dx": 40, "dy": 20 } },
+    { "id": "sealed-ground-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 39 }, "facing": "south" },
+    { "id": "sealed-ground-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 39 }, "facing": "south" },
+    { "id": "sealed-ground-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 33, "dy": 42 }, "facing": "north" },
+    { "id": "sealed-ground-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 42 }, "facing": "north" },
+    { "id": "sealed-ground-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 28, "dy": 39 }, "facing": "west" },
+    { "id": "sealed-ground-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 35 }, "facing": "east" },
+    { "id": "sealed-ground-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 31 }, "facing": "east" },
+    { "id": "sealed-ground-street-lamp-7", "object": "street-lamp", "at": { "room": "ground", "dx": 28, "dy": 27 }, "facing": "west" },
+    { "id": "sealed-ground-street-lamp-8", "object": "street-lamp", "at": { "room": "ground", "dx": 28, "dy": 24 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [

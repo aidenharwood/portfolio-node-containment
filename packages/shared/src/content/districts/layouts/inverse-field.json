@@ -10,7 +10,12 @@
   "square": { "column": 9, "row": 7 },
   "steps": [
     { "kind": "rise", "rect": { "x": 29, "y": 27, "width": 10, "height": 8 }, "height": 10 },
-    { "kind": "building", "id": "inverse-house", "rect": { "x": 30, "y": 28, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "inverse-house", "rect": { "x": 30, "y": 28, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 30, "y": 35, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 33, "y": 35, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 33, "y": 36, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 40, "y": 24, "width": 2, "height": 14 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 38, "y": 23, "width": 4, "height": 2 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -21,7 +26,6 @@
     "start": { "room": "ground", "dx": 54, "dy": 26 }
   },
   "objects": [
-    { "id": "inverse-field-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 39 } },
     { "id": "inverse-field-checkpoint-barrier-2", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 51, "dy": 13 } },
     { "id": "inverse-field-flood-mast-3", "object": "flood-mast", "at": { "room": "ground", "dx": 33, "dy": 3 } },
     { "id": "inverse-field-precursor-pylon-4", "object": "precursor-pylon", "at": { "room": "ground", "dx": 24, "dy": 42 } },
@@ -33,7 +37,13 @@
     { "id": "inverse-house-shelving-2", "object": "shelving", "at": { "room": "inverse-house", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "inverse-house-table-3", "object": "table", "at": { "room": "inverse-house", "dx": 5, "dy": 3 } },
     { "id": "inverse-house-chair-4", "object": "chair", "at": { "room": "inverse-house", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "inverse-field-poi-spindle-vault-drawer-0", "object": "spindle-vault-drawer", "at": { "room": "ground", "dx": 42, "dy": 21 } }
+    { "id": "inverse-field-poi-spindle-vault-drawer-0", "object": "spindle-vault-drawer", "at": { "room": "ground", "dx": 42, "dy": 21 } },
+    { "id": "inverse-field-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 35 }, "facing": "south" },
+    { "id": "inverse-field-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 35 }, "facing": "south" },
+    { "id": "inverse-field-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 38 }, "facing": "north" },
+    { "id": "inverse-field-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 42, "dy": 33 }, "facing": "west" },
+    { "id": "inverse-field-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 42, "dy": 29 }, "facing": "west" },
+    { "id": "inverse-field-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 42, "dy": 25 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],

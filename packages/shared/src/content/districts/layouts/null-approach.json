@@ -10,7 +10,12 @@
   "square": { "column": 7, "row": 5 },
   "steps": [
     { "kind": "rise", "rect": { "x": 28, "y": 29, "width": 14, "height": 10 }, "height": 12 },
-    { "kind": "building", "id": "approach-post", "rect": { "x": 29, "y": 30, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "approach-post", "rect": { "x": 29, "y": 30, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 31, "y": 39, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 34, "y": 39, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 26, "y": 40, "width": 10, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 25, "y": 25, "width": 2, "height": 17 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 25, "y": 24, "width": 8, "height": 2 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -21,7 +26,6 @@
     "start": { "room": "ground", "dx": 19, "dy": 35 }
   },
   "objects": [
-    { "id": "null-approach-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 12, "dy": 57 } },
     { "id": "null-approach-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 16, "dy": 44 } },
     { "id": "null-approach-steam-vent-3", "object": "steam-vent", "at": { "room": "ground", "dx": 47, "dy": 46 } },
     { "id": "null-approach-steam-vent-4", "object": "steam-vent", "at": { "room": "ground", "dx": 35, "dy": 16 } },
@@ -38,7 +42,16 @@
     { "id": "approach-post-table-6", "object": "table", "at": { "room": "approach-post", "dx": 4, "dy": 3 } },
     { "id": "approach-post-chair-7", "object": "chair", "at": { "room": "approach-post", "dx": 3, "dy": 2 }, "facing": "south" },
     { "id": "approach-post-chair-8", "object": "chair", "at": { "room": "approach-post", "dx": 4, "dy": 2 }, "facing": "south" },
-    { "id": "null-approach-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 40, "dy": 21 } }
+    { "id": "null-approach-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 40, "dy": 21 } },
+    { "id": "null-approach-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 39 }, "facing": "south" },
+    { "id": "null-approach-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 39 }, "facing": "south" },
+    { "id": "null-approach-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 42 }, "facing": "north" },
+    { "id": "null-approach-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 28, "dy": 42 }, "facing": "north" },
+    { "id": "null-approach-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 24, "dy": 39 }, "facing": "east" },
+    { "id": "null-approach-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 24, "dy": 35 }, "facing": "east" },
+    { "id": "null-approach-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 24, "dy": 31 }, "facing": "east" },
+    { "id": "null-approach-street-lamp-7", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 27 }, "facing": "west" },
+    { "id": "null-approach-street-lamp-8", "object": "street-lamp", "at": { "room": "ground", "dx": 26, "dy": 23 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [],

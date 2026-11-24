@@ -10,7 +10,12 @@
   "square": { "column": 9, "row": 8 },
   "steps": [
     { "kind": "rise", "rect": { "x": 31, "y": 29, "width": 14, "height": 10 }, "height": 11 },
-    { "kind": "building", "id": "noise-lab", "rect": { "x": 32, "y": 30, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "noise-lab", "rect": { "x": 32, "y": 30, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 34, "y": 39, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 37, "y": 39, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 37, "y": 40, "width": 10, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 46, "y": 26, "width": 2, "height": 16 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 42, "y": 25, "width": 6, "height": 2 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -22,8 +27,6 @@
   },
   "objects": [
     { "id": "white-noise-quest-cass-locker", "object": "cass-locker", "at": { "room": "ground", "dx": 41, "dy": 39 } },
-    { "id": "white-noise-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 47 } },
-    { "id": "white-noise-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 18 } },
     { "id": "white-noise-steam-vent-2", "object": "steam-vent", "at": { "room": "ground", "dx": 9, "dy": 17 } },
     { "id": "white-noise-checkpoint-barrier-3", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 3, "dy": 43 } },
     { "id": "white-noise-checkpoint-barrier-4", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 27, "dy": 17 } },
@@ -38,7 +41,15 @@
     { "id": "noise-lab-shelving-4", "object": "shelving", "at": { "room": "noise-lab", "dx": 9, "dy": 0 }, "facing": "south" },
     { "id": "noise-lab-shelving-5", "object": "shelving", "at": { "room": "noise-lab", "dx": 10, "dy": 0 }, "facing": "south" },
     { "id": "noise-lab-shelving-6", "object": "shelving", "at": { "room": "noise-lab", "dx": 11, "dy": 0 }, "facing": "south" },
-    { "id": "white-noise-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 47, "dy": 22 } }
+    { "id": "white-noise-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 47, "dy": 22 } },
+    { "id": "white-noise-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 39 }, "facing": "south" },
+    { "id": "white-noise-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 42 }, "facing": "north" },
+    { "id": "white-noise-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 42 }, "facing": "north" },
+    { "id": "white-noise-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 39 }, "facing": "east" },
+    { "id": "white-noise-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 35 }, "facing": "west" },
+    { "id": "white-noise-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 31 }, "facing": "west" },
+    { "id": "white-noise-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 27 }, "facing": "east" },
+    { "id": "white-noise-street-lamp-7", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 24 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [],

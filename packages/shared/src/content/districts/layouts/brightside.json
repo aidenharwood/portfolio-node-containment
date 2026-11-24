@@ -10,7 +10,9 @@
   "square": { "column": 3, "row": 2 },
   "steps": [
     { "kind": "rise", "rect": { "x": 29, "y": 29, "width": 14, "height": 10 }, "height": 6 },
-    { "kind": "building", "id": "brightside-arcade", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "brightside-arcade", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 32, "y": 39, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 35, "y": 39, "width": 2, "height": 7 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -22,8 +24,6 @@
   },
   "objects": [
     { "id": "brightside-quest-dark-billboard", "object": "dark-billboard", "at": { "room": "ground", "dx": 41, "dy": 41 } },
-    { "id": "brightside-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 53, "dy": 16 } },
-    { "id": "brightside-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 19, "dy": 29 } },
     { "id": "brightside-food-stall-2", "object": "food-stall", "at": { "room": "ground", "dx": 55, "dy": 45 } },
     { "id": "brightside-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 9, "dy": 30 } },
     { "id": "brightside-food-stall-5", "object": "food-stall", "at": { "room": "ground", "dx": 48, "dy": 43 } },
@@ -43,7 +43,10 @@
     { "id": "brightside-arcade-counter-9", "object": "counter", "at": { "room": "brightside-arcade", "dx": 3, "dy": 3 } },
     { "id": "brightside-arcade-table-10", "object": "table", "at": { "room": "brightside-arcade", "dx": 9, "dy": 5 } },
     { "id": "brightside-arcade-chair-11", "object": "chair", "at": { "room": "brightside-arcade", "dx": 9, "dy": 4 }, "facing": "south" },
-    { "id": "brightside-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 37, "dy": 57 } }
+    { "id": "brightside-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 37, "dy": 57 } },
+    { "id": "brightside-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 39 }, "facing": "south" },
+    { "id": "brightside-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 39 }, "facing": "south" },
+    { "id": "brightside-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 42 }, "facing": "east" }
   ],
   "assemblies": [
     { "id": "brightside-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 22, "dy": 51 }, "span": 2 },

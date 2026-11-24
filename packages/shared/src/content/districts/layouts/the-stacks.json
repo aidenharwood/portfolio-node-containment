@@ -10,7 +10,11 @@
   "square": { "column": 8, "row": 1 },
   "steps": [
     { "kind": "rise", "rect": { "x": 26, "y": 25, "width": 14, "height": 10 }, "height": 6 },
-    { "kind": "building", "id": "stacks-reading-room", "rect": { "x": 27, "y": 26, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "stacks-reading-room", "rect": { "x": 27, "y": 26, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 29, "y": 35, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 32, "y": 35, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 32, "y": 36, "width": 11, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 42, "y": 35, "width": 2, "height": 3 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +25,6 @@
     "start": { "room": "ground", "dx": 31, "dy": 58 }
   },
   "objects": [
-    { "id": "the-stacks-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 49 } },
-    { "id": "the-stacks-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 14 } },
     { "id": "the-stacks-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 50, "dy": 56 } },
     { "id": "the-stacks-holo-billboard-4", "object": "holo-billboard", "at": { "room": "ground", "dx": 4, "dy": 27 } },
     { "id": "stacks-reading-room-lab-bench-0", "object": "lab-bench", "at": { "room": "stacks-reading-room", "dx": 2, "dy": 3 } },
@@ -34,7 +36,11 @@
     { "id": "stacks-reading-room-shelving-6", "object": "shelving", "at": { "room": "stacks-reading-room", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "the-stacks-poi-halcyon-lockbox-0", "object": "halcyon-lockbox", "at": { "room": "ground", "dx": 53, "dy": 34 } },
     { "id": "the-stacks-poi-crusher-housing-1", "object": "crusher-housing", "at": { "room": "ground", "dx": 33, "dy": 42 } },
-    { "id": "the-stacks-poi-scrap-heap-2", "object": "scrap-heap", "at": { "room": "ground", "dx": 19, "dy": 15 } }
+    { "id": "the-stacks-poi-scrap-heap-2", "object": "scrap-heap", "at": { "room": "ground", "dx": 19, "dy": 15 } },
+    { "id": "the-stacks-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 35 }, "facing": "south" },
+    { "id": "the-stacks-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 35 }, "facing": "south" },
+    { "id": "the-stacks-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 38 }, "facing": "north" },
+    { "id": "the-stacks-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 38 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [

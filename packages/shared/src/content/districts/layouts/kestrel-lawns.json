@@ -10,7 +10,11 @@
   "square": { "column": 4, "row": 9 },
   "steps": [
     { "kind": "rise", "rect": { "x": 30, "y": 28, "width": 10, "height": 8 }, "height": 5 },
-    { "kind": "building", "id": "groundskeepers-lodge", "rect": { "x": 31, "y": 29, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "groundskeepers-lodge", "rect": { "x": 31, "y": 29, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 31, "y": 36, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 34, "y": 36, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 34, "y": 37, "width": 10, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 43, "y": 34, "width": 2, "height": 5 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +25,6 @@
     "start": { "room": "ground", "dx": 16, "dy": 11 }
   },
   "objects": [
-    { "id": "kestrel-lawns-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 16 } },
-    { "id": "kestrel-lawns-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 12, "dy": 45 } },
     { "id": "kestrel-lawns-checkpoint-barrier-2", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 8, "dy": 24 } },
     { "id": "kestrel-lawns-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 9, "dy": 35 } },
     { "id": "kestrel-lawns-flood-mast-4", "object": "flood-mast", "at": { "room": "ground", "dx": 49, "dy": 48 } },
@@ -37,7 +39,12 @@
     { "id": "groundskeepers-lodge-shelving-2", "object": "shelving", "at": { "room": "groundskeepers-lodge", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "groundskeepers-lodge-table-3", "object": "table", "at": { "room": "groundskeepers-lodge", "dx": 5, "dy": 3 } },
     { "id": "groundskeepers-lodge-chair-4", "object": "chair", "at": { "room": "groundskeepers-lodge", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "kestrel-lawns-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 53, "dy": 33 } }
+    { "id": "kestrel-lawns-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 53, "dy": 33 } },
+    { "id": "kestrel-lawns-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 36 }, "facing": "south" },
+    { "id": "kestrel-lawns-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 36 }, "facing": "south" },
+    { "id": "kestrel-lawns-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 39 }, "facing": "north" },
+    { "id": "kestrel-lawns-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 39 }, "facing": "north" },
+    { "id": "kestrel-lawns-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 42, "dy": 36 }, "facing": "east" }
   ],
   "assemblies": [],
   "npcs": [

@@ -10,7 +10,12 @@
   "square": { "column": 13, "row": 11 },
   "steps": [
     { "kind": "rise", "rect": { "x": 29, "y": 28, "width": 14, "height": 10 }, "height": 11 },
-    { "kind": "building", "id": "tuning-field-lab", "rect": { "x": 30, "y": 29, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "tuning-field-lab", "rect": { "x": 30, "y": 29, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 32, "y": 38, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 35, "y": 38, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 35, "y": 39, "width": 10, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 44, "y": 25, "width": 2, "height": 16 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 39, "y": 24, "width": 7, "height": 2 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -21,7 +26,6 @@
     "start": { "room": "ground", "dx": 48, "dy": 16 }
   },
   "objects": [
-    { "id": "tuning-fields-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 10, "dy": 38 } },
     { "id": "tuning-fields-ledge-milestone-2", "object": "ledge-milestone", "at": { "room": "ground", "dx": 38, "dy": 46 } },
     { "id": "tuning-fields-barricade-3", "object": "barricade", "at": { "room": "ground", "dx": 55, "dy": 33 } },
     { "id": "tuning-fields-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 13, "dy": 29 } },
@@ -35,7 +39,14 @@
     { "id": "tuning-field-lab-shelving-4", "object": "shelving", "at": { "room": "tuning-field-lab", "dx": 9, "dy": 0 }, "facing": "south" },
     { "id": "tuning-field-lab-shelving-5", "object": "shelving", "at": { "room": "tuning-field-lab", "dx": 10, "dy": 0 }, "facing": "south" },
     { "id": "tuning-field-lab-shelving-6", "object": "shelving", "at": { "room": "tuning-field-lab", "dx": 11, "dy": 0 }, "facing": "south" },
-    { "id": "tuning-fields-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 43, "dy": 23 } }
+    { "id": "tuning-fields-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 43, "dy": 23 } },
+    { "id": "tuning-fields-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 38 }, "facing": "south" },
+    { "id": "tuning-fields-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 38 }, "facing": "south" },
+    { "id": "tuning-fields-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 41 }, "facing": "north" },
+    { "id": "tuning-fields-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 41 }, "facing": "north" },
+    { "id": "tuning-fields-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 38 }, "facing": "east" },
+    { "id": "tuning-fields-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 34 }, "facing": "west" },
+    { "id": "tuning-fields-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 26 }, "facing": "east" }
   ],
   "assemblies": [],
   "npcs": [],

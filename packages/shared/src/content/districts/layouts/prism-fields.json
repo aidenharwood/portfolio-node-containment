@@ -10,7 +10,11 @@
   "square": { "column": 14, "row": 4 },
   "steps": [
     { "kind": "rise", "rect": { "x": 29, "y": 28, "width": 14, "height": 10 }, "height": 9 },
-    { "kind": "building", "id": "prism-survey-lab", "rect": { "x": 30, "y": 29, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "prism-survey-lab", "rect": { "x": 30, "y": 29, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 32, "y": 38, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 35, "y": 38, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 35, "y": 39, "width": 11, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 45, "y": 38, "width": 2, "height": 3 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -21,7 +25,6 @@
     "start": { "room": "ground", "dx": 20, "dy": 18 }
   },
   "objects": [
-    { "id": "prism-fields-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 50, "dy": 59 } },
     { "id": "prism-fields-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 49, "dy": 12 } },
     { "id": "prism-fields-flood-mast-3", "object": "flood-mast", "at": { "room": "ground", "dx": 56, "dy": 31 } },
     { "id": "prism-fields-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 33, "dy": 25 } },
@@ -37,7 +40,11 @@
     { "id": "prism-survey-lab-shelving-5", "object": "shelving", "at": { "room": "prism-survey-lab", "dx": 10, "dy": 0 }, "facing": "south" },
     { "id": "prism-survey-lab-shelving-6", "object": "shelving", "at": { "room": "prism-survey-lab", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "prism-survey-lab-red-moss-7", "object": "red-moss", "at": { "room": "prism-survey-lab", "dx": 10, "dy": 5 } },
-    { "id": "prism-fields-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 50, "dy": 28 } }
+    { "id": "prism-fields-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 50, "dy": 28 } },
+    { "id": "prism-fields-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 38 }, "facing": "south" },
+    { "id": "prism-fields-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 38 }, "facing": "south" },
+    { "id": "prism-fields-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 41 }, "facing": "north" },
+    { "id": "prism-fields-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 41 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],

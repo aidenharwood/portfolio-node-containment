@@ -61,10 +61,6 @@
     { "id": "ninth-flat-2-shelving-2", "object": "shelving", "at": { "room": "ninth-flat-2", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "ninth-flat-2-table-3", "object": "table", "at": { "room": "ninth-flat-2", "dx": 5, "dy": 3 } },
     { "id": "ninth-flat-2-chair-4", "object": "chair", "at": { "room": "ninth-flat-2", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "ninth-street-street-lamp-35", "object": "street-lamp", "at": { "room": "ground", "dx": 57, "dy": 14 } },
-    { "id": "ninth-street-street-lamp-36", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 4 } },
-    { "id": "ninth-street-street-lamp-37", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 45 } },
-    { "id": "ninth-street-street-lamp-38", "object": "street-lamp", "at": { "room": "ground", "dx": 24, "dy": 47 } },
     { "id": "ninth-street-utility-pole-39", "object": "utility-pole", "at": { "room": "ground", "dx": 15, "dy": 44 } },
     { "id": "ninth-street-steam-vent-40", "object": "steam-vent", "at": { "room": "ground", "dx": 52, "dy": 29 } },
     { "id": "ninth-street-holo-billboard-41", "object": "holo-billboard", "at": { "room": "ground", "dx": 37, "dy": 54 } },
@@ -75,7 +71,15 @@
     { "id": "ninth-street-street-bench-46", "object": "street-bench", "at": { "room": "ground", "dx": 15, "dy": 25 }, "facing": "south" },
     { "id": "ninth-street-street-bench-47", "object": "street-bench", "at": { "room": "ground", "dx": 49, "dy": 57 }, "facing": "south" },
     { "id": "ninth-street-street-bench-48", "object": "street-bench", "at": { "room": "ground", "dx": 45, "dy": 21 }, "facing": "south" },
-    { "id": "ninth-street-dead-screen-49", "object": "dead-screen", "at": { "room": "ground", "dx": 23, "dy": 30 } }
+    { "id": "ninth-street-dead-screen-49", "object": "dead-screen", "at": { "room": "ground", "dx": 23, "dy": 30 } },
+    { "id": "ninth-street-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 19 }, "facing": "south" },
+    { "id": "ninth-street-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 18, "dy": 19 }, "facing": "south" },
+    { "id": "ninth-street-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 19 }, "facing": "south" },
+    { "id": "ninth-street-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 19 }, "facing": "south" },
+    { "id": "ninth-street-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 17 }, "facing": "south" },
+    { "id": "ninth-street-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 17 }, "facing": "south" },
+    { "id": "ninth-street-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 9, "dy": 38 }, "facing": "south" },
+    { "id": "ninth-street-street-lamp-7", "object": "street-lamp", "at": { "room": "ground", "dx": 16, "dy": 38 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [

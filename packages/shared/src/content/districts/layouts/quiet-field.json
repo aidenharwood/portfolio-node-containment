@@ -10,7 +10,11 @@
   "square": { "column": 8, "row": 11 },
   "steps": [
     { "kind": "rise", "rect": { "x": 26, "y": 34, "width": 14, "height": 10 }, "height": 6 },
-    { "kind": "building", "id": "quiet-field-kennels", "rect": { "x": 27, "y": 35, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "quiet-field-kennels", "rect": { "x": 27, "y": 35, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 29, "y": 44, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 32, "y": 44, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 23, "y": 45, "width": 11, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 22, "y": 42, "width": 2, "height": 5 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -21,7 +25,6 @@
     "start": { "room": "ground", "dx": 22, "dy": 20 }
   },
   "objects": [
-    { "id": "quiet-field-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 8 } },
     { "id": "quiet-field-bollard-3", "object": "bollard", "at": { "room": "ground", "dx": 3, "dy": 17 } },
     { "id": "quiet-field-flood-mast-4", "object": "flood-mast", "at": { "room": "ground", "dx": 14, "dy": 38 } },
     { "id": "quiet-field-bollard-5", "object": "bollard", "at": { "room": "ground", "dx": 32, "dy": 7 } },
@@ -36,7 +39,11 @@
     { "id": "quiet-field-kennels-keycard-reader-3", "object": "keycard-reader", "at": { "room": "quiet-field-kennels", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "quiet-field-kennels-security-camera-4", "object": "security-camera", "at": { "room": "quiet-field-kennels", "dx": 0, "dy": 0 }, "facing": "south" },
     { "id": "quiet-field-kennels-lab-bench-5", "object": "lab-bench", "at": { "room": "quiet-field-kennels", "dx": 10, "dy": 4 } },
-    { "id": "quiet-field-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 21, "dy": 46 } }
+    { "id": "quiet-field-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 21, "dy": 46 } },
+    { "id": "quiet-field-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 44 }, "facing": "south" },
+    { "id": "quiet-field-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 44 }, "facing": "south" },
+    { "id": "quiet-field-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 47 }, "facing": "north" },
+    { "id": "quiet-field-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 26, "dy": 47 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],

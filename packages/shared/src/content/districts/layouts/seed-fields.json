@@ -10,7 +10,11 @@
   "square": { "column": 2, "row": 5 },
   "steps": [
     { "kind": "rise", "rect": { "x": 29, "y": 29, "width": 14, "height": 10 }, "height": 7 },
-    { "kind": "building", "id": "seed-trial-station", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "seed-trial-station", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 32, "y": 39, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 35, "y": 39, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 35, "y": 40, "width": 11, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 45, "y": 38, "width": 2, "height": 4 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +25,6 @@
     "start": { "room": "ground", "dx": 36, "dy": 41 }
   },
   "objects": [
-    { "id": "seed-fields-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 56 } },
-    { "id": "seed-fields-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 7 } },
     { "id": "seed-fields-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 7, "dy": 59 } },
     { "id": "seed-fields-washing-line-3", "object": "washing-line", "at": { "room": "ground", "dx": 49, "dy": 10 } },
     { "id": "seed-fields-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 46, "dy": 47 } },
@@ -38,7 +40,11 @@
     { "id": "seed-trial-station-shelving-5", "object": "shelving", "at": { "room": "seed-trial-station", "dx": 10, "dy": 0 }, "facing": "south" },
     { "id": "seed-trial-station-shelving-6", "object": "shelving", "at": { "room": "seed-trial-station", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "seed-trial-station-reed-bed-7", "object": "reed-bed", "at": { "room": "seed-trial-station", "dx": 10, "dy": 5 } },
-    { "id": "seed-fields-poi-harrow-tithe-box-0", "object": "harrow-tithe-box", "at": { "room": "ground", "dx": 56, "dy": 34 } }
+    { "id": "seed-fields-poi-harrow-tithe-box-0", "object": "harrow-tithe-box", "at": { "room": "ground", "dx": 56, "dy": 34 } },
+    { "id": "seed-fields-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 39 }, "facing": "south" },
+    { "id": "seed-fields-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 39 }, "facing": "south" },
+    { "id": "seed-fields-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 42 }, "facing": "north" },
+    { "id": "seed-fields-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 47, "dy": 40 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],

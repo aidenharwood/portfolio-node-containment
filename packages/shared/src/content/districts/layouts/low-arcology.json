@@ -10,7 +10,11 @@
   "square": { "column": 2, "row": 3 },
   "steps": [
     { "kind": "rise", "rect": { "x": 30, "y": 18, "width": 14, "height": 10 }, "height": 7 },
-    { "kind": "building", "id": "arcology-canteen", "rect": { "x": 31, "y": 19, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "arcology-canteen", "rect": { "x": 31, "y": 19, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 33, "y": 28, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 36, "y": 28, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 36, "y": 29, "width": 11, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 46, "y": 26, "width": 2, "height": 5 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -22,8 +26,6 @@
   },
   "objects": [
     { "id": "low-arcology-quest-combine-camera", "object": "combine-camera", "at": { "room": "ground", "dx": 34, "dy": 39 } },
-    { "id": "low-arcology-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 24, "dy": 56 } },
-    { "id": "low-arcology-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 55, "dy": 14 } },
     { "id": "low-arcology-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 42, "dy": 49 } },
     { "id": "low-arcology-food-stall-4", "object": "food-stall", "at": { "room": "ground", "dx": 30, "dy": 49 } },
     { "id": "low-arcology-utility-pole-5", "object": "utility-pole", "at": { "room": "ground", "dx": 59, "dy": 22 } },
@@ -44,7 +46,9 @@
     { "id": "arcology-canteen-chair-9", "object": "chair", "at": { "room": "arcology-canteen", "dx": 10, "dy": 2 }, "facing": "south" },
     { "id": "arcology-canteen-table-10", "object": "table", "at": { "room": "arcology-canteen", "dx": 9, "dy": 6 } },
     { "id": "arcology-canteen-chair-11", "object": "chair", "at": { "room": "arcology-canteen", "dx": 9, "dy": 5 }, "facing": "south" },
-    { "id": "low-arcology-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 52, "dy": 30 } }
+    { "id": "low-arcology-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 52, "dy": 30 } },
+    { "id": "low-arcology-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 33, "dy": 28 }, "facing": "south" },
+    { "id": "low-arcology-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 28 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [],

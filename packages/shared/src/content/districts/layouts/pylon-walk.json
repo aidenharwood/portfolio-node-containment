@@ -10,7 +10,12 @@
   "square": { "column": 14, "row": 8 },
   "steps": [
     { "kind": "rise", "rect": { "x": 29, "y": 27, "width": 14, "height": 10 }, "height": 11 },
-    { "kind": "building", "id": "pylon-cells", "rect": { "x": 30, "y": 28, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "pylon-cells", "rect": { "x": 30, "y": 28, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 32, "y": 37, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 35, "y": 37, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 27, "y": 38, "width": 10, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 26, "y": 23, "width": 2, "height": 17 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 26, "y": 22, "width": 10, "height": 2 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -22,7 +27,6 @@
   },
   "objects": [
     { "id": "pylon-walk-quest-pylon-tuner", "object": "pylon-tuner", "at": { "room": "ground", "dx": 41, "dy": 39 } },
-    { "id": "pylon-walk-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 26, "dy": 48 } },
     { "id": "pylon-walk-ledge-milestone-2", "object": "ledge-milestone", "at": { "room": "ground", "dx": 8, "dy": 6 } },
     { "id": "pylon-walk-ledge-milestone-3", "object": "ledge-milestone", "at": { "room": "ground", "dx": 50, "dy": 22 } },
     { "id": "pylon-walk-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 10, "dy": 48 } },
@@ -35,7 +39,17 @@
     { "id": "pylon-cells-keycard-reader-3", "object": "keycard-reader", "at": { "room": "pylon-cells", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "pylon-cells-security-camera-4", "object": "security-camera", "at": { "room": "pylon-cells", "dx": 0, "dy": 0 }, "facing": "south" },
     { "id": "pylon-cells-lab-bench-5", "object": "lab-bench", "at": { "room": "pylon-cells", "dx": 10, "dy": 4 } },
-    { "id": "pylon-walk-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 43, "dy": 19 } }
+    { "id": "pylon-walk-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 43, "dy": 19 } },
+    { "id": "pylon-walk-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 37 }, "facing": "south" },
+    { "id": "pylon-walk-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 37 }, "facing": "south" },
+    { "id": "pylon-walk-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 33, "dy": 40 }, "facing": "north" },
+    { "id": "pylon-walk-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 40 }, "facing": "north" },
+    { "id": "pylon-walk-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 37 }, "facing": "east" },
+    { "id": "pylon-walk-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 33 }, "facing": "east" },
+    { "id": "pylon-walk-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 29 }, "facing": "east" },
+    { "id": "pylon-walk-street-lamp-7", "object": "street-lamp", "at": { "room": "ground", "dx": 28, "dy": 25 }, "facing": "west" },
+    { "id": "pylon-walk-street-lamp-8", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 21 }, "facing": "south" },
+    { "id": "pylon-walk-street-lamp-9", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 21 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [],

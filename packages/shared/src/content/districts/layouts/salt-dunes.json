@@ -10,7 +10,12 @@
   "square": { "column": 6, "row": 12 },
   "steps": [
     { "kind": "rise", "rect": { "x": 29, "y": 30, "width": 14, "height": 10 }, "height": 7 },
-    { "kind": "building", "id": "dune-watch-post", "rect": { "x": 30, "y": 31, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "dune-watch-post", "rect": { "x": 30, "y": 31, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 32, "y": 40, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 35, "y": 40, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 27, "y": 41, "width": 10, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 26, "y": 27, "width": 2, "height": 16 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 26, "y": 26, "width": 8, "height": 2 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +26,6 @@
     "start": { "room": "ground", "dx": 19, "dy": 24 }
   },
   "objects": [
-    { "id": "salt-dunes-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 19, "dy": 36 } },
-    { "id": "salt-dunes-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 7, "dy": 43 } },
     { "id": "salt-dunes-litter-bin-2", "object": "litter-bin", "at": { "room": "ground", "dx": 3, "dy": 15 } },
     { "id": "salt-dunes-street-tree-4", "object": "street-tree", "at": { "room": "ground", "dx": 54, "dy": 38 } },
     { "id": "salt-dunes-checkpoint-barrier-5", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 52, "dy": 25 } },
@@ -39,7 +42,15 @@
     { "id": "dune-watch-post-table-6", "object": "table", "at": { "room": "dune-watch-post", "dx": 4, "dy": 3 } },
     { "id": "dune-watch-post-chair-7", "object": "chair", "at": { "room": "dune-watch-post", "dx": 3, "dy": 2 }, "facing": "south" },
     { "id": "dune-watch-post-chair-8", "object": "chair", "at": { "room": "dune-watch-post", "dx": 4, "dy": 2 }, "facing": "south" },
-    { "id": "salt-dunes-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 41, "dy": 25 } }
+    { "id": "salt-dunes-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 41, "dy": 25 } },
+    { "id": "salt-dunes-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 40 }, "facing": "south" },
+    { "id": "salt-dunes-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 40 }, "facing": "south" },
+    { "id": "salt-dunes-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 33, "dy": 43 }, "facing": "north" },
+    { "id": "salt-dunes-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 29, "dy": 43 }, "facing": "north" },
+    { "id": "salt-dunes-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 40 }, "facing": "east" },
+    { "id": "salt-dunes-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 36 }, "facing": "east" },
+    { "id": "salt-dunes-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 32 }, "facing": "east" },
+    { "id": "salt-dunes-street-lamp-7", "object": "street-lamp", "at": { "room": "ground", "dx": 28, "dy": 28 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],

@@ -10,7 +10,10 @@
   "square": { "column": 15, "row": 9 },
   "steps": [
     { "kind": "rise", "rect": { "x": 27, "y": 28, "width": 10, "height": 8 }, "height": 11 },
-    { "kind": "building", "id": "strand-hut", "rect": { "x": 28, "y": 29, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "strand-hut", "rect": { "x": 28, "y": 29, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 28, "y": 36, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 31, "y": 36, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 31, "y": 37, "width": 10, "height": 2 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +24,6 @@
     "start": { "room": "ground", "dx": 54, "dy": 22 }
   },
   "objects": [
-    { "id": "glass-strand-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 20, "dy": 43 } },
-    { "id": "glass-strand-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 33, "dy": 24 } },
     { "id": "glass-strand-ledge-milestone-2", "object": "ledge-milestone", "at": { "room": "ground", "dx": 45, "dy": 21 } },
     { "id": "glass-strand-barricade-3", "object": "barricade", "at": { "room": "ground", "dx": 6, "dy": 30 } },
     { "id": "glass-strand-flood-mast-4", "object": "flood-mast", "at": { "room": "ground", "dx": 41, "dy": 15 } },
@@ -33,7 +34,11 @@
     { "id": "strand-hut-shelving-2", "object": "shelving", "at": { "room": "strand-hut", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "strand-hut-table-3", "object": "table", "at": { "room": "strand-hut", "dx": 5, "dy": 3 } },
     { "id": "strand-hut-chair-4", "object": "chair", "at": { "room": "strand-hut", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "glass-strand-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 43, "dy": 42 } }
+    { "id": "glass-strand-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 43, "dy": 42 } },
+    { "id": "glass-strand-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 28, "dy": 36 }, "facing": "south" },
+    { "id": "glass-strand-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 35, "dy": 36 }, "facing": "south" },
+    { "id": "glass-strand-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 33, "dy": 39 }, "facing": "north" },
+    { "id": "glass-strand-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 39 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],

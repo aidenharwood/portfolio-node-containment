@@ -10,7 +10,12 @@
   "square": { "column": 15, "row": 4 },
   "steps": [
     { "kind": "rise", "rect": { "x": 29, "y": 29, "width": 14, "height": 10 }, "height": 10 },
-    { "kind": "building", "id": "silent-chapel", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "terrazzo", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "silent-chapel", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "terrazzo", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 32, "y": 39, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 35, "y": 39, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 35, "y": 40, "width": 10, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 44, "y": 26, "width": 2, "height": 16 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 42, "y": 25, "width": 4, "height": 2 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +26,6 @@
     "start": { "room": "ground", "dx": 34, "dy": 8 }
   },
   "objects": [
-    { "id": "silent-rise-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 26 } },
-    { "id": "silent-rise-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 33, "dy": 45 } },
     { "id": "silent-rise-precursor-pylon-2", "object": "precursor-pylon", "at": { "room": "ground", "dx": 18, "dy": 22 } },
     { "id": "silent-rise-burn-barrel-3", "object": "burn-barrel", "at": { "room": "ground", "dx": 24, "dy": 8 } },
     { "id": "silent-rise-flood-mast-5", "object": "flood-mast", "at": { "room": "ground", "dx": 3, "dy": 13 } },
@@ -38,7 +41,15 @@
     { "id": "silent-chapel-street-bench-5", "object": "street-bench", "at": { "room": "silent-chapel", "dx": 10, "dy": 4 }, "facing": "north" },
     { "id": "silent-chapel-street-bench-6", "object": "street-bench", "at": { "room": "silent-chapel", "dx": 2, "dy": 6 }, "facing": "north" },
     { "id": "silent-chapel-street-bench-7", "object": "street-bench", "at": { "room": "silent-chapel", "dx": 9, "dy": 6 }, "facing": "north" },
-    { "id": "silent-rise-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 40, "dy": 16 } }
+    { "id": "silent-rise-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 40, "dy": 16 } },
+    { "id": "silent-rise-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 32, "dy": 39 }, "facing": "south" },
+    { "id": "silent-rise-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 39 }, "facing": "south" },
+    { "id": "silent-rise-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 42 }, "facing": "north" },
+    { "id": "silent-rise-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 42 }, "facing": "north" },
+    { "id": "silent-rise-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 39 }, "facing": "east" },
+    { "id": "silent-rise-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 35 }, "facing": "west" },
+    { "id": "silent-rise-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 31 }, "facing": "west" },
+    { "id": "silent-rise-street-lamp-7", "object": "street-lamp", "at": { "room": "ground", "dx": 46, "dy": 27 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],

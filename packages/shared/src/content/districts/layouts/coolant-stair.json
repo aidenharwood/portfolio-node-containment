@@ -10,7 +10,11 @@
   "square": { "column": 8, "row": 7 },
   "steps": [
     { "kind": "rise", "rect": { "x": 30, "y": 31, "width": 14, "height": 10 }, "height": 11 },
-    { "kind": "building", "id": "stair-aid-post", "rect": { "x": 31, "y": 32, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "stair-aid-post", "rect": { "x": 31, "y": 32, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 33, "y": 41, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 36, "y": 41, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 36, "y": 42, "width": 11, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 46, "y": 40, "width": 2, "height": 4 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +25,6 @@
     "start": { "room": "ground", "dx": 25, "dy": 50 }
   },
   "objects": [
-    { "id": "coolant-stair-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 14, "dy": 51 } },
-    { "id": "coolant-stair-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 13, "dy": 25 } },
     { "id": "coolant-stair-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 49, "dy": 23 } },
     { "id": "coolant-stair-precursor-pylon-4", "object": "precursor-pylon", "at": { "room": "ground", "dx": 23, "dy": 36 } },
     { "id": "coolant-stair-checkpoint-barrier-5", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 28, "dy": 60 } },
@@ -35,7 +37,12 @@
     { "id": "stair-aid-post-shelving-4", "object": "shelving", "at": { "room": "stair-aid-post", "dx": 10, "dy": 0 }, "facing": "south" },
     { "id": "stair-aid-post-shelving-5", "object": "shelving", "at": { "room": "stair-aid-post", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "stair-aid-post-lab-bench-6", "object": "lab-bench", "at": { "room": "stair-aid-post", "dx": 8, "dy": 3 } },
-    { "id": "coolant-stair-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 50, "dy": 44 } }
+    { "id": "coolant-stair-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 50, "dy": 44 } },
+    { "id": "coolant-stair-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 33, "dy": 41 }, "facing": "south" },
+    { "id": "coolant-stair-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 41 }, "facing": "south" },
+    { "id": "coolant-stair-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 44 }, "facing": "north" },
+    { "id": "coolant-stair-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 42, "dy": 44 }, "facing": "north" },
+    { "id": "coolant-stair-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 42 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [

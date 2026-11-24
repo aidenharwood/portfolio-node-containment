@@ -150,6 +150,14 @@ describe('placement rules', () => {
     assert.deepEqual(about(issuesOf(backwards, { hall: 'archive', annex: 'ward' }, { condition: 'uncanny' }), 'nothing behind it'), []);
   });
 
+  test('a kerbside lamp out in the open is reported, and one at the edge of the way is not', () => {
+    const lamp: WorldObjectDefinition = { id: 'kerb-lamp', name: 'Kerb Lamp', examine: '', model: 'placeholder', blocksMovement: true, interactions: [], furnishing: { mount: 'free', homes: DRESSING_THEMES, kerbside: true } };
+    const objects = new Map([...FIXTURE_CONTENT.worldObjects, ['kerb-lamp', lamp]]);
+    const issuesWith = (dx: number, dy: number): string[] => about(findPlacementIssues(contentWith(furnish(plan, baseDistrict({ objects: [...SIGNED, place('lamp', 'kerb-lamp', 'hall', dx, dy)] }), { hall: 'civic', annex: 'ward' }), objects)), '"lamp"', 'away from any road or path');
+    assert.equal(issuesWith(10, 14).length, 1);
+    assert.deepEqual(issuesWith(10, 0), []);
+  });
+
   test('an object players use that dressing has boxed in is reported', () => {
     const locker = place('locker', 'storage-locker', 'hall', 10, 10);
     const box = [place('n', 'packing-crate', 'hall', 10, 9), place('s', 'packing-crate', 'hall', 10, 11), place('w', 'packing-crate', 'hall', 9, 10), place('e', 'packing-crate', 'hall', 11, 10)];

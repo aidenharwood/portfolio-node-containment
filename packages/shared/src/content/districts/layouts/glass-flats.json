@@ -10,7 +10,11 @@
   "square": { "column": 13, "row": 7 },
   "steps": [
     { "kind": "rise", "rect": { "x": 29, "y": 30, "width": 10, "height": 8 }, "height": 11 },
-    { "kind": "building", "id": "glass-hut", "rect": { "x": 30, "y": 31, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "glass-hut", "rect": { "x": 30, "y": 31, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 30, "y": 38, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 33, "y": 38, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 33, "y": 39, "width": 10, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 42, "y": 36, "width": 2, "height": 5 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +25,6 @@
     "start": { "room": "ground", "dx": 48, "dy": 55 }
   },
   "objects": [
-    { "id": "glass-flats-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 19, "dy": 40 } },
-    { "id": "glass-flats-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 52 } },
     { "id": "glass-flats-flood-mast-3", "object": "flood-mast", "at": { "room": "ground", "dx": 44, "dy": 17 } },
     { "id": "glass-flats-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 38, "dy": 11 } },
     { "id": "glass-flats-ledge-milestone-5", "object": "ledge-milestone", "at": { "room": "ground", "dx": 24, "dy": 48 } },
@@ -35,7 +37,12 @@
     { "id": "glass-hut-shelving-2", "object": "shelving", "at": { "room": "glass-hut", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "glass-hut-table-3", "object": "table", "at": { "room": "glass-hut", "dx": 5, "dy": 3 } },
     { "id": "glass-hut-chair-4", "object": "chair", "at": { "room": "glass-hut", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "glass-flats-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 45, "dy": 40 } }
+    { "id": "glass-flats-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 45, "dy": 40 } },
+    { "id": "glass-flats-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 38 }, "facing": "south" },
+    { "id": "glass-flats-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 38 }, "facing": "south" },
+    { "id": "glass-flats-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 35, "dy": 41 }, "facing": "north" },
+    { "id": "glass-flats-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 41 }, "facing": "north" },
+    { "id": "glass-flats-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 38 }, "facing": "east" }
   ],
   "assemblies": [],
   "npcs": [],

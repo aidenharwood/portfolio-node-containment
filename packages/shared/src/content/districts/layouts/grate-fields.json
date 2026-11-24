@@ -10,7 +10,12 @@
   "square": { "column": 10, "row": 5 },
   "steps": [
     { "kind": "rise", "rect": { "x": 27, "y": 28, "width": 14, "height": 10 }, "height": 13 },
-    { "kind": "building", "id": "grate-workshop", "rect": { "x": 28, "y": 29, "width": 12, "height": 8 }, "floor": "concrete", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "grate-workshop", "rect": { "x": 28, "y": 29, "width": 12, "height": 8 }, "floor": "concrete", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 30, "y": 38, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 33, "y": 38, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 33, "y": 39, "width": 10, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 42, "y": 25, "width": 2, "height": 16 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 37, "y": 24, "width": 7, "height": 2 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +26,6 @@
     "start": { "room": "ground", "dx": 30, "dy": 20 }
   },
   "objects": [
-    { "id": "grate-fields-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 38 } },
-    { "id": "grate-fields-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 55, "dy": 27 } },
     { "id": "grate-fields-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 47, "dy": 20 } },
     { "id": "grate-fields-flood-mast-3", "object": "flood-mast", "at": { "room": "ground", "dx": 51, "dy": 38 } },
     { "id": "grate-fields-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 32, "dy": 56 } },
@@ -36,7 +39,14 @@
     { "id": "grate-workshop-shelving-4", "object": "shelving", "at": { "room": "grate-workshop", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "grate-workshop-table-5", "object": "table", "at": { "room": "grate-workshop", "dx": 10, "dy": 5 } },
     { "id": "grate-workshop-chair-6", "object": "chair", "at": { "room": "grate-workshop", "dx": 10, "dy": 4 }, "facing": "south" },
-    { "id": "grate-fields-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 41, "dy": 22 } }
+    { "id": "grate-fields-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 41, "dy": 22 } },
+    { "id": "grate-fields-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 30, "dy": 38 }, "facing": "south" },
+    { "id": "grate-fields-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 38 }, "facing": "south" },
+    { "id": "grate-fields-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 35, "dy": 41 }, "facing": "north" },
+    { "id": "grate-fields-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 39, "dy": 41 }, "facing": "north" },
+    { "id": "grate-fields-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 38 }, "facing": "east" },
+    { "id": "grate-fields-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 30 }, "facing": "west" },
+    { "id": "grate-fields-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 26 }, "facing": "east" }
   ],
   "assemblies": [],
   "npcs": [],

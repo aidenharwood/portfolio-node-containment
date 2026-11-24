@@ -5,6 +5,7 @@ import type { WorldObjectDefinition } from '../world/entities.ts';
 import { objectFootprintTiles } from '../world/footprint.ts';
 import { CARDINAL_OFFSETS, rectContains, tileKey, type Facing, type TilePoint, type TileRect } from '../world/geometry.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
+import { isKerb } from '../world/streetLights.ts';
 import { TILE_KINDS, type TileKindId } from '../world/tiles.ts';
 import { BACKLESS_REACH, NARROW_OPENING, OPENING_APRON, REPEAT_LIMIT, RHYTHM_LIMIT, WIDE_OPENING_GAP, ROOM_FLOORS, ROOM_SIGNATURES, SIGNATURE_MIN_TILES, type FurnishingProfile } from './furnishingCatalogue.ts';
 import type { GameContent } from './gameContent.ts';
@@ -311,6 +312,13 @@ function rhythmsIn(markers: readonly Marker[]): { name: string; count: number; g
   return found;
 }
 
+function findKerbIssues(scene: Scene): void {
+  for (const item of scene.placed) {
+    if (!item.profile?.kerbside || isKerb(scene.kindAt, item.placement.position)) continue;
+    scene.report(`"${item.placement.instanceId}" at ${at(item.placement.position)} (${item.definition.name}) stands away from any road or path; stand it on the kerb, beside the edge of a paved way`);
+  }
+}
+
 function findRhythmIssues(scene: Scene): void {
   const setPieces = new Map<string, { prefab: string; origin: TilePoint; room: string }>();
   for (const item of scene.placed) {
@@ -385,6 +393,7 @@ export function findDistrictPlacementIssues(content: GameContent, district: Dist
       findSeatIssues(scene);
     }
     findRhythmIssues(scene);
+    findKerbIssues(scene);
   }
   return issues;
 }

@@ -10,7 +10,11 @@
   "square": { "column": 7, "row": 1 },
   "steps": [
     { "kind": "rise", "rect": { "x": 30, "y": 27, "width": 10, "height": 8 }, "height": 6 },
-    { "kind": "building", "id": "lock-keepers-flat", "rect": { "x": 31, "y": 28, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "lock-keepers-flat", "rect": { "x": 31, "y": 28, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 31, "y": 35, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 34, "y": 35, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 34, "y": 36, "width": 10, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 43, "y": 33, "width": 2, "height": 5 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -21,8 +25,6 @@
     "start": { "room": "ground", "dx": 10, "dy": 25 }
   },
   "objects": [
-    { "id": "canal-ward-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 25, "dy": 34 } },
-    { "id": "canal-ward-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 60, "dy": 32 } },
     { "id": "canal-ward-parked-car-2", "object": "parked-car", "at": { "room": "ground", "dx": 35, "dy": 60 } },
     { "id": "canal-ward-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 13, "dy": 45 } },
     { "id": "canal-ward-utility-pole-4", "object": "utility-pole", "at": { "room": "ground", "dx": 51, "dy": 59 } },
@@ -34,7 +36,12 @@
     { "id": "lock-keepers-flat-shelving-2", "object": "shelving", "at": { "room": "lock-keepers-flat", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "lock-keepers-flat-table-3", "object": "table", "at": { "room": "lock-keepers-flat", "dx": 5, "dy": 3 } },
     { "id": "lock-keepers-flat-chair-4", "object": "chair", "at": { "room": "lock-keepers-flat", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "canal-ward-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 47, "dy": 37 } }
+    { "id": "canal-ward-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 47, "dy": 37 } },
+    { "id": "canal-ward-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 35 }, "facing": "south" },
+    { "id": "canal-ward-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 35 }, "facing": "south" },
+    { "id": "canal-ward-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 36, "dy": 38 }, "facing": "north" },
+    { "id": "canal-ward-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 38 }, "facing": "north" },
+    { "id": "canal-ward-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 42, "dy": 35 }, "facing": "east" }
   ],
   "assemblies": [],
   "npcs": [

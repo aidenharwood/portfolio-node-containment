@@ -10,7 +10,11 @@
   "square": { "column": 3, "row": 1 },
   "steps": [
     { "kind": "rise", "rect": { "x": 28, "y": 26, "width": 14, "height": 10 }, "height": 6 },
-    { "kind": "building", "id": "overpass-kiosk", "rect": { "x": 29, "y": 27, "width": 12, "height": 8 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "overpass-kiosk", "rect": { "x": 29, "y": 27, "width": 12, "height": 8 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 31, "y": 36, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 34, "y": 36, "width": 2, "height": 4 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 34, "y": 39, "width": 11, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 44, "y": 33, "width": 2, "height": 8 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -22,8 +26,6 @@
   },
   "objects": [
     { "id": "the-overpass-quest-cohort-billboard", "object": "cohort-billboard", "at": { "room": "ground", "dx": 41, "dy": 38 } },
-    { "id": "the-overpass-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 7, "dy": 38 } },
-    { "id": "the-overpass-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 44, "dy": 25 } },
     { "id": "the-overpass-food-stall-2", "object": "food-stall", "at": { "room": "ground", "dx": 31, "dy": 18 } },
     { "id": "the-overpass-utility-pole-4", "object": "utility-pole", "at": { "room": "ground", "dx": 14, "dy": 27 } },
     { "id": "the-overpass-food-stall-5", "object": "food-stall", "at": { "room": "ground", "dx": 56, "dy": 23 } },
@@ -43,7 +45,9 @@
     { "id": "overpass-kiosk-counter-9", "object": "counter", "at": { "room": "overpass-kiosk", "dx": 3, "dy": 3 } },
     { "id": "overpass-kiosk-table-10", "object": "table", "at": { "room": "overpass-kiosk", "dx": 9, "dy": 5 } },
     { "id": "overpass-kiosk-chair-11", "object": "chair", "at": { "room": "overpass-kiosk", "dx": 9, "dy": 4 }, "facing": "south" },
-    { "id": "the-overpass-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 54, "dy": 30 } }
+    { "id": "the-overpass-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 54, "dy": 30 } },
+    { "id": "the-overpass-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 31, "dy": 36 }, "facing": "south" },
+    { "id": "the-overpass-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 38, "dy": 36 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [],

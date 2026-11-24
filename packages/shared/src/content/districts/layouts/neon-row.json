@@ -88,10 +88,6 @@
     { "id": "night-market-counter-9", "object": "counter", "at": { "room": "night-market", "dx": 3, "dy": 3 } },
     { "id": "night-market-table-10", "object": "table", "at": { "room": "night-market", "dx": 9, "dy": 5 } },
     { "id": "night-market-chair-11", "object": "chair", "at": { "room": "night-market", "dx": 9, "dy": 4 }, "facing": "south" },
-    { "id": "neon-row-street-lamp-54", "object": "street-lamp", "at": { "room": "ground", "dx": 4, "dy": 18 } },
-    { "id": "neon-row-street-lamp-55", "object": "street-lamp", "at": { "room": "ground", "dx": 55, "dy": 3 } },
-    { "id": "neon-row-street-lamp-56", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 41 } },
-    { "id": "neon-row-street-lamp-57", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 24 } },
     { "id": "neon-row-food-stall-58", "object": "food-stall", "at": { "room": "ground", "dx": 58, "dy": 36 } },
     { "id": "neon-row-holo-billboard-59", "object": "holo-billboard", "at": { "room": "ground", "dx": 39, "dy": 24 } },
     { "id": "neon-row-bollard-60", "object": "bollard", "at": { "room": "ground", "dx": 26, "dy": 59 } },
@@ -102,7 +98,19 @@
     { "id": "neon-row-street-bench-65", "object": "street-bench", "at": { "room": "ground", "dx": 7, "dy": 47 }, "facing": "south" },
     { "id": "neon-row-street-bench-66", "object": "street-bench", "at": { "room": "ground", "dx": 15, "dy": 6 }, "facing": "south" },
     { "id": "neon-row-street-bench-67", "object": "street-bench", "at": { "room": "ground", "dx": 52, "dy": 27 }, "facing": "south" },
-    { "id": "neon-row-dead-screen-68", "object": "dead-screen", "at": { "room": "ground", "dx": 12, "dy": 60 } }
+    { "id": "neon-row-dead-screen-68", "object": "dead-screen", "at": { "room": "ground", "dx": 12, "dy": 60 } },
+    { "id": "neon-row-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 47 }, "facing": "north" },
+    { "id": "neon-row-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 47 }, "facing": "north" },
+    { "id": "neon-row-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 19 }, "facing": "south" },
+    { "id": "neon-row-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 18, "dy": 19 }, "facing": "south" },
+    { "id": "neon-row-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 19 }, "facing": "south" },
+    { "id": "neon-row-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 19 }, "facing": "south" },
+    { "id": "neon-row-street-lamp-6", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 19 }, "facing": "south" },
+    { "id": "neon-row-street-lamp-7", "object": "street-lamp", "at": { "room": "ground", "dx": 50, "dy": 19 }, "facing": "south" },
+    { "id": "neon-row-street-lamp-8", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 40 }, "facing": "south" },
+    { "id": "neon-row-street-lamp-9", "object": "street-lamp", "at": { "room": "ground", "dx": 18, "dy": 40 }, "facing": "south" },
+    { "id": "neon-row-street-lamp-10", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 40 }, "facing": "south" },
+    { "id": "neon-row-street-lamp-11", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 40 }, "facing": "south" }
   ],
   "assemblies": [
     { "id": "neon-row-tram-car", "assembly": "tram-car", "at": { "room": "tram-terminal", "dx": 14, "dy": 3 } }
