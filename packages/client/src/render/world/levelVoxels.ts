@@ -1,7 +1,7 @@
 import { isBuildingWall, isOutdoorFloor, TILE_KINDS, tileKey, type DecalCell, type TileKindId, type TileLayout, type TilePoint, type TileRect, type WallMaterialId } from '@containment/shared';
 import { DenseVolume, RaisedCanvas, type VoxelCanvas } from '../voxel/denseVolume.ts';
 import { darken, jitter, lighten, mix, noise3 } from '../voxel/palette.ts';
-import { VOXEL_EMISSIVE, VOXEL_GLASS, VOXEL_SOLID } from '../voxel/voxelKinds.ts';
+import { VOXEL_EMISSIVE, VOXEL_EMPTY, VOXEL_GLASS, VOXEL_SOLID, type VoxelKind } from '../voxel/voxelKinds.ts';
 import { decalColor } from './floorDecals.ts';
 import { blockMark, laneMark, trackPieceAt, trackRise, type TrackMark } from './trackPieces.ts';
 import { FLOOR_LAYERS, STEP_VOXELS, TILE_RESOLUTION, WALL_LAYERS, ZONE_VOLUME_HEIGHT } from './worldScale.ts';
@@ -80,6 +80,9 @@ const COLORS = {
   kerbTop: 0x7c7a72,
   roofTray: 0x3c4044,
   waterBed: 0x16262a,
+  shallows: 0x2e4a48,
+  silt: 0x6e6450,
+  wetSilt: 0x3c3a30,
   rock: 0x5d5a55,
   rockDark: 0x45423e,
   rockLight: 0x7a766e,
@@ -122,7 +125,7 @@ const TRACK_SWAY = STEP_VOXELS / 2;
 const TRACK_SCAN = 8;
 
 export function groundTopAt(layout: TileLayout, tx: number, ty: number): number {
-  return tileBase(layout, tx, ty) + FLOOR_LAYERS + (layout.tileAt({ x: tx, y: ty }) === 'track' ? TRACK_SWAY : 0);
+  return tileBase(layout, tx, ty) + FLOOR_LAYERS + (layout.tileAt({ x: tx, y: ty }) === 'track' ? TRACK_SWAY : 0) + slopeHeadroom(layout, tx, ty);
 }
 
 export function groundBottomAt(layout: TileLayout, tx: number, ty: number): number {
@@ -172,7 +175,9 @@ export function paintTileRows(volume: DenseVolume, layout: OwnedLayout, region: 
       else if (kind === 'track') paintTrack(volume, layout, tx, ty, base);
       else paintFloor(canvas, kind, tx, ty, kind === 'door' ? doorAxis(layout, tx, ty) : 'x', decals?.get(tileKey({ x: tx, y: ty })), seamsOf(layout, kind, tx, ty), blendNeighborsOf(layout, kind, tx, ty), wallsBeside(layout, tx, ty), kerbsOf(layout, kind, tx, ty));
       if (kind === 'door') paintLintel(canvas, layout, tx, ty);
+      if (LAND.has(kind)) shadeLand(canvas, layout, kind, tx, ty);
       if (base > 0 && kind !== 'track') paintEarth(volume, layout, kind, tx, ty, base);
+      if (SLOPED.has(kind)) slopeLand(volume, layout, tx, ty, base);
     }
   }
   return volume;
@@ -240,6 +245,162 @@ function paintCliff(volume: VoxelCanvas, tx: number, ty: number): void {
   }
 }
 
+const SLOPED: ReadonlySet<TileKindId> = new Set<TileKindId>(['grass', 'dirt', 'gravel', 'soil']);
+const SLOPE_REACH = STEP_VOXELS / 2;
+
+function leansToward(kind: TileKindId, height: number, base: number): boolean {
+  if (SLOPED.has(kind)) return true;
+  if (kind === 'water') return height < base;
+  return kind !== 'door' && kind !== 'track' && TILE_KINDS[kind].walkable;
+}
+
+function slopeCorners(layout: TileLayout, tx: number, ty: number): number[] | null {
+  const base = tileBase(layout, tx, ty);
+  const heights = [base, base, base, base, base, base, base, base, base];
+  let uneven = false;
+  for (const [dx, dy] of AROUND) {
+    const height = tileBase(layout, tx + dx, ty + dy);
+    if (Math.abs(height - base) > STEP_VOXELS || !leansToward(layout.tileAt({ x: tx + dx, y: ty + dy }), height, base)) continue;
+    heights[(dy + 1) * 3 + dx + 1] = height;
+    if (height !== base) uneven = true;
+  }
+  return uneven ? heights : null;
+}
+
+export function slopeOffsets(layout: TileLayout, tx: number, ty: number): Int8Array | null {
+  if (!SLOPED.has(layout.tileAt({ x: tx, y: ty }))) return null;
+  const heights = slopeCorners(layout, tx, ty);
+  if (!heights) return null;
+  const base = heights[4] as number;
+  const at = (dx: number, dy: number): number => heights[(dy + 1) * 3 + dx + 1] as number;
+  const offsets = new Int8Array(R * R);
+  for (let lz = 0; lz < R; lz++) {
+    for (let lx = 0; lx < R; lx++) {
+      const u = (lx + 0.5) / R - 0.5;
+      const v = (lz + 0.5) / R - 0.5;
+      const sx = u < 0 ? -1 : 1;
+      const sz = v < 0 ? -1 : 1;
+      const fx = Math.abs(u);
+      const fz = Math.abs(v);
+      const height = (1 - fx) * (1 - fz) * base + fx * (1 - fz) * at(sx, 0) + (1 - fx) * fz * at(0, sz) + fx * fz * at(sx, sz);
+      offsets[lz * R + lx] = Math.max(-SLOPE_REACH, Math.min(SLOPE_REACH, Math.round(height - base)));
+    }
+  }
+  return offsets;
+}
+
+function slopeHeadroom(layout: TileLayout, tx: number, ty: number): number {
+  if (!SLOPED.has(layout.tileAt({ x: tx, y: ty }))) return 0;
+  const base = tileBase(layout, tx, ty);
+  for (const [dx, dy] of AROUND) {
+    const height = tileBase(layout, tx + dx, ty + dy);
+    if (height > base && height - base <= STEP_VOXELS && leansToward(layout.tileAt({ x: tx + dx, y: ty + dy }), height, base)) return SLOPE_REACH;
+  }
+  return 0;
+}
+
+function slopeLand(volume: DenseVolume, layout: TileLayout, tx: number, ty: number, base: number): void {
+  const offsets = slopeOffsets(layout, tx, ty);
+  if (!offsets) return;
+  const top = base + FLOOR;
+  for (let lz = 0; lz < R; lz++) {
+    for (let lx = 0; lx < R; lx++) {
+      const rise = offsets[lz * R + lx] as number;
+      if (rise === 0) continue;
+      const vx = tx * R + lx;
+      const vz = ty * R + lz;
+      const kind = volume.kindAt(vx, top, vz);
+      if (kind === VOXEL_EMPTY) continue;
+      const color = volume.colorAt(vx, top, vz);
+      if (rise > 0) {
+        for (let h = 0; h < rise; h++) volume.set(vx, top + h, vz, darken(color, 0.06 * (rise - h)));
+        volume.set(vx, top + rise, vz, color, kind as VoxelKind);
+        continue;
+      }
+      for (let vy = top + rise + 1; vy <= top; vy++) volume.clear(vx, vy, vz);
+      volume.set(vx, top + rise, vz, color, kind as VoxelKind);
+    }
+  }
+}
+
+const LAND: ReadonlySet<TileKindId> = new Set<TileKindId>(['grass', 'dirt', 'gravel', 'soil', 'water']);
+const LAND_WIDE = 192;
+const LAND_MID = 56;
+const SHORE_REACH = R * 0.85;
+
+function nearestBeside(layout: TileLayout, tx: number, ty: number, match: (kind: TileKindId) => boolean): readonly TilePoint[] {
+  const found: TilePoint[] = [];
+  for (const [dx, dy] of AROUND) if (match(layout.tileAt({ x: tx + dx, y: ty + dy }))) found.push({ x: tx + dx, y: ty + dy });
+  return found;
+}
+
+function distanceToTiles(tiles: readonly TilePoint[], vx: number, vz: number): number {
+  let best = Infinity;
+  for (const tile of tiles) {
+    const dx = Math.max(tile.x * R - (vx + 0.5), 0, vx + 0.5 - (tile.x + 1) * R);
+    const dz = Math.max(tile.y * R - (vz + 0.5), 0, vz + 0.5 - (tile.y + 1) * R);
+    best = Math.min(best, Math.hypot(dx, dz));
+  }
+  return best;
+}
+
+interface LandField {
+  readonly wide: readonly [number, number, number, number];
+  readonly mid: readonly [number, number, number, number];
+}
+
+function landFieldOf(tx: number, ty: number): LandField {
+  const corners = (scale: number, salt: number): [number, number, number, number] => [
+    smoothNoise(tx * R, ty * R, scale, salt),
+    smoothNoise((tx + 1) * R, ty * R, scale, salt),
+    smoothNoise(tx * R, (ty + 1) * R, scale, salt),
+    smoothNoise((tx + 1) * R, (ty + 1) * R, scale, salt),
+  ];
+  return { wide: corners(LAND_WIDE, 271), mid: corners(LAND_MID, 277) };
+}
+
+function sampleField(corners: readonly [number, number, number, number], lx: number, lz: number): number {
+  const fx = (lx + 0.5) / R;
+  const fz = (lz + 0.5) / R;
+  return (corners[0] * (1 - fx) + corners[1] * fx) * (1 - fz) + (corners[2] * (1 - fx) + corners[3] * fx) * fz;
+}
+
+function landTint(color: number, kind: TileKindId, field: LandField, lx: number, lz: number): number {
+  const wide = sampleField(field.wide, lx, lz);
+  const mid = sampleField(field.mid, lx, lz);
+  let tinted = color;
+  if (kind === 'grass') tinted = wide > 0.5 ? mix(tinted, COLORS.grassDry, (wide - 0.5) * 0.7) : mix(tinted, COLORS.pine, (0.5 - wide) * 0.35);
+  const shade = (wide - 0.5) * 0.12 + (mid - 0.5) * 0.14;
+  return shade < 0 ? darken(tinted, -shade) : lighten(tinted, shade * 0.6);
+}
+
+function shadeLand(volume: VoxelCanvas, layout: TileLayout, kind: TileKindId, tx: number, ty: number): void {
+  const water = kind === 'water';
+  const shore = nearestBeside(layout, tx, ty, water ? (other) => other !== 'water' && other !== 'void' && TILE_KINDS[other].structure !== 'liquid' : (other) => other === 'water');
+  if (water && shore.length === 0) return;
+  const field = water ? null : landFieldOf(tx, ty);
+  for (let lz = 0; lz < R; lz++) {
+    for (let lx = 0; lx < R; lx++) {
+      const vx = tx * R + lx;
+      const vz = ty * R + lz;
+      const distance = shore.length > 0 ? distanceToTiles(shore, vx, vz) : Infinity;
+      if (water) {
+        if (distance >= R) continue;
+        volume.set(vx, SUBFLOOR, vz, mix(volume.colorAt(vx, SUBFLOOR, vz), COLORS.shallows, (1 - distance / R) ** 1.5 * 0.8));
+        continue;
+      }
+      if (volume.kindAt(vx, FLOOR, vz) !== VOXEL_SOLID) continue;
+      let color = field ? landTint(volume.colorAt(vx, FLOOR, vz), kind, field, lx, lz) : volume.colorAt(vx, FLOOR, vz);
+      if (distance < R) {
+        const frontier = distance + (smoothNoise(vx, vz, 4, 263) - 0.5) * 7 + (noise3(vx, vz, 0, 269) - 0.5) * 1.5;
+        if (frontier < SHORE_REACH) color = jitter(mix(COLORS.wetSilt, COLORS.silt, Math.max(0, frontier) / SHORE_REACH), 0.04, noise3(vx, vz, 1, 269));
+        else color = mix(color, COLORS.silt, (1 - distance / R) * 0.3);
+      }
+      volume.set(vx, FLOOR, vz, color);
+    }
+  }
+}
+
 const SURFACES: ReadonlySet<TileKindId> = new Set<TileKindId>(['plating', 'concrete', 'rust', 'carpet', 'terrazzo', 'ceramic', 'boards', 'soil', 'grate']);
 
 interface Seams {
@@ -249,7 +410,11 @@ interface Seams {
   readonly west: boolean;
 }
 
-const BLENDED: ReadonlySet<TileKindId> = new Set<TileKindId>(['plating', 'concrete', 'rust', 'carpet', 'terrazzo', 'ceramic', 'boards']);
+const BUILT: ReadonlySet<TileKindId> = new Set<TileKindId>(['plating', 'concrete', 'rust', 'carpet', 'terrazzo', 'ceramic', 'boards']);
+const NATURAL: ReadonlySet<TileKindId> = new Set<TileKindId>(['grass', 'dirt', 'gravel', 'soil', 'rust']);
+const HARD: ReadonlySet<TileKindId> = new Set<TileKindId>(['paving', 'asphalt', 'concrete']);
+const BLENDED: ReadonlySet<TileKindId> = new Set<TileKindId>([...BUILT, ...NATURAL, ...HARD]);
+const VERGE_BIAS = R * 0.1;
 const BLEND_REACH = R;
 
 interface BlendNeighbor {
@@ -259,7 +424,9 @@ interface BlendNeighbor {
   readonly sign: number;
 }
 
-const blends = (a: TileKindId, b: TileKindId): boolean => a !== b && BLENDED.has(a) && BLENDED.has(b);
+const naturalPair = (a: TileKindId, b: TileKindId): boolean => NATURAL.has(a) && NATURAL.has(b);
+const vergePair = (a: TileKindId, b: TileKindId): boolean => (NATURAL.has(a) && HARD.has(b)) || (HARD.has(a) && NATURAL.has(b));
+const blends = (a: TileKindId, b: TileKindId): boolean => a !== b && ((BUILT.has(a) && BUILT.has(b)) || naturalPair(a, b) || vergePair(a, b));
 
 function blendNeighborsOf(layout: OwnedLayout, kind: TileKindId, tx: number, ty: number): readonly BlendNeighbor[] {
   if (!BLENDED.has(kind)) return [];
@@ -281,12 +448,25 @@ const BLEND_BASE: Partial<Record<TileKindId, number>> = {
   terrazzo: COLORS.terrazzo,
   ceramic: COLORS.ceramic,
   boards: COLORS.boards,
+  grass: COLORS.grass,
+  dirt: COLORS.dirt,
+  gravel: COLORS.gravel,
+  soil: COLORS.soil,
+  paving: COLORS.paving,
+  asphalt: COLORS.asphalt,
 };
 
 interface FloorBlend {
   readonly kind: TileKindId | null;
   readonly tint: number;
   readonly weight: number;
+}
+
+function vergeFrontier(own: TileKindId, other: TileKindId, vx: number, vz: number): number {
+  const natural = NATURAL.has(own) ? own : other;
+  const hard = natural === own ? other : own;
+  const toward = natural < hard ? 1 : -1;
+  return (smoothNoise(vx, vz, 3, 53) - 0.5) * 1.3 * BLEND_REACH + (noise3(vx, vz, 0, 59) - 0.5) * 2 - toward * VERGE_BIAS;
 }
 
 function floorBlend(own: TileKindId, neighbors: readonly BlendNeighbor[], vx: number, vz: number): FloorBlend | null {
@@ -302,11 +482,14 @@ function floorBlend(own: TileKindId, neighbors: readonly BlendNeighbor[], vx: nu
     }
   }
   if (!nearest || best >= BLEND_REACH) return null;
-  const frontier = (smoothNoise(vx, vz, 5, 53) - 0.5) * 1.8 * BLEND_REACH + (noise3(vx, vz, 0, 59) - 0.5) * 3;
+  const verge = !naturalPair(own, nearest.kind) && vergePair(own, nearest.kind);
+  const frontier = verge ? vergeFrontier(own, nearest.kind, vx, vz) : naturalPair(own, nearest.kind)
+    ? (smoothNoise(vx, vz, 7, 53) - 0.5) * 2.2 * BLEND_REACH + (smoothNoise(vx, vz, 2, 57) - 0.5) * 4 + (noise3(vx, vz, 0, 59) - 0.5) * 2
+    : (smoothNoise(vx, vz, 5, 53) - 0.5) * 1.8 * BLEND_REACH + (noise3(vx, vz, 0, 59) - 0.5) * 3;
   return {
     kind: nearest.sign * frontier > best ? nearest.kind : null,
     tint: mix(BLEND_BASE[own] ?? COLORS.concrete, BLEND_BASE[nearest.kind] ?? COLORS.concrete, 0.5),
-    weight: 0.5 * (1 - best / BLEND_REACH),
+    weight: (verge ? 0.2 : 0.5) * (1 - best / BLEND_REACH),
   };
 }
 
@@ -359,7 +542,7 @@ function wallDistance(walls: Seams, lx: number, lz: number): number {
 
 function weathered(color: number, kind: TileKindId, vx: number, vz: number, lx: number, lz: number, walls: Seams | null): number {
   let shaded = color;
-  if (BLENDED.has(kind)) {
+  if (BUILT.has(kind)) {
     const swing = (smoothNoise(vx, vz, MACRO_SCALE, 97) - 0.5) * MACRO_SWING;
     shaded = swing < 0 ? darken(shaded, -swing) : lighten(shaded, swing * 0.5);
   }

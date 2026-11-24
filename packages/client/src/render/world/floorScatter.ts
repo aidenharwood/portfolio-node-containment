@@ -3,6 +3,8 @@ import { groundAt } from './ground.ts';
 import { MODEL_VOXEL_SIZE } from './worldScale.ts';
 import { darken, jitter, lighten, noise3 } from '../voxel/palette.ts';
 import { decalBlocksScatter } from './floorDecals.ts';
+import { slopeOffsets } from './levelVoxels.ts';
+import { TILE_RESOLUTION } from './worldScale.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 
 const VOXELS_PER_TILE = 16;
@@ -87,23 +89,50 @@ function paintPiece(model: VoxelModel, piece: ScatterPiece, x: number, y: number
   }
 }
 
+const SPILL = 0.4;
+const SIDES: readonly (readonly [number, number])[] = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+
+function spillFrom(layout: TileLayout, tx: number, ty: number, own: TileKindId): { readonly palette: ScatterPalette; readonly dx: number; readonly dy: number } | null {
+  const roll = noise3(tx, ty, 2, 96);
+  if (roll > SPILL) return null;
+  const [dx, dy] = SIDES[Math.floor(noise3(tx, ty, 3, 96) * SIDES.length) % SIDES.length] as readonly [number, number];
+  const kind = layout.tileAt({ x: tx + dx, y: ty + dy });
+  const palette = kind === own ? undefined : PALETTES[kind];
+  return palette && PALETTES[own] ? { palette, dx, dy } : null;
+}
+
+function riseAt(offsets: Int8Array | null, lx: number, lz: number): number {
+  if (!offsets) return 0;
+  const scale = VOXELS_PER_TILE / TILE_RESOLUTION;
+  const column = Math.max(0, Math.min(TILE_RESOLUTION - 1, Math.floor((lx + HALF) / scale)));
+  const row = Math.max(0, Math.min(TILE_RESOLUTION - 1, Math.floor((lz + HALF) / scale)));
+  return (offsets[row * TILE_RESOLUTION + column] ?? 0) * scale;
+}
+
 export function buildFloorScatter(layout: TileLayout, region: TileRect, isOccupied: (tile: TilePoint) => boolean, decals?: ReadonlyMap<string, readonly DecalCell[]>): VoxelModel {
   const model = new VoxelModel();
   for (let ty = region.y; ty < region.y + region.height; ty++) {
     for (let tx = region.x; tx < region.x + region.width; tx++) {
-      const palette = PALETTES[layout.tileAt({ x: tx, y: ty })];
+      const kind = layout.tileAt({ x: tx, y: ty });
+      const palette = PALETTES[kind];
       const cells = decals?.get(tileKey({ x: tx, y: ty }));
       if (!palette || isOccupied({ x: tx, y: ty }) || decalBlocksScatter(cells)) continue;
       const pieces = piecesFor(palette, cells);
       const lift = Math.round(groundAt(layout, tx, ty) / MODEL_VOXEL_SIZE);
       if (noise3(tx, ty, 0, 91) > palette.density) continue;
       const count = 1 + Math.floor(noise3(tx, ty, 1, 92) * 2);
+      const spill = spillFrom(layout, tx, ty, kind);
+      const offsets = slopeOffsets(layout, tx, ty);
+      const reach = VOXELS_PER_TILE - EDGE_MARGIN * 2 - 3;
       for (let index = 0; index < count; index++) {
         const seed = tx * 131 + ty * 71 + index * 17;
-        const lx = Math.floor(noise3(tx, index, ty, 93) * (VOXELS_PER_TILE - EDGE_MARGIN * 2 - 3)) + EDGE_MARGIN - HALF;
-        const lz = Math.floor(noise3(ty, index, tx, 94) * (VOXELS_PER_TILE - EDGE_MARGIN * 2 - 3)) + EDGE_MARGIN - HALF;
-        const piece = pick(pieces, noise3(tx, ty, index, 95));
-        paintPiece(model, piece, tx * VOXELS_PER_TILE + lx, lift, ty * VOXELS_PER_TILE + lz, palette, seed);
+        const spilled = spill && index === count - 1 ? spill : null;
+        const lean = (along: number, toward: number): number => (spilled && toward !== 0 ? Math.floor(along / 2) + (toward > 0 ? Math.floor(reach / 2) : 0) : along);
+        const lx = lean(Math.floor(noise3(tx, index, ty, 93) * reach), spilled?.dx ?? 0) + EDGE_MARGIN - HALF;
+        const lz = lean(Math.floor(noise3(ty, index, tx, 94) * reach), spilled?.dy ?? 0) + EDGE_MARGIN - HALF;
+        const from = spilled ? spilled.palette : palette;
+        const piece = pick(spilled ? spilled.palette.pieces : pieces, noise3(tx, ty, index, 95));
+        paintPiece(model, piece, tx * VOXELS_PER_TILE + lx, lift + riseAt(offsets, lx, lz), ty * VOXELS_PER_TILE + lz, from, seed);
       }
     }
   }

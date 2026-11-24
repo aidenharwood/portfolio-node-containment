@@ -74,3 +74,50 @@ test('earth under a raised tile drops to the height of lower land water beside i
   assert.equal(volume.kindAt(vx, STEP_VOXELS * 3 - 1, vz), VOXEL_SOLID);
   assert.equal(volume.kindAt(vx, STEP_VOXELS - 1, vz), VOXEL_EMPTY);
 });
+
+
+const topOf = (volume: ReturnType<typeof buildTileVolume>, vx: number, vz: number): number => {
+  for (let vy = volume.height - 1; vy >= 0; vy--) if (volume.kindAt(vx, vy, vz) !== VOXEL_EMPTY) return vy;
+  return -1;
+};
+
+test('natural ground one step below its neighbour slopes up to meet it instead of standing as a stair', () => {
+  const layout = layoutOf(
+    [
+      ['grass', 'grass', 'grass', 'grass'],
+      ['grass', 'grass', 'grass', 'grass'],
+      ['grass', 'grass', 'grass', 'grass'],
+    ],
+    [
+      [1, 1, 2, 2],
+      [1, 1, 2, 2],
+      [1, 1, 2, 2],
+    ],
+  );
+  const volume = buildTileVolume(layout, { x: 0, y: 0, width: 4, height: 3 });
+  const vz = R + 3;
+  const profile = Array.from({ length: R * 2 }, (_, index) => topOf(volume, R + index, vz));
+  for (let index = 1; index < profile.length; index++) assert.ok(Math.abs((profile[index] as number) - (profile[index - 1] as number)) <= 1, profile.join(','));
+  assert.equal(profile[0], STEP_VOXELS + 1);
+  assert.equal(profile[profile.length - 1], STEP_VOXELS * 2 + 1);
+});
+
+test('flat natural ground and paving beside a rise keep their level tops', () => {
+  const layout = layoutOf(
+    [
+      ['grass', 'grass', 'paving', 'grass'],
+      ['grass', 'grass', 'paving', 'grass'],
+      ['grass', 'grass', 'paving', 'grass'],
+    ],
+    [
+      [1, 1, 1, 2],
+      [1, 1, 1, 2],
+      [1, 1, 1, 2],
+    ],
+  );
+  const volume = buildTileVolume(layout, { x: 0, y: 0, width: 4, height: 3 });
+  for (let lx = 0; lx < R; lx++) {
+    assert.equal(topOf(volume, lx, R + 3), STEP_VOXELS + 1);
+    assert.equal(topOf(volume, 2 * R + lx, R + 3) <= STEP_VOXELS + 2, true);
+  }
+});
