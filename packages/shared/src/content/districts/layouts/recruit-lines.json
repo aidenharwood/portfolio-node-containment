@@ -9,11 +9,11 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 10 },
   "steps": [
-    { "kind": "building", "id": "cohort-hall", "rect": { "x": 9, "y": 10, "width": 12, "height": 8 }, "floor": "terrazzo", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "building", "id": "lines-cottage-1", "rect": { "x": 25, "y": 10, "width": 8, "height": 6 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "building", "id": "lines-cottage-2", "rect": { "x": 41, "y": 10, "width": 8, "height": 6 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "building", "id": "lines-store", "rect": { "x": 9, "y": 31, "width": 12, "height": 8 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "building", "id": "lines-cottage-3", "rect": { "x": 25, "y": 31, "width": 8, "height": 6 }, "floor": "boards", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "cohort-hall", "rect": { "x": 9, "y": 10, "width": 12, "height": 8 }, "floor": "terrazzo", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "lines-cottage-1", "rect": { "x": 25, "y": 10, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "lines-cottage-2", "rect": { "x": 41, "y": 10, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "lines-store", "rect": { "x": 9, "y": 31, "width": 12, "height": 8 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "building", "id": "lines-cottage-3", "rect": { "x": 25, "y": 31, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
   ],
   "tiles": [],
   "areas": [

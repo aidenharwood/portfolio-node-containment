@@ -5,7 +5,7 @@
   "tier": 3,
   "region": "harrow-terraces",
   "condition": "overgrown",
-  "ambience": { "darkness": 0.2, "tint": "#e4dcb8", "fog": "#d8d0a8", "sky": "#b8d8c0", "weather": ["dust"], "haze": 0.8 },
+  "ambience": { "darkness": 0.2, "tint": "#d8e4d4", "fog": "#c8d8d0", "sky": "#a8d0c8", "weather": ["dust"], "haze": 0.8 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 6 },
   "steps": [

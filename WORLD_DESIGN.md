@@ -132,7 +132,7 @@ The rest is judgement, and reviewers hold it:
 | ----- | ----------------- | -------- |
 | Overworld squares | 64×64 open ground, `paving` base, `asphalt` roads, `gravel` yards, `grass` parks | One per square, such as the station clock |
 | Land squares | Cut from the land plan: its cover (`grass`, `dirt`, `trees`, `water`, `soil`, `rust`, `gravel`) under the square's own roads, yards and buildings | One per square, as a `focal` set-piece: the town's, Site's or outpost's own, or the wild square's (`content/span/wilds.ts`) |
-| City buildings | Small walled interiors in `brick`, `blockwork` or `cladding`; `boards` for homes, shops and pubs, `terrazzo` for public halls | Shop signs and awnings outside |
+| City buildings | Small walled interiors in `blockwork` or `cladding` (`brick` only on the Harrow terraces); `boards` for homes, shops and pubs, `terrazzo` for public halls | Shop signs, awnings and roofline neon outside |
 | Directorate buildings | Directorate panel walls (`wall`), `plating` floors, an orange band outside | The Directorate sign |
 | Directorate compounds | A `building` with an outdoor floor and `edge: "barrier"`: a walled yard with a gate, Directorate buildings standing inside it | The Site Meridian headframe |
 | Facility levels below ground | Rooms joined by links, one district per level, getting tighter and colder with depth; amber for low security (B1), red for high (B2), cold blue for the Vault (B3) | The Heart of the Vault |
@@ -144,7 +144,7 @@ The rest is judgement, and reviewers hold it:
 
 **Rooms.** A tile inside a building belongs to the building, not to the ground around it: placement checks and the editor use the smallest room that contains the tile.
 
-**Floors.** `ceramic` is for medical, ward, lab, cold and canteen rooms; `boards` for homes, shops, offices, canteens and the like. Wall materials say who built a place: brick and blockwork for the old city, corrugated cladding for what went up after the anomalies, and the Directorate panel for the Directorate.
+**Floors.** `ceramic` is for medical, ward, lab, cold and canteen rooms; `boards` (composite decking) for homes, shops, offices, canteens and the like. Wall materials say who built a place: brick for the Harrow terraces, blockwork for the old city, corrugated cladding for what went up after the anomalies, and the Directorate panel for the Directorate. Cladding and blockwork carry runs of neon trim under the roofline.
 
 ## Regions
 

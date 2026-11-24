@@ -1,11 +1,11 @@
 {
   "id": "harrow-lanes",
   "name": "Harrow Lanes",
-  "subtitle": "Harrow Terraces · cottages and the bakery",
+  "subtitle": "Harrow Terraces · habs and the bakery",
   "tier": 4,
   "region": "harrow-terraces",
   "condition": "overgrown",
-  "ambience": { "darkness": 0.2, "tint": "#e4dcb8", "fog": "#d8d0a8", "sky": "#b8d8c0", "weather": ["dust"], "haze": 0.8 },
+  "ambience": { "darkness": 0.2, "tint": "#d8e4d4", "fog": "#c8d8d0", "sky": "#a8d0c8", "weather": ["dust"], "haze": 0.8 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 2, "row": 7 },
   "steps": [
@@ -18,10 +18,10 @@
   "tiles": [],
   "areas": [
     { "room": "ground", "name": "Harrow Lanes", "safe": true },
-    { "room": "harrow-bakery", "name": "Ostrowski’s Bakery", "safe": true },
-    { "room": "lanes-cottage-1", "name": "Furrow Cottage", "safe": true },
-    { "room": "lanes-cottage-2", "name": "Sluice Cottage", "safe": true },
-    { "room": "lanes-cottage-3", "name": "Mill Cottage", "safe": true },
+    { "room": "harrow-bakery", "name": "Ostrowski’s Protein Bakery", "safe": true },
+    { "room": "lanes-cottage-1", "name": "Furrow Hab", "safe": true },
+    { "room": "lanes-cottage-2", "name": "Sluice Hab", "safe": true },
+    { "room": "lanes-cottage-3", "name": "Mill Hab", "safe": true },
     { "room": "lanes-clinic", "name": "Lanes Surgery", "safe": true }
   ],
   "anchors": {

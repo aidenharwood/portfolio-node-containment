@@ -94,12 +94,12 @@ export const ERRAND_QUESTS: readonly QuestDefinition[] = [
       { id: 'silt', journal: 'Bring in four silt iron. Dredge it from the winches on the terraces at Salvage 10, or take it off furrow eels, seed mites and thornbacks.', objectives: [{ type: 'obtainItem', itemId: 'silt-iron', count: 4, label: 'Collect silt iron' }] },
       {
         id: 'heat',
-        journal: 'Learn the furnace. Refine scrap metal into scrap plating at a refinery until your Refining reaches 10. There is one beside the Smithy in Harrowgate.',
+        journal: 'Learn the furnace. Refine scrap metal into scrap plating at a refinery until your Refining reaches 10. There is one beside the Co-op Fab Shop in Harrowgate.',
         objectives: [{ type: 'reach', measure: 'refining', level: 10, label: 'Reach Refining 10', toward: { objects: ['ward-refinery'] } }],
       },
       { id: 'plate', journal: 'Refine two ferro plating from your silt iron.', objectives: [{ type: 'craft', itemId: 'ferro-plating', count: 2, label: 'Refine ferro plating' }] },
       { id: 'windpump', journal: 'Patch the split housing of the old windpump on Windpump Rise, north-east of Harrowgate, with a ferro plate.', objectives: [{ type: 'interactWith', objectId: 'windpump-housing', label: 'Plate the windpump housing' }] },
-      { id: 'keane', journal: 'Tell Joss Keane at the Smithy that the Rise is pumping again.', objectives: [{ type: 'talkTo', npcId: 'smith-keane', label: 'Talk to Joss Keane' }] },
+      { id: 'keane', journal: 'Tell Joss Keane at the Co-op Fab Shop that the Rise is pumping again.', objectives: [{ type: 'talkTo', npcId: 'smith-keane', label: 'Talk to Joss Keane' }] },
     ],
     ...paid([scrip(120), questPay('refining', 10, 3), questPay('salvage', 10, 1)], [{ type: 'giveItem', itemId: 'ferro-helmet' }], ['Ferro Helmet']),
   },
@@ -135,7 +135,7 @@ export const ERRAND_QUESTS: readonly QuestDefinition[] = [
     steps: [
       {
         id: 'ask',
-        journal: 'Ask round Harrowgate about the tithe barns: Steward Tull at the Co-op Stores, and Farmer Greaves at Furrow Cottage.',
+        journal: 'Ask round Harrowgate about the tithe barns: Steward Tull at the Co-op Stores, and Farmer Greaves at Furrow Hab.',
         objectives: [
           { type: 'talkTo', npcId: 'steward-tull', label: 'Ask Steward Tull' },
           { type: 'talkTo', npcId: 'farmer-greaves', label: 'Ask Farmer Greaves' },

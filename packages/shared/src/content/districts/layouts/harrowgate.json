@@ -5,7 +5,7 @@
   "tier": 4,
   "region": "harrow-terraces",
   "condition": "overgrown",
-  "ambience": { "darkness": 0.2, "tint": "#e4dcb8", "fog": "#d8d0a8", "sky": "#b8d8c0", "weather": ["dust"], "haze": 0.8 },
+  "ambience": { "darkness": 0.2, "tint": "#d8e4d4", "fog": "#c8d8d0", "sky": "#a8d0c8", "weather": ["dust"], "haze": 0.8 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 2, "row": 6 },
   "steps": [
@@ -22,8 +22,8 @@
     { "room": "ground", "name": "Harrowgate", "safe": true },
     { "room": "tram-terminal", "name": "Harrowgate Halt Station", "safe": true },
     { "room": "coop-stores", "name": "Co-op Stores", "safe": true },
-    { "room": "harrow-apothecary", "name": "Wynn’s Apothecary", "safe": true },
-    { "room": "harrow-smithy", "name": "The Smithy", "safe": true },
+    { "room": "harrow-apothecary", "name": "Wynn’s Dispensary", "safe": true },
+    { "room": "harrow-smithy", "name": "Co-op Fab Shop", "safe": true },
     { "room": "the-plough", "name": "The Plough", "safe": true },
     { "room": "coop-hall", "name": "Co-op Hall", "safe": true }
   ],

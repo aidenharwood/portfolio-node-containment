@@ -45,9 +45,9 @@ type Placement = { id: string; object: string; at: { room: string; dx: number; d
 
 const AMBIENCE: Readonly<Record<string, DistrictLayout['ambience']>> = {
   'kestrel-reach': { darkness: 0.16, tint: '#e8eef4', fog: '#c8d8e8', sky: '#9fc8f0', weather: ['mist'], haze: 0.7 },
-  'harrow-terraces': { darkness: 0.2, tint: '#e4dcb8', fog: '#d8d0a8', sky: '#b8d8c0', weather: ['dust'], haze: 0.8 },
+  'harrow-terraces': { darkness: 0.2, tint: '#d8e4d4', fog: '#c8d8d0', sky: '#a8d0c8', weather: ['dust'], haze: 0.8 },
   halcyon: { darkness: 0.58, tint: '#3a2448', fog: '#1e1430', sky: '#2a1838', weather: ['rain'], haze: 1.3 },
-  wreckfield: { darkness: 0.4, tint: '#5a3a28', fog: '#4a3424', sky: '#8a6a50', weather: ['dust', 'embers'], haze: 1.2 },
+  wreckfield: { darkness: 0.4, tint: '#4e3e36', fog: '#3a3430', sky: '#6a6660', weather: ['dust', 'embers'], haze: 1.2 },
   'glass-steppe': { darkness: 0.36, tint: '#3c3a5a', fog: '#4a4670', sky: '#7a74b0', weather: ['spores'], haze: 1.1 },
   'the-spindle': { darkness: 0.62, tint: '#1a2a3a', fog: '#0c1824', sky: '#1a3048', weather: ['sparks'], haze: 1.4 },
 };
