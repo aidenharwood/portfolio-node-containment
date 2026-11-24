@@ -217,7 +217,8 @@ const scrapMagpie = (): VoxelModel => {
 const lamplighter = (): VoxelModel => {
   const body = 0x2c3c44;
   const claw = darken(body, 0.3);
-  const lamp = 0xffb35a;
+  const lamp = 0x7fe8ff;
+  const core = 0xe8fbff;
   const iron = 0x2a2e31;
   const model = new VoxelModel();
   for (let y = 0; y <= 41; y++) {
@@ -232,7 +233,7 @@ const lamplighter = (): VoxelModel => {
   model.fill(-7, 20, -1, -6, 27, 0, body).fill(-7, 19, -1, -6, 20, 4, body);
   model.fill(-7, 16, 4, -7, 18, 4, claw).fill(-6, 16, 4, -6, 18, 4, claw).set(-6, 16, 5, claw);
   model.fill(5, 20, -1, 6, 27, 0, body).fill(5, 19, -1, 6, 20, 5, body);
-  model.fill(3, 9, 3, 8, 15, 8, lamp, VOXEL_EMISSIVE);
+  model.fill(3, 9, 3, 8, 15, 8, 0x9fd6e6, VOXEL_GLASS).fill(4, 10, 4, 7, 14, 7, lamp, VOXEL_EMISSIVE).fill(5, 11, 5, 6, 13, 6, core, VOXEL_EMISSIVE).fill(3, 15, 3, 8, 15, 8, lamp, VOXEL_EMISSIVE);
   for (const x of [3, 8]) for (const z of [3, 8]) model.fill(x, 9, z, x, 15, z, iron);
   model.fill(3, 8, 3, 8, 8, 8, iron).fill(4, 16, 4, 7, 16, 7, iron).fill(5, 17, 5, 6, 18, 6, iron);
   model.fill(5, 6, 5, 5, 7, 5, 0x5a8a90);
