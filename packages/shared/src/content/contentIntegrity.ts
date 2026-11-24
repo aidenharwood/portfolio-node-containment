@@ -16,6 +16,7 @@ import { findContractIssues } from './contractIntegrity.ts';
 import { findCraftingIssues, rawSourceTiers } from './craftingIntegrity.ts';
 import type { GameContent } from './gameContent.ts';
 import { findLevelIssues } from './levelIntegrity.ts';
+import { findMegastructureIssues } from './megastructureIntegrity.ts';
 import { findOverworldIssues } from './overworldIntegrity.ts';
 import { findRegionIssues } from './regionIntegrity.ts';
 import { findEncounterIssues } from './encounterIntegrity.ts';
@@ -264,6 +265,7 @@ export function findContentIssues(content: GameContent): string[] {
 
   issues.push(...findCraftingIssues(content));
   issues.push(...findLevelIssues(content));
+  issues.push(...findMegastructureIssues(content));
   issues.push(...findRegionIssues(content));
   issues.push(...findOverworldIssues(content));
   issues.push(...findTramIssues(content));

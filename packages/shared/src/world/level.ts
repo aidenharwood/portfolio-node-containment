@@ -2,6 +2,7 @@ import type { ConnectorId, DistrictId, LevelId } from '../ids.ts';
 import type { DistrictDefinition, ZoneAmbience, ZoneLight } from './district.ts';
 import type { TilePoint } from './geometry.ts';
 import type { LandMap } from './landPlan.ts';
+import type { MegastructurePlacement } from './megastructure.ts';
 
 export interface LevelContext {
   districtOf(id: DistrictId): DistrictDefinition;
@@ -41,6 +42,7 @@ export interface LevelDefinition {
   readonly spawn: { readonly districtId: DistrictId; readonly position: TilePoint };
   readonly capacity?: number;
   readonly land?: LandMap;
+  readonly megastructures?: readonly MegastructurePlacement[];
 }
 
 export const visitedLevelFlag = (levelId: LevelId): string => `visited:${levelId}`;

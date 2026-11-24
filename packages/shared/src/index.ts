@@ -85,6 +85,7 @@ export * from './world/doors.ts';
 export * from './world/level.ts';
 export * from './world/region.ts';
 export * from './world/levelLayout.ts';
+export * from './world/megastructure.ts';
 export * from './world/tram.ts';
 export * from './world/pointsOfInterest.ts';
 export * from './world/mapScenery.ts';

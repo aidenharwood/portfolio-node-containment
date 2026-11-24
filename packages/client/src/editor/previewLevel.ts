@@ -64,6 +64,7 @@ export function landLevel(land: LandMap, id: string): ResolvedLevel {
     creatures: [],
     lights: [],
     decals: [],
+    megastructures: [],
     ambienceAt: () => LAND_AMBIENCE,
   };
 }

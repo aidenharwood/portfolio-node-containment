@@ -6,6 +6,7 @@ import { TRANSIT_KIT } from '../catalog/transit.ts';
 import { BELOW_LAYOUT_IDS, LAYOUT_SOURCES, SQUARE_LAYOUT_IDS } from '../districts/layouts/index.ts';
 import { registerFurnishingKit } from '../furnishingKit.ts';
 import { landFrom, SHIPPED_LANDS } from '../land/index.ts';
+import { MEGASTRUCTURE_KIT } from './megastructures.ts';
 import { SPAN_KIT } from './objects.ts';
 import { WILD_KIT } from './wilds.ts';
 
@@ -14,6 +15,7 @@ registerFurnishingKit(LANDMARK_KIT);
 registerFurnishingKit(TRANSIT_KIT);
 registerFurnishingKit(SPAN_KIT);
 registerFurnishingKit(WILD_KIT);
+registerFurnishingKit(MEGASTRUCTURE_KIT);
 
 export const SPAN_LAND_ID = 'the-span';
 

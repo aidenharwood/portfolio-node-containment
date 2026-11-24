@@ -35,7 +35,7 @@ import { buildFloorScatter } from './floorScatter.ts';
 import { groundAt } from './ground.ts';
 import { BAND_ROWS, bandsOf, hasStructure, ownedLayoutOf, planChunkStructure, STRIP_ROWS, type ChunkStructure, type TopTexels } from './chunkStructure.ts';
 import type { StructureJob } from './chunkMesher.ts';
-import { MODEL_VOXEL_SIZE } from './worldScale.ts';
+import { MODEL_VOXEL_SIZE, STEP_HEIGHT } from './worldScale.ts';
 
 export interface LightSource {
   readonly position: Vector3;
@@ -382,7 +382,7 @@ export class ChunkView {
     const parts = objectMeshesFor(definition.model, seed % MODEL_VARIANTS);
     const scale = definition.modelScale ?? 1;
     const origin = objectModelOrigin(placement, definition);
-    const ground = groundAt(this.layout, placement.position.x, placement.position.y);
+    const ground = placement.datum === undefined ? groundAt(this.layout, placement.position.x, placement.position.y) : placement.datum * STEP_HEIGHT;
     const lightsBefore = this.lights.length;
     this.addObjectLight(definition, placement, origin, ground, parts, `${definition.model}:${seed % MODEL_VARIANTS}`, scale, seed);
     if (this.lights.length > lightsBefore) this.objectLights.set(placement.instanceId, this.lights.slice(lightsBefore));

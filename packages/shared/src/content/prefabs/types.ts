@@ -30,7 +30,7 @@ export const DRESSING_THEMES = [
 
 export type DressingTheme = (typeof DRESSING_THEMES)[number];
 
-export type PrefabRole = 'focal' | 'bay' | 'edge' | 'island' | 'wall';
+export type PrefabRole = 'focal' | 'bay' | 'edge' | 'island' | 'wall' | 'megastructure';
 
 export interface PrefabPiece {
   readonly dx: number;

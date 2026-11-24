@@ -15,6 +15,7 @@ import type { FloorDecal } from './decals.ts';
 import type { TilePoint, TileRect } from './geometry.ts';
 import { sceneOf, type SceneLayout } from './landScene.ts';
 import type { LevelDefinition } from './level.ts';
+import { resolveMegastructure, type ResolvedMegastructure } from './megastructure.ts';
 import type { TileKindId } from './tiles.ts';
 
 export interface LevelLayout extends TileLayout {
@@ -49,6 +50,7 @@ export interface ResolvedLevel {
   readonly creatures: readonly CreaturePlacement[];
   readonly lights: readonly ZoneLight[];
   readonly decals: readonly FloorDecal[];
+  readonly megastructures: readonly ResolvedMegastructure[];
   ambienceAt(point: TilePoint): ZoneAmbience;
 }
 
@@ -156,6 +158,8 @@ export function resolveLevel(
   const placed = level.districts.map((placement) => ({ origin: placement.origin, district: districtOf(districts, placement.districtId) }));
   const ambience = districtOf(districts, level.spawn.districtId).ambience;
   const connectorAmbience = new Map(level.connectors.map((connector) => [connector.id, connector.ambience]));
+  const origins = new Map(level.districts.map((placement) => [placement.districtId, placement.origin]));
+  const megastructures = (level.megastructures ?? []).map((placement) => resolveMegastructure(placement, (id) => districts.get(id), (id) => origins.get(id), layout));
 
   return {
     definition: level,
@@ -174,9 +178,10 @@ export function resolveLevel(
       rect: { x: origin.x, y: origin.y, width: Math.max(0, ...district.map.map((row) => row.length)), height: district.map.length },
     })),
     npcs: placed.flatMap(({ origin, district }) => district.npcs.map((npc) => ({ ...npc, position: offset(npc.position, origin) }))),
-    objects: placed.flatMap(({ origin, district }) =>
-      districtObjects(district, assemblies).map((object) => ({ ...object, position: offset(object.position, origin) })),
-    ),
+    objects: [
+      ...placed.flatMap(({ origin, district }) => districtObjects(district, assemblies).map((object) => ({ ...object, position: offset(object.position, origin) }))),
+      ...megastructures.flatMap((megastructure) => megastructure.objects),
+    ],
     creatures: placed.flatMap(({ origin, district }) =>
       (district.creatures ?? []).map((creature) => ({ ...creature, position: offset(creature.position, origin) })),
     ),
@@ -187,6 +192,7 @@ export function resolveLevel(
     decals: placed.flatMap(({ origin, district }) =>
       (district.decals ?? []).map((decal) => ({ ...decal, rect: { ...decal.rect, ...offset(decal.rect, origin) } })),
     ),
+    megastructures,
     ambienceAt: (point) => {
       const districtId = layout.districtAt(point);
       if (districtId) return districtOf(districts, districtId).ambience;

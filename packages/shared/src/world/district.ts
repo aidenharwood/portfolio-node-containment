@@ -44,6 +44,7 @@ export interface ObjectPlacement {
   readonly objectId: WorldObjectId;
   readonly position: TilePoint;
   readonly facing?: Facing;
+  readonly datum?: number;
 }
 
 export interface CreaturePlacement {

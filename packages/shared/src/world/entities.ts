@@ -98,7 +98,18 @@ export type WorldObjectModel =
   | 'bridgeEndRight'
   | 'catwalkSpan'
   | 'catwalkEnd'
-  | 'departureBoard';
+  | 'departureBoard'
+  | 'maglevPylon'
+  | 'maglevSpan'
+  | 'maglevSpanEnd'
+  | 'siphonTrestle'
+  | 'siphonPipe'
+  | 'ribFoot'
+  | 'ribArch'
+  | 'ringFoot'
+  | 'ringArch'
+  | 'uplinkDish'
+  | 'uplinkCable';
 
 export interface ObjectInteraction {
   readonly verb: string;

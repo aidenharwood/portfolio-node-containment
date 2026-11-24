@@ -36,6 +36,7 @@ import { combineDialogues } from './catalog/dialogueKit.ts';
 import { SPAN_CREATURES } from './span/creatures.ts';
 import { SPAN_DISTRICTS } from './span/districts.ts';
 import { SPAN_LIFTS, SPAN_RELICS } from './span/lifts.ts';
+import { MEGASTRUCTURE_KIT } from './span/megastructures.ts';
 import { SPAN_KIT } from './span/objects.ts';
 import { WILD_DIALOGUES, WILD_KIT, WILD_NPCS } from './span/wilds.ts';
 import { SPAN_BASE_DIALOGUES, SPAN_NPCS, SPAN_REGIONS, SPAN_SHOPS } from './span/people.ts';
@@ -87,7 +88,7 @@ function indexById<T extends { readonly id: string }>(entries: readonly T[]): Re
 }
 
 const DISTRICTS: ReadonlyMap<DistrictId, DistrictDefinition> = indexById(SPAN_DISTRICTS);
-const INSTALLED = buildInstallations([STORAGE_LOCKER, ...CITY_KIT_OBJECTS, ...LANDMARK_OBJECTS, ...TRANSIT_OBJECTS, ...SPAN_KIT.objects, ...WILD_KIT.objects, ...SPAN_LIFTS, ...SPAN_RELICS, ...WARD_SPOTS, ...WARD_STATIONS, ...SPAN_QUEST_OBJECTS]);
+const INSTALLED = buildInstallations([STORAGE_LOCKER, ...CITY_KIT_OBJECTS, ...LANDMARK_OBJECTS, ...TRANSIT_OBJECTS, ...SPAN_KIT.objects, ...WILD_KIT.objects, ...MEGASTRUCTURE_KIT.objects, ...SPAN_LIFTS, ...SPAN_RELICS, ...WARD_SPOTS, ...WARD_STATIONS, ...SPAN_QUEST_OBJECTS]);
 const ASSEMBLY_INDEX: ReadonlyMap<AssemblyId, AssemblyDefinition> = indexById([...ASSEMBLIES, ...TRANSIT_ASSEMBLIES, ...INSTALLED.assemblies]);
 const LEVEL_INDEX: LevelIndex = buildLevelIndex([OVERWORLD, ...BELOW_LEVELS], DISTRICTS, ASSEMBLY_INDEX);
 

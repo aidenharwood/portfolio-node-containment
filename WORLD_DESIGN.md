@@ -67,6 +67,17 @@ Ground rises in whole steps, from step 0 (sea level, and every level below groun
 - **Wall fixtures stand against a wall**, counting multi-tile footprints (the back edge must touch the wall). **Checked** (`findFixtureIssues`).
 - **Prefabs are valid.** Pieces name real objects and do not overlap once footprints count (only the corner posts of a walk-under canopy block), roles are not empty, `wall` and `bay` prefabs have a back row, each prefab id appears once across the libraries and keys `PREFABS`, and every object footprint is at least 1×1. **Checked.**
 
+### Megastructures
+
+A megastructure is a giant prefab that crosses land squares: a maglev guideway, a pipe line, a ring, a dish array. It is not a set-piece. The level places it (`LevelDefinition.megastructures`, the Span's in `content/span/megastructures.ts`), anchored to a room of one district as `{ districtId, room, dx, dy }` with a `facing`, and its prefab has the `megastructure` role. Its pieces are footings, which block movement, and overhead pieces, which block nothing and are walked under. The whole structure stands level on one `datum`, the highest ground under it; footings reach down to the ground below. `findMegastructureIssues` (`content/megastructureIntegrity.ts`) checks:
+
+- Every tile of every piece lies in a room of the district that owns it. **Checked.**
+- Footings stand on walkable ground or water, never on a door, hazard or track tile, an anchor or exit, another object, an NPC or a creature, and never beside a door. **Checked.**
+- No footing stands more than `MEGASTRUCTURE_DROP` steps below the datum. **Checked.**
+- Ground under it stays reachable (`findLevelIssues` counts its footings). **Checked.**
+
+Give each region at most one or two, where its theme wants something seen from far off, and keep them clear of towns' pads and Seams.
+
 ### Placement
 
 Every prop you can place has a profile in `FURNISHING_PROFILES` (`content/furnishingCatalogue.ts`): how it stands, which room themes it belongs in, and whether it comes in rows. Read the profile before you place a prop, and give a new prop one when you add it. `findPlacementIssues` (`content/placementIntegrity.ts`) checks the rules below inside `findContentIssues`; fix what it reports by moving or turning a piece, or by choosing one that belongs, never by widening a profile to fit one room.
