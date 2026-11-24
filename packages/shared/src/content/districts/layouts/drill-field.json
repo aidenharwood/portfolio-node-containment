@@ -10,7 +10,12 @@
   "square": { "column": 2, "row": 10 },
   "steps": [
     { "kind": "rise", "rect": { "x": 40, "y": 37, "width": 14, "height": 10 }, "height": 7 },
-    { "kind": "building", "id": "drill-hall-bunks", "rect": { "x": 41, "y": 38, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "drill-hall-bunks", "rect": { "x": 41, "y": 38, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 43, "y": 47, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 46, "y": 47, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 46, "y": 48, "width": 10, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 55, "y": 33, "width": 2, "height": 17 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 50, "y": 32, "width": 7, "height": 2 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -18,18 +23,16 @@
     { "room": "drill-hall-bunks", "name": "Drill Hall Bunks", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 13, "dy": 41 }
+    "start": { "room": "ground", "dx": 56, "dy": 57 }
   },
   "objects": [
-    { "id": "drill-field-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 28, "dy": 20 } },
-    { "id": "drill-field-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 12, "dy": 15 } },
-    { "id": "drill-field-litter-bin-3", "object": "litter-bin", "at": { "room": "ground", "dx": 49, "dy": 12 } },
-    { "id": "drill-field-checkpoint-barrier-4", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 27, "dy": 6 } },
-    { "id": "drill-field-street-tree-5", "object": "street-tree", "at": { "room": "ground", "dx": 41, "dy": 27 } },
-    { "id": "drill-field-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 27, "dy": 12 } },
-    { "id": "drill-field-street-bench-7", "object": "street-bench", "at": { "room": "ground", "dx": 35, "dy": 52 }, "facing": "south" },
-    { "id": "drill-field-cable-drum-8", "object": "cable-drum", "at": { "room": "ground", "dx": 56, "dy": 8 } },
-    { "id": "drill-field-faint-trace-10", "object": "faint-trace", "at": { "room": "ground", "dx": 57, "dy": 50 } },
+    { "id": "drill-field-flood-mast-0", "object": "flood-mast", "at": { "room": "ground", "dx": 20, "dy": 12 } },
+    { "id": "drill-field-street-tree-2", "object": "street-tree", "at": { "room": "ground", "dx": 27, "dy": 6 } },
+    { "id": "drill-field-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 52, "dy": 12 } },
+    { "id": "drill-field-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 41, "dy": 27 } },
+    { "id": "drill-field-street-bench-5", "object": "street-bench", "at": { "room": "ground", "dx": 27, "dy": 12 }, "facing": "south" },
+    { "id": "drill-field-cable-drum-6", "object": "cable-drum", "at": { "room": "ground", "dx": 35, "dy": 52 } },
+    { "id": "drill-field-faint-trace-8", "object": "faint-trace", "at": { "room": "ground", "dx": 23, "dy": 18 } },
     { "id": "drill-hall-bunks-bed-0", "object": "bed", "at": { "room": "drill-hall-bunks", "dx": 1, "dy": 0 } },
     { "id": "drill-hall-bunks-bed-1", "object": "bed", "at": { "room": "drill-hall-bunks", "dx": 3, "dy": 0 } },
     { "id": "drill-hall-bunks-bed-2", "object": "bed", "at": { "room": "drill-hall-bunks", "dx": 5, "dy": 0 } },
@@ -41,24 +44,31 @@
     { "id": "drill-hall-bunks-bed-8", "object": "bed", "at": { "room": "drill-hall-bunks", "dx": 9, "dy": 5 } },
     { "id": "drill-hall-bunks-bed-9", "object": "bed", "at": { "room": "drill-hall-bunks", "dx": 11, "dy": 5 } },
     { "id": "drill-hall-bunks-storage-locker-10", "object": "storage-locker", "at": { "room": "drill-hall-bunks", "dx": 0, "dy": 3 }, "facing": "east" },
-    { "id": "drill-field-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 55, "dy": 29 } }
+    { "id": "drill-field-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 55, "dy": 29 } },
+    { "id": "drill-field-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 42, "dy": 47 }, "facing": "east" },
+    { "id": "drill-field-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 51, "dy": 47 }, "facing": "west" },
+    { "id": "drill-field-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 49, "dy": 50 }, "facing": "north" },
+    { "id": "drill-field-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 57, "dy": 46 }, "facing": "west" },
+    { "id": "drill-field-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 57, "dy": 38 }, "facing": "west" },
+    { "id": "drill-field-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 53, "dy": 34 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "drill-field-feral-hound-0", "creature": "feral-hound", "at": { "room": "ground", "dx": 20, "dy": 8 } },
-    { "id": "drill-field-grounds-mite-1", "creature": "grounds-mite", "at": { "room": "ground", "dx": 50, "dy": 21 } },
-    { "id": "drill-field-drill-sentry-2", "creature": "drill-sentry", "at": { "room": "ground", "dx": 40, "dy": 34 } },
-    { "id": "drill-field-feral-hound-3", "creature": "feral-hound", "at": { "room": "ground", "dx": 10, "dy": 50 } },
-    { "id": "drill-field-grounds-mite-4", "creature": "grounds-mite", "at": { "room": "ground", "dx": 37, "dy": 9 } },
-    { "id": "drill-field-drill-sentry-5", "creature": "drill-sentry", "at": { "room": "ground", "dx": 59, "dy": 15 } },
-    { "id": "drill-field-grounds-mite-7", "creature": "grounds-mite", "at": { "room": "ground", "dx": 19, "dy": 13 } },
+    { "id": "drill-field-feral-hound-0", "creature": "feral-hound", "at": { "room": "ground", "dx": 57, "dy": 50 } },
+    { "id": "drill-field-grounds-mite-1", "creature": "grounds-mite", "at": { "room": "ground", "dx": 60, "dy": 10 } },
+    { "id": "drill-field-drill-sentry-2", "creature": "drill-sentry", "at": { "room": "ground", "dx": 50, "dy": 21 } },
+    { "id": "drill-field-feral-hound-3", "creature": "feral-hound", "at": { "room": "ground", "dx": 12, "dy": 11 } },
+    { "id": "drill-field-grounds-mite-4", "creature": "grounds-mite", "at": { "room": "ground", "dx": 40, "dy": 34 } },
+    { "id": "drill-field-drill-sentry-5", "creature": "drill-sentry", "at": { "room": "ground", "dx": 10, "dy": 50 } },
+    { "id": "drill-field-feral-hound-6", "creature": "feral-hound", "at": { "room": "ground", "dx": 37, "dy": 9 } },
+    { "id": "drill-field-grounds-mite-7", "creature": "grounds-mite", "at": { "room": "ground", "dx": 59, "dy": 15 } },
     { "id": "drill-field-drill-sentry-8", "creature": "drill-sentry", "at": { "room": "ground", "dx": 49, "dy": 60 } },
     { "id": "drill-field-feral-hound-9", "creature": "feral-hound", "at": { "room": "ground", "dx": 33, "dy": 42 } },
-    { "id": "drill-field-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 15, "dy": 8 } },
-    { "id": "drill-field-drill-sentry-11", "creature": "drill-sentry", "at": { "room": "ground", "dx": 19, "dy": 39 } },
-    { "id": "drill-field-feral-hound-12", "creature": "feral-hound", "at": { "room": "ground", "dx": 19, "dy": 26 } },
-    { "id": "drill-field-grounds-mite-13", "creature": "grounds-mite", "at": { "room": "ground", "dx": 26, "dy": 31 } }
+    { "id": "drill-field-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 19, "dy": 39 } },
+    { "id": "drill-field-drill-sentry-11", "creature": "drill-sentry", "at": { "room": "ground", "dx": 19, "dy": 26 } },
+    { "id": "drill-field-feral-hound-12", "creature": "feral-hound", "at": { "room": "ground", "dx": 26, "dy": 31 } },
+    { "id": "drill-field-grounds-mite-13", "creature": "grounds-mite", "at": { "room": "ground", "dx": 13, "dy": 41 } }
   ],
   "lights": [],
   "decals": [],

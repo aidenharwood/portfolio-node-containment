@@ -10,7 +10,10 @@
   "square": { "column": 4, "row": 3 },
   "steps": [
     { "kind": "rise", "rect": { "x": 27, "y": 19, "width": 10, "height": 8 }, "height": 6 },
-    { "kind": "building", "id": "lantern-ward-flat", "rect": { "x": 28, "y": 20, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "lantern-ward-flat", "rect": { "x": 28, "y": 20, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 28, "y": 27, "width": 8, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 31, "y": 27, "width": 2, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 31, "y": 28, "width": 10, "height": 2 }, "tile": "concrete" }
   ],
   "tiles": [],
   "areas": [
@@ -18,26 +21,28 @@
     { "room": "lantern-ward-flat", "name": "Lantern Ward Flat", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 24, "dy": 54 }
+    "start": { "room": "ground", "dx": 20, "dy": 33 }
   },
   "objects": [
     { "id": "lantern-ward-quest-combine-camera", "object": "combine-camera", "at": { "room": "ground", "dx": 45, "dy": 41 } },
-    { "id": "lantern-ward-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 10 } },
-    { "id": "lantern-ward-litter-bin-2", "object": "litter-bin", "at": { "room": "ground", "dx": 11, "dy": 17 } },
-    { "id": "lantern-ward-parked-car-3", "object": "parked-car", "at": { "room": "ground", "dx": 9, "dy": 53 } },
-    { "id": "lantern-ward-litter-bin-4", "object": "litter-bin", "at": { "room": "ground", "dx": 24, "dy": 46 } },
-    { "id": "lantern-ward-litter-bin-5", "object": "litter-bin", "at": { "room": "ground", "dx": 56, "dy": 44 } },
+    { "id": "lantern-ward-parked-car-0", "object": "parked-car", "at": { "room": "ground", "dx": 22, "dy": 49 } },
+    { "id": "lantern-ward-food-stall-1", "object": "food-stall", "at": { "room": "ground", "dx": 17, "dy": 20 } },
+    { "id": "lantern-ward-parked-car-2", "object": "parked-car", "at": { "room": "ground", "dx": 46, "dy": 9 } },
+    { "id": "lantern-ward-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 9, "dy": 53 } },
+    { "id": "lantern-ward-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 52, "dy": 24 } },
     { "id": "lantern-ward-harrow-south-gate-leaf-0", "object": "harrow-south-gate-leaf", "at": { "room": "ground", "dx": 26, "dy": 63 }, "facing": "south" },
     { "id": "lantern-ward-harrow-south-gate-leaf-1", "object": "harrow-south-gate-leaf", "at": { "room": "ground", "dx": 27, "dy": 63 }, "facing": "south" },
-    { "id": "lantern-ward-culture-bench-9", "object": "culture-bench", "at": { "room": "ground", "dx": 47, "dy": 6 } },
-    { "id": "lantern-ward-amber-trace-10", "object": "amber-trace", "at": { "room": "ground", "dx": 45, "dy": 49 } },
-    { "id": "lantern-ward-scrap-heap-11", "object": "scrap-heap", "at": { "room": "ground", "dx": 19, "dy": 50 } },
+    { "id": "lantern-ward-culture-bench-7", "object": "culture-bench", "at": { "room": "ground", "dx": 46, "dy": 50 } },
+    { "id": "lantern-ward-amber-trace-8", "object": "amber-trace", "at": { "room": "ground", "dx": 56, "dy": 44 } },
     { "id": "lantern-ward-flat-bed-0", "object": "bed", "at": { "room": "lantern-ward-flat", "dx": 1, "dy": 0 } },
     { "id": "lantern-ward-flat-washer-1", "object": "washer", "at": { "room": "lantern-ward-flat", "dx": 4, "dy": 0 }, "facing": "south" },
     { "id": "lantern-ward-flat-shelving-2", "object": "shelving", "at": { "room": "lantern-ward-flat", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "lantern-ward-flat-table-3", "object": "table", "at": { "room": "lantern-ward-flat", "dx": 5, "dy": 3 } },
     { "id": "lantern-ward-flat-chair-4", "object": "chair", "at": { "room": "lantern-ward-flat", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "lantern-ward-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 49, "dy": 22 } }
+    { "id": "lantern-ward-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 49, "dy": 22 } },
+    { "id": "lantern-ward-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 27, "dy": 27 }, "facing": "east" },
+    { "id": "lantern-ward-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 36, "dy": 27 }, "facing": "west" },
+    { "id": "lantern-ward-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 34, "dy": 30 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],
@@ -47,12 +52,11 @@
     { "id": "lantern-ward-holo-shill-2", "creature": "holo-shill", "at": { "room": "ground", "dx": 48, "dy": 18 } },
     { "id": "lantern-ward-alley-crawler-3", "creature": "alley-crawler", "at": { "room": "ground", "dx": 56, "dy": 54 } },
     { "id": "lantern-ward-holo-shill-4", "creature": "holo-shill", "at": { "room": "ground", "dx": 13, "dy": 8 } },
-    { "id": "lantern-ward-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 55, "dy": 19 } },
-    { "id": "lantern-ward-holo-shill-6", "creature": "holo-shill", "at": { "room": "ground", "dx": 56, "dy": 31 } },
-    { "id": "lantern-ward-alley-crawler-7", "creature": "alley-crawler", "at": { "room": "ground", "dx": 54, "dy": 9 } },
-    { "id": "lantern-ward-holo-shill-8", "creature": "holo-shill", "at": { "room": "ground", "dx": 33, "dy": 49 } },
-    { "id": "lantern-ward-alley-crawler-9", "creature": "alley-crawler", "at": { "room": "ground", "dx": 25, "dy": 38 } },
-    { "id": "lantern-ward-holo-shill-10", "creature": "holo-shill", "at": { "room": "ground", "dx": 50, "dy": 53 } },
+    { "id": "lantern-ward-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 56, "dy": 31 } },
+    { "id": "lantern-ward-alley-crawler-7", "creature": "alley-crawler", "at": { "room": "ground", "dx": 22, "dy": 41 } },
+    { "id": "lantern-ward-holo-shill-8", "creature": "holo-shill", "at": { "room": "ground", "dx": 54, "dy": 9 } },
+    { "id": "lantern-ward-alley-crawler-9", "creature": "alley-crawler", "at": { "room": "ground", "dx": 33, "dy": 49 } },
+    { "id": "lantern-ward-holo-shill-10", "creature": "holo-shill", "at": { "room": "ground", "dx": 21, "dy": 13 } },
     { "id": "lantern-ward-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 39, "dy": 17 } },
     { "id": "lantern-ward-holo-shill-12", "creature": "holo-shill", "at": { "room": "ground", "dx": 54, "dy": 36 } },
     { "id": "lantern-ward-alley-crawler-13", "creature": "alley-crawler", "at": { "room": "ground", "dx": 45, "dy": 37 } }

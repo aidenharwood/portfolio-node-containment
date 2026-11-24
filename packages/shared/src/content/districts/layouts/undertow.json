@@ -10,7 +10,11 @@
   "square": { "column": 4, "row": 1 },
   "steps": [
     { "kind": "rise", "rect": { "x": 31, "y": 25, "width": 14, "height": 10 }, "height": 4 },
-    { "kind": "building", "id": "undertow-pump-lab", "rect": { "x": 32, "y": 26, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "undertow-pump-lab", "rect": { "x": 32, "y": 26, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 34, "y": 35, "width": 8, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 37, "y": 35, "width": 2, "height": 4 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 37, "y": 38, "width": 11, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 47, "y": 32, "width": 2, "height": 8 }, "tile": "concrete" }
   ],
   "tiles": [],
   "areas": [
@@ -18,18 +22,17 @@
     { "room": "undertow-pump-lab", "name": "Undertow Pump Lab", "safe": false }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 17, "dy": 26 }
+    "start": { "room": "ground", "dx": 47, "dy": 16 }
   },
   "objects": [
     { "id": "undertow-quest-sola-camera", "object": "sola-camera", "at": { "room": "ground", "dx": 41, "dy": 37 } },
-    { "id": "undertow-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 53, "dy": 52 } },
-    { "id": "undertow-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 26, "dy": 19 } },
-    { "id": "undertow-parked-car-2", "object": "parked-car", "at": { "room": "ground", "dx": 52, "dy": 12 } },
+    { "id": "undertow-utility-pole-0", "object": "utility-pole", "at": { "room": "ground", "dx": 52, "dy": 12 } },
+    { "id": "undertow-holo-billboard-1", "object": "holo-billboard", "at": { "room": "ground", "dx": 26, "dy": 19 } },
     { "id": "undertow-bollard-3", "object": "bollard", "at": { "room": "ground", "dx": 59, "dy": 36 } },
-    { "id": "undertow-litter-bin-5", "object": "litter-bin", "at": { "room": "ground", "dx": 41, "dy": 59 } },
-    { "id": "undertow-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 24, "dy": 48 } },
-    { "id": "undertow-amber-trace-7", "object": "amber-trace", "at": { "room": "ground", "dx": 17, "dy": 14 } },
-    { "id": "undertow-culture-bench-9", "object": "culture-bench", "at": { "room": "ground", "dx": 45, "dy": 46 } },
+    { "id": "undertow-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 41, "dy": 59 } },
+    { "id": "undertow-amber-trace-5", "object": "amber-trace", "at": { "room": "ground", "dx": 24, "dy": 48 } },
+    { "id": "undertow-scrap-heap-6", "object": "scrap-heap", "at": { "room": "ground", "dx": 17, "dy": 14 } },
+    { "id": "undertow-culture-bench-7", "object": "culture-bench", "at": { "room": "ground", "dx": 45, "dy": 46 } },
     { "id": "undertow-pump-lab-lab-bench-0", "object": "lab-bench", "at": { "room": "undertow-pump-lab", "dx": 2, "dy": 3 } },
     { "id": "undertow-pump-lab-lab-bench-1", "object": "lab-bench", "at": { "room": "undertow-pump-lab", "dx": 3, "dy": 3 } },
     { "id": "undertow-pump-lab-lab-bench-2", "object": "lab-bench", "at": { "room": "undertow-pump-lab", "dx": 4, "dy": 3 } },
@@ -38,22 +41,24 @@
     { "id": "undertow-pump-lab-shelving-5", "object": "shelving", "at": { "room": "undertow-pump-lab", "dx": 10, "dy": 0 }, "facing": "south" },
     { "id": "undertow-pump-lab-shelving-6", "object": "shelving", "at": { "room": "undertow-pump-lab", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "undertow-pump-lab-culture-bench-7", "object": "culture-bench", "at": { "room": "undertow-pump-lab", "dx": 10, "dy": 5 } },
-    { "id": "undertow-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 53, "dy": 36 } }
+    { "id": "undertow-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 53, "dy": 36 } },
+    { "id": "undertow-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 33, "dy": 35 }, "facing": "east" },
+    { "id": "undertow-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 42, "dy": 35 }, "facing": "west" },
+    { "id": "undertow-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 46, "dy": 37 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "undertow-neon-moth-0", "creature": "neon-moth", "at": { "room": "ground", "dx": 28, "dy": 57 } },
-    { "id": "undertow-holo-shill-1", "creature": "holo-shill", "at": { "room": "ground", "dx": 57, "dy": 45 } },
-    { "id": "undertow-neon-moth-2", "creature": "neon-moth", "at": { "room": "ground", "dx": 14, "dy": 40 } },
-    { "id": "undertow-holo-shill-3", "creature": "holo-shill", "at": { "room": "ground", "dx": 53, "dy": 20 } },
-    { "id": "undertow-holo-shill-5", "creature": "holo-shill", "at": { "room": "ground", "dx": 9, "dy": 29 } },
-    { "id": "undertow-neon-moth-6", "creature": "neon-moth", "at": { "room": "ground", "dx": 35, "dy": 60 } },
-    { "id": "undertow-holo-shill-7", "creature": "holo-shill", "at": { "room": "ground", "dx": 39, "dy": 20 } },
-    { "id": "undertow-neon-moth-8", "creature": "neon-moth", "at": { "room": "ground", "dx": 21, "dy": 59 } },
-    { "id": "undertow-holo-shill-11", "creature": "holo-shill", "at": { "room": "ground", "dx": 4, "dy": 33 } },
-    { "id": "undertow-neon-moth-12", "creature": "neon-moth", "at": { "room": "ground", "dx": 22, "dy": 29 } },
-    { "id": "undertow-holo-shill-13", "creature": "holo-shill", "at": { "room": "ground", "dx": 47, "dy": 16 } },
+    { "id": "undertow-holo-shill-1", "creature": "holo-shill", "at": { "room": "ground", "dx": 28, "dy": 57 } },
+    { "id": "undertow-neon-moth-2", "creature": "neon-moth", "at": { "room": "ground", "dx": 57, "dy": 45 } },
+    { "id": "undertow-holo-shill-3", "creature": "holo-shill", "at": { "room": "ground", "dx": 14, "dy": 40 } },
+    { "id": "undertow-neon-moth-4", "creature": "neon-moth", "at": { "room": "ground", "dx": 53, "dy": 20 } },
+    { "id": "undertow-neon-moth-6", "creature": "neon-moth", "at": { "room": "ground", "dx": 9, "dy": 29 } },
+    { "id": "undertow-holo-shill-7", "creature": "holo-shill", "at": { "room": "ground", "dx": 35, "dy": 60 } },
+    { "id": "undertow-neon-moth-8", "creature": "neon-moth", "at": { "room": "ground", "dx": 39, "dy": 20 } },
+    { "id": "undertow-holo-shill-9", "creature": "holo-shill", "at": { "room": "ground", "dx": 21, "dy": 59 } },
+    { "id": "undertow-neon-moth-12", "creature": "neon-moth", "at": { "room": "ground", "dx": 4, "dy": 33 } },
+    { "id": "undertow-holo-shill-13", "creature": "holo-shill", "at": { "room": "ground", "dx": 22, "dy": 29 } },
     { "id": "undertow-pump-lab-alley-crawler-0", "creature": "alley-crawler", "at": { "room": "undertow-pump-lab", "dx": 8, "dy": 5 } }
   ],
   "lights": [],

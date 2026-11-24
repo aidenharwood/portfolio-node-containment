@@ -10,7 +10,10 @@
   "square": { "column": 3, "row": 12 },
   "steps": [
     { "kind": "rise", "rect": { "x": 27, "y": 30, "width": 10, "height": 8 }, "height": 7 },
-    { "kind": "building", "id": "lakeside-cottage", "rect": { "x": 28, "y": 31, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "lakeside-cottage", "rect": { "x": 28, "y": 31, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 28, "y": 38, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 31, "y": 38, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 31, "y": 39, "width": 10, "height": 2 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -18,25 +21,26 @@
     { "room": "lakeside-cottage", "name": "Lakeside Cottage", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 30, "dy": 19 }
+    "start": { "room": "ground", "dx": 36, "dy": 48 }
   },
   "objects": [
-    { "id": "lakeside-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 40, "dy": 5 } },
-    { "id": "lakeside-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 14, "dy": 20 } },
-    { "id": "lakeside-checkpoint-barrier-3", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 52, "dy": 14 } },
-    { "id": "lakeside-street-tree-4", "object": "street-tree", "at": { "room": "ground", "dx": 52, "dy": 37 } },
-    { "id": "lakeside-street-tree-5", "object": "street-tree", "at": { "room": "ground", "dx": 46, "dy": 33 } },
-    { "id": "lakeside-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 34, "dy": 14 } },
-    { "id": "lakeside-street-bench-7", "object": "street-bench", "at": { "room": "ground", "dx": 50, "dy": 21 }, "facing": "south" },
-    { "id": "lakeside-eel-trap-8", "object": "eel-trap", "at": { "room": "ground", "dx": 12, "dy": 34 } },
-    { "id": "lakeside-cable-drum-9", "object": "cable-drum", "at": { "room": "ground", "dx": 19, "dy": 34 } },
-    { "id": "lakeside-scrap-pile-10", "object": "scrap-pile", "at": { "room": "ground", "dx": 58, "dy": 48 } },
+    { "id": "lakeside-litter-bin-0", "object": "litter-bin", "at": { "room": "ground", "dx": 52, "dy": 14 } },
+    { "id": "lakeside-bollard-1", "object": "bollard", "at": { "room": "ground", "dx": 48, "dy": 27 } },
+    { "id": "lakeside-litter-bin-2", "object": "litter-bin", "at": { "room": "ground", "dx": 54, "dy": 52 } },
+    { "id": "lakeside-bollard-3", "object": "bollard", "at": { "room": "ground", "dx": 37, "dy": 10 } },
+    { "id": "lakeside-street-bench-5", "object": "street-bench", "at": { "room": "ground", "dx": 23, "dy": 31 }, "facing": "south" },
+    { "id": "lakeside-eel-trap-6", "object": "eel-trap", "at": { "room": "ground", "dx": 46, "dy": 33 } },
+    { "id": "lakeside-cable-drum-7", "object": "cable-drum", "at": { "room": "ground", "dx": 50, "dy": 21 } },
+    { "id": "lakeside-scrap-pile-8", "object": "scrap-pile", "at": { "room": "ground", "dx": 12, "dy": 34 } },
     { "id": "lakeside-cottage-bed-0", "object": "bed", "at": { "room": "lakeside-cottage", "dx": 1, "dy": 0 } },
     { "id": "lakeside-cottage-washer-1", "object": "washer", "at": { "room": "lakeside-cottage", "dx": 4, "dy": 0 }, "facing": "south" },
     { "id": "lakeside-cottage-shelving-2", "object": "shelving", "at": { "room": "lakeside-cottage", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "lakeside-cottage-table-3", "object": "table", "at": { "room": "lakeside-cottage", "dx": 5, "dy": 3 } },
     { "id": "lakeside-cottage-chair-4", "object": "chair", "at": { "room": "lakeside-cottage", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "lakeside-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 42, "dy": 45 } }
+    { "id": "lakeside-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 42, "dy": 45 } },
+    { "id": "lakeside-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 27, "dy": 38 }, "facing": "east" },
+    { "id": "lakeside-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 36, "dy": 38 }, "facing": "west" },
+    { "id": "lakeside-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 34, "dy": 41 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],
@@ -45,14 +49,15 @@
     { "id": "lakeside-courtyard-gull-2", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 13, "dy": 53 } },
     { "id": "lakeside-feral-hound-3", "creature": "feral-hound", "at": { "room": "ground", "dx": 16, "dy": 27 } },
     { "id": "lakeside-grounds-mite-4", "creature": "grounds-mite", "at": { "room": "ground", "dx": 55, "dy": 6 } },
-    { "id": "lakeside-courtyard-gull-5", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 10, "dy": 3 } },
-    { "id": "lakeside-feral-hound-6", "creature": "feral-hound", "at": { "room": "ground", "dx": 59, "dy": 35 } },
-    { "id": "lakeside-grounds-mite-7", "creature": "grounds-mite", "at": { "room": "ground", "dx": 18, "dy": 49 } },
-    { "id": "lakeside-courtyard-gull-8", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 59, "dy": 19 } },
-    { "id": "lakeside-feral-hound-9", "creature": "feral-hound", "at": { "room": "ground", "dx": 7, "dy": 53 } },
-    { "id": "lakeside-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 36, "dy": 48 } },
-    { "id": "lakeside-feral-hound-12", "creature": "feral-hound", "at": { "room": "ground", "dx": 18, "dy": 9 } },
-    { "id": "lakeside-grounds-mite-13", "creature": "grounds-mite", "at": { "room": "ground", "dx": 32, "dy": 25 } }
+    { "id": "lakeside-courtyard-gull-5", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 19, "dy": 23 } },
+    { "id": "lakeside-feral-hound-6", "creature": "feral-hound", "at": { "room": "ground", "dx": 10, "dy": 3 } },
+    { "id": "lakeside-grounds-mite-7", "creature": "grounds-mite", "at": { "room": "ground", "dx": 59, "dy": 35 } },
+    { "id": "lakeside-courtyard-gull-8", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 18, "dy": 49 } },
+    { "id": "lakeside-feral-hound-9", "creature": "feral-hound", "at": { "room": "ground", "dx": 59, "dy": 19 } },
+    { "id": "lakeside-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 12, "dy": 14 } },
+    { "id": "lakeside-courtyard-gull-11", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 7, "dy": 53 } },
+    { "id": "lakeside-feral-hound-12", "creature": "feral-hound", "at": { "room": "ground", "dx": 59, "dy": 45 } },
+    { "id": "lakeside-grounds-mite-13", "creature": "grounds-mite", "at": { "room": "ground", "dx": 11, "dy": 24 } }
   ],
   "lights": [],
   "decals": [],

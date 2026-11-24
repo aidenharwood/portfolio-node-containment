@@ -10,7 +10,11 @@
   "square": { "column": 8, "row": 11 },
   "steps": [
     { "kind": "rise", "rect": { "x": 26, "y": 34, "width": 14, "height": 10 }, "height": 6 },
-    { "kind": "building", "id": "quiet-field-kennels", "rect": { "x": 27, "y": 35, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "quiet-field-kennels", "rect": { "x": 27, "y": 35, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 29, "y": 44, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 32, "y": 44, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 23, "y": 45, "width": 11, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 22, "y": 42, "width": 2, "height": 5 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -18,39 +22,44 @@
     { "room": "quiet-field-kennels", "name": "Quiet Field Kennels", "safe": false }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 22, "dy": 20 }
+    "start": { "room": "ground", "dx": 3, "dy": 38 }
   },
   "objects": [
-    { "id": "quiet-field-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 8 } },
-    { "id": "quiet-field-bollard-3", "object": "bollard", "at": { "room": "ground", "dx": 3, "dy": 17 } },
-    { "id": "quiet-field-flood-mast-4", "object": "flood-mast", "at": { "room": "ground", "dx": 14, "dy": 38 } },
-    { "id": "quiet-field-bollard-5", "object": "bollard", "at": { "room": "ground", "dx": 32, "dy": 7 } },
-    { "id": "quiet-field-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 26, "dy": 56 } },
-    { "id": "quiet-field-street-bench-7", "object": "street-bench", "at": { "room": "ground", "dx": 55, "dy": 52 }, "facing": "south" },
-    { "id": "quiet-field-eel-trap-8", "object": "eel-trap", "at": { "room": "ground", "dx": 3, "dy": 25 } },
-    { "id": "quiet-field-cable-drum-9", "object": "cable-drum", "at": { "room": "ground", "dx": 45, "dy": 46 } },
-    { "id": "quiet-field-scrap-pile-10", "object": "scrap-pile", "at": { "room": "ground", "dx": 13, "dy": 54 } },
+    { "id": "quiet-field-flood-mast-0", "object": "flood-mast", "at": { "room": "ground", "dx": 46, "dy": 48 } },
+    { "id": "quiet-field-street-tree-1", "object": "street-tree", "at": { "room": "ground", "dx": 12, "dy": 29 } },
+    { "id": "quiet-field-litter-bin-2", "object": "litter-bin", "at": { "room": "ground", "dx": 5, "dy": 3 } },
+    { "id": "quiet-field-bollard-3", "object": "bollard", "at": { "room": "ground", "dx": 29, "dy": 14 } },
+    { "id": "quiet-field-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 38, "dy": 17 } },
+    { "id": "quiet-field-street-bench-5", "object": "street-bench", "at": { "room": "ground", "dx": 32, "dy": 7 }, "facing": "south" },
+    { "id": "quiet-field-eel-trap-6", "object": "eel-trap", "at": { "room": "ground", "dx": 26, "dy": 56 } },
+    { "id": "quiet-field-cable-drum-7", "object": "cable-drum", "at": { "room": "ground", "dx": 55, "dy": 52 } },
+    { "id": "quiet-field-scrap-pile-8", "object": "scrap-pile", "at": { "room": "ground", "dx": 3, "dy": 25 } },
     { "id": "quiet-field-kennels-secure-cell-0", "object": "secure-cell", "at": { "room": "quiet-field-kennels", "dx": 1, "dy": 1 } },
     { "id": "quiet-field-kennels-secure-cell-1", "object": "secure-cell", "at": { "room": "quiet-field-kennels", "dx": 4, "dy": 1 } },
     { "id": "quiet-field-kennels-secure-cell-2", "object": "secure-cell", "at": { "room": "quiet-field-kennels", "dx": 7, "dy": 1 } },
     { "id": "quiet-field-kennels-keycard-reader-3", "object": "keycard-reader", "at": { "room": "quiet-field-kennels", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "quiet-field-kennels-security-camera-4", "object": "security-camera", "at": { "room": "quiet-field-kennels", "dx": 0, "dy": 0 }, "facing": "south" },
     { "id": "quiet-field-kennels-lab-bench-5", "object": "lab-bench", "at": { "room": "quiet-field-kennels", "dx": 10, "dy": 4 } },
-    { "id": "quiet-field-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 21, "dy": 46 } }
+    { "id": "quiet-field-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 21, "dy": 46 } },
+    { "id": "quiet-field-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 28, "dy": 44 }, "facing": "east" },
+    { "id": "quiet-field-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 37, "dy": 44 }, "facing": "west" },
+    { "id": "quiet-field-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 29, "dy": 47 }, "facing": "north" },
+    { "id": "quiet-field-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 24, "dy": 44 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "quiet-field-feral-hound-0", "creature": "feral-hound", "at": { "room": "ground", "dx": 6, "dy": 31 } },
-    { "id": "quiet-field-grounds-mite-1", "creature": "grounds-mite", "at": { "room": "ground", "dx": 19, "dy": 15 } },
-    { "id": "quiet-field-feral-hound-3", "creature": "feral-hound", "at": { "room": "ground", "dx": 17, "dy": 25 } },
-    { "id": "quiet-field-grounds-mite-4", "creature": "grounds-mite", "at": { "room": "ground", "dx": 50, "dy": 25 } },
-    { "id": "quiet-field-lawn-rat-5", "creature": "lawn-rat", "at": { "room": "ground", "dx": 40, "dy": 15 } },
-    { "id": "quiet-field-feral-hound-6", "creature": "feral-hound", "at": { "room": "ground", "dx": 9, "dy": 44 } },
-    { "id": "quiet-field-lawn-rat-8", "creature": "lawn-rat", "at": { "room": "ground", "dx": 31, "dy": 51 } },
-    { "id": "quiet-field-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 3, "dy": 38 } },
-    { "id": "quiet-field-feral-hound-12", "creature": "feral-hound", "at": { "room": "ground", "dx": 5, "dy": 11 } },
-    { "id": "quiet-field-grounds-mite-13", "creature": "grounds-mite", "at": { "room": "ground", "dx": 7, "dy": 5 } },
+    { "id": "quiet-field-feral-hound-0", "creature": "feral-hound", "at": { "room": "ground", "dx": 22, "dy": 50 } },
+    { "id": "quiet-field-grounds-mite-1", "creature": "grounds-mite", "at": { "room": "ground", "dx": 51, "dy": 14 } },
+    { "id": "quiet-field-lawn-rat-2", "creature": "lawn-rat", "at": { "room": "ground", "dx": 13, "dy": 54 } },
+    { "id": "quiet-field-feral-hound-3", "creature": "feral-hound", "at": { "room": "ground", "dx": 6, "dy": 31 } },
+    { "id": "quiet-field-grounds-mite-4", "creature": "grounds-mite", "at": { "room": "ground", "dx": 19, "dy": 15 } },
+    { "id": "quiet-field-feral-hound-6", "creature": "feral-hound", "at": { "room": "ground", "dx": 17, "dy": 25 } },
+    { "id": "quiet-field-grounds-mite-7", "creature": "grounds-mite", "at": { "room": "ground", "dx": 50, "dy": 25 } },
+    { "id": "quiet-field-lawn-rat-8", "creature": "lawn-rat", "at": { "room": "ground", "dx": 9, "dy": 44 } },
+    { "id": "quiet-field-feral-hound-9", "creature": "feral-hound", "at": { "room": "ground", "dx": 14, "dy": 37 } },
+    { "id": "quiet-field-lawn-rat-11", "creature": "lawn-rat", "at": { "room": "ground", "dx": 3, "dy": 14 } },
+    { "id": "quiet-field-feral-hound-12", "creature": "feral-hound", "at": { "room": "ground", "dx": 31, "dy": 51 } },
     { "id": "quiet-field-kennels-feral-hound-0", "creature": "feral-hound", "at": { "room": "quiet-field-kennels", "dx": 2, "dy": 5 } },
     { "id": "quiet-field-kennels-feral-hound-1", "creature": "feral-hound", "at": { "room": "quiet-field-kennels", "dx": 9, "dy": 6 } }
   ],

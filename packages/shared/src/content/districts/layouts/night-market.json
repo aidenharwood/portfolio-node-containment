@@ -10,7 +10,12 @@
   "square": { "column": 8, "row": 2 },
   "steps": [
     { "kind": "rise", "rect": { "x": 30, "y": 28, "width": 14, "height": 10 }, "height": 5 },
-    { "kind": "building", "id": "night-stalls", "rect": { "x": 31, "y": 29, "width": 12, "height": 8 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "night-stalls", "rect": { "x": 31, "y": 29, "width": 12, "height": 8 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 33, "y": 38, "width": 8, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 36, "y": 38, "width": 2, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 28, "y": 39, "width": 10, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 27, "y": 24, "width": 2, "height": 17 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 27, "y": 23, "width": 8, "height": 2 }, "tile": "concrete" }
   ],
   "tiles": [],
   "areas": [
@@ -18,16 +23,17 @@
     { "room": "night-stalls", "name": "The Night Stalls", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 29, "dy": 16 }
+    "start": { "room": "ground", "dx": 28, "dy": 57 }
   },
   "objects": [
     { "id": "night-market-quest-lins-old-stall", "object": "lins-old-stall", "at": { "room": "ground", "dx": 41, "dy": 40 } },
-    { "id": "night-market-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 23, "dy": 44 } },
+    { "id": "night-market-bollard-0", "object": "bollard", "at": { "room": "ground", "dx": 55, "dy": 23 } },
+    { "id": "night-market-litter-bin-1", "object": "litter-bin", "at": { "room": "ground", "dx": 12, "dy": 31 } },
     { "id": "night-market-food-stall-2", "object": "food-stall", "at": { "room": "ground", "dx": 44, "dy": 25 } },
     { "id": "night-market-bollard-3", "object": "bollard", "at": { "room": "ground", "dx": 29, "dy": 25 } },
-    { "id": "night-market-utility-pole-5", "object": "utility-pole", "at": { "room": "ground", "dx": 16, "dy": 60 } },
-    { "id": "night-market-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 6, "dy": 56 } },
-    { "id": "night-market-crusher-housing-9", "object": "crusher-housing", "at": { "room": "ground", "dx": 58, "dy": 31 } },
+    { "id": "night-market-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 55, "dy": 38 } },
+    { "id": "night-market-amber-trace-6", "object": "amber-trace", "at": { "room": "ground", "dx": 6, "dy": 56 } },
+    { "id": "night-market-crusher-housing-7", "object": "crusher-housing", "at": { "room": "ground", "dx": 58, "dy": 31 } },
     { "id": "night-stalls-shelving-0", "object": "shelving", "at": { "room": "night-stalls", "dx": 1, "dy": 0 }, "facing": "south" },
     { "id": "night-stalls-shelving-1", "object": "shelving", "at": { "room": "night-stalls", "dx": 2, "dy": 0 }, "facing": "south" },
     { "id": "night-stalls-shelving-2", "object": "shelving", "at": { "room": "night-stalls", "dx": 3, "dy": 0 }, "facing": "south" },
@@ -40,7 +46,13 @@
     { "id": "night-stalls-counter-9", "object": "counter", "at": { "room": "night-stalls", "dx": 3, "dy": 3 } },
     { "id": "night-stalls-table-10", "object": "table", "at": { "room": "night-stalls", "dx": 9, "dy": 5 } },
     { "id": "night-stalls-chair-11", "object": "chair", "at": { "room": "night-stalls", "dx": 9, "dy": 4 }, "facing": "south" },
-    { "id": "night-market-poi-halcyon-lockbox-0", "object": "halcyon-lockbox", "at": { "room": "ground", "dx": 38, "dy": 14 } }
+    { "id": "night-market-poi-halcyon-lockbox-0", "object": "halcyon-lockbox", "at": { "room": "ground", "dx": 38, "dy": 14 } },
+    { "id": "night-market-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 32, "dy": 38 }, "facing": "east" },
+    { "id": "night-market-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 41, "dy": 38 }, "facing": "west" },
+    { "id": "night-market-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 33, "dy": 41 }, "facing": "north" },
+    { "id": "night-market-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 26, "dy": 37 }, "facing": "east" },
+    { "id": "night-market-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 26, "dy": 29 }, "facing": "east" },
+    { "id": "night-market-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 29, "dy": 22 }, "facing": "south" }
   ],
   "assemblies": [
     { "id": "night-market-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 14, "dy": 51 }, "span": 2 },
@@ -53,16 +65,14 @@
     { "id": "night-market-ad-wraith-0", "creature": "ad-wraith", "at": { "room": "ground", "dx": 47, "dy": 49 } },
     { "id": "night-market-glass-hound-1", "creature": "glass-hound", "at": { "room": "ground", "dx": 37, "dy": 58 } },
     { "id": "night-market-alley-crawler-2", "creature": "alley-crawler", "at": { "room": "ground", "dx": 14, "dy": 38 } },
-    { "id": "night-market-glass-hound-4", "creature": "glass-hound", "at": { "room": "ground", "dx": 57, "dy": 49 } },
-    { "id": "night-market-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 16, "dy": 25 } },
-    { "id": "night-market-ad-wraith-6", "creature": "ad-wraith", "at": { "room": "ground", "dx": 57, "dy": 43 } },
-    { "id": "night-market-alley-crawler-8", "creature": "alley-crawler", "at": { "room": "ground", "dx": 31, "dy": 8 } },
-    { "id": "night-market-ad-wraith-9", "creature": "ad-wraith", "at": { "room": "ground", "dx": 52, "dy": 23 } },
-    { "id": "night-market-glass-hound-10", "creature": "glass-hound", "at": { "room": "ground", "dx": 3, "dy": 21 } },
-    { "id": "night-market-ad-wraith-12", "creature": "ad-wraith", "at": { "room": "ground", "dx": 10, "dy": 43 } },
-    { "id": "night-market-glass-hound-13", "creature": "glass-hound", "at": { "room": "ground", "dx": 3, "dy": 49 } },
-    { "id": "night-market-alley-crawler-14", "creature": "alley-crawler", "at": { "room": "ground", "dx": 27, "dy": 50 } },
-    { "id": "night-market-ad-wraith-15", "creature": "ad-wraith", "at": { "room": "ground", "dx": 28, "dy": 57 } }
+    { "id": "night-market-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 57, "dy": 49 } },
+    { "id": "night-market-ad-wraith-6", "creature": "ad-wraith", "at": { "room": "ground", "dx": 16, "dy": 25 } },
+    { "id": "night-market-glass-hound-7", "creature": "glass-hound", "at": { "room": "ground", "dx": 33, "dy": 13 } },
+    { "id": "night-market-glass-hound-10", "creature": "glass-hound", "at": { "room": "ground", "dx": 31, "dy": 8 } },
+    { "id": "night-market-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 3, "dy": 21 } },
+    { "id": "night-market-glass-hound-13", "creature": "glass-hound", "at": { "room": "ground", "dx": 10, "dy": 43 } },
+    { "id": "night-market-alley-crawler-14", "creature": "alley-crawler", "at": { "room": "ground", "dx": 3, "dy": 49 } },
+    { "id": "night-market-ad-wraith-15", "creature": "ad-wraith", "at": { "room": "ground", "dx": 27, "dy": 50 } }
   ],
   "lights": [],
   "decals": [],

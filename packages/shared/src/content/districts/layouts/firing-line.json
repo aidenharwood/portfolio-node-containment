@@ -10,7 +10,11 @@
   "square": { "column": 7, "row": 11 },
   "steps": [
     { "kind": "rise", "rect": { "x": 47, "y": 43, "width": 14, "height": 10 }, "height": 6 },
-    { "kind": "building", "id": "range-hut", "rect": { "x": 48, "y": 44, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "range-hut", "rect": { "x": 48, "y": 44, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 53, "y": 53, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 45, "y": 54, "width": 10, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 44, "y": 40, "width": 2, "height": 16 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 44, "y": 39, "width": 11, "height": 2 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -18,21 +22,18 @@
     { "room": "range-hut", "name": "Range Hut", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 38, "dy": 53 }
+    "start": { "room": "ground", "dx": 17, "dy": 52 }
   },
   "objects": [
     { "id": "firing-line-quest-range-target-2", "object": "range-target", "at": { "room": "ground", "dx": 38, "dy": 44 } },
     { "id": "firing-line-quest-range-target", "object": "range-target", "at": { "room": "ground", "dx": 45, "dy": 38 } },
-    { "id": "firing-line-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 54, "dy": 31 } },
-    { "id": "firing-line-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 14, "dy": 53 } },
-    { "id": "firing-line-litter-bin-2", "object": "litter-bin", "at": { "room": "ground", "dx": 23, "dy": 56 } },
-    { "id": "firing-line-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 5, "dy": 36 } },
-    { "id": "firing-line-street-tree-4", "object": "street-tree", "at": { "room": "ground", "dx": 43, "dy": 48 } },
-    { "id": "firing-line-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 10, "dy": 43 } },
-    { "id": "firing-line-street-bench-7", "object": "street-bench", "at": { "room": "ground", "dx": 16, "dy": 45 }, "facing": "south" },
-    { "id": "firing-line-faint-trace-8", "object": "faint-trace", "at": { "room": "ground", "dx": 60, "dy": 12 } },
-    { "id": "firing-line-eel-trap-9", "object": "eel-trap", "at": { "room": "ground", "dx": 49, "dy": 4 } },
-    { "id": "firing-line-cable-drum-10", "object": "cable-drum", "at": { "room": "ground", "dx": 55, "dy": 4 } },
+    { "id": "firing-line-flood-mast-1", "object": "flood-mast", "at": { "room": "ground", "dx": 56, "dy": 10 } },
+    { "id": "firing-line-litter-bin-2", "object": "litter-bin", "at": { "room": "ground", "dx": 27, "dy": 5 } },
+    { "id": "firing-line-litter-bin-3", "object": "litter-bin", "at": { "room": "ground", "dx": 42, "dy": 43 } },
+    { "id": "firing-line-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 48, "dy": 15 } },
+    { "id": "firing-line-street-bench-5", "object": "street-bench", "at": { "room": "ground", "dx": 50, "dy": 28 }, "facing": "south" },
+    { "id": "firing-line-eel-trap-7", "object": "eel-trap", "at": { "room": "ground", "dx": 10, "dy": 43 } },
+    { "id": "firing-line-cable-drum-8", "object": "cable-drum", "at": { "room": "ground", "dx": 16, "dy": 45 } },
     { "id": "range-hut-shelving-0", "object": "shelving", "at": { "room": "range-hut", "dx": 1, "dy": 0 }, "facing": "south" },
     { "id": "range-hut-shelving-1", "object": "shelving", "at": { "room": "range-hut", "dx": 2, "dy": 0 }, "facing": "south" },
     { "id": "range-hut-notice-board-2", "object": "notice-board", "at": { "room": "range-hut", "dx": 6, "dy": 0 }, "facing": "south" },
@@ -42,22 +43,25 @@
     { "id": "range-hut-table-6", "object": "table", "at": { "room": "range-hut", "dx": 4, "dy": 3 } },
     { "id": "range-hut-chair-7", "object": "chair", "at": { "room": "range-hut", "dx": 3, "dy": 2 }, "facing": "south" },
     { "id": "range-hut-chair-8", "object": "chair", "at": { "room": "range-hut", "dx": 4, "dy": 2 }, "facing": "south" },
-    { "id": "firing-line-poi-kestrel-survey-locker-0", "object": "kestrel-survey-locker", "at": { "room": "ground", "dx": 50, "dy": 38 } }
+    { "id": "firing-line-poi-kestrel-survey-locker-0", "object": "kestrel-survey-locker", "at": { "room": "ground", "dx": 50, "dy": 38 } },
+    { "id": "firing-line-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 50, "dy": 56 }, "facing": "north" },
+    { "id": "firing-line-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 43, "dy": 52 }, "facing": "east" },
+    { "id": "firing-line-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 38 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "firing-line-seam-boar-0", "creature": "seam-boar", "at": { "room": "ground", "dx": 17, "dy": 9 } },
-    { "id": "firing-line-grounds-mite-1", "creature": "grounds-mite", "at": { "room": "ground", "dx": 51, "dy": 18 } },
-    { "id": "firing-line-drill-sentry-2", "creature": "drill-sentry", "at": { "room": "ground", "dx": 15, "dy": 3 } },
-    { "id": "firing-line-grounds-mite-4", "creature": "grounds-mite", "at": { "room": "ground", "dx": 14, "dy": 37 } },
-    { "id": "firing-line-drill-sentry-5", "creature": "drill-sentry", "at": { "room": "ground", "dx": 26, "dy": 44 } },
-    { "id": "firing-line-drill-sentry-8", "creature": "drill-sentry", "at": { "room": "ground", "dx": 4, "dy": 18 } },
-    { "id": "firing-line-seam-boar-9", "creature": "seam-boar", "at": { "room": "ground", "dx": 4, "dy": 52 } },
-    { "id": "firing-line-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 44, "dy": 10 } },
-    { "id": "firing-line-drill-sentry-11", "creature": "drill-sentry", "at": { "room": "ground", "dx": 44, "dy": 42 } },
-    { "id": "firing-line-seam-boar-12", "creature": "seam-boar", "at": { "room": "ground", "dx": 6, "dy": 8 } },
-    { "id": "firing-line-grounds-mite-13", "creature": "grounds-mite", "at": { "room": "ground", "dx": 56, "dy": 23 } }
+    { "id": "firing-line-seam-boar-0", "creature": "seam-boar", "at": { "room": "ground", "dx": 49, "dy": 4 } },
+    { "id": "firing-line-grounds-mite-1", "creature": "grounds-mite", "at": { "room": "ground", "dx": 55, "dy": 4 } },
+    { "id": "firing-line-drill-sentry-2", "creature": "drill-sentry", "at": { "room": "ground", "dx": 17, "dy": 9 } },
+    { "id": "firing-line-seam-boar-3", "creature": "seam-boar", "at": { "room": "ground", "dx": 15, "dy": 3 } },
+    { "id": "firing-line-drill-sentry-5", "creature": "drill-sentry", "at": { "room": "ground", "dx": 14, "dy": 37 } },
+    { "id": "firing-line-seam-boar-6", "creature": "seam-boar", "at": { "room": "ground", "dx": 23, "dy": 59 } },
+    { "id": "firing-line-grounds-mite-7", "creature": "grounds-mite", "at": { "room": "ground", "dx": 26, "dy": 44 } },
+    { "id": "firing-line-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 27, "dy": 54 } },
+    { "id": "firing-line-drill-sentry-11", "creature": "drill-sentry", "at": { "room": "ground", "dx": 4, "dy": 18 } },
+    { "id": "firing-line-seam-boar-12", "creature": "seam-boar", "at": { "room": "ground", "dx": 4, "dy": 52 } },
+    { "id": "firing-line-grounds-mite-13", "creature": "grounds-mite", "at": { "room": "ground", "dx": 60, "dy": 31 } }
   ],
   "lights": [],
   "decals": [],

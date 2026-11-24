@@ -32,6 +32,7 @@ import { DRESSING_THEMES } from '../../packages/shared/src/content/prefabs/types
 registerFurnishingKit({ objects: [...SPINWARD_OBJECTS, ...FAR_SPAN_OBJECTS].map((object) => ({ ...object, furnishing: object.furnishing ?? { mount: 'free', homes: DRESSING_THEMES } })), prefabs: [], signatures: {} });
 const EXTRAS: Readonly<Record<string, readonly string[]>> = Object.fromEntries([...new Set([...Object.keys(SPINWARD_EXTRAS), ...Object.keys(FAR_SPAN_EXTRAS)])].map((key) => [key, [...(SPINWARD_EXTRAS[key] ?? []), ...(FAR_SPAN_EXTRAS[key] ?? [])]]));
 import { safeNodes } from './safeNodes.ts';
+import { lightStreets } from './streetLights.ts';
 
 registerFurnishingKit(CITY_KIT);
 registerFurnishingKit(LANDMARK_KIT);
@@ -425,10 +426,6 @@ function layoutFor(cut: Cut): DistrictLayout {
     taken.push({ x: spot.x + 1, y: spot.y + 1, r: 5 });
   }
 
-  const lampCount = place ? 4 : 2;
-  let lamps = 0;
-  for (let attempt = 0; attempt < 10 && lamps < lampCount; attempt++) if (putObject('street-lamp', 7)) lamps++;
-  if (lamps === 0) throw new Error(id + ': nowhere to stand a street lamp');
   const props = PROPS[cut.region] ?? [];
   const propCount = place ? 6 : 4;
   for (let index = 0; index < propCount; index++) putObject(props[Math.floor(next() * props.length)]!, 6);
@@ -536,7 +533,7 @@ function buildDistrictMap(layout: DistrictLayout): readonly string[] {
 for (const file of readdirSync(OUT)) if (file.endsWith('.json')) unlinkSync(join(OUT, file));
 const written: { id: string; kind: 'square' | 'below' }[] = [];
 for (const cut of all) {
-  const layout = withQuestPlacements(dressSquare(cut));
+  const layout = lightStreets(withQuestPlacements(dressSquare(cut)), land);
   writeFileSync(join(OUT, layout.id + '.json'), printLayout(layout));
   written.push({ id: layout.id, kind: 'square' });
 }

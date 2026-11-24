@@ -10,7 +10,10 @@
   "square": { "column": 15, "row": 9 },
   "steps": [
     { "kind": "rise", "rect": { "x": 27, "y": 28, "width": 10, "height": 8 }, "height": 11 },
-    { "kind": "building", "id": "strand-hut", "rect": { "x": 28, "y": 29, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "strand-hut", "rect": { "x": 28, "y": 29, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 28, "y": 36, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 31, "y": 36, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 31, "y": 37, "width": 10, "height": 2 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -18,40 +21,41 @@
     { "room": "strand-hut", "name": "Strand Hut", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 54, "dy": 22 }
+    "start": { "room": "ground", "dx": 33, "dy": 8 }
   },
   "objects": [
-    { "id": "glass-strand-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 20, "dy": 43 } },
-    { "id": "glass-strand-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 33, "dy": 24 } },
-    { "id": "glass-strand-ledge-milestone-2", "object": "ledge-milestone", "at": { "room": "ground", "dx": 45, "dy": 21 } },
+    { "id": "glass-strand-ledge-milestone-1", "object": "ledge-milestone", "at": { "room": "ground", "dx": 15, "dy": 12 } },
+    { "id": "glass-strand-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 45, "dy": 21 } },
     { "id": "glass-strand-barricade-3", "object": "barricade", "at": { "room": "ground", "dx": 6, "dy": 30 } },
-    { "id": "glass-strand-flood-mast-4", "object": "flood-mast", "at": { "room": "ground", "dx": 41, "dy": 15 } },
-    { "id": "glass-strand-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 22, "dy": 30 } },
-    { "id": "glass-strand-sprung-cell-door-7", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 12, "dy": 4 } },
+    { "id": "glass-strand-sprung-cell-door-5", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 21, "dy": 6 } },
     { "id": "strand-hut-bed-0", "object": "bed", "at": { "room": "strand-hut", "dx": 1, "dy": 0 } },
     { "id": "strand-hut-washer-1", "object": "washer", "at": { "room": "strand-hut", "dx": 4, "dy": 0 }, "facing": "south" },
     { "id": "strand-hut-shelving-2", "object": "shelving", "at": { "room": "strand-hut", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "strand-hut-table-3", "object": "table", "at": { "room": "strand-hut", "dx": 5, "dy": 3 } },
     { "id": "strand-hut-chair-4", "object": "chair", "at": { "room": "strand-hut", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "glass-strand-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 43, "dy": 42 } }
+    { "id": "glass-strand-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 43, "dy": 42 } },
+    { "id": "glass-strand-poi-red-trace-1", "object": "red-trace", "at": { "room": "ground", "dx": 37, "dy": 23 } },
+    { "id": "glass-strand-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 27, "dy": 36 }, "facing": "east" },
+    { "id": "glass-strand-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 36, "dy": 36 }, "facing": "west" },
+    { "id": "glass-strand-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 34, "dy": 39 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "glass-strand-shard-wisp-0", "creature": "shard-wisp", "at": { "room": "ground", "dx": 27, "dy": 52 } },
-    { "id": "glass-strand-red-twin-1", "creature": "red-twin", "at": { "room": "ground", "dx": 52, "dy": 52 } },
-    { "id": "glass-strand-glass-stalker-2", "creature": "glass-stalker", "at": { "room": "ground", "dx": 18, "dy": 5 } },
-    { "id": "glass-strand-shard-wisp-3", "creature": "shard-wisp", "at": { "room": "ground", "dx": 44, "dy": 45 } },
-    { "id": "glass-strand-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 53, "dy": 39 } },
-    { "id": "glass-strand-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 53, "dy": 31 } },
-    { "id": "glass-strand-shard-wisp-6", "creature": "shard-wisp", "at": { "room": "ground", "dx": 56, "dy": 4 } },
-    { "id": "glass-strand-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 13, "dy": 43 } },
-    { "id": "glass-strand-glass-stalker-8", "creature": "glass-stalker", "at": { "room": "ground", "dx": 5, "dy": 10 } },
-    { "id": "glass-strand-shard-wisp-9", "creature": "shard-wisp", "at": { "room": "ground", "dx": 50, "dy": 35 } },
-    { "id": "glass-strand-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 21, "dy": 10 } },
-    { "id": "glass-strand-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 51, "dy": 15 } },
-    { "id": "glass-strand-shard-wisp-12", "creature": "shard-wisp", "at": { "room": "ground", "dx": 25, "dy": 5 } },
-    { "id": "glass-strand-red-twin-13", "creature": "red-twin", "at": { "room": "ground", "dx": 15, "dy": 30 } }
+    { "id": "glass-strand-shard-wisp-0", "creature": "shard-wisp", "at": { "room": "ground", "dx": 54, "dy": 25 } },
+    { "id": "glass-strand-red-twin-1", "creature": "red-twin", "at": { "room": "ground", "dx": 22, "dy": 30 } },
+    { "id": "glass-strand-glass-stalker-2", "creature": "glass-stalker", "at": { "room": "ground", "dx": 12, "dy": 4 } },
+    { "id": "glass-strand-shard-wisp-3", "creature": "shard-wisp", "at": { "room": "ground", "dx": 53, "dy": 51 } },
+    { "id": "glass-strand-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 32, "dy": 47 } },
+    { "id": "glass-strand-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 37, "dy": 4 } },
+    { "id": "glass-strand-shard-wisp-6", "creature": "shard-wisp", "at": { "room": "ground", "dx": 27, "dy": 52 } },
+    { "id": "glass-strand-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 14, "dy": 43 } },
+    { "id": "glass-strand-glass-stalker-8", "creature": "glass-stalker", "at": { "room": "ground", "dx": 44, "dy": 45 } },
+    { "id": "glass-strand-shard-wisp-9", "creature": "shard-wisp", "at": { "room": "ground", "dx": 53, "dy": 39 } },
+    { "id": "glass-strand-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 27, "dy": 44 } },
+    { "id": "glass-strand-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 38, "dy": 20 } },
+    { "id": "glass-strand-shard-wisp-12", "creature": "shard-wisp", "at": { "room": "ground", "dx": 53, "dy": 31 } },
+    { "id": "glass-strand-red-twin-13", "creature": "red-twin", "at": { "room": "ground", "dx": 56, "dy": 4 } }
   ],
   "lights": [],
   "decals": [],

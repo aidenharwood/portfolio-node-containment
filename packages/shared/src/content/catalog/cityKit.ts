@@ -13,7 +13,8 @@ const INDOORS = ['shop', 'home', 'office', 'civic', 'transit', 'canteen', 'conta
 const PUBLIC = ['street', 'civic', 'transit', 'shop', 'canteen', 'office', 'containment'] as const;
 
 export const CITY_KIT_OBJECTS: readonly WorldObjectDefinition[] = [
-  prop({ id: 'street-lamp', name: 'Street Lamp', examine: 'Sodium orange. Half the city is this colour after dark.', model: 'streetLamp', modelScale: 1.25, furnishing: { mount: 'free', homes: OUTDOORS, inRows: true }, light: { radius: 4, color: '#ffb35a', intensity: 0.65, beam: 1.1 } }),
+  prop({ id: 'street-lamp', name: 'Street Lamp', examine: 'A Directorate light mast: a slim composite pole and a strip lamp on a cantilever arm, angled over the way it lights.', model: 'streetLamp', modelScale: 1.25, furnishing: { mount: 'free', homes: OUTDOORS, inRows: true, kerbside: true }, light: { radius: 4, color: '#ffd59a', intensity: 0.65, beam: 1.1 } }),
+  prop({ id: 'path-light', name: 'Path Light', examine: 'A knee-high light post that washes the path at your feet and nothing else.', model: 'pathLight', furnishing: { mount: 'free', homes: OUTDOORS, inRows: true, kerbside: true }, light: { radius: 3, color: '#cfefff', intensity: 0.5 } }),
   prop({ id: 'bollard', name: 'Bollard', examine: 'Keeps the traffic off the pavement, mostly.', model: 'bollard', furnishing: { mount: 'free', homes: OUTDOORS, inRows: true } }),
   prop({ id: 'street-bench', name: 'Bench', examine: 'Slats worn pale where people wait.', model: 'streetBench', furnishing: { mount: 'seat', homes: ['street', 'civic', 'transit', 'containment'], seatsAt: 'view' } }),
   prop({ id: 'litter-bin', name: 'Litter Bin', examine: 'Full. It is always full.', model: 'litterBin', furnishing: { mount: 'free', homes: PUBLIC } }),
@@ -66,5 +67,5 @@ export const CITY_KIT_OBJECTS: readonly WorldObjectDefinition[] = [
 export const CITY_KIT: FurnishingKit = {
   objects: CITY_KIT_OBJECTS,
   prefabs: [],
-  signatures: { street: ['street-lamp'], shop: ['counter', 'shelving', 'market-stall'], home: ['bed'], containment: ['containment-cell', 'secure-cell'], lab: ['lab-bench'], ward: ['bed'] },
+  signatures: { street: ['street-lamp', 'path-light', 'flood-mast'], shop: ['counter', 'shelving', 'market-stall'], home: ['bed'], containment: ['containment-cell', 'secure-cell'], lab: ['lab-bench'], ward: ['bed'] },
 };

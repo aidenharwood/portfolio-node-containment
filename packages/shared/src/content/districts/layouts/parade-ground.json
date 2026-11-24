@@ -10,7 +10,11 @@
   "square": { "column": 4, "row": 11 },
   "steps": [
     { "kind": "rise", "rect": { "x": 28, "y": 30, "width": 14, "height": 10 }, "height": 7 },
-    { "kind": "building", "id": "parade-pavilion", "rect": { "x": 29, "y": 31, "width": 12, "height": 8 }, "floor": "terrazzo", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "parade-pavilion", "rect": { "x": 29, "y": 31, "width": 12, "height": 8 }, "floor": "terrazzo", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 31, "y": 40, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 34, "y": 40, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 34, "y": 41, "width": 11, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 44, "y": 39, "width": 2, "height": 4 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -18,17 +22,16 @@
     { "room": "parade-pavilion", "name": "Parade Pavilion", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 41, "dy": 58 }
+    "start": { "room": "ground", "dx": 30, "dy": 23 }
   },
   "objects": [
-    { "id": "parade-ground-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 8, "dy": 33 } },
-    { "id": "parade-ground-bollard-3", "object": "bollard", "at": { "room": "ground", "dx": 57, "dy": 22 } },
-    { "id": "parade-ground-litter-bin-4", "object": "litter-bin", "at": { "room": "ground", "dx": 21, "dy": 31 } },
-    { "id": "parade-ground-litter-bin-5", "object": "litter-bin", "at": { "room": "ground", "dx": 31, "dy": 8 } },
-    { "id": "parade-ground-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 11, "dy": 44 } },
-    { "id": "parade-ground-street-bench-7", "object": "street-bench", "at": { "room": "ground", "dx": 33, "dy": 60 }, "facing": "south" },
-    { "id": "parade-ground-cable-drum-9", "object": "cable-drum", "at": { "room": "ground", "dx": 6, "dy": 10 } },
-    { "id": "parade-ground-scrap-pile-10", "object": "scrap-pile", "at": { "room": "ground", "dx": 25, "dy": 11 } },
+    { "id": "parade-ground-street-tree-1", "object": "street-tree", "at": { "room": "ground", "dx": 11, "dy": 29 } },
+    { "id": "parade-ground-litter-bin-2", "object": "litter-bin", "at": { "room": "ground", "dx": 17, "dy": 57 } },
+    { "id": "parade-ground-bollard-3", "object": "bollard", "at": { "room": "ground", "dx": 37, "dy": 21 } },
+    { "id": "parade-ground-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 31, "dy": 8 } },
+    { "id": "parade-ground-eel-trap-6", "object": "eel-trap", "at": { "room": "ground", "dx": 11, "dy": 44 } },
+    { "id": "parade-ground-cable-drum-7", "object": "cable-drum", "at": { "room": "ground", "dx": 33, "dy": 60 } },
+    { "id": "parade-ground-scrap-pile-8", "object": "scrap-pile", "at": { "room": "ground", "dx": 34, "dy": 49 } },
     { "id": "parade-pavilion-notice-board-0", "object": "notice-board", "at": { "room": "parade-pavilion", "dx": 5, "dy": 0 }, "facing": "south" },
     { "id": "parade-pavilion-table-1", "object": "table", "at": { "room": "parade-pavilion", "dx": 6, "dy": 1 } },
     { "id": "parade-pavilion-street-bench-2", "object": "street-bench", "at": { "room": "parade-pavilion", "dx": 2, "dy": 4 }, "facing": "north" },
@@ -37,7 +40,10 @@
     { "id": "parade-pavilion-street-bench-5", "object": "street-bench", "at": { "room": "parade-pavilion", "dx": 10, "dy": 4 }, "facing": "north" },
     { "id": "parade-pavilion-street-bench-6", "object": "street-bench", "at": { "room": "parade-pavilion", "dx": 2, "dy": 6 }, "facing": "north" },
     { "id": "parade-pavilion-street-bench-7", "object": "street-bench", "at": { "room": "parade-pavilion", "dx": 9, "dy": 6 }, "facing": "north" },
-    { "id": "parade-ground-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 47, "dy": 43 } }
+    { "id": "parade-ground-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 47, "dy": 43 } },
+    { "id": "parade-ground-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 30, "dy": 40 }, "facing": "east" },
+    { "id": "parade-ground-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 39, "dy": 40 }, "facing": "west" },
+    { "id": "parade-ground-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 37, "dy": 43 }, "facing": "north" }
   ],
   "assemblies": [
     { "id": "parade-ground-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 14, "dy": 51 }, "span": 2 },
@@ -45,22 +51,22 @@
   ],
   "npcs": [],
   "creatures": [
-    { "id": "parade-ground-seam-boar-0", "creature": "seam-boar", "at": { "room": "ground", "dx": 55, "dy": 13 } },
-    { "id": "parade-ground-grounds-mite-1", "creature": "grounds-mite", "at": { "room": "ground", "dx": 48, "dy": 58 } },
-    { "id": "parade-ground-lawn-rat-2", "creature": "lawn-rat", "at": { "room": "ground", "dx": 21, "dy": 44 } },
-    { "id": "parade-ground-seam-boar-3", "creature": "seam-boar", "at": { "room": "ground", "dx": 18, "dy": 9 } },
-    { "id": "parade-ground-grounds-mite-4", "creature": "grounds-mite", "at": { "room": "ground", "dx": 48, "dy": 22 } },
-    { "id": "parade-ground-lawn-rat-5", "creature": "lawn-rat", "at": { "room": "ground", "dx": 10, "dy": 22 } },
-    { "id": "parade-ground-seam-boar-6", "creature": "seam-boar", "at": { "room": "ground", "dx": 33, "dy": 23 } },
-    { "id": "parade-ground-lawn-rat-8", "creature": "lawn-rat", "at": { "room": "ground", "dx": 16, "dy": 16 } },
-    { "id": "parade-ground-seam-boar-9", "creature": "seam-boar", "at": { "room": "ground", "dx": 57, "dy": 30 } },
-    { "id": "parade-ground-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 39, "dy": 13 } },
-    { "id": "parade-ground-lawn-rat-11", "creature": "lawn-rat", "at": { "room": "ground", "dx": 46, "dy": 14 } },
-    { "id": "parade-ground-seam-boar-12", "creature": "seam-boar", "at": { "room": "ground", "dx": 25, "dy": 21 } },
-    { "id": "parade-ground-grounds-mite-13", "creature": "grounds-mite", "at": { "room": "ground", "dx": 58, "dy": 44 } },
-    { "id": "parade-ground-lawn-rat-14", "creature": "lawn-rat", "at": { "room": "ground", "dx": 29, "dy": 16 } },
-    { "id": "parade-ground-seam-boar-15", "creature": "seam-boar", "at": { "room": "ground", "dx": 59, "dy": 6 } },
-    { "id": "parade-ground-grounds-mite-16", "creature": "grounds-mite", "at": { "room": "ground", "dx": 21, "dy": 4 } }
+    { "id": "parade-ground-seam-boar-0", "creature": "seam-boar", "at": { "room": "ground", "dx": 44, "dy": 50 } },
+    { "id": "parade-ground-grounds-mite-1", "creature": "grounds-mite", "at": { "room": "ground", "dx": 58, "dy": 19 } },
+    { "id": "parade-ground-seam-boar-3", "creature": "seam-boar", "at": { "room": "ground", "dx": 6, "dy": 10 } },
+    { "id": "parade-ground-lawn-rat-5", "creature": "lawn-rat", "at": { "room": "ground", "dx": 5, "dy": 36 } },
+    { "id": "parade-ground-seam-boar-6", "creature": "seam-boar", "at": { "room": "ground", "dx": 25, "dy": 11 } },
+    { "id": "parade-ground-grounds-mite-7", "creature": "grounds-mite", "at": { "room": "ground", "dx": 55, "dy": 13 } },
+    { "id": "parade-ground-lawn-rat-8", "creature": "lawn-rat", "at": { "room": "ground", "dx": 48, "dy": 58 } },
+    { "id": "parade-ground-seam-boar-9", "creature": "seam-boar", "at": { "room": "ground", "dx": 21, "dy": 44 } },
+    { "id": "parade-ground-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 18, "dy": 9 } },
+    { "id": "parade-ground-lawn-rat-11", "creature": "lawn-rat", "at": { "room": "ground", "dx": 48, "dy": 22 } },
+    { "id": "parade-ground-seam-boar-12", "creature": "seam-boar", "at": { "room": "ground", "dx": 10, "dy": 22 } },
+    { "id": "parade-ground-grounds-mite-13", "creature": "grounds-mite", "at": { "room": "ground", "dx": 54, "dy": 35 } },
+    { "id": "parade-ground-lawn-rat-14", "creature": "lawn-rat", "at": { "room": "ground", "dx": 16, "dy": 16 } },
+    { "id": "parade-ground-seam-boar-15", "creature": "seam-boar", "at": { "room": "ground", "dx": 57, "dy": 30 } },
+    { "id": "parade-ground-grounds-mite-16", "creature": "grounds-mite", "at": { "room": "ground", "dx": 39, "dy": 13 } },
+    { "id": "parade-ground-lawn-rat-17", "creature": "lawn-rat", "at": { "room": "ground", "dx": 46, "dy": 14 } }
   ],
   "lights": [],
   "decals": [],

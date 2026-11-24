@@ -10,7 +10,11 @@
   "square": { "column": 15, "row": 3 },
   "steps": [
     { "kind": "rise", "rect": { "x": 25, "y": 40, "width": 14, "height": 10 }, "height": 5 },
-    { "kind": "building", "id": "boiler-house", "rect": { "x": 26, "y": 41, "width": 12, "height": 8 }, "floor": "concrete", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "boiler-house", "rect": { "x": 26, "y": 41, "width": 12, "height": 8 }, "floor": "concrete", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 28, "y": 50, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 31, "y": 50, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 31, "y": 51, "width": 11, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 41, "y": 47, "width": 2, "height": 6 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -18,16 +22,13 @@
     { "room": "boiler-house", "name": "Boiler House", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 44, "dy": 3 }
+    "start": { "room": "ground", "dx": 32, "dy": 52 }
   },
   "objects": [
     { "id": "boiler-bay-quest-meridian-valve", "object": "meridian-valve", "at": { "room": "ground", "dx": 41, "dy": 40 } },
-    { "id": "boiler-bay-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 35, "dy": 58 } },
+    { "id": "boiler-bay-barricade-1", "object": "barricade", "at": { "room": "ground", "dx": 35, "dy": 58 } },
     { "id": "boiler-bay-magnet-crane-2", "object": "magnet-crane", "at": { "room": "ground", "dx": 14, "dy": 43 } },
-    { "id": "boiler-bay-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 4, "dy": 46 } },
-    { "id": "boiler-bay-utility-pole-5", "object": "utility-pole", "at": { "room": "ground", "dx": 57, "dy": 55 } },
-    { "id": "boiler-bay-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 53, "dy": 42 } },
-    { "id": "boiler-bay-rivet-seam-9", "object": "rivet-seam", "at": { "room": "ground", "dx": 57, "dy": 3 } },
+    { "id": "boiler-bay-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 29, "dy": 4 } },
     { "id": "boiler-house-ward-refinery-0", "object": "ward-refinery", "at": { "room": "boiler-house", "dx": 1, "dy": 1 } },
     { "id": "boiler-house-ward-fabricator-1", "object": "ward-fabricator", "at": { "room": "boiler-house", "dx": 4, "dy": 1 } },
     { "id": "boiler-house-ward-synthesiser-2", "object": "ward-synthesiser", "at": { "room": "boiler-house", "dx": 7, "dy": 1 } },
@@ -35,21 +36,25 @@
     { "id": "boiler-house-shelving-4", "object": "shelving", "at": { "room": "boiler-house", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "boiler-house-table-5", "object": "table", "at": { "room": "boiler-house", "dx": 10, "dy": 5 } },
     { "id": "boiler-house-chair-6", "object": "chair", "at": { "room": "boiler-house", "dx": 10, "dy": 4 }, "facing": "south" },
-    { "id": "boiler-bay-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 51, "dy": 46 } }
+    { "id": "boiler-bay-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 51, "dy": 46 } },
+    { "id": "boiler-bay-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 27, "dy": 50 }, "facing": "east" },
+    { "id": "boiler-bay-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 36, "dy": 50 }, "facing": "west" },
+    { "id": "boiler-bay-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 34, "dy": 53 }, "facing": "north" },
+    { "id": "boiler-bay-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 43, "dy": 50 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [
     { "id": "boiler-house-boiler-scav-gus", "npc": "boiler-scav-gus", "at": { "room": "boiler-house", "dx": 2, "dy": 4 } }
   ],
   "creatures": [
-    { "id": "boiler-bay-bilge-wraith-0", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 16, "dy": 51 } },
-    { "id": "boiler-bay-rustling-1", "creature": "rustling", "at": { "room": "ground", "dx": 8, "dy": 41 } },
-    { "id": "boiler-bay-ballast-crab-2", "creature": "ballast-crab", "at": { "room": "ground", "dx": 29, "dy": 5 } },
-    { "id": "boiler-bay-rustling-4", "creature": "rustling", "at": { "room": "ground", "dx": 40, "dy": 7 } },
-    { "id": "boiler-bay-ballast-crab-5", "creature": "ballast-crab", "at": { "room": "ground", "dx": 17, "dy": 4 } },
-    { "id": "boiler-bay-bilge-wraith-6", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 42, "dy": 56 } },
-    { "id": "boiler-bay-ballast-crab-8", "creature": "ballast-crab", "at": { "room": "ground", "dx": 13, "dy": 8 } },
-    { "id": "boiler-bay-bilge-wraith-9", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 23, "dy": 8 } }
+    { "id": "boiler-bay-bilge-wraith-0", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 50, "dy": 54 } },
+    { "id": "boiler-bay-rustling-1", "creature": "rustling", "at": { "room": "ground", "dx": 47, "dy": 39 } },
+    { "id": "boiler-bay-ballast-crab-2", "creature": "ballast-crab", "at": { "room": "ground", "dx": 57, "dy": 3 } },
+    { "id": "boiler-bay-bilge-wraith-3", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 3, "dy": 41 } },
+    { "id": "boiler-bay-rustling-4", "creature": "rustling", "at": { "room": "ground", "dx": 16, "dy": 51 } },
+    { "id": "boiler-bay-ballast-crab-5", "creature": "ballast-crab", "at": { "room": "ground", "dx": 8, "dy": 41 } },
+    { "id": "boiler-bay-ballast-crab-8", "creature": "ballast-crab", "at": { "room": "ground", "dx": 40, "dy": 7 } },
+    { "id": "boiler-bay-bilge-wraith-9", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 17, "dy": 4 } }
   ],
   "lights": [],
   "decals": [],

@@ -10,7 +10,11 @@
   "square": { "column": 12, "row": 11 },
   "steps": [
     { "kind": "rise", "rect": { "x": 30, "y": 30, "width": 14, "height": 10 }, "height": 11 },
-    { "kind": "building", "id": "steppe-foot-glassworks", "rect": { "x": 31, "y": 31, "width": 12, "height": 8 }, "floor": "concrete", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "steppe-foot-glassworks", "rect": { "x": 31, "y": 31, "width": 12, "height": 8 }, "floor": "concrete", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 33, "y": 40, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 36, "y": 40, "width": 2, "height": 3 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 36, "y": 42, "width": 11, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 46, "y": 40, "width": 2, "height": 4 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -21,13 +25,12 @@
     "start": { "room": "ground", "dx": 20, "dy": 13 }
   },
   "objects": [
-    { "id": "steppe-foot-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 55, "dy": 31 } },
-    { "id": "steppe-foot-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 55, "dy": 3 } },
-    { "id": "steppe-foot-burn-barrel-3", "object": "burn-barrel", "at": { "room": "ground", "dx": 50, "dy": 18 } },
-    { "id": "steppe-foot-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 9, "dy": 51 } },
-    { "id": "steppe-foot-flood-mast-5", "object": "flood-mast", "at": { "room": "ground", "dx": 41, "dy": 10 } },
-    { "id": "steppe-foot-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 58, "dy": 24 } },
-    { "id": "steppe-foot-red-trace-7", "object": "red-trace", "at": { "room": "ground", "dx": 17, "dy": 3 } },
+    { "id": "steppe-foot-burn-barrel-0", "object": "burn-barrel", "at": { "room": "ground", "dx": 31, "dy": 55 } },
+    { "id": "steppe-foot-precursor-pylon-1", "object": "precursor-pylon", "at": { "room": "ground", "dx": 50, "dy": 18 } },
+    { "id": "steppe-foot-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 9, "dy": 51 } },
+    { "id": "steppe-foot-flood-mast-3", "object": "flood-mast", "at": { "room": "ground", "dx": 41, "dy": 10 } },
+    { "id": "steppe-foot-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 58, "dy": 24 } },
+    { "id": "steppe-foot-red-trace-5", "object": "red-trace", "at": { "room": "ground", "dx": 17, "dy": 3 } },
     { "id": "steppe-foot-glassworks-ward-refinery-0", "object": "ward-refinery", "at": { "room": "steppe-foot-glassworks", "dx": 1, "dy": 1 } },
     { "id": "steppe-foot-glassworks-ward-fabricator-1", "object": "ward-fabricator", "at": { "room": "steppe-foot-glassworks", "dx": 4, "dy": 1 } },
     { "id": "steppe-foot-glassworks-ward-synthesiser-2", "object": "ward-synthesiser", "at": { "room": "steppe-foot-glassworks", "dx": 7, "dy": 1 } },
@@ -35,7 +38,11 @@
     { "id": "steppe-foot-glassworks-shelving-4", "object": "shelving", "at": { "room": "steppe-foot-glassworks", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "steppe-foot-glassworks-table-5", "object": "table", "at": { "room": "steppe-foot-glassworks", "dx": 10, "dy": 5 } },
     { "id": "steppe-foot-glassworks-chair-6", "object": "chair", "at": { "room": "steppe-foot-glassworks", "dx": 10, "dy": 4 }, "facing": "south" },
-    { "id": "steppe-foot-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 51, "dy": 44 } }
+    { "id": "steppe-foot-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 51, "dy": 44 } },
+    { "id": "steppe-foot-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 32, "dy": 40 }, "facing": "east" },
+    { "id": "steppe-foot-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 41, "dy": 40 }, "facing": "west" },
+    { "id": "steppe-foot-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 44 }, "facing": "north" },
+    { "id": "steppe-foot-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 48, "dy": 42 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],
@@ -44,13 +51,12 @@
     { "id": "steppe-foot-red-twin-1", "creature": "red-twin", "at": { "room": "ground", "dx": 15, "dy": 31 } },
     { "id": "steppe-foot-glass-stalker-2", "creature": "glass-stalker", "at": { "room": "ground", "dx": 17, "dy": 53 } },
     { "id": "steppe-foot-shard-wisp-3", "creature": "shard-wisp", "at": { "room": "ground", "dx": 21, "dy": 34 } },
-    { "id": "steppe-foot-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 28, "dy": 52 } },
-    { "id": "steppe-foot-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 56, "dy": 13 } },
-    { "id": "steppe-foot-shard-wisp-6", "creature": "shard-wisp", "at": { "room": "ground", "dx": 35, "dy": 4 } },
-    { "id": "steppe-foot-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 56, "dy": 45 } },
-    { "id": "steppe-foot-glass-stalker-8", "creature": "glass-stalker", "at": { "room": "ground", "dx": 43, "dy": 17 } },
-    { "id": "steppe-foot-shard-wisp-9", "creature": "shard-wisp", "at": { "room": "ground", "dx": 12, "dy": 38 } },
-    { "id": "steppe-foot-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 31, "dy": 9 } },
+    { "id": "steppe-foot-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 56, "dy": 13 } },
+    { "id": "steppe-foot-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 35, "dy": 4 } },
+    { "id": "steppe-foot-shard-wisp-6", "creature": "shard-wisp", "at": { "room": "ground", "dx": 56, "dy": 45 } },
+    { "id": "steppe-foot-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 43, "dy": 17 } },
+    { "id": "steppe-foot-glass-stalker-8", "creature": "glass-stalker", "at": { "room": "ground", "dx": 12, "dy": 38 } },
+    { "id": "steppe-foot-shard-wisp-9", "creature": "shard-wisp", "at": { "room": "ground", "dx": 31, "dy": 9 } },
     { "id": "steppe-foot-shard-wisp-12", "creature": "shard-wisp", "at": { "room": "ground", "dx": 17, "dy": 22 } },
     { "id": "steppe-foot-glass-stalker-14", "creature": "glass-stalker", "at": { "room": "ground", "dx": 25, "dy": 13 } }
   ],

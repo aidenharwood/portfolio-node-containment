@@ -10,7 +10,11 @@
   "square": { "column": 16, "row": 5 },
   "steps": [
     { "kind": "rise", "rect": { "x": 27, "y": 30, "width": 14, "height": 10 }, "height": 10 },
-    { "kind": "building", "id": "heath-chapel", "rect": { "x": 28, "y": 31, "width": 12, "height": 8 }, "floor": "terrazzo", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "heath-chapel", "rect": { "x": 28, "y": 31, "width": 12, "height": 8 }, "floor": "terrazzo", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 30, "y": 40, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 33, "y": 40, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 33, "y": 41, "width": 11, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 43, "y": 40, "width": 2, "height": 3 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -18,16 +22,15 @@
     { "room": "heath-chapel", "name": "Heath Chapel", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 34, "dy": 18 }
+    "start": { "room": "ground", "dx": 26, "dy": 26 }
   },
   "objects": [
-    { "id": "bell-heath-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 37, "dy": 60 } },
-    { "id": "bell-heath-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 35, "dy": 27 } },
-    { "id": "bell-heath-flood-mast-2", "object": "flood-mast", "at": { "room": "ground", "dx": 32, "dy": 10 } },
-    { "id": "bell-heath-ledge-milestone-3", "object": "ledge-milestone", "at": { "room": "ground", "dx": 9, "dy": 22 } },
-    { "id": "bell-heath-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 24, "dy": 12 } },
-    { "id": "bell-heath-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 11, "dy": 33 } },
-    { "id": "bell-heath-directorate-salvage-7", "object": "directorate-salvage", "at": { "room": "ground", "dx": 49, "dy": 21 } },
+    { "id": "bell-heath-barricade-0", "object": "barricade", "at": { "room": "ground", "dx": 27, "dy": 47 } },
+    { "id": "bell-heath-barricade-1", "object": "barricade", "at": { "room": "ground", "dx": 10, "dy": 16 } },
+    { "id": "bell-heath-precursor-pylon-2", "object": "precursor-pylon", "at": { "room": "ground", "dx": 22, "dy": 55 } },
+    { "id": "bell-heath-ledge-milestone-3", "object": "ledge-milestone", "at": { "room": "ground", "dx": 12, "dy": 35 } },
+    { "id": "bell-heath-directorate-salvage-5", "object": "directorate-salvage", "at": { "room": "ground", "dx": 49, "dy": 21 } },
+    { "id": "bell-heath-red-moss-6", "object": "red-moss", "at": { "room": "ground", "dx": 13, "dy": 47 } },
     { "id": "heath-chapel-notice-board-0", "object": "notice-board", "at": { "room": "heath-chapel", "dx": 5, "dy": 0 }, "facing": "south" },
     { "id": "heath-chapel-table-1", "object": "table", "at": { "room": "heath-chapel", "dx": 6, "dy": 1 } },
     { "id": "heath-chapel-street-bench-2", "object": "street-bench", "at": { "room": "heath-chapel", "dx": 2, "dy": 4 }, "facing": "north" },
@@ -36,7 +39,10 @@
     { "id": "heath-chapel-street-bench-5", "object": "street-bench", "at": { "room": "heath-chapel", "dx": 10, "dy": 4 }, "facing": "north" },
     { "id": "heath-chapel-street-bench-6", "object": "street-bench", "at": { "room": "heath-chapel", "dx": 2, "dy": 6 }, "facing": "north" },
     { "id": "heath-chapel-street-bench-7", "object": "street-bench", "at": { "room": "heath-chapel", "dx": 9, "dy": 6 }, "facing": "north" },
-    { "id": "bell-heath-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 53, "dy": 37 } }
+    { "id": "bell-heath-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 53, "dy": 37 } },
+    { "id": "bell-heath-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 29, "dy": 40 }, "facing": "east" },
+    { "id": "bell-heath-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 40 }, "facing": "west" },
+    { "id": "bell-heath-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 36, "dy": 43 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],
@@ -44,18 +50,17 @@
     { "id": "bell-heath-red-twin-1", "creature": "red-twin", "at": { "room": "ground", "dx": 48, "dy": 7 } },
     { "id": "bell-heath-glass-stalker-2", "creature": "glass-stalker", "at": { "room": "ground", "dx": 37, "dy": 45 } },
     { "id": "bell-heath-choir-echo-3", "creature": "choir-echo", "at": { "room": "ground", "dx": 56, "dy": 58 } },
-    { "id": "bell-heath-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 24, "dy": 19 } },
-    { "id": "bell-heath-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 48, "dy": 46 } },
-    { "id": "bell-heath-choir-echo-6", "creature": "choir-echo", "at": { "room": "ground", "dx": 3, "dy": 36 } },
-    { "id": "bell-heath-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 15, "dy": 7 } },
-    { "id": "bell-heath-glass-stalker-8", "creature": "glass-stalker", "at": { "room": "ground", "dx": 46, "dy": 32 } },
-    { "id": "bell-heath-choir-echo-9", "creature": "choir-echo", "at": { "room": "ground", "dx": 46, "dy": 57 } },
-    { "id": "bell-heath-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 42, "dy": 3 } },
-    { "id": "bell-heath-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 40, "dy": 8 } },
-    { "id": "bell-heath-choir-echo-12", "creature": "choir-echo", "at": { "room": "ground", "dx": 26, "dy": 50 } },
-    { "id": "bell-heath-red-twin-13", "creature": "red-twin", "at": { "room": "ground", "dx": 13, "dy": 15 } },
-    { "id": "bell-heath-glass-stalker-14", "creature": "glass-stalker", "at": { "room": "ground", "dx": 26, "dy": 26 } },
-    { "id": "bell-heath-choir-echo-15", "creature": "choir-echo", "at": { "room": "ground", "dx": 4, "dy": 8 } }
+    { "id": "bell-heath-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 35, "dy": 54 } },
+    { "id": "bell-heath-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 24, "dy": 19 } },
+    { "id": "bell-heath-choir-echo-6", "creature": "choir-echo", "at": { "room": "ground", "dx": 48, "dy": 46 } },
+    { "id": "bell-heath-glass-stalker-8", "creature": "glass-stalker", "at": { "room": "ground", "dx": 3, "dy": 36 } },
+    { "id": "bell-heath-choir-echo-9", "creature": "choir-echo", "at": { "room": "ground", "dx": 15, "dy": 7 } },
+    { "id": "bell-heath-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 34, "dy": 60 } },
+    { "id": "bell-heath-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 46, "dy": 32 } },
+    { "id": "bell-heath-choir-echo-12", "creature": "choir-echo", "at": { "room": "ground", "dx": 46, "dy": 57 } },
+    { "id": "bell-heath-red-twin-13", "creature": "red-twin", "at": { "room": "ground", "dx": 42, "dy": 3 } },
+    { "id": "bell-heath-glass-stalker-14", "creature": "glass-stalker", "at": { "room": "ground", "dx": 10, "dy": 27 } },
+    { "id": "bell-heath-choir-echo-15", "creature": "choir-echo", "at": { "room": "ground", "dx": 40, "dy": 8 } }
   ],
   "lights": [],
   "decals": [],

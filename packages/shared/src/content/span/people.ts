@@ -162,10 +162,10 @@ export const SPAN_SHOPS: readonly ShopDefinition[] = [
 ];
 
 export const SPAN_REGIONS: readonly RegionDefinition[] = [
-  { id: 'kestrel-reach', name: 'Kestrel Reach', hubDistrictId: 'kestrel-commons' },
-  { id: 'harrow-terraces', name: 'Harrow Terraces', hubDistrictId: 'harrowgate' },
-  { id: 'halcyon', name: 'Halcyon', hubDistrictId: 'neon-row' },
-  { id: 'wreckfield', name: 'The Wreckfield', hubDistrictId: 'rustwater' },
-  { id: 'glass-steppe', name: 'The Glass Steppe', hubDistrictId: 'the-choir' },
-  { id: 'the-spindle', name: 'The Spindle', hubDistrictId: 'last-post' },
+  { id: 'kestrel-reach', name: 'Kestrel Reach', hubDistrictId: 'kestrel-commons', ground: 'grass' },
+  { id: 'harrow-terraces', name: 'Harrow Terraces', hubDistrictId: 'harrowgate', ground: 'grass' },
+  { id: 'halcyon', name: 'Halcyon', hubDistrictId: 'neon-row', ground: 'asphalt' },
+  { id: 'wreckfield', name: 'The Wreckfield', hubDistrictId: 'rustwater', ground: 'gravel' },
+  { id: 'glass-steppe', name: 'The Glass Steppe', hubDistrictId: 'the-choir', ground: 'soil' },
+  { id: 'the-spindle', name: 'The Spindle', hubDistrictId: 'last-post', ground: 'concrete' },
 ];

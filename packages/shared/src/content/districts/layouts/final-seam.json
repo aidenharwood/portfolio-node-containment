@@ -10,7 +10,12 @@
   "square": { "column": 11, "row": 5 },
   "steps": [
     { "kind": "rise", "rect": { "x": 30, "y": 31, "width": 14, "height": 10 }, "height": 12 },
-    { "kind": "building", "id": "seam-watch", "rect": { "x": 31, "y": 32, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "seam-watch", "rect": { "x": 31, "y": 32, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 33, "y": 41, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 36, "y": 41, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 36, "y": 42, "width": 10, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 45, "y": 28, "width": 2, "height": 16 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 42, "y": 27, "width": 5, "height": 2 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -18,19 +23,17 @@
     { "room": "seam-watch", "name": "Seam Watch", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 55, "dy": 22 }
+    "start": { "room": "ground", "dx": 15, "dy": 32 }
   },
   "objects": [
-    { "id": "final-seam-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 59 } },
-    { "id": "final-seam-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 12 } },
-    { "id": "final-seam-steam-vent-2", "object": "steam-vent", "at": { "room": "ground", "dx": 6, "dy": 20 } },
-    { "id": "final-seam-steam-vent-3", "object": "steam-vent", "at": { "room": "ground", "dx": 22, "dy": 22 } },
-    { "id": "final-seam-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 33, "dy": 49 } },
-    { "id": "final-seam-checkpoint-barrier-5", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 14, "dy": 55 } },
-    { "id": "final-seam-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 13, "dy": 12 } },
-    { "id": "final-seam-vault-residue-7", "object": "vault-residue", "at": { "room": "ground", "dx": 22, "dy": 32 } },
-    { "id": "final-seam-vault-bloom-8", "object": "vault-bloom", "at": { "room": "ground", "dx": 31, "dy": 17 } },
-    { "id": "final-seam-vault-trace-9", "object": "vault-trace", "at": { "room": "ground", "dx": 52, "dy": 28 } },
+    { "id": "final-seam-steam-vent-0", "object": "steam-vent", "at": { "room": "ground", "dx": 26, "dy": 54 } },
+    { "id": "final-seam-flood-mast-1", "object": "flood-mast", "at": { "room": "ground", "dx": 43, "dy": 59 } },
+    { "id": "final-seam-checkpoint-barrier-2", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 3, "dy": 41 } },
+    { "id": "final-seam-flood-mast-3", "object": "flood-mast", "at": { "room": "ground", "dx": 51, "dy": 6 } },
+    { "id": "final-seam-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 20, "dy": 58 } },
+    { "id": "final-seam-vault-residue-5", "object": "vault-residue", "at": { "room": "ground", "dx": 22, "dy": 22 } },
+    { "id": "final-seam-vault-bloom-6", "object": "vault-bloom", "at": { "room": "ground", "dx": 26, "dy": 33 } },
+    { "id": "final-seam-vault-trace-7", "object": "vault-trace", "at": { "room": "ground", "dx": 49, "dy": 22 } },
     { "id": "seam-watch-shelving-0", "object": "shelving", "at": { "room": "seam-watch", "dx": 1, "dy": 0 }, "facing": "south" },
     { "id": "seam-watch-shelving-1", "object": "shelving", "at": { "room": "seam-watch", "dx": 2, "dy": 0 }, "facing": "south" },
     { "id": "seam-watch-notice-board-2", "object": "notice-board", "at": { "room": "seam-watch", "dx": 6, "dy": 0 }, "facing": "south" },
@@ -40,21 +43,27 @@
     { "id": "seam-watch-table-6", "object": "table", "at": { "room": "seam-watch", "dx": 4, "dy": 3 } },
     { "id": "seam-watch-chair-7", "object": "chair", "at": { "room": "seam-watch", "dx": 3, "dy": 2 }, "facing": "south" },
     { "id": "seam-watch-chair-8", "object": "chair", "at": { "room": "seam-watch", "dx": 4, "dy": 2 }, "facing": "south" },
-    { "id": "final-seam-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 47, "dy": 26 } }
+    { "id": "final-seam-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 47, "dy": 26 } },
+    { "id": "final-seam-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 32, "dy": 41 }, "facing": "east" },
+    { "id": "final-seam-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 41, "dy": 41 }, "facing": "west" },
+    { "id": "final-seam-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 39, "dy": 44 }, "facing": "north" },
+    { "id": "final-seam-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 40 }, "facing": "west" },
+    { "id": "final-seam-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 32 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "final-seam-coolant-wraith-1", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 6, "dy": 11 } },
-    { "id": "final-seam-null-echo-2", "creature": "null-echo", "at": { "room": "ground", "dx": 50, "dy": 10 } },
-    { "id": "final-seam-null-echo-4", "creature": "null-echo", "at": { "room": "ground", "dx": 19, "dy": 43 } },
-    { "id": "final-seam-coolant-wraith-7", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 26, "dy": 43 } },
-    { "id": "final-seam-null-echo-8", "creature": "null-echo", "at": { "room": "ground", "dx": 5, "dy": 40 } },
-    { "id": "final-seam-null-echo-10", "creature": "null-echo", "at": { "room": "ground", "dx": 15, "dy": 32 } },
-    { "id": "final-seam-coolant-wraith-11", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 20, "dy": 13 } },
-    { "id": "final-seam-null-echo-12", "creature": "null-echo", "at": { "room": "ground", "dx": 20, "dy": 52 } },
-    { "id": "final-seam-coolant-wraith-13", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 48, "dy": 37 } },
-    { "id": "final-seam-null-echo-14", "creature": "null-echo", "at": { "room": "ground", "dx": 53, "dy": 16 } }
+    { "id": "final-seam-null-echo-0", "creature": "null-echo", "at": { "room": "ground", "dx": 14, "dy": 55 } },
+    { "id": "final-seam-coolant-wraith-1", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 13, "dy": 12 } },
+    { "id": "final-seam-null-echo-2", "creature": "null-echo", "at": { "room": "ground", "dx": 31, "dy": 17 } },
+    { "id": "final-seam-coolant-wraith-3", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 39, "dy": 10 } },
+    { "id": "final-seam-null-echo-4", "creature": "null-echo", "at": { "room": "ground", "dx": 52, "dy": 28 } },
+    { "id": "final-seam-coolant-wraith-5", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 28, "dy": 22 } },
+    { "id": "final-seam-null-echo-6", "creature": "null-echo", "at": { "room": "ground", "dx": 34, "dy": 54 } },
+    { "id": "final-seam-null-echo-8", "creature": "null-echo", "at": { "room": "ground", "dx": 6, "dy": 11 } },
+    { "id": "final-seam-coolant-wraith-9", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 26, "dy": 14 } },
+    { "id": "final-seam-null-echo-10", "creature": "null-echo", "at": { "room": "ground", "dx": 19, "dy": 43 } },
+    { "id": "final-seam-coolant-wraith-13", "creature": "coolant-wraith", "at": { "room": "ground", "dx": 26, "dy": 43 } }
   ],
   "lights": [],
   "decals": [],

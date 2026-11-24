@@ -10,7 +10,12 @@
   "square": { "column": 13, "row": 9 },
   "steps": [
     { "kind": "rise", "rect": { "x": 30, "y": 29, "width": 14, "height": 10 }, "height": 11 },
-    { "kind": "building", "id": "shard-lab", "rect": { "x": 31, "y": 30, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "shard-lab", "rect": { "x": 31, "y": 30, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 33, "y": 39, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 36, "y": 39, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 36, "y": 40, "width": 10, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 45, "y": 26, "width": 2, "height": 16 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 40, "y": 25, "width": 7, "height": 2 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -21,14 +26,12 @@
     "start": { "room": "ground", "dx": 21, "dy": 10 }
   },
   "objects": [
-    { "id": "shard-moor-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 12, "dy": 27 } },
-    { "id": "shard-moor-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 49 } },
-    { "id": "shard-moor-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 34, "dy": 3 } },
-    { "id": "shard-moor-barricade-3", "object": "barricade", "at": { "room": "ground", "dx": 14, "dy": 46 } },
-    { "id": "shard-moor-ledge-milestone-4", "object": "ledge-milestone", "at": { "room": "ground", "dx": 37, "dy": 60 } },
-    { "id": "shard-moor-ledge-milestone-5", "object": "ledge-milestone", "at": { "room": "ground", "dx": 9, "dy": 3 } },
-    { "id": "shard-moor-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 17, "dy": 20 } },
-    { "id": "shard-moor-sprung-cell-door-9", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 18, "dy": 3 } },
+    { "id": "shard-moor-precursor-pylon-0", "object": "precursor-pylon", "at": { "room": "ground", "dx": 27, "dy": 34 } },
+    { "id": "shard-moor-burn-barrel-1", "object": "burn-barrel", "at": { "room": "ground", "dx": 14, "dy": 46 } },
+    { "id": "shard-moor-ledge-milestone-2", "object": "ledge-milestone", "at": { "room": "ground", "dx": 37, "dy": 60 } },
+    { "id": "shard-moor-ledge-milestone-3", "object": "ledge-milestone", "at": { "room": "ground", "dx": 9, "dy": 3 } },
+    { "id": "shard-moor-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 17, "dy": 20 } },
+    { "id": "shard-moor-sprung-cell-door-7", "object": "sprung-cell-door", "at": { "room": "ground", "dx": 18, "dy": 3 } },
     { "id": "shard-lab-lab-bench-0", "object": "lab-bench", "at": { "room": "shard-lab", "dx": 2, "dy": 3 } },
     { "id": "shard-lab-lab-bench-1", "object": "lab-bench", "at": { "room": "shard-lab", "dx": 3, "dy": 3 } },
     { "id": "shard-lab-lab-bench-2", "object": "lab-bench", "at": { "room": "shard-lab", "dx": 4, "dy": 3 } },
@@ -36,7 +39,13 @@
     { "id": "shard-lab-shelving-4", "object": "shelving", "at": { "room": "shard-lab", "dx": 9, "dy": 0 }, "facing": "south" },
     { "id": "shard-lab-shelving-5", "object": "shelving", "at": { "room": "shard-lab", "dx": 10, "dy": 0 }, "facing": "south" },
     { "id": "shard-lab-shelving-6", "object": "shelving", "at": { "room": "shard-lab", "dx": 11, "dy": 0 }, "facing": "south" },
-    { "id": "shard-moor-poi-steppe-reliquary-0", "object": "steppe-reliquary", "at": { "room": "ground", "dx": 44, "dy": 22 } }
+    { "id": "shard-moor-poi-steppe-reliquary-0", "object": "steppe-reliquary", "at": { "room": "ground", "dx": 44, "dy": 22 } },
+    { "id": "shard-moor-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 32, "dy": 39 }, "facing": "east" },
+    { "id": "shard-moor-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 41, "dy": 39 }, "facing": "west" },
+    { "id": "shard-moor-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 39, "dy": 42 }, "facing": "north" },
+    { "id": "shard-moor-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 38 }, "facing": "west" },
+    { "id": "shard-moor-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 30 }, "facing": "west" },
+    { "id": "shard-moor-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 42, "dy": 27 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],
@@ -46,8 +55,8 @@
     { "id": "shard-moor-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 9, "dy": 12 } },
     { "id": "shard-moor-shard-wisp-5", "creature": "shard-wisp", "at": { "room": "ground", "dx": 51, "dy": 30 } },
     { "id": "shard-moor-choir-echo-6", "creature": "choir-echo", "at": { "room": "ground", "dx": 27, "dy": 48 } },
-    { "id": "shard-moor-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 59, "dy": 28 } },
-    { "id": "shard-moor-shard-wisp-8", "creature": "shard-wisp", "at": { "room": "ground", "dx": 23, "dy": 32 } },
+    { "id": "shard-moor-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 8, "dy": 27 } },
+    { "id": "shard-moor-shard-wisp-8", "creature": "shard-wisp", "at": { "room": "ground", "dx": 59, "dy": 28 } },
     { "id": "shard-moor-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 8, "dy": 34 } },
     { "id": "shard-moor-shard-wisp-11", "creature": "shard-wisp", "at": { "room": "ground", "dx": 49, "dy": 56 } },
     { "id": "shard-moor-choir-echo-12", "creature": "choir-echo", "at": { "room": "ground", "dx": 19, "dy": 35 } },

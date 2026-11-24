@@ -10,7 +10,11 @@
   "square": { "column": 12, "row": 1 },
   "steps": [
     { "kind": "rise", "rect": { "x": 29, "y": 29, "width": 14, "height": 10 }, "height": 3 },
-    { "kind": "building", "id": "scrap-sea-forge", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "concrete", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "scrap-sea-forge", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "concrete", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 32, "y": 39, "width": 8, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 35, "y": 39, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 35, "y": 40, "width": 11, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 45, "y": 36, "width": 2, "height": 6 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -21,12 +25,11 @@
     "start": { "room": "ground", "dx": 3, "dy": 47 }
   },
   "objects": [
-    { "id": "scrap-sea-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 45, "dy": 43 } },
-    { "id": "scrap-sea-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 21, "dy": 19 } },
-    { "id": "scrap-sea-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 7, "dy": 57 } },
-    { "id": "scrap-sea-parked-car-3", "object": "parked-car", "at": { "room": "ground", "dx": 7, "dy": 19 } },
-    { "id": "scrap-sea-utility-pole-5", "object": "utility-pole", "at": { "room": "ground", "dx": 41, "dy": 25 } },
-    { "id": "scrap-sea-tide-weed-8", "object": "tide-weed", "at": { "room": "ground", "dx": 30, "dy": 18 } },
+    { "id": "scrap-sea-burn-barrel-0", "object": "burn-barrel", "at": { "room": "ground", "dx": 8, "dy": 21 } },
+    { "id": "scrap-sea-barricade-1", "object": "barricade", "at": { "room": "ground", "dx": 57, "dy": 55 } },
+    { "id": "scrap-sea-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 19, "dy": 27 } },
+    { "id": "scrap-sea-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 41, "dy": 25 } },
+    { "id": "scrap-sea-hull-trace-7", "object": "hull-trace", "at": { "room": "ground", "dx": 24, "dy": 13 } },
     { "id": "scrap-sea-forge-ward-refinery-0", "object": "ward-refinery", "at": { "room": "scrap-sea-forge", "dx": 1, "dy": 1 } },
     { "id": "scrap-sea-forge-ward-fabricator-1", "object": "ward-fabricator", "at": { "room": "scrap-sea-forge", "dx": 4, "dy": 1 } },
     { "id": "scrap-sea-forge-ward-synthesiser-2", "object": "ward-synthesiser", "at": { "room": "scrap-sea-forge", "dx": 7, "dy": 1 } },
@@ -34,25 +37,28 @@
     { "id": "scrap-sea-forge-shelving-4", "object": "shelving", "at": { "room": "scrap-sea-forge", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "scrap-sea-forge-table-5", "object": "table", "at": { "room": "scrap-sea-forge", "dx": 10, "dy": 5 } },
     { "id": "scrap-sea-forge-chair-6", "object": "chair", "at": { "room": "scrap-sea-forge", "dx": 10, "dy": 4 }, "facing": "south" },
-    { "id": "scrap-sea-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 55, "dy": 35 } }
+    { "id": "scrap-sea-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 55, "dy": 35 } },
+    { "id": "scrap-sea-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 39 }, "facing": "east" },
+    { "id": "scrap-sea-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 40, "dy": 39 }, "facing": "west" },
+    { "id": "scrap-sea-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 42 }, "facing": "north" },
+    { "id": "scrap-sea-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 39 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "scrap-sea-bilge-wraith-0", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 49, "dy": 21 } },
-    { "id": "scrap-sea-rustling-1", "creature": "rustling", "at": { "room": "ground", "dx": 30, "dy": 59 } },
-    { "id": "scrap-sea-hull-knocker-2", "creature": "hull-knocker", "at": { "room": "ground", "dx": 18, "dy": 41 } },
-    { "id": "scrap-sea-bilge-wraith-3", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 3, "dy": 7 } },
-    { "id": "scrap-sea-rustling-4", "creature": "rustling", "at": { "room": "ground", "dx": 31, "dy": 12 } },
-    { "id": "scrap-sea-hull-knocker-5", "creature": "hull-knocker", "at": { "room": "ground", "dx": 25, "dy": 30 } },
-    { "id": "scrap-sea-bilge-wraith-6", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 24, "dy": 49 } },
-    { "id": "scrap-sea-hull-knocker-8", "creature": "hull-knocker", "at": { "room": "ground", "dx": 59, "dy": 55 } },
+    { "id": "scrap-sea-bilge-wraith-0", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 30, "dy": 47 } },
+    { "id": "scrap-sea-rustling-1", "creature": "rustling", "at": { "room": "ground", "dx": 49, "dy": 21 } },
+    { "id": "scrap-sea-hull-knocker-2", "creature": "hull-knocker", "at": { "room": "ground", "dx": 30, "dy": 59 } },
+    { "id": "scrap-sea-bilge-wraith-3", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 18, "dy": 41 } },
+    { "id": "scrap-sea-rustling-4", "creature": "rustling", "at": { "room": "ground", "dx": 3, "dy": 7 } },
+    { "id": "scrap-sea-hull-knocker-5", "creature": "hull-knocker", "at": { "room": "ground", "dx": 31, "dy": 12 } },
+    { "id": "scrap-sea-bilge-wraith-6", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 25, "dy": 30 } },
+    { "id": "scrap-sea-rustling-7", "creature": "rustling", "at": { "room": "ground", "dx": 24, "dy": 49 } },
     { "id": "scrap-sea-bilge-wraith-9", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 37, "dy": 56 } },
-    { "id": "scrap-sea-rustling-10", "creature": "rustling", "at": { "room": "ground", "dx": 56, "dy": 59 } },
-    { "id": "scrap-sea-hull-knocker-11", "creature": "hull-knocker", "at": { "room": "ground", "dx": 45, "dy": 11 } },
-    { "id": "scrap-sea-bilge-wraith-12", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 57, "dy": 13 } },
-    { "id": "scrap-sea-hull-knocker-14", "creature": "hull-knocker", "at": { "room": "ground", "dx": 40, "dy": 50 } },
-    { "id": "scrap-sea-bilge-wraith-15", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 15, "dy": 31 } }
+    { "id": "scrap-sea-rustling-10", "creature": "rustling", "at": { "room": "ground", "dx": 45, "dy": 11 } },
+    { "id": "scrap-sea-hull-knocker-11", "creature": "hull-knocker", "at": { "room": "ground", "dx": 57, "dy": 13 } },
+    { "id": "scrap-sea-rustling-13", "creature": "rustling", "at": { "room": "ground", "dx": 52, "dy": 59 } },
+    { "id": "scrap-sea-hull-knocker-14", "creature": "hull-knocker", "at": { "room": "ground", "dx": 40, "dy": 50 } }
   ],
   "lights": [],
   "decals": [],

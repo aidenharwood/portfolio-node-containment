@@ -10,7 +10,9 @@
   "square": { "column": 14, "row": 7 },
   "steps": [
     { "kind": "rise", "rect": { "x": 20, "y": 30, "width": 14, "height": 10 }, "height": 11 },
-    { "kind": "building", "id": "tuning-station", "rect": { "x": 21, "y": 31, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "tuning-station", "rect": { "x": 21, "y": 31, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 23, "y": 40, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 26, "y": 40, "width": 2, "height": 7 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -22,12 +24,12 @@
   },
   "objects": [
     { "id": "hollow-pylons-quest-pylon-tuner", "object": "pylon-tuner", "at": { "room": "ground", "dx": 41, "dy": 38 } },
-    { "id": "hollow-pylons-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 20, "dy": 19 } },
-    { "id": "hollow-pylons-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 14, "dy": 26 } },
-    { "id": "hollow-pylons-ledge-milestone-3", "object": "ledge-milestone", "at": { "room": "ground", "dx": 45, "dy": 43 } },
-    { "id": "hollow-pylons-burn-barrel-4", "object": "burn-barrel", "at": { "room": "ground", "dx": 45, "dy": 22 } },
-    { "id": "hollow-pylons-ledge-milestone-5", "object": "ledge-milestone", "at": { "room": "ground", "dx": 52, "dy": 23 } },
-    { "id": "hollow-pylons-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 11, "dy": 7 } },
+    { "id": "hollow-pylons-ledge-milestone-0", "object": "ledge-milestone", "at": { "room": "ground", "dx": 19, "dy": 14 } },
+    { "id": "hollow-pylons-ledge-milestone-1", "object": "ledge-milestone", "at": { "room": "ground", "dx": 14, "dy": 29 } },
+    { "id": "hollow-pylons-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 18, "dy": 45 } },
+    { "id": "hollow-pylons-flood-mast-3", "object": "flood-mast", "at": { "room": "ground", "dx": 49, "dy": 45 } },
+    { "id": "hollow-pylons-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 52, "dy": 23 } },
+    { "id": "hollow-pylons-red-moss-6", "object": "red-moss", "at": { "room": "ground", "dx": 60, "dy": 55 } },
     { "id": "tuning-station-lab-bench-0", "object": "lab-bench", "at": { "room": "tuning-station", "dx": 2, "dy": 3 } },
     { "id": "tuning-station-lab-bench-1", "object": "lab-bench", "at": { "room": "tuning-station", "dx": 3, "dy": 3 } },
     { "id": "tuning-station-lab-bench-2", "object": "lab-bench", "at": { "room": "tuning-station", "dx": 4, "dy": 3 } },
@@ -36,8 +38,8 @@
     { "id": "tuning-station-shelving-5", "object": "shelving", "at": { "room": "tuning-station", "dx": 10, "dy": 0 }, "facing": "south" },
     { "id": "tuning-station-shelving-6", "object": "shelving", "at": { "room": "tuning-station", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "hollow-pylons-poi-steppe-reliquary-0", "object": "steppe-reliquary", "at": { "room": "ground", "dx": 30, "dy": 56 } },
-    { "id": "hollow-pylons-poi-red-moss-1", "object": "red-moss", "at": { "room": "ground", "dx": 48, "dy": 32 } },
-    { "id": "hollow-pylons-poi-red-trace-2", "object": "red-trace", "at": { "room": "ground", "dx": 23, "dy": 23 } }
+    { "id": "hollow-pylons-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 22, "dy": 40 }, "facing": "east" },
+    { "id": "hollow-pylons-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 40 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [
@@ -49,17 +51,16 @@
     { "id": "hollow-pylons-glass-stalker-2", "creature": "glass-stalker", "at": { "room": "ground", "dx": 18, "dy": 53 } },
     { "id": "hollow-pylons-shard-wisp-3", "creature": "shard-wisp", "at": { "room": "ground", "dx": 6, "dy": 27 } },
     { "id": "hollow-pylons-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 59, "dy": 6 } },
-    { "id": "hollow-pylons-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 42, "dy": 4 } },
-    { "id": "hollow-pylons-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 37, "dy": 18 } },
-    { "id": "hollow-pylons-glass-stalker-8", "creature": "glass-stalker", "at": { "room": "ground", "dx": 23, "dy": 8 } },
-    { "id": "hollow-pylons-shard-wisp-9", "creature": "shard-wisp", "at": { "room": "ground", "dx": 25, "dy": 47 } },
-    { "id": "hollow-pylons-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 3, "dy": 47 } },
-    { "id": "hollow-pylons-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 13, "dy": 49 } },
-    { "id": "hollow-pylons-red-twin-13", "creature": "red-twin", "at": { "room": "ground", "dx": 53, "dy": 3 } },
-    { "id": "hollow-pylons-glass-stalker-14", "creature": "glass-stalker", "at": { "room": "ground", "dx": 10, "dy": 15 } },
-    { "id": "hollow-pylons-shard-wisp-15", "creature": "shard-wisp", "at": { "room": "ground", "dx": 60, "dy": 47 } },
-    { "id": "hollow-pylons-red-twin-16", "creature": "red-twin", "at": { "room": "ground", "dx": 39, "dy": 11 } },
-    { "id": "hollow-pylons-glass-stalker-17", "creature": "glass-stalker", "at": { "room": "ground", "dx": 53, "dy": 42 } }
+    { "id": "hollow-pylons-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 9, "dy": 22 } },
+    { "id": "hollow-pylons-shard-wisp-6", "creature": "shard-wisp", "at": { "room": "ground", "dx": 42, "dy": 4 } },
+    { "id": "hollow-pylons-glass-stalker-8", "creature": "glass-stalker", "at": { "room": "ground", "dx": 37, "dy": 18 } },
+    { "id": "hollow-pylons-shard-wisp-9", "creature": "shard-wisp", "at": { "room": "ground", "dx": 20, "dy": 25 } },
+    { "id": "hollow-pylons-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 23, "dy": 8 } },
+    { "id": "hollow-pylons-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 25, "dy": 47 } },
+    { "id": "hollow-pylons-shard-wisp-15", "creature": "shard-wisp", "at": { "room": "ground", "dx": 13, "dy": 49 } },
+    { "id": "hollow-pylons-red-twin-16", "creature": "red-twin", "at": { "room": "ground", "dx": 49, "dy": 37 } },
+    { "id": "hollow-pylons-glass-stalker-17", "creature": "glass-stalker", "at": { "room": "ground", "dx": 53, "dy": 3 } },
+    { "id": "hollow-pylons-poi-choir-echo-0", "creature": "choir-echo", "at": { "room": "ground", "dx": 37, "dy": 29 } }
   ],
   "lights": [],
   "decals": [],

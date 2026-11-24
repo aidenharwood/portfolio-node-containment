@@ -10,7 +10,12 @@
   "square": { "column": 3, "row": 4 },
   "steps": [
     { "kind": "rise", "rect": { "x": 30, "y": 30, "width": 14, "height": 10 }, "height": 9 },
-    { "kind": "building", "id": "rise-pump-house", "rect": { "x": 31, "y": 31, "width": 12, "height": 8 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "rise-pump-house", "rect": { "x": 31, "y": 31, "width": 12, "height": 8 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 33, "y": 40, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 36, "y": 40, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 28, "y": 41, "width": 10, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 27, "y": 25, "width": 2, "height": 18 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 27, "y": 24, "width": 7, "height": 2 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -18,18 +23,16 @@
     { "room": "rise-pump-house", "name": "Pump House", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 14, "dy": 36 }
+    "start": { "room": "ground", "dx": 12, "dy": 20 }
   },
   "objects": [
     { "id": "windpump-rise-quest-windpump-housing", "object": "windpump-housing", "at": { "room": "ground", "dx": 41, "dy": 42 } },
-    { "id": "windpump-rise-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 43, "dy": 15 } },
-    { "id": "windpump-rise-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 60, "dy": 44 } },
-    { "id": "windpump-rise-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 13, "dy": 45 } },
-    { "id": "windpump-rise-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 41, "dy": 26 } },
-    { "id": "windpump-rise-washing-line-4", "object": "washing-line", "at": { "room": "ground", "dx": 48, "dy": 9 } },
-    { "id": "windpump-rise-street-tree-5", "object": "street-tree", "at": { "room": "ground", "dx": 29, "dy": 51 } },
-    { "id": "windpump-rise-culvert-trace-7", "object": "culvert-trace", "at": { "room": "ground", "dx": 17, "dy": 16 } },
-    { "id": "windpump-rise-dredge-spot-9", "object": "dredge-spot", "at": { "room": "ground", "dx": 32, "dy": 60 } },
+    { "id": "windpump-rise-street-tree-0", "object": "street-tree", "at": { "room": "ground", "dx": 15, "dy": 60 } },
+    { "id": "windpump-rise-street-tree-1", "object": "street-tree", "at": { "room": "ground", "dx": 32, "dy": 13 } },
+    { "id": "windpump-rise-street-tree-2", "object": "street-tree", "at": { "room": "ground", "dx": 51, "dy": 41 } },
+    { "id": "windpump-rise-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 13, "dy": 48 } },
+    { "id": "windpump-rise-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 29, "dy": 51 } },
+    { "id": "windpump-rise-lock-gear-6", "object": "lock-gear", "at": { "room": "ground", "dx": 17, "dy": 16 } },
     { "id": "rise-pump-house-ward-refinery-0", "object": "ward-refinery", "at": { "room": "rise-pump-house", "dx": 1, "dy": 1 } },
     { "id": "rise-pump-house-ward-fabricator-1", "object": "ward-fabricator", "at": { "room": "rise-pump-house", "dx": 4, "dy": 1 } },
     { "id": "rise-pump-house-ward-synthesiser-2", "object": "ward-synthesiser", "at": { "room": "rise-pump-house", "dx": 7, "dy": 1 } },
@@ -37,29 +40,36 @@
     { "id": "rise-pump-house-shelving-4", "object": "shelving", "at": { "room": "rise-pump-house", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "rise-pump-house-table-5", "object": "table", "at": { "room": "rise-pump-house", "dx": 10, "dy": 5 } },
     { "id": "rise-pump-house-chair-6", "object": "chair", "at": { "room": "rise-pump-house", "dx": 10, "dy": 4 }, "facing": "south" },
-    { "id": "windpump-rise-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 39, "dy": 17 } }
+    { "id": "windpump-rise-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 39, "dy": 17 } },
+    { "id": "windpump-rise-poi-culvert-trace-1", "object": "culvert-trace", "at": { "room": "ground", "dx": 16, "dy": 35 } },
+    { "id": "windpump-rise-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 32, "dy": 40 }, "facing": "east" },
+    { "id": "windpump-rise-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 41, "dy": 40 }, "facing": "west" },
+    { "id": "windpump-rise-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 33, "dy": 43 }, "facing": "north" },
+    { "id": "windpump-rise-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 26, "dy": 39 }, "facing": "east" },
+    { "id": "windpump-rise-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 26, "dy": 31 }, "facing": "east" },
+    { "id": "windpump-rise-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 28, "dy": 23 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [
     { "id": "rise-pump-house-windwright-cole", "npc": "windwright-cole", "at": { "room": "rise-pump-house", "dx": 2, "dy": 4 } }
   ],
   "creatures": [
-    { "id": "windpump-rise-thornback-0", "creature": "thornback", "at": { "room": "ground", "dx": 12, "dy": 30 } },
-    { "id": "windpump-rise-windpump-wight-1", "creature": "windpump-wight", "at": { "room": "ground", "dx": 31, "dy": 45 } },
-    { "id": "windpump-rise-thornback-2", "creature": "thornback", "at": { "room": "ground", "dx": 58, "dy": 60 } },
-    { "id": "windpump-rise-windpump-wight-3", "creature": "windpump-wight", "at": { "room": "ground", "dx": 20, "dy": 24 } },
-    { "id": "windpump-rise-thornback-4", "creature": "thornback", "at": { "room": "ground", "dx": 54, "dy": 54 } },
-    { "id": "windpump-rise-windpump-wight-5", "creature": "windpump-wight", "at": { "room": "ground", "dx": 54, "dy": 6 } },
-    { "id": "windpump-rise-thornback-6", "creature": "thornback", "at": { "room": "ground", "dx": 17, "dy": 54 } },
-    { "id": "windpump-rise-thornback-8", "creature": "thornback", "at": { "room": "ground", "dx": 46, "dy": 37 } },
-    { "id": "windpump-rise-windpump-wight-9", "creature": "windpump-wight", "at": { "room": "ground", "dx": 29, "dy": 5 } },
-    { "id": "windpump-rise-thornback-10", "creature": "thornback", "at": { "room": "ground", "dx": 5, "dy": 19 } },
-    { "id": "windpump-rise-windpump-wight-11", "creature": "windpump-wight", "at": { "room": "ground", "dx": 49, "dy": 20 } },
-    { "id": "windpump-rise-windpump-wight-13", "creature": "windpump-wight", "at": { "room": "ground", "dx": 6, "dy": 14 } },
-    { "id": "windpump-rise-thornback-14", "creature": "thornback", "at": { "room": "ground", "dx": 9, "dy": 34 } },
-    { "id": "windpump-rise-windpump-wight-15", "creature": "windpump-wight", "at": { "room": "ground", "dx": 12, "dy": 20 } },
-    { "id": "windpump-rise-thornback-16", "creature": "thornback", "at": { "room": "ground", "dx": 3, "dy": 32 } },
-    { "id": "windpump-rise-windpump-wight-17", "creature": "windpump-wight", "at": { "room": "ground", "dx": 11, "dy": 6 } }
+    { "id": "windpump-rise-thornback-0", "creature": "thornback", "at": { "room": "ground", "dx": 32, "dy": 60 } },
+    { "id": "windpump-rise-windpump-wight-1", "creature": "windpump-wight", "at": { "room": "ground", "dx": 12, "dy": 30 } },
+    { "id": "windpump-rise-thornback-2", "creature": "thornback", "at": { "room": "ground", "dx": 31, "dy": 45 } },
+    { "id": "windpump-rise-windpump-wight-3", "creature": "windpump-wight", "at": { "room": "ground", "dx": 58, "dy": 60 } },
+    { "id": "windpump-rise-thornback-4", "creature": "thornback", "at": { "room": "ground", "dx": 20, "dy": 24 } },
+    { "id": "windpump-rise-windpump-wight-5", "creature": "windpump-wight", "at": { "room": "ground", "dx": 54, "dy": 54 } },
+    { "id": "windpump-rise-thornback-6", "creature": "thornback", "at": { "room": "ground", "dx": 54, "dy": 6 } },
+    { "id": "windpump-rise-windpump-wight-7", "creature": "windpump-wight", "at": { "room": "ground", "dx": 17, "dy": 54 } },
+    { "id": "windpump-rise-windpump-wight-9", "creature": "windpump-wight", "at": { "room": "ground", "dx": 46, "dy": 37 } },
+    { "id": "windpump-rise-thornback-10", "creature": "thornback", "at": { "room": "ground", "dx": 29, "dy": 5 } },
+    { "id": "windpump-rise-windpump-wight-11", "creature": "windpump-wight", "at": { "room": "ground", "dx": 60, "dy": 47 } },
+    { "id": "windpump-rise-thornback-12", "creature": "thornback", "at": { "room": "ground", "dx": 5, "dy": 19 } },
+    { "id": "windpump-rise-windpump-wight-13", "creature": "windpump-wight", "at": { "room": "ground", "dx": 49, "dy": 20 } },
+    { "id": "windpump-rise-windpump-wight-15", "creature": "windpump-wight", "at": { "room": "ground", "dx": 42, "dy": 14 } },
+    { "id": "windpump-rise-thornback-16", "creature": "thornback", "at": { "room": "ground", "dx": 6, "dy": 14 } },
+    { "id": "windpump-rise-windpump-wight-17", "creature": "windpump-wight", "at": { "room": "ground", "dx": 9, "dy": 34 } }
   ],
   "lights": [],
   "decals": [],

@@ -20,6 +20,9 @@ export const CITY = {
   lamp: 0xffe2a8,
   composite: 0x4e5a5c,
   compositeDark: 0x2e3a3c,
+  led: 0xfff0d8,
+  cyan: 0x4fe3ff,
+  graphite: 0x2a3138,
   panel: 0xd8d6cc,
   panelJoint: 0xb4b2a8,
   band: 0xe86a1c,
@@ -104,16 +107,27 @@ const flicker = (part: Object3D, time: number, seed: number) => {
 
 const streetLamp: Builder = () => {
   const model = new VoxelModel()
-    .fill(-2, 0, -2, 1, 2, 1, grain(CITY.concrete))
-    .fill(-1, 3, -1, 0, 39, 0, grain(CITY.iron, 0.02))
-    .fill(-1, 38, 1, 0, 39, 5, CITY.iron)
-    .fill(-3, 37, 3, 2, 39, 9, CITY.iron)
-    .fill(-2, 36, 4, 1, 36, 8, CITY.sodium, VOXEL_EMISSIVE)
-    .fill(-3, 37, 4, -3, 37, 8, CITY.sodium, VOXEL_EMISSIVE)
-    .fill(2, 37, 4, 2, 37, 8, CITY.sodium, VOXEL_EMISSIVE)
-    .fill(-2, 37, 9, 1, 37, 9, CITY.sodium, VOXEL_EMISSIVE)
-    .fill(-1, 14, 1, 0, 19, 1, CITY.band);
-  return parts(model, 40);
+    .fill(-2, 0, -2, 1, 1, 1, grain(CITY.darkSteel, 0.02))
+    .fill(-2, 2, -2, 1, 2, 1, lighten(CITY.darkSteel, 0.25))
+    .fill(-1, 3, -1, 0, 40, 0, grain(CITY.graphite, 0.015))
+    .fill(-1, 6, 1, 0, 9, 1, CITY.band)
+    .fill(-1, 22, 1, 0, 34, 1, CITY.cyan)
+    .fill(-1, 38, 1, 0, 40, 2, CITY.graphite)
+    .fill(-1, 40, 3, 0, 41, 6, CITY.graphite)
+    .fill(-2, 39, 7, 1, 41, 12, CITY.graphite)
+    .fill(-2, 38, 7, 1, 38, 12, CITY.led, VOXEL_EMISSIVE)
+    .fill(-2, 39, 13, 1, 40, 13, CITY.cyan, VOXEL_EMISSIVE);
+  return parts(model, 42);
+};
+
+const pathLight: Builder = () => {
+  const model = new VoxelModel()
+    .fill(-2, 0, -2, 1, 1, 1, grain(CITY.darkSteel, 0.02))
+    .fill(-1, 2, -1, 0, 11, 0, grain(CITY.graphite, 0.015))
+    .fill(-2, 12, -2, 1, 13, 1, CITY.led, VOXEL_EMISSIVE)
+    .fill(-2, 14, -2, 1, 14, 1, CITY.graphite)
+    .fill(-1, 5, 1, 0, 6, 1, CITY.band);
+  return parts(model, 15);
 };
 
 const bollard: Builder = () => {
@@ -1150,6 +1164,7 @@ const precursorNeedle: Builder = () => {
 
 export const CITY_BUILDERS: Readonly<Record<CityModel, Builder>> = {
   streetLamp,
+  pathLight,
   bollard,
   streetBench,
   litterBin,

@@ -10,7 +10,11 @@
   "square": { "column": 4, "row": 9 },
   "steps": [
     { "kind": "rise", "rect": { "x": 30, "y": 28, "width": 10, "height": 8 }, "height": 5 },
-    { "kind": "building", "id": "groundskeepers-lodge", "rect": { "x": 31, "y": 29, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "groundskeepers-lodge", "rect": { "x": 31, "y": 29, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 31, "y": 36, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 34, "y": 36, "width": 2, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 34, "y": 37, "width": 10, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 43, "y": 34, "width": 2, "height": 5 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -18,44 +22,46 @@
     { "room": "groundskeepers-lodge", "name": "Groundskeeper’s Lodge", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 16, "dy": 11 }
+    "start": { "room": "ground", "dx": 35, "dy": 38 }
   },
   "objects": [
-    { "id": "kestrel-lawns-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 16 } },
-    { "id": "kestrel-lawns-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 12, "dy": 45 } },
+    { "id": "kestrel-lawns-street-tree-0", "object": "street-tree", "at": { "room": "ground", "dx": 43, "dy": 27 } },
+    { "id": "kestrel-lawns-bollard-1", "object": "bollard", "at": { "room": "ground", "dx": 12, "dy": 45 } },
     { "id": "kestrel-lawns-checkpoint-barrier-2", "object": "checkpoint-barrier", "at": { "room": "ground", "dx": 8, "dy": 24 } },
     { "id": "kestrel-lawns-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 9, "dy": 35 } },
-    { "id": "kestrel-lawns-flood-mast-4", "object": "flood-mast", "at": { "room": "ground", "dx": 49, "dy": 48 } },
-    { "id": "kestrel-lawns-flood-mast-5", "object": "flood-mast", "at": { "room": "ground", "dx": 49, "dy": 57 } },
-    { "id": "kestrel-lawns-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 18, "dy": 58 } },
-    { "id": "kestrel-lawns-street-bench-7", "object": "street-bench", "at": { "room": "ground", "dx": 47, "dy": 41 }, "facing": "south" },
-    { "id": "kestrel-lawns-scrap-pile-8", "object": "scrap-pile", "at": { "room": "ground", "dx": 22, "dy": 37 } },
-    { "id": "kestrel-lawns-faint-trace-9", "object": "faint-trace", "at": { "room": "ground", "dx": 39, "dy": 16 } },
-    { "id": "kestrel-lawns-eel-trap-10", "object": "eel-trap", "at": { "room": "ground", "dx": 17, "dy": 25 } },
+    { "id": "kestrel-lawns-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 29, "dy": 56 } },
+    { "id": "kestrel-lawns-street-bench-5", "object": "street-bench", "at": { "room": "ground", "dx": 46, "dy": 49 }, "facing": "south" },
+    { "id": "kestrel-lawns-scrap-pile-6", "object": "scrap-pile", "at": { "room": "ground", "dx": 49, "dy": 57 } },
+    { "id": "kestrel-lawns-faint-trace-7", "object": "faint-trace", "at": { "room": "ground", "dx": 18, "dy": 58 } },
+    { "id": "kestrel-lawns-eel-trap-8", "object": "eel-trap", "at": { "room": "ground", "dx": 47, "dy": 41 } },
     { "id": "groundskeepers-lodge-bed-0", "object": "bed", "at": { "room": "groundskeepers-lodge", "dx": 1, "dy": 0 } },
     { "id": "groundskeepers-lodge-washer-1", "object": "washer", "at": { "room": "groundskeepers-lodge", "dx": 4, "dy": 0 }, "facing": "south" },
     { "id": "groundskeepers-lodge-shelving-2", "object": "shelving", "at": { "room": "groundskeepers-lodge", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "groundskeepers-lodge-table-3", "object": "table", "at": { "room": "groundskeepers-lodge", "dx": 5, "dy": 3 } },
     { "id": "groundskeepers-lodge-chair-4", "object": "chair", "at": { "room": "groundskeepers-lodge", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "kestrel-lawns-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 53, "dy": 33 } }
+    { "id": "kestrel-lawns-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 53, "dy": 33 } },
+    { "id": "kestrel-lawns-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 30, "dy": 36 }, "facing": "east" },
+    { "id": "kestrel-lawns-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 39, "dy": 36 }, "facing": "west" },
+    { "id": "kestrel-lawns-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 37, "dy": 39 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [
     { "id": "groundskeepers-lodge-groundskeeper-elm", "npc": "groundskeeper-elm", "at": { "room": "groundskeepers-lodge", "dx": 2, "dy": 3 } }
   ],
   "creatures": [
-    { "id": "kestrel-lawns-grounds-mite-1", "creature": "grounds-mite", "at": { "room": "ground", "dx": 42, "dy": 60 } },
-    { "id": "kestrel-lawns-lawn-rat-2", "creature": "lawn-rat", "at": { "room": "ground", "dx": 9, "dy": 14 } },
-    { "id": "kestrel-lawns-feral-hound-3", "creature": "feral-hound", "at": { "room": "ground", "dx": 25, "dy": 52 } },
-    { "id": "kestrel-lawns-lawn-rat-5", "creature": "lawn-rat", "at": { "room": "ground", "dx": 33, "dy": 9 } },
-    { "id": "kestrel-lawns-feral-hound-6", "creature": "feral-hound", "at": { "room": "ground", "dx": 37, "dy": 57 } },
-    { "id": "kestrel-lawns-grounds-mite-7", "creature": "grounds-mite", "at": { "room": "ground", "dx": 55, "dy": 5 } },
-    { "id": "kestrel-lawns-lawn-rat-8", "creature": "lawn-rat", "at": { "room": "ground", "dx": 54, "dy": 52 } },
-    { "id": "kestrel-lawns-feral-hound-9", "creature": "feral-hound", "at": { "room": "ground", "dx": 16, "dy": 34 } },
-    { "id": "kestrel-lawns-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 40, "dy": 47 } },
-    { "id": "kestrel-lawns-feral-hound-12", "creature": "feral-hound", "at": { "room": "ground", "dx": 19, "dy": 50 } },
-    { "id": "kestrel-lawns-grounds-mite-13", "creature": "grounds-mite", "at": { "room": "ground", "dx": 22, "dy": 11 } },
-    { "id": "kestrel-lawns-lawn-rat-14", "creature": "lawn-rat", "at": { "room": "ground", "dx": 25, "dy": 47 } }
+    { "id": "kestrel-lawns-feral-hound-0", "creature": "feral-hound", "at": { "room": "ground", "dx": 22, "dy": 37 } },
+    { "id": "kestrel-lawns-grounds-mite-1", "creature": "grounds-mite", "at": { "room": "ground", "dx": 39, "dy": 16 } },
+    { "id": "kestrel-lawns-lawn-rat-2", "creature": "lawn-rat", "at": { "room": "ground", "dx": 17, "dy": 25 } },
+    { "id": "kestrel-lawns-grounds-mite-4", "creature": "grounds-mite", "at": { "room": "ground", "dx": 42, "dy": 60 } },
+    { "id": "kestrel-lawns-lawn-rat-5", "creature": "lawn-rat", "at": { "room": "ground", "dx": 9, "dy": 14 } },
+    { "id": "kestrel-lawns-feral-hound-6", "creature": "feral-hound", "at": { "room": "ground", "dx": 53, "dy": 50 } },
+    { "id": "kestrel-lawns-grounds-mite-7", "creature": "grounds-mite", "at": { "room": "ground", "dx": 33, "dy": 9 } },
+    { "id": "kestrel-lawns-lawn-rat-8", "creature": "lawn-rat", "at": { "room": "ground", "dx": 37, "dy": 57 } },
+    { "id": "kestrel-lawns-feral-hound-9", "creature": "feral-hound", "at": { "room": "ground", "dx": 55, "dy": 5 } },
+    { "id": "kestrel-lawns-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 16, "dy": 34 } },
+    { "id": "kestrel-lawns-lawn-rat-11", "creature": "lawn-rat", "at": { "room": "ground", "dx": 40, "dy": 47 } },
+    { "id": "kestrel-lawns-feral-hound-12", "creature": "feral-hound", "at": { "room": "ground", "dx": 28, "dy": 16 } },
+    { "id": "kestrel-lawns-grounds-mite-13", "creature": "grounds-mite", "at": { "room": "ground", "dx": 22, "dy": 25 } }
   ],
   "lights": [],
   "decals": [],

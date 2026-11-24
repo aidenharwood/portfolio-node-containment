@@ -10,7 +10,11 @@
   "square": { "column": 6, "row": 2 },
   "steps": [
     { "kind": "rise", "rect": { "x": 29, "y": 29, "width": 14, "height": 10 }, "height": 5 },
-    { "kind": "building", "id": "fence-checkpoint", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] }
+    { "kind": "building", "id": "fence-checkpoint", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 32, "y": 39, "width": 8, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 35, "y": 39, "width": 2, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 35, "y": 40, "width": 11, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 45, "y": 35, "width": 2, "height": 7 }, "tile": "concrete" }
   ],
   "tiles": [],
   "areas": [
@@ -18,26 +22,28 @@
     { "room": "fence-checkpoint", "name": "Fence Checkpoint", "safe": false }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 9, "dy": 49 }
+    "start": { "room": "ground", "dx": 36, "dy": 41 }
   },
   "objects": [
-    { "id": "gallowglass-fence-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 49, "dy": 22 } },
-    { "id": "gallowglass-fence-street-lamp-1", "object": "street-lamp", "at": { "room": "ground", "dx": 12, "dy": 9 } },
-    { "id": "gallowglass-fence-bollard-2", "object": "bollard", "at": { "room": "ground", "dx": 56, "dy": 29 } },
+    { "id": "gallowglass-fence-litter-bin-0", "object": "litter-bin", "at": { "room": "ground", "dx": 9, "dy": 40 } },
+    { "id": "gallowglass-fence-steam-vent-1", "object": "steam-vent", "at": { "room": "ground", "dx": 12, "dy": 19 } },
+    { "id": "gallowglass-fence-food-stall-2", "object": "food-stall", "at": { "room": "ground", "dx": 56, "dy": 29 } },
     { "id": "gallowglass-fence-bollard-3", "object": "bollard", "at": { "room": "ground", "dx": 22, "dy": 39 } },
-    { "id": "gallowglass-fence-food-stall-4", "object": "food-stall", "at": { "room": "ground", "dx": 37, "dy": 23 } },
-    { "id": "gallowglass-fence-bollard-5", "object": "bollard", "at": { "room": "ground", "dx": 26, "dy": 25 } },
-    { "id": "gallowglass-fence-barricade-6", "object": "barricade", "at": { "room": "ground", "dx": 37, "dy": 10 } },
-    { "id": "gallowglass-fence-amber-trace-7", "object": "amber-trace", "at": { "room": "ground", "dx": 33, "dy": 44 } },
-    { "id": "gallowglass-fence-scrap-heap-8", "object": "scrap-heap", "at": { "room": "ground", "dx": 16, "dy": 24 } },
-    { "id": "gallowglass-fence-culture-bench-9", "object": "culture-bench", "at": { "room": "ground", "dx": 11, "dy": 34 } },
+    { "id": "gallowglass-fence-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 26, "dy": 25 } },
+    { "id": "gallowglass-fence-amber-trace-5", "object": "amber-trace", "at": { "room": "ground", "dx": 37, "dy": 10 } },
+    { "id": "gallowglass-fence-scrap-heap-6", "object": "scrap-heap", "at": { "room": "ground", "dx": 33, "dy": 44 } },
+    { "id": "gallowglass-fence-culture-bench-7", "object": "culture-bench", "at": { "room": "ground", "dx": 16, "dy": 24 } },
     { "id": "fence-checkpoint-secure-cell-0", "object": "secure-cell", "at": { "room": "fence-checkpoint", "dx": 1, "dy": 1 } },
     { "id": "fence-checkpoint-secure-cell-1", "object": "secure-cell", "at": { "room": "fence-checkpoint", "dx": 4, "dy": 1 } },
     { "id": "fence-checkpoint-secure-cell-2", "object": "secure-cell", "at": { "room": "fence-checkpoint", "dx": 7, "dy": 1 } },
     { "id": "fence-checkpoint-keycard-reader-3", "object": "keycard-reader", "at": { "room": "fence-checkpoint", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "fence-checkpoint-security-camera-4", "object": "security-camera", "at": { "room": "fence-checkpoint", "dx": 0, "dy": 0 }, "facing": "south" },
     { "id": "fence-checkpoint-lab-bench-5", "object": "lab-bench", "at": { "room": "fence-checkpoint", "dx": 10, "dy": 4 } },
-    { "id": "gallowglass-fence-poi-halcyon-lockbox-0", "object": "halcyon-lockbox", "at": { "room": "ground", "dx": 55, "dy": 35 } }
+    { "id": "gallowglass-fence-poi-halcyon-lockbox-0", "object": "halcyon-lockbox", "at": { "room": "ground", "dx": 55, "dy": 35 } },
+    { "id": "gallowglass-fence-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 39 }, "facing": "east" },
+    { "id": "gallowglass-fence-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 40, "dy": 39 }, "facing": "west" },
+    { "id": "gallowglass-fence-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 42 }, "facing": "north" },
+    { "id": "gallowglass-fence-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 39 }, "facing": "west" }
   ],
   "assemblies": [
     { "id": "gallowglass-fence-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 22, "dy": 51 }, "span": 2 },
@@ -45,20 +51,21 @@
   ],
   "npcs": [],
   "creatures": [
-    { "id": "gallowglass-fence-neon-moth-0", "creature": "neon-moth", "at": { "room": "ground", "dx": 59, "dy": 4 } },
-    { "id": "gallowglass-fence-holo-shill-1", "creature": "holo-shill", "at": { "room": "ground", "dx": 47, "dy": 60 } },
-    { "id": "gallowglass-fence-neon-moth-2", "creature": "neon-moth", "at": { "room": "ground", "dx": 51, "dy": 38 } },
-    { "id": "gallowglass-fence-holo-shill-3", "creature": "holo-shill", "at": { "room": "ground", "dx": 44, "dy": 44 } },
-    { "id": "gallowglass-fence-neon-moth-4", "creature": "neon-moth", "at": { "room": "ground", "dx": 53, "dy": 58 } },
-    { "id": "gallowglass-fence-holo-shill-5", "creature": "holo-shill", "at": { "room": "ground", "dx": 15, "dy": 40 } },
-    { "id": "gallowglass-fence-neon-moth-6", "creature": "neon-moth", "at": { "room": "ground", "dx": 49, "dy": 45 } },
-    { "id": "gallowglass-fence-neon-moth-8", "creature": "neon-moth", "at": { "room": "ground", "dx": 17, "dy": 30 } },
-    { "id": "gallowglass-fence-holo-shill-9", "creature": "holo-shill", "at": { "room": "ground", "dx": 31, "dy": 4 } },
-    { "id": "gallowglass-fence-neon-moth-10", "creature": "neon-moth", "at": { "room": "ground", "dx": 3, "dy": 23 } },
-    { "id": "gallowglass-fence-holo-shill-11", "creature": "holo-shill", "at": { "room": "ground", "dx": 60, "dy": 43 } },
-    { "id": "gallowglass-fence-neon-moth-12", "creature": "neon-moth", "at": { "room": "ground", "dx": 16, "dy": 16 } },
-    { "id": "gallowglass-fence-neon-moth-14", "creature": "neon-moth", "at": { "room": "ground", "dx": 27, "dy": 45 } },
-    { "id": "gallowglass-fence-holo-shill-15", "creature": "holo-shill", "at": { "room": "ground", "dx": 42, "dy": 15 } },
+    { "id": "gallowglass-fence-neon-moth-0", "creature": "neon-moth", "at": { "room": "ground", "dx": 38, "dy": 24 } },
+    { "id": "gallowglass-fence-holo-shill-1", "creature": "holo-shill", "at": { "room": "ground", "dx": 16, "dy": 13 } },
+    { "id": "gallowglass-fence-neon-moth-2", "creature": "neon-moth", "at": { "room": "ground", "dx": 11, "dy": 34 } },
+    { "id": "gallowglass-fence-holo-shill-3", "creature": "holo-shill", "at": { "room": "ground", "dx": 59, "dy": 4 } },
+    { "id": "gallowglass-fence-neon-moth-4", "creature": "neon-moth", "at": { "room": "ground", "dx": 47, "dy": 60 } },
+    { "id": "gallowglass-fence-holo-shill-5", "creature": "holo-shill", "at": { "room": "ground", "dx": 51, "dy": 38 } },
+    { "id": "gallowglass-fence-neon-moth-6", "creature": "neon-moth", "at": { "room": "ground", "dx": 44, "dy": 44 } },
+    { "id": "gallowglass-fence-holo-shill-7", "creature": "holo-shill", "at": { "room": "ground", "dx": 53, "dy": 58 } },
+    { "id": "gallowglass-fence-neon-moth-8", "creature": "neon-moth", "at": { "room": "ground", "dx": 15, "dy": 40 } },
+    { "id": "gallowglass-fence-holo-shill-9", "creature": "holo-shill", "at": { "room": "ground", "dx": 32, "dy": 21 } },
+    { "id": "gallowglass-fence-neon-moth-10", "creature": "neon-moth", "at": { "room": "ground", "dx": 49, "dy": 45 } },
+    { "id": "gallowglass-fence-neon-moth-12", "creature": "neon-moth", "at": { "room": "ground", "dx": 17, "dy": 30 } },
+    { "id": "gallowglass-fence-holo-shill-13", "creature": "holo-shill", "at": { "room": "ground", "dx": 31, "dy": 4 } },
+    { "id": "gallowglass-fence-neon-moth-14", "creature": "neon-moth", "at": { "room": "ground", "dx": 3, "dy": 23 } },
+    { "id": "gallowglass-fence-holo-shill-15", "creature": "holo-shill", "at": { "room": "ground", "dx": 60, "dy": 43 } },
     { "id": "fence-checkpoint-neon-moth-0", "creature": "neon-moth", "at": { "room": "fence-checkpoint", "dx": 2, "dy": 5 } },
     { "id": "fence-checkpoint-alley-crawler-1", "creature": "alley-crawler", "at": { "room": "fence-checkpoint", "dx": 9, "dy": 6 } }
   ],

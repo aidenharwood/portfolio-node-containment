@@ -65,6 +65,7 @@ export * from './world/pathfinding.ts';
 export * from './world/footprint.ts';
 export * from './world/objectUse.ts';
 export * from './world/tiles.ts';
+export * from './world/streetLights.ts';
 export * from './world/chunks.ts';
 export * from './world/blueprint.ts';
 export * from './world/landPlan.ts';
