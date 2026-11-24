@@ -20,3 +20,7 @@ export const FACILITY_WALL = { body: 0x2a3a45, cap: 0x3b4b57, kick: 0x151c21, tr
 export const ROOF_TRAY = 0x3c4044;
 
 export const INTERIOR_PLASTER = 0x7d766a;
+
+export const HAZARD = { yellow: 0xc99a1c, black: 0x17170f } as const;
+
+export const FACADE_BAND = 0xe86a1c;

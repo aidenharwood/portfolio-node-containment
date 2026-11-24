@@ -1,5 +1,6 @@
 import { decalIndex, type DecalCell, type FloorDecal, type FloorDecalKind, type FloorDecalPattern, type ResolvedLevel } from '@containment/shared';
 import { darken, hex, lighten, noise3 } from '../voxel/palette.ts';
+import { HAZARD } from './wallPalette.ts';
 import { TILE_RESOLUTION } from './worldScale.ts';
 
 const R = TILE_RESOLUTION;
@@ -16,14 +17,14 @@ export const DECAL_KIND_COLORS: Partial<Record<FloorDecalKind, number>> = {
   rug: 0x7a2f3a,
   runner: 0x8a3a2f,
   'lane-paint': 0xa89a52,
-  'hazard-paint': 0xc99a1c,
+  'hazard-paint': HAZARD.yellow,
   moss: 0x3f6a2f,
   'salt-crust': 0xe6e2d6,
   'alien-vein': 0x9a3fd8,
 };
 
 const MOSAIC_ALT = 0xd9d2bf;
-const HAZARD_DARK = 0x17170f;
+const HAZARD_DARK = HAZARD.black;
 const INNER_LIGHTEN = 0.35;
 
 const SURFACE_KINDS: ReadonlySet<FloorDecalKind> = new Set(['inlay', 'rug', 'runner']);
