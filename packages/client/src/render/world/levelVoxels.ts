@@ -4,7 +4,7 @@ import { darken, jitter, lighten, mix, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE, VOXEL_EMPTY, VOXEL_GLASS, VOXEL_SOLID, type VoxelKind } from '../voxel/voxelKinds.ts';
 import { doorGround, doorSpot, doorwayAt, frameVoxel, gatePostVoxel, revealVoxel, seamPylonVoxel, thresholdVoxel, type Doorway } from './doorways.ts';
 import { decalColor } from './floorDecals.ts';
-import { WALL_PALETTE } from './wallPalette.ts';
+import { FACADE_BAND, HAZARD, WALL_PALETTE } from './wallPalette.ts';
 import { blockMark, laneMark, trackPieceAt, trackRise, type TrackMark } from './trackPieces.ts';
 import { FLOOR_LAYERS, STEP_VOXELS, TILE_RESOLUTION, WALL_LAYERS, ZONE_VOLUME_HEIGHT } from './worldScale.ts';
 
@@ -42,8 +42,8 @@ const COLORS = {
   boardsSeam: 0x1e1c1c,
   boardsStrip: 0x5d666c,
   threshold: 0x463d2c,
-  hazardYellow: 0xc99a1c,
-  hazardBlack: 0x17170f,
+  hazardYellow: HAZARD.yellow,
+  hazardBlack: HAZARD.black,
   coolantBed: 0x0a2733,
   wallBody: 0x2a3a45,
   wallCap: 0x3b4b57,
@@ -168,8 +168,8 @@ export function paintTileRows(volume: DenseVolume, layout: OwnedLayout, region: 
       canvas.lift = base;
       if (isBuildingWall(kind)) paintWall(canvas, layout, tx, ty, kind);
       else if (kind === 'rock') paintRock(canvas, layout, tx, ty);
-      else if (kind === 'cliff') paintCliff(canvas, tx, ty);
-      else if (kind === 'trees') paintTrees(canvas, tx, ty);
+      else if (kind === 'cliff') paintCliff(canvas, layout, tx, ty);
+      else if (kind === 'trees') paintTrees(canvas, layout, tx, ty);
       else if (kind === 'fence') paintFence(canvas, layout, tx, ty);
       else if (kind === 'barrier') paintBarrier(canvas, layout, tx, ty);
       else if (kind === 'glass') paintGlass(canvas, tx, ty);
@@ -233,7 +233,7 @@ function paintEarth(volume: DenseVolume, layout: TileLayout, kind: TileKindId, t
   }
 }
 
-function paintCliff(volume: VoxelCanvas, tx: number, ty: number): void {
+function paintCliff(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number): void {
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
       const vx = tx * R + lx;
@@ -244,6 +244,7 @@ function paintCliff(volume: VoxelCanvas, tx: number, ty: number): void {
       for (let h = 0; h < lip; h++) volume.set(vx, FLOOR_LAYERS + h, vz, h === lip - 1 && noise3(vx, vz, h, 141) > 0.6 ? COLORS.moss : rockColor(vx, FLOOR_LAYERS + h, vz));
     }
   }
+  paintSeamPylons(volume, layout, tx, ty);
 }
 
 const SLOPED: ReadonlySet<TileKindId> = new Set<TileKindId>(['grass', 'dirt', 'gravel', 'soil']);
@@ -778,10 +779,9 @@ function outerSide(lx: number, lz: number, open: Set<Side>): { side: Side; u: nu
 
 const SIDE_SALT: Readonly<Record<Side, number>> = { north: 1, south: 2, east: 3, west: 4 };
 
-const MATERIAL = WALL_PALETTE;
 
 const FACADE = {
-  band: 0xe86a1c,
+  band: FACADE_BAND,
   litWindow: 0xffd08a,
   darkWindow: 0x161c22,
   slit: 0x9feaff,
@@ -832,14 +832,14 @@ function windowAt(material: WallMaterialId, tx: number, ty: number, side: Side, 
   }
   if (h === 5 && u >= 1 && u <= 6) return { color: FACADE.sill };
   if (h < 6 || h > 11 || u < 2 || u > 5) return null;
-  if (u === 2 || u === 5 || h === 11) return { color: darken(MATERIAL[material].joint, 0.3), recessed: true };
+  if (u === 2 || u === 5 || h === 11) return { color: darken(WALL_PALETTE[material].joint, 0.3), recessed: true };
   const glow = litWindowGlow(material, tx, ty, side);
   if (glow === null) return { color: FACADE.darkWindow, recessed: true };
   return { color: h === 8 ? darken(glow, 0.35) : glow, kind: VOXEL_EMISSIVE, recessed: true };
 }
 
 function exteriorVoxel(material: WallMaterialId, tx: number, ty: number, side: Side, h: number, u: number, vx: number, vy: number, vz: number): FaceVoxel {
-  const palette = MATERIAL[material];
+  const palette = WALL_PALETTE[material];
   const grain = noise3(vx, vy, vz, 5);
   if (h <= 1) return { color: jitter(palette.plinth, 0.03, grain) };
   const pane = windowAt(material, tx, ty, side, h, u);
@@ -873,7 +873,7 @@ function exteriorVoxel(material: WallMaterialId, tx: number, ty: number, side: S
 }
 
 function interiorVoxel(material: WallMaterialId, h: number, u: number, grain: number): FaceVoxel {
-  const palette = MATERIAL[material];
+  const palette = WALL_PALETTE[material];
   if (h <= 1) return { color: FACADE.skirting };
   if (h <= 6) return { color: jitter(palette.dado, 0.02, grain) };
   if (h === 7) return { color: FACADE.rail };
@@ -882,7 +882,7 @@ function interiorVoxel(material: WallMaterialId, h: number, u: number, grain: nu
 
 function paintWall(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number, material: WallMaterialId): void {
   const open = openSides(layout, tx, ty);
-  const palette = MATERIAL[material];
+  const palette = WALL_PALETTE[material];
   const outdoors = new Set([...open].filter((side) => facesOutdoors(layout, tx, ty, side)));
   const jambs = doorSides(layout, tx, ty);
   for (let lz = 0; lz < R; lz++) {
@@ -911,7 +911,7 @@ function paintWall(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: num
           continue;
         }
         if (jambs.has(outer.side)) {
-          const reveal = revealVoxel(material, h, outer.u, grain);
+          const reveal = revealVoxel(material, h, faceAlong(outer.side, lx, lz), grain);
           volume.set(vx, vy, vz, reveal.color, reveal.kind);
           continue;
         }
@@ -964,6 +964,10 @@ function paintRock(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: num
       }
     }
   }
+  paintSeamPylons(volume, layout, tx, ty);
+}
+
+function paintSeamPylons(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number): void {
   for (const side of doorSides(layout, tx, ty)) {
     for (let lz = 0; lz < R; lz++) {
       for (let lx = 0; lx < R; lx++) {
@@ -978,13 +982,14 @@ function paintRock(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: num
   }
 }
 
-function paintGatePosts(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number, style: 'fence' | 'barrier'): void {
+function paintGatePosts(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number, style: 'fence' | 'barrier', clearing = false): void {
   const middle = R / 2;
   for (const side of doorSides(layout, tx, ty)) {
     for (let lz = 0; lz < R; lz++) {
       for (let lx = 0; lx < R; lx++) {
         const along = faceAlong(side, lx, lz);
         const reach = style === 'barrier' ? 2 : 1;
+        if (clearing && faceDepth(side, lx, lz) <= 1) for (let h = 0; h < WALL_LAYERS; h++) volume.clear(tx * R + lx, FLOOR_LAYERS + h, ty * R + lz);
         if (faceDepth(side, lx, lz) > 1 || along < middle - reach || along >= middle + reach) continue;
         for (let h = 0; h < WALL_LAYERS; h++) {
           const post = gatePostVoxel(style, h);
@@ -995,7 +1000,7 @@ function paintGatePosts(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty
   }
 }
 
-function paintTrees(volume: VoxelCanvas, tx: number, ty: number): void {
+function paintTrees(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number): void {
   paintGround(volume, tx, ty, COLORS.needles, 113);
   const trunkX = 2 + Math.floor(noise3(tx, ty, 0, 127) * 4);
   const trunkZ = 2 + Math.floor(noise3(tx, ty, 1, 127) * 4);
@@ -1019,6 +1024,7 @@ function paintTrees(volume: VoxelCanvas, tx: number, ty: number): void {
       }
     }
   }
+  paintGatePosts(volume, layout, tx, ty, 'fence', true);
 }
 
 function paintBarrier(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number): void {

@@ -1,7 +1,7 @@
 import { isOutdoorFloor, TILE_KINDS, type TileKindId } from '@containment/shared';
 import { darken, jitter, lighten, mix } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE, VOXEL_SOLID } from '../voxel/voxelKinds.ts';
-import { FACILITY_WALL, INTERIOR_PLASTER, ROOF_TRAY, WALL_PALETTE } from './wallPalette.ts';
+import { FACADE_BAND, FACILITY_WALL, HAZARD, INTERIOR_PLASTER, ROOF_TRAY, WALL_PALETTE } from './wallPalette.ts';
 import { TILE_RESOLUTION, WALL_LAYERS } from './worldScale.ts';
 
 const R = TILE_RESOLUTION;
@@ -43,11 +43,9 @@ interface Run {
   readonly beyond: TileKindId;
 }
 
-const MAX_RUN = 16;
-
 function runFrom(tileAt: TileReader, tx: number, ty: number, dx: number, dy: number): Run {
   let count = 0;
-  while (count < MAX_RUN && tileAt(tx + dx * (count + 1), ty + dy * (count + 1)) === 'door') count++;
+  while (tileAt(tx + dx * (count + 1), ty + dy * (count + 1)) === 'door') count++;
   return { count, beyond: tileAt(tx + dx * (count + 1), ty + dy * (count + 1)) };
 }
 
@@ -107,8 +105,6 @@ export const DOOR_OPENING = 13;
 const TOP = WALL_LAYERS - 1;
 
 const DOOR = {
-  hazardYellow: 0xc99a1c,
-  hazardBlack: 0x17170f,
   lit: 0x4fd8ff,
   amber: 0xffb24a,
   status: 0x3fbf7f,
@@ -126,7 +122,6 @@ const DOOR = {
   plate: 0x46525a,
   rivet: 0x3d5464,
   pylon: 0x2a3038,
-  band: 0xe86a1c,
   apron: 0x4c4f52,
   post: 0x6a6e70,
 } as const;
@@ -134,7 +129,7 @@ const DOOR = {
 const solid = (color: number): DoorVoxel => ({ color, kind: VOXEL_SOLID });
 const glow = (color: number): DoorVoxel => ({ color, kind: VOXEL_EMISSIVE });
 
-const hazard = (index: number): DoorVoxel => solid(index % 2 === 0 ? DOOR.hazardYellow : DOOR.hazardBlack);
+const hazard = (index: number): DoorVoxel => solid(index % 2 === 0 ? HAZARD.yellow : HAZARD.black);
 
 const span = (door: Doorway): number => door.width * R;
 const reach = (door: Doorway): number => door.depth * R;
@@ -256,8 +251,6 @@ export function frameVoxel(door: Doorway, spot: DoorSpot, h: number, grain: numb
   const palette = HEADERS[style];
   const bottom = style === 'bulkhead' ? HEADER_BOTTOM.bulkhead - Math.max(0, CHAMFER - jamb) : HEADER_BOTTOM[style];
   if (h < bottom) {
-    if (style === 'bulkhead' && jamb === 0 && h >= 2) return solid(FACILITY_WALL.kick);
-    if (style === 'cladding' && jamb === 0 && Math.min(across, depth - 1 - across) <= 1) return solid(face ? DOOR.steelLight : DOOR.steel);
     return null;
   }
   if (h === TOP) return face ? solid(jitter(lighten(palette.cap, 0.06), 0.02, grain)) : null;
@@ -316,7 +309,7 @@ export function revealVoxel(kind: JambKind, h: number, u: number, grain: number)
 export function seamPylonVoxel(h: number, u: number, depth: number): DoorVoxel {
   if (h === TOP) return u >= R / 2 - 1 && u <= R / 2 ? glow(DOOR.amber) : solid(DOOR.pylon);
   if (h >= 2 && h <= 3) return hazard(Math.floor((u + h) / 2));
-  if (h === DOOR_OPENING - 1) return solid(DOOR.band);
+  if (h === DOOR_OPENING - 1) return solid(FACADE_BAND);
   if (depth === 0 && (u === 0 || u === R - 1)) return solid(lighten(DOOR.pylon, 0.12));
   return solid(DOOR.pylon);
 }
