@@ -78,7 +78,7 @@ export const PLACE_SPECS: Readonly<Record<string, PlaceSquare>> = {
       b('holding-block-k', 'Holding Block K', [2, 0], holding(['warden-achebe'])),
       b('kestrel-records', 'Kestrel Records', [0, 1], office(['registrar-lune'])),
       b('kestrel-armoury', 'Armoury', [1, 1], shop(['armourer-kade'], 'wall')),
-      yard('training-yard', 'Training Yard', 9, 43, 44, 12, ['training-drone', 'training-drone', 'training-drone', 'sim-wisp', 'sim-wisp', 'sim-wisp']),
+      yard('training-yard', 'Training Yard', 9, 43, 44, 12, ['training-drone', 'training-drone', 'echo-decoy', 'echo-decoy', 'plated-drone', 'plated-drone', 'sim-wisp']),
     ],
     landmark: { prefab: 'landmark-kestrel-headframe', at: { x: 45, y: 33 } },
     wildlife: false,

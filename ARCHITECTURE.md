@@ -171,6 +171,8 @@ When a player clicks an NPC or object, `InteractionController.request` stores a 
 
 `QuestTracker` wires the pure engine to players: it applies `onComplete` effects and rewards, and starts follow-up quests.
 
+**The intake** (`content/span/quests/intake.ts`) opens Act I and walks a recruit through every combat style and core mechanic before the story starts: Report for Intake (a win with the baton, the pistol and the focus, each against a Training Yard target whose guard is weak to it, a study and a containment), Commons Rounds (eating, the locker, the contract board, the exchange, the tram, the Clinic and buying), Make Do (gathering for Salvage, Biochemistry and Research, then the refinery, fabricator, synthesiser and cooker) and The Oath (clearance for the Intake lift), then Paper Trail. Only the first is a `tutorial` quest, so a recruit who logs out in the Commons is not sent back to the Site. `intakeCoverage.test.ts` fails if a style, a mechanic or a skill drops out.
+
 **Questlines** (`content/questlines.ts`) group quests for the journal. A questline is `main` (a chapter of a storyline, such as Induction or an act) or `side` (a run of related errands), and lists its quests in story order. Every quest belongs to exactly one questline of its own kind (`tutorial` and `main` quests in main questlines, `side` quests in side ones), which `findContentIssues` enforces. The journal shows Main storyline and Side quests sections, each split by questline, and folds away questlines that are finished. Add a new storyline or quest chain by adding a questline.
 
 ### Combat
