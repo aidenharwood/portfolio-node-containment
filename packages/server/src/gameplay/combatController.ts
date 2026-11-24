@@ -472,7 +472,7 @@ export class CombatController implements EncounterHost {
       const names = loot.map((entry) => `${entry.count > 1 ? `${entry.count} × ` : ''}${this.content.items.get(entry.itemId)?.name ?? entry.itemId}`);
       player.send({ type: 'chat.message', channel: 'system', text: `Loot dropped: ${names.join(', ')}` });
     }
-    this.host.raiseQuestEvent(player, { type: 'defeated', creatureId: creature.definition.id });
+    this.host.raiseQuestEvent(player, { type: 'defeated', creatureId: creature.definition.id, style });
   }
 
   recover(player: Player): void {

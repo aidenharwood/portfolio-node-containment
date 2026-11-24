@@ -165,6 +165,7 @@ When a player clicks an NPC or object, `InteractionController.request` stores a 
 `shared/src/quests` is pure.
 
 - **Event objectives** (`talkTo`, `enterArea`, `interactWith`, `signal`) count events.
+- A `defeat` objective with a `style` counts only kills made with a weapon of that style: the `defeated` event carries the killer's style, and credit shared with party mates carries none.
 - **State objectives** (`obtainItem`, `equipItem`) are re-read from a `QuestStateProbe` on every evaluation, so dropping an item un-completes them.
 - An event advances **only the current step**. Talking to an NPC to finish step 3 never also satisfies a `talkTo` for the same NPC in step 4. State objectives in the new step are evaluated immediately, so steps that are already satisfied chain through.
 

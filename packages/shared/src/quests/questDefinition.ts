@@ -1,5 +1,6 @@
 import type { AreaId, ItemId, NpcId, QuestId, WorldObjectId, DistrictId } from '../ids.ts';
 import type { CreatureId } from '../combat/creatures.ts';
+import type { CombatStyle } from '../combat/weapons.ts';
 import type { GameEffect } from '../rules/effects.ts';
 import type { SkillId } from '../character/skills.ts';
 
@@ -18,7 +19,7 @@ export type QuestObjective =
   | { readonly type: 'equipItem'; readonly itemId: ItemId; readonly label: string }
   | { readonly type: 'interactWith'; readonly objectId: WorldObjectId; readonly count?: number; readonly label: string }
   | { readonly type: 'signal'; readonly signal: string; readonly label: string; readonly npcId?: NpcId }
-  | { readonly type: 'defeat'; readonly creatureId: CreatureId; readonly count: number; readonly label: string }
+  | { readonly type: 'defeat'; readonly creatureId: CreatureId; readonly count: number; readonly label: string; readonly style?: CombatStyle }
   | { readonly type: 'contain'; readonly creatureId: CreatureId; readonly count: number; readonly label: string }
   | { readonly type: 'useItem'; readonly itemId: ItemId; readonly label: string }
   | { readonly type: 'gather'; readonly itemId: ItemId; readonly count: number; readonly label: string }
