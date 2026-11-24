@@ -29,7 +29,7 @@ const SHARPEN_MAX_PIXEL_RATIO = 1.5;
 const FOG_DENSITY = 0.018;
 const SURVEY_AMBIENT = 4.2;
 const SURVEY_KEY = 1.4;
-const SUN_COLOR = 0xfff1d6;
+const SUN_COLOR = 0xf6f2ff;
 const SHADE_COLOR = 0xcfe8ff;
 const SUN_BOOST = 1.6;
 const SKY_BRIGHTNESS_GAIN = 1.2;
@@ -62,8 +62,8 @@ void main() {
   float l = dot( c, vec3( 0.2126, 0.7152, 0.0722 ) );
   vec3 g = mix( vec3( l ), c, 1.12 );
   g = mix( g, g * g * ( 3.0 - 2.0 * g ), 0.22 );
-  g += vec3( -0.010, 0.002, 0.014 ) * ( 1.0 - smoothstep( 0.0, 0.45, l ) );
-  g += vec3( 0.018, 0.008, -0.012 ) * smoothstep( 0.55, 1.0, l );
+  g += vec3( -0.012, 0.004, 0.014 ) * ( 1.0 - smoothstep( 0.0, 0.45, l ) );
+  g += vec3( 0.012, -0.004, 0.010 ) * smoothstep( 0.55, 1.0, l );
   c = mix( c, g, grade );
   vec2 v = vUv - 0.5;
   c *= 1.0 - 0.3 * vignette * smoothstep( 0.35, 0.95, dot( v, v ) * 2.0 );
@@ -98,6 +98,7 @@ const BLOOM_PEAK = 0.8;
 const BLOOM_REFERENCE_DISTANCE = 11;
 const BLOOM_DISTANCE_RESPONSE = 0.4;
 const BLOOM_STRENGTH_RANGE = { minimum: 0.4, maximum: 0.8 } as const;
+const NIGHT_BLOOM_LIFT = 0.25;
 const BRIGHT_PASS_SHADER = `uniform sampler2D tDiffuse;
 uniform vec2 sourceTexel;
 uniform float luminosityThreshold;
@@ -295,7 +296,8 @@ export class SceneLook {
 
   matchBloomToDistance(distance: number): void {
     const scale = Math.pow(Math.max(0, distance) / BLOOM_REFERENCE_DISTANCE, BLOOM_DISTANCE_RESPONSE);
-    this.bloom.strength = MathUtils.clamp(BLOOM_STRENGTH * scale, BLOOM_STRENGTH_RANGE.minimum, BLOOM_STRENGTH_RANGE.maximum) * this.glowStrength;
+    const night = 1 + (this.lastAmbience?.darkness ?? 0) * NIGHT_BLOOM_LIFT;
+    this.bloom.strength = MathUtils.clamp(BLOOM_STRENGTH * scale, BLOOM_STRENGTH_RANGE.minimum, BLOOM_STRENGTH_RANGE.maximum) * night * this.glowStrength;
   }
 
   resetLights(): void {

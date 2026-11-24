@@ -36,8 +36,9 @@ const COLORS = {
   terrazzoStrip: 0x4a4232,
   ceramic: 0x4a565c,
   ceramicGrout: 0x2a3236,
-  boards: 0x3b2b1e,
-  boardsSeam: 0x1c140d,
+  boards: 0x3a3634,
+  boardsSeam: 0x1e1c1c,
+  boardsStrip: 0x5d666c,
   threshold: 0x463d2c,
   hazardYellow: 0xc99a1c,
   hazardBlack: 0x17170f,
@@ -500,7 +501,7 @@ function floorVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: nu
       const along = tile.axis === 'x' ? vx : vz;
       const plank = Math.floor((tile.axis === 'x' ? vz : vx) / 2);
       if (across % 2 === 0) return solid(COLORS.boardsSeam);
-      if ((along + plank * 5) % 24 === 0) return solid(COLORS.boardsSeam);
+      if ((along + plank * 5) % 24 === 0) return solid(COLORS.boardsStrip);
       return solid(jitter(COLORS.boards, 0.05, noise3(plank, Math.floor((along + plank * 5) / 24), 0, 43)));
     }
     case 'grass': {
@@ -581,7 +582,7 @@ const FACADE = {
   slit: 0x9feaff,
   sill: 0x8a857b,
   plaster: 0x7d766a,
-  rail: 0x4a3c2e,
+  rail: 0x5d666c,
   skirting: 0x241e1a,
 } as const;
 
@@ -598,7 +599,17 @@ function facesOutdoors(layout: OwnedLayout, tx: number, ty: number, side: Side):
   return isOutdoorFloor(besideKind(layout, tx, ty, tx + dx, ty + dy));
 }
 
-const WINDOW_GLOWS = [FACADE.litWindow, FACADE.litWindow, FACADE.litWindow, FACADE.litWindow, 0x6ab8ff, 0xff4fa8];
+const WINDOW_GLOWS = [FACADE.litWindow, FACADE.litWindow, 0xd8ecff, 0x6ab8ff, 0x4fe3ff, 0xff4fa8];
+
+const ROOFLINE_NEON = [0x4fe3ff, 0xff4fa8, 0xffb35a, 0xb48cff] as const;
+
+function rooflineNeon(material: WallMaterialId, tx: number, ty: number, side: Side, h: number): number | null {
+  if (h !== WALL_LAYERS - 2 || (material !== 'cladding' && material !== 'blockwork')) return null;
+  const runX = Math.floor(tx / 6);
+  const runY = Math.floor(ty / 6);
+  if (noise3(runX, runY, SIDE_SALT[side], 311) < 0.45) return null;
+  return darken(ROOFLINE_NEON[Math.floor(noise3(runX, runY, SIDE_SALT[side], 313) * ROOFLINE_NEON.length)] ?? ROOFLINE_NEON[0], 0.2);
+}
 
 export function litWindowGlow(material: WallMaterialId, tx: number, ty: number, side: Side): number | null {
   if (material === 'wall' || (tx + ty) % 2 !== 0 || noise3(tx, ty, SIDE_SALT[side], 211) <= 0.4) return null;
@@ -626,6 +637,8 @@ function exteriorVoxel(material: WallMaterialId, tx: number, ty: number, side: S
   if (h <= 1) return { color: jitter(palette.plinth, 0.03, grain) };
   const pane = windowAt(material, tx, ty, side, h, u);
   if (pane) return pane;
+  const neon = rooflineNeon(material, tx, ty, side, h);
+  if (neon !== null) return { color: neon, kind: VOXEL_EMISSIVE };
   const stain = h <= 4 ? 0.12 - h * 0.02 : 0;
   switch (material) {
     case 'brick': {
