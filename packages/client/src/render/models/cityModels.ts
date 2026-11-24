@@ -182,7 +182,7 @@ const utilityPole: Builder = () => {
   for (const x of [-8, -3, 2, 7]) model.fill(x, 47, -1, x, 48, -1, 0x9aa2a6);
   model.fill(1, 30, -2, 4, 39, 1, grain(CITY.darkSteel, 0.02)).fill(1, 29, -1, 4, 29, 0, CITY.iron).fill(4, 36, -1, 4, 38, 0, CITY.amber);
   model.fill(-1, 12, 1, 0, 18, 1, CITY.paper).fill(-1, 14, 1, 0, 15, 1, CITY.red);
-  const led = new VoxelModel().set(4, 33, 0, CITY.green, VOXEL_EMISSIVE);
+  const led = new VoxelModel().set(5, 33, 0, CITY.green, VOXEL_EMISSIVE);
   return parts(model, 51, [{ model: led, animate: blink(1.3) }]);
 };
 
@@ -576,7 +576,7 @@ const marketStall: Builder = (seed) => {
   for (const x of [-15, 14]) for (const z of [-7, 4]) model.fill(x, 0, z, x, 30, z, CITY.iron);
   model.fill(-16, 30, -8, 15, 31, 6, grain(canopy, 0.03)).fill(-16, 29, 6, 15, 29, 6, glow, VOXEL_EMISSIVE);
   const tags = new VoxelModel();
-  for (const x of [-12, -1, 9]) tags.fill(x, 19, 4, x + 3, 21, 4, lighten(glow, 0.3), VOXEL_EMISSIVE);
+  for (const x of [-12, -1, 9]) tags.fill(x, 19, 3, x + 3, 21, 3, lighten(glow, 0.3), VOXEL_EMISSIVE);
   return parts(model, 32, [{ model: tags, animate: flicker }]);
 };
 
@@ -613,7 +613,7 @@ const headframe: Builder = () => {
 const mooringPost: Builder = () => {
   const model = cylinder(new VoxelModel(), 0, 0, 2.6, 0, 6, grain(CITY.iron, 0.03));
   cylinder(model, 0, 0, 3.4, 7, 8, CITY.iron);
-  model.fill(-3, 4, -3, 2, 4, 2, (x, _y, z) => ((x + z) % 2 === 0 ? 0xb8a070 : null));
+  model.fill(-3, 4, -3, 2, 4, 2, (x, _y, z) => ((x + z) % 2 === 0 ? 0x9aa2a6 : null));
   return parts(model, 9);
 };
 
@@ -658,7 +658,7 @@ const chimney: Builder = () => {
   cylinder(model, 0, 0, 3.6, 92, 92, CITY.ink);
   for (let y = 8; y <= 84; y += 3) model.fill(-1, y, 5, 0, y, 5, CITY.iron);
   model.fill(-3, 30, 5, 2, 33, 5, (x) => (x % 2 === 0 ? CITY.amber : CITY.ink));
-  const strobe = new VoxelModel().set(-1, 91, 6, CITY.red, VOXEL_EMISSIVE).set(0, 91, -7, CITY.red, VOXEL_EMISSIVE).set(6, 91, 0, CITY.red, VOXEL_EMISSIVE).set(-7, 91, -1, CITY.red, VOXEL_EMISSIVE);
+  const strobe = new VoxelModel().set(-1, 91, 5, CITY.red, VOXEL_EMISSIVE).set(0, 91, -6, CITY.red, VOXEL_EMISSIVE).set(5, 91, 0, CITY.red, VOXEL_EMISSIVE).set(-6, 91, -1, CITY.red, VOXEL_EMISSIVE);
   return parts(model, 93, [{ model: strobe, animate: blink(2.2) }]);
 };
 
@@ -772,7 +772,7 @@ const dredgeWinch: Builder = () => {
   const model = new VoxelModel().fill(-4, 0, -6, 3, 2, -1, grain(CITY.concrete));
   model.fill(-3, 3, -5, -3, 12, -5, CITY.iron).fill(2, 3, -5, 2, 12, -5, CITY.iron);
   cylinder(model, 0, -5, 2, 8, 10, CITY.darkSteel);
-  model.fill(-3, 12, -5, 2, 12, 6, CITY.iron).fill(0, 2, 6, 0, 11, 6, 0xb8a070);
+  model.fill(-3, 12, -5, 2, 12, 6, CITY.iron).fill(0, 2, 6, 0, 11, 6, 0x9aa2a6);
   model.fill(-1, 1, 6, 1, 2, 7, CITY.darkSteel).set(-1, 13, -5, CITY.amber, VOXEL_EMISSIVE);
   return parts(model, 14);
 };
@@ -1001,7 +1001,7 @@ const bellTower: Builder = () => {
     model.fill(lo, y, lo, hi, y, lo, CITY.steel).fill(lo, y, hi, hi, y, hi, CITY.steel).fill(lo, y, lo, lo, y, hi, CITY.steel).fill(hi, y, lo, hi, y, hi, CITY.steel);
   }
   model.fill(-9, 84, -9, 8, 85, 8, grain(CITY.darkSteel, 0.02));
-  model.fill(-1, 74, -1, 0, 83, 0, CITY.iron);
+  model.fill(-1, 66, -1, 0, 83, 0, CITY.iron);
   for (const y of [70, 71, 72]) shellRing(model, 6.6, 1.2, y, CITY.darkSteel);
   shellRing(model, 4, 1, 66, CITY.darkSteel);
   model.fill(-7, 117, -7, 6, 119, 6, CITY.band).fill(-7, 120, -7, 6, 121, 6, grain(CITY.darkSteel, 0.02));
@@ -1044,8 +1044,9 @@ const glassBell: Builder = () => {
     for (let x = -11; x <= 10; x++) {
       for (let z = -11; z <= 10; z++) {
         const reach = hexReach(x, z);
-        if (reach > r || reach < r - 1.4) continue;
-        if (hexCorner(x, z)) model.set(x, y, z, seam, VOXEL_EMISSIVE);
+        if (reach > r || (reach < r - 1.4 && y !== 110)) continue;
+        if (y === 110) model.set(x, y, z, plate);
+        else if (hexCorner(x, z)) model.set(x, y, z, seam, VOXEL_EMISSIVE);
         else if (y % 14 === 4 || y === 69 || y === 87) model.set(x, y, z, plate);
         else if (!open) model.set(x, y, z, jitter(glass, 0.04, noise3(x, y, z, 131)), VOXEL_GLASS);
       }

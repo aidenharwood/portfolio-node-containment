@@ -16,7 +16,7 @@ const MARKS: readonly Mark[] = [
   ['cove-lantern', 'Cove Lantern', 'A storm lantern on a mast over the cove. Somebody keeps it lit, and nobody admits to it.', 'floodMast', 1, 1.4, '#ffc870'],
   ['signal-relay', 'Signal Hill Relay', 'The relay mast that carries Kestrel’s traffic over the Seam. Half its dishes point at Harrow and one points straight down.', 'floodMast', 1, 2.2, '#9fd0ff'],
   ['range-tower', 'Range Tower', 'The range officer’s tower over the firing line. A red flag means live fire. The flag has been red for a year.', 'headframe', 2],
-  ['drill-bell', 'Drill Bell', 'A bell on a frame at the edge of the drill field, rung for the start of every exercise and the end of every recruit who did not make it.', 'bellTower', 2],
+  ['drill-bell', 'Drill Bell', 'A resonator in a lattice mast at the edge of the drill field, rung for the start of every exercise and the end of every recruit who did not make it.', 'bellTower', 2],
   ['lake-gauge', 'Lake Gauge', 'A painted gauge on a post at the water’s edge. The lake has risen a hand since the last entry in the log.', 'clockTower', 2],
   ['seam-pylon', 'Wood Pylon', 'A pylon of the Quiet standing among the trees, warm to the touch, humming the same note as the Seam.', 'precursorPylon', 1, 2.4, '#b8f0ff'],
   ['lawn-clock', 'Groundskeepers’ Clock', 'A clock on a post that tells the groundskeepers when to mow. It has been telling them for two years.', 'clockTower', 2],

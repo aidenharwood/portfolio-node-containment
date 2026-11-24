@@ -230,7 +230,7 @@ export const SPINWARD_QUESTS: readonly QuestDefinition[] = [
     recommendedLevel: 8,
     steps: [
       { id: 'reeds', journal: 'Cut four reed bundles from the reed beds.', objectives: [{ type: 'gather', itemId: 'reed-bundle', count: 4, label: 'Gather reed bundles' }] },
-      { id: 'wynn', journal: 'Bring the reeds to Ada Wynn in the apothecary, Harrowgate.', objectives: [{ type: 'signal', signal: 'wynn-reeds', npcId: 'apothecary-wynn', label: 'Give Ada Wynn the reeds' }] },
+      { id: 'wynn', journal: 'Bring the reeds to Ada Wynn in the dispensary, Harrowgate.', objectives: [{ type: 'signal', signal: 'wynn-reeds', npcId: 'apothecary-wynn', label: 'Give Ada Wynn the reeds' }] },
     ],
     ...paid([scrip(70), questPay('biochemistry', 8, 2), questPay('salvage', 8, 1)]),
   },
