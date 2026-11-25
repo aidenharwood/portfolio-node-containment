@@ -1,5 +1,7 @@
 import { heightShade, shadeHex } from './heightShade.ts';
-import { GAME_CONTENT, mapScenery, pointsOfInterest, TILE_KINDS, type Facing, type MapSceneryKind, type PointOfInterest, type TilePoint } from '@containment/shared';
+import { GAME_CONTENT, mapScenery, pointsOfInterest, TILE_KINDS, type Facing, type MapSceneryKind, type PointOfInterest, type TileLayout, type TilePoint } from '@containment/shared';
+import { sceneRasterFor } from '../render/far/farJobs.ts';
+import { rasterLayout } from '../render/far/sceneRaster.ts';
 import type { WorldState } from '../state/worldState.ts';
 import { h } from '../ui/dom.ts';
 import type { ClickTone } from './clickIndicator.ts';
@@ -8,6 +10,8 @@ import { drawPoiIcon } from './poiIcons.ts';
 
 const BASE_PIXELS_PER_TILE = 7;
 const PIXELS_PER_TILE = 4.5;
+const WINDOW_TILES = 128;
+const WINDOW_SLACK = 24;
 const MAP_WIDTH = 256;
 const MAP_HEIGHT = 224;
 const HALF_WIDTH = MAP_WIDTH / 2;
@@ -74,6 +78,43 @@ interface MapView {
   readonly rotation: number;
 }
 
+interface MapWindow {
+  readonly canvas: HTMLCanvasElement;
+  readonly x: number;
+  readonly y: number;
+}
+
+interface Scenery {
+  readonly kind: MapSceneryKind;
+  readonly position: TilePoint;
+}
+
+const colorCache = new Map<string, readonly [number, number, number]>();
+
+function rgbOf(hex: string): readonly [number, number, number] {
+  const known = colorCache.get(hex);
+  if (known) return known;
+  const value = Number.parseInt(hex.slice(1), 16);
+  const rgb = [(value >> 16) & 255, (value >> 8) & 255, value & 255] as const;
+  colorCache.set(hex, rgb);
+  return rgb;
+}
+
+export function paintTileBase(layout: TileLayout, width: number, height: number, pixels: Uint8ClampedArray): void {
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const kind = layout.tileAt({ x, y });
+      if (kind === 'void') continue;
+      const rgb = rgbOf(shadeHex(TILE_COLORS[kind] ?? (TILE_KINDS[kind].walkable ? '#1f2d36' : '#0b1014'), heightShade(layout, x, y)));
+      const index = (y * width + x) * 4;
+      pixels[index] = rgb[0];
+      pixels[index + 1] = rgb[1];
+      pixels[index + 2] = rgb[2];
+      pixels[index + 3] = 255;
+    }
+  }
+}
+
 interface Destination {
   readonly tile: TilePoint;
   readonly tone: ClickTone;
@@ -86,6 +127,9 @@ export class Minimap {
   private readonly title = h('div', { className: 'minimap-title' });
   private readonly world: WorldState;
   private base: HTMLCanvasElement | null = null;
+  private window: MapWindow | null = null;
+  private scenery: readonly Scenery[] = [];
+  private ticket = 0;
   private view: MapView = { centerX: 0, centerY: 0, rotation: 0 };
   private destination: Destination | null = null;
   private points: readonly PointOfInterest[] = [];
@@ -125,27 +169,60 @@ export class Minimap {
     const zone = this.world.zone;
     if (!zone) return;
     this.refreshTitle();
-    const base = document.createElement('canvas');
-    base.width = zone.layout.width * BASE_PIXELS_PER_TILE;
-    base.height = zone.layout.height * BASE_PIXELS_PER_TILE;
-    const context = base.getContext('2d') as CanvasRenderingContext2D;
-    for (let y = 0; y < zone.layout.height; y++) {
-      for (let x = 0; x < zone.layout.width; x++) {
-        const kind = zone.layout.tileAt({ x, y });
-        if (kind === 'void') continue;
-        context.fillStyle = shadeHex(TILE_COLORS[kind] ?? (TILE_KINDS[kind].walkable ? '#1f2d36' : '#0b1014'), heightShade(zone.layout, x, y));
-        context.fillRect(x * BASE_PIXELS_PER_TILE, y * BASE_PIXELS_PER_TILE, BASE_PIXELS_PER_TILE, BASE_PIXELS_PER_TILE);
-      }
-    }
-    for (const { kind, position } of mapScenery(zone.definition, GAME_CONTENT.worldObjects)) paintScenery(context, kind, position);
-    this.base = base;
+    this.base = null;
+    this.window = null;
+    this.scenery = mapScenery(zone.definition, GAME_CONTENT.worldObjects);
     this.points = pointsOfInterest(zone.definition, GAME_CONTENT).sort((a, b) => Number(b.kind === 'gathering') - Number(a.kind === 'gathering'));
+    const ticket = ++this.ticket;
+    const { width, height } = zone.layout;
+    void sceneRasterFor(zone.definition, zone.layout).then(
+      (raster) => {
+        if (ticket !== this.ticket) return;
+        const base = document.createElement('canvas');
+        base.width = width;
+        base.height = height;
+        const context = base.getContext('2d') as CanvasRenderingContext2D;
+        const image = context.createImageData(width, height);
+        paintTileBase(rasterLayout(raster), width, height, image.data);
+        context.putImageData(image, 0, 0);
+        this.base = base;
+      },
+      () => undefined,
+    );
+  }
+
+  private windowAround(base: HTMLCanvasElement, position: TilePoint): MapWindow {
+    const centreX = Math.round(position.x);
+    const centreY = Math.round(position.y);
+    const current = this.window;
+    if (current && Math.abs(centreX - (current.x + WINDOW_TILES / 2)) <= WINDOW_SLACK && Math.abs(centreY - (current.y + WINDOW_TILES / 2)) <= WINDOW_SLACK) return current;
+    const x = centreX - WINDOW_TILES / 2;
+    const y = centreY - WINDOW_TILES / 2;
+    const canvas = current?.canvas ?? document.createElement('canvas');
+    canvas.width = WINDOW_TILES * BASE_PIXELS_PER_TILE;
+    canvas.height = WINDOW_TILES * BASE_PIXELS_PER_TILE;
+    const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    const left = Math.max(0, x);
+    const top = Math.max(0, y);
+    const right = Math.min(base.width, x + WINDOW_TILES);
+    const bottom = Math.min(base.height, y + WINDOW_TILES);
+    context.imageSmoothingEnabled = false;
+    if (right > left && bottom > top) context.drawImage(base, left, top, right - left, bottom - top, (left - x) * BASE_PIXELS_PER_TILE, (top - y) * BASE_PIXELS_PER_TILE, (right - left) * BASE_PIXELS_PER_TILE, (bottom - top) * BASE_PIXELS_PER_TILE);
+    context.save();
+    context.translate(-x * BASE_PIXELS_PER_TILE, -y * BASE_PIXELS_PER_TILE);
+    for (const { kind, position: at } of this.scenery) {
+      if (at.x >= x - 1 && at.y >= y - 1 && at.x <= x + WINDOW_TILES && at.y <= y + WINDOW_TILES) paintScenery(context, kind, at);
+    }
+    context.restore();
+    this.window = { canvas, x, y };
+    return this.window;
   }
 
   render(now: number, cameraHeading: number): void {
     const base = this.base;
     const self = this.world.selfEntity;
-    if (!base || !self) return;
+    if (!self) return;
     const context = this.canvas.getContext('2d') as CanvasRenderingContext2D;
     const ratio = this.canvas.width / MAP_WIDTH;
     const position = this.world.renderPosition(self, now);
@@ -167,7 +244,7 @@ export class Minimap {
     this.paintFrame(context);
   }
 
-  private paintWorld(context: CanvasRenderingContext2D, base: HTMLCanvasElement, position: TilePoint, rotation: number, now: number, selfId: string): void {
+  private paintWorld(context: CanvasRenderingContext2D, base: HTMLCanvasElement | null, position: TilePoint, rotation: number, now: number, selfId: string): void {
     const scale = PIXELS_PER_TILE / BASE_PIXELS_PER_TILE;
     const pixel = 1 / scale;
     context.save();
@@ -176,7 +253,10 @@ export class Minimap {
     context.scale(scale, scale);
     context.translate(-(position.x + 0.5) * BASE_PIXELS_PER_TILE, -(position.y + 0.5) * BASE_PIXELS_PER_TILE);
     context.imageSmoothingEnabled = true;
-    context.drawImage(base, 0, 0);
+    if (base) {
+      const area = this.windowAround(base, position);
+      context.drawImage(area.canvas, area.x * BASE_PIXELS_PER_TILE, area.y * BASE_PIXELS_PER_TILE);
+    }
 
     for (const item of this.world.groundItems.values()) {
       const size = 3 * pixel;

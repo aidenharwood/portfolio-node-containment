@@ -222,6 +222,7 @@ export class SceneLook {
   private survey = false;
   private readonly fogDensity: number;
   private lastAmbience: BlendedAmbience | null = null;
+  private hazeCap = Infinity;
   private readonly mistColor = new Color();
   private readonly snappedFocus = new Vector3();
   private readonly finish = new ShaderPass(FINISH_SHADER);
@@ -321,6 +322,11 @@ export class SceneLook {
     return needsResize;
   }
 
+  capHaze(limit: number | null): void {
+    this.hazeCap = limit ?? Infinity;
+    if (this.lastAmbience) this.applyAmbience(this.lastAmbience);
+  }
+
   setSurvey(on: boolean): void {
     this.survey = on;
     this.fog.density = on ? 0 : this.fogDensity;
@@ -338,7 +344,7 @@ export class SceneLook {
     this.keyLight.color.copy(light.key);
     this.keyLight.intensity = light.sun;
     const skyGlow = Math.min(1, Math.max(ambience.sky.r, ambience.sky.g, ambience.sky.b) * SKY_BRIGHTNESS_GAIN);
-    if (!this.survey) this.fog.density = this.fogDensity * ambience.haze * (1 - ambience.daylight * skyGlow * DAYLIGHT_FOG_THINNING);
+    if (!this.survey) this.fog.density = Math.min(this.hazeCap, this.fogDensity * ambience.haze * (1 - ambience.daylight * skyGlow * DAYLIGHT_FOG_THINNING));
     const groundFog = this.survey ? 0 : Math.min(GROUND_FOG_LIMIT, Math.max(0, (ambience.haze - 1) * GROUND_FOG_PER_HAZE + ambience.weather.mist * GROUND_FOG_PER_MIST));
     this.mistColor.copy(ambience.fog).multiplyScalar(MIST_GAIN).lerp(this.flashColor.setRGB(1, 1, 1), MIST_WHITE);
     setBeamWeather(this.survey ? 0 : ambience.haze, ambience.weather.mist, ambience.weather.rain);

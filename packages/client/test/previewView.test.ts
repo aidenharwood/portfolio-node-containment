@@ -3,6 +3,8 @@ import { test } from 'node:test';
 import { type DistrictDefinition } from '@containment/shared';
 import { FIXTURE_CONTENT as GAME_CONTENT, FIXTURE_LAND } from '@containment/shared/fixtures';
 import { landLevel, previewLevel, previewZone, zoneOfLevel } from '../src/editor/previewLevel.ts';
+import { previewReach, previewTarget, streamFocusOf } from '../src/editor/previewView.ts';
+import { groundAt } from '../src/render/world/ground.ts';
 
 const atrium = GAME_CONTENT.districts.get('fx-hub') as DistrictDefinition;
 
@@ -43,4 +45,15 @@ test('a land level draws the land in its scene and has nothing to walk on', () =
   }
   const zone = zoneOfLevel(GAME_CONTENT, level);
   for (let y = 0; y < FIXTURE_LAND.height; y++) for (let x = 0; x < FIXTURE_LAND.width; x++) assert.equal(zone.grid.isWalkable({ x, y }), false);
+});
+
+test('the 3D preview orbits the ground, builds around the camera and leaves the distance to the far view', () => {
+  const zone = zoneOfLevel(GAME_CONTENT, landLevel(FIXTURE_LAND, 'fx-land'));
+  const focus = { x: Math.floor(zone.layout.width / 2), y: Math.floor(zone.layout.height / 2) };
+  assert.equal(previewTarget(zone, focus).y, groundAt(zone.layout, focus.x, focus.y));
+  assert.equal(previewTarget(null, focus).y, 0);
+  assert.deepEqual(streamFocusOf({ x: 100, z: 100 }, { x: 110, z: 100 }), { x: 110, y: 100 });
+  assert.deepEqual(streamFocusOf({ x: 100, z: 100 }, { x: 100, z: 400 }, 24), { x: 100, y: 124 });
+  assert.deepEqual(previewReach(8, true), { build: 2, retain: 3 });
+  assert.deepEqual(previewReach(5, false), { build: 5, retain: 5 });
 });

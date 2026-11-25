@@ -1,8 +1,9 @@
-import { particleDensityFor, weatherDensityFor, type GameSettings } from '../state/gameSettings.ts';
+import { DEFAULT_SETTINGS, particleDensityFor, weatherDensityFor, type GameSettings } from '../state/gameSettings.ts';
 import { GAME_CONTENT, WEAPON_KIND_INFO, type EntityId, type Facing, type ItemId, type NpcQuestMarker, type TilePoint, type WorldObjectDefinition } from '@containment/shared';
 import { Color, CylinderGeometry, Group, MathUtils, Plane, Raycaster, Scene, Vector2, Vector3, MeshBasicMaterial, Mesh, OctahedronGeometry, type Object3D } from 'three';
 import type { ClientEntity, CombatHitEvent, WorldEffectEvent, WorldState } from '../state/worldState.ts';
 import { CameraRig } from './cameraRig.ts';
+import { FAR_HAZE_CAP, FarView, farReachFor } from './far/farView.ts';
 import { CharacterRig } from './models/characterModel.ts';
 import { createCreatureRig } from './models/creatureModels.ts';
 import type { EntityRig } from './models/entityRig.ts';
@@ -137,6 +138,8 @@ export class GameRenderer {
   private readonly raycaster = new Raycaster();
   private readonly groundPlane = new Plane(new Vector3(0, 1, 0), 0);
   private zone: LevelScene | null = null;
+  private far: FarView | null = null;
+  private farReach = farReachFor(DEFAULT_SETTINGS);
   private readonly weather: WeatherLayer;
   private readonly skyMask = new SkyMask();
   private weatherDensity = 1;
@@ -160,6 +163,7 @@ export class GameRenderer {
     this.canvas = canvas;
     this.world = world;
     this.look = new SceneLook(canvas, this.scene, this.cameraRig.camera);
+    this.cameraRig.setFar(this.farReach);
     chunkMesherPool();
     this.stopHitListener = world.onCombatHit((event) => this.pendingHits.push({ event, launched: false, impacted: false, lastTip: null }));
     this.stopEffectListener = world.onEffect((event) => this.worldEffect(event));
@@ -178,6 +182,9 @@ export class GameRenderer {
   applyGraphics(settings: GameSettings): void {
     this.weatherDensity = weatherDensityFor(settings.weather);
     this.particles.density = particleDensityFor(settings.particles);
+    this.farReach = farReachFor(settings);
+    this.cameraRig.setFar(this.farReach);
+    this.far?.setReach(this.farReach);
     if (this.look.applyGraphics(settings)) this.resize();
   }
 
@@ -204,12 +211,19 @@ export class GameRenderer {
       this.scene.remove(this.zone.root);
       this.zone.dispose();
     }
+    this.far?.dispose();
+    this.far = null;
     for (const view of this.entities.values()) this.scene.remove(view.rig.root);
     this.entities.clear();
     const active = this.world.zone;
     if (!active) return;
     this.zone = new LevelScene(active);
     this.scene.add(this.zone.root);
+    if (active.definition.definition.land) {
+      this.far = new FarView(active.definition, active.layout, this.farReach);
+      this.scene.add(this.far.root);
+    }
+    this.look.capHaze(this.far ? FAR_HAZE_CAP : null);
     this.look.resetLights();
 
     const start = this.world.selfEntity?.to ?? active.definition.spawn;
@@ -252,6 +266,7 @@ export class GameRenderer {
     const focus = this.cameraRig.focusPoint;
     this.zone.stream({ x: focus.x, y: focus.z });
     this.followAmbience(focus, delta, false);
+    this.far?.update({ camera: this.cameraRig.camera.position, focus, ambience: this.ambience, background: this.scene.background as Color, drawn: this.zone.drawnChunks, pixelRatio: this.look.renderer.getPixelRatio() });
     const viewDistance = this.cameraRig.camera.position.distanceTo(focus);
     this.look.aimKeyLight(focus, viewDistance);
     this.look.matchBloomToDistance(viewDistance);
@@ -380,6 +395,7 @@ export class GameRenderer {
     this.projectiles.dispose();
     this.particles.dispose();
     this.zone?.dispose();
+    this.far?.dispose();
     this.look.dispose();
   }
 

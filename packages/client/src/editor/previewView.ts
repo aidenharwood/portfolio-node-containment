@@ -1,6 +1,7 @@
 import { CHUNK_SIZE, GAME_CONTENT, type TilePoint } from '@containment/shared';
-import { Group, Mesh, MeshBasicMaterial, MathUtils, PerspectiveCamera, Plane, PlaneGeometry, Raycaster, Scene, Vector2, Vector3 } from 'three';
+import { Group, Mesh, MeshBasicMaterial, MathUtils, PerspectiveCamera, Plane, PlaneGeometry, Raycaster, Scene, Vector2, Vector3, type Color } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { FAR_HAZE_CAP, FarView } from '../render/far/farView.ts';
 import { SceneLook } from '../render/sceneLook.ts';
 import { ActorLayer } from './actorLayer.ts';
 import { EditOverlay } from './editOverlay.ts';
@@ -25,6 +26,21 @@ const NOTHING: ReadonlySet<string> = new Set();
 const MAX_REACH = 8;
 const CLICK_SLOP_PX = 4;
 const GROUND = new Plane(new Vector3(0, 1, 0), 0);
+const VIEW_DISTANCE = 2000;
+const FAR_REACH: StreamReach = { build: 2, retain: 3 };
+const STREAM_LEAD = 24;
+
+export const previewReach = (span: number, far: boolean): StreamReach => (far ? FAR_REACH : { build: span, retain: span });
+
+export function streamFocusOf(target: { readonly x: number; readonly z: number }, camera: { readonly x: number; readonly z: number }, lead = STREAM_LEAD): TilePoint {
+  const dx = camera.x - target.x;
+  const dz = camera.z - target.z;
+  const share = Math.min(1, lead / Math.max(1e-6, Math.hypot(dx, dz)));
+  return { x: target.x + dx * share, y: target.z + dz * share };
+}
+
+export const previewTarget = (zone: ActiveZone | null, focus: TilePoint): Vector3 => new Vector3(focus.x, zone ? groundAt(zone.layout, focus.x, focus.y) : 0, focus.y);
+const FAR_REBUILD_MS = 1500;
 
 export interface EditPointer {
   down(tile: TilePoint, event: PointerEvent): boolean;
@@ -37,7 +53,7 @@ export interface EditPointer {
 export class PreviewView {
   private readonly canvas = document.createElement('canvas');
   private readonly scene = new Scene();
-  private readonly camera = new PerspectiveCamera(40, 1, 0.1, 2000);
+  private readonly camera = new PerspectiveCamera(40, 1, 0.3, VIEW_DISTANCE);
   private readonly sceneLook: SceneLook;
   private readonly controls: OrbitControls;
   private readonly ambience = createBlendedAmbience();
@@ -46,6 +62,9 @@ export class PreviewView {
   private readonly issueGeometry = new PlaneGeometry(1, 1);
   private readonly issueMaterial = new MeshBasicMaterial({ color: 0xff3b3b, transparent: true, opacity: 0.75, depthWrite: false, toneMapped: false });
   private level: LevelScene | null = null;
+  private far: FarView | null = null;
+  private nextFar: FarView | null = null;
+  private farDue = 0;
   private zone: ActiveZone | null = null;
   private reach: StreamReach = { build: 1, retain: 2 };
   private listeners: ((state: CameraState) => void)[] = [];
@@ -97,9 +116,15 @@ export class PreviewView {
     this.actors.show(actorsOf(GAME_CONTENT, zone.definition), this.overlay.ground);
     this.level = new LevelScene(zone, { editable: true });
     this.scene.add(this.level.root);
+    this.far?.dispose();
+    this.nextFar?.dispose();
+    this.nextFar = null;
+    this.farDue = 0;
+    this.far = this.startFar(zone);
+    this.sceneLook.capHaze(this.far ? FAR_HAZE_CAP : null);
     this.sceneLook.resetLights();
     const span = Math.min(MAX_REACH, Math.ceil(Math.max(zone.layout.width, zone.layout.height) / CHUNK_SIZE) + 1);
-    this.reach = { build: span, retain: span };
+    this.reach = previewReach(span, this.far !== null);
   }
 
   hideObject(instanceId: string | null): void {
@@ -125,13 +150,21 @@ export class PreviewView {
     this.overlay.ground = (x, y) => groundAt(zone.layout, x, y);
     this.actors.show(actorsOf(GAME_CONTENT, zone.definition), this.overlay.ground);
     level.patch(zone);
+    if (this.far) this.farDue = performance.now() + FAR_REBUILD_MS;
     return true;
+  }
+
+  private startFar(zone: ActiveZone): FarView | null {
+    if (!zone.definition.definition.land) return null;
+    const far = new FarView(zone.definition, zone.layout, VIEW_DISTANCE);
+    this.scene.add(far.root);
+    return far;
   }
 
   look(state: CameraState): void {
     const zone = this.zone;
     const focus = state.focus ?? (zone ? { x: Math.floor(zone.layout.width / 2), y: Math.floor(zone.layout.height / 2) } : { x: 0, y: 0 });
-    const target = new Vector3(focus.x, 0, focus.y);
+    const target = previewTarget(zone, focus);
     const distance = BASE_DISTANCE / state.zoom;
     const yaw = MathUtils.degToRad(state.yaw);
     const pitch = MathUtils.degToRad(state.pitch);
@@ -206,6 +239,8 @@ export class PreviewView {
     this.issueMaterial.dispose();
     this.overlay.dispose();
     this.level?.dispose();
+    this.far?.dispose();
+    this.nextFar?.dispose();
     this.sceneLook.dispose();
   }
 
@@ -276,6 +311,25 @@ export class PreviewView {
     this.sceneLook.applyAmbience(this.ambience);
   }
 
+  private followFar(now: number, focus: Vector3): void {
+    const zone = this.zone;
+    const level = this.level;
+    if (!zone || !level) return;
+    if (this.farDue > 0 && now >= this.farDue) {
+      this.farDue = 0;
+      this.nextFar?.dispose();
+      this.nextFar = this.startFar(zone);
+    }
+    if (this.nextFar?.ready) {
+      this.far?.dispose();
+      this.far = this.nextFar;
+      this.nextFar = null;
+    }
+    const frame = { camera: this.camera.position, focus, ambience: this.ambience, background: this.scene.background as Color, drawn: level.drawnChunks, pixelRatio: this.sceneLook.renderer.getPixelRatio() };
+    this.far?.update(frame);
+    this.nextFar?.update(frame);
+  }
+
   private resize(): void {
     const width = this.canvas.clientWidth;
     const height = this.canvas.clientHeight;
@@ -295,10 +349,11 @@ export class PreviewView {
     this.controls.update();
     const target = this.controls.target;
     const time = now / 1000;
-    this.level.stream({ x: target.x, y: target.z }, BUILD_BUDGET_MS, this.reach);
+    this.level.stream(streamFocusOf(target, this.camera.position), BUILD_BUDGET_MS, this.reach);
     this.level.update(time, NOTHING, NOTHING, NOTHING, { open: NOTHING, self: null });
     this.actors.update(time);
     this.level.updateCutaway(this.camera.position, target);
+    this.followFar(now, target);
     const viewDistance = this.camera.position.distanceTo(target);
     this.sceneLook.aimKeyLight(target, viewDistance);
     this.sceneLook.matchBloomToDistance(viewDistance);

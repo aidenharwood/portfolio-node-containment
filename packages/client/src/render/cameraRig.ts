@@ -3,13 +3,14 @@ import { MathUtils, PerspectiveCamera, Vector3 } from 'three';
 const PITCH_RANGE = { minimum: MathUtils.degToRad(18), maximum: MathUtils.degToRad(82) } as const;
 const DISTANCE_RANGE = { minimum: 3.5, maximum: 22 } as const;
 const DEFAULT_ORBIT = { yaw: MathUtils.degToRad(45), pitch: MathUtils.degToRad(52), distance: 11 } as const;
+const CLIP_PLANES = { near: 0.3, far: 900 } as const;
 const FOLLOW_SHARPNESS = 9;
 const ORBIT_SHARPNESS = 14;
 const KEY_ROTATION_SPEED = 2.2;
 const KEY_PITCH_SPEED = 1.2;
 
 export class CameraRig {
-  readonly camera = new PerspectiveCamera(40, 1, 0.1, 200);
+  readonly camera = new PerspectiveCamera(40, 1, CLIP_PLANES.near, CLIP_PLANES.far);
   private readonly focus = new Vector3();
   private readonly desiredFocus = new Vector3();
   private yaw: number = DEFAULT_ORBIT.yaw;
@@ -40,6 +41,12 @@ export class CameraRig {
     this.viewHeight = Math.max(1, height);
     this.camera.aspect = this.viewWidth / this.viewHeight;
     this.applyViewShift();
+  }
+
+  setFar(far: number): void {
+    if (this.camera.far === far) return;
+    this.camera.far = far;
+    this.camera.updateProjectionMatrix();
   }
 
   shiftView(left: number, up: number): void {

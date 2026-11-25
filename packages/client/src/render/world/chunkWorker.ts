@@ -1,16 +1,32 @@
 import { GAME_CONTENT } from '@containment/shared';
+import { farBuildTransfer, farLevelOf, planFarBuild } from '../far/farBuild.ts';
+import { planLandmarks } from '../far/farLandmarks.ts';
+import { rasterizeScene, rasterTransfer, runPlan } from '../far/sceneRaster.ts';
 import { decalsForLevel } from './floorDecals.ts';
 import { ownedLayoutOf, packStructure, planChunkStructure } from './chunkStructure.ts';
-import type { StructureReply, StructureRequest } from './chunkMesher.ts';
+import type { StructureReply, WorkerRequest } from './chunkMesher.ts';
 
-const scope = self as unknown as { onmessage: ((event: MessageEvent<StructureRequest>) => void) | null; postMessage(message: StructureReply, transfer: Transferable[]): void };
+const scope = self as unknown as { onmessage: ((event: MessageEvent<WorkerRequest>) => void) | null; postMessage(message: StructureReply, transfer: Transferable[]): void };
 
 scope.onmessage = (event) => {
-  const { id, levelId, region } = event.data;
+  const request = event.data;
+  const { id, levelId } = request;
   try {
     const level = GAME_CONTENT.levels.get(levelId);
     if (!level) throw new Error(`There is no level "${levelId}".`);
-    const plan = planChunkStructure(ownedLayoutOf(level, level.scene), decalsForLevel(level), region);
+    if ('kind' in request) {
+      if (request.kind === 'raster') {
+        const raster = rasterizeScene(level.scene);
+        scope.postMessage({ id, raster }, rasterTransfer(raster));
+      } else if (request.kind === 'far') {
+        const far = runPlan(planFarBuild(farLevelOf(level), rasterizeScene(level.scene), request.cell));
+        scope.postMessage({ id, far }, farBuildTransfer(far));
+      } else {
+        scope.postMessage({ id, landmarks: runPlan(planLandmarks(level, GAME_CONTENT, level.scene)) }, []);
+      }
+      return;
+    }
+    const plan = planChunkStructure(ownedLayoutOf(level, level.scene), decalsForLevel(level), request.region);
     for (const step of plan.steps) step();
     const { packed, transfer } = packStructure(plan.result());
     scope.postMessage({ id, structure: packed }, transfer);

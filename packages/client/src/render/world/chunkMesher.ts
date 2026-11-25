@@ -1,4 +1,8 @@
 import type { TileRect } from '@containment/shared';
+import type { FarBuild } from '../far/farBuild.ts';
+import type { Landmark } from '../far/farLandmarks.ts';
+import type { FarCellSize } from '../far/farTerrainMesher.ts';
+import type { SceneRaster } from '../far/sceneRaster.ts';
 import { unpackStructure, type ChunkStructure, type PackedStructure } from './chunkStructure.ts';
 
 export interface StructureJob {
@@ -13,12 +17,42 @@ export interface StructureRequest {
   readonly region: TileRect;
 }
 
-export type StructureReply = { readonly id: number; readonly structure: PackedStructure } | { readonly id: number; readonly error: string } | { readonly ready: true };
+export interface RasterRequest {
+  readonly id: number;
+  readonly levelId: string;
+  readonly kind: 'raster';
+}
+
+export interface FarRequest {
+  readonly id: number;
+  readonly levelId: string;
+  readonly kind: 'far';
+  readonly cell: FarCellSize;
+}
+
+export interface LandmarksRequest {
+  readonly id: number;
+  readonly levelId: string;
+  readonly kind: 'landmarks';
+}
+
+export type WorkerRequest = StructureRequest | RasterRequest | FarRequest | LandmarksRequest;
+
+export type WorkerResult =
+  | { readonly id: number; readonly structure: PackedStructure }
+  | { readonly id: number; readonly raster: SceneRaster }
+  | { readonly id: number; readonly far: FarBuild }
+  | { readonly id: number; readonly landmarks: readonly Landmark[] }
+  | { readonly id: number; readonly error: string };
+
+export type StructureReply = WorkerResult | { readonly ready: true };
 
 interface Pending {
-  readonly request: StructureRequest;
+  readonly request: WorkerRequest;
   readonly priority: () => number;
   readonly job: PoolJob;
+  readonly patience: number;
+  readonly settle: (reply: WorkerResult) => void;
 }
 
 class PoolJob implements StructureJob {
@@ -27,9 +61,11 @@ class PoolJob implements StructureJob {
   cancelled = false;
   started = false;
   private readonly onCancel: (job: PoolJob) => void;
+  private readonly onFail: () => void;
 
-  constructor(onCancel: (job: PoolJob) => void) {
+  constructor(onCancel: (job: PoolJob) => void, onFail: () => void = () => undefined) {
     this.onCancel = onCancel;
+    this.onFail = onFail;
   }
 
   cancel(): void {
@@ -37,12 +73,18 @@ class PoolJob implements StructureJob {
     this.cancelled = true;
     this.onCancel(this);
   }
+
+  fail(): void {
+    if (this.failed) return;
+    this.failed = true;
+    this.onFail();
+  }
 }
 
 export interface MesherWorker {
   onmessage: ((event: MessageEvent<StructureReply>) => void) | null;
   onerror: ((event: ErrorEvent) => void) | null;
-  postMessage(message: StructureRequest): void;
+  postMessage(message: WorkerRequest): void;
   terminate(): void;
 }
 
@@ -105,15 +147,15 @@ export class ChunkMesherPool {
     this.timers.clear();
     for (const worker of this.idle) worker.terminate();
     this.idle.length = 0;
-    for (const pending of [...this.queue, ...this.busy.values()]) pending.job.failed = true;
+    for (const pending of [...this.queue, ...this.busy.values()]) pending.job.fail();
     this.queue = [];
   }
 
   private watch(worker: MesherWorker, pending: Pending): void {
     this.later(() => {
       if (this.broken || this.busy.get(worker) !== pending) return;
-      pending.job.failed = true;
       pending.job.cancelled = true;
+      pending.job.fail();
       this.busy.delete(worker);
       worker.terminate();
       this.timeouts++;
@@ -123,7 +165,7 @@ export class ChunkMesherPool {
       }
       this.idle.push(this.hire());
       this.pump();
-    }, JOB_TIMEOUT_MS);
+    }, pending.patience);
   }
 
   get queued(): number {
@@ -135,16 +177,51 @@ export class ChunkMesherPool {
   }
 
   request(levelId: string, region: TileRect, priority: () => number): StructureJob {
-    const job = new PoolJob((cancelled) => {
-      this.queue = this.queue.filter((pending) => pending.job !== cancelled);
+    const job = new PoolJob((cancelled) => this.drop(cancelled));
+    this.enqueue(job, (id) => ({ id, levelId, region }), priority, JOB_TIMEOUT_MS, (reply) => {
+      if ('structure' in reply) job.structure = unpackStructure(reply.structure);
+      else job.fail();
     });
-    if (this.broken) {
-      job.failed = true;
-      return job;
-    }
-    this.queue.push({ request: { id: this.nextId++, levelId, region }, priority, job });
-    queueMicrotask(() => this.pump());
     return job;
+  }
+
+  requestRaster(levelId: string, priority: () => number): Promise<SceneRaster> {
+    return this.ask((id) => ({ id, levelId, kind: 'raster' }), priority, (reply) => ('raster' in reply ? reply.raster : null));
+  }
+
+  requestFar(levelId: string, cell: FarCellSize, priority: () => number): Promise<FarBuild> {
+    return this.ask((id) => ({ id, levelId, kind: 'far', cell }), priority, (reply) => ('far' in reply ? reply.far : null));
+  }
+
+  requestLandmarks(levelId: string, priority: () => number): Promise<readonly Landmark[]> {
+    return this.ask((id) => ({ id, levelId, kind: 'landmarks' }), priority, (reply) => ('landmarks' in reply ? reply.landmarks : null));
+  }
+
+  private ask<T>(make: (id: number) => WorkerRequest, priority: () => number, read: (reply: WorkerResult) => T | null): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      const job = new PoolJob(
+        (cancelled) => this.drop(cancelled),
+        () => reject(new Error('The mesher pool could not finish the job.')),
+      );
+      this.enqueue(job, make, priority, FAR_TIMEOUT_MS, (reply) => {
+        const value = read(reply);
+        if (value === null) job.fail();
+        else resolve(value);
+      });
+    });
+  }
+
+  private drop(job: PoolJob): void {
+    this.queue = this.queue.filter((pending) => pending.job !== job);
+  }
+
+  private enqueue(job: PoolJob, make: (id: number) => WorkerRequest, priority: () => number, patience: number, settle: (reply: WorkerResult) => void): void {
+    if (this.broken) {
+      job.fail();
+      return;
+    }
+    this.queue.push({ request: make(this.nextId++), priority, job, patience, settle });
+    queueMicrotask(() => this.pump());
   }
 
   private pump(): void {
@@ -168,14 +245,11 @@ export class ChunkMesherPool {
     }
   }
 
-  private finish(worker: MesherWorker, reply: Exclude<StructureReply, { readonly ready: true }>): void {
+  private finish(worker: MesherWorker, reply: WorkerResult): void {
     const pending = this.busy.get(worker);
     this.busy.delete(worker);
     this.idle.push(worker);
-    if (pending && pending.request.id === reply.id && !pending.job.cancelled) {
-      if ('structure' in reply) pending.job.structure = unpackStructure(reply.structure);
-      else pending.job.failed = true;
-    }
+    if (pending && pending.request.id === reply.id && !pending.job.cancelled) pending.settle(reply);
     this.pump();
   }
 
@@ -183,7 +257,7 @@ export class ChunkMesherPool {
     for (const timer of this.timers) clearTimeout(timer);
     this.timers.clear();
     for (const worker of [...this.idle, ...this.busy.keys()]) worker.terminate();
-    for (const pending of [...this.queue, ...this.busy.values()]) pending.job.failed = true;
+    for (const pending of [...this.queue, ...this.busy.values()]) pending.job.fail();
     this.idle.length = 0;
     this.busy.clear();
     this.queue = [];
@@ -193,6 +267,7 @@ export class ChunkMesherPool {
 
 const MAX_WORKERS = 3;
 const JOB_TIMEOUT_MS = 20000;
+const FAR_TIMEOUT_MS = 120000;
 const MAX_TIMEOUTS = 3;
 const BOOT_TIMEOUT_MS = 60000;
 let shared: ChunkMesherPool | null | undefined;
