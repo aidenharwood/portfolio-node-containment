@@ -37,8 +37,8 @@ const FACES: readonly FaceDefinition[] = [
 
 const UP_FACE = 2;
 const DOWN_FACE = 3;
-const AMBIENT_OCCLUSION = [0.5, 0.68, 0.84, 1];
-const EDGE_LIFT = 1.12;
+const AMBIENT_OCCLUSION = [0.6, 0.75, 0.88, 1];
+const EDGE_LIFT = 1.05;
 
 interface FaceProbe {
   readonly normal: Vector;
