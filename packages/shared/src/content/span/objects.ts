@@ -2,7 +2,7 @@ import type { TilePoint } from '../../world/geometry.ts';
 import type { WorldObjectDefinition } from '../../world/entities.ts';
 import type { FurnishingKit } from '../furnishingKit.ts';
 import { prefab, type Prefab } from '../prefabs/types.ts';
-import { gate, landmark, LANDMARK_HOMES, prop } from '../catalog/landmarks.ts';
+import { landmark, LANDMARK_HOMES, prop } from '../catalog/landmarks.ts';
 
 const tall = { mount: 'free', homes: LANDMARK_HOMES } as const;
 
@@ -48,32 +48,6 @@ export const SPAN_LANDMARK_PREFABS: readonly Prefab[] = [
   prefab('landmark-pylon-line', ['focal'], [[0, 0, 'precursor-pylon'], [4, 2, 'precursor-pylon'], [8, 0, 'precursor-pylon']]),
 ];
 
-const SEAM_GATE_TEXT: Readonly<Record<string, string>> = {
-  'kestrel-north-gate': 'Past the Seam the land climbs in terraces toward the Massif.',
-  'kestrel-gate': 'Past the Seam the land climbs in terraces toward the Massif.',
-  'kestrel-south-gate': 'Past the Seam the land climbs in terraces toward the Massif.',
-  'harrow-north-gate': 'Past the Seam, the glow of Halcyon.',
-  'harrow-gate': 'Past the Seam, the glow of Halcyon.',
-  'harrow-south-gate': 'Past the Seam, the glow of Halcyon.',
-  'halcyon-north-gate': 'Past the Seam, rust to the coast, and the wreck of the Meridian.',
-  'halcyon-gate': 'Past the Seam, rust to the coast, and the wreck of the Meridian.',
-  'halcyon-south-gate': 'Past the Seam, rust to the coast, and the wreck of the Meridian.',
-  'wreck-north-gate': 'Past the Seam the ground turns to glass.',
-  'wreck-gate': 'Past the Seam the ground turns to glass.',
-  'wreck-south-gate': 'Past the Seam the ground turns to glass.',
-  'steppe-north-gate': 'Past the Seam the Spindle fills the sky.',
-  'steppe-gate': 'Past the Seam the Spindle fills the sky.',
-  'steppe-south-gate': 'Past the Seam the Spindle fills the sky.',
-};
-
-export const SEAM_GATE_IDS: readonly string[] = Object.keys(SEAM_GATE_TEXT);
-
-export const seamLeafOf = (gateId: string): string => `${gateId}-leaf`;
-
-export const SEAM_GATES: readonly WorldObjectDefinition[] = SEAM_GATE_IDS.map((gateId) =>
-  gate(seamLeafOf(gateId), 'Seam Gate', 'A gate of the Quiet through the Seam bulkhead, wedged open with Directorate jacks. The edges of the gap are perfectly smooth.', [], 'It will not move.', `The gate grinds aside. ${SEAM_GATE_TEXT[gateId]}`),
-);
-
 export interface LiftEnd {
   readonly id: string;
   readonly verb: 'Descend' | 'Ascend';
@@ -101,7 +75,7 @@ export const liftObject = (end: LiftEnd): WorldObjectDefinition => ({
 });
 
 export const SPAN_KIT: FurnishingKit = {
-  objects: [...SPAN_LANDMARKS, ...SEAM_GATES],
+  objects: SPAN_LANDMARKS,
   prefabs: SPAN_LANDMARK_PREFABS,
   signatures: {},
 };

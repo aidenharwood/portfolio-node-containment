@@ -9,13 +9,11 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 11, "row": 1 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 24, "y": 27, "width": 14, "height": 10 }, "height": 2 },
-    { "kind": "building", "id": "forecastle-camp", "rect": { "x": 25, "y": 28, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "patch", "rect": { "x": 27, "y": 37, "width": 8, "height": 2 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 30, "y": 37, "width": 2, "height": 2 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 30, "y": 38, "width": 10, "height": 2 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 39, "y": 38, "width": 2, "height": 2 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 39, "y": 37, "width": 3, "height": 2 }, "tile": "plating" }
+    { "kind": "rise", "rect": { "x": 29, "y": 24, "width": 14, "height": 10 }, "height": 3 },
+    { "kind": "building", "id": "forecastle-camp", "rect": { "x": 30, "y": 25, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 35, "y": 34, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 35, "y": 35, "width": 11, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 45, "y": 32, "width": 2, "height": 5 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -32,7 +30,7 @@
     { "id": "the-bow-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 53, "dy": 8 } },
     { "id": "the-bow-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 22, "dy": 6 } },
     { "id": "the-bow-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 30, "dy": 45 } },
-    { "id": "the-bow-tide-weed-6", "object": "tide-weed", "at": { "room": "ground", "dx": 35, "dy": 23 } },
+    { "id": "the-bow-wreck-plate-5", "object": "wreck-plate", "at": { "room": "ground", "dx": 25, "dy": 38 } },
     { "id": "the-bow-hull-trace-7", "object": "hull-trace", "at": { "room": "ground", "dx": 42, "dy": 17 } },
     { "id": "forecastle-camp-bed-0", "object": "bed", "at": { "room": "forecastle-camp", "dx": 1, "dy": 0 } },
     { "id": "forecastle-camp-bed-1", "object": "bed", "at": { "room": "forecastle-camp", "dx": 3, "dy": 0 } },
@@ -45,10 +43,9 @@
     { "id": "forecastle-camp-bed-8", "object": "bed", "at": { "room": "forecastle-camp", "dx": 9, "dy": 5 } },
     { "id": "forecastle-camp-bed-9", "object": "bed", "at": { "room": "forecastle-camp", "dx": 11, "dy": 5 } },
     { "id": "forecastle-camp-storage-locker-10", "object": "storage-locker", "at": { "room": "forecastle-camp", "dx": 0, "dy": 3 }, "facing": "east" },
-    { "id": "the-bow-poi-wreck-strongroom-0", "object": "wreck-strongroom", "at": { "room": "ground", "dx": 45, "dy": 41 } },
-    { "id": "the-bow-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 26, "dy": 37 }, "facing": "east" },
-    { "id": "the-bow-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 35, "dy": 37 }, "facing": "west" },
-    { "id": "the-bow-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 33, "dy": 40 }, "facing": "north" }
+    { "id": "the-bow-poi-wreck-strongroom-0", "object": "wreck-strongroom", "at": { "room": "ground", "dx": 47, "dy": 36 } },
+    { "id": "the-bow-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 37 }, "facing": "north" },
+    { "id": "the-bow-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 34 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [
@@ -56,25 +53,24 @@
   ],
   "creatures": [
     { "id": "the-bow-rustling-0", "creature": "rustling", "at": { "room": "ground", "dx": 44, "dy": 5 } },
-    { "id": "the-bow-ballast-crab-1", "creature": "ballast-crab", "at": { "room": "ground", "dx": 42, "dy": 25 } },
     { "id": "the-bow-ballast-crab-3", "creature": "ballast-crab", "at": { "room": "ground", "dx": 17, "dy": 27 } },
     { "id": "the-bow-rustling-4", "creature": "rustling", "at": { "room": "ground", "dx": 45, "dy": 11 } },
     { "id": "the-bow-ballast-crab-5", "creature": "ballast-crab", "at": { "room": "ground", "dx": 19, "dy": 39 } },
     { "id": "the-bow-rustling-6", "creature": "rustling", "at": { "room": "ground", "dx": 17, "dy": 57 } },
-    { "id": "the-bow-ballast-crab-7", "creature": "ballast-crab", "at": { "room": "ground", "dx": 15, "dy": 4 } },
-    { "id": "the-bow-rustling-8", "creature": "rustling", "at": { "room": "ground", "dx": 8, "dy": 53 } },
-    { "id": "the-bow-ballast-crab-9", "creature": "ballast-crab", "at": { "room": "ground", "dx": 22, "dy": 12 } },
-    { "id": "the-bow-rustling-10", "creature": "rustling", "at": { "room": "ground", "dx": 59, "dy": 58 } },
-    { "id": "the-bow-ballast-crab-11", "creature": "ballast-crab", "at": { "room": "ground", "dx": 54, "dy": 41 } },
-    { "id": "the-bow-rustling-12", "creature": "rustling", "at": { "room": "ground", "dx": 3, "dy": 54 } },
-    { "id": "the-bow-ballast-crab-13", "creature": "ballast-crab", "at": { "room": "ground", "dx": 12, "dy": 22 } },
-    { "id": "the-bow-rustling-14", "creature": "rustling", "at": { "room": "ground", "dx": 56, "dy": 19 } },
+    { "id": "the-bow-ballast-crab-7", "creature": "ballast-crab", "at": { "room": "ground", "dx": 8, "dy": 53 } },
+    { "id": "the-bow-rustling-8", "creature": "rustling", "at": { "room": "ground", "dx": 22, "dy": 12 } },
+    { "id": "the-bow-ballast-crab-9", "creature": "ballast-crab", "at": { "room": "ground", "dx": 59, "dy": 58 } },
+    { "id": "the-bow-rustling-10", "creature": "rustling", "at": { "room": "ground", "dx": 54, "dy": 41 } },
+    { "id": "the-bow-ballast-crab-11", "creature": "ballast-crab", "at": { "room": "ground", "dx": 3, "dy": 54 } },
+    { "id": "the-bow-rustling-12", "creature": "rustling", "at": { "room": "ground", "dx": 12, "dy": 22 } },
+    { "id": "the-bow-ballast-crab-13", "creature": "ballast-crab", "at": { "room": "ground", "dx": 56, "dy": 19 } },
+    { "id": "the-bow-rustling-14", "creature": "rustling", "at": { "room": "ground", "dx": 60, "dy": 9 } },
     { "id": "the-bow-ballast-crab-15", "creature": "ballast-crab", "at": { "room": "ground", "dx": 46, "dy": 50 } }
   ],
   "lights": [],
   "decals": [],
   "setPieces": [
-    { "id": "the-bow-landmark", "prefab": "landmark-meridian-bow", "at": { "room": "ground", "dx": 43, "dy": 33 }, "facing": "south" }
+    { "id": "the-bow-landmark", "prefab": "landmark-meridian-bow", "at": { "room": "ground", "dx": 48, "dy": 28 }, "facing": "south" }
   ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },

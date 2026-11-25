@@ -13,9 +13,9 @@
     { "kind": "building", "id": "rise-pump-house", "rect": { "x": 27, "y": 29, "width": 12, "height": 8 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 29, "y": 38, "width": 8, "height": 2 }, "tile": "gravel" },
     { "kind": "patch", "rect": { "x": 32, "y": 38, "width": 2, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 32, "y": 39, "width": 10, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 41, "y": 23, "width": 2, "height": 18 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 38, "y": 22, "width": 5, "height": 2 }, "tile": "gravel" }
+    { "kind": "patch", "rect": { "x": 24, "y": 39, "width": 10, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 23, "y": 25, "width": 2, "height": 16 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 23, "y": 24, "width": 11, "height": 2 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -23,7 +23,7 @@
     { "room": "rise-pump-house", "name": "Pump House", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 12, "dy": 20 }
+    "start": { "room": "ground", "dx": 9, "dy": 34 }
   },
   "objects": [
     { "id": "windpump-rise-quest-windpump-housing", "object": "windpump-housing", "at": { "room": "ground", "dx": 41, "dy": 42 } },
@@ -44,10 +44,10 @@
     { "id": "windpump-rise-poi-culvert-trace-1", "object": "culvert-trace", "at": { "room": "ground", "dx": 44, "dy": 35 } },
     { "id": "windpump-rise-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 28, "dy": 38 }, "facing": "east" },
     { "id": "windpump-rise-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 37, "dy": 38 }, "facing": "west" },
-    { "id": "windpump-rise-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 35, "dy": 41 }, "facing": "north" },
-    { "id": "windpump-rise-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 43, "dy": 37 }, "facing": "west" },
-    { "id": "windpump-rise-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 43, "dy": 29 }, "facing": "west" },
-    { "id": "windpump-rise-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 40, "dy": 24 }, "facing": "north" }
+    { "id": "windpump-rise-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 29, "dy": 41 }, "facing": "north" },
+    { "id": "windpump-rise-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 22, "dy": 37 }, "facing": "east" },
+    { "id": "windpump-rise-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 22, "dy": 29 }, "facing": "east" },
+    { "id": "windpump-rise-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 26, "dy": 26 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [
@@ -60,15 +60,15 @@
     { "id": "windpump-rise-windpump-wight-3", "creature": "windpump-wight", "at": { "room": "ground", "dx": 58, "dy": 60 } },
     { "id": "windpump-rise-thornback-4", "creature": "thornback", "at": { "room": "ground", "dx": 20, "dy": 24 } },
     { "id": "windpump-rise-windpump-wight-5", "creature": "windpump-wight", "at": { "room": "ground", "dx": 54, "dy": 54 } },
-    { "id": "windpump-rise-thornback-6", "creature": "thornback", "at": { "room": "ground", "dx": 54, "dy": 6 } },
-    { "id": "windpump-rise-windpump-wight-7", "creature": "windpump-wight", "at": { "room": "ground", "dx": 17, "dy": 54 } },
-    { "id": "windpump-rise-thornback-10", "creature": "thornback", "at": { "room": "ground", "dx": 29, "dy": 5 } },
-    { "id": "windpump-rise-windpump-wight-11", "creature": "windpump-wight", "at": { "room": "ground", "dx": 60, "dy": 47 } },
-    { "id": "windpump-rise-thornback-12", "creature": "thornback", "at": { "room": "ground", "dx": 5, "dy": 19 } },
-    { "id": "windpump-rise-windpump-wight-13", "creature": "windpump-wight", "at": { "room": "ground", "dx": 49, "dy": 20 } },
-    { "id": "windpump-rise-windpump-wight-15", "creature": "windpump-wight", "at": { "room": "ground", "dx": 42, "dy": 14 } },
-    { "id": "windpump-rise-thornback-16", "creature": "thornback", "at": { "room": "ground", "dx": 6, "dy": 14 } },
-    { "id": "windpump-rise-windpump-wight-17", "creature": "windpump-wight", "at": { "room": "ground", "dx": 9, "dy": 34 } }
+    { "id": "windpump-rise-thornback-6", "creature": "thornback", "at": { "room": "ground", "dx": 3, "dy": 3 } },
+    { "id": "windpump-rise-windpump-wight-7", "creature": "windpump-wight", "at": { "room": "ground", "dx": 54, "dy": 6 } },
+    { "id": "windpump-rise-thornback-8", "creature": "thornback", "at": { "room": "ground", "dx": 15, "dy": 6 } },
+    { "id": "windpump-rise-windpump-wight-9", "creature": "windpump-wight", "at": { "room": "ground", "dx": 17, "dy": 54 } },
+    { "id": "windpump-rise-thornback-12", "creature": "thornback", "at": { "room": "ground", "dx": 29, "dy": 5 } },
+    { "id": "windpump-rise-windpump-wight-13", "creature": "windpump-wight", "at": { "room": "ground", "dx": 60, "dy": 47 } },
+    { "id": "windpump-rise-thornback-14", "creature": "thornback", "at": { "room": "ground", "dx": 5, "dy": 19 } },
+    { "id": "windpump-rise-windpump-wight-15", "creature": "windpump-wight", "at": { "room": "ground", "dx": 49, "dy": 20 } },
+    { "id": "windpump-rise-windpump-wight-17", "creature": "windpump-wight", "at": { "room": "ground", "dx": 42, "dy": 14 } }
   ],
   "lights": [],
   "decals": [],

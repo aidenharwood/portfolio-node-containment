@@ -58,9 +58,9 @@
     { "id": "wheat-steps-barn-crawler-8", "creature": "barn-crawler", "at": { "room": "ground", "dx": 41, "dy": 11 } },
     { "id": "wheat-steps-seed-mite-9", "creature": "seed-mite", "at": { "room": "ground", "dx": 54, "dy": 31 } },
     { "id": "wheat-steps-barn-crawler-10", "creature": "barn-crawler", "at": { "room": "ground", "dx": 57, "dy": 41 } },
-    { "id": "wheat-steps-barn-crawler-12", "creature": "barn-crawler", "at": { "room": "ground", "dx": 23, "dy": 11 } },
-    { "id": "wheat-steps-seed-mite-13", "creature": "seed-mite", "at": { "room": "ground", "dx": 39, "dy": 16 } },
-    { "id": "wheat-steps-barn-crawler-14", "creature": "barn-crawler", "at": { "room": "ground", "dx": 9, "dy": 9 } },
+    { "id": "wheat-steps-barn-crawler-12", "creature": "barn-crawler", "at": { "room": "ground", "dx": 10, "dy": 6 } },
+    { "id": "wheat-steps-seed-mite-13", "creature": "seed-mite", "at": { "room": "ground", "dx": 23, "dy": 11 } },
+    { "id": "wheat-steps-barn-crawler-14", "creature": "barn-crawler", "at": { "room": "ground", "dx": 39, "dy": 16 } },
     { "id": "wheat-steps-seed-mite-15", "creature": "seed-mite", "at": { "room": "ground", "dx": 60, "dy": 20 } },
     { "id": "wheat-steps-barn-crawler-16", "creature": "barn-crawler", "at": { "room": "ground", "dx": 39, "dy": 56 } },
     { "id": "wheat-steps-seed-mite-17", "creature": "seed-mite", "at": { "room": "ground", "dx": 13, "dy": 37 } }

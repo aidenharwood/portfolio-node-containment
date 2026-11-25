@@ -23,7 +23,7 @@
     { "room": "vesper-checkpoint", "name": "Vesper Checkpoint", "safe": false }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 49, "dy": 31 }
+    "start": { "room": "ground", "dx": 24, "dy": 22 }
   },
   "objects": [
     { "id": "vesper-approach-barricade-0", "object": "barricade", "at": { "room": "ground", "dx": 13, "dy": 44 } },
@@ -71,6 +71,7 @@
     { "id": "vesper-approach-prism-hound-14", "creature": "prism-hound", "at": { "room": "ground", "dx": 60, "dy": 35 } },
     { "id": "vesper-approach-shard-wisp-15", "creature": "shard-wisp", "at": { "room": "ground", "dx": 60, "dy": 26 } },
     { "id": "vesper-approach-prism-hound-16", "creature": "prism-hound", "at": { "room": "ground", "dx": 55, "dy": 56 } },
+    { "id": "vesper-approach-shard-wisp-17", "creature": "shard-wisp", "at": { "room": "ground", "dx": 49, "dy": 31 } },
     { "id": "vesper-checkpoint-prism-hound-0", "creature": "prism-hound", "at": { "room": "vesper-checkpoint", "dx": 9, "dy": 5 } },
     { "id": "vesper-checkpoint-prism-hound-1", "creature": "prism-hound", "at": { "room": "vesper-checkpoint", "dx": 2, "dy": 5 } }
   ],

@@ -22,7 +22,7 @@
     { "room": "pilgrim-steps-rest", "name": "Pilgrim Steps Rest", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 8, "dy": 26 }
+    "start": { "room": "ground", "dx": 54, "dy": 57 }
   },
   "objects": [
     { "id": "pilgrim-steps-burn-barrel-0", "object": "burn-barrel", "at": { "room": "ground", "dx": 38, "dy": 48 } },
@@ -65,9 +65,9 @@
     { "id": "pilgrim-steps-shard-wisp-5", "creature": "shard-wisp", "at": { "room": "ground", "dx": 21, "dy": 45 } },
     { "id": "pilgrim-steps-prism-hound-6", "creature": "prism-hound", "at": { "room": "ground", "dx": 45, "dy": 12 } },
     { "id": "pilgrim-steps-shard-wisp-7", "creature": "shard-wisp", "at": { "room": "ground", "dx": 18, "dy": 15 } },
-    { "id": "pilgrim-steps-shard-wisp-9", "creature": "shard-wisp", "at": { "room": "ground", "dx": 14, "dy": 11 } },
-    { "id": "pilgrim-steps-shard-wisp-11", "creature": "shard-wisp", "at": { "room": "ground", "dx": 42, "dy": 19 } },
-    { "id": "pilgrim-steps-shard-wisp-13", "creature": "shard-wisp", "at": { "room": "ground", "dx": 22, "dy": 50 } }
+    { "id": "pilgrim-steps-shard-wisp-9", "creature": "shard-wisp", "at": { "room": "ground", "dx": 3, "dy": 12 } },
+    { "id": "pilgrim-steps-prism-hound-10", "creature": "prism-hound", "at": { "room": "ground", "dx": 14, "dy": 11 } },
+    { "id": "pilgrim-steps-prism-hound-12", "creature": "prism-hound", "at": { "room": "ground", "dx": 42, "dy": 19 } }
   ],
   "lights": [],
   "decals": [],

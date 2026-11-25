@@ -138,19 +138,18 @@ export const TRAM_LINES: readonly { readonly id: string; readonly name: string; 
   { id: 'spindle-funicular', name: 'Spindle Funicular', color: '#ffb347', stations: ['choir-halt', 'last-post-funicular'] },
 ];
 
-export const SEAM_HALF = 3;
+export const SEAM_HALF = 1;
 
 export interface SeamSpec {
   readonly between: readonly [string, string];
-  readonly gates: readonly string[];
 }
 
 export const SEAMS: readonly SeamSpec[] = [
-  { between: ['K', 'H'], gates: ['kestrel-north-gate', 'kestrel-gate', 'kestrel-south-gate'] },
-  { between: ['H', 'C'], gates: ['harrow-north-gate', 'harrow-gate', 'harrow-south-gate'] },
-  { between: ['C', 'W'], gates: ['halcyon-north-gate', 'halcyon-gate', 'halcyon-south-gate'] },
-  { between: ['W', 'G'], gates: ['wreck-north-gate', 'wreck-gate', 'wreck-south-gate'] },
-  { between: ['G', 'S'], gates: ['steppe-north-gate', 'steppe-gate', 'steppe-south-gate'] },
+  { between: ['K', 'H'] },
+  { between: ['H', 'C'] },
+  { between: ['C', 'W'] },
+  { between: ['W', 'G'] },
+  { between: ['G', 'S'] },
 ];
 
 export const WILD_PINS: Readonly<Record<string, string>> = {

@@ -29,11 +29,8 @@
     { "id": "gantry-flats-burn-barrel-1", "object": "burn-barrel", "at": { "room": "ground", "dx": 13, "dy": 17 } },
     { "id": "gantry-flats-magnet-crane-3", "object": "magnet-crane", "at": { "room": "ground", "dx": 12, "dy": 48 } },
     { "id": "gantry-flats-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 23, "dy": 45 } },
-    { "id": "gantry-flats-wreck-north-gate-leaf-0", "object": "wreck-north-gate-leaf", "at": { "room": "ground", "dx": 44, "dy": 63 }, "facing": "south" },
-    { "id": "gantry-flats-wreck-north-gate-leaf-1", "object": "wreck-north-gate-leaf", "at": { "room": "ground", "dx": 45, "dy": 63 }, "facing": "south" },
-    { "id": "gantry-flats-crusher-housing-7", "object": "crusher-housing", "at": { "room": "ground", "dx": 34, "dy": 57 } },
-    { "id": "gantry-flats-wreck-plate-8", "object": "wreck-plate", "at": { "room": "ground", "dx": 27, "dy": 23 } },
-    { "id": "gantry-flats-tide-weed-9", "object": "tide-weed", "at": { "room": "ground", "dx": 51, "dy": 13 } },
+    { "id": "gantry-flats-wreck-plate-6", "object": "wreck-plate", "at": { "room": "ground", "dx": 27, "dy": 23 } },
+    { "id": "gantry-flats-tide-weed-7", "object": "tide-weed", "at": { "room": "ground", "dx": 51, "dy": 13 } },
     { "id": "gantry-workshop-ward-refinery-0", "object": "ward-refinery", "at": { "room": "gantry-workshop", "dx": 1, "dy": 1 } },
     { "id": "gantry-workshop-ward-fabricator-1", "object": "ward-fabricator", "at": { "room": "gantry-workshop", "dx": 4, "dy": 1 } },
     { "id": "gantry-workshop-ward-synthesiser-2", "object": "ward-synthesiser", "at": { "room": "gantry-workshop", "dx": 7, "dy": 1 } },
@@ -64,7 +61,8 @@
     { "id": "gantry-flats-ballast-crab-13", "creature": "ballast-crab", "at": { "room": "ground", "dx": 17, "dy": 9 } },
     { "id": "gantry-flats-rustling-14", "creature": "rustling", "at": { "room": "ground", "dx": 58, "dy": 46 } },
     { "id": "gantry-flats-ballast-crab-15", "creature": "ballast-crab", "at": { "room": "ground", "dx": 24, "dy": 12 } },
-    { "id": "gantry-flats-rustling-16", "creature": "rustling", "at": { "room": "ground", "dx": 30, "dy": 11 } }
+    { "id": "gantry-flats-rustling-16", "creature": "rustling", "at": { "room": "ground", "dx": 26, "dy": 60 } },
+    { "id": "gantry-flats-ballast-crab-17", "creature": "ballast-crab", "at": { "room": "ground", "dx": 30, "dy": 11 } }
   ],
   "lights": [],
   "decals": [],

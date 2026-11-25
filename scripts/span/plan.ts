@@ -94,9 +94,8 @@ export function coastInset(x: number, y: number): number {
   const headland = HEADLAND_REACH * ease(0.6, 0.85, valueNoise(14, x / 64, y / 64));
   const pads = Math.min(...PLACES.map((place) => boxDistance(padOf(place), x, y)));
   const rail = Math.min(...SEGMENTS.map((segment) => boxDistance(segment, x, y)));
-  const gates = Math.min(...GATE_PLANS.map((gate) => Math.max(Math.abs(gate.x + 0.5 - x), Math.abs(gate.y + 0.5 - y))));
   const hull = boxDistance({ ...HULL, width: HULL.width + 14 }, x, y);
-  const calm = Math.min(ease(4, 22, pads), ease(6, 26, rail), ease(10, 30, gates), ease(8, 40, hull));
+  const calm = Math.min(ease(4, 22, pads), ease(6, 26, rail), ease(8, 40, hull));
   const inset = COAST_INSET + swing + cove - headland;
   return Math.min(COAST_MAX, Math.max(COAST_MIN, KEPT_COAST + (inset - KEPT_COAST) * calm));
 }
@@ -113,7 +112,7 @@ export function isMassifTile(x: number, y: number): boolean {
   const code = codeAt(Math.floor(x / SQUARE), Math.floor(y / SQUARE));
   if (code === MASSIF) return true;
   if (!isLandCode(code)) return false;
-  if (nearPad(x, y, 6) || nearRail(x, y, 5) || nearGate(x, y, 14)) return false;
+  if (nearPad(x, y, 6) || nearRail(x, y, 5)) return false;
   const toMassif = distanceToCode(x, y, (other) => other === MASSIF, 20);
   return toMassif < 1 + 11 * smooth(x, y, 23, 14);
 }
@@ -174,50 +173,13 @@ export function seamEdges(): SeamEdge[] {
   return out;
 }
 
-export interface GatePlan {
-  readonly id: string;
-  readonly vertical: boolean;
-  readonly x: number;
-  readonly y: number;
-}
-
-export function gatePlans(): GatePlan[] {
-  const edges = seamEdges();
-  const out: GatePlan[] = [];
-  SEAMS.forEach((seam, index) => {
-    const mine = edges.filter((edge) => edge.seam === index);
-    const candidates: { vertical: boolean; x: number; y: number }[] = [];
-    for (const edge of mine) {
-      for (let along = edge.from + 8; along <= edge.to - 10; along += 2) {
-        const x = edge.vertical ? edge.line - 1 : along;
-        const y = edge.vertical ? along : edge.line - 1;
-        if (nearRail(x, y, 12)) continue;
-        candidates.push({ vertical: edge.vertical, x, y });
-      }
-    }
-    if (candidates.length < seam.gates.length) throw new Error('seam ' + seam.between.join('|') + ' has no room for its gates');
-    const picked: typeof candidates = [];
-    const count = seam.gates.length;
-    for (let gate = 0; gate < count; gate++) {
-      const target = Math.round(((gate + 0.5) / count) * (candidates.length - 1));
-      picked.push(candidates[target]!);
-    }
-    picked.forEach((spot, gate) => out.push({ id: seam.gates[gate]!, ...spot }));
-  });
-  return out;
-}
-
-export const GATE_PLANS = gatePlans();
-
-export function nearGate(x: number, y: number, reach: number): boolean {
-  return GATE_PLANS.some((gate) => Math.abs(gate.x + 0.5 - x) < reach && Math.abs(gate.y + 0.5 - y) < reach);
-}
+const SEAM_EDGES = seamEdges();
 
 export const isSeamTile = (x: number, y: number): boolean =>
-  seamEdges().some((edge) => {
+  SEAM_EDGES.some((edge) => {
     const across = edge.vertical ? x : y;
     const along = edge.vertical ? y : x;
-    return Math.abs(across + 0.5 - edge.line) <= SEAM_HALF + 0.5 && along >= edge.from - SEAM_HALF && along < edge.to + SEAM_HALF;
+    return Math.abs(across + 0.5 - edge.line) < SEAM_HALF && along >= edge.from - SEAM_HALF && along < edge.to + SEAM_HALF;
   });
 
 export interface BridgePlan {
@@ -235,7 +197,7 @@ export function bridgePlans(): BridgePlan[] {
     for (let along = 10; along < length - 10; along += BRIDGE_SPACING) {
       const x = segment.horizontal ? segment.x + along : segment.x;
       const y = segment.horizontal ? segment.y : segment.y + along;
-      if (nearPad(x, y, 3) || nearGate(x, y, 10) || isSeamTile(x, y) || isSeamTile(x + 1, y + 1)) continue;
+      if (nearPad(x, y, 3)) continue;
       const lx = x % SQUARE;
       const ly = y % SQUARE;
       if (lx < 4 || ly < 4 || lx > SQUARE - 6 || ly > SQUARE - 6) continue;

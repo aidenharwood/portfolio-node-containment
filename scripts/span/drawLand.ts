@@ -4,10 +4,11 @@ import { drawLand, type LandPlan, type LandShape, type LandStep } from '../../pa
 import { printLandPlan } from '../../packages/shared/src/world/printLandPlan.ts';
 import type { TilePoint, TileRect } from '../../packages/shared/src/world/geometry.ts';
 import { TILE_KINDS, type TileKindId } from '../../packages/shared/src/world/tiles.ts';
-import { codeAt, COLUMNS, HEIGHT, HULL, LAND_ID, landSquares, MASSIF, padOf, placeAt, PLACES, placeById, random, REGIONS, regionAtSquare, ROWS, SEAM_HALF, SQUARE, WIDTH } from './atlas.ts';
+import { valueNoise } from '../../packages/shared/src/world/noise.ts';
+import { codeAt, COLUMNS, HEIGHT, HULL, LAND_ID, landSquares, MASSIF, padOf, placeAt, PLACES, placeById, random, REGIONS, regionAtSquare, regionOfCode, ROWS, SQUARE, WIDTH } from './atlas.ts';
 import { LAYOUT_SOURCES } from '../../packages/shared/src/content/districts/layouts/index.ts';
 import { BRIDGE_PLANS_FOR_LAND, bridgeTiles } from './bridges.ts';
-import { GATE_PLANS, isLandTile, isMassifTile, nearGate, nearPad, nearRail, railSegments, seamEdges } from './plan.ts';
+import { isLandTile, isMassifTile, isSeamTile, nearPad, nearRail, railSegments, seamEdges } from './plan.ts';
 import { gradeRail } from './grade.ts';
 import { megastructureTiles } from './megastructures.ts';
 import { buildingSpecOf, WILD_POIS } from './wilds.ts';
@@ -43,7 +44,7 @@ const squareMask = (keep: (column: number, row: number) => boolean): LandShape |
   return points.length >= 3 ? polygon(points) : undefined;
 };
 
-const keepClear = (x: number, y: number, margin: number): boolean => !nearPad(x, y, margin) && !nearRail(x, y, 3) && !nearGate(x, y, 12);
+const keepClear = (x: number, y: number, margin: number): boolean => !nearPad(x, y, margin) && !nearRail(x, y, 3);
 
 function blobs(seed: number, area: TileRect, count: number, minR: number, maxR: number, tile: TileKindId, spacing = 3, keep: (x: number, y: number, r: number) => boolean = () => true, height?: number | ((x: number, y: number, r: number) => number)): void {
   const next = random(seed);
@@ -52,7 +53,7 @@ function blobs(seed: number, area: TileRect, count: number, minR: number, maxR: 
     const r = minR + next() * (maxR - minR);
     const x = area.x + r + next() * (area.width - 2 * r);
     const y = area.y + r + next() * (area.height - 2 * r);
-    if (!keepClear(x, y, r + 3) || nearRail(x, y, r + 3) || nearGate(x, y, r + 12)) continue;
+    if (!keepClear(x, y, r + 3) || nearRail(x, y, r + 3)) continue;
     if (!isLandTile(Math.round(x), Math.round(y)) || isMassifTile(Math.round(x), Math.round(y))) continue;
     if (!keep(x, y, r)) continue;
     if (placed.some((other) => Math.hypot(other.x - x, other.y - y) < other.r + r + spacing)) continue;
@@ -114,7 +115,7 @@ const towers: { x: number; y: number; size: number; tile: TileKindId; height: nu
 for (let y = C.y + 6; y < C.y + C.height - 8; y += 30) {
   for (let x = C.x + 6; x < C.x + C.width - 8; x += 30) {
     if (!inRegion('C')(x + 11, y + 11) || !isLand(x, y) || !isLand(x + 22, y + 22)) continue;
-    if (nearPad(x + 11, y + 11, 18) || nearRail(x + 11, y + 11, 16) || nearGate(x + 11, y + 11, 22)) continue;
+    if (nearPad(x + 11, y + 11, 18) || nearRail(x + 11, y + 11, 16)) continue;
     const next = random(x * 31 + y);
     const size = 10 + Math.floor(next() * 7);
     towers.push({ x, y, size, tile: next() < 0.5 ? 'cladding' : 'blockwork', height: 9 + Math.floor(next() * 7) });
@@ -126,14 +127,15 @@ const SITE = { x: 34, y: 32 };
 const SITE_RING = 2;
 const SITE_APRON = 3;
 const SITE_FORECOURT = 9;
+const SEAM_CLEAR = 3;
 const blocked = new Uint8Array(WIDTH * HEIGHT);
 const block = (left: number, top: number, width: number, height: number): void => {
   for (let y = Math.max(0, top); y < Math.min(HEIGHT, top + height); y++) for (let x = Math.max(0, left); x < Math.min(WIDTH, left + width); x++) blocked[y * WIDTH + x] = 1;
 };
-for (let y = 0; y < HEIGHT; y++) for (let x = 0; x < WIDTH; x++) if (!isLand(x, y) || massifTiles[y * WIDTH + x] || nearRail(x, y, 4) || nearGate(x, y, 14) || riverReach(spill, x, y).distance < 5) blocked[y * WIDTH + x] = 1;
+for (let y = 0; y < HEIGHT; y++) for (let x = 0; x < WIDTH; x++) if (!isLand(x, y) || massifTiles[y * WIDTH + x] || nearRail(x, y, 4) || riverReach(spill, x, y).distance < 5) blocked[y * WIDTH + x] = 1;
 for (const edge of seamEdges()) {
-  if (edge.vertical) block(edge.line - SEAM_HALF, edge.from - SEAM_HALF, SEAM_HALF * 2, edge.to - edge.from + SEAM_HALF * 2);
-  else block(edge.from - SEAM_HALF, edge.line - SEAM_HALF, edge.to - edge.from + SEAM_HALF * 2, SEAM_HALF * 2);
+  if (edge.vertical) block(edge.line - SEAM_CLEAR, edge.from - SEAM_CLEAR, SEAM_CLEAR * 2, edge.to - edge.from + SEAM_CLEAR * 2);
+  else block(edge.from - SEAM_CLEAR, edge.line - SEAM_CLEAR, edge.to - edge.from + SEAM_CLEAR * 2, SEAM_CLEAR * 2);
 }
 for (const lake of LAKES) block(lake.x - lake.r - 2, lake.y - lake.r - 2, 2 * lake.r + 4, 2 * lake.r + 4);
 block(HULL.x, HULL.y, HULL.width, HULL.height);
@@ -188,10 +190,20 @@ const siteOf = (column: number, row: number, region: string): { x: number; y: nu
 const sites = landSquares().filter((square) => !placeAt(square.column, square.row)).map((square) => siteOf(square.column, square.row, square.region.id));
 const shaped = shapeRelief({ land: landTiles, massif: massifTiles, lakes: LAKES, river: spill, riverLevel: spillLevel, footprints, sites });
 
+const FRONTIER_SWAY = 28;
+const sway = (seed: number, x: number, y: number): number => FRONTIER_SWAY * (valueNoise(seed, x / 36, y / 36) - 0.5) + (FRONTIER_SWAY / 3) * (valueNoise(seed + 1, x / 9, y / 9) - 0.5);
+const groundCode = new Uint8Array(WIDTH * HEIGHT);
+for (let y = 0; y < HEIGHT; y++) for (let x = 0; x < WIDTH; x++) {
+  const own = codeAt(Math.floor(x / SQUARE), Math.floor(y / SQUARE));
+  const swayed = codeAt(Math.floor((x + sway(811, x, y)) / SQUARE), Math.floor((y + sway(823, x, y)) / SQUARE));
+  groundCode[y * WIDTH + x] = (regionOfCode(swayed) ? swayed : own).charCodeAt(0);
+}
+const groundIs = (code: string, x: number, y: number): boolean => groundCode[y * WIDTH + x] === code.charCodeAt(0);
+
 REGIONS.forEach((region) => {
-  const shape = masked((x, y) => isLand(x, y) && codeAt(Math.floor(x / SQUARE), Math.floor(y / SQUARE)) === region.code);
+  const shape = masked((x, y) => isLand(x, y) && groundIs(region.code, x, y));
   if (shape) fill(shape, region.ground);
-  const shore = masked((x, y) => shaped.beach[y * WIDTH + x] === 1 && codeAt(Math.floor(x / SQUARE), Math.floor(y / SQUARE)) === region.code);
+  const shore = masked((x, y) => shaped.beach[y * WIDTH + x] === 1 && groundIs(region.code, x, y));
   if (shore) fill(shore, region.shore);
 });
 const massifShape = squareMask((column, row) => codeAt(column, row) === MASSIF);
@@ -252,31 +264,12 @@ const S = regionBox('S');
 blobs(71, S, 26, 3, 7, 'plating', 2);
 blobs(72, S, 16, 1, 3, 'grate', 5);
 
-const edges = seamEdges();
-for (const edge of edges) {
-  const shape = edge.vertical
-    ? box(edge.line - SEAM_HALF, edge.from - SEAM_HALF, SEAM_HALF * 2, edge.to - edge.from + SEAM_HALF * 2)
-    : box(edge.from - SEAM_HALF, edge.line - SEAM_HALF, edge.to - edge.from + SEAM_HALF * 2, SEAM_HALF * 2);
-  ground(shape, 'rock', 15);
-}
-for (const gate of GATE_PLANS) {
-  const sample = (x: number, y: number): number => relief.heightAt({ x, y });
-  const h = gate.vertical
-    ? Math.max(1, Math.min(sample(gate.x - 10, gate.y), sample(gate.x + 11, gate.y)))
-    : Math.max(1, Math.min(sample(gate.x, gate.y - 10), sample(gate.x, gate.y + 11)));
-  if (gate.vertical) {
-    ground(octagon(gate.x - 9, gate.y + 1, 7, 6), 'paving', h);
-    ground(octagon(gate.x + 11, gate.y + 1, 7, 6), 'paving', h);
-    ground(box(gate.x - SEAM_HALF - 3, gate.y, SEAM_HALF * 2 + 8, 2), 'paving', h);
-  } else {
-    ground(octagon(gate.x + 1, gate.y - 9, 6, 7), 'paving', h);
-    ground(octagon(gate.x + 1, gate.y + 11, 6, 7), 'paving', h);
-    ground(box(gate.x, gate.y - SEAM_HALF - 3, 2, SEAM_HALF * 2 + 8), 'paving', h);
-  }
-}
+const SEAM_UNDER: ReadonlySet<TileKindId> = new Set<TileKindId>(['water', 'boards', 'rock']);
+const seamLine = masked((x, y) => isSeamTile(x, y) && isLand(x, y) && !massifTiles[y * WIDTH + x] && !SEAM_UNDER.has(relief.tileAt({ x, y })));
+if (seamLine) fill(seamLine, 'plating');
 
 const graded = drawLand({ id: LAND_ID, squareSize: SQUARE, columns: COLUMNS, rows: ROWS, steps: [...steps] });
-const railRises = gradeRail((x, y) => (graded.tileAt({ x, y }) === 'rock' && graded.heightAt({ x, y }) === 15 ? relief.heightAt({ x, y }) : graded.heightAt({ x, y })));
+const railRises = gradeRail((x, y) => graded.heightAt({ x, y }));
 const layRail = (): void => {
   for (const segment of railSegments()) fill(box(segment.x, segment.y, segment.width, segment.height), 'track');
   for (const railRise of railRises) rise({ kind: 'rect', rect: railRise.rect }, railRise.height);
@@ -316,9 +309,7 @@ const wards: LandStep[] = REGIONS.flatMap((region) => {
   const shape = squareMask((column, row) => codeAt(column, row) === region.code);
   return shape ? [{ kind: 'ward', shape, ward: region.id } as LandStep] : [];
 });
-const gates: LandStep[] = GATE_PLANS.map((gate) => ({ kind: 'gate', id: gate.id, rect: rect(gate.x, gate.y, 2, 2), tile: 'door' }));
-
-const planOf = (pockets: readonly LandStep[]): LandPlan => ({ id: LAND_ID, squareSize: SQUARE, columns: COLUMNS, rows: ROWS, steps: [...steps, ...pockets, ...wards, ...gates] });
+const planOf = (pockets: readonly LandStep[]): LandPlan => ({ id: LAND_ID, squareSize: SQUARE, columns: COLUMNS, rows: ROWS, steps: [...steps, ...pockets, ...wards] });
 
 const bridgeSet = new Set(bridgeTiles().map((tile) => tile.y * WIDTH + tile.x));
 

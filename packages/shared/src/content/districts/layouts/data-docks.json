@@ -21,18 +21,16 @@
     { "room": "courier-office", "name": "Courier Office", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 56, "dy": 47 }
+    "start": { "room": "ground", "dx": 34, "dy": 29 }
   },
   "objects": [
     { "id": "data-docks-quest-combine-camera", "object": "combine-camera", "at": { "room": "ground", "dx": 48, "dy": 40 } },
     { "id": "data-docks-utility-pole-1", "object": "utility-pole", "at": { "room": "ground", "dx": 12, "dy": 50 } },
-    { "id": "data-docks-food-stall-2", "object": "food-stall", "at": { "room": "ground", "dx": 55, "dy": 53 } },
-    { "id": "data-docks-holo-billboard-3", "object": "holo-billboard", "at": { "room": "ground", "dx": 54, "dy": 13 } },
+    { "id": "data-docks-food-stall-2", "object": "food-stall", "at": { "room": "ground", "dx": 54, "dy": 59 } },
+    { "id": "data-docks-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 53, "dy": 8 } },
     { "id": "data-docks-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 9, "dy": 27 } },
-    { "id": "data-docks-harrow-gate-leaf-0", "object": "harrow-gate-leaf", "at": { "room": "ground", "dx": 20, "dy": 63 }, "facing": "south" },
-    { "id": "data-docks-harrow-gate-leaf-1", "object": "harrow-gate-leaf", "at": { "room": "ground", "dx": 21, "dy": 63 }, "facing": "south" },
-    { "id": "data-docks-culture-bench-8", "object": "culture-bench", "at": { "room": "ground", "dx": 3, "dy": 56 } },
-    { "id": "data-docks-amber-trace-9", "object": "amber-trace", "at": { "room": "ground", "dx": 60, "dy": 3 } },
+    { "id": "data-docks-culture-bench-6", "object": "culture-bench", "at": { "room": "ground", "dx": 3, "dy": 56 } },
+    { "id": "data-docks-amber-trace-7", "object": "amber-trace", "at": { "room": "ground", "dx": 60, "dy": 3 } },
     { "id": "courier-office-shelving-0", "object": "shelving", "at": { "room": "courier-office", "dx": 1, "dy": 0 }, "facing": "south" },
     { "id": "courier-office-shelving-1", "object": "shelving", "at": { "room": "courier-office", "dx": 2, "dy": 0 }, "facing": "south" },
     { "id": "courier-office-notice-board-2", "object": "notice-board", "at": { "room": "courier-office", "dx": 6, "dy": 0 }, "facing": "south" },
@@ -60,9 +58,11 @@
     { "id": "data-docks-neon-moth-6", "creature": "neon-moth", "at": { "room": "ground", "dx": 21, "dy": 31 } },
     { "id": "data-docks-holo-shill-7", "creature": "holo-shill", "at": { "room": "ground", "dx": 48, "dy": 50 } },
     { "id": "data-docks-neon-moth-8", "creature": "neon-moth", "at": { "room": "ground", "dx": 27, "dy": 40 } },
-    { "id": "data-docks-neon-moth-10", "creature": "neon-moth", "at": { "room": "ground", "dx": 22, "dy": 10 } },
-    { "id": "data-docks-holo-shill-11", "creature": "holo-shill", "at": { "room": "ground", "dx": 49, "dy": 32 } },
-    { "id": "data-docks-neon-moth-12", "creature": "neon-moth", "at": { "room": "ground", "dx": 11, "dy": 21 } }
+    { "id": "data-docks-holo-shill-9", "creature": "holo-shill", "at": { "room": "ground", "dx": 19, "dy": 59 } },
+    { "id": "data-docks-holo-shill-11", "creature": "holo-shill", "at": { "room": "ground", "dx": 22, "dy": 10 } },
+    { "id": "data-docks-neon-moth-12", "creature": "neon-moth", "at": { "room": "ground", "dx": 49, "dy": 32 } },
+    { "id": "data-docks-holo-shill-13", "creature": "holo-shill", "at": { "room": "ground", "dx": 12, "dy": 60 } },
+    { "id": "data-docks-neon-moth-14", "creature": "neon-moth", "at": { "room": "ground", "dx": 11, "dy": 21 } }
   ],
   "lights": [],
   "decals": [],

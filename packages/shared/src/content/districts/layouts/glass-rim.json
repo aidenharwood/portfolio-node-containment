@@ -23,11 +23,11 @@
     { "room": "rim-post", "name": "Rim Post", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 35, "dy": 41 }
+    "start": { "room": "ground", "dx": 30, "dy": 44 }
   },
   "objects": [
-    { "id": "glass-rim-ledge-milestone-0", "object": "ledge-milestone", "at": { "room": "ground", "dx": 6, "dy": 58 } },
-    { "id": "glass-rim-barricade-1", "object": "barricade", "at": { "room": "ground", "dx": 42, "dy": 52 } },
+    { "id": "glass-rim-ledge-milestone-0", "object": "ledge-milestone", "at": { "room": "ground", "dx": 9, "dy": 3 } },
+    { "id": "glass-rim-precursor-pylon-1", "object": "precursor-pylon", "at": { "room": "ground", "dx": 42, "dy": 52 } },
     { "id": "glass-rim-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 29, "dy": 53 } },
     { "id": "glass-rim-burn-barrel-3", "object": "burn-barrel", "at": { "room": "ground", "dx": 49, "dy": 5 } },
     { "id": "glass-rim-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 18, "dy": 38 } },
@@ -55,18 +55,18 @@
   "npcs": [],
   "creatures": [
     { "id": "glass-rim-prism-hound-0", "creature": "prism-hound", "at": { "room": "ground", "dx": 50, "dy": 31 } },
-    { "id": "glass-rim-shard-wisp-1", "creature": "shard-wisp", "at": { "room": "ground", "dx": 4, "dy": 18 } },
-    { "id": "glass-rim-prism-hound-2", "creature": "prism-hound", "at": { "room": "ground", "dx": 20, "dy": 56 } },
-    { "id": "glass-rim-shard-wisp-3", "creature": "shard-wisp", "at": { "room": "ground", "dx": 4, "dy": 24 } },
-    { "id": "glass-rim-prism-hound-4", "creature": "prism-hound", "at": { "room": "ground", "dx": 38, "dy": 8 } },
-    { "id": "glass-rim-shard-wisp-5", "creature": "shard-wisp", "at": { "room": "ground", "dx": 29, "dy": 20 } },
-    { "id": "glass-rim-prism-hound-6", "creature": "prism-hound", "at": { "room": "ground", "dx": 32, "dy": 6 } },
-    { "id": "glass-rim-shard-wisp-7", "creature": "shard-wisp", "at": { "room": "ground", "dx": 41, "dy": 60 } },
-    { "id": "glass-rim-prism-hound-8", "creature": "prism-hound", "at": { "room": "ground", "dx": 21, "dy": 29 } },
-    { "id": "glass-rim-prism-hound-10", "creature": "prism-hound", "at": { "room": "ground", "dx": 38, "dy": 44 } },
-    { "id": "glass-rim-shard-wisp-11", "creature": "shard-wisp", "at": { "room": "ground", "dx": 23, "dy": 23 } },
-    { "id": "glass-rim-prism-hound-12", "creature": "prism-hound", "at": { "room": "ground", "dx": 30, "dy": 44 } },
-    { "id": "glass-rim-shard-wisp-13", "creature": "shard-wisp", "at": { "room": "ground", "dx": 25, "dy": 9 } }
+    { "id": "glass-rim-shard-wisp-1", "creature": "shard-wisp", "at": { "room": "ground", "dx": 17, "dy": 5 } },
+    { "id": "glass-rim-prism-hound-2", "creature": "prism-hound", "at": { "room": "ground", "dx": 4, "dy": 18 } },
+    { "id": "glass-rim-shard-wisp-3", "creature": "shard-wisp", "at": { "room": "ground", "dx": 20, "dy": 56 } },
+    { "id": "glass-rim-prism-hound-4", "creature": "prism-hound", "at": { "room": "ground", "dx": 24, "dy": 7 } },
+    { "id": "glass-rim-shard-wisp-5", "creature": "shard-wisp", "at": { "room": "ground", "dx": 4, "dy": 24 } },
+    { "id": "glass-rim-prism-hound-6", "creature": "prism-hound", "at": { "room": "ground", "dx": 38, "dy": 8 } },
+    { "id": "glass-rim-shard-wisp-7", "creature": "shard-wisp", "at": { "room": "ground", "dx": 29, "dy": 20 } },
+    { "id": "glass-rim-prism-hound-8", "creature": "prism-hound", "at": { "room": "ground", "dx": 32, "dy": 6 } },
+    { "id": "glass-rim-shard-wisp-9", "creature": "shard-wisp", "at": { "room": "ground", "dx": 41, "dy": 60 } },
+    { "id": "glass-rim-prism-hound-10", "creature": "prism-hound", "at": { "room": "ground", "dx": 21, "dy": 29 } },
+    { "id": "glass-rim-prism-hound-12", "creature": "prism-hound", "at": { "room": "ground", "dx": 38, "dy": 44 } },
+    { "id": "glass-rim-shard-wisp-13", "creature": "shard-wisp", "at": { "room": "ground", "dx": 23, "dy": 23 } }
   ],
   "lights": [],
   "decals": [],

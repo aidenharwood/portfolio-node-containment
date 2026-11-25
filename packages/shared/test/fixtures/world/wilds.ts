@@ -29,8 +29,8 @@ export const FIXTURE_LAND_PLAN: LandPlan = {
     {
       kind: 'line',
       points: [
-        { x: 48, y: 1 },
-        { x: 48, y: 30 },
+        { x: 48, y: 13 },
+        { x: 48, y: 18 },
       ],
       width: 1,
       tile: 'brick',
