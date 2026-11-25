@@ -1050,28 +1050,60 @@ function paintGatePosts(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty
   }
 }
 
+const WOODS = {
+  fern: 0x2c4a26,
+  trunk: 0x4a3420,
+  trunkDark: 0x30231a,
+  pine: [0x24402a, 0x2a4830, 0x213a28],
+  pineLight: 0x3c6040,
+  pineDark: 0x172a1c,
+  leaf: [0x3c6632, 0x467238, 0x355c2e],
+  leafLight: 0x5c8a42,
+  leafDark: 0x26422a,
+} as const;
+
+const WOOD_SIDES: readonly (readonly [number, number])[] = [
+  [0, -1],
+  [1, 0],
+  [0, 1],
+  [-1, 0],
+];
+
+function woodTone(broadleaf: boolean, band: number, tone: number): number {
+  if (band > 0.74) return broadleaf ? WOODS.leafLight : WOODS.pineLight;
+  if (band < 0.22) return broadleaf ? WOODS.leafDark : WOODS.pineDark;
+  return (broadleaf ? WOODS.leaf : WOODS.pine)[tone] as number;
+}
+
 function paintTrees(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number): void {
   paintGround(volume, tx, ty, COLORS.needles, 113);
-  const trunkX = 2 + Math.floor(noise3(tx, ty, 0, 127) * 4);
-  const trunkZ = 2 + Math.floor(noise3(tx, ty, 1, 127) * 4);
+  const open = WOOD_SIDES.filter(([dx, dy]) => layout.tileAt({ x: tx + dx, y: ty + dy }) !== 'trees');
+  const edge = open.length > 0;
+  const roll = (salt: number): number => noise3(tx, ty, salt, 127);
+  const broadleaf = smoothNoise(tx, ty, 5, 211) > 0.56;
+  const clearing = !edge && roll(2) < 0.16;
+  const trunkX = 2 + Math.floor(roll(0) * 4);
+  const trunkZ = 2 + Math.floor(roll(1) * 4);
+  const top = clearing ? 7 + Math.floor(roll(3) * 3) : 12 + Math.floor(roll(3) * 5);
+  const base = clearing ? 2 : edge ? 5 + Math.floor(roll(4) * 3) : 2 + Math.floor(roll(4) * 3);
+  const reach = clearing ? 2.2 : 3 + roll(5) * 1.1;
+  const tone = Math.floor(roll(6) * 3);
+  const crownX = trunkX + 0.5 - Math.sign(open.reduce((sum, [dx]) => sum + dx, 0));
+  const crownZ = trunkZ + 0.5 - Math.sign(open.reduce((sum, [, dy]) => sum + dy, 0));
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
       const vx = tx * R + lx;
       const vz = ty * R + lz;
-      const trunk = Math.abs(lx - trunkX) <= 0 && Math.abs(lz - trunkZ) <= 0;
-      const fromTrunk = Math.hypot(lx - trunkX, lz - trunkZ);
-      for (let h = 0; h < WALL_LAYERS; h++) {
-        const vy = FLOOR_LAYERS + h;
-        if (h < 4) {
-          if (trunk) volume.set(vx, vy, vz, COLORS.trunk);
-          continue;
-        }
-        const reach = (WALL_LAYERS - h) * 0.42 + 1.2 + smoothNoise(vx, vz, 3, 131) * 1.4;
-        if (fromTrunk > reach && smoothNoise(vx, vy * 2, vz, 137) < 0.62) continue;
-        if (noise3(vx, vy, vz, 139) < 0.08) continue;
-        const shade = noise3(vx, vy, vz, 149);
-        volume.set(vx, vy, vz, shade > 0.78 ? COLORS.pineLight : shade < 0.22 ? COLORS.pineDark : jitter(COLORS.pine, 0.05, shade));
+      if (lx === trunkX && lz === trunkZ) for (let h = 0; h <= base; h++) volume.set(vx, FLOOR_LAYERS + h, vz, h < 2 ? WOODS.trunkDark : WOODS.trunk);
+      const fromCrown = Math.hypot(lx + 0.5 - crownX, lz + 0.5 - crownZ);
+      for (let h = base; h < top; h++) {
+        const t = (h - base) / Math.max(1, top - base - 1);
+        const lump = (noise3(vx >> 1, h >> 1, vz >> 1, 139) - 0.5) * 0.9;
+        const radius = broadleaf ? reach * Math.sqrt(Math.max(0, 1 - (2 * t - 1) ** 2)) * 1.12 + 0.3 : reach * (1 - t) * (1 - ((top - h) % 3) * 0.12) + 0.7;
+        if (fromCrown > radius + lump) continue;
+        volume.set(vx, FLOOR_LAYERS + h, vz, woodTone(broadleaf, t + lump * 0.2, tone));
       }
+      if ((edge || clearing) && fromCrown > 2.2 && noise3(vx, vz, 3, 151) > 0.72) volume.set(vx, FLOOR_LAYERS, vz, WOODS.fern);
     }
   }
   paintGatePosts(volume, layout, tx, ty, 'fence', true);

@@ -70,7 +70,20 @@
     { "id": "glasshouse-alley-street-lamp-2", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 21 }, "facing": "south" },
     { "id": "glasshouse-alley-street-lamp-3", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 21 }, "facing": "south" },
     { "id": "glasshouse-alley-street-lamp-4", "object": "street-lamp", "at": { "room": "ground", "dx": 41, "dy": 19 }, "facing": "south" },
-    { "id": "glasshouse-alley-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 19 }, "facing": "south" }
+    { "id": "glasshouse-alley-street-lamp-5", "object": "street-lamp", "at": { "room": "ground", "dx": 48, "dy": 19 }, "facing": "south" },
+    { "id": "glasshouse-alley-w0", "object": "tall-grass", "at": { "room": "ground", "dx": 50, "dy": 3 }, "facing": "north" },
+    { "id": "glasshouse-alley-w1", "object": "tall-grass", "at": { "room": "ground", "dx": 53, "dy": 4 } },
+    { "id": "glasshouse-alley-w2", "object": "tall-grass", "at": { "room": "ground", "dx": 52, "dy": 4 }, "facing": "north" },
+    { "id": "glasshouse-alley-w3", "object": "tall-grass", "at": { "room": "ground", "dx": 49, "dy": 3 }, "facing": "east" },
+    { "id": "glasshouse-alley-w4", "object": "tall-grass", "at": { "room": "ground", "dx": 49, "dy": 4 }, "facing": "west" },
+    { "id": "glasshouse-alley-w5", "object": "rubble-heap", "at": { "room": "ground", "dx": 60, "dy": 24 }, "facing": "north" },
+    { "id": "glasshouse-alley-w6", "object": "tall-grass", "at": { "room": "ground", "dx": 60, "dy": 30 }, "facing": "north" },
+    { "id": "glasshouse-alley-w7", "object": "tall-grass", "at": { "room": "ground", "dx": 59, "dy": 25 } },
+    { "id": "glasshouse-alley-w8", "object": "bush", "at": { "room": "ground", "dx": 60, "dy": 31 }, "facing": "west" },
+    { "id": "glasshouse-alley-w9", "object": "overgrown-planter", "at": { "room": "ground", "dx": 60, "dy": 15 }, "facing": "east" },
+    { "id": "glasshouse-alley-w10", "object": "overgrown-planter", "at": { "room": "ground", "dx": 60, "dy": 17 }, "facing": "north" },
+    { "id": "glasshouse-alley-w11", "object": "tall-grass", "at": { "room": "ground", "dx": 59, "dy": 18 }, "facing": "north" },
+    { "id": "glasshouse-alley-w12", "object": "rubble-heap", "at": { "room": "ground", "dx": 60, "dy": 13 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [

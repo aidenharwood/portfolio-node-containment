@@ -33,6 +33,7 @@ const EXTRAS: Readonly<Record<string, readonly string[]>> = Object.fromEntries([
 import { safeNodes } from './safeNodes.ts';
 import { lightStreets } from './streetLights.ts';
 import { knowSquares, megastructureGround, reservedBy } from './megastructures.ts';
+import { growWild } from './wildGrowth.ts';
 
 registerFurnishingKit(CITY_KIT);
 registerFurnishingKit(LANDMARK_KIT);
@@ -218,8 +219,8 @@ const WILD_NAMES: Readonly<Record<string, readonly string[]>> = {
 };
 
 const PROPS: Readonly<Record<string, readonly string[]>> = {
-  'kestrel-reach': ['street-tree', 'bollard', 'flood-mast', 'litter-bin', 'street-tree', 'checkpoint-barrier'],
-  'harrow-terraces': ['windpump', 'washing-line', 'utility-pole', 'burn-barrel', 'street-tree', 'barricade'],
+  'kestrel-reach': ['broadleaf-tree', 'bollard', 'flood-mast', 'litter-bin', 'birch-tree', 'checkpoint-barrier'],
+  'harrow-terraces': ['windpump', 'washing-line', 'utility-pole', 'burn-barrel', 'orchard-tree', 'barricade'],
   halcyon: ['holo-billboard', 'food-stall', 'parked-car', 'steam-vent', 'bollard', 'litter-bin', 'utility-pole'],
   wreckfield: ['burn-barrel', 'barricade', 'utility-pole', 'magnet-crane', 'burn-barrel', 'parked-car'],
   'glass-steppe': ['precursor-pylon', 'ledge-milestone', 'barricade', 'flood-mast', 'burn-barrel'],
@@ -528,7 +529,7 @@ function buildDistrictMap(layout: DistrictLayout): readonly string[] {
 for (const file of readdirSync(OUT)) if (file.endsWith('.json')) unlinkSync(join(OUT, file));
 const written: { id: string; kind: 'square' | 'below' }[] = [];
 for (const cut of all) {
-  const layout = lightStreets(withQuestPlacements(dressSquare(cut)), land);
+  const layout = growWild(lightStreets(withQuestPlacements(dressSquare(cut)), land), land);
   writeFileSync(join(OUT, layout.id + '.json'), printLayout(layout));
   written.push({ id: layout.id, kind: 'square' });
 }
