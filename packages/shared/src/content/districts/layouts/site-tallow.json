@@ -114,7 +114,9 @@
     { "id": "site-tallow-w15", "object": "scrap-mound", "at": { "room": "ground", "dx": 60, "dy": 27 }, "facing": "west" },
     { "id": "site-tallow-w16", "object": "tall-grass", "at": { "room": "ground", "dx": 47, "dy": 3 }, "facing": "west" },
     { "id": "site-tallow-w17", "object": "tall-grass", "at": { "room": "ground", "dx": 56, "dy": 3 } },
-    { "id": "site-tallow-w18", "object": "tall-grass", "at": { "room": "ground", "dx": 47, "dy": 4 }, "facing": "east" }
+    { "id": "site-tallow-w18", "object": "tall-grass", "at": { "room": "ground", "dx": 47, "dy": 4 }, "facing": "east" },
+    { "id": "site-tallow-w19", "object": "dead-tree", "at": { "room": "ground", "dx": 60, "dy": 43 }, "facing": "west" },
+    { "id": "site-tallow-w20", "object": "tall-grass", "at": { "room": "ground", "dx": 60, "dy": 40 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [

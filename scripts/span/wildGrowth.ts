@@ -40,6 +40,7 @@ interface Stand {
 
 interface Growth {
   readonly density: number;
+  readonly cover?: number;
   readonly stands: readonly Stand[];
   readonly edge?: readonly Member[];
   readonly bounds?: { readonly hedge: string; readonly wall: string };
@@ -107,7 +108,8 @@ export const WILD_GROWTH: Readonly<Record<string, Growth>> = {
     ],
   },
   wreckfield: {
-    density: 5.5,
+    density: 6.5,
+    cover: 0.32,
     stands: [
       { weight: 2, radius: [3, 5], near: 'hull', boost: 5, members: [m('scrap-mound', 2, 5), m('tyre-heap', 1, 3), m('wrecked-panel', 0, 2, 'rim')] },
       { weight: 1.5, radius: [2, 4], members: [m('tyre-heap', 3, 5), m('scrap-mound', 0, 1)] },
@@ -119,9 +121,10 @@ export const WILD_GROWTH: Readonly<Record<string, Growth>> = {
     ],
   },
   'glass-steppe': {
-    density: 4,
+    density: 5,
+    cover: 0.34,
     stands: [
-      { weight: 4, radius: [3, 6], members: [m('glass-crystals', 3, 7), m('fused-shards', 3, 6)] },
+      { weight: 4, radius: [3, 6], members: [m('glass-crystals', 4, 8), m('fused-shards', 2, 4)] },
       { weight: 2, radius: [3, 5], near: 'stone', boost: 4, members: [m('obsidian-outcrop', 1, 3, 'core'), m('fused-shards', 2, 4, 'rim'), m('glass-crystals', 0, 2, 'rim')] },
       { weight: 2, radius: [2, 5], members: [m('fused-shards', 4, 8)] },
       { weight: 1, radius: [3, 4], members: [m('ruin-wall', 1, 2, 'core'), m('rubble-heap', 0, 1, 'rim'), m('fused-shards', 1, 3, 'rim')] },
@@ -427,7 +430,7 @@ export function growWild(layout: DistrictLayout, land: LandMap): DistrictLayout 
     const x = WILD_MARGIN + Math.floor(next() * (size - 2 * WILD_MARGIN));
     const y = WILD_MARGIN + Math.floor(next() * (size - 2 * WILD_MARGIN));
     if (!ground.natural[at(x, y)] || ground.noFlora[at(x, y)]) continue;
-    if (coverAt(originX + x, originY + y) < COVER_THRESHOLD) continue;
+    if (coverAt(originX + x, originY + y) < (growth.cover ?? COVER_THRESHOLD)) continue;
     if (centres.some((centre) => Math.hypot(centre.x - x, centre.y - y) < STAND_SPACING)) continue;
     centres.push({ x, y });
     const weights = growth.stands.map((choice) => {

@@ -49,14 +49,14 @@ const GOLDEN = 2.39996;
 const BARK: Tones = { light: 0x6a5440, base: 0x4f3d2c, dark: 0x352a20 };
 const WOOD = { face: 0xb89462, ring: 0x9a7848, core: 0x7a5a36 };
 const LEAF: readonly Tones[] = [
-  { light: 0x7fa24c, base: 0x5a823c, dark: 0x3a5c2e },
-  { light: 0x6c9446, base: 0x4b7236, dark: 0x2f4c28 },
-  { light: 0x8ea24e, base: 0x6a803a, dark: 0x485a2c },
+  { light: 0x6a8c42, base: 0x4c7034, dark: 0x30502a },
+  { light: 0x5e8240, base: 0x41632f, dark: 0x284224 },
+  { light: 0x7a8c46, base: 0x5c7034, dark: 0x3e4e28 },
 ];
 const AUTUMN: Tones = { light: 0xd8a844, base: 0xb87e30, dark: 0x7e5226 };
 const BIRCH_LEAF: readonly Tones[] = [
-  { light: 0xbccc6c, base: 0x98ae4e, dark: 0x6a8038 },
-  { light: 0xaac472, base: 0x82a24a, dark: 0x58722e },
+  { light: 0xa4b45e, base: 0x829844, dark: 0x5c7032 },
+  { light: 0x94ac62, base: 0x708c40, dark: 0x4c6428 },
 ];
 const BLOSSOM: Tones = { light: 0xf4dce4, base: 0xe4b8c8, dark: 0x6a8a52 };
 const PINE: readonly Tones[] = [
@@ -64,15 +64,15 @@ const PINE: readonly Tones[] = [
   { light: 0x5a7c60, base: 0x3c5c46, dark: 0x25392d },
 ];
 const RIME = 0xcad6d0;
-const STONE: Tones = { light: 0xa6a298, base: 0x88847b, dark: 0x5f5c55 };
-const DARK_STONE: Tones = { light: 0x8e8a82, base: 0x6e6a63, dark: 0x4a4743 };
+const STONE: Tones = { light: 0x8e8a80, base: 0x727068, dark: 0x504d48 };
+const DARK_STONE: Tones = { light: 0x7a766e, base: 0x5c5953, dark: 0x3e3c38 };
 const LICHEN = 0xa0aa52;
 const MOSS = 0x56803c;
-const STRAW: Tones = { light: 0xdcc274, base: 0xc2a25a, dark: 0x9a7e42 };
+const STRAW: Tones = { light: 0xc8b068, base: 0xae9250, dark: 0x8a703c };
 const RUST = 0x8a4a24;
 const RUST_DARK = 0x5e3420;
 const STEEL = 0x5d666c;
-const CONCRETE: Tones = { light: 0x969286, base: 0x7c786e, dark: 0x5c5850 };
+const CONCRETE: Tones = { light: 0x848074, base: 0x6a665e, dark: 0x4c4944 };
 const RUBBER = 0x1b1b1d;
 const OBSIDIAN = { body: 0x1f1c28, sheen: 0x4a4268, edge: 0x2e2a3c };
 const CITY_BAND = 0xe86a1c;
@@ -271,7 +271,7 @@ const bush: Builder = (seed) => {
 };
 
 const hedgerow: Builder = (seed) => {
-  const tones: Tones = { light: 0x5f8a3e, base: 0x44682f, dark: 0x2e4a24 };
+  const tones: Tones = { light: 0x547a38, base: 0x3c5c2a, dark: 0x284020 };
   const height = of(seed, [7, 6, 8, 7, 6, 5, 8, 7]);
   const model = new VoxelModel();
   for (let x = -4; x <= 3; x++) {
@@ -432,7 +432,7 @@ const glassCrystals: Builder = (seed) => {
     const reach = i === 0 ? 0 : 1.5 + (i % 2);
     const bx = Math.round(Math.cos(angle) * reach);
     const bz = Math.round(Math.sin(angle) * reach);
-    const height = Math.max(3, of(seed + i, [10, 7, 12, 6, 9, 11, 8, 5]) - i * 2);
+    const height = Math.max(4, of(seed + i, [14, 10, 16, 8, 12, 15, 11, 9]) - i * 2);
     const thick = i === 0 || height > 7;
     const lean = i === 0 ? 0 : 0.25;
     for (let y = -1; y < height; y++) {
@@ -472,7 +472,7 @@ const METALS = [0x6a4a3a, STEEL, 0x8a5a3a, 0x3a4a52, 0x7a6a5a] as const;
 
 const scrapMound: Builder = (seed) => {
   const model = new VoxelModel();
-  const peak = of(seed, [7, 5, 9, 6, 8, 5, 7, 9]);
+  const peak = of(seed, [9, 7, 11, 8, 10, 7, 9, 11]);
   for (let i = 0; i < 14; i++) {
     const angle = i * GOLDEN + seed;
     const reach = (i / 14) * 3.4;
@@ -576,7 +576,7 @@ const rubbleHeap: Builder = (seed) => {
 };
 
 const ruinWall: Builder = (seed) => {
-  const tones: Tones = { light: 0x9c978a, base: 0x857f74, dark: 0x5e5a52 };
+  const tones: Tones = { light: 0x878276, base: 0x6f6a60, dark: 0x4e4a44 };
   const shape = of(seed, ['ramp', 'peak', 'notch', 'stub', 'corner', 'ramp', 'peak', 'corner']);
   const tall = of(seed, [13, 10, 14, 7, 12, 11, 12, 9]);
   const ivy = seed === 1 || seed === 4 || seed === 6;
@@ -666,7 +666,7 @@ const FLOWERS = [0xf0ece0, 0xe8c840, 0x9a6ad8, 0xd83a2a, 0x5a8ae0, 0xf0ece0, 0xe
 
 const wildflowers: Builder = (seed) => {
   const model = new VoxelModel();
-  const leaf = of(seed, [0x5a823c, 0x6a8e42, 0x4f7636]);
+  const leaf = of(seed, [0x4c7034, 0x5a7c3a, 0x44662e]);
   const head = FLOWERS[seed % FLOWERS.length] as number;
   const second = seed === 5 ? 0xe8c840 : seed === 0 ? 0x9a6ad8 : head;
   for (let i = 0; i < 12; i++) {
@@ -684,7 +684,7 @@ const wildflowers: Builder = (seed) => {
 const tallGrass: Builder = (seed) => {
   const model = new VoxelModel();
   const dry = seed === 3 || seed === 6;
-  const tones: Tones = dry ? { light: 0xc8b878, base: 0xa89a5c, dark: 0x7e7444 } : { light: 0x8aa44c, base: 0x6a8a3a, dark: 0x4c6a2e };
+  const tones: Tones = dry ? { light: 0xc8b878, base: 0xa89a5c, dark: 0x7e7444 } : { light: 0x7a9244, base: 0x5c7a34, dark: 0x425e2a };
   const lean = of(seed, [1, -1, 0, 1]);
   for (let i = 0; i < 14; i++) {
     const angle = i * GOLDEN + seed * 0.9;
