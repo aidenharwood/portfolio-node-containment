@@ -59,6 +59,6 @@ test('a land vertex comes before the step bodies under it', () => {
 });
 
 test('a line is hit along its width', () => {
-  assert.ok(landHitsAt(FIXTURE_LAND.plan, { x: 48, y: 10 }).some((hit) => hit.kind === 'landStep' && hit.index === 3));
-  assert.ok(!landHitsAt(FIXTURE_LAND.plan, { x: 50, y: 10 }).some((hit) => hit.kind === 'landStep' && hit.index === 3));
+  assert.ok(landHitsAt(FIXTURE_LAND.plan, { x: 48, y: 14 }).some((hit) => hit.kind === 'landStep' && hit.index === 3));
+  assert.ok(!landHitsAt(FIXTURE_LAND.plan, { x: 50, y: 14 }).some((hit) => hit.kind === 'landStep' && hit.index === 3));
 });

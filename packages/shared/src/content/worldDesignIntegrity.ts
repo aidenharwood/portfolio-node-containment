@@ -10,7 +10,6 @@ import type { GameContent } from './gameContent.ts';
 import { findFootprintIssues } from './footprintIntegrity.ts';
 import { findLandIssues } from './landIntegrity.ts';
 import { overworldLevelOf } from './overworldIntegrity.ts';
-import { findSealedWardIssues } from './wardIntegrity.ts';
 
 export const MIN_EXIT_WIDTH = 9;
 export const MIN_CREATURES_PER_THOUSAND_TILES = 3;
@@ -278,6 +277,6 @@ export function findWorldDesignIssues(content: GameContent): string[] {
   }
   findLineIssues(content, issues);
   issues.push(...findFootprintIssues(content));
-  issues.push(...findLandIssues(content), ...findSealedWardIssues(content));
+  issues.push(...findLandIssues(content));
   return issues;
 }

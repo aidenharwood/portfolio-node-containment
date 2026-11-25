@@ -1,8 +1,7 @@
 import type { TilePoint } from '../../packages/shared/src/world/geometry.ts';
 import type { LandShape, LandStep } from '../../packages/shared/src/world/landPlan.ts';
 import { contrastNoise, valueNoise } from '../../packages/shared/src/world/noise.ts';
-import { codeAt, HEIGHT, padOf, PLACES, REGIONS, SEAM_HALF, SQUARE, WIDTH, type RegionSpec } from './atlas.ts';
-import { GATE_PLANS, seamEdges } from './plan.ts';
+import { codeAt, HEIGHT, padOf, PLACES, REGIONS, SQUARE, WIDTH, type RegionSpec } from './atlas.ts';
 import { joinLoops, maskLoops, smoothLoop } from './trace.ts';
 
 export interface Lake {
@@ -146,11 +145,8 @@ const SHAPERS: Readonly<Record<string, Shaper>> = {
 
 const BEACH_LEVEL = 1;
 const BEACH_BELOW = 3.2;
-const SEAM_RISE = 3;
-const SEAM_REACH = 18;
+const BORDER_BLEND = 14;
 const PAD_REACH = 20;
-const GATE_REACH = 20;
-const GATE_CORE = 7;
 const SITE_REACH = 16;
 const LAKE_REACH = 30;
 const RIVER_CORE = 3;
@@ -198,31 +194,24 @@ export function shapeRelief(input: ReliefInput): Relief {
   const size = WIDTH * HEIGHT;
   const sea = new Uint8Array(size);
   for (let index = 0; index < size; index++) sea[index] = input.land[index] ? 0 : 1;
-  const seams = new Uint8Array(size);
-  for (const edge of seamEdges()) {
-    const left = edge.vertical ? edge.line - SEAM_HALF : edge.from - SEAM_HALF;
-    const top = edge.vertical ? edge.from - SEAM_HALF : edge.line - SEAM_HALF;
-    const width = edge.vertical ? SEAM_HALF * 2 : edge.to - edge.from + SEAM_HALF * 2;
-    const height = edge.vertical ? edge.to - edge.from + SEAM_HALF * 2 : SEAM_HALF * 2;
-    for (let y = Math.max(0, top); y < Math.min(HEIGHT, top + height); y++) for (let x = Math.max(0, left); x < Math.min(WIDTH, left + width); x++) seams[y * WIDTH + x] = 1;
-  }
   const coast = distanceField(WIDTH, HEIGHT, sea);
   const massif = distanceField(WIDTH, HEIGHT, input.massif);
-  const seam = distanceField(WIDTH, HEIGHT, seams);
-  const regionOf = (x: number, y: number): RegionSpec | undefined => REGIONS.find((region) => region.code === codeAt(Math.floor(x / SQUARE), Math.floor(y / SQUARE)));
+  const blend = borderBlend();
 
   const shaped = new Float32Array(size);
   const beach = new Uint8Array(size);
   for (let y = 0; y < HEIGHT; y++) {
     for (let x = 0; x < WIDTH; x++) {
       const index = y * WIDTH + x;
-      const region = regionOf(x, y);
-      if (!region) continue;
-      const shaper = SHAPERS[region.code]!;
+      const shares = blend(x, y);
+      if (shares.length === 0) continue;
       const probe: Probe = { x, y, coast: coast[index]!, massif: massif[index]!, macro: macroAt(x, y), headland: headlandAt(x, y) };
-      const rise = SEAM_RISE * (1 - smoothstep(0, SEAM_REACH, seam[index]!));
-      const inland = clamp(shaper.inland(probe) + rise, region.relief[0], region.relief[1]);
-      const level = BEACH_LEVEL + (inland - BEACH_LEVEL) * smoothstep(0, shaper.ramp(probe), probe.coast);
+      let level = 0;
+      for (const { region, weight } of shares) {
+        const shaper = SHAPERS[region.code]!;
+        const inland = clamp(shaper.inland(probe), region.relief[0], region.relief[1]);
+        level += weight * (BEACH_LEVEL + (inland - BEACH_LEVEL) * smoothstep(0, shaper.ramp(probe), probe.coast));
+      }
       shaped[index] = level;
       if (input.land[index] && probe.coast <= beachWidthAt(x, y) && level <= BEACH_BELOW) beach[index] = 1;
     }
@@ -258,13 +247,6 @@ export function shapeRelief(input: ReliefInput): Relief {
     const tiles: TilePoint[] = [];
     for (let y = pad.y; y < pad.y + pad.height; y++) for (let x = pad.x; x < pad.x + pad.width; x++) tiles.push({ x, y });
     flats.push({ target: Math.round(meanOver(tiles)), reach: PAD_REACH, left: pad.x - PAD_REACH, top: pad.y - PAD_REACH, right: pad.x + pad.width + PAD_REACH, bottom: pad.y + pad.height + PAD_REACH, distance: rectDistance(pad) });
-  }
-  for (const gate of GATE_PLANS) {
-    const cx = gate.x + 1;
-    const cy = gate.y + 1;
-    const sides = gate.vertical ? [{ x: gate.x - 14, y: cy }, { x: gate.x + 15, y: cy }] : [{ x: cx, y: gate.y - 14 }, { x: cx, y: gate.y + 15 }];
-    const reach = GATE_REACH + GATE_CORE;
-    flats.push({ target: Math.round(meanOver(sides)), reach: GATE_REACH, left: cx - reach, top: cy - reach, right: cx + reach, bottom: cy + reach, distance: (x, y) => Math.max(0, Math.hypot(x - cx, y - cy) - GATE_CORE) });
   }
   for (const site of input.sites) {
     const tiles: TilePoint[] = [];
@@ -316,20 +298,55 @@ export function shapeRelief(input: ReliefInput): Relief {
   for (let index = 0; index < size; index++) if (pull[index]! >= 0.2) beach[index] = 0;
 
   const heights = new Uint8Array(size);
-  REGIONS.forEach((region, regionIndex) => {
-    const hills = SHAPERS[region.code]!.hills;
-    for (let y = 0; y < HEIGHT; y++) {
-      for (let x = 0; x < WIDTH; x++) {
-        if (codeAt(Math.floor(x / SQUARE), Math.floor(y / SQUARE)) !== region.code) continue;
-        const index = y * WIDTH + x;
-        const level = field[index]!;
-        const calm = (1 - pull[index]!) * smoothstep(0, 3, level - BEACH_LEVEL);
-        const hill = calm === 0 ? 0 : hills * calm * signed(contrastNoise(101 + regionIndex * 37, x / region.scale, y / region.scale, 2, 0.45, HILL_GAIN));
-        heights[index] = clamp(Math.round(level + hill), 0, 15);
+  for (let y = 0; y < HEIGHT; y++) {
+    for (let x = 0; x < WIDTH; x++) {
+      const shares = blend(x, y);
+      if (shares.length === 0) continue;
+      const index = y * WIDTH + x;
+      const level = field[index]!;
+      const calm = (1 - pull[index]!) * smoothstep(0, 3, level - BEACH_LEVEL);
+      let hill = 0;
+      if (calm > 0) {
+        for (const { region, weight } of shares) {
+          hill += weight * (SHAPERS[region.code]!.hills * calm * signed(contrastNoise(101 + REGIONS.indexOf(region) * 37, x / region.scale, y / region.scale, 2, 0.45, HILL_GAIN)));
+        }
       }
+      heights[index] = clamp(Math.round(level + hill), 0, 15);
     }
-  });
+  }
   return { coast, heights, beach, steps: contourRises(heights) };
+}
+
+interface Share {
+  readonly region: RegionSpec;
+  readonly weight: number;
+}
+
+function borderBlend(): (x: number, y: number) => readonly Share[] {
+  const codes = REGIONS.map((region) => region.code);
+  const reach = REGIONS.map((region) => {
+    const inside = new Uint8Array(WIDTH * HEIGHT);
+    for (let y = 0; y < HEIGHT; y++) for (let x = 0; x < WIDTH; x++) if (codeAt(Math.floor(x / SQUARE), Math.floor(y / SQUARE)) === region.code) inside[y * WIDTH + x] = 1;
+    return distanceField(WIDTH, HEIGHT, inside);
+  });
+  const alone = REGIONS.map((region) => [{ region, weight: 1 }]);
+  return (x, y) => {
+    const own = codes.indexOf(codeAt(Math.floor(x / SQUARE), Math.floor(y / SQUARE)));
+    if (own < 0) return [];
+    const index = y * WIDTH + x;
+    const shares: Share[] = [];
+    let others = 0;
+    REGIONS.forEach((region, regionIndex) => {
+      if (regionIndex === own) return;
+      const weight = 0.5 * (1 - smoothstep(0, BORDER_BLEND, reach[regionIndex]![index]! - 0.5));
+      if (weight <= 0) return;
+      shares.push({ region, weight });
+      others += weight;
+    });
+    if (shares.length === 0) return alone[own]!;
+    const scale = others > 1 ? 1 / others : 1;
+    return [{ region: REGIONS[own]!, weight: 1 - others * scale }, ...shares.map((share) => ({ region: share.region, weight: share.weight * scale }))];
+  };
 }
 
 function contourRises(heights: Uint8Array): LandStep[] {

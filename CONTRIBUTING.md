@@ -77,7 +77,7 @@ Unique gear is never crafted. It only comes from the loot of a boss or a select 
 
 ### Orient an object
 
-Object models face south (+y on the map) by default. Wall-mounted or doorway objects on an east, west or north wall need `facing` on their `ObjectPlacement`, for example `facing: 'east'` for a bulkhead on a west wall. Wide doorways are two adjacent placements of the same object, like the two leaves of a Seam gate.
+Object models face south (+y on the map) by default. Wall-mounted or doorway objects on an east, west or north wall need `facing` on their `ObjectPlacement`, for example `facing: 'east'` for a bulkhead on a west wall. Wide doorways are two adjacent placements of the same object, like the two leaves of a double gate.
 
 ### Add a district
 
@@ -105,7 +105,7 @@ Overworld ground beyond the districts is cut from a land plan (`shared/src/conte
 2. Write the square's layout, `content/districts/layouts/<district-id>.json`, with `"square": { "column": c, "row": r }` (add `"split": true` and one district per ward where a ward border crosses the square). The square's tiles are its base, under a `ground` room covering the whole square; draw the district's own steps on top. A land square has no `exit` steps: it meets its neighbours across the land itself.
 3. Load it with `buildDistrict(layout, land)`, passing the land the level reads, and register it as for any district (tier, region, `DISTRICTS`).
 4. In the level recipe, ask for the plan with `context.landOf(<id>)`, set it as the level's `land`, and place the square districts with `placeLandSquares(land, districts)`; use `pinPlacements` to keep a district at a fixed origin. Square `(c, r)` sits at `c × squareSize, r × squareSize` in level coordinates.
-5. Run `npm test`. `findLandIssues` checks the plan and every square cut from it, and `findSealedWardIssues` checks that each ward is closed except at its gates.
+5. Run `npm test`. `findLandIssues` checks the plan and every square cut from it, and that neighbouring wards meet in the open along most of their border.
 
 ### Add a pocket dimension
 

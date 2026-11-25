@@ -59,7 +59,7 @@ test('vertex edits reshape a polygon and a line', () => {
   assert.equal(polygon(planOf(removeVertex(PLAN, 1, 1))).length, 5);
   const line = planOf(insertVertex(PLAN, 3, 0, { x: 50, y: 15 })).steps[3];
   assert.ok(line?.kind === 'line');
-  assert.deepEqual(line.points, [{ x: 48, y: 1 }, { x: 50, y: 15 }, { x: 48, y: 30 }]);
+  assert.deepEqual(line.points, [{ x: 48, y: 13 }, { x: 50, y: 15 }, { x: 48, y: 18 }]);
   refused(removeVertex(PLAN, 3, 0), /at least 2/);
   refused(moveVertex(PLAN, 0, 0, { x: 1, y: 1 }), /no points/);
   refused(moveVertex(PLAN, 1, 9, { x: 1, y: 1 }), /no point 9/);
@@ -74,7 +74,7 @@ test('moveStepBy shifts shapes, lines, ramps and gates', () => {
   const by = { x: 1, y: 2 };
   const plan = planOf(moveStepBy(planOf(moveStepBy(planOf(moveStepBy(PLAN, 2, by)), 3, by)), 4, by));
   assert.deepEqual(plan.steps[2], { kind: 'rise', shape: { kind: 'round', rect: { x: 25, y: 12, width: 16, height: 12 } }, height: 1 });
-  assert.deepEqual(plan.steps[3], { kind: 'line', points: [{ x: 49, y: 3 }, { x: 49, y: 32 }], width: 1, tile: 'brick' });
+  assert.deepEqual(plan.steps[3], { kind: 'line', points: [{ x: 49, y: 15 }, { x: 49, y: 20 }], width: 1, tile: 'brick' });
   assert.deepEqual(plan.steps[4], { kind: 'gate', id: 'fx-wall-gate', rect: { x: 49, y: 17, width: 1, height: 2 }, tile: 'door' });
   const polygon = planOf(moveStepBy(PLAN, 1, by)).steps[1];
   assert.ok(polygon?.kind === 'fill' && polygon.shape.kind === 'polygon');

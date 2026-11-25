@@ -17,6 +17,7 @@ import { WILD_KIT } from '../../packages/shared/src/content/span/wilds.ts';
 import { SPAN_QUEST_OBJECTS } from '../../packages/shared/src/content/span/quests/index.ts';
 import { HULL, padOf, placeAt, random, SQUARE } from './atlas.ts';
 import { megastructureGround } from './megastructures.ts';
+import { nearSeam } from './plan.ts';
 import { distanceField } from './relief.ts';
 
 type Placement = DistrictLayout['objects'][number];
@@ -48,6 +49,7 @@ interface Growth {
 }
 
 export const WILD_MARGIN = 3;
+const SEAM_KEEP = 3;
 const COVER_SCALE = 17;
 const COVER_THRESHOLD = 0.4;
 const STAND_SPACING = 7;
@@ -260,6 +262,7 @@ export function growWild(layout: DistrictLayout, land: LandMap): DistrictLayout 
       if (kind !== base.tiles[index]) keep(x, y, 2, 1);
       if (kind === 'door') keep(x, y, 5, 3);
       if (kind === 'track') keep(x, y, 3, 1);
+      if (nearSeam(originX + x, originY + y, SEAM_KEEP)) keep(x, y, 0, 0);
     }
   }
   for (const step of layout.steps) if (step.kind === 'building') keepRect(step.rect, 3, 2);
