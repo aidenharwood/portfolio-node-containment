@@ -442,7 +442,7 @@ export class ChunkView {
     const position = local.multiplyScalar(scale).applyAxisAngle(UP, OBJECT_FACING_YAW[placement.facing ?? 'south']).add(new Vector3(origin.x, ground, origin.z));
     if (definition.light) {
       this.lights.push({ position, color: hex(definition.light.color), intensity: definition.light.intensity, radius: definition.light.radius, flicker: definition.light.flicker ?? false, seed });
-      if (definition.light.beam) this.root.add(createLightBeam(position, hex(definition.light.color), definition.light.beam));
+      if (definition.light.beam) this.root.add(createLightBeam(position, hex(definition.light.color), definition.light.beam, ground));
     } else if (glow) {
       this.lights.push({ position, color: glow.color, intensity: GLOW_INTENSITY, radius: Math.min(GLOW_MAX_RADIUS, GLOW_MIN_RADIUS + glow.size * scale * 1.5), flicker: false, seed });
     }

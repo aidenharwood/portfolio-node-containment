@@ -2,7 +2,7 @@ import { isBuildingWall, isOutdoorFloor, TILE_KINDS, type Facing, type ResolvedA
 import type { ActiveZone } from '../../state/worldState.ts';
 import { noise3 } from '../voxel/palette.ts';
 import { ownedLayoutOf } from './chunkStructure.ts';
-import { litWindowGlow, type Side } from './levelVoxels.ts';
+import { litWindowGlow, NEON_RUN, rooflineNeonGlow, type Side } from './levelVoxels.ts';
 
 export interface SconceSpot {
   readonly floor: TilePoint;
@@ -34,6 +34,11 @@ const FAILING_INTENSITY = 0.95;
 const WINDOW_SPILL_INTENSITY = 0.3;
 const WINDOW_SPILL_RADIUS = 2.2;
 const WINDOW_SPILL_SPACING = 4;
+const NEON_SPILL_INTENSITY = 0.7;
+const NEON_SPILL_RADIUS = 4.5;
+const NIGHT_SPILL_FROM = 0.4;
+const NIGHT_SPILL_SPAN = 0.2;
+const NIGHT_SPILL_GAIN = 0.8;
 const WINDOW_SIDES: readonly Side[] = ['south', 'east', 'west', 'north'];
 
 export const FACING_STEP: Readonly<Record<Facing, TilePoint>> = { north: { x: 0, y: -1 }, east: { x: 1, y: 0 }, west: { x: -1, y: 0 }, south: { x: 0, y: 1 } };
@@ -117,15 +122,18 @@ export function planWallLighting(zone: ActiveZone): WallLighting {
       });
     }
   }
-  fills.push(...windowSpills(zone, fills));
+  fills.push(...facadeSpills(zone, fills));
   return { sconces, fills };
 }
 
-function windowSpills(zone: ActiveZone, existing: readonly FillLight[]): FillLight[] {
+const hexColor = (color: number): string => `#${color.toString(16).padStart(6, '0')}`;
+
+function facadeSpills(zone: ActiveZone, existing: readonly FillLight[]): FillLight[] {
   const { layout } = zone;
   const indoors = indoorsOf(zone);
-  const spills: FillLight[] = [];
-  const crowded = (point: TilePoint) => [...existing, ...spills].some((fill) => Math.hypot(fill.position.x - point.x, fill.position.y - point.y) < WINDOW_SPILL_SPACING);
+  const nightGain = (point: TilePoint): number => 1 + NIGHT_SPILL_GAIN * Math.min(1, Math.max(0, (zone.definition.ambienceAt(point).darkness - NIGHT_SPILL_FROM) / NIGHT_SPILL_SPAN));
+  const runs = new Map<string, { readonly color: number; readonly positions: TilePoint[] }>();
+  const windows: { readonly position: TilePoint; readonly glow: number }[] = [];
   for (let ty = 0; ty < layout.height; ty++) {
     for (let tx = 0; tx < layout.width; tx++) {
       const material = layout.tileAt({ x: tx, y: ty });
@@ -135,11 +143,27 @@ function windowSpills(zone: ActiveZone, existing: readonly FillLight[]): FillLig
         const position = { x: tx + step.x, y: ty + step.y };
         const outside = layout.tileAt(position);
         if (!TILE_KINDS[outside].walkable || outside === 'door' || indoors(position)) continue;
+        const neon = rooflineNeonGlow(material, tx, ty, side);
+        if (neon !== null) {
+          const key = step.x === 0 ? `${side}:${Math.floor(tx / NEON_RUN)}:${ty}` : `${side}:${tx}:${Math.floor(ty / NEON_RUN)}`;
+          const run = runs.get(key) ?? { color: neon, positions: [] };
+          run.positions.push(position);
+          runs.set(key, run);
+        }
         const glow = litWindowGlow(material, tx, ty, side);
-        if (glow === null || crowded(position)) continue;
-        spills.push({ position, light: { position, radius: WINDOW_SPILL_RADIUS, intensity: WINDOW_SPILL_INTENSITY, color: `#${glow.toString(16).padStart(6, '0')}` } });
+        if (glow !== null) windows.push({ position, glow });
       }
     }
+  }
+  const spills: FillLight[] = [];
+  for (const { color, positions } of runs.values()) {
+    const position = positions[Math.floor(positions.length / 2)] as TilePoint;
+    spills.push({ position, light: { position, radius: NEON_SPILL_RADIUS, intensity: NEON_SPILL_INTENSITY * nightGain(position), color: hexColor(color) } });
+  }
+  const near = (point: TilePoint) => (fill: FillLight) => Math.hypot(fill.position.x - point.x, fill.position.y - point.y) < WINDOW_SPILL_SPACING;
+  for (const { position, glow } of windows) {
+    if (existing.some(near(position)) || spills.some(near(position))) continue;
+    spills.push({ position, light: { position, radius: WINDOW_SPILL_RADIUS, intensity: WINDOW_SPILL_INTENSITY * nightGain(position), color: hexColor(glow) } });
   }
   return spills;
 }
