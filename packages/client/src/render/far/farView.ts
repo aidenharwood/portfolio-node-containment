@@ -6,6 +6,7 @@ import { createBlendedAmbience, type BlendedAmbience } from '../world/ambienceBl
 import type { FarBuild } from './farBuild.ts';
 import { farBuildFor } from './farJobs.ts';
 import { createChunkMask, createFarUniforms, FAR_MOODS, farTerrainMaterial, shareFarUniforms, type ChunkMask, type FarUniforms } from './farMaterial.ts';
+import { FarSea } from './farSea.ts';
 import type { FarTileArrays } from './farTerrainMesher.ts';
 
 export const FAR_HAZE_CAP = 0.006;
@@ -78,6 +79,8 @@ export class FarView {
   private readonly uniforms: FarUniforms;
   private readonly terrain: ShaderMaterial;
   private readonly meshes: Mesh[] = [];
+  private readonly sea: FarSea;
+  private reach = 0;
   private readonly light = createAmbienceLight();
   private maskKey = '';
   private disposed = false;
@@ -88,7 +91,9 @@ export class FarView {
     this.mask = createChunkMask(bounds.x, bounds.y, bounds.width, bounds.height);
     this.uniforms = createFarUniforms(this.mask);
     this.terrain = shareFarUniforms(farTerrainMaterial(), this.uniforms);
+    this.sea = new FarSea(this.uniforms);
     this.root.name = 'farView';
+    this.root.add(this.sea.mesh);
     this.setReach(reach);
     void farBuildFor(level, scene).then(
       (build) => this.accept(build),
@@ -101,6 +106,7 @@ export class FarView {
   }
 
   setReach(reach: number): void {
+    this.reach = reach;
     this.uniforms.aerialRange.value.set(AERIAL_FROM, Math.max(AERIAL_FROM + 1, reach * AERIAL_SHARE));
   }
 
@@ -125,6 +131,7 @@ export class FarView {
     this.uniforms.farFocus.value.copy(frame.focus);
     this.uniforms.aerialColor.value.copy(frame.background);
     lightColors(lightAmbience(frame.ambience, this.light), this.uniforms.nearSky.value, this.uniforms.nearGround.value, this.uniforms.nearKey.value);
+    this.sea.update(frame.camera, this.reach);
     let key = '';
     for (const { cx, cy } of frame.drawn) key += `${cx},${cy};`;
     if (key !== this.maskKey) {
@@ -139,6 +146,7 @@ export class FarView {
     for (const mesh of this.meshes) mesh.geometry.dispose();
     this.meshes.length = 0;
     this.terrain.dispose();
+    this.sea.dispose();
     this.mask.texture.dispose();
   }
 }

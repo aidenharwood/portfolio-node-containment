@@ -5,7 +5,9 @@ import { FIXTURE_CONTENT } from '@containment/shared/fixtures';
 import { Color, Mesh, Vector3 } from 'three';
 import { zoneOfLevel } from '../src/editor/previewLevel.ts';
 import { blendedOf, chunkMaskBounds, FarView, lightColors, writeChunkMask } from '../src/render/far/farView.ts';
-import { createChunkMask } from '../src/render/far/farMaterial.ts';
+import { createChunkMask, createFarUniforms } from '../src/render/far/farMaterial.ts';
+import { FAR_SEA_LEVEL, FarSea, seaRadiance } from '../src/render/far/farSea.ts';
+import { FAR_SINK } from '../src/render/far/farTerrainMesher.ts';
 import { createAmbienceLight, lightAmbience } from '../src/render/sceneLook.ts';
 import { createBlendedAmbience } from '../src/render/world/ambienceBlend.ts';
 import { LevelScene } from '../src/render/world/levelScene.ts';
@@ -63,6 +65,7 @@ test('the far view builds the whole land once, follows the near scene, and frees
   await until(() => far.ready);
   assert.ok(far.ready);
   const meshes = far.root.children.filter((child): child is Mesh => child instanceof Mesh && child.name === 'farTerrain');
+  assert.ok(far.root.children.some((child) => child.name === 'farSea'));
   assert.ok(meshes.length > 0);
   for (const mesh of meshes) {
     assert.ok(mesh.geometry.getAttribute('chunk'));
@@ -84,4 +87,20 @@ test('the far view builds the whole land once, follows the near scene, and frees
   far.dispose();
   assert.equal(disposed, meshes.length);
   scene.dispose();
+});
+
+test('the far sea lies below every far shore, follows the camera to the far plane and takes the camera light', () => {
+  assert.ok(FAR_SEA_LEVEL < -FAR_SINK - 0.05);
+  const uniforms = createFarUniforms(createChunkMask(0, 0, 1, 1));
+  const sea = new FarSea(uniforms);
+  uniforms.nearSky.value.setRGB(0.5, 0.5, 0.5);
+  uniforms.nearKey.value.setRGB(1, 1, 1);
+  sea.update(new Vector3(100, 20, 200), 900);
+  assert.deepEqual([sea.mesh.position.x, sea.mesh.position.y, sea.mesh.position.z], [100, FAR_SEA_LEVEL, 200]);
+  assert.equal(sea.mesh.scale.x, 900);
+  const dim = seaRadiance(new Color(0.1, 0.1, 0.1), new Color(0.1, 0.1, 0.1), new Color());
+  const bright = seaRadiance(new Color(2, 2, 2), new Color(3, 3, 3), new Color());
+  assert.ok(bright.g > dim.g);
+  assert.ok(seaRadiance(new Color(50, 50, 50), new Color(50, 50, 50), new Color()).g <= 0.85 + 1e-6);
+  sea.dispose();
 });
