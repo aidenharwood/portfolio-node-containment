@@ -28,6 +28,10 @@ const masked = (inside: (x: number, y: number) => boolean): LandShape | undefine
   const points = maskPolygon(WIDTH, HEIGHT, inside);
   return points.length >= 3 ? polygon(points) : undefined;
 };
+const lineMask = (points: readonly TilePoint[], width: number): LandShape | undefined => {
+  const drawn = drawLand({ id: LAND_ID, squareSize: SQUARE, columns: COLUMNS, rows: ROWS, steps: [{ kind: 'line', points, width, tile: 'water' }] });
+  return masked((x, y) => drawn.tileAt({ x, y }) === 'water');
+};
 const squareMask = (keep: (column: number, row: number) => boolean): LandShape | undefined => {
   const points = maskPolygon(COLUMNS, ROWS, keep).map((point) => ({ x: point.x * SQUARE, y: point.y * SQUARE }));
   return points.length >= 3 ? polygon(points) : undefined;
@@ -107,7 +111,8 @@ const spill: TilePoint[] = [
   { x: 1 * SQUARE + 30, y: 12 * SQUARE + 10 },
 ];
 line(spill, 3, 'water');
-rise(polygon([...spill.map((point) => ({ x: point.x - 2, y: point.y })), ...[...spill].reverse().map((point) => ({ x: point.x + 3, y: point.y }))]), 0);
+const river = lineMask(spill, 3);
+if (river) rise(river, 0);
 
 for (let index = 1; index < spill.length; index++) {
   const a = spill[index - 1]!;
