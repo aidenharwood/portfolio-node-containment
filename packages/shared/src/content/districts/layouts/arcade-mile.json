@@ -5,7 +5,7 @@
   "tier": 6,
   "region": "halcyon",
   "condition": "worn",
-  "ambience": { "darkness": 0.58, "tint": "#3a2448", "fog": "#1e1430", "sky": "#2a1838", "weather": ["rain"], "haze": 1.3 },
+  "ambience": { "darkness": 0.5, "tint": "#4a3a6e", "fog": "#3a2c5c", "sky": "#4a2e66", "weather": ["rain"], "haze": 1.2 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 2 },
   "steps": [

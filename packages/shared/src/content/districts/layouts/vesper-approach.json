@@ -5,7 +5,7 @@
   "tier": 10,
   "region": "glass-steppe",
   "condition": "alien",
-  "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
+  "ambience": { "darkness": 0.28, "tint": "#8c86c0", "fog": "#8a82c0", "sky": "#a49ad8", "weather": ["spores"], "haze": 1.05 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 13, "row": 4 },
   "steps": [

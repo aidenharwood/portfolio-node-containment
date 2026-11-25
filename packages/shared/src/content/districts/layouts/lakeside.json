@@ -5,7 +5,7 @@
   "tier": 2,
   "region": "kestrel-reach",
   "condition": "pristine",
-  "ambience": { "darkness": 0.16, "tint": "#e8eef4", "fog": "#c8d8e8", "sky": "#9fc8f0", "weather": ["mist"], "haze": 0.7 },
+  "ambience": { "darkness": 0.18, "tint": "#dfe8f0", "fog": "#b8c6d4", "sky": "#9ab8d4", "weather": ["mist"], "haze": 1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 3, "row": 12 },
   "steps": [
