@@ -27,6 +27,19 @@ const MAX_REACH = 8;
 const CLICK_SLOP_PX = 4;
 const GROUND = new Plane(new Vector3(0, 1, 0), 0);
 const VIEW_DISTANCE = 2000;
+const FAR_REACH: StreamReach = { build: 2, retain: 3 };
+const STREAM_LEAD = 24;
+
+export const previewReach = (span: number, far: boolean): StreamReach => (far ? FAR_REACH : { build: span, retain: span });
+
+export function streamFocusOf(target: { readonly x: number; readonly z: number }, camera: { readonly x: number; readonly z: number }, lead = STREAM_LEAD): TilePoint {
+  const dx = camera.x - target.x;
+  const dz = camera.z - target.z;
+  const share = Math.min(1, lead / Math.max(1e-6, Math.hypot(dx, dz)));
+  return { x: target.x + dx * share, y: target.z + dz * share };
+}
+
+export const previewTarget = (zone: ActiveZone | null, focus: TilePoint): Vector3 => new Vector3(focus.x, zone ? groundAt(zone.layout, focus.x, focus.y) : 0, focus.y);
 const FAR_REBUILD_MS = 1500;
 
 export interface EditPointer {
@@ -111,7 +124,7 @@ export class PreviewView {
     this.sceneLook.capHaze(this.far ? FAR_HAZE_CAP : null);
     this.sceneLook.resetLights();
     const span = Math.min(MAX_REACH, Math.ceil(Math.max(zone.layout.width, zone.layout.height) / CHUNK_SIZE) + 1);
-    this.reach = { build: span, retain: span };
+    this.reach = previewReach(span, this.far !== null);
   }
 
   hideObject(instanceId: string | null): void {
@@ -151,7 +164,7 @@ export class PreviewView {
   look(state: CameraState): void {
     const zone = this.zone;
     const focus = state.focus ?? (zone ? { x: Math.floor(zone.layout.width / 2), y: Math.floor(zone.layout.height / 2) } : { x: 0, y: 0 });
-    const target = new Vector3(focus.x, 0, focus.y);
+    const target = previewTarget(zone, focus);
     const distance = BASE_DISTANCE / state.zoom;
     const yaw = MathUtils.degToRad(state.yaw);
     const pitch = MathUtils.degToRad(state.pitch);
@@ -336,7 +349,7 @@ export class PreviewView {
     this.controls.update();
     const target = this.controls.target;
     const time = now / 1000;
-    this.level.stream({ x: target.x, y: target.z }, BUILD_BUDGET_MS, this.reach);
+    this.level.stream(streamFocusOf(target, this.camera.position), BUILD_BUDGET_MS, this.reach);
     this.level.update(time, NOTHING, NOTHING, NOTHING, { open: NOTHING, self: null });
     this.actors.update(time);
     this.level.updateCutaway(this.camera.position, target);
