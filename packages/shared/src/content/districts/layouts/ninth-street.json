@@ -77,7 +77,7 @@
     { "id": "ninth-street-steam-vent-40", "object": "steam-vent", "at": { "room": "ground", "dx": 52, "dy": 29 } },
     { "id": "ninth-street-barricade-41", "object": "barricade", "at": { "room": "ground", "dx": 5, "dy": 37 } },
     { "id": "ninth-street-street-bench-42", "object": "street-bench", "at": { "room": "ground", "dx": 54, "dy": 43 }, "facing": "south" },
-    { "id": "ninth-street-street-bench-43", "object": "street-bench", "at": { "room": "ground", "dx": 57, "dy": 12 }, "facing": "south" },
+    { "id": "ninth-street-street-bench-43", "object": "street-bench", "at": { "room": "ground", "dx": 60, "dy": 11 }, "facing": "south" },
     { "id": "ninth-street-street-bench-44", "object": "street-bench", "at": { "room": "ground", "dx": 58, "dy": 35 }, "facing": "south" },
     { "id": "ninth-street-dead-screen-45", "object": "dead-screen", "at": { "room": "ground", "dx": 45, "dy": 49 } },
     { "id": "ninth-street-street-lamp-0", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 21 }, "facing": "south" },

@@ -9,13 +9,13 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 13, "row": 6 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 22, "y": 32, "width": 14, "height": 10 }, "height": 10 },
+    { "kind": "rise", "rect": { "x": 22, "y": 32, "width": 14, "height": 10 }, "height": 11 },
     { "kind": "building", "id": "downs-barracks", "rect": { "x": 23, "y": 33, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 25, "y": 42, "width": 8, "height": 2 }, "tile": "gravel" },
     { "kind": "patch", "rect": { "x": 28, "y": 42, "width": 2, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 20, "y": 43, "width": 10, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 19, "y": 28, "width": 2, "height": 17 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 19, "y": 27, "width": 9, "height": 2 }, "tile": "gravel" }
+    { "kind": "patch", "rect": { "x": 28, "y": 43, "width": 10, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 37, "y": 28, "width": 2, "height": 17 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 31, "y": 27, "width": 8, "height": 2 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -47,9 +47,8 @@
     { "id": "shining-downs-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 23, "dy": 26 } },
     { "id": "shining-downs-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 24, "dy": 42 }, "facing": "east" },
     { "id": "shining-downs-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 33, "dy": 42 }, "facing": "west" },
-    { "id": "shining-downs-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 25, "dy": 45 }, "facing": "north" },
-    { "id": "shining-downs-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 18, "dy": 41 }, "facing": "east" },
-    { "id": "shining-downs-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 21, "dy": 26 }, "facing": "south" }
+    { "id": "shining-downs-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 45 }, "facing": "north" },
+    { "id": "shining-downs-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 35, "dy": 29 }, "facing": "north" }
   ],
   "assemblies": [
     { "id": "shining-downs-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 39, "dy": 22 }, "facing": "east", "span": 2 },

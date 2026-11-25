@@ -9,13 +9,13 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 8, "row": 2 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 30, "y": 28, "width": 14, "height": 10 }, "height": 5 },
-    { "kind": "building", "id": "night-stalls", "rect": { "x": 31, "y": 29, "width": 12, "height": 8 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "patch", "rect": { "x": 33, "y": 38, "width": 8, "height": 2 }, "tile": "concrete" },
-    { "kind": "patch", "rect": { "x": 36, "y": 38, "width": 2, "height": 2 }, "tile": "concrete" },
-    { "kind": "patch", "rect": { "x": 28, "y": 39, "width": 10, "height": 2 }, "tile": "concrete" },
-    { "kind": "patch", "rect": { "x": 27, "y": 24, "width": 2, "height": 17 }, "tile": "concrete" },
-    { "kind": "patch", "rect": { "x": 27, "y": 23, "width": 8, "height": 2 }, "tile": "concrete" }
+    { "kind": "rise", "rect": { "x": 28, "y": 28, "width": 14, "height": 10 }, "height": 5 },
+    { "kind": "building", "id": "night-stalls", "rect": { "x": 29, "y": 29, "width": 12, "height": 8 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 31, "y": 38, "width": 8, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 34, "y": 38, "width": 2, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 26, "y": 39, "width": 10, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 25, "y": 24, "width": 2, "height": 17 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 25, "y": 23, "width": 7, "height": 2 }, "tile": "concrete" }
   ],
   "tiles": [],
   "areas": [
@@ -46,13 +46,13 @@
     { "id": "night-stalls-counter-9", "object": "counter", "at": { "room": "night-stalls", "dx": 3, "dy": 3 } },
     { "id": "night-stalls-table-10", "object": "table", "at": { "room": "night-stalls", "dx": 9, "dy": 5 } },
     { "id": "night-stalls-chair-11", "object": "chair", "at": { "room": "night-stalls", "dx": 9, "dy": 4 }, "facing": "south" },
-    { "id": "night-market-poi-halcyon-lockbox-0", "object": "halcyon-lockbox", "at": { "room": "ground", "dx": 38, "dy": 14 } },
-    { "id": "night-market-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 32, "dy": 38 }, "facing": "east" },
-    { "id": "night-market-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 41, "dy": 38 }, "facing": "west" },
-    { "id": "night-market-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 33, "dy": 41 }, "facing": "north" },
-    { "id": "night-market-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 26, "dy": 37 }, "facing": "east" },
-    { "id": "night-market-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 26, "dy": 29 }, "facing": "east" },
-    { "id": "night-market-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 29, "dy": 22 }, "facing": "south" }
+    { "id": "night-market-poi-halcyon-lockbox-0", "object": "halcyon-lockbox", "at": { "room": "ground", "dx": 40, "dy": 23 } },
+    { "id": "night-market-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 30, "dy": 38 }, "facing": "east" },
+    { "id": "night-market-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 39, "dy": 38 }, "facing": "west" },
+    { "id": "night-market-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 41 }, "facing": "north" },
+    { "id": "night-market-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 24, "dy": 37 }, "facing": "east" },
+    { "id": "night-market-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 24, "dy": 29 }, "facing": "east" },
+    { "id": "night-market-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 27, "dy": 25 }, "facing": "north" }
   ],
   "assemblies": [
     { "id": "night-market-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 14, "dy": 51 }, "span": 2 },
@@ -65,6 +65,8 @@
     { "id": "night-market-ad-wraith-0", "creature": "ad-wraith", "at": { "room": "ground", "dx": 47, "dy": 49 } },
     { "id": "night-market-glass-hound-1", "creature": "glass-hound", "at": { "room": "ground", "dx": 37, "dy": 58 } },
     { "id": "night-market-alley-crawler-2", "creature": "alley-crawler", "at": { "room": "ground", "dx": 14, "dy": 38 } },
+    { "id": "night-market-ad-wraith-3", "creature": "ad-wraith", "at": { "room": "ground", "dx": 40, "dy": 16 } },
+    { "id": "night-market-glass-hound-4", "creature": "glass-hound", "at": { "room": "ground", "dx": 44, "dy": 42 } },
     { "id": "night-market-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 57, "dy": 49 } },
     { "id": "night-market-ad-wraith-6", "creature": "ad-wraith", "at": { "room": "ground", "dx": 16, "dy": 25 } },
     { "id": "night-market-glass-hound-7", "creature": "glass-hound", "at": { "room": "ground", "dx": 33, "dy": 13 } },
@@ -77,7 +79,7 @@
   "lights": [],
   "decals": [],
   "setPieces": [
-    { "id": "night-market-landmark", "prefab": "landmark-market-mast", "at": { "room": "ground", "dx": 36, "dy": 21 }, "facing": "south" }
+    { "id": "night-market-landmark", "prefab": "landmark-market-mast", "at": { "room": "ground", "dx": 33, "dy": 21 }, "facing": "south" }
   ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },

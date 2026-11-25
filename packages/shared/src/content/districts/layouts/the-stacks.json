@@ -9,7 +9,7 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 8, "row": 1 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 26, "y": 25, "width": 14, "height": 10 }, "height": 6 },
+    { "kind": "rise", "rect": { "x": 26, "y": 25, "width": 14, "height": 10 }, "height": 4 },
     { "kind": "building", "id": "stacks-reading-room", "rect": { "x": 27, "y": 26, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 29, "y": 35, "width": 8, "height": 2 }, "tile": "concrete" },
     { "kind": "patch", "rect": { "x": 32, "y": 35, "width": 2, "height": 2 }, "tile": "concrete" },
@@ -22,7 +22,7 @@
     { "room": "stacks-reading-room", "name": "Stacks Reading Room", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 10, "dy": 26 }
+    "start": { "room": "ground", "dx": 33, "dy": 37 }
   },
   "objects": [
     { "id": "the-stacks-bollard-0", "object": "bollard", "at": { "room": "ground", "dx": 14, "dy": 34 } },
@@ -58,8 +58,7 @@
     { "id": "the-stacks-ad-wraith-9", "creature": "ad-wraith", "at": { "room": "ground", "dx": 35, "dy": 52 } },
     { "id": "the-stacks-glass-hound-10", "creature": "glass-hound", "at": { "room": "ground", "dx": 30, "dy": 41 } },
     { "id": "the-stacks-vent-moth-11", "creature": "vent-moth", "at": { "room": "ground", "dx": 57, "dy": 49 } },
-    { "id": "the-stacks-ad-wraith-12", "creature": "ad-wraith", "at": { "room": "ground", "dx": 4, "dy": 58 } },
-    { "id": "the-stacks-poi-ad-wraith-0", "creature": "ad-wraith", "at": { "room": "ground", "dx": 37, "dy": 41 } }
+    { "id": "the-stacks-ad-wraith-12", "creature": "ad-wraith", "at": { "room": "ground", "dx": 4, "dy": 58 } }
   ],
   "lights": [],
   "decals": [],

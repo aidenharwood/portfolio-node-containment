@@ -9,13 +9,12 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 7, "row": 10 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 30, "y": 31, "width": 14, "height": 10 }, "height": 5 },
-    { "kind": "building", "id": "range-office", "rect": { "x": 31, "y": 32, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "patch", "rect": { "x": 33, "y": 41, "width": 8, "height": 2 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 36, "y": 41, "width": 2, "height": 4 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 36, "y": 44, "width": 10, "height": 2 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 45, "y": 28, "width": 2, "height": 18 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 42, "y": 27, "width": 5, "height": 2 }, "tile": "paving" }
+    { "kind": "rise", "rect": { "x": 25, "y": 31, "width": 14, "height": 10 }, "height": 8 },
+    { "kind": "building", "id": "range-office", "rect": { "x": 26, "y": 32, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 28, "y": 41, "width": 8, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 31, "y": 41, "width": 2, "height": 4 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 31, "y": 44, "width": 12, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 42, "y": 37, "width": 2, "height": 9 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -34,7 +33,6 @@
     { "id": "range-road-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 50, "dy": 48 } },
     { "id": "range-road-street-bench-5", "object": "street-bench", "at": { "room": "ground", "dx": 32, "dy": 23 }, "facing": "south" },
     { "id": "range-road-scrap-pile-6", "object": "scrap-pile", "at": { "room": "ground", "dx": 5, "dy": 9 } },
-    { "id": "range-road-faint-trace-7", "object": "faint-trace", "at": { "room": "ground", "dx": 26, "dy": 41 } },
     { "id": "range-road-eel-trap-8", "object": "eel-trap", "at": { "room": "ground", "dx": 17, "dy": 16 } },
     { "id": "range-office-shelving-0", "object": "shelving", "at": { "room": "range-office", "dx": 1, "dy": 0 }, "facing": "south" },
     { "id": "range-office-shelving-1", "object": "shelving", "at": { "room": "range-office", "dx": 2, "dy": 0 }, "facing": "south" },
@@ -45,13 +43,10 @@
     { "id": "range-office-table-6", "object": "table", "at": { "room": "range-office", "dx": 4, "dy": 3 } },
     { "id": "range-office-chair-7", "object": "chair", "at": { "room": "range-office", "dx": 3, "dy": 2 }, "facing": "south" },
     { "id": "range-office-chair-8", "object": "chair", "at": { "room": "range-office", "dx": 4, "dy": 2 }, "facing": "south" },
-    { "id": "range-road-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 46, "dy": 25 } },
-    { "id": "range-road-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 32, "dy": 41 }, "facing": "east" },
-    { "id": "range-road-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 41, "dy": 41 }, "facing": "west" },
-    { "id": "range-road-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 37, "dy": 46 }, "facing": "north" },
-    { "id": "range-road-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 44 }, "facing": "west" },
-    { "id": "range-road-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 36 }, "facing": "west" },
-    { "id": "range-road-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 28 }, "facing": "west" }
+    { "id": "range-road-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 45, "dy": 41 } },
+    { "id": "range-road-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 27, "dy": 41 }, "facing": "east" },
+    { "id": "range-road-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 36, "dy": 41 }, "facing": "west" },
+    { "id": "range-road-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 40, "dy": 46 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],
@@ -63,7 +58,6 @@
     { "id": "range-road-drill-sentry-5", "creature": "drill-sentry", "at": { "room": "ground", "dx": 11, "dy": 37 } },
     { "id": "range-road-feral-hound-6", "creature": "feral-hound", "at": { "room": "ground", "dx": 56, "dy": 48 } },
     { "id": "range-road-grounds-mite-7", "creature": "grounds-mite", "at": { "room": "ground", "dx": 29, "dy": 49 } },
-    { "id": "range-road-drill-sentry-8", "creature": "drill-sentry", "at": { "room": "ground", "dx": 47, "dy": 31 } },
     { "id": "range-road-feral-hound-9", "creature": "feral-hound", "at": { "room": "ground", "dx": 57, "dy": 22 } },
     { "id": "range-road-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 16, "dy": 55 } },
     { "id": "range-road-drill-sentry-11", "creature": "drill-sentry", "at": { "room": "ground", "dx": 59, "dy": 42 } },
@@ -74,7 +68,7 @@
   "lights": [],
   "decals": [],
   "setPieces": [
-    { "id": "range-road-landmark", "prefab": "landmark-range-tower", "at": { "room": "ground", "dx": 39, "dy": 24 }, "facing": "south" }
+    { "id": "range-road-landmark", "prefab": "landmark-range-tower", "at": { "room": "ground", "dx": 44, "dy": 34 }, "facing": "south" }
   ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },

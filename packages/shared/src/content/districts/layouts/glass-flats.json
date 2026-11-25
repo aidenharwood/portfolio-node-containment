@@ -9,7 +9,7 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 13, "row": 7 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 29, "y": 30, "width": 10, "height": 8 }, "height": 11 },
+    { "kind": "rise", "rect": { "x": 29, "y": 30, "width": 10, "height": 8 }, "height": 13 },
     { "kind": "building", "id": "glass-hut", "rect": { "x": 30, "y": 31, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 30, "y": 38, "width": 8, "height": 2 }, "tile": "gravel" },
     { "kind": "patch", "rect": { "x": 33, "y": 38, "width": 2, "height": 2 }, "tile": "gravel" },

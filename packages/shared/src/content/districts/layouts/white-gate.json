@@ -9,7 +9,7 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 3, "row": 11 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 29, "y": 27, "width": 14, "height": 10 }, "height": 3 },
+    { "kind": "rise", "rect": { "x": 29, "y": 27, "width": 14, "height": 10 }, "height": 2 },
     { "kind": "building", "id": "white-gate-post", "rect": { "x": 30, "y": 28, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 32, "y": 37, "width": 8, "height": 2 }, "tile": "paving" },
     { "kind": "patch", "rect": { "x": 35, "y": 37, "width": 2, "height": 2 }, "tile": "paving" },

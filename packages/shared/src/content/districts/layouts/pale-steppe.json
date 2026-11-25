@@ -9,12 +9,13 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 13, "row": 10 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 30, "y": 32, "width": 14, "height": 10 }, "height": 10 },
-    { "kind": "building", "id": "pale-barracks", "rect": { "x": 31, "y": 33, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "patch", "rect": { "x": 33, "y": 42, "width": 8, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 36, "y": 42, "width": 2, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 36, "y": 43, "width": 11, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 46, "y": 37, "width": 2, "height": 8 }, "tile": "gravel" }
+    { "kind": "rise", "rect": { "x": 29, "y": 30, "width": 14, "height": 10 }, "height": 11 },
+    { "kind": "building", "id": "pale-barracks", "rect": { "x": 30, "y": 31, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 32, "y": 40, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 35, "y": 40, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 35, "y": 41, "width": 10, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 44, "y": 27, "width": 2, "height": 16 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 40, "y": 26, "width": 6, "height": 2 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -22,11 +23,10 @@
     { "room": "pale-barracks", "name": "Pale Barracks", "safe": false }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 39, "dy": 6 }
+    "start": { "room": "ground", "dx": 19, "dy": 3 }
   },
   "objects": [
     { "id": "pale-steppe-ledge-milestone-0", "object": "ledge-milestone", "at": { "room": "ground", "dx": 37, "dy": 59 } },
-    { "id": "pale-steppe-precursor-pylon-1", "object": "precursor-pylon", "at": { "room": "ground", "dx": 37, "dy": 25 } },
     { "id": "pale-steppe-ledge-milestone-2", "object": "ledge-milestone", "at": { "room": "ground", "dx": 5, "dy": 40 } },
     { "id": "pale-steppe-burn-barrel-3", "object": "burn-barrel", "at": { "room": "ground", "dx": 31, "dy": 5 } },
     { "id": "pale-steppe-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 21, "dy": 29 } },
@@ -41,16 +41,16 @@
     { "id": "pale-barracks-bed-8", "object": "bed", "at": { "room": "pale-barracks", "dx": 9, "dy": 5 } },
     { "id": "pale-barracks-bed-9", "object": "bed", "at": { "room": "pale-barracks", "dx": 11, "dy": 5 } },
     { "id": "pale-barracks-storage-locker-10", "object": "storage-locker", "at": { "room": "pale-barracks", "dx": 0, "dy": 3 }, "facing": "east" },
-    { "id": "pale-steppe-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 49, "dy": 41 } },
-    { "id": "pale-steppe-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 32, "dy": 42 }, "facing": "east" },
-    { "id": "pale-steppe-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 41, "dy": 42 }, "facing": "west" },
-    { "id": "pale-steppe-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 39, "dy": 45 }, "facing": "north" },
-    { "id": "pale-steppe-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 45, "dy": 42 }, "facing": "east" }
+    { "id": "pale-steppe-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 44, "dy": 23 } },
+    { "id": "pale-steppe-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 40 }, "facing": "east" },
+    { "id": "pale-steppe-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 40, "dy": 40 }, "facing": "west" },
+    { "id": "pale-steppe-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 43 }, "facing": "north" },
+    { "id": "pale-steppe-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 46, "dy": 39 }, "facing": "west" },
+    { "id": "pale-steppe-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 46, "dy": 31 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "pale-steppe-choir-echo-0", "creature": "choir-echo", "at": { "room": "ground", "dx": 28, "dy": 29 } },
     { "id": "pale-steppe-red-twin-1", "creature": "red-twin", "at": { "room": "ground", "dx": 56, "dy": 41 } },
     { "id": "pale-steppe-prism-hound-2", "creature": "prism-hound", "at": { "room": "ground", "dx": 19, "dy": 45 } },
     { "id": "pale-steppe-choir-echo-3", "creature": "choir-echo", "at": { "room": "ground", "dx": 3, "dy": 58 } },
@@ -67,13 +67,14 @@
     { "id": "pale-steppe-prism-hound-14", "creature": "prism-hound", "at": { "room": "ground", "dx": 32, "dy": 20 } },
     { "id": "pale-steppe-choir-echo-15", "creature": "choir-echo", "at": { "room": "ground", "dx": 30, "dy": 12 } },
     { "id": "pale-steppe-red-twin-16", "creature": "red-twin", "at": { "room": "ground", "dx": 6, "dy": 16 } },
+    { "id": "pale-steppe-prism-hound-17", "creature": "prism-hound", "at": { "room": "ground", "dx": 39, "dy": 6 } },
     { "id": "pale-barracks-choir-echo-0", "creature": "choir-echo", "at": { "room": "pale-barracks", "dx": 6, "dy": 3 } },
     { "id": "pale-barracks-choir-echo-1", "creature": "choir-echo", "at": { "room": "pale-barracks", "dx": 2, "dy": 3 } }
   ],
   "lights": [],
   "decals": [],
   "setPieces": [
-    { "id": "pale-steppe-landmark", "prefab": "landmark-steppe-mast", "at": { "room": "ground", "dx": 49, "dy": 35 }, "facing": "south" }
+    { "id": "pale-steppe-landmark", "prefab": "landmark-steppe-mast", "at": { "room": "ground", "dx": 38, "dy": 24 }, "facing": "south" }
   ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },

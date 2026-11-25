@@ -9,7 +9,7 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 15, "row": 7 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 30, "y": 28, "width": 14, "height": 10 }, "height": 11 },
+    { "kind": "rise", "rect": { "x": 30, "y": 28, "width": 14, "height": 10 }, "height": 12 },
     { "kind": "building", "id": "vigil-dormitory", "rect": { "x": 31, "y": 29, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 33, "y": 38, "width": 8, "height": 2 }, "tile": "gravel" },
     { "kind": "patch", "rect": { "x": 36, "y": 38, "width": 2, "height": 3 }, "tile": "gravel" },

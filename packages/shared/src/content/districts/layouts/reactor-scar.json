@@ -13,8 +13,8 @@
     { "kind": "building", "id": "scar-watch-station", "rect": { "x": 30, "y": 29, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 32, "y": 38, "width": 8, "height": 2 }, "tile": "plating" },
     { "kind": "patch", "rect": { "x": 35, "y": 38, "width": 2, "height": 3 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 35, "y": 40, "width": 11, "height": 2 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 45, "y": 35, "width": 2, "height": 7 }, "tile": "plating" }
+    { "kind": "patch", "rect": { "x": 35, "y": 40, "width": 12, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 46, "y": 35, "width": 2, "height": 7 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -43,7 +43,7 @@
     { "id": "reactor-scar-poi-wreck-strongroom-0", "object": "wreck-strongroom", "at": { "room": "ground", "dx": 49, "dy": 25 } },
     { "id": "reactor-scar-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 38 }, "facing": "east" },
     { "id": "reactor-scar-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 37, "dy": 42 }, "facing": "north" },
-    { "id": "reactor-scar-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 40 }, "facing": "west" }
+    { "id": "reactor-scar-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 45, "dy": 39 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [

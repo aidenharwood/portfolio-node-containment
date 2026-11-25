@@ -41,7 +41,7 @@ registerFurnishingKit(SPAN_KIT);
 registerFurnishingKit(WILD_KIT);
 
 const OUT = process.env.SPAN_LAYOUT_OUT ?? join(import.meta.dirname, '../../packages/shared/src/content/districts/layouts');
-const land: LandMap = drawLand(parseLandPlan(landSource));
+const land: LandMap = drawLand(parseLandPlan(process.env.SPAN_LAND_IN ? JSON.parse(readFileSync(process.env.SPAN_LAND_IN, 'utf8')) : landSource));
 
 type Placement = { id: string; object: string; at: { room: string; dx: number; dy: number }; facing?: 'north' | 'east' | 'south' | 'west' };
 

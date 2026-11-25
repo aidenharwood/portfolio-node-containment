@@ -21,13 +21,13 @@
     { "room": "cliff-hut", "name": "Cliff Hut", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 10, "dy": 3 }
+    "start": { "room": "ground", "dx": 27, "dy": 47 }
   },
   "objects": [
     { "id": "westcliff-barricade-0", "object": "barricade", "at": { "room": "ground", "dx": 24, "dy": 41 } },
-    { "id": "westcliff-street-tree-1", "object": "street-tree", "at": { "room": "ground", "dx": 14, "dy": 41 } },
-    { "id": "westcliff-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 60, "dy": 3 } },
-    { "id": "westcliff-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 24, "dy": 34 } },
+    { "id": "westcliff-street-tree-1", "object": "street-tree", "at": { "room": "ground", "dx": 9, "dy": 37 } },
+    { "id": "westcliff-washing-line-2", "object": "washing-line", "at": { "room": "ground", "dx": 41, "dy": 51 } },
+    { "id": "westcliff-barricade-3", "object": "barricade", "at": { "room": "ground", "dx": 24, "dy": 34 } },
     { "id": "westcliff-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 36, "dy": 14 } },
     { "id": "westcliff-kestrel-gate-leaf-0", "object": "kestrel-gate-leaf", "at": { "room": "ground", "dx": 42, "dy": 63 }, "facing": "south" },
     { "id": "westcliff-kestrel-gate-leaf-1", "object": "kestrel-gate-leaf", "at": { "room": "ground", "dx": 43, "dy": 63 }, "facing": "south" },
@@ -49,17 +49,19 @@
   "creatures": [
     { "id": "westcliff-ditch-leech-0", "creature": "ditch-leech", "at": { "room": "ground", "dx": 58, "dy": 36 } },
     { "id": "westcliff-crop-magpie-1", "creature": "crop-magpie", "at": { "room": "ground", "dx": 53, "dy": 19 } },
-    { "id": "westcliff-ditch-leech-2", "creature": "ditch-leech", "at": { "room": "ground", "dx": 46, "dy": 52 } },
-    { "id": "westcliff-crop-magpie-3", "creature": "crop-magpie", "at": { "room": "ground", "dx": 49, "dy": 41 } },
-    { "id": "westcliff-ditch-leech-4", "creature": "ditch-leech", "at": { "room": "ground", "dx": 7, "dy": 19 } },
-    { "id": "westcliff-crop-magpie-5", "creature": "crop-magpie", "at": { "room": "ground", "dx": 25, "dy": 17 } },
-    { "id": "westcliff-ditch-leech-6", "creature": "ditch-leech", "at": { "room": "ground", "dx": 12, "dy": 57 } },
-    { "id": "westcliff-ditch-leech-8", "creature": "ditch-leech", "at": { "room": "ground", "dx": 45, "dy": 29 } },
-    { "id": "westcliff-crop-magpie-9", "creature": "crop-magpie", "at": { "room": "ground", "dx": 56, "dy": 57 } },
-    { "id": "westcliff-ditch-leech-10", "creature": "ditch-leech", "at": { "room": "ground", "dx": 60, "dy": 14 } },
+    { "id": "westcliff-ditch-leech-2", "creature": "ditch-leech", "at": { "room": "ground", "dx": 49, "dy": 41 } },
+    { "id": "westcliff-crop-magpie-3", "creature": "crop-magpie", "at": { "room": "ground", "dx": 7, "dy": 19 } },
+    { "id": "westcliff-ditch-leech-4", "creature": "ditch-leech", "at": { "room": "ground", "dx": 25, "dy": 17 } },
+    { "id": "westcliff-crop-magpie-5", "creature": "crop-magpie", "at": { "room": "ground", "dx": 12, "dy": 57 } },
+    { "id": "westcliff-crop-magpie-7", "creature": "crop-magpie", "at": { "room": "ground", "dx": 45, "dy": 29 } },
+    { "id": "westcliff-ditch-leech-8", "creature": "ditch-leech", "at": { "room": "ground", "dx": 56, "dy": 57 } },
+    { "id": "westcliff-crop-magpie-9", "creature": "crop-magpie", "at": { "room": "ground", "dx": 60, "dy": 14 } },
+    { "id": "westcliff-ditch-leech-10", "creature": "ditch-leech", "at": { "room": "ground", "dx": 8, "dy": 48 } },
     { "id": "westcliff-ditch-leech-12", "creature": "ditch-leech", "at": { "room": "ground", "dx": 38, "dy": 20 } },
     { "id": "westcliff-crop-magpie-13", "creature": "crop-magpie", "at": { "room": "ground", "dx": 58, "dy": 49 } },
-    { "id": "westcliff-ditch-leech-14", "creature": "ditch-leech", "at": { "room": "ground", "dx": 30, "dy": 23 } }
+    { "id": "westcliff-ditch-leech-14", "creature": "ditch-leech", "at": { "room": "ground", "dx": 30, "dy": 23 } },
+    { "id": "westcliff-crop-magpie-15", "creature": "crop-magpie", "at": { "room": "ground", "dx": 10, "dy": 3 } },
+    { "id": "westcliff-ditch-leech-16", "creature": "ditch-leech", "at": { "room": "ground", "dx": 17, "dy": 12 } }
   ],
   "lights": [],
   "decals": [],

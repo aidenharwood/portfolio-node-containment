@@ -9,12 +9,12 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 3, "row": 1 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 28, "y": 26, "width": 14, "height": 10 }, "height": 6 },
-    { "kind": "building", "id": "overpass-kiosk", "rect": { "x": 29, "y": 27, "width": 12, "height": 8 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "patch", "rect": { "x": 31, "y": 36, "width": 8, "height": 2 }, "tile": "concrete" },
-    { "kind": "patch", "rect": { "x": 34, "y": 36, "width": 2, "height": 4 }, "tile": "concrete" },
-    { "kind": "patch", "rect": { "x": 34, "y": 39, "width": 13, "height": 2 }, "tile": "concrete" },
-    { "kind": "patch", "rect": { "x": 46, "y": 33, "width": 2, "height": 8 }, "tile": "concrete" }
+    { "kind": "rise", "rect": { "x": 21, "y": 26, "width": 14, "height": 10 }, "height": 4 },
+    { "kind": "building", "id": "overpass-kiosk", "rect": { "x": 22, "y": 27, "width": 12, "height": 8 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 24, "y": 36, "width": 8, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 27, "y": 36, "width": 2, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 27, "y": 37, "width": 11, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 37, "y": 34, "width": 2, "height": 5 }, "tile": "concrete" }
   ],
   "tiles": [],
   "areas": [
@@ -22,7 +22,7 @@
     { "room": "overpass-kiosk", "name": "Overpass Kiosk", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 3, "dy": 26 }
+    "start": { "room": "ground", "dx": 40, "dy": 26 }
   },
   "objects": [
     { "id": "the-overpass-quest-cohort-billboard", "object": "cohort-billboard", "at": { "room": "ground", "dx": 41, "dy": 38 } },
@@ -44,33 +44,30 @@
     { "id": "overpass-kiosk-counter-9", "object": "counter", "at": { "room": "overpass-kiosk", "dx": 3, "dy": 3 } },
     { "id": "overpass-kiosk-table-10", "object": "table", "at": { "room": "overpass-kiosk", "dx": 9, "dy": 5 } },
     { "id": "overpass-kiosk-chair-11", "object": "chair", "at": { "room": "overpass-kiosk", "dx": 9, "dy": 4 }, "facing": "south" },
-    { "id": "the-overpass-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 54, "dy": 30 } },
-    { "id": "the-overpass-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 30, "dy": 36 }, "facing": "east" },
-    { "id": "the-overpass-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 39, "dy": 36 }, "facing": "west" },
-    { "id": "the-overpass-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 43, "dy": 38 }, "facing": "south" }
+    { "id": "the-overpass-poi-halcyon-courier-drop-0", "object": "halcyon-courier-drop", "at": { "room": "ground", "dx": 47, "dy": 31 } },
+    { "id": "the-overpass-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 23, "dy": 36 }, "facing": "east" },
+    { "id": "the-overpass-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 32, "dy": 36 }, "facing": "west" },
+    { "id": "the-overpass-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 30, "dy": 39 }, "facing": "north" },
+    { "id": "the-overpass-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 39, "dy": 36 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
     { "id": "the-overpass-neon-moth-0", "creature": "neon-moth", "at": { "room": "ground", "dx": 29, "dy": 43 } },
-    { "id": "the-overpass-alley-crawler-1", "creature": "alley-crawler", "at": { "room": "ground", "dx": 22, "dy": 30 } },
     { "id": "the-overpass-neon-moth-2", "creature": "neon-moth", "at": { "room": "ground", "dx": 14, "dy": 34 } },
     { "id": "the-overpass-alley-crawler-3", "creature": "alley-crawler", "at": { "room": "ground", "dx": 49, "dy": 23 } },
-    { "id": "the-overpass-neon-moth-4", "creature": "neon-moth", "at": { "room": "ground", "dx": 44, "dy": 16 } },
-    { "id": "the-overpass-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 49, "dy": 15 } },
-    { "id": "the-overpass-neon-moth-6", "creature": "neon-moth", "at": { "room": "ground", "dx": 55, "dy": 15 } },
-    { "id": "the-overpass-alley-crawler-7", "creature": "alley-crawler", "at": { "room": "ground", "dx": 48, "dy": 49 } },
-    { "id": "the-overpass-neon-moth-8", "creature": "neon-moth", "at": { "room": "ground", "dx": 23, "dy": 46 } },
-    { "id": "the-overpass-alley-crawler-9", "creature": "alley-crawler", "at": { "room": "ground", "dx": 6, "dy": 8 } },
-    { "id": "the-overpass-neon-moth-10", "creature": "neon-moth", "at": { "room": "ground", "dx": 4, "dy": 37 } },
-    { "id": "the-overpass-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 44, "dy": 22 } },
-    { "id": "the-overpass-neon-moth-12", "creature": "neon-moth", "at": { "room": "ground", "dx": 60, "dy": 36 } },
-    { "id": "the-overpass-alley-crawler-13", "creature": "alley-crawler", "at": { "room": "ground", "dx": 17, "dy": 12 } }
+    { "id": "the-overpass-neon-moth-4", "creature": "neon-moth", "at": { "room": "ground", "dx": 48, "dy": 49 } },
+    { "id": "the-overpass-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 23, "dy": 46 } },
+    { "id": "the-overpass-neon-moth-6", "creature": "neon-moth", "at": { "room": "ground", "dx": 4, "dy": 37 } },
+    { "id": "the-overpass-alley-crawler-7", "creature": "alley-crawler", "at": { "room": "ground", "dx": 44, "dy": 22 } },
+    { "id": "the-overpass-neon-moth-8", "creature": "neon-moth", "at": { "room": "ground", "dx": 60, "dy": 36 } },
+    { "id": "the-overpass-neon-moth-10", "creature": "neon-moth", "at": { "room": "ground", "dx": 3, "dy": 26 } },
+    { "id": "the-overpass-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 25, "dy": 60 } }
   ],
   "lights": [],
   "decals": [],
   "setPieces": [
-    { "id": "the-overpass-landmark", "prefab": "landmark-strand-screen", "at": { "room": "ground", "dx": 47, "dy": 30 }, "facing": "south" }
+    { "id": "the-overpass-landmark", "prefab": "landmark-strand-screen", "at": { "room": "ground", "dx": 40, "dy": 31 }, "facing": "south" }
   ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },

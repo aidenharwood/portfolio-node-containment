@@ -9,7 +9,7 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 6, "row": 3 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 36, "y": 29, "width": 14, "height": 10 }, "height": 6 },
+    { "kind": "rise", "rect": { "x": 36, "y": 29, "width": 14, "height": 10 }, "height": 7 },
     { "kind": "building", "id": "pylon-park-lab", "rect": { "x": 37, "y": 30, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 39, "y": 39, "width": 8, "height": 2 }, "tile": "concrete" },
     { "kind": "patch", "rect": { "x": 42, "y": 39, "width": 2, "height": 2 }, "tile": "concrete" },

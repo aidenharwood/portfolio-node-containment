@@ -1,6 +1,6 @@
 import type { TilePoint } from '../../packages/shared/src/world/geometry.ts';
 
-export function maskPolygon(width: number, height: number, inside: (x: number, y: number) => boolean, offsetX = 0, offsetY = 0): TilePoint[] {
+export function maskLoops(width: number, height: number, inside: (x: number, y: number) => boolean): TilePoint[][] {
   const at = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < width && y < height && inside(x, y);
   const outgoing = new Map<number, number[]>();
   const W = width + 1;
@@ -38,6 +38,10 @@ export function maskPolygon(width: number, height: number, inside: (x: number, y
       loops.push(simplify(loop));
     }
   }
+  return loops;
+}
+
+export function joinLoops(loops: readonly (readonly TilePoint[])[], offsetX = 0, offsetY = 0): TilePoint[] {
   if (loops.length === 0) return [];
   const anchor = loops[0]![0]!;
   const points: TilePoint[] = [...loops[0]!, anchor];
@@ -47,6 +51,53 @@ export function maskPolygon(width: number, height: number, inside: (x: number, y
     points.push(corner, ...loop, first, corner, anchor);
   }
   return simplify(points).map((point) => ({ x: point.x + offsetX, y: point.y + offsetY }));
+}
+
+export function maskPolygon(width: number, height: number, inside: (x: number, y: number) => boolean, offsetX = 0, offsetY = 0): TilePoint[] {
+  return joinLoops(maskLoops(width, height, inside), offsetX, offsetY);
+}
+
+const offLine = (point: TilePoint, a: TilePoint, b: TilePoint): number => {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const length = Math.hypot(dx, dy);
+  if (length === 0) return Math.hypot(point.x - a.x, point.y - a.y);
+  return Math.abs(dy * (point.x - a.x) - dx * (point.y - a.y)) / length;
+};
+
+function reduce(points: readonly TilePoint[], from: number, to: number, tolerance: number, keep: Uint8Array): void {
+  let farthest = -1;
+  let distance = tolerance;
+  for (let index = from + 1; index < to; index++) {
+    const off = offLine(points[index]!, points[from]!, points[to]!);
+    if (off > distance) {
+      distance = off;
+      farthest = index;
+    }
+  }
+  if (farthest < 0) return;
+  keep[farthest] = 1;
+  reduce(points, from, farthest, tolerance, keep);
+  reduce(points, farthest, to, tolerance, keep);
+}
+
+export function smoothLoop(loop: readonly TilePoint[], tolerance: number): TilePoint[] {
+  if (loop.length < 8) return [...loop];
+  const first = loop[0]!;
+  let far = 0;
+  for (let index = 1; index < loop.length; index++) {
+    if (Math.hypot(loop[index]!.x - first.x, loop[index]!.y - first.y) > Math.hypot(loop[far]!.x - first.x, loop[far]!.y - first.y)) far = index;
+  }
+  const closed = [...loop, first];
+  const keep = new Uint8Array(closed.length);
+  keep[0] = 1;
+  keep[far] = 1;
+  keep[closed.length - 1] = 1;
+  reduce(closed, 0, far, tolerance, keep);
+  reduce(closed, far, closed.length - 1, tolerance, keep);
+  const out = closed.filter((_, index) => keep[index] === 1);
+  out.pop();
+  return out.length >= 3 ? out : [...loop];
 }
 
 function simplify(points: readonly TilePoint[]): TilePoint[] {

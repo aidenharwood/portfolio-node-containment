@@ -9,7 +9,7 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 9, "row": 7 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 29, "y": 27, "width": 10, "height": 8 }, "height": 10 },
+    { "kind": "rise", "rect": { "x": 29, "y": 27, "width": 10, "height": 8 }, "height": 13 },
     { "kind": "building", "id": "inverse-house", "rect": { "x": 30, "y": 28, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 30, "y": 35, "width": 8, "height": 2 }, "tile": "plating" },
     { "kind": "patch", "rect": { "x": 33, "y": 35, "width": 2, "height": 2 }, "tile": "plating" },

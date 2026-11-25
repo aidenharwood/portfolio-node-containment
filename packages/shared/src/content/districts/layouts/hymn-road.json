@@ -9,12 +9,12 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 12, "row": 4 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 28, "y": 30, "width": 14, "height": 10 }, "height": 12 },
+    { "kind": "rise", "rect": { "x": 28, "y": 30, "width": 14, "height": 10 }, "height": 11 },
     { "kind": "building", "id": "hymn-road-waystation", "rect": { "x": 29, "y": 31, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 31, "y": 40, "width": 8, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 34, "y": 40, "width": 2, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 34, "y": 41, "width": 11, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 44, "y": 40, "width": 2, "height": 3 }, "tile": "gravel" }
+    { "kind": "patch", "rect": { "x": 34, "y": 40, "width": 2, "height": 3 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 34, "y": 42, "width": 12, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 45, "y": 40, "width": 2, "height": 4 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -47,7 +47,8 @@
     { "id": "hymn-road-poi-steppe-pilgrim-cache-0", "object": "steppe-pilgrim-cache", "at": { "room": "ground", "dx": 55, "dy": 36 } },
     { "id": "hymn-road-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 30, "dy": 40 }, "facing": "east" },
     { "id": "hymn-road-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 39, "dy": 40 }, "facing": "west" },
-    { "id": "hymn-road-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 37, "dy": 43 }, "facing": "north" }
+    { "id": "hymn-road-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 36, "dy": 44 }, "facing": "north" },
+    { "id": "hymn-road-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 44, "dy": 44 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [

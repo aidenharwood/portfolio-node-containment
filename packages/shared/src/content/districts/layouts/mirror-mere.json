@@ -9,12 +9,12 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 16, "row": 7 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 29, "y": 30, "width": 10, "height": 8 }, "height": 9 },
+    { "kind": "rise", "rect": { "x": 29, "y": 30, "width": 10, "height": 8 }, "height": 10 },
     { "kind": "building", "id": "mere-hut", "rect": { "x": 30, "y": 31, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 30, "y": 38, "width": 8, "height": 2 }, "tile": "gravel" },
     { "kind": "patch", "rect": { "x": 33, "y": 38, "width": 2, "height": 3 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 33, "y": 40, "width": 11, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 43, "y": 36, "width": 2, "height": 6 }, "tile": "gravel" }
+    { "kind": "patch", "rect": { "x": 33, "y": 40, "width": 10, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 42, "y": 36, "width": 2, "height": 6 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -22,7 +22,7 @@
     { "room": "mere-hut", "name": "Mere Hut", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 5, "dy": 33 }
+    "start": { "room": "ground", "dx": 18, "dy": 40 }
   },
   "objects": [
     { "id": "mirror-mere-quest-mere-reflection", "object": "mere-reflection", "at": { "room": "ground", "dx": 41, "dy": 39 } },
@@ -40,7 +40,7 @@
     { "id": "mirror-mere-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 29, "dy": 38 }, "facing": "east" },
     { "id": "mirror-mere-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 38 }, "facing": "west" },
     { "id": "mirror-mere-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 35, "dy": 42 }, "facing": "north" },
-    { "id": "mirror-mere-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 45, "dy": 40 }, "facing": "west" }
+    { "id": "mirror-mere-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 44, "dy": 39 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [
@@ -61,7 +61,8 @@
     { "id": "mirror-mere-choir-echo-12", "creature": "choir-echo", "at": { "room": "ground", "dx": 42, "dy": 58 } },
     { "id": "mirror-mere-red-twin-13", "creature": "red-twin", "at": { "room": "ground", "dx": 53, "dy": 6 } },
     { "id": "mirror-mere-shard-wisp-14", "creature": "shard-wisp", "at": { "room": "ground", "dx": 6, "dy": 52 } },
-    { "id": "mirror-mere-choir-echo-15", "creature": "choir-echo", "at": { "room": "ground", "dx": 28, "dy": 9 } }
+    { "id": "mirror-mere-choir-echo-15", "creature": "choir-echo", "at": { "room": "ground", "dx": 28, "dy": 9 } },
+    { "id": "mirror-mere-red-twin-16", "creature": "red-twin", "at": { "room": "ground", "dx": 5, "dy": 33 } }
   ],
   "lights": [],
   "decals": [],

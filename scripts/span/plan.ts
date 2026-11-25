@@ -1,4 +1,5 @@
-import { codeAt, COLUMNS, DROP, HEIGHT, MASSIF, PLACES, padOf, RAIL, regionAtSquare, ROWS, SEA, SEAMS, SEAM_HALF, SQUARE, WIDTH, type RailPoint } from './atlas.ts';
+import { valueNoise } from '../../packages/shared/src/world/noise.ts';
+import { codeAt, COLUMNS, DROP, HEIGHT, HULL, MASSIF, PLACES, padOf, RAIL, regionAtSquare, ROWS, SEA, SEAMS, SEAM_HALF, SQUARE, WIDTH, type RailPoint } from './atlas.ts';
 
 const hash = (x: number, y: number, seed: number): number => {
   let h = Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(seed, 2147483647);
@@ -57,12 +58,55 @@ export const nearPad = (x: number, y: number, margin: number): boolean =>
     return x >= pad.x - margin && y >= pad.y - margin && x < pad.x + pad.width + margin && y < pad.y + pad.height + margin;
   });
 
+export function seaDistance(x: number, y: number): number {
+  const column = Math.floor(x / SQUARE);
+  const row = Math.floor(y / SQUARE);
+  let best = Infinity;
+  for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+    if (isLandCode(codeAt(column + dc, row + dr))) continue;
+    const left = (column + dc) * SQUARE;
+    const top = (row + dr) * SQUARE;
+    best = Math.min(best, Math.hypot(Math.max(left - x, 0, x - (left + SQUARE - 1)), Math.max(top - y, 0, y - (top + SQUARE - 1))));
+  }
+  return best;
+}
+
+const ease = (from: number, to: number, value: number): number => {
+  const t = Math.min(1, Math.max(0, (value - from) / (to - from)));
+  return t * t * (3 - 2 * t);
+};
+
+const boxDistance = (box: { x: number; y: number; width: number; height: number }, x: number, y: number): number =>
+  Math.max(box.x - x, 0, x - (box.x + box.width - 1), box.y - y, y - (box.y + box.height - 1));
+
+const COAST_INSET = 7;
+const COAST_SWING = 14;
+const COAST_RIPPLE = 6;
+const COVE_DEPTH = 10;
+const HEADLAND_REACH = 5;
+const KEPT_COAST = 4;
+const COAST_MIN = 2;
+const COAST_MAX = 22;
+
+export function coastInset(x: number, y: number): number {
+  const swing = COAST_SWING * (valueNoise(11, x / 40, y / 40) - 0.5) + COAST_RIPPLE * (valueNoise(12, x / 12, y / 12) - 0.5);
+  const cove = COVE_DEPTH * ease(0.58, 0.82, valueNoise(13, x / 84, y / 84));
+  const headland = HEADLAND_REACH * ease(0.6, 0.85, valueNoise(14, x / 64, y / 64));
+  const pads = Math.min(...PLACES.map((place) => boxDistance(padOf(place), x, y)));
+  const rail = Math.min(...SEGMENTS.map((segment) => boxDistance(segment, x, y)));
+  const gates = Math.min(...GATE_PLANS.map((gate) => Math.max(Math.abs(gate.x + 0.5 - x), Math.abs(gate.y + 0.5 - y))));
+  const hull = boxDistance({ ...HULL, width: HULL.width + 14 }, x, y);
+  const calm = Math.min(ease(4, 22, pads), ease(6, 26, rail), ease(10, 30, gates), ease(8, 40, hull));
+  const inset = COAST_INSET + swing + cove - headland;
+  return Math.min(COAST_MAX, Math.max(COAST_MIN, KEPT_COAST + (inset - KEPT_COAST) * calm));
+}
+
 export function isLandTile(x: number, y: number): boolean {
   const code = codeAt(Math.floor(x / SQUARE), Math.floor(y / SQUARE));
   if (!isLandCode(code)) return false;
   if (nearPad(x, y, 4)) return true;
-  const toSea = distanceToCode(x, y, (other) => !isLandCode(other), 20);
-  return toSea > 3 + 10 * smooth(x, y, 11, 18);
+  const toSea = seaDistance(x, y);
+  return toSea > COAST_MAX || toSea > coastInset(x, y);
 }
 
 export function isMassifTile(x: number, y: number): boolean {

@@ -14,8 +14,8 @@
     { "kind": "patch", "rect": { "x": 30, "y": 38, "width": 8, "height": 2 }, "tile": "plating" },
     { "kind": "patch", "rect": { "x": 33, "y": 38, "width": 2, "height": 2 }, "tile": "plating" },
     { "kind": "patch", "rect": { "x": 33, "y": 39, "width": 10, "height": 2 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 42, "y": 25, "width": 2, "height": 16 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 37, "y": 24, "width": 7, "height": 2 }, "tile": "plating" }
+    { "kind": "patch", "rect": { "x": 42, "y": 24, "width": 2, "height": 17 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 37, "y": 23, "width": 7, "height": 2 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -45,7 +45,7 @@
     { "id": "grate-fields-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 36, "dy": 41 }, "facing": "north" },
     { "id": "grate-fields-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 44, "dy": 37 }, "facing": "west" },
     { "id": "grate-fields-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 44, "dy": 29 }, "facing": "west" },
-    { "id": "grate-fields-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 39, "dy": 26 }, "facing": "north" }
+    { "id": "grate-fields-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 40, "dy": 25 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],

@@ -9,10 +9,10 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 10, "row": 1 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 5, "y": 26, "width": 10, "height": 8 }, "height": 5 },
-    { "kind": "building", "id": "hull-shadow-shack", "rect": { "x": 6, "y": 27, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "patch", "rect": { "x": 6, "y": 34, "width": 8, "height": 2 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 9, "y": 34, "width": 2, "height": 7 }, "tile": "plating" }
+    { "kind": "rise", "rect": { "x": 16, "y": 11, "width": 10, "height": 8 }, "height": 1 },
+    { "kind": "building", "id": "hull-shadow-shack", "rect": { "x": 17, "y": 12, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 20, "y": 19, "width": 2, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 12, "y": 20, "width": 10, "height": 2 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -20,40 +20,41 @@
     { "room": "hull-shadow-shack", "name": "Hull Shadow Shack", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 48, "dy": 58 }
+    "start": { "room": "ground", "dx": 53, "dy": 3 }
   },
   "objects": [
     { "id": "hull-shadow-parked-car-0", "object": "parked-car", "at": { "room": "ground", "dx": 7, "dy": 58 } },
-    { "id": "hull-shadow-magnet-crane-2", "object": "magnet-crane", "at": { "room": "ground", "dx": 5, "dy": 18 } },
+    { "id": "hull-shadow-parked-car-1", "object": "parked-car", "at": { "room": "ground", "dx": 14, "dy": 44 } },
     { "id": "hull-shadow-parked-car-3", "object": "parked-car", "at": { "room": "ground", "dx": 22, "dy": 59 } },
     { "id": "hull-shadow-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 17, "dy": 50 } },
     { "id": "hull-shadow-wreck-plate-6", "object": "wreck-plate", "at": { "room": "ground", "dx": 9, "dy": 8 } },
+    { "id": "hull-shadow-tide-weed-7", "object": "tide-weed", "at": { "room": "ground", "dx": 8, "dy": 51 } },
     { "id": "hull-shadow-shack-bed-0", "object": "bed", "at": { "room": "hull-shadow-shack", "dx": 1, "dy": 0 } },
     { "id": "hull-shadow-shack-washer-1", "object": "washer", "at": { "room": "hull-shadow-shack", "dx": 4, "dy": 0 }, "facing": "south" },
     { "id": "hull-shadow-shack-shelving-2", "object": "shelving", "at": { "room": "hull-shadow-shack", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "hull-shadow-shack-table-3", "object": "table", "at": { "room": "hull-shadow-shack", "dx": 5, "dy": 3 } },
     { "id": "hull-shadow-shack-chair-4", "object": "chair", "at": { "room": "hull-shadow-shack", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "hull-shadow-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 7, "dy": 50 } },
-    { "id": "hull-shadow-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 5, "dy": 34 }, "facing": "east" },
-    { "id": "hull-shadow-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 14, "dy": 34 }, "facing": "west" }
+    { "id": "hull-shadow-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 7, "dy": 25 } },
+    { "id": "hull-shadow-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 17, "dy": 22 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
     { "id": "hull-shadow-rustling-0", "creature": "rustling", "at": { "room": "ground", "dx": 41, "dy": 16 } },
     { "id": "hull-shadow-hull-knocker-1", "creature": "hull-knocker", "at": { "room": "ground", "dx": 35, "dy": 9 } },
-    { "id": "hull-shadow-rustling-2", "creature": "rustling", "at": { "room": "ground", "dx": 19, "dy": 11 } },
     { "id": "hull-shadow-hull-knocker-3", "creature": "hull-knocker", "at": { "room": "ground", "dx": 52, "dy": 10 } },
+    { "id": "hull-shadow-rustling-4", "creature": "rustling", "at": { "room": "ground", "dx": 16, "dy": 28 } },
     { "id": "hull-shadow-hull-knocker-5", "creature": "hull-knocker", "at": { "room": "ground", "dx": 43, "dy": 59 } },
     { "id": "hull-shadow-rustling-6", "creature": "rustling", "at": { "room": "ground", "dx": 44, "dy": 9 } },
-    { "id": "hull-shadow-poi-rustling-0", "creature": "rustling", "at": { "room": "ground", "dx": 26, "dy": 22 } },
-    { "id": "hull-shadow-poi-hull-knocker-1", "creature": "hull-knocker", "at": { "room": "ground", "dx": 42, "dy": 24 } },
-    { "id": "hull-shadow-poi-rustling-2", "creature": "rustling", "at": { "room": "ground", "dx": 20, "dy": 21 } }
+    { "id": "hull-shadow-hull-knocker-7", "creature": "hull-knocker", "at": { "room": "ground", "dx": 12, "dy": 25 } },
+    { "id": "hull-shadow-rustling-8", "creature": "rustling", "at": { "room": "ground", "dx": 10, "dy": 31 } },
+    { "id": "hull-shadow-hull-knocker-9", "creature": "hull-knocker", "at": { "room": "ground", "dx": 5, "dy": 40 } },
+    { "id": "hull-shadow-rustling-10", "creature": "rustling", "at": { "room": "ground", "dx": 29, "dy": 6 } }
   ],
   "lights": [],
   "decals": [],
   "setPieces": [
-    { "id": "hull-shadow-landmark", "prefab": "landmark-lifeboat-hull", "at": { "room": "ground", "dx": 9, "dy": 42 }, "facing": "south" }
+    { "id": "hull-shadow-landmark", "prefab": "landmark-lifeboat-hull", "at": { "room": "ground", "dx": 8, "dy": 17 }, "facing": "south" }
   ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },

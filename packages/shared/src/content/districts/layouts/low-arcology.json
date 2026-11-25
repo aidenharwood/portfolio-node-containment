@@ -9,7 +9,7 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 2, "row": 3 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 30, "y": 18, "width": 14, "height": 10 }, "height": 7 },
+    { "kind": "rise", "rect": { "x": 30, "y": 18, "width": 14, "height": 10 }, "height": 8 },
     { "kind": "building", "id": "arcology-canteen", "rect": { "x": 31, "y": 19, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 33, "y": 28, "width": 8, "height": 2 }, "tile": "concrete" },
     { "kind": "patch", "rect": { "x": 36, "y": 28, "width": 2, "height": 2 }, "tile": "concrete" },

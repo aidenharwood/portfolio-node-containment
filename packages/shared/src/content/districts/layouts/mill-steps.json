@@ -9,7 +9,7 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 3, "row": 6 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 28, "y": 30, "width": 14, "height": 10 }, "height": 9 },
+    { "kind": "rise", "rect": { "x": 28, "y": 30, "width": 14, "height": 10 }, "height": 10 },
     { "kind": "building", "id": "terrace-mill", "rect": { "x": 29, "y": 31, "width": 12, "height": 8 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 31, "y": 40, "width": 8, "height": 2 }, "tile": "gravel" },
     { "kind": "patch", "rect": { "x": 34, "y": 40, "width": 2, "height": 2 }, "tile": "gravel" },

@@ -9,11 +9,11 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 14, "row": 3 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 8, "y": 47, "width": 10, "height": 8 }, "height": 4 },
+    { "kind": "rise", "rect": { "x": 8, "y": 47, "width": 10, "height": 8 }, "height": 6 },
     { "kind": "building", "id": "hermits-hut", "rect": { "x": 9, "y": 48, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 9, "y": 55, "width": 8, "height": 2 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 12, "y": 55, "width": 2, "height": 2 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 12, "y": 56, "width": 10, "height": 2 }, "tile": "plating" }
+    { "kind": "patch", "rect": { "x": 12, "y": 55, "width": 2, "height": 3 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 12, "y": 57, "width": 10, "height": 2 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -42,7 +42,7 @@
     { "id": "crater-shore-poi-hull-trace-2", "object": "hull-trace", "at": { "room": "ground", "dx": 24, "dy": 7 } },
     { "id": "crater-shore-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 8, "dy": 55 }, "facing": "east" },
     { "id": "crater-shore-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 17, "dy": 55 }, "facing": "west" },
-    { "id": "crater-shore-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 15, "dy": 58 }, "facing": "north" }
+    { "id": "crater-shore-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 14, "dy": 59 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [

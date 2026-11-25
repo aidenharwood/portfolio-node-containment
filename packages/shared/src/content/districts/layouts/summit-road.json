@@ -9,13 +9,13 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 6, "row": 7 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 31, "y": 30, "width": 14, "height": 10 }, "height": 12 },
+    { "kind": "rise", "rect": { "x": 31, "y": 30, "width": 14, "height": 10 }, "height": 11 },
     { "kind": "building", "id": "summit-toll", "rect": { "x": 32, "y": 31, "width": 12, "height": 8 }, "floor": "carpet", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 34, "y": 40, "width": 8, "height": 2 }, "tile": "plating" },
     { "kind": "patch", "rect": { "x": 37, "y": 40, "width": 2, "height": 2 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 37, "y": 41, "width": 10, "height": 2 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 46, "y": 27, "width": 2, "height": 16 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 41, "y": 26, "width": 7, "height": 2 }, "tile": "plating" }
+    { "kind": "patch", "rect": { "x": 29, "y": 41, "width": 10, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 28, "y": 27, "width": 2, "height": 16 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 28, "y": 26, "width": 10, "height": 2 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -43,10 +43,10 @@
     { "id": "summit-road-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 45, "dy": 23 } },
     { "id": "summit-road-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 33, "dy": 40 }, "facing": "east" },
     { "id": "summit-road-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 42, "dy": 40 }, "facing": "west" },
-    { "id": "summit-road-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 40, "dy": 43 }, "facing": "north" },
-    { "id": "summit-road-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 48, "dy": 39 }, "facing": "west" },
-    { "id": "summit-road-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 48, "dy": 31 }, "facing": "west" },
-    { "id": "summit-road-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 43, "dy": 28 }, "facing": "north" }
+    { "id": "summit-road-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 34, "dy": 43 }, "facing": "north" },
+    { "id": "summit-road-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 27, "dy": 39 }, "facing": "east" },
+    { "id": "summit-road-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 27, "dy": 31 }, "facing": "east" },
+    { "id": "summit-road-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 28 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],

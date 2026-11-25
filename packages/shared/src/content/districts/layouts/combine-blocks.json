@@ -9,12 +9,12 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 2, "row": 1 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 30, "y": 26, "width": 14, "height": 10 }, "height": 6 },
-    { "kind": "building", "id": "combine-block-lobby", "rect": { "x": 31, "y": 27, "width": 12, "height": 8 }, "floor": "carpet", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "patch", "rect": { "x": 33, "y": 36, "width": 8, "height": 2 }, "tile": "concrete" },
-    { "kind": "patch", "rect": { "x": 36, "y": 36, "width": 2, "height": 2 }, "tile": "concrete" },
-    { "kind": "patch", "rect": { "x": 36, "y": 37, "width": 12, "height": 2 }, "tile": "concrete" },
-    { "kind": "patch", "rect": { "x": 47, "y": 35, "width": 2, "height": 4 }, "tile": "concrete" }
+    { "kind": "rise", "rect": { "x": 26, "y": 27, "width": 14, "height": 10 }, "height": 3 },
+    { "kind": "building", "id": "combine-block-lobby", "rect": { "x": 27, "y": 28, "width": 12, "height": 8 }, "floor": "carpet", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 29, "y": 37, "width": 8, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 32, "y": 37, "width": 2, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 32, "y": 38, "width": 11, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 42, "y": 30, "width": 2, "height": 10 }, "tile": "concrete" }
   ],
   "tiles": [],
   "areas": [
@@ -22,14 +22,12 @@
     { "room": "combine-block-lobby", "name": "Combine Block Lobby", "safe": false }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 20, "dy": 39 }
+    "start": { "room": "ground", "dx": 49, "dy": 44 }
   },
   "objects": [
     { "id": "combine-blocks-parked-car-0", "object": "parked-car", "at": { "room": "ground", "dx": 29, "dy": 46 } },
-    { "id": "combine-blocks-bollard-1", "object": "bollard", "at": { "room": "ground", "dx": 26, "dy": 18 } },
-    { "id": "combine-blocks-steam-vent-3", "object": "steam-vent", "at": { "room": "ground", "dx": 45, "dy": 13 } },
-    { "id": "combine-blocks-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 44, "dy": 58 } },
-    { "id": "combine-blocks-crusher-housing-6", "object": "crusher-housing", "at": { "room": "ground", "dx": 36, "dy": 54 } },
+    { "id": "combine-blocks-food-stall-2", "object": "food-stall", "at": { "room": "ground", "dx": 15, "dy": 44 } },
+    { "id": "combine-blocks-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 36, "dy": 54 } },
     { "id": "combine-block-lobby-shelving-0", "object": "shelving", "at": { "room": "combine-block-lobby", "dx": 1, "dy": 0 }, "facing": "south" },
     { "id": "combine-block-lobby-shelving-1", "object": "shelving", "at": { "room": "combine-block-lobby", "dx": 2, "dy": 0 }, "facing": "south" },
     { "id": "combine-block-lobby-notice-board-2", "object": "notice-board", "at": { "room": "combine-block-lobby", "dx": 6, "dy": 0 }, "facing": "south" },
@@ -39,33 +37,30 @@
     { "id": "combine-block-lobby-table-6", "object": "table", "at": { "room": "combine-block-lobby", "dx": 4, "dy": 3 } },
     { "id": "combine-block-lobby-chair-7", "object": "chair", "at": { "room": "combine-block-lobby", "dx": 3, "dy": 2 }, "facing": "south" },
     { "id": "combine-block-lobby-chair-8", "object": "chair", "at": { "room": "combine-block-lobby", "dx": 4, "dy": 2 }, "facing": "south" },
-    { "id": "combine-blocks-poi-halcyon-lockbox-0", "object": "halcyon-lockbox", "at": { "room": "ground", "dx": 49, "dy": 39 } },
-    { "id": "combine-blocks-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 32, "dy": 36 }, "facing": "east" },
-    { "id": "combine-blocks-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 41, "dy": 36 }, "facing": "west" },
-    { "id": "combine-blocks-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 39, "dy": 39 }, "facing": "north" },
-    { "id": "combine-blocks-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 49, "dy": 37 }, "facing": "west" }
+    { "id": "combine-blocks-poi-halcyon-lockbox-0", "object": "halcyon-lockbox", "at": { "room": "ground", "dx": 53, "dy": 27 } },
+    { "id": "combine-blocks-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 28, "dy": 37 }, "facing": "east" },
+    { "id": "combine-blocks-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 37, "dy": 37 }, "facing": "west" },
+    { "id": "combine-blocks-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 35, "dy": 40 }, "facing": "north" },
+    { "id": "combine-blocks-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 44, "dy": 37 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "combine-blocks-ad-wraith-0", "creature": "ad-wraith", "at": { "room": "ground", "dx": 25, "dy": 41 } },
-    { "id": "combine-blocks-glass-hound-1", "creature": "glass-hound", "at": { "room": "ground", "dx": 16, "dy": 42 } },
-    { "id": "combine-blocks-glass-hound-4", "creature": "glass-hound", "at": { "room": "ground", "dx": 14, "dy": 34 } },
-    { "id": "combine-blocks-vent-moth-5", "creature": "vent-moth", "at": { "room": "ground", "dx": 57, "dy": 14 } },
-    { "id": "combine-blocks-ad-wraith-6", "creature": "ad-wraith", "at": { "room": "ground", "dx": 53, "dy": 54 } },
-    { "id": "combine-blocks-glass-hound-7", "creature": "glass-hound", "at": { "room": "ground", "dx": 20, "dy": 60 } },
-    { "id": "combine-blocks-vent-moth-8", "creature": "vent-moth", "at": { "room": "ground", "dx": 9, "dy": 42 } },
-    { "id": "combine-blocks-ad-wraith-9", "creature": "ad-wraith", "at": { "room": "ground", "dx": 49, "dy": 24 } },
-    { "id": "combine-blocks-glass-hound-10", "creature": "glass-hound", "at": { "room": "ground", "dx": 60, "dy": 31 } },
-    { "id": "combine-blocks-vent-moth-11", "creature": "vent-moth", "at": { "room": "ground", "dx": 37, "dy": 16 } },
-    { "id": "combine-blocks-ad-wraith-12", "creature": "ad-wraith", "at": { "room": "ground", "dx": 57, "dy": 21 } },
+    { "id": "combine-blocks-ad-wraith-0", "creature": "ad-wraith", "at": { "room": "ground", "dx": 53, "dy": 54 } },
+    { "id": "combine-blocks-glass-hound-1", "creature": "glass-hound", "at": { "room": "ground", "dx": 20, "dy": 60 } },
+    { "id": "combine-blocks-ad-wraith-3", "creature": "ad-wraith", "at": { "room": "ground", "dx": 60, "dy": 31 } },
+    { "id": "combine-blocks-glass-hound-4", "creature": "glass-hound", "at": { "room": "ground", "dx": 57, "dy": 21 } },
+    { "id": "combine-blocks-vent-moth-5", "creature": "vent-moth", "at": { "room": "ground", "dx": 29, "dy": 60 } },
+    { "id": "combine-blocks-ad-wraith-6", "creature": "ad-wraith", "at": { "room": "ground", "dx": 58, "dy": 43 } },
+    { "id": "combine-blocks-vent-moth-8", "creature": "vent-moth", "at": { "room": "ground", "dx": 10, "dy": 57 } },
+    { "id": "combine-blocks-ad-wraith-9", "creature": "ad-wraith", "at": { "room": "ground", "dx": 22, "dy": 48 } },
     { "id": "combine-block-lobby-ad-wraith-0", "creature": "ad-wraith", "at": { "room": "combine-block-lobby", "dx": 9, "dy": 5 } },
     { "id": "combine-block-lobby-ad-wraith-1", "creature": "ad-wraith", "at": { "room": "combine-block-lobby", "dx": 2, "dy": 5 } }
   ],
   "lights": [],
   "decals": [],
   "setPieces": [
-    { "id": "combine-blocks-landmark", "prefab": "landmark-combine-screen", "at": { "room": "ground", "dx": 50, "dy": 32 }, "facing": "south" }
+    { "id": "combine-blocks-landmark", "prefab": "landmark-combine-screen", "at": { "room": "ground", "dx": 45, "dy": 27 }, "facing": "south" }
   ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },

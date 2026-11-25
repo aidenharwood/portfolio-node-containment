@@ -9,7 +9,7 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 1, "row": 2 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 28, "y": 29, "width": 14, "height": 10 }, "height": 5 },
+    { "kind": "rise", "rect": { "x": 28, "y": 29, "width": 14, "height": 10 }, "height": 3 },
     { "kind": "building", "id": "capsule-block", "rect": { "x": 29, "y": 30, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 31, "y": 39, "width": 8, "height": 2 }, "tile": "concrete" },
     { "kind": "patch", "rect": { "x": 34, "y": 39, "width": 2, "height": 2 }, "tile": "concrete" },
@@ -22,7 +22,7 @@
     { "room": "capsule-block", "name": "Capsule Block", "safe": false }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 19, "dy": 40 }
+    "start": { "room": "ground", "dx": 12, "dy": 45 }
   },
   "objects": [
     { "id": "sprawl-north-bollard-0", "object": "bollard", "at": { "room": "ground", "dx": 21, "dy": 46 } },
@@ -30,9 +30,7 @@
     { "id": "sprawl-north-bollard-2", "object": "bollard", "at": { "room": "ground", "dx": 11, "dy": 28 } },
     { "id": "sprawl-north-steam-vent-3", "object": "steam-vent", "at": { "room": "ground", "dx": 17, "dy": 30 } },
     { "id": "sprawl-north-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 45, "dy": 42 } },
-    { "id": "sprawl-north-amber-trace-5", "object": "amber-trace", "at": { "room": "ground", "dx": 23, "dy": 8 } },
-    { "id": "sprawl-north-crusher-housing-6", "object": "crusher-housing", "at": { "room": "ground", "dx": 57, "dy": 33 } },
-    { "id": "sprawl-north-scrap-heap-7", "object": "scrap-heap", "at": { "room": "ground", "dx": 57, "dy": 41 } },
+    { "id": "sprawl-north-crusher-housing-6", "object": "crusher-housing", "at": { "room": "ground", "dx": 57, "dy": 41 } },
     { "id": "capsule-block-bed-0", "object": "bed", "at": { "room": "capsule-block", "dx": 1, "dy": 0 } },
     { "id": "capsule-block-bed-1", "object": "bed", "at": { "room": "capsule-block", "dx": 3, "dy": 0 } },
     { "id": "capsule-block-bed-2", "object": "bed", "at": { "room": "capsule-block", "dx": 5, "dy": 0 } },
@@ -56,16 +54,18 @@
   ],
   "npcs": [],
   "creatures": [
-    { "id": "sprawl-north-vent-moth-0", "creature": "vent-moth", "at": { "room": "ground", "dx": 48, "dy": 25 } },
-    { "id": "sprawl-north-glass-hound-1", "creature": "glass-hound", "at": { "room": "ground", "dx": 45, "dy": 12 } },
-    { "id": "sprawl-north-alley-crawler-2", "creature": "alley-crawler", "at": { "room": "ground", "dx": 34, "dy": 21 } },
+    { "id": "sprawl-north-vent-moth-0", "creature": "vent-moth", "at": { "room": "ground", "dx": 45, "dy": 12 } },
+    { "id": "sprawl-north-glass-hound-1", "creature": "glass-hound", "at": { "room": "ground", "dx": 34, "dy": 21 } },
+    { "id": "sprawl-north-alley-crawler-2", "creature": "alley-crawler", "at": { "room": "ground", "dx": 33, "dy": 5 } },
     { "id": "sprawl-north-vent-moth-3", "creature": "vent-moth", "at": { "room": "ground", "dx": 57, "dy": 8 } },
     { "id": "sprawl-north-glass-hound-4", "creature": "glass-hound", "at": { "room": "ground", "dx": 25, "dy": 20 } },
     { "id": "sprawl-north-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 43, "dy": 50 } },
-    { "id": "sprawl-north-glass-hound-7", "creature": "glass-hound", "at": { "room": "ground", "dx": 42, "dy": 23 } },
-    { "id": "sprawl-north-alley-crawler-8", "creature": "alley-crawler", "at": { "room": "ground", "dx": 41, "dy": 18 } },
-    { "id": "sprawl-north-glass-hound-10", "creature": "glass-hound", "at": { "room": "ground", "dx": 60, "dy": 56 } },
-    { "id": "sprawl-north-vent-moth-12", "creature": "vent-moth", "at": { "room": "ground", "dx": 38, "dy": 57 } },
+    { "id": "sprawl-north-vent-moth-6", "creature": "vent-moth", "at": { "room": "ground", "dx": 7, "dy": 18 } },
+    { "id": "sprawl-north-alley-crawler-8", "creature": "alley-crawler", "at": { "room": "ground", "dx": 42, "dy": 23 } },
+    { "id": "sprawl-north-vent-moth-9", "creature": "vent-moth", "at": { "room": "ground", "dx": 41, "dy": 18 } },
+    { "id": "sprawl-north-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 60, "dy": 56 } },
+    { "id": "sprawl-north-glass-hound-13", "creature": "glass-hound", "at": { "room": "ground", "dx": 38, "dy": 57 } },
+    { "id": "sprawl-north-alley-crawler-14", "creature": "alley-crawler", "at": { "room": "ground", "dx": 19, "dy": 40 } },
     { "id": "capsule-block-alley-crawler-0", "creature": "alley-crawler", "at": { "room": "capsule-block", "dx": 6, "dy": 3 } },
     { "id": "capsule-block-glass-hound-1", "creature": "glass-hound", "at": { "room": "capsule-block", "dx": 2, "dy": 3 } }
   ],

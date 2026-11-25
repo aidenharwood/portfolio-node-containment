@@ -9,7 +9,7 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 8, "row": 3 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 30, "y": 28, "width": 10, "height": 8 }, "height": 6 },
+    { "kind": "rise", "rect": { "x": 30, "y": 28, "width": 10, "height": 8 }, "height": 7 },
     { "kind": "building", "id": "underpass-squat", "rect": { "x": 31, "y": 29, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 31, "y": 36, "width": 8, "height": 2 }, "tile": "concrete" },
     { "kind": "patch", "rect": { "x": 34, "y": 36, "width": 2, "height": 2 }, "tile": "concrete" },

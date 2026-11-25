@@ -9,13 +9,13 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 7 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 21, "y": 24, "width": 14, "height": 10 }, "height": 8 },
-    { "kind": "building", "id": "spill-sluice-house", "rect": { "x": 22, "y": 25, "width": 12, "height": 8 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "patch", "rect": { "x": 24, "y": 34, "width": 8, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 27, "y": 34, "width": 2, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 17, "y": 35, "width": 12, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 16, "y": 21, "width": 2, "height": 16 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 16, "y": 20, "width": 12, "height": 2 }, "tile": "gravel" }
+    { "kind": "rise", "rect": { "x": 25, "y": 26, "width": 14, "height": 10 }, "height": 8 },
+    { "kind": "building", "id": "spill-sluice-house", "rect": { "x": 26, "y": 27, "width": 12, "height": 8 }, "floor": "concrete", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 28, "y": 36, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 31, "y": 36, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 23, "y": 37, "width": 10, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 22, "y": 23, "width": 2, "height": 16 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 22, "y": 22, "width": 11, "height": 2 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -31,7 +31,6 @@
     { "id": "spill-meadows-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 53, "dy": 43 } },
     { "id": "spill-meadows-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 49, "dy": 54 } },
     { "id": "spill-meadows-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 42, "dy": 55 } },
-    { "id": "spill-meadows-cable-drum-5", "object": "cable-drum", "at": { "room": "ground", "dx": 30, "dy": 40 } },
     { "id": "spill-meadows-dredge-spot-6", "object": "dredge-spot", "at": { "room": "ground", "dx": 51, "dy": 17 } },
     { "id": "spill-meadows-reed-bed-7", "object": "reed-bed", "at": { "room": "ground", "dx": 3, "dy": 56 } },
     { "id": "spill-sluice-house-ward-refinery-0", "object": "ward-refinery", "at": { "room": "spill-sluice-house", "dx": 1, "dy": 1 } },
@@ -41,13 +40,13 @@
     { "id": "spill-sluice-house-shelving-4", "object": "shelving", "at": { "room": "spill-sluice-house", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "spill-sluice-house-table-5", "object": "table", "at": { "room": "spill-sluice-house", "dx": 10, "dy": 5 } },
     { "id": "spill-sluice-house-chair-6", "object": "chair", "at": { "room": "spill-sluice-house", "dx": 10, "dy": 4 }, "facing": "south" },
-    { "id": "spill-meadows-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 36, "dy": 19 } },
-    { "id": "spill-meadows-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 23, "dy": 34 }, "facing": "east" },
-    { "id": "spill-meadows-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 32, "dy": 34 }, "facing": "west" },
-    { "id": "spill-meadows-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 24, "dy": 37 }, "facing": "north" },
-    { "id": "spill-meadows-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 15, "dy": 35 }, "facing": "east" },
-    { "id": "spill-meadows-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 15, "dy": 27 }, "facing": "east" },
-    { "id": "spill-meadows-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 17, "dy": 19 }, "facing": "south" }
+    { "id": "spill-meadows-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 41, "dy": 19 } },
+    { "id": "spill-meadows-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 27, "dy": 36 }, "facing": "east" },
+    { "id": "spill-meadows-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 36, "dy": 36 }, "facing": "west" },
+    { "id": "spill-meadows-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 28, "dy": 39 }, "facing": "north" },
+    { "id": "spill-meadows-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 21, "dy": 35 }, "facing": "east" },
+    { "id": "spill-meadows-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 21, "dy": 27 }, "facing": "east" },
+    { "id": "spill-meadows-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 25, "dy": 24 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],
@@ -65,12 +64,13 @@
     { "id": "spill-meadows-furrow-eel-10", "creature": "furrow-eel", "at": { "room": "ground", "dx": 41, "dy": 25 } },
     { "id": "spill-meadows-crop-magpie-11", "creature": "crop-magpie", "at": { "room": "ground", "dx": 42, "dy": 32 } },
     { "id": "spill-meadows-furrow-eel-12", "creature": "furrow-eel", "at": { "room": "ground", "dx": 14, "dy": 48 } },
+    { "id": "spill-meadows-crop-magpie-13", "creature": "crop-magpie", "at": { "room": "ground", "dx": 30, "dy": 23 } },
     { "id": "spill-meadows-furrow-eel-14", "creature": "furrow-eel", "at": { "room": "ground", "dx": 37, "dy": 43 } }
   ],
   "lights": [],
   "decals": [],
   "setPieces": [
-    { "id": "spill-meadows-landmark", "prefab": "landmark-mill-wheel", "at": { "room": "ground", "dx": 29, "dy": 17 }, "facing": "south" }
+    { "id": "spill-meadows-landmark", "prefab": "landmark-mill-wheel", "at": { "room": "ground", "dx": 34, "dy": 19 }, "facing": "south" }
   ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },

@@ -9,13 +9,12 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 7, "row": 12 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 28, "y": 29, "width": 10, "height": 8 }, "height": 6 },
+    { "kind": "rise", "rect": { "x": 28, "y": 29, "width": 10, "height": 8 }, "height": 4 },
     { "kind": "building", "id": "boatmans-hut", "rect": { "x": 29, "y": 30, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 29, "y": 37, "width": 8, "height": 2 }, "tile": "paving" },
     { "kind": "patch", "rect": { "x": 32, "y": 37, "width": 2, "height": 2 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 26, "y": 38, "width": 8, "height": 2 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 25, "y": 25, "width": 2, "height": 15 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 25, "y": 24, "width": 4, "height": 2 }, "tile": "paving" }
+    { "kind": "patch", "rect": { "x": 32, "y": 38, "width": 9, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 40, "y": 30, "width": 2, "height": 10 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -23,12 +22,12 @@
     { "room": "boatmans-hut", "name": "Boatman’s Hut", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 47, "dy": 3 }
+    "start": { "room": "ground", "dx": 49, "dy": 16 }
   },
   "objects": [
-    { "id": "lantern-cove-flood-mast-2", "object": "flood-mast", "at": { "room": "ground", "dx": 46, "dy": 45 } },
-    { "id": "lantern-cove-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 39, "dy": 9 } },
-    { "id": "lantern-cove-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 4, "dy": 45 } },
+    { "id": "lantern-cove-flood-mast-2", "object": "flood-mast", "at": { "room": "ground", "dx": 4, "dy": 39 } },
+    { "id": "lantern-cove-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 4, "dy": 45 } },
+    { "id": "lantern-cove-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 41, "dy": 12 } },
     { "id": "lantern-cove-street-bench-5", "object": "street-bench", "at": { "room": "ground", "dx": 14, "dy": 51 }, "facing": "south" },
     { "id": "lantern-cove-eel-trap-6", "object": "eel-trap", "at": { "room": "ground", "dx": 17, "dy": 36 } },
     { "id": "lantern-cove-cable-drum-7", "object": "cable-drum", "at": { "room": "ground", "dx": 30, "dy": 8 } },
@@ -38,12 +37,11 @@
     { "id": "boatmans-hut-shelving-2", "object": "shelving", "at": { "room": "boatmans-hut", "dx": 6, "dy": 0 }, "facing": "south" },
     { "id": "boatmans-hut-table-3", "object": "table", "at": { "room": "boatmans-hut", "dx": 5, "dy": 3 } },
     { "id": "boatmans-hut-chair-4", "object": "chair", "at": { "room": "boatmans-hut", "dx": 5, "dy": 2 }, "facing": "south" },
-    { "id": "lantern-cove-poi-kestrel-survey-locker-0", "object": "kestrel-survey-locker", "at": { "room": "ground", "dx": 36, "dy": 23 } },
+    { "id": "lantern-cove-poi-kestrel-survey-locker-0", "object": "kestrel-survey-locker", "at": { "room": "ground", "dx": 45, "dy": 34 } },
     { "id": "lantern-cove-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 28, "dy": 37 }, "facing": "east" },
     { "id": "lantern-cove-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 37, "dy": 37 }, "facing": "west" },
-    { "id": "lantern-cove-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 29, "dy": 40 }, "facing": "north" },
-    { "id": "lantern-cove-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 24, "dy": 34 }, "facing": "east" },
-    { "id": "lantern-cove-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 24, "dy": 26 }, "facing": "east" }
+    { "id": "lantern-cove-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 35, "dy": 40 }, "facing": "north" },
+    { "id": "lantern-cove-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 42, "dy": 35 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [
@@ -51,23 +49,21 @@
   ],
   "creatures": [
     { "id": "lantern-cove-feral-hound-0", "creature": "feral-hound", "at": { "room": "ground", "dx": 9, "dy": 32 } },
-    { "id": "lantern-cove-grounds-mite-1", "creature": "grounds-mite", "at": { "room": "ground", "dx": 38, "dy": 15 } },
-    { "id": "lantern-cove-courtyard-gull-2", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 19, "dy": 20 } },
-    { "id": "lantern-cove-feral-hound-3", "creature": "feral-hound", "at": { "room": "ground", "dx": 3, "dy": 7 } },
-    { "id": "lantern-cove-grounds-mite-4", "creature": "grounds-mite", "at": { "room": "ground", "dx": 3, "dy": 33 } },
-    { "id": "lantern-cove-courtyard-gull-5", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 24, "dy": 41 } },
-    { "id": "lantern-cove-feral-hound-6", "creature": "feral-hound", "at": { "room": "ground", "dx": 49, "dy": 36 } },
-    { "id": "lantern-cove-grounds-mite-7", "creature": "grounds-mite", "at": { "room": "ground", "dx": 17, "dy": 11 } },
-    { "id": "lantern-cove-courtyard-gull-8", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 43, "dy": 14 } },
-    { "id": "lantern-cove-feral-hound-9", "creature": "feral-hound", "at": { "room": "ground", "dx": 6, "dy": 52 } },
-    { "id": "lantern-cove-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 13, "dy": 21 } },
-    { "id": "lantern-cove-courtyard-gull-11", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 18, "dy": 6 } },
-    { "id": "lantern-cove-feral-hound-12", "creature": "feral-hound", "at": { "room": "ground", "dx": 42, "dy": 3 } }
+    { "id": "lantern-cove-grounds-mite-1", "creature": "grounds-mite", "at": { "room": "ground", "dx": 19, "dy": 20 } },
+    { "id": "lantern-cove-courtyard-gull-2", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 3, "dy": 7 } },
+    { "id": "lantern-cove-feral-hound-3", "creature": "feral-hound", "at": { "room": "ground", "dx": 3, "dy": 33 } },
+    { "id": "lantern-cove-grounds-mite-4", "creature": "grounds-mite", "at": { "room": "ground", "dx": 24, "dy": 41 } },
+    { "id": "lantern-cove-courtyard-gull-5", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 17, "dy": 11 } },
+    { "id": "lantern-cove-feral-hound-6", "creature": "feral-hound", "at": { "room": "ground", "dx": 6, "dy": 52 } },
+    { "id": "lantern-cove-grounds-mite-7", "creature": "grounds-mite", "at": { "room": "ground", "dx": 13, "dy": 21 } },
+    { "id": "lantern-cove-courtyard-gull-8", "creature": "courtyard-gull", "at": { "room": "ground", "dx": 18, "dy": 6 } },
+    { "id": "lantern-cove-feral-hound-9", "creature": "feral-hound", "at": { "room": "ground", "dx": 42, "dy": 3 } },
+    { "id": "lantern-cove-grounds-mite-10", "creature": "grounds-mite", "at": { "room": "ground", "dx": 47, "dy": 3 } }
   ],
   "lights": [],
   "decals": [],
   "setPieces": [
-    { "id": "lantern-cove-landmark", "prefab": "landmark-cove-lantern", "at": { "room": "ground", "dx": 30, "dy": 22 }, "facing": "south" }
+    { "id": "lantern-cove-landmark", "prefab": "landmark-cove-lantern", "at": { "room": "ground", "dx": 43, "dy": 28 }, "facing": "south" }
   ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },

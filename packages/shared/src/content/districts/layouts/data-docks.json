@@ -9,7 +9,7 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 3, "row": 3 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 27, "y": 17, "width": 14, "height": 10 }, "height": 7 },
+    { "kind": "rise", "rect": { "x": 27, "y": 17, "width": 14, "height": 10 }, "height": 9 },
     { "kind": "building", "id": "courier-office", "rect": { "x": 28, "y": 18, "width": 12, "height": 8 }, "floor": "carpet", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 30, "y": 27, "width": 8, "height": 2 }, "tile": "concrete" },
     { "kind": "patch", "rect": { "x": 33, "y": 27, "width": 2, "height": 2 }, "tile": "concrete" },
