@@ -4,10 +4,12 @@ import type { GameSettings, RenderScale } from '../../state/gameSettings.ts';
 import { createAmbienceLight, lightAmbience, type AmbienceLight } from '../sceneLook.ts';
 import { createBlendedAmbience, type BlendedAmbience } from '../world/ambienceBlend.ts';
 import type { FarBuild } from './farBuild.ts';
-import { farBuildFor } from './farJobs.ts';
+import { farBuildFor, landmarksFor } from './farJobs.ts';
 import { createChunkMask, createFarUniforms, FAR_MOODS, farTerrainMaterial, shareFarUniforms, type ChunkMask, type FarUniforms } from './farMaterial.ts';
+import type { Landmark } from './farLandmarks.ts';
 import { FarSea } from './farSea.ts';
 import type { FarTileArrays } from './farTerrainMesher.ts';
+import { LandmarkBeacons } from './landmarkBeacons.ts';
 
 export const FAR_HAZE_CAP = 0.006;
 export const FAR_REACHES: Readonly<Record<RenderScale, number>> = { performance: 600, balanced: 900, sharp: 1300, native: 1600 };
@@ -71,6 +73,7 @@ export interface FarFrame {
   readonly ambience: BlendedAmbience;
   readonly background: Color;
   readonly drawn: readonly ChunkCoord[];
+  readonly pixelRatio?: number;
 }
 
 export class FarView {
@@ -80,6 +83,7 @@ export class FarView {
   private readonly terrain: ShaderMaterial;
   private readonly meshes: Mesh[] = [];
   private readonly sea: FarSea;
+  private beacons: LandmarkBeacons | null = null;
   private reach = 0;
   private readonly light = createAmbienceLight();
   private maskKey = '';
@@ -97,6 +101,10 @@ export class FarView {
     this.setReach(reach);
     void farBuildFor(level, scene).then(
       (build) => this.accept(build),
+      () => undefined,
+    );
+    void landmarksFor(level, scene).then(
+      (landmarks) => this.acceptLandmarks(landmarks),
       () => undefined,
     );
   }
@@ -127,11 +135,18 @@ export class FarView {
     this.built = true;
   }
 
+  private acceptLandmarks(landmarks: readonly Landmark[]): void {
+    if (this.disposed || landmarks.length === 0) return;
+    this.beacons = new LandmarkBeacons(landmarks);
+    this.root.add(this.beacons.points);
+  }
+
   update(frame: FarFrame): void {
     this.uniforms.farFocus.value.copy(frame.focus);
     this.uniforms.aerialColor.value.copy(frame.background);
     lightColors(lightAmbience(frame.ambience, this.light), this.uniforms.nearSky.value, this.uniforms.nearGround.value, this.uniforms.nearKey.value);
     this.sea.update(frame.camera, this.reach);
+    this.beacons?.update(frame.focus, frame.pixelRatio ?? 1);
     let key = '';
     for (const { cx, cy } of frame.drawn) key += `${cx},${cy};`;
     if (key !== this.maskKey) {
@@ -147,6 +162,7 @@ export class FarView {
     this.meshes.length = 0;
     this.terrain.dispose();
     this.sea.dispose();
+    this.beacons?.dispose();
     this.mask.texture.dispose();
   }
 }

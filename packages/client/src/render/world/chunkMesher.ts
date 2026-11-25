@@ -1,5 +1,6 @@
 import type { TileRect } from '@containment/shared';
 import type { FarBuild } from '../far/farBuild.ts';
+import type { Landmark } from '../far/farLandmarks.ts';
 import type { FarCellSize } from '../far/farTerrainMesher.ts';
 import type { SceneRaster } from '../far/sceneRaster.ts';
 import { unpackStructure, type ChunkStructure, type PackedStructure } from './chunkStructure.ts';
@@ -29,12 +30,19 @@ export interface FarRequest {
   readonly cell: FarCellSize;
 }
 
-export type WorkerRequest = StructureRequest | RasterRequest | FarRequest;
+export interface LandmarksRequest {
+  readonly id: number;
+  readonly levelId: string;
+  readonly kind: 'landmarks';
+}
+
+export type WorkerRequest = StructureRequest | RasterRequest | FarRequest | LandmarksRequest;
 
 export type WorkerResult =
   | { readonly id: number; readonly structure: PackedStructure }
   | { readonly id: number; readonly raster: SceneRaster }
   | { readonly id: number; readonly far: FarBuild }
+  | { readonly id: number; readonly landmarks: readonly Landmark[] }
   | { readonly id: number; readonly error: string };
 
 export type StructureReply = WorkerResult | { readonly ready: true };
@@ -183,6 +191,10 @@ export class ChunkMesherPool {
 
   requestFar(levelId: string, cell: FarCellSize, priority: () => number): Promise<FarBuild> {
     return this.ask((id) => ({ id, levelId, kind: 'far', cell }), priority, (reply) => ('far' in reply ? reply.far : null));
+  }
+
+  requestLandmarks(levelId: string, priority: () => number): Promise<readonly Landmark[]> {
+    return this.ask((id) => ({ id, levelId, kind: 'landmarks' }), priority, (reply) => ('landmarks' in reply ? reply.landmarks : null));
   }
 
   private ask<T>(make: (id: number) => WorkerRequest, priority: () => number, read: (reply: WorkerResult) => T | null): Promise<T> {

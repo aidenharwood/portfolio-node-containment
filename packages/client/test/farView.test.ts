@@ -1,13 +1,16 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { chunkKey, chunkOf } from '@containment/shared';
+import { chunkKey, chunkOf, GAME_CONTENT } from '@containment/shared';
 import { FIXTURE_CONTENT } from '@containment/shared/fixtures';
 import { Color, Mesh, Vector3 } from 'three';
 import { zoneOfLevel } from '../src/editor/previewLevel.ts';
 import { blendedOf, chunkMaskBounds, FarView, lightColors, writeChunkMask } from '../src/render/far/farView.ts';
 import { createChunkMask, createFarUniforms } from '../src/render/far/farMaterial.ts';
+import { planLandmarks, type Landmark } from '../src/render/far/farLandmarks.ts';
 import { FAR_SEA_LEVEL, FarSea, seaRadiance } from '../src/render/far/farSea.ts';
 import { FAR_SINK } from '../src/render/far/farTerrainMesher.ts';
+import { beaconPixels, LandmarkBeacons } from '../src/render/far/landmarkBeacons.ts';
+import { runPlan } from '../src/render/far/sceneRaster.ts';
 import { createAmbienceLight, lightAmbience } from '../src/render/sceneLook.ts';
 import { createBlendedAmbience } from '../src/render/world/ambienceBlend.ts';
 import { LevelScene } from '../src/render/world/levelScene.ts';
@@ -103,4 +106,20 @@ test('the far sea lies below every far shore, follows the camera to the far plan
   assert.ok(bright.g > dim.g);
   assert.ok(seaRadiance(new Color(50, 50, 50), new Color(50, 50, 50), new Color()).g <= 0.85 + 1e-6);
   sea.dispose();
+});
+
+test('the tallest landmarks, the Spindle among them, get beacons that grow with their height', () => {
+  const overworld = GAME_CONTENT.levels.get('overworld');
+  assert.ok(overworld);
+  const landmarks = runPlan(planLandmarks(overworld, GAME_CONTENT, overworld.scene));
+  assert.ok(landmarks.length >= 5);
+  for (let index = 1; index < landmarks.length; index++) assert.ok((landmarks[index - 1] as Landmark).height >= (landmarks[index] as Landmark).height);
+  const spindle = overworld.objects.find((placement) => placement.objectId === 'spindle-light');
+  assert.ok(spindle);
+  assert.ok(landmarks.some((landmark) => Math.abs(landmark.x - spindle.position.x) < 3 && Math.abs(landmark.z - spindle.position.y) < 3 && landmark.y > 12));
+  assert.ok(beaconPixels(18) > beaconPixels(13));
+  assert.ok(beaconPixels(1000) <= 30);
+  const beacons = new LandmarkBeacons(landmarks);
+  assert.equal(beacons.points.geometry.getAttribute('size').count, landmarks.length);
+  beacons.dispose();
 });

@@ -1,6 +1,7 @@
-import { GAME_CONTENT, type ResolvedLevel, type SceneLayout } from '@containment/shared';
+import { GAME_CONTENT, type GameContent, type ResolvedLevel, type SceneLayout } from '@containment/shared';
 import { chunkMesherPool } from '../world/chunkMesher.ts';
 import { farLevelOf, planFarBuild, type FarBuild } from './farBuild.ts';
+import { planLandmarks, type Landmark } from './farLandmarks.ts';
 import type { FarCellSize } from './farTerrainMesher.ts';
 import { planSceneRaster, type Plan, type SceneRaster } from './sceneRaster.ts';
 
@@ -8,6 +9,7 @@ export const FAR_CELL: FarCellSize = 4;
 const SLICE_MS = 6;
 const RASTER_PRIORITY = 0.5;
 const FAR_PRIORITY = 1.2;
+const LANDMARK_PRIORITY = 50;
 
 interface Pending<T> {
   readonly promise: Promise<T>;
@@ -16,6 +18,7 @@ interface Pending<T> {
 
 const RASTERS = new WeakMap<ResolvedLevel, Pending<SceneRaster>>();
 const BUILDS = new WeakMap<ResolvedLevel, Pending<FarBuild>>();
+const LANDMARKS = new WeakMap<ResolvedLevel, Pending<readonly Landmark[]>>();
 
 const pause = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -70,5 +73,15 @@ export function farBuildFor(level: ResolvedLevel, scene: SceneLayout = level.sce
     const pool = workerFor(level);
     if (!pool) return localFar(level, scene, cell);
     return pool.requestFar(level.id, cell, () => FAR_PRIORITY).catch(() => localFar(level, scene, cell));
+  }).promise;
+}
+
+export function landmarksFor(level: ResolvedLevel, scene: SceneLayout = level.scene, content: GameContent = GAME_CONTENT): Promise<readonly Landmark[]> {
+  const local = (): Promise<readonly Landmark[]> => runInSlices(planLandmarks(level, content, scene));
+  if (scene !== level.scene || content !== GAME_CONTENT) return local();
+  return remember(LANDMARKS, level, () => {
+    const pool = workerFor(level);
+    if (!pool) return local();
+    return pool.requestLandmarks(level.id, () => LANDMARK_PRIORITY).catch(local);
   }).promise;
 }

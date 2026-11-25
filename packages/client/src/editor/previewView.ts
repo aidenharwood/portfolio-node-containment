@@ -312,7 +312,7 @@ export class PreviewView {
       this.far = this.nextFar;
       this.nextFar = null;
     }
-    const frame = { camera: this.camera.position, focus, ambience: this.ambience, background: this.scene.background as Color, drawn: level.drawnChunks };
+    const frame = { camera: this.camera.position, focus, ambience: this.ambience, background: this.scene.background as Color, drawn: level.drawnChunks, pixelRatio: this.sceneLook.renderer.getPixelRatio() };
     this.far?.update(frame);
     this.nextFar?.update(frame);
   }

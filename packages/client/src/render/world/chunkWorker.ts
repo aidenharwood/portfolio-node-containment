@@ -1,5 +1,6 @@
 import { GAME_CONTENT } from '@containment/shared';
 import { farBuildTransfer, farLevelOf, planFarBuild } from '../far/farBuild.ts';
+import { planLandmarks } from '../far/farLandmarks.ts';
 import { rasterizeScene, rasterTransfer, runPlan } from '../far/sceneRaster.ts';
 import { decalsForLevel } from './floorDecals.ts';
 import { ownedLayoutOf, packStructure, planChunkStructure } from './chunkStructure.ts';
@@ -17,9 +18,11 @@ scope.onmessage = (event) => {
       if (request.kind === 'raster') {
         const raster = rasterizeScene(level.scene);
         scope.postMessage({ id, raster }, rasterTransfer(raster));
-      } else {
+      } else if (request.kind === 'far') {
         const far = runPlan(planFarBuild(farLevelOf(level), rasterizeScene(level.scene), request.cell));
         scope.postMessage({ id, far }, farBuildTransfer(far));
+      } else {
+        scope.postMessage({ id, landmarks: runPlan(planLandmarks(level, GAME_CONTENT, level.scene)) }, []);
       }
       return;
     }
