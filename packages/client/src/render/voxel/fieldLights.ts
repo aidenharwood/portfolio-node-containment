@@ -1,4 +1,5 @@
 import { Color, DataTexture, MathUtils, NearestFilter, RGBAFormat, UnsignedByteType, Vector2, Vector3, Vector4, type Material, type Matrix4, type Texture } from 'three';
+import { STEP_HEIGHT } from '../world/worldScale.ts';
 
 export const FIELD_LIGHT_LIMIT = 96;
 const GRID_CELL = 2;
@@ -22,6 +23,17 @@ const FOG_SCALE_XZ = 0.32;
 const FOG_SCALE_Y = 0.7;
 const FOG_WIND_X = 0.16;
 const FOG_WIND_Z = 0.09;
+const PUDDLE_RISE = 0.08;
+const WET_DARKEN = 0.15;
+const PUDDLE_DARKEN = 0.2;
+const STREAK_ACROSS = 900;
+const STREAK_ALONG = 30;
+const STREAK_LIMIT = 8;
+const STREAK_WEIGHT = 0.06;
+const MIRROR_STREAK_WEIGHT = 0.04;
+const HORIZON_SHEEN = 0.4;
+
+export type FieldSurface = 'ground' | 'mirror';
 
 export interface FieldLight {
   readonly position: Vector3;
@@ -135,8 +147,10 @@ export function clearFieldLights(): void {
   uniforms.fieldLightGridEnabled.value = 0;
 }
 
-export function receiveFieldLights<T extends Material>(material: T, actorFill = 0, wetSurface = true): T {
-  const wetGate = wetSurface ? 'fieldWetness > 0.0 && vFieldNormal.y > 0.9' : 'false';
+export function receiveFieldLights<T extends Material>(material: T, actorFill = 0, surface: FieldSurface = 'ground'): T {
+  const wetGate = surface === 'ground' ? 'fieldWetness > 0.0 && vFieldNormal.y > 0.9' : 'false';
+  const streakGate = surface === 'mirror' ? 'vFieldNormal.y > 0.9' : wetGate;
+  const mirror = surface === 'mirror' ? `reflectedLight.directDiffuse += min( fieldStreak, vec3( ${STREAK_LIMIT.toFixed(1)} ) ) * ${MIRROR_STREAK_WEIGHT.toFixed(3)};` : '';
   const fill = actorFill > 0 ? `reflectedLight.indirectDiffuse += diffuseColor.rgb * ${actorFill.toFixed(3)} * ( 0.4 + 0.6 * max( dot( geometryNormal, geometryViewDir ), 0.0 ) );` : '';
   material.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, uniforms);
@@ -201,10 +215,11 @@ float fieldFogDensity( vec3 p ) {
 	float billow = smoothstep( 0.4, 0.78, body * 0.68 + curl * 0.32 );
 	return exp( - ${FOG_FALLOFF.toFixed(3)} * max( p.y, 0.0 ) ) * ( 0.04 + 1.6 * billow * billow );
 }
-float fieldOpenSky( vec2 xz ) {
+vec2 fieldGround( vec2 xz ) {
 	ivec2 texel = ivec2( floor( xz + 0.5 ) - fieldSkyOrigin );
-	if ( texel.x < 0 || texel.y < 0 || texel.x >= ${SKY_MASK_TEXELS} || texel.y >= ${SKY_MASK_TEXELS} ) return 0.0;
-	return texelFetch( fieldSkyMask, texel, 0 ).r;
+	if ( texel.x < 0 || texel.y < 0 || texel.x >= ${SKY_MASK_TEXELS} || texel.y >= ${SKY_MASK_TEXELS} ) return vec2( 0.0, -1e4 );
+	vec2 ground = texelFetch( fieldSkyMask, texel, 0 ).rg;
+	return vec2( ground.r, ground.g * ${(255 * STEP_HEIGHT).toFixed(2)} );
 }`,
       )
       .replace(
@@ -212,9 +227,14 @@ float fieldOpenSky( vec2 xz ) {
         `#include <lights_fragment_begin>
 vec3 fieldScatter = vec3( 0.0 );
 vec3 fieldSheen = vec3( 0.0 );
+vec3 fieldStreak = vec3( 0.0 );
+vec2 fieldGroundHere = fieldGround( vFieldWorld.xz );
 vec3 fieldAlong = normalize( geometryViewDir - geometryNormal * dot( geometryViewDir, geometryNormal ) + vec3( 1e-4 ) );
-float fieldPuddle = step( vFieldWorld.y, 0.08 ) * smoothstep( 0.45, 0.75, fieldNoise( vFieldWorld.xz * 0.9 ) );
+float fieldPuddle = step( vFieldWorld.y, fieldGroundHere.y + ${PUDDLE_RISE.toFixed(2)} ) * smoothstep( 0.45, 0.75, fieldNoise( vFieldWorld.xz * 0.9 ) );
 vec3 fieldWetNormal = normalize( geometryNormal + fieldAlong * ( fieldHash( floor( vFieldWorld.xz * 8.0 ) ) - 0.5 ) * mix( 0.2, 0.05, fieldPuddle ) );
+vec3 fieldEyeRay = normalize( geometryPosition );
+vec3 fieldStreakAcross = normalize( cross( geometryNormal, fieldEyeRay ) + vec3( 1e-5 ) );
+vec3 fieldStreakAlong = cross( fieldEyeRay, fieldStreakAcross );
 ivec2 fieldCell = ivec2( floor( ( vFieldWorld.xz - fieldLightGridOrigin ) / FIELD_GRID_CELL ) );
 if ( fieldLightGridEnabled == 1 && fieldCell.x >= 0 && fieldCell.y >= 0 && fieldCell.x < FIELD_GRID_CELLS && fieldCell.y < FIELD_GRID_CELLS ) {
 	bool fieldDone = false;
@@ -239,6 +259,13 @@ if ( fieldLightGridEnabled == 1 && fieldCell.x >= 0 && fieldCell.y >= 0 && field
 			fieldIncident.visible = true;
 			fieldScatter += fieldIncident.color;
 			if ( ${wetGate} ) fieldSheen += fieldIncident.color * pow( max( dot( fieldWetNormal, normalize( fieldIncident.direction + geometryViewDir ) ), 0.0 ), 36.0 );
+			float fieldHeight = dot( fieldVector, geometryNormal );
+			if ( ${streakGate} && fieldHeight > 0.0 ) {
+				vec3 fieldMirror = normalize( fieldLight.xyz - 2.0 * fieldHeight * geometryNormal ) - fieldEyeRay;
+				float fieldAcrossOffset = dot( fieldMirror, fieldStreakAcross );
+				float fieldAlongOffset = dot( fieldMirror, fieldStreakAlong );
+				fieldStreak += fieldLightColors[ fieldIndex ] * ( 1.0 - fieldRatio ) * exp( - ${STREAK_ACROSS.toFixed(1)} * fieldAcrossOffset * fieldAcrossOffset - ${STREAK_ALONG.toFixed(1)} * fieldAlongOffset * fieldAlongOffset );
+			}
 			RE_Direct( fieldIncident, geometryPosition, geometryNormal, geometryViewDir, geometryClearcoatNormal, material, reflectedLight );
 		}
 	}
@@ -249,6 +276,17 @@ if ( fieldLightGridEnabled == 1 && fieldCell.x >= 0 && fieldCell.y >= 0 && field
         `#include <lights_fragment_end>
 reflectedLight.indirectDiffuse *= 1.0 + ${FACING_SHADE.toFixed(2)} * dot( vFieldNormal, vec3( ${KEY_FACING.x.toFixed(3)}, 0.0, ${KEY_FACING.y.toFixed(3)} ) );
 ${fill}
+if ( ${wetGate} ) {
+	float fieldWet = fieldWetness * fieldGroundHere.x;
+	reflectedLight.directDiffuse *= 1.0 - ( ${WET_DARKEN.toFixed(3)} + ${PUDDLE_DARKEN.toFixed(3)} * fieldPuddle ) * fieldWet;
+	reflectedLight.directDiffuse += min( fieldSheen, vec3( 6.0 ) ) * 0.035 * fieldWet * mix( 0.22, 1.0, fieldPuddle );
+	reflectedLight.directDiffuse += min( fieldStreak, vec3( ${STREAK_LIMIT.toFixed(1)} ) ) * ${STREAK_WEIGHT.toFixed(3)} * fieldWet * mix( 0.45, 1.0, fieldPuddle );
+#ifdef USE_FOG
+	float fieldFresnel = pow( 1.0 - clamp( dot( geometryNormal, geometryViewDir ), 0.0, 1.0 ), 3.0 ) * ${HORIZON_SHEEN.toFixed(3)} * fieldWet;
+	reflectedLight.directDiffuse += ( fogColor - reflectedLight.directDiffuse - reflectedLight.indirectDiffuse ) * fieldFresnel;
+#endif
+}
+${mirror}
 vec3 litRadiance = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse;
 float litPeak = max( max( litRadiance.r, litRadiance.g ), litRadiance.b );
 if ( litPeak > ${LIT_KNEE.toFixed(3)} ) {
@@ -257,12 +295,6 @@ if ( litPeak > ${LIT_KNEE.toFixed(3)} ) {
 	float litScale = litShoulder / litPeak;
 	reflectedLight.directDiffuse *= litScale;
 	reflectedLight.indirectDiffuse *= litScale;
-}
-if ( ${wetGate} ) {
-	float fieldWet = fieldWetness * fieldOpenSky( vFieldWorld.xz );
-	reflectedLight.directDiffuse *= 1.0 - ( 0.3 + 0.25 * fieldPuddle ) * fieldWet;
-	reflectedLight.indirectDiffuse *= 1.0 - ( 0.3 + 0.25 * fieldPuddle ) * fieldWet;
-	reflectedLight.directDiffuse += min( fieldSheen, vec3( 6.0 ) ) * 0.035 * fieldWet * mix( 0.22, 1.0, fieldPuddle );
 }`,
       )
       .replace(
@@ -284,7 +316,7 @@ if ( ${wetGate} ) {
 #include <fog_fragment>`,
       );
   };
-  material.customProgramCacheKey = () => `field-light-point-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}-lit-${LIT_KNEE}-${LIT_CEILING}-atmosphere-${SKY_MASK_TEXELS}-facing-${FACING_SHADE}-${KEY_FACING.x.toFixed(3)}-${KEY_FACING.y.toFixed(3)}-actor-${actorFill}-volfog${FOG_STEPS}-${FOG_CEILING}-${FOG_THICKNESS}-${FOG_FALLOFF}-puddle3-wet-${wetSurface}`;
+  material.customProgramCacheKey = () => `field-light-point-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}-lit-${LIT_KNEE}-${LIT_CEILING}-atmosphere-${SKY_MASK_TEXELS}-facing-${FACING_SHADE}-${KEY_FACING.x.toFixed(3)}-${KEY_FACING.y.toFixed(3)}-actor-${actorFill}-volfog${FOG_STEPS}-${FOG_CEILING}-${FOG_THICKNESS}-${FOG_FALLOFF}-puddle4-${surface}-streak-${STREAK_ACROSS}-${STREAK_ALONG}-${STREAK_WEIGHT}`;
   return material;
 }
 

@@ -193,7 +193,7 @@ export class LiquidSurface {
     geometry.setIndex(indices);
     geometry.computeBoundingSphere();
     const time = { value: 0 };
-    const material = receiveFieldLights(new MeshStandardMaterial({ roughness: 0.3, metalness: 0, transparent: true, depthWrite: false, side: DoubleSide }), 0, false);
+    const material = receiveFieldLights(new MeshStandardMaterial({ roughness: 0.3, metalness: 0, transparent: true, depthWrite: false, side: DoubleSide }), 0, 'mirror');
     const fieldCompile = material.onBeforeCompile.bind(material);
     const fieldKey = material.customProgramCacheKey.bind(material);
     material.onBeforeCompile = (shader, renderer) => {
