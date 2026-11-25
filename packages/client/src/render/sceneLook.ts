@@ -1,4 +1,4 @@
-import { ACESFilmicToneMapping, Color, CustomBlending, DirectionalLight, FogExp2, HalfFloatType, HemisphereLight, MathUtils, OneFactor, PCFSoftShadowMap, SRGBColorSpace, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget, ZeroFactor, type Camera, type Scene } from 'three';
+import { ACESFilmicToneMapping, Color, CustomBlending, DirectionalLight, FogExp2, HalfFloatType, HemisphereLight, LinearSRGBColorSpace, MathUtils, OneFactor, PCFSoftShadowMap, SRGBColorSpace, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget, ZeroFactor, type Camera, type Scene } from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
@@ -7,6 +7,9 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { assignLights, type LightAssignment } from './lightAssignment.ts';
 import { buildFieldLightGrid, clearFieldLights, FIELD_LIGHT_LIMIT, fieldLightFade, KEY_LIGHT_OFFSET, setFieldAtmosphere, setFieldLights, setFieldTime, type FieldLight } from './voxel/fieldLights.ts';
 import { lighten } from './voxel/palette.ts';
+import { SkyDome } from './sky/skyDome.ts';
+import { createSkyLook, skyLookFor } from './sky/skyLook.ts';
+import { sceneColorOf } from './sky/toneCurve.ts';
 import type { BlendedAmbience } from './world/ambienceBlend.ts';
 import { setBeamWeather } from './world/lightBeams.ts';
 import type { LightSource } from './world/levelScene.ts';
@@ -38,7 +41,6 @@ const DUSK_AMBIENT_CUT = 0.72;
 const DUSK_KEY_CUT = 0.55;
 const SKY_SUN_TINT = 0.4;
 const DAYLIGHT_FOG_THINNING = 0.7;
-const VOID_SKY_MIX = 0.7;
 const LUMINANCE = { r: 0.2126, g: 0.7152, b: 0.0722 } as const;
 const NIGHT_FROM = 0.3;
 const NIGHT_TO = 0.5;
@@ -227,6 +229,9 @@ export class SceneLook {
   private readonly snappedFocus = new Vector3();
   private readonly finish = new ShaderPass(FINISH_SHADER);
   private readonly flashColor = new Color(FLASH_SKY);
+  private readonly flashShown = new Color();
+  private readonly sky = new SkyDome();
+  private readonly skyLook = createSkyLook();
   private time = 0;
   flash = 0;
 
@@ -246,7 +251,7 @@ export class SceneLook {
     this.fog.density = fogDensity;
     scene.fog = this.fog;
     scene.background = this.background;
-    scene.add(this.hemisphere, this.keyLight, this.keyLight.target);
+    scene.add(this.hemisphere, this.keyLight, this.keyLight.target, this.sky.mesh);
 
     this.composer = new EffectComposer(this.renderer, new WebGLRenderTarget(1, 1, { type: HalfFloatType, samples: 4 }));
     this.composer.addPass(new RenderPass(scene, camera));
@@ -336,7 +341,7 @@ export class SceneLook {
   applyAmbience(ambience: BlendedAmbience): void {
     this.lastAmbience = ambience;
     this.fog.color.copy(ambience.fog);
-    this.background.copy(ambience.fog).multiplyScalar(0.55).lerp(ambience.sky, ambience.daylight * VOID_SKY_MIX);
+    skyLookFor(ambience, nightOf(ambience.darkness), this.skyLook);
     const light = lightAmbience(ambience, this.light);
     this.hemisphere.color.copy(light.sky);
     this.hemisphere.groundColor.copy(light.ground);
@@ -352,8 +357,12 @@ export class SceneLook {
     if (this.flash > 0 && !this.survey) {
       this.hemisphere.intensity += this.flash * FLASH_AMBIENT;
       this.keyLight.intensity += this.flash * FLASH_KEY;
-      this.background.lerp(this.flashColor.setHex(FLASH_SKY), this.flash * FLASH_SKY_MIX);
+      this.flashShown.setHex(FLASH_SKY, LinearSRGBColorSpace);
+      this.skyLook.horizon.lerp(this.flashShown, this.flash * FLASH_SKY_MIX);
+      this.skyLook.zenith.lerp(this.flashShown, this.flash * FLASH_SKY_MIX);
     }
+    this.sky.apply(this.skyLook, BASE_EXPOSURE);
+    sceneColorOf(this.skyLook.horizon, BASE_EXPOSURE, this.background);
     if (this.survey) {
       this.hemisphere.intensity = SURVEY_AMBIENT;
       this.keyLight.intensity = SURVEY_KEY;
@@ -428,6 +437,7 @@ export class SceneLook {
   render(camera: Camera, delta: number): void {
     this.time += delta;
     this.finish.uniforms.time!.value = this.time;
+    this.sky.setTime(this.time);
     setFieldTime(this.time);
     camera.updateMatrixWorld();
     setFieldLights(this.fieldLights.slice(0, this.activeFieldLights), camera.matrixWorldInverse);
@@ -440,6 +450,7 @@ export class SceneLook {
   }
 
   dispose(): void {
+    this.sky.dispose();
     this.composer.dispose();
     this.renderer.dispose();
   }
