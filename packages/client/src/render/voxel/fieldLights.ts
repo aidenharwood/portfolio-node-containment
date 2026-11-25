@@ -10,6 +10,8 @@ const LIT_KNEE = 0.5;
 const LIT_CEILING = 0.85;
 const SKY_MASK_TEXELS = 128;
 const FACING_SHADE = 0.18;
+export const KEY_LIGHT_OFFSET: readonly [number, number, number] = [-4, 12, 9];
+const KEY_FACING = new Vector2(KEY_LIGHT_OFFSET[0], KEY_LIGHT_OFFSET[2]).normalize();
 const FOG_STEPS = 8;
 const FOG_CEILING = 3;
 const FOG_REACH = 12;
@@ -245,7 +247,7 @@ if ( fieldLightGridEnabled == 1 && fieldCell.x >= 0 && fieldCell.y >= 0 && field
       .replace(
         '#include <lights_fragment_end>',
         `#include <lights_fragment_end>
-reflectedLight.indirectDiffuse *= 1.0 + ${FACING_SHADE.toFixed(2)} * dot( vFieldNormal, vec3( -0.38, 0.0, 0.92 ) );
+reflectedLight.indirectDiffuse *= 1.0 + ${FACING_SHADE.toFixed(2)} * dot( vFieldNormal, vec3( ${KEY_FACING.x.toFixed(3)}, 0.0, ${KEY_FACING.y.toFixed(3)} ) );
 ${fill}
 vec3 litRadiance = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse;
 float litPeak = max( max( litRadiance.r, litRadiance.g ), litRadiance.b );
@@ -282,7 +284,7 @@ if ( ${wetGate} ) {
 #include <fog_fragment>`,
       );
   };
-  material.customProgramCacheKey = () => `field-light-point-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}-lit-${LIT_KNEE}-${LIT_CEILING}-atmosphere-${SKY_MASK_TEXELS}-facing-${FACING_SHADE}-actor-${actorFill}-volfog${FOG_STEPS}-${FOG_CEILING}-${FOG_THICKNESS}-${FOG_FALLOFF}-puddle3-wet-${wetSurface}`;
+  material.customProgramCacheKey = () => `field-light-point-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}-lit-${LIT_KNEE}-${LIT_CEILING}-atmosphere-${SKY_MASK_TEXELS}-facing-${FACING_SHADE}-${KEY_FACING.x.toFixed(3)}-${KEY_FACING.y.toFixed(3)}-actor-${actorFill}-volfog${FOG_STEPS}-${FOG_CEILING}-${FOG_THICKNESS}-${FOG_FALLOFF}-puddle3-wet-${wetSurface}`;
   return material;
 }
 
