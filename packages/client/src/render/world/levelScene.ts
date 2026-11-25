@@ -187,6 +187,14 @@ export class LevelScene {
     return this.pendingNearby;
   }
 
+  get drawnChunks(): ChunkCoord[] {
+    const drawn = new Map<ChunkKey, ChunkCoord>();
+    for (const [key, { coord }] of this.placeholders) drawn.set(key, coord);
+    for (const [key, { coord, view }] of this.chunks) if (view.ready) drawn.set(key, coord);
+    for (const [key, view] of this.retiring) drawn.set(key, chunkOf({ x: view.region.x, y: view.region.y }));
+    return [...drawn.values()];
+  }
+
   get builtChunks(): readonly ChunkKey[] {
     return [...this.chunks].filter(([, { view }]) => view.ready).map(([key]) => key);
   }

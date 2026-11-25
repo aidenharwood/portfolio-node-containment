@@ -1,4 +1,6 @@
 import type { TileRect } from '@containment/shared';
+import type { FarBuild } from '../far/farBuild.ts';
+import type { FarCellSize } from '../far/farTerrainMesher.ts';
 import type { SceneRaster } from '../far/sceneRaster.ts';
 import { unpackStructure, type ChunkStructure, type PackedStructure } from './chunkStructure.ts';
 
@@ -20,11 +22,19 @@ export interface RasterRequest {
   readonly kind: 'raster';
 }
 
-export type WorkerRequest = StructureRequest | RasterRequest;
+export interface FarRequest {
+  readonly id: number;
+  readonly levelId: string;
+  readonly kind: 'far';
+  readonly cell: FarCellSize;
+}
+
+export type WorkerRequest = StructureRequest | RasterRequest | FarRequest;
 
 export type WorkerResult =
   | { readonly id: number; readonly structure: PackedStructure }
   | { readonly id: number; readonly raster: SceneRaster }
+  | { readonly id: number; readonly far: FarBuild }
   | { readonly id: number; readonly error: string };
 
 export type StructureReply = WorkerResult | { readonly ready: true };
@@ -169,6 +179,10 @@ export class ChunkMesherPool {
 
   requestRaster(levelId: string, priority: () => number): Promise<SceneRaster> {
     return this.ask((id) => ({ id, levelId, kind: 'raster' }), priority, (reply) => ('raster' in reply ? reply.raster : null));
+  }
+
+  requestFar(levelId: string, cell: FarCellSize, priority: () => number): Promise<FarBuild> {
+    return this.ask((id) => ({ id, levelId, kind: 'far', cell }), priority, (reply) => ('far' in reply ? reply.far : null));
   }
 
   private ask<T>(make: (id: number) => WorkerRequest, priority: () => number, read: (reply: WorkerResult) => T | null): Promise<T> {

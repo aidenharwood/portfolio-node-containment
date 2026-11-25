@@ -1,5 +1,6 @@
 import { GAME_CONTENT } from '@containment/shared';
-import { rasterizeScene, rasterTransfer } from '../far/sceneRaster.ts';
+import { farBuildTransfer, farLevelOf, planFarBuild } from '../far/farBuild.ts';
+import { rasterizeScene, rasterTransfer, runPlan } from '../far/sceneRaster.ts';
 import { decalsForLevel } from './floorDecals.ts';
 import { ownedLayoutOf, packStructure, planChunkStructure } from './chunkStructure.ts';
 import type { StructureReply, WorkerRequest } from './chunkMesher.ts';
@@ -13,8 +14,13 @@ scope.onmessage = (event) => {
     const level = GAME_CONTENT.levels.get(levelId);
     if (!level) throw new Error(`There is no level "${levelId}".`);
     if ('kind' in request) {
-      const raster = rasterizeScene(level.scene);
-      scope.postMessage({ id, raster }, rasterTransfer(raster));
+      if (request.kind === 'raster') {
+        const raster = rasterizeScene(level.scene);
+        scope.postMessage({ id, raster }, rasterTransfer(raster));
+      } else {
+        const far = runPlan(planFarBuild(farLevelOf(level), rasterizeScene(level.scene), request.cell));
+        scope.postMessage({ id, far }, farBuildTransfer(far));
+      }
       return;
     }
     const plan = planChunkStructure(ownedLayoutOf(level, level.scene), decalsForLevel(level), request.region);
