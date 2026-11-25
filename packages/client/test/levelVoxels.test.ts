@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import type { TileKindId, TilePoint } from '@containment/shared';
+import { groundAt, SLOPE_REACH } from '../src/render/world/ground.ts';
 import { buildTileVolume, type OwnedLayout } from '../src/render/world/levelVoxels.ts';
-import { STEP_VOXELS, TILE_RESOLUTION, ZONE_VOLUME_HEIGHT } from '../src/render/world/worldScale.ts';
+import { FLOOR_LAYERS, STEP_VOXELS, TILE_RESOLUTION, ZONE_VOLUME_HEIGHT, ZONE_VOXEL_SIZE } from '../src/render/world/worldScale.ts';
 import { VOXEL_EMPTY, VOXEL_SOLID } from '../src/render/voxel/voxelKinds.ts';
 
 const R = TILE_RESOLUTION;
@@ -97,9 +98,48 @@ test('natural ground one step below its neighbour slopes up to meet it instead o
   const volume = buildTileVolume(layout, { x: 0, y: 0, width: 4, height: 3 });
   const vz = R + 3;
   const profile = Array.from({ length: R * 2 }, (_, index) => topOf(volume, R + index, vz));
-  for (let index = 1; index < profile.length; index++) assert.ok(Math.abs((profile[index] as number) - (profile[index - 1] as number)) <= 1, profile.join(','));
-  assert.equal(profile[0], STEP_VOXELS + 1);
-  assert.equal(profile[profile.length - 1], STEP_VOXELS * 2 + 1);
+  for (let index = 1; index < profile.length; index++) {
+    const step = (profile[index] as number) - (profile[index - 1] as number);
+    assert.ok(step >= 0 && step <= 1, profile.join(','));
+  }
+  assert.ok(Math.abs((profile[0] as number) - (STEP_VOXELS + 1)) <= SLOPE_REACH, profile.join(','));
+  assert.ok(Math.abs((profile[profile.length - 1] as number) - (STEP_VOXELS * 2 + 1)) <= SLOPE_REACH, profile.join(','));
+});
+
+const gentleRun = (): OwnedLayout => {
+  const width = 20;
+  const rows = Array.from({ length: 5 }, () => Array.from({ length: width }, (): TileKindId => 'grass'));
+  const heights = Array.from({ length: 5 }, () => Array.from({ length: width }, (_, x) => 1 + Math.floor(x / 4)));
+  return layoutOf(rows, heights);
+};
+
+test('a gentle run of one step every four tiles draws an even slope instead of treads and ramps', () => {
+  const layout = gentleRun();
+  const volume = buildTileVolume(layout, { x: 0, y: 0, width: 20, height: 5 });
+  const vz = 2 * R + 3;
+  const profile = Array.from({ length: R * 14 }, (_, index) => topOf(volume, 3 * R + index, vz));
+  let flat = 1;
+  let longest = 1;
+  for (let index = 1; index < profile.length; index++) {
+    const step = (profile[index] as number) - (profile[index - 1] as number);
+    assert.ok(step >= 0 && step <= 1, profile.join(','));
+    flat = step === 0 ? flat + 1 : 1;
+    longest = Math.max(longest, flat);
+  }
+  assert.ok(longest <= R + R / 2, `flat run of ${longest} voxels: ${profile.join(',')}`);
+});
+
+test('ground under a point stands on the drawn slope', () => {
+  const layout = gentleRun();
+  const volume = buildTileVolume(layout, { x: 0, y: 0, width: 20, height: 5 });
+  for (let tx = 2; tx < 18; tx++) {
+    for (const lx of [0, 3, 7]) {
+      const vx = tx * R + lx;
+      const vz = 2 * R + 3;
+      const drawn = ((topOf(volume, vx, vz) as number) + 1 - FLOOR_LAYERS) * ZONE_VOXEL_SIZE;
+      assert.ok(Math.abs(groundAt(layout, tx + (lx + 0.5) / R - 0.5, 2 + (3 + 0.5) / R - 0.5) - drawn) < 1e-9, `${tx},${lx}`);
+    }
+  }
 });
 
 test('flat natural ground and paving beside a rise keep their level tops', () => {

@@ -4,6 +4,7 @@ import { darken, jitter, lighten, mix, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE, VOXEL_EMPTY, VOXEL_GLASS, VOXEL_SOLID, type VoxelKind } from '../voxel/voxelKinds.ts';
 import { doorGround, doorSpot, doorwayAt, frameVoxel, gatePostVoxel, revealVoxel, seamPylonVoxel, thresholdVoxel, type Doorway } from './doorways.ts';
 import { decalColor } from './floorDecals.ts';
+import { SLOPE_REACH, SLOPED, slopeHeadroom, slopeOffsets } from './ground.ts';
 import { blendLand, dominantLand, isLandBlend, landSpotOf, paletteAt, type LandPalette, type LandSpot } from './landPalette.ts';
 import { FACADE_BAND, HAZARD, WALL_PALETTE } from './wallPalette.ts';
 import { blockMark, laneMark, trackPieceAt, trackRise, type TrackMark } from './trackPieces.ts';
@@ -111,7 +112,7 @@ export function groundTopAt(layout: TileLayout, tx: number, ty: number): number 
 }
 
 export function groundBottomAt(layout: TileLayout, tx: number, ty: number): number {
-  let bottom = tileBase(layout, tx, ty);
+  let bottom = SLOPED.has(layout.tileAt({ x: tx, y: ty })) ? Math.max(0, tileBase(layout, tx, ty) - SLOPE_REACH) : tileBase(layout, tx, ty);
   for (const [dx, dy] of AROUND) {
     const beside = layout.tileAt({ x: tx + dx, y: ty + dy });
     bottom = Math.min(bottom, beside === 'void' ? 0 : tileBase(layout, tx + dx, ty + dy));
@@ -235,60 +236,6 @@ function paintCliff(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: nu
     }
   }
   paintSeamPylons(volume, layout, tx, ty);
-}
-
-const SLOPED: ReadonlySet<TileKindId> = new Set<TileKindId>(['grass', 'dirt', 'gravel', 'soil']);
-const SLOPE_REACH = STEP_VOXELS / 2;
-
-function leansToward(kind: TileKindId, height: number, base: number): boolean {
-  if (SLOPED.has(kind)) return true;
-  if (kind === 'water') return height < base;
-  return kind !== 'door' && kind !== 'track' && TILE_KINDS[kind].walkable;
-}
-
-function slopeCorners(layout: TileLayout, tx: number, ty: number): number[] | null {
-  const base = tileBase(layout, tx, ty);
-  const heights = [base, base, base, base, base, base, base, base, base];
-  let uneven = false;
-  for (const [dx, dy] of AROUND) {
-    const height = tileBase(layout, tx + dx, ty + dy);
-    if (Math.abs(height - base) > STEP_VOXELS || !leansToward(layout.tileAt({ x: tx + dx, y: ty + dy }), height, base)) continue;
-    heights[(dy + 1) * 3 + dx + 1] = height;
-    if (height !== base) uneven = true;
-  }
-  return uneven ? heights : null;
-}
-
-export function slopeOffsets(layout: TileLayout, tx: number, ty: number): Int8Array | null {
-  if (!SLOPED.has(layout.tileAt({ x: tx, y: ty }))) return null;
-  const heights = slopeCorners(layout, tx, ty);
-  if (!heights) return null;
-  const base = heights[4] as number;
-  const at = (dx: number, dy: number): number => heights[(dy + 1) * 3 + dx + 1] as number;
-  const offsets = new Int8Array(R * R);
-  for (let lz = 0; lz < R; lz++) {
-    for (let lx = 0; lx < R; lx++) {
-      const u = (lx + 0.5) / R - 0.5;
-      const v = (lz + 0.5) / R - 0.5;
-      const sx = u < 0 ? -1 : 1;
-      const sz = v < 0 ? -1 : 1;
-      const fx = Math.abs(u);
-      const fz = Math.abs(v);
-      const height = (1 - fx) * (1 - fz) * base + fx * (1 - fz) * at(sx, 0) + (1 - fx) * fz * at(0, sz) + fx * fz * at(sx, sz);
-      offsets[lz * R + lx] = Math.max(-SLOPE_REACH, Math.min(SLOPE_REACH, Math.round(height - base)));
-    }
-  }
-  return offsets;
-}
-
-function slopeHeadroom(layout: TileLayout, tx: number, ty: number): number {
-  if (!SLOPED.has(layout.tileAt({ x: tx, y: ty }))) return 0;
-  const base = tileBase(layout, tx, ty);
-  for (const [dx, dy] of AROUND) {
-    const height = tileBase(layout, tx + dx, ty + dy);
-    if (height > base && height - base <= STEP_VOXELS && leansToward(layout.tileAt({ x: tx + dx, y: ty + dy }), height, base)) return SLOPE_REACH;
-  }
-  return 0;
 }
 
 function slopeLand(volume: DenseVolume, layout: TileLayout, tx: number, ty: number, base: number): void {
