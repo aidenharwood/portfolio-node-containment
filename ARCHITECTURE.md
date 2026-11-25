@@ -444,10 +444,10 @@ Everything in the world is built procedurally from voxels at runtime; there are 
 - **Minimap** (`hud/minimap.ts`) and **world map** (`hud/worldMap.ts`): both paint the scene inside the plan (not the margin). The minimap names nearby districts at their footprint label points (`districtLabels`, `regionLabels` in `hud/mapLabels.ts`), so a split square's two districts do not double up, and pins the names of districts outside the view to its rim in their direction.
 - **`models/characterModel.ts`** builds an articulated `CharacterRig` (legs, torso, head and arms on pivots) from `CharacterAppearance` and equipped gear visuals. Geometry is cached per look, so NPCs that look the same share it.
 - **`gameRenderer.ts`** handles:
-  - renderer setup: ACES tone mapping, soft shadows from a key light that follows the focus, and a hemisphere fill;
+  - renderer setup: ACES tone mapping, soft shadows from a key light that follows the focus from the south-south-west (so the two wall faces the default camera sees read differently), and a hemisphere fill;
   - local lights, reassigned to the nearest 96 sources every quarter second (`lightAssignment.ts`) and shaded as omnidirectional **field lights** inside the voxel materials (`voxel/fieldLights.ts`), with no shadow maps. Field lights are binned into a 64 × 64 grid of 2-tile cells around the focus, holding up to 16 lights per cell they can reach, so each fragment only shades the lights listed in its own cell. Lights beyond the 96 fade out at the edge;
-  - an ambient floor: the hemisphere fill and key light dim with district `darkness` but never below a readable minimum, so dark districts keep their mood without hiding the floor;
-  - bloom post-processing;
+  - an ambient floor: the hemisphere fill and key light dim with district `darkness` and under a dark sky, but never below a readable minimum that holds whatever the tint or sky colour, so dark districts keep their mood without hiding the floor. Darker districts carry more of their tint into the fill, and the key light leans toward the sky's hue;
+  - bloom post-processing and a finishing grade that follow `darkness`: by day a gentle contrast curve, after dark a lift in the shadows, a lighter vignette and stronger, wider bloom;
   - entity sync and interpolation;
   - quest markers and hover, self and click markers;
   - raycast picking: entities, then objects, then walls block, then the ground plane resolves to a tile.
