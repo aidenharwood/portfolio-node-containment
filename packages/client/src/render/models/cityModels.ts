@@ -5,10 +5,11 @@ import { VOXEL_EMISSIVE, VOXEL_GLASS, type VoxelKind } from '../voxel/voxelKinds
 import { VoxelModel, type Paint } from '../voxel/voxelModel.ts';
 import type { AnimatedPart, ObjectModelParts } from './objectModels.ts';
 import type { MegaModel } from './megaModels.ts';
+import type { NatureModel } from './natureModels.ts';
 import type { TransitModel } from './transitModels.ts';
 import { MODEL_VOXEL_SIZE } from '../world/worldScale.ts';
 
-type CityModel = Exclude<WorldObjectModel, 'placeholder' | TransitModel | MegaModel>;
+type CityModel = Exclude<WorldObjectModel, 'placeholder' | TransitModel | MegaModel | NatureModel>;
 type Builder = (seed: number) => ObjectModelParts;
 
 export const CITY = {

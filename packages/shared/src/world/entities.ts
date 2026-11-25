@@ -113,7 +113,31 @@ export type WorldObjectModel =
   | 'ringFoot'
   | 'ringArch'
   | 'uplinkDish'
-  | 'uplinkCable';
+  | 'uplinkCable'
+  | 'broadleafTree'
+  | 'birchTree'
+  | 'orchardTree'
+  | 'windbentPine'
+  | 'deadTree'
+  | 'bush'
+  | 'hedgerow'
+  | 'fieldWall'
+  | 'hayBale'
+  | 'boulder'
+  | 'rockOutcrop'
+  | 'obsidianOutcrop'
+  | 'glassCrystals'
+  | 'fusedShards'
+  | 'scrapMound'
+  | 'tyreHeap'
+  | 'wreckedPanel'
+  | 'overgrownPlanter'
+  | 'rubbleHeap'
+  | 'ruinWall'
+  | 'treeStump'
+  | 'fallenLog'
+  | 'wildflowers'
+  | 'tallGrass';
 
 export interface ObjectInteraction {
   readonly verb: string;

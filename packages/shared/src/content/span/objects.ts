@@ -1,5 +1,6 @@
 import type { TilePoint } from '../../world/geometry.ts';
-import type { WorldObjectDefinition } from '../../world/entities.ts';
+import type { WorldObjectDefinition, WorldObjectModel } from '../../world/entities.ts';
+import type { FurnishingProfile } from '../furnishingCatalogue.ts';
 import type { FurnishingKit } from '../furnishingKit.ts';
 import { prefab, type Prefab } from '../prefabs/types.ts';
 import { gate, landmark, LANDMARK_HOMES, prop } from '../catalog/landmarks.ts';
@@ -100,8 +101,53 @@ export const liftObject = (end: LiftEnd): WorldObjectDefinition => ({
   ],
 });
 
+const WILD_HOMES = ['street', 'garden'] as const;
+const growth = { mount: 'free', homes: WILD_HOMES } as const;
+const rows = { mount: 'free', homes: WILD_HOMES, inRows: true } as const;
+
+const wild = (id: string, name: string, examine: string, model: WorldObjectModel, furnishing: FurnishingProfile, footprint?: { width: number; height: number }): WorldObjectDefinition =>
+  prop({ id, name, examine, model, modelScale: 2, furnishing, ...(footprint ? { footprint } : {}) });
+
+const flora = (id: string, name: string, examine: string, model: WorldObjectModel): WorldObjectDefinition => ({
+  id,
+  name,
+  examine,
+  model,
+  modelScale: 2,
+  blocksMovement: false,
+  furnishing: { mount: 'flat', homes: WILD_HOMES },
+  interactions: [],
+});
+
+export const SPAN_WILD_PROPS: readonly WorldObjectDefinition[] = [
+  wild('broadleaf-tree', 'Oak', 'A colony oak grown from ship’s stock. A Directorate tag nailed to the trunk reads SPECIMEN: STABLE.', 'broadleafTree', growth),
+  wild('birch-tree', 'Birch', 'Paper-white bark peeling in strips. Somebody carved a cohort number into it, and somebody else crossed it out.', 'birchTree', growth),
+  wild('orchard-tree', 'Apple Tree', 'An old co-op apple tree, pruned and propped. The fruit is counted twice a year, and the count never matches.', 'orchardTree', rows),
+  wild('windbent-pine', 'Wind Pine', 'A pine bent flat by a wind that only blows on the summit. It leans the same way whichever way it is planted.', 'windbentPine', growth),
+  wild('dead-tree', 'Dead Tree', 'Bare, bleached and streaked with rust where the scrap rain fell. Nothing nests in it.', 'deadTree', growth),
+  wild('bush', 'Bush', 'Bramble, and something in among it with too many leaves.', 'bush', growth),
+  wild('hedgerow', 'Hedgerow', 'A field hedge laid by hand, older than the terrace it marks.', 'hedgerow', rows),
+  wild('field-wall', 'Dry-stone Wall', 'Field stones stacked without mortar. Every co-op child is taught to put back the one they knock off.', 'fieldWall', rows),
+  wild('hay-bale', 'Hay Bale', 'Cut, rolled and left for a quota collection that never came.', 'hayBale', growth),
+  wild('boulder', 'Boulder', 'A boulder of Span rock, warmer than the air around it.', 'boulder', growth),
+  wild('rock-outcrop', 'Rock Outcrop', 'Layered rock breaking through the ground: the bones of the Massif.', 'rockOutcrop', growth, { width: 2, height: 2 }),
+  wild('obsidian-outcrop', 'Obsidian Spur', 'Black glass forced up out of the soil in spurs. It rings faintly when the wind changes.', 'obsidianOutcrop', growth, { width: 2, height: 2 }),
+  wild('glass-crystals', 'Glass Crystals', 'Precursor glass grown into crystals overnight. The light inside them is not a reflection.', 'glassCrystals', growth),
+  flora('fused-shards', 'Fused Shards', 'Sand fused into glass by something that passed this way once and did not stop.', 'fusedShards'),
+  wild('scrap-mound', 'Scrap Mound', 'Plate, girder and cable from the Meridian, too far gone even for the scavengers.', 'scrapMound', growth),
+  wild('tyre-heap', 'Tyre Heap', 'Tyres from vehicles nobody on the Span has ever seen run. The rubber is still soft.', 'tyreHeap', growth),
+  wild('wrecked-panel', 'Wrecked Panel', 'A hull panel from the Meridian, driven edge-first into the ground. The stencil still says DO NOT.', 'wreckedPanel', growth, { width: 2, height: 1 }),
+  wild('overgrown-planter', 'Overgrown Planter', 'A Combine planter gone wild. The plant has outgrown its box and started on the street.', 'overgrownPlanter', growth),
+  wild('rubble-heap', 'Rubble', 'Broken concrete and twisted rebar from something that used to stand here.', 'rubbleHeap', growth),
+  wild('ruin-wall', 'Ruined Wall', 'A stub of wall from a settlement older than the Directorate’s records. The stones are numbered.', 'ruinWall', growth, { width: 2, height: 1 }),
+  wild('tree-stump', 'Tree Stump', 'A stump, cut clean. The rings are too regular to count.', 'treeStump', growth),
+  wild('fallen-log', 'Fallen Log', 'A trunk brought down in a storm and going slowly back into the ground.', 'fallenLog', growth, { width: 2, height: 1 }),
+  flora('wildflowers', 'Wildflowers', 'Wildflowers. The Directorate’s botanists list them as harmless, with a question mark.', 'wildflowers'),
+  flora('tall-grass', 'Tall Grass', 'Long grass nodding in a wind you cannot feel.', 'tallGrass'),
+];
+
 export const SPAN_KIT: FurnishingKit = {
-  objects: [...SPAN_LANDMARKS, ...SEAM_GATES],
+  objects: [...SPAN_LANDMARKS, ...SEAM_GATES, ...SPAN_WILD_PROPS],
   prefabs: SPAN_LANDMARK_PREFABS,
   signatures: {},
 };
