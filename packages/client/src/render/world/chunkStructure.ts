@@ -116,7 +116,8 @@ export function interiorMaskOf(layout: TileLayout): (point: TilePoint) => boolea
 const OWNED = new WeakMap<TileLayout, { readonly definition: ResolvedLevel; readonly owned: OwnedLayout }>();
 
 export function ownedLayoutOf(definition: ResolvedLevel, layout: SceneLayout): OwnedLayout {
-  if (!definition.definition.land) return layout;
+  const { land } = definition.definition;
+  if (!land) return layout;
   const known = OWNED.get(layout);
   if (known?.definition === definition) return known.owned;
   const owners = definition.layout;
@@ -127,6 +128,7 @@ export function ownedLayoutOf(definition: ResolvedLevel, layout: SceneLayout): O
     heightAt: (point) => layout.heightAt(point),
     ownerAt: (point) => owners.districtAt(point) ?? owners.connectorAt(point),
     interiorAt: interiorMaskOf(layout),
+    regionAt: (point) => land.wardAt(point),
   };
   OWNED.set(layout, { definition, owned });
   return owned;

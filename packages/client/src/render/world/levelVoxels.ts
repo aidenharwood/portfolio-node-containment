@@ -1,9 +1,10 @@
-import { isBuildingWall, isOutdoorFloor, TILE_KINDS, tileKey, type DecalCell, type TileKindId, type TileLayout, type TilePoint, type TileRect, type WallMaterialId } from '@containment/shared';
+import { isBuildingWall, isOutdoorFloor, TILE_KINDS, tileKey, type DecalCell, type RegionId, type TileKindId, type TileLayout, type TilePoint, type TileRect, type WallMaterialId } from '@containment/shared';
 import { DenseVolume, RaisedCanvas, type VoxelCanvas } from '../voxel/denseVolume.ts';
 import { darken, jitter, lighten, mix, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE, VOXEL_EMPTY, VOXEL_GLASS, VOXEL_SOLID, type VoxelKind } from '../voxel/voxelKinds.ts';
 import { doorGround, doorSpot, doorwayAt, frameVoxel, gatePostVoxel, revealVoxel, seamPylonVoxel, thresholdVoxel, type Doorway } from './doorways.ts';
 import { decalColor } from './floorDecals.ts';
+import { blendLand, dominantLand, isLandBlend, landSpotOf, paletteAt, type LandPalette, type LandSpot } from './landPalette.ts';
 import { FACADE_BAND, HAZARD, WALL_PALETTE } from './wallPalette.ts';
 import { blockMark, laneMark, trackPieceAt, trackRise, type TrackMark } from './trackPieces.ts';
 import { FLOOR_LAYERS, STEP_VOXELS, TILE_RESOLUTION, WALL_LAYERS, ZONE_VOLUME_HEIGHT } from './worldScale.ts';
@@ -18,19 +19,12 @@ const COLORS = {
   platingSeam: 0x111b21,
   rivet: 0x3d5464,
   inlay: 0x1b6a80,
-  concrete: 0x2a2e31,
   grateFrame: 0x2b3a44,
   grateBar: 0x1c2830,
   grateGlow: 0x0e4252,
   carpet: 0x2a2338,
-  rust: 0x4a3122,
-  soil: 0x2e2418,
-  soilDark: 0x1f1810,
-  sprout: 0x4f8a3a,
-  sproutBright: 0x8ad05a,
   rustBright: 0x7a4a2a,
-  rustSeam: 0x22160f,
-  algae: 0x2f4a2a,
+  algae: 0x3c4434,
   carpetTrim: 0x5a4a2a,
   terrazzo: 0x34373a,
   terrazzoChip: 0x45484b,
@@ -64,19 +58,8 @@ const COLORS = {
   sleeper: 0x2e241c,
   tunnel: 0x040608,
   tunnelLamp: 0xff5e3a,
-  grass: 0x3f5e2a,
-  grassLight: 0x5c7a34,
-  grassDry: 0x6b6a3a,
-  dirt: 0x5a4632,
-  dirtDark: 0x463626,
-  gravel: 0x3a3e43,
-  gravelDark: 0x31353a,
-  gravelLight: 0x52585e,
-  asphalt: 0x505358,
-  asphaltWorn: 0x55575b,
-  asphaltLine: 0xd8c27a,
-  paving: 0x434548,
-  pavingJoint: 0x37393c,
+  gravel: 0x6a665e,
+  pavingJoint: 0x4a4b49,
   kerb: 0x66655f,
   kerbTop: 0x7c7a72,
   roofTray: 0x3c4044,
@@ -84,10 +67,6 @@ const COLORS = {
   shallows: 0x2e4a48,
   silt: 0x6e6450,
   wetSilt: 0x3c3a30,
-  rock: 0x5d5a55,
-  rockDark: 0x45423e,
-  rockLight: 0x7a766e,
-  moss: 0x4d6630,
   needles: 0x3a3022,
   trunk: 0x4a3420,
   pine: 0x24402a,
@@ -112,6 +91,7 @@ const isWallKind = (kind: TileKindId): boolean => TILE_KINDS[kind].structure ===
 export interface OwnedLayout extends TileLayout {
   readonly ownerAt?: (point: TilePoint) => string | undefined;
   readonly interiorAt?: (point: TilePoint) => boolean;
+  readonly regionAt?: (point: TilePoint) => RegionId | undefined;
 }
 
 const besideKind = (layout: OwnedLayout, tx: number, ty: number, x: number, y: number): TileKindId => {
@@ -166,19 +146,21 @@ export function paintTileRows(volume: DenseVolume, layout: OwnedLayout, region: 
       const kind = layout.tileAt({ x: tx, y: ty });
       if (kind === 'void') continue;
       const base = tileBase(layout, tx, ty);
+      const land = landSpotOf(layout.regionAt, tx, ty);
+      const palette = dominantLand(land);
       canvas.lift = base;
       if (isBuildingWall(kind)) paintWall(canvas, layout, tx, ty, kind);
-      else if (kind === 'rock') paintRock(canvas, layout, tx, ty);
-      else if (kind === 'cliff') paintCliff(canvas, layout, tx, ty);
+      else if (kind === 'rock') paintRock(canvas, layout, tx, ty, palette);
+      else if (kind === 'cliff') paintCliff(canvas, layout, tx, ty, palette);
       else if (kind === 'trees') paintTrees(canvas, layout, tx, ty);
-      else if (kind === 'fence') paintFence(canvas, layout, tx, ty);
+      else if (kind === 'fence') paintFence(canvas, layout, tx, ty, land);
       else if (kind === 'barrier') paintBarrier(canvas, layout, tx, ty);
       else if (kind === 'glass') paintGlass(canvas, tx, ty);
-      else if (kind === 'track') paintTrack(volume, layout, tx, ty, base);
-      else if (kind === 'door') paintDoorway(canvas, layout, tx, ty);
-      else paintFloor(canvas, kind, tx, ty, 'x', decals?.get(tileKey({ x: tx, y: ty })), seamsOf(layout, kind, tx, ty), blendNeighborsOf(layout, kind, tx, ty), wallsBeside(layout, tx, ty), kerbsOf(layout, kind, tx, ty));
-      if (LAND.has(kind)) shadeLand(canvas, layout, kind, tx, ty);
-      if (base > 0 && kind !== 'track') paintEarth(volume, layout, kind, tx, ty, base);
+      else if (kind === 'track') paintTrack(volume, layout, tx, ty, base, palette);
+      else if (kind === 'door') paintDoorway(canvas, layout, tx, ty, land);
+      else paintFloor(canvas, kind, tx, ty, 'x', land, decals?.get(tileKey({ x: tx, y: ty })), seamsOf(layout, kind, tx, ty), blendNeighborsOf(layout, kind, tx, ty), wallsBeside(layout, tx, ty), kerbsOf(layout, kind, tx, ty));
+      if (LAND.has(kind)) shadeLand(canvas, layout, kind, tx, ty, land);
+      if (base > 0 && kind !== 'track') paintEarth(volume, layout, kind, tx, ty, base, palette);
       if (SLOPED.has(kind)) slopeLand(volume, layout, tx, ty, base);
     }
   }
@@ -198,25 +180,28 @@ const AROUND: readonly (readonly [number, number])[] = [
 
 const SOD: ReadonlySet<TileKindId> = new Set<TileKindId>(['grass', 'dirt', 'soil', 'gravel', 'trees', 'water', 'coolant', 'track']);
 
-function rockColor(vx: number, vy: number, vz: number): number {
+function rockColor(vx: number, vy: number, vz: number, land: LandPalette): number {
   const strata = smoothNoise(vx + vy * 3, vz - vy * 2, 4, 103);
-  const color = strata > 0.66 ? COLORS.rockLight : strata < 0.3 ? COLORS.rockDark : COLORS.rock;
-  return jitter(color, 0.05, noise3(vx, vy, vz, 109));
+  const color = strata > 0.5 ? mix(land.rock, land.rockLight, ramp(0.55, 0.8, strata)) : mix(land.rock, land.rockDark, ramp(0.45, 0.2, strata));
+  return jitter(color, 0.02, noise3(vx, vy, vz, 109));
 }
 
-function earthColor(kind: TileKindId, vx: number, vy: number, vz: number, depth: number): number {
-  if (kind === 'cliff' || kind === 'rock') return rockColor(vx, vy, vz);
+const mossy = (color: number, vx: number, vz: number, land: LandPalette): number => mix(color, land.moss, Math.min(0.85, ramp(0.6, 0.78, smoothNoise(vx, vz, 6, 131)) * land.mossiness * 1.4));
+
+function earthColor(kind: TileKindId, vx: number, vy: number, vz: number, depth: number, land: LandPalette): number {
+  if (kind === 'cliff' || kind === 'rock') return rockColor(vx, vy, vz, land);
   if (SOD.has(kind)) {
-    if (depth === 0) return jitter(kind === 'grass' ? darken(COLORS.grass, 0.25) : COLORS.dirtDark, 0.06, noise3(vx, vy, vz, 151));
+    if (depth === 0) return jitter(kind === 'grass' ? darken(land.grass, 0.25) : land.earthDark, 0.02, noise3(vx, vy, vz, 151));
     const band = smoothNoise(vx * 0.5 + vy * 2, vz * 0.5 - vy, 3, 157);
-    return jitter(band > 0.6 ? COLORS.dirt : band < 0.28 ? COLORS.soilDark : COLORS.dirtDark, 0.07, noise3(vx, vy, vz, 163));
+    const tone = band > 0.5 ? mix(land.earth, land.dirt, ramp(0.5, 0.75, band)) : mix(land.earth, land.earthDark, ramp(0.5, 0.25, band));
+    return jitter(tone, 0.025, noise3(vx, vy, vz, 163));
   }
   const course = Math.floor(vy / 2);
   const joint = vy % 2 === 0 || (vx + vz + (course % 2) * 3) % 6 === 0;
   return jitter(joint ? COLORS.pavingJoint : COLORS.kerb, 0.04, noise3(vx, vy, vz, 167));
 }
 
-function paintEarth(volume: DenseVolume, layout: TileLayout, kind: TileKindId, tx: number, ty: number, base: number): void {
+function paintEarth(volume: DenseVolume, layout: TileLayout, kind: TileKindId, tx: number, ty: number, base: number, land: LandPalette): void {
   let bottom = base;
   for (const [dx, dy] of AROUND) {
     const beside = layout.tileAt({ x: tx + dx, y: ty + dy });
@@ -227,22 +212,26 @@ function paintEarth(volume: DenseVolume, layout: TileLayout, kind: TileKindId, t
       const vx = tx * R + lx;
       const vz = ty * R + lz;
       if (volume.kindAt(vx, base + SUBFLOOR, vz) === VOXEL_SOLID && volume.colorAt(vx, base + SUBFLOOR, vz) === COLORS.subfloor) {
-        volume.set(vx, base + SUBFLOOR, vz, earthColor(kind, vx, base + SUBFLOOR, vz, 0));
+        volume.set(vx, base + SUBFLOOR, vz, earthColor(kind, vx, base + SUBFLOOR, vz, 0, land));
       }
-      for (let vy = bottom; vy < base; vy++) volume.set(vx, vy, vz, earthColor(kind, vx, vy, vz, base - 1 - vy + 1));
+      for (let vy = bottom; vy < base; vy++) volume.set(vx, vy, vz, earthColor(kind, vx, vy, vz, base - 1 - vy + 1, land));
     }
   }
 }
 
-function paintCliff(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number): void {
+function paintCliff(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number, land: LandPalette): void {
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
       const vx = tx * R + lx;
       const vz = ty * R + lz;
-      volume.set(vx, SUBFLOOR, vz, rockColor(vx, SUBFLOOR, vz));
-      volume.set(vx, FLOOR, vz, noise3(vx, vz, 0, 131) > 0.7 ? COLORS.moss : rockColor(vx, FLOOR, vz));
-      const lip = smoothNoise(vx, vz, 3, 137) > 0.6 ? (noise3(vx, vz, 1, 139) > 0.6 ? 2 : 1) : 0;
-      for (let h = 0; h < lip; h++) volume.set(vx, FLOOR_LAYERS + h, vz, h === lip - 1 && noise3(vx, vz, h, 141) > 0.6 ? COLORS.moss : rockColor(vx, FLOOR_LAYERS + h, vz));
+      volume.set(vx, SUBFLOOR, vz, rockColor(vx, SUBFLOOR, vz, land));
+      volume.set(vx, FLOOR, vz, mossy(rockColor(vx, FLOOR, vz, land), vx, vz, land));
+      const rise = smoothNoise(vx, vz, 3, 137);
+      const lip = rise > 0.6 ? (rise > 0.74 ? 2 : 1) : 0;
+      for (let h = 0; h < lip; h++) {
+        const color = rockColor(vx, FLOOR_LAYERS + h, vz, land);
+        volume.set(vx, FLOOR_LAYERS + h, vz, h === lip - 1 ? mossy(color, vx, vz, land) : color);
+      }
     }
   }
   paintSeamPylons(volume, layout, tx, ty);
@@ -316,7 +305,7 @@ function slopeLand(volume: DenseVolume, layout: TileLayout, tx: number, ty: numb
       if (kind === VOXEL_EMPTY) continue;
       const color = volume.colorAt(vx, top, vz);
       if (rise > 0) {
-        for (let h = 0; h < rise; h++) volume.set(vx, top + h, vz, darken(color, 0.06 * (rise - h)));
+        for (let h = 0; h < rise; h++) volume.set(vx, top + h, vz, color);
         volume.set(vx, top + rise, vz, color, kind as VoxelKind);
         continue;
       }
@@ -329,6 +318,9 @@ function slopeLand(volume: DenseVolume, layout: TileLayout, tx: number, ty: numb
 const LAND: ReadonlySet<TileKindId> = new Set<TileKindId>(['grass', 'dirt', 'gravel', 'soil', 'water']);
 const LAND_WIDE = 192;
 const LAND_MID = 56;
+const LAND_HUE = 320;
+const WIDE_SHADE = 0.16;
+const MID_SHADE = 0.36;
 const SHORE_REACH = R * 0.85;
 
 function nearestBeside(layout: TileLayout, tx: number, ty: number, match: (kind: TileKindId) => boolean): readonly TilePoint[] {
@@ -350,6 +342,7 @@ function distanceToTiles(tiles: readonly TilePoint[], vx: number, vz: number): n
 interface LandField {
   readonly wide: readonly [number, number, number, number];
   readonly mid: readonly [number, number, number, number];
+  readonly hue: readonly [number, number, number, number];
 }
 
 function landFieldOf(tx: number, ty: number): LandField {
@@ -359,7 +352,7 @@ function landFieldOf(tx: number, ty: number): LandField {
     smoothNoise(tx * R, (ty + 1) * R, scale, salt),
     smoothNoise((tx + 1) * R, (ty + 1) * R, scale, salt),
   ];
-  return { wide: corners(LAND_WIDE, 271), mid: corners(LAND_MID, 277) };
+  return { wide: corners(LAND_WIDE, 271), mid: corners(LAND_MID, 277), hue: corners(LAND_HUE, 281) };
 }
 
 function sampleField(corners: readonly [number, number, number, number], lx: number, lz: number): number {
@@ -368,16 +361,19 @@ function sampleField(corners: readonly [number, number, number, number], lx: num
   return (corners[0] * (1 - fx) + corners[1] * fx) * (1 - fz) + (corners[2] * (1 - fx) + corners[3] * fx) * fz;
 }
 
-function landTint(color: number, kind: TileKindId, field: LandField, lx: number, lz: number): number {
+function landTint(color: number, kind: TileKindId, field: LandField, lx: number, lz: number, land: LandPalette): number {
   const wide = sampleField(field.wide, lx, lz);
   const mid = sampleField(field.mid, lx, lz);
   let tinted = color;
-  if (kind === 'grass') tinted = wide > 0.5 ? mix(tinted, COLORS.grassDry, (wide - 0.5) * 0.7) : mix(tinted, COLORS.pine, (0.5 - wide) * 0.35);
-  const shade = (wide - 0.5) * 0.12 + (mid - 0.5) * 0.14;
+  if (kind === 'grass') {
+    const hue = sampleField(field.hue, lx, lz);
+    tinted = hue > 0.5 ? mix(tinted, land.grassDry, (hue - 0.5) * land.drift) : mix(tinted, land.grassLush, (0.5 - hue) * land.drift * 1.4);
+  }
+  const shade = (wide - 0.5) * WIDE_SHADE + (mid - 0.5) * MID_SHADE;
   return shade < 0 ? darken(tinted, -shade) : lighten(tinted, shade * 0.6);
 }
 
-function shadeLand(volume: VoxelCanvas, layout: TileLayout, kind: TileKindId, tx: number, ty: number): void {
+function shadeLand(volume: VoxelCanvas, layout: TileLayout, kind: TileKindId, tx: number, ty: number, land: LandSpot): void {
   const water = kind === 'water';
   const shore = nearestBeside(layout, tx, ty, water ? (other) => other !== 'water' && other !== 'void' && TILE_KINDS[other].structure !== 'liquid' : (other) => other === 'water');
   if (water && shore.length === 0) return;
@@ -393,10 +389,11 @@ function shadeLand(volume: VoxelCanvas, layout: TileLayout, kind: TileKindId, tx
         continue;
       }
       if (volume.kindAt(vx, FLOOR, vz) !== VOXEL_SOLID) continue;
-      let color = field ? landTint(volume.colorAt(vx, FLOOR, vz), kind, field, lx, lz) : volume.colorAt(vx, FLOOR, vz);
+      const painted = volume.colorAt(vx, FLOOR, vz);
+      let color = field ? blendLand(land, (lx + 0.5) / R, (lz + 0.5) / R, (palette) => landTint(painted, kind, field, lx, lz, palette)) : painted;
       if (distance < R) {
-        const frontier = distance + (smoothNoise(vx, vz, 4, 263) - 0.5) * 7 + (noise3(vx, vz, 0, 269) - 0.5) * 1.5;
-        if (frontier < SHORE_REACH) color = jitter(mix(COLORS.wetSilt, COLORS.silt, Math.max(0, frontier) / SHORE_REACH), 0.04, noise3(vx, vz, 1, 269));
+        const frontier = distance + (smoothNoise(vx, vz, 4, 263) - 0.5) * 7 + (smoothNoise(vx, vz, 2, 269) - 0.5) * 1.5;
+        if (frontier < SHORE_REACH) color = jitter(mix(COLORS.wetSilt, COLORS.silt, Math.max(0, frontier) / SHORE_REACH), 0.02, noise3(vx, vz, 1, 269));
         else color = mix(color, COLORS.silt, (1 - distance / R) * 0.3);
       }
       volume.set(vx, FLOOR, vz, color);
@@ -443,24 +440,42 @@ function blendNeighborsOf(layout: OwnedLayout, kind: TileKindId, tx: number, ty:
   return neighbors;
 }
 
-const BLEND_BASE: Partial<Record<TileKindId, number>> = {
-  plating: COLORS.plating,
-  concrete: COLORS.concrete,
-  rust: COLORS.rust,
-  carpet: COLORS.carpet,
-  terrazzo: COLORS.terrazzo,
-  ceramic: COLORS.ceramic,
-  boards: COLORS.boards,
-  grass: COLORS.grass,
-  dirt: COLORS.dirt,
-  gravel: COLORS.gravel,
-  soil: COLORS.soil,
-  paving: COLORS.paving,
-  asphalt: COLORS.asphalt,
-};
+function baseColorOf(kind: TileKindId, land: LandPalette): number {
+  switch (kind) {
+    case 'grass':
+      return land.grass;
+    case 'dirt':
+      return land.dirt;
+    case 'gravel':
+      return land.gravel;
+    case 'soil':
+      return land.soil;
+    case 'rust':
+      return land.rust;
+    case 'paving':
+      return land.paving;
+    case 'asphalt':
+      return land.asphalt;
+    case 'plating':
+      return COLORS.plating;
+    case 'carpet':
+      return COLORS.carpet;
+    case 'terrazzo':
+      return COLORS.terrazzo;
+    case 'ceramic':
+      return COLORS.ceramic;
+    case 'boards':
+      return COLORS.boards;
+    default:
+      return land.concrete;
+  }
+}
+
+const NATURAL_SOFTNESS = 1.5;
 
 interface FloorBlend {
-  readonly kind: TileKindId | null;
+  readonly kind: TileKindId;
+  readonly share: number;
   readonly tint: number;
   readonly weight: number;
 }
@@ -472,7 +487,7 @@ function vergeFrontier(own: TileKindId, other: TileKindId, vx: number, vz: numbe
   return (smoothNoise(vx, vz, 3, 53) - 0.5) * 1.3 * BLEND_REACH + (noise3(vx, vz, 0, 59) - 0.5) * 2 - toward * VERGE_BIAS;
 }
 
-function floorBlend(own: TileKindId, neighbors: readonly BlendNeighbor[], vx: number, vz: number): FloorBlend | null {
+function floorBlend(own: TileKindId, neighbors: readonly BlendNeighbor[], vx: number, vz: number, land: LandPalette): FloorBlend | null {
   let nearest: BlendNeighbor | null = null;
   let best = Infinity;
   for (const neighbor of neighbors) {
@@ -485,15 +500,34 @@ function floorBlend(own: TileKindId, neighbors: readonly BlendNeighbor[], vx: nu
     }
   }
   if (!nearest || best >= BLEND_REACH) return null;
-  const verge = !naturalPair(own, nearest.kind) && vergePair(own, nearest.kind);
-  const frontier = verge ? vergeFrontier(own, nearest.kind, vx, vz) : naturalPair(own, nearest.kind)
-    ? (smoothNoise(vx, vz, 7, 53) - 0.5) * 2.2 * BLEND_REACH + (smoothNoise(vx, vz, 2, 57) - 0.5) * 4 + (noise3(vx, vz, 0, 59) - 0.5) * 2
+  const natural = naturalPair(own, nearest.kind);
+  const verge = !natural && vergePair(own, nearest.kind);
+  const frontier = verge ? vergeFrontier(own, nearest.kind, vx, vz) : natural
+    ? (smoothNoise(vx, vz, 7, 53) - 0.5) * 2.2 * BLEND_REACH + (smoothNoise(vx, vz, 2, 57) - 0.5) * 5
     : (smoothNoise(vx, vz, 5, 53) - 0.5) * 1.8 * BLEND_REACH + (noise3(vx, vz, 0, 59) - 0.5) * 3;
+  const reach = nearest.sign * frontier - best;
   return {
-    kind: nearest.sign * frontier > best ? nearest.kind : null,
-    tint: mix(BLEND_BASE[own] ?? COLORS.concrete, BLEND_BASE[nearest.kind] ?? COLORS.concrete, 0.5),
-    weight: (verge ? 0.2 : 0.5) * (1 - best / BLEND_REACH),
+    kind: nearest.kind,
+    share: natural ? ramp(-NATURAL_SOFTNESS, NATURAL_SOFTNESS, reach) : reach > 0 ? 1 : 0,
+    tint: mix(baseColorOf(own, land), baseColorOf(nearest.kind, land), 0.5),
+    weight: (verge ? 0.2 : natural ? 0.25 : 0.5) * (1 - best / BLEND_REACH),
   };
+}
+
+function landVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: number, tile: FloorTile, land: LandSpot): FloorVoxel | null {
+  const fx = (lx + 0.5) / R;
+  const fz = (lz + 0.5) / R;
+  const main = floorVoxel(kind, lx, lz, vx, vz, tile, paletteAt(land, fx, fz));
+  if (!main || main.kind !== VOXEL_SOLID || !isLandBlend(land)) return main;
+  return { color: blendLand(land, fx, fz, (palette) => floorVoxel(kind, lx, lz, vx, vz, tile, palette)?.color ?? main.color), kind: VOXEL_SOLID };
+}
+
+function blendedVoxel(kind: TileKindId, blend: FloorBlend | null, lx: number, lz: number, vx: number, vz: number, tile: FloorTile, land: LandSpot): FloorVoxel | null {
+  const own = landVoxel(kind, lx, lz, vx, vz, tile, land);
+  if (!blend || blend.share <= 0) return own;
+  const other = landVoxel(blend.kind, lx, lz, vx, vz, tile, land);
+  if (blend.share >= 1 || !own || !other || own.kind !== VOXEL_SOLID || other.kind !== VOXEL_SOLID) return blend.share >= 0.5 ? other : own;
+  return { color: mix(own.color, other.color, blend.share), kind: VOXEL_SOLID };
 }
 
 function seamsOf(layout: OwnedLayout, kind: TileKindId, tx: number, ty: number): Seams | null {
@@ -533,6 +567,9 @@ const GRIME_DEPTH = 0.2;
 const GRIME_FADE = 0.06;
 const MACRO_SCALE = 32;
 const MACRO_SWING = 0.1;
+const STREET_SCALE = 160;
+const STREET_SWING = 0.12;
+const STREETS: ReadonlySet<TileKindId> = new Set<TileKindId>(['paving', 'asphalt']);
 
 function wallDistance(walls: Seams, lx: number, lz: number): number {
   let nearest = Infinity;
@@ -543,10 +580,12 @@ function wallDistance(walls: Seams, lx: number, lz: number): number {
   return nearest;
 }
 
+const WEATHERED: ReadonlySet<TileKindId> = new Set<TileKindId>([...BUILT, 'paving', 'asphalt']);
+
 function weathered(color: number, kind: TileKindId, vx: number, vz: number, lx: number, lz: number, walls: Seams | null): number {
   let shaded = color;
-  if (BUILT.has(kind)) {
-    const swing = (smoothNoise(vx, vz, MACRO_SCALE, 97) - 0.5) * MACRO_SWING;
+  if (WEATHERED.has(kind)) {
+    const swing = (smoothNoise(vx, vz, MACRO_SCALE, 97) - 0.5) * MACRO_SWING + (STREETS.has(kind) ? (smoothNoise(vx, vz, STREET_SCALE, 99) - 0.5) * STREET_SWING : 0);
     shaded = swing < 0 ? darken(shaded, -swing) : lighten(shaded, swing * 0.5);
   }
   if (walls) {
@@ -556,8 +595,9 @@ function weathered(color: number, kind: TileKindId, vx: number, vz: number, lx: 
   return shaded;
 }
 
-function paintFloor(volume: VoxelCanvas, kind: TileKindId, tx: number, ty: number, axis: Axis, cells?: readonly DecalCell[], seams?: Seams | null, blendNeighbors: readonly BlendNeighbor[] = [], walls: Seams | null = null, kerbs: Seams | null = null): void {
+function paintFloor(volume: VoxelCanvas, kind: TileKindId, tx: number, ty: number, axis: Axis, land: LandSpot, cells?: readonly DecalCell[], seams?: Seams | null, blendNeighbors: readonly BlendNeighbor[] = [], walls: Seams | null = null, kerbs: Seams | null = null): void {
   const tile: FloorTile = { tx, ty, tone: noise3(tx, ty, 0, 11), axis };
+  const palette = dominantLand(land);
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
       const vx = tx * R + lx;
@@ -571,8 +611,8 @@ function paintFloor(volume: VoxelCanvas, kind: TileKindId, tx: number, ty: numbe
         volume.set(vx, SUBFLOOR, vz, jitter(COLORS.waterBed, 0.05, smoothNoise(vx, vz, 5, 43)));
         continue;
       }
-      const blend = blendNeighbors.length > 0 ? floorBlend(kind, blendNeighbors, vx, vz) : null;
-      const drawn = floorVoxel(blend?.kind ?? kind, lx, lz, vx, vz, tile);
+      const blend = blendNeighbors.length > 0 ? floorBlend(kind, blendNeighbors, vx, vz, palette) : null;
+      const drawn = blendedVoxel(kind, blend, lx, lz, vx, vz, tile, land);
       if (!drawn) continue;
       const surface = blend && drawn.kind === VOXEL_SOLID ? { color: mix(drawn.color, blend.tint, blend.weight), kind: drawn.kind } : drawn;
       if (seams && onSeam(seams, lx, lz)) {
@@ -620,7 +660,7 @@ function smoothNoise(x: number, z: number, scale: number, salt: number): number 
 
 const doorwayOf = (layout: OwnedLayout, tx: number, ty: number): Doorway => doorwayAt((x, y) => besideKind(layout, tx, ty, x, y), tx, ty);
 
-function paintDoorway(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number): void {
+function paintDoorway(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number, land: LandSpot): void {
   const door = doorwayOf(layout, tx, ty);
   const ground = doorGround(door);
   const tile: FloorTile = { tx, ty, tone: noise3(tx, ty, 0, 11), axis: door.alongX ? 'y' : 'x' };
@@ -630,7 +670,7 @@ function paintDoorway(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: 
       const vz = ty * R + lz;
       const spot = doorSpot(door, lx, lz);
       volume.set(vx, SUBFLOOR, vz, COLORS.subfloor);
-      const floor = thresholdVoxel(door, spot, noise3(vx, FLOOR, vz, 3)) ?? floorVoxel(ground, lx, lz, vx, vz, tile);
+      const floor = thresholdVoxel(door, spot, noise3(vx, FLOOR, vz, 3)) ?? landVoxel(ground, lx, lz, vx, vz, tile, land);
       volume.set(vx, FLOOR, vz, floor?.color ?? COLORS.gravel, floor?.kind ?? VOXEL_SOLID);
       for (let h = 0; h < WALL_LAYERS; h++) {
         const frame = frameVoxel(door, spot, h, noise3(vx, FLOOR_LAYERS + h, vz, 5));
@@ -664,7 +704,61 @@ function faceDepth(side: Side, lx: number, lz: number): number {
 
 const faceAlong = (side: Side, lx: number, lz: number): number => (side === 'north' || side === 'south' ? lx : lz);
 
-function floorVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: number, tile: FloorTile): FloorVoxel | null {
+const ramp = (from: number, to: number, value: number): number => smoothstep(Math.max(0, Math.min(1, (value - from) / (to - from))));
+
+const REPAIR_CELL = 5;
+
+function asphaltRepair(tx: number, ty: number): number {
+  const cx = Math.floor(tx / REPAIR_CELL);
+  const cy = Math.floor(ty / REPAIR_CELL);
+  if (noise3(cx, cy, 0, 331) > 0.3) return 0;
+  const width = 2 + Math.floor(noise3(cx, cy, 1, 331) * 3);
+  const height = 2 + Math.floor(noise3(cx, cy, 2, 331) * 3);
+  const x = cx * REPAIR_CELL + Math.floor(noise3(cx, cy, 3, 331) * (REPAIR_CELL - width + 1));
+  const y = cy * REPAIR_CELL + Math.floor(noise3(cx, cy, 4, 331) * (REPAIR_CELL - height + 1));
+  if (tx < x || ty < y || tx >= x + width || ty >= y + height) return 0;
+  return noise3(cx, cy, 5, 331) > 0.5 ? 1 : -1;
+}
+
+const PLATE = 14;
+const PLATE_JOINT = 0.9;
+const PLATE_RIM = 0.6;
+
+function plateAt(vx: number, vz: number): { readonly gap: number; readonly tone: number } {
+  const gx = Math.floor(vx / PLATE);
+  const gz = Math.floor(vz / PLATE);
+  let nearest = Infinity;
+  let second = Infinity;
+  let tone = 0.5;
+  for (let dz = -1; dz <= 1; dz++) {
+    for (let dx = -1; dx <= 1; dx++) {
+      const cx = gx + dx;
+      const cz = gz + dz;
+      const distance = Math.hypot(vx + 0.5 - (cx + 0.15 + noise3(cx, cz, 0, 401) * 0.7) * PLATE, vz + 0.5 - (cz + 0.15 + noise3(cx, cz, 1, 401) * 0.7) * PLATE);
+      if (distance < nearest) {
+        second = nearest;
+        nearest = distance;
+        tone = noise3(cx, cz, 2, 401);
+      } else if (distance < second) second = distance;
+    }
+  }
+  return { gap: second - nearest, tone };
+}
+
+function basaltVoxel(vx: number, vz: number, land: LandPalette): FloorVoxel {
+  const plate = plateAt(vx, vz);
+  const sheet = ramp(0.48, 0.72, smoothNoise(vx, vz, 72, 409));
+  const ground = mix(land.soil, land.glass, sheet * 0.85);
+  const toned = plate.tone > 0.5 ? lighten(ground, (plate.tone - 0.5) * 0.05) : darken(ground, (0.5 - plate.tone) * 0.06);
+  if (sheet > 0.5 && plate.gap < PLATE_RIM) {
+    if (sheet > 0.6 && noise3(vx, vz, 3, 411) > 0.985) return { color: land.glint, kind: VOXEL_EMISSIVE };
+    return { color: mix(toned, land.glassSheen, 0.14), kind: VOXEL_SOLID };
+  }
+  if (sheet <= 0.5 && plate.gap < PLATE_JOINT) return { color: darken(toned, 0.08), kind: VOXEL_SOLID };
+  return { color: jitter(toned, 0.008, noise3(vx, vz, 0, 413)), kind: VOXEL_SOLID };
+}
+
+function floorVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: number, tile: FloorTile, land: LandPalette): FloorVoxel | null {
   const solid = (color: number): FloorVoxel => ({ color, kind: VOXEL_SOLID });
   const edge = lx === 0 || lz === 0;
   switch (kind) {
@@ -675,8 +769,8 @@ function floorVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: nu
       return solid(jitter(COLORS.plating, 0.018, tile.tone));
     }
     case 'concrete': {
-      if ((even(tile.tx) && lx === 0) || (even(tile.ty) && lz === 0)) return solid(darken(COLORS.concrete, 0.28));
-      return solid(jitter(COLORS.concrete, 0.03, noise3(Math.floor(tile.tx / 2), Math.floor(tile.ty / 2), 0, 13)));
+      if ((even(tile.tx) && lx === 0) || (even(tile.ty) && lz === 0)) return solid(darken(land.concrete, 0.12));
+      return solid(jitter(jitter(land.concrete, 0.02, noise3(Math.floor(tile.tx / 2), Math.floor(tile.ty / 2), 0, 13)), 0.008, noise3(vx, vz, 0, 15)));
     }
     case 'grate': {
       if (edge || lx === R - 1 || lz === R - 1) return solid(COLORS.grateFrame);
@@ -684,21 +778,19 @@ function floorVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: nu
       return solid(COLORS.grateBar);
     }
     case 'rust': {
-      if (edge) return solid(COLORS.rustSeam);
+      if (edge) return solid(darken(land.rust, 0.25));
       const weather = smoothNoise(vx, vz, 7, 31);
-      if (weather > 0.7) return solid(darken(COLORS.rustBright, 0.1));
-      if (weather < 0.2) return solid(COLORS.algae);
-      return solid(jitter(COLORS.rust, 0.025, tile.tone));
+      const weathering = mix(mix(land.rust, COLORS.rustBright, ramp(0.55, 0.85, weather) * 0.45), COLORS.algae, ramp(0.35, 0.1, weather) * 0.4);
+      return solid(jitter(weathering, 0.015, tile.tone));
     }
     case 'soil': {
-      const bed = smoothNoise(vx, vz, 9, 47);
+      if (land.soilStyle === 'basalt') return basaltVoxel(vx, vz, land);
       const row = tile.axis === 'x' ? lz : lx;
-      const along = tile.axis === 'x' ? vx : vz;
-      if ((row === 2 || row === 5) && bed > 0.38) return solid(along % 3 === 0 && bed > 0.55 ? COLORS.sproutBright : COLORS.sprout);
-      return solid(jitter(COLORS.soil, 0.035, bed));
+      const furrow = (row === 2 || row === 5) && smoothNoise(vx, vz, 9, 47) > 0.38;
+      return solid(jitter(furrow ? land.soilRow : land.soil, 0.012, noise3(vx, vz, 0, 47)));
     }
     case 'carpet': {
-      if (even(tile.tx + tile.ty) && Math.abs(lx - 3.5) + Math.abs(lz - 3.5) === 2) return solid(mix(COLORS.carpet, COLORS.carpetTrim, 0.4));
+      if (even(tile.tx + tile.ty) && Math.abs(lx - 3.5) + Math.abs(lz - 3.5) === 2) return solid(mix(COLORS.carpet, COLORS.carpetTrim, 0.15));
       return solid(COLORS.carpet);
     }
     case 'terrazzo': {
@@ -710,45 +802,46 @@ function floorVoxel(kind: TileKindId, lx: number, lz: number, vx: number, vz: nu
       return solid(jitter(COLORS.terrazzo, 0.018, noise3(Math.floor(tile.tx / 4), Math.floor(tile.ty / 4), 0, 29)));
     }
     case 'ceramic': {
-      if (lx % 4 === 0 || lz % 4 === 0) return solid(COLORS.ceramicGrout);
-      return solid(jitter(COLORS.ceramic, 0.012, noise3(tile.tx * 2 + (lx >> 2), tile.ty * 2 + (lz >> 2), 0, 37)));
+      if (edge) return solid(darken(COLORS.ceramic, 0.18));
+      return solid(jitter(COLORS.ceramic, 0.012, noise3(tile.tx, tile.ty, 0, 37)));
     }
     case 'boards': {
       const across = tile.axis === 'x' ? lz : lx;
       const along = tile.axis === 'x' ? vx : vz;
-      const plank = Math.floor((tile.axis === 'x' ? vz : vx) / 2);
-      if (across % 2 === 0) return solid(COLORS.boardsSeam);
-      if ((along + plank * 5) % 24 === 0) return solid(COLORS.boardsStrip);
-      return solid(jitter(COLORS.boards, 0.05, noise3(plank, Math.floor((along + plank * 5) / 24), 0, 43)));
+      const plank = Math.floor((tile.axis === 'x' ? vz : vx) / 4);
+      if (across % 4 === 0) return solid(darken(COLORS.boards, 0.25));
+      const run = along + plank * 7;
+      if (run % 24 === 0) return solid(darken(COLORS.boards, 0.18));
+      return solid(jitter(COLORS.boards, 0.035, noise3(plank, Math.floor(run / 24), 0, 43)));
     }
     case 'grass': {
-      const patch = smoothNoise(vx, vz, 11, 61);
-      const blade = noise3(vx, vz, 0, 67);
-      if (patch > 0.72) return solid(jitter(COLORS.grassDry, 0.04, blade));
-      if (blade > 0.86) return solid(COLORS.grassLight);
-      return solid(jitter(mix(COLORS.grass, COLORS.grassLight, patch * 0.5), 0.05, blade));
+      const patch = smoothNoise(vx, vz, 40, 61);
+      const dry = ramp(0.5 - 0.12 * land.dryness, 0.95 - 0.12 * land.dryness, patch) * 0.75 * land.dryness;
+      return solid(jitter(mix(land.grass, land.grassDry, dry), 0.015, noise3(vx, vz, 0, 67)));
     }
     case 'dirt': {
-      const rut = smoothNoise(vx, vz, 6, 71);
-      return solid(jitter(rut > 0.6 ? COLORS.dirtDark : COLORS.dirt, 0.05, noise3(vx, vz, 0, 73)));
+      const rut = ramp(0.45, 0.75, smoothNoise(vx, vz, 12, 71));
+      return solid(jitter(mix(land.dirt, land.dirtDark, rut * 0.8), 0.013, noise3(vx, vz, 0, 73)));
     }
     case 'gravel': {
-      const clump = smoothNoise(vx, vz, 11, 79);
+      const clump = ramp(0.55, 0.1, smoothNoise(vx, vz, 11, 79));
       const stone = noise3(vx, vz, 0, 79);
-      if (stone > 0.975) return solid(COLORS.gravelLight);
-      return solid(jitter(clump < 0.3 ? COLORS.gravelDark : COLORS.gravel, 0.02, stone));
+      const ground = mix(land.gravel, land.gravelDark, clump * 0.6);
+      return solid(stone > 0.99 ? lighten(ground, 0.05) : jitter(ground, 0.013, stone));
     }
     case 'asphalt': {
-      const wear = smoothNoise(vx, vz, 9, 83);
-      return solid(jitter(wear > 0.72 ? COLORS.asphaltWorn : COLORS.asphalt, 0.015, noise3(vx, vz, 0, 89)));
+      const repair = asphaltRepair(tile.tx, tile.ty);
+      const ground = repair === 0 ? land.asphalt : repair > 0 ? lighten(land.asphalt, 0.045) : darken(land.asphalt, 0.06);
+      const wear = ramp(0.6, 0.85, smoothNoise(vx, vz, 24, 83));
+      return solid(jitter(mix(ground, lighten(ground, 0.06), wear * 0.5), 0.012, noise3(vx, vz, 0, 89)));
     }
     case 'paving': {
-      const course = Math.floor(vz / 4);
-      const shifted = vx + (even(course) ? 0 : 3);
-      if (shifted % 6 === 0 || vz % 4 === 0) return solid(COLORS.pavingJoint);
-      const slab = noise3(Math.floor(shifted / 6), course, 0, 233);
-      const tone = slab > 0.86 ? darken(COLORS.paving, 0.16) : slab < 0.2 ? lighten(COLORS.paving, 0.07) : jitter(COLORS.paving, 0.05, slab);
-      return solid(jitter(tone, 0.015, noise3(vx, vz, 0, 239)));
+      const course = Math.floor(vz / 6);
+      const shifted = vx + (even(course) ? 0 : 4);
+      if (shifted % 8 === 0 || vz % 6 === 0) return solid(darken(land.paving, 0.1));
+      const slab = noise3(Math.floor(shifted / 8), course, 0, 233);
+      const tone = slab > 0.9 ? darken(land.paving, 0.07) : slab < 0.1 ? lighten(land.paving, 0.04) : land.paving;
+      return solid(jitter(tone, 0.012, noise3(vx, vz, 0, 239)));
     }
     case 'hazard':
       return solid(even(Math.floor((vx + vz) / 4)) ? COLORS.hazardYellow : COLORS.hazardBlack);
@@ -856,7 +949,7 @@ function exteriorVoxel(material: WallMaterialId, tx: number, ty: number, side: S
       const offset = (h % 2) * 2;
       if ((u + offset) % 4 === 0) return { color: palette.joint };
       const brick = Math.floor((u + offset) / 4) + h * 7 + tx * 13 + ty * 31;
-      return { color: darken(jitter(palette.body, 0.05, noise3(brick, 0, 0, 223)), stain) };
+      return { color: darken(jitter(palette.body, 0.03, noise3(brick, 0, 0, 223)), stain) };
     }
     case 'blockwork': {
       const offset = (Math.floor(h / 3) % 2) * 2;
@@ -865,8 +958,8 @@ function exteriorVoxel(material: WallMaterialId, tx: number, ty: number, side: S
     }
     case 'cladding': {
       if (h === 8) return { color: darken(palette.body, 0.3) };
-      const rust = smoothNoise(vx + vz, vy, 3, 227) > 0.72 ? 0.4 : 0;
-      return { color: mix(u % 2 === 0 ? palette.joint : palette.body, COLORS.rustBright, rust) };
+      const streak = ramp(0.7, 0.86, smoothNoise(vx + vz, vy * 0.2, 2, 227)) * ramp(4, 13, h) * 0.25;
+      return { color: mix(u % 2 === 0 ? palette.joint : palette.body, COLORS.rustBright, streak) };
     }
     case 'wall': {
       if (h === 3 || h === 4) return { color: FACADE.band };
@@ -945,13 +1038,13 @@ function paintGround(volume: VoxelCanvas, tx: number, ty: number, color: number,
       const vx = tx * R + lx;
       const vz = ty * R + lz;
       volume.set(vx, SUBFLOOR, vz, COLORS.subfloor);
-      volume.set(vx, FLOOR, vz, jitter(color, 0.06, noise3(vx, vz, 0, salt)));
+      volume.set(vx, FLOOR, vz, jitter(color, 0.02, noise3(vx, vz, 0, salt)));
     }
   }
 }
 
-function paintRock(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number): void {
-  paintGround(volume, tx, ty, COLORS.rockDark, 97);
+function paintRock(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number, land: LandPalette): void {
+  paintGround(volume, tx, ty, land.rockDark, 97);
   const open = openSides(layout, tx, ty);
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
@@ -961,10 +1054,8 @@ function paintRock(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: num
       const crest = WALL_LAYERS - 1 - Math.floor(smoothNoise(vx, vz, 5, 101) * 7) - (outer ? 1 : 0);
       for (let h = 0; h <= crest; h++) {
         const vy = FLOOR_LAYERS + h;
-        const strata = smoothNoise(vx + h * 3, vz - h * 2, 4, 103);
-        const color = strata > 0.66 ? COLORS.rockLight : strata < 0.3 ? COLORS.rockDark : COLORS.rock;
-        const top = h === crest;
-        volume.set(vx, vy, vz, top && noise3(vx, vz, h, 107) > 0.55 ? COLORS.moss : jitter(color, 0.05, noise3(vx, vy, vz, 109)));
+        const color = rockColor(vx, vy, vz, land);
+        volume.set(vx, vy, vz, h === crest ? mossy(color, vx, vz, land) : color);
       }
     }
   }
@@ -1074,7 +1165,7 @@ function fenceAxis(layout: OwnedLayout, tx: number, ty: number): Axis {
   return isFence(tx - 1, ty) || isFence(tx + 1, ty) ? 'x' : 'y';
 }
 
-function paintFence(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number): void {
+function paintFence(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: number, land: LandSpot): void {
   const beside = [besideKind(layout, tx, ty, tx, ty - 1), besideKind(layout, tx, ty, tx, ty + 1), besideKind(layout, tx, ty, tx - 1, ty), besideKind(layout, tx, ty, tx + 1, ty)];
   const ground = beside.find(isOutdoorGround);
   for (let lz = 0; lz < R; lz++) {
@@ -1082,7 +1173,7 @@ function paintFence(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: nu
       const vx = tx * R + lx;
       const vz = ty * R + lz;
       volume.set(vx, SUBFLOOR, vz, COLORS.subfloor);
-      const drawn = ground ? floorVoxel(ground, lx, lz, vx, vz, { tx, ty, tone: noise3(tx, ty, 0, 11), axis: 'x' }) : null;
+      const drawn = ground ? landVoxel(ground, lx, lz, vx, vz, { tx, ty, tone: noise3(tx, ty, 0, 11), axis: 'x' }, land) : null;
       volume.set(vx, FLOOR, vz, drawn?.color ?? COLORS.gravel);
     }
   }
@@ -1129,7 +1220,7 @@ function paintTrackVoxel(volume: VoxelCanvas, vx: number, vz: number, along: num
   else volume.set(vx, FLOOR, vz, surface);
 }
 
-function paintTrack(volume: DenseVolume, layout: TileLayout, tx: number, ty: number, base: number): void {
+function paintTrack(volume: DenseVolume, layout: TileLayout, tx: number, ty: number, base: number, land: LandPalette): void {
   const piece = trackPieceAt(layout, tx, ty);
   const rise = piece.kind === 'straight' ? trackRise(layout, tx, ty, piece.axis) : () => 0;
   let bottom = base;
@@ -1146,7 +1237,7 @@ function paintTrack(volume: DenseVolume, layout: TileLayout, tx: number, ty: num
       const across = piece.kind === 'straight' && piece.axis === 'y' ? lx : lz;
       const lift = base + Math.round(rise((along + 0.5) / R - 0.5) * STEP_VOXELS);
       const mark = piece.kind === 'block' ? blockMark(piece.open, vx - piece.x * R + 0.5, vz - piece.y * R + 0.5, R) : laneMark(along, across + 0.5, R);
-      for (let vy = Math.min(bottom, lift); vy < lift + SUBFLOOR; vy++) volume.set(vx, vy, vz, earthColor('track', vx, vy, vz, lift - vy));
+      for (let vy = Math.min(bottom, lift); vy < lift + SUBFLOOR; vy++) volume.set(vx, vy, vz, earthColor('track', vx, vy, vz, lift - vy, land));
       volume.set(vx, lift + SUBFLOOR, vz, ballastColor(grain));
       const surface = markColor(mark, grain);
       if (surface !== null) volume.set(vx, lift + FLOOR, vz, surface);
@@ -1235,7 +1326,7 @@ function paintWallFace(
     return carve(COLORS.wallDark);
   }
   const seam = u === 0 ? 0.18 : 0;
-  volume.set(vx, vy, vz, darken(jitter(COLORS.wallBody, 0.025, grain), seam));
+  volume.set(vx, vy, vz, darken(jitter(COLORS.wallBody, 0.015, noise3(Math.floor(vx / 4), Math.floor(vy / 4), Math.floor(vz / 4), 9)), seam));
 }
 
 function paintGlass(volume: VoxelCanvas, tx: number, ty: number): void {

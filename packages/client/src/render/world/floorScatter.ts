@@ -1,9 +1,10 @@
 import { tileKey, type DecalCell, type FloorDecalKind, type TileKindId, type TileLayout, type TilePoint, type TileRect } from '@containment/shared';
 import { groundAt } from './ground.ts';
 import { MODEL_VOXEL_SIZE } from './worldScale.ts';
-import { darken, jitter, lighten, noise3 } from '../voxel/palette.ts';
+import { darken, jitter, lighten, mix, noise3 } from '../voxel/palette.ts';
 import { decalBlocksScatter } from './floorDecals.ts';
-import { slopeOffsets } from './levelVoxels.ts';
+import { landPaletteOf, type LandPalette } from './landPalette.ts';
+import { slopeOffsets, type OwnedLayout } from './levelVoxels.ts';
 import { TILE_RESOLUTION } from './worldScale.ts';
 import { VoxelModel } from '../voxel/voxelModel.ts';
 
@@ -16,23 +17,44 @@ interface ScatterPalette {
   readonly pebbles: readonly number[];
   readonly grit: readonly number[];
   readonly pieces: readonly ScatterPiece[];
+  readonly tufts: readonly [number, number];
+  readonly leaves: readonly [number, number];
 }
 
 type ScatterPiece = 'pebble' | 'stone' | 'grit' | 'flake' | 'bolt' | 'leaf' | 'tuft' | 'shard';
 
-const STONE = [0x5d6266, 0x4a4f53, 0x6f7377, 0x3d4246, 0x7a7468];
 const RUST = [0x6a3f24, 0x7f4c2a, 0x52301c, 0x8a5a36];
-const SOIL = [0x4a3a28, 0x5b4a34, 0x3a2e20, 0x6b5a42];
 
-const PALETTES: Partial<Record<TileKindId, ScatterPalette>> = {
-  concrete: { density: 0.14, pebbles: STONE, grit: [0x3a3e41, 0x4c5054], pieces: ['pebble', 'stone', 'shard'] },
-  rust: { density: 0.16, pebbles: RUST, grit: [0x3a2216, 0x5a3420], pieces: ['flake', 'bolt'] },
-  soil: { density: 0.22, pebbles: SOIL, grit: [0x2a2014, 0x3a2c1c], pieces: ['stone', 'leaf', 'tuft'] },
-  grass: { density: 0.34, pebbles: [0x4f7a34, 0x6a8a3c, 0x3a5a26, 0x8a8a4a], grit: [0x2e4420, 0x4a6a2c], pieces: ['tuft', 'tuft', 'leaf', 'stone'] },
-  dirt: { density: 0.2, pebbles: [...SOIL, ...STONE], grit: [0x3a2c1c, 0x4a3a28], pieces: ['pebble', 'stone', 'tuft'] },
-  gravel: { density: 0.12, pebbles: STONE, grit: [0x3e4348, 0x5a6066], pieces: ['pebble', 'grit', 'stone'] },
-  asphalt: { density: 0.06, pebbles: STONE, grit: [0x1e2022, 0x3a3c3e], pieces: ['grit', 'shard'] },
-};
+function palettesOf(land: LandPalette): Partial<Record<TileKindId, ScatterPalette>> {
+  const stone = [land.rock, land.rockLight, land.rockDark, lighten(land.rock, 0.08), land.gravel];
+  const soil = [land.earth, land.dirt, land.earthDark, land.soil];
+  const tufts: readonly [number, number] = [lighten(land.grass, 0.04), lighten(land.grass, 0.08)];
+  const sprouts: readonly [number, number] = [lighten(land.soilRow, 0.06), lighten(land.soilRow, 0.12)];
+  const { leaves } = land;
+  return {
+    concrete: { density: 0.14, pebbles: stone, grit: [darken(land.concrete, 0.2), darken(land.concrete, 0.1)], pieces: ['pebble', 'stone', 'shard'], tufts, leaves },
+    rust: { density: 0.16, pebbles: RUST, grit: [0x3a2216, 0x5a3420], pieces: ['flake', 'bolt'], tufts, leaves },
+    soil:
+      land.soilStyle === 'basalt'
+        ? { density: 0.16, pebbles: [land.glassSheen, mix(land.glassSheen, land.glass, 0.5), land.rockLight], grit: [land.glass, land.rockDark], pieces: ['shard', 'shard', 'stone'], tufts, leaves }
+        : { density: 0.22, pebbles: soil, grit: [land.earthDark, land.earth], pieces: ['stone', 'leaf', 'tuft'], tufts: sprouts, leaves },
+    grass: { density: 0.12, pebbles: [tufts[0], land.grass, darken(land.grass, 0.08), land.grassDry], grit: [darken(land.grass, 0.18), darken(land.grass, 0.1)], pieces: ['tuft', 'tuft', 'leaf', 'stone'], tufts, leaves },
+    dirt: { density: 0.2, pebbles: [...soil, ...stone], grit: [land.earthDark, land.earth], pieces: ['pebble', 'stone', 'tuft'], tufts, leaves },
+    gravel: { density: 0.12, pebbles: stone, grit: [darken(land.gravel, 0.15), lighten(land.gravel, 0.06)], pieces: ['pebble', 'grit', 'stone'], tufts, leaves },
+    asphalt: { density: 0.06, pebbles: stone, grit: [darken(land.asphalt, 0.4), darken(land.asphalt, 0.2)], pieces: ['grit', 'shard'], tufts, leaves },
+  };
+}
+
+const PALETTES = new Map<LandPalette, Partial<Record<TileKindId, ScatterPalette>>>();
+
+function scatterOf(land: LandPalette, kind: TileKindId): ScatterPalette | undefined {
+  let palettes = PALETTES.get(land);
+  if (!palettes) {
+    palettes = palettesOf(land);
+    PALETTES.set(land, palettes);
+  }
+  return palettes[kind];
+}
 
 const DECAL_PIECES: Partial<Record<FloorDecalKind, readonly ScatterPiece[]>> = {
   moss: ['leaf', 'tuft'],
@@ -50,7 +72,7 @@ const pick = <T>(list: readonly T[], roll: number): T => list[Math.min(list.leng
 
 function paintPiece(model: VoxelModel, piece: ScatterPiece, x: number, y: number, z: number, palette: ScatterPalette, seed: number): void {
   const roll = noise3(x, 5, z, seed);
-  const color = jitter(pick(palette.pebbles, roll), 0.06, noise3(x, 1, z, seed));
+  const color = jitter(pick(palette.pebbles, roll), 0.03, noise3(x, 1, z, seed));
   switch (piece) {
     case 'pebble':
       model.set(x, y, z, color);
@@ -78,12 +100,12 @@ function paintPiece(model: VoxelModel, piece: ScatterPiece, x: number, y: number
       model.fill(x, y, z, x + 2, y, z + 1, (vx, _y, vz) => ((vx - x + vz - z) % 3 === 0 ? null : lighten(color, 0.08)));
       return;
     case 'leaf':
-      model.fill(x, y, z, x + 1, y, z, roll > 0.5 ? 0x5a8a3a : 0x7a6a2a).set(x + 2, y, z + 1, 0x4f7a32);
+      model.fill(x, y, z, x + 1, y, z, roll > 0.5 ? palette.leaves[0] : palette.leaves[1]).set(x + 2, y, z + 1, darken(palette.leaves[0], 0.08));
       return;
     case 'tuft': {
-      const green = roll > 0.6 ? 0x6fae48 : 0x4f8a3a;
-      model.set(x, y, z, green).set(x, y + 1, z, lighten(green, 0.1)).set(x + 1, y, z, green);
-      if (roll > 0.3) model.set(x - 1, y + 1, z + 1, green).set(x, y + 2, z, lighten(green, 0.2));
+      const [blade, tip] = palette.tufts;
+      model.set(x, y, z, blade).set(x, y + 1, z, blade).set(x + 1, y, z, blade);
+      if (roll > 0.3) model.set(x - 1, y + 1, z + 1, blade).set(x, y + 2, z, tip);
       return;
     }
   }
@@ -92,13 +114,13 @@ function paintPiece(model: VoxelModel, piece: ScatterPiece, x: number, y: number
 const SPILL = 0.4;
 const SIDES: readonly (readonly [number, number])[] = [[1, 0], [-1, 0], [0, 1], [0, -1]];
 
-function spillFrom(layout: TileLayout, tx: number, ty: number, own: TileKindId): { readonly palette: ScatterPalette; readonly dx: number; readonly dy: number } | null {
+function spillFrom(layout: TileLayout, tx: number, ty: number, own: TileKindId, land: LandPalette): { readonly palette: ScatterPalette; readonly dx: number; readonly dy: number } | null {
   const roll = noise3(tx, ty, 2, 96);
   if (roll > SPILL) return null;
   const [dx, dy] = SIDES[Math.floor(noise3(tx, ty, 3, 96) * SIDES.length) % SIDES.length] as readonly [number, number];
   const kind = layout.tileAt({ x: tx + dx, y: ty + dy });
-  const palette = kind === own ? undefined : PALETTES[kind];
-  return palette && PALETTES[own] ? { palette, dx, dy } : null;
+  const palette = kind === own ? undefined : scatterOf(land, kind);
+  return palette && scatterOf(land, own) ? { palette, dx, dy } : null;
 }
 
 function riseAt(offsets: Int8Array | null, lx: number, lz: number): number {
@@ -109,19 +131,20 @@ function riseAt(offsets: Int8Array | null, lx: number, lz: number): number {
   return (offsets[row * TILE_RESOLUTION + column] ?? 0) * scale;
 }
 
-export function buildFloorScatter(layout: TileLayout, region: TileRect, isOccupied: (tile: TilePoint) => boolean, decals?: ReadonlyMap<string, readonly DecalCell[]>): VoxelModel {
+export function buildFloorScatter(layout: OwnedLayout, region: TileRect, isOccupied: (tile: TilePoint) => boolean, decals?: ReadonlyMap<string, readonly DecalCell[]>): VoxelModel {
   const model = new VoxelModel();
   for (let ty = region.y; ty < region.y + region.height; ty++) {
     for (let tx = region.x; tx < region.x + region.width; tx++) {
       const kind = layout.tileAt({ x: tx, y: ty });
-      const palette = PALETTES[kind];
+      const land = landPaletteOf(layout.regionAt?.({ x: tx, y: ty }));
+      const palette = scatterOf(land, kind);
       const cells = decals?.get(tileKey({ x: tx, y: ty }));
       if (!palette || isOccupied({ x: tx, y: ty }) || decalBlocksScatter(cells)) continue;
       const pieces = piecesFor(palette, cells);
       const lift = Math.round(groundAt(layout, tx, ty) / MODEL_VOXEL_SIZE);
       if (noise3(tx, ty, 0, 91) > palette.density) continue;
       const count = 1 + Math.floor(noise3(tx, ty, 1, 92) * 2);
-      const spill = spillFrom(layout, tx, ty, kind);
+      const spill = spillFrom(layout, tx, ty, kind, land);
       const offsets = slopeOffsets(layout, tx, ty);
       const reach = VOXELS_PER_TILE - EDGE_MARGIN * 2 - 3;
       for (let index = 0; index < count; index++) {

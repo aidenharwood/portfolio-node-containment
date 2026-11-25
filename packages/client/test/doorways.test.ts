@@ -3,6 +3,7 @@ import { test } from 'node:test';
 import type { TileKindId, TilePoint } from '@containment/shared';
 import { doorSpot, doorwayAt, DOOR_OPENING, frameVoxel, pickDoorwayStyle, thresholdVoxel, type Doorway, type TileReader } from '../src/render/world/doorways.ts';
 import { buildTileVolume, type OwnedLayout } from '../src/render/world/levelVoxels.ts';
+import { WALL_PALETTE } from '../src/render/world/wallPalette.ts';
 import { FLOOR_LAYERS, TILE_RESOLUTION, WALL_LAYERS } from '../src/render/world/worldScale.ts';
 import { VOXEL_EMISSIVE } from '../src/render/voxel/voxelKinds.ts';
 
@@ -178,8 +179,8 @@ const revealFace = (layout: OwnedLayout, jamb: TilePoint, face: number): { color
 
 test('both walls beside a doorway show a reveal of their own material where the door meets them', () => {
   const marks: Readonly<Record<'brick' | 'blockwork' | 'cladding' | 'wall', (face: { colors: Set<number>; lit: boolean }) => boolean>> = {
-    brick: (face) => face.colors.has(0x5e3327),
-    blockwork: (face) => face.colors.has(0x45494c),
+    brick: (face) => face.colors.has(WALL_PALETTE.brick.joint),
+    blockwork: (face) => face.colors.has(WALL_PALETTE.blockwork.joint),
     cladding: (face) => face.colors.has(0x3d5464),
     wall: (face) => face.lit,
   };
