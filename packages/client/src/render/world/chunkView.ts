@@ -15,7 +15,7 @@ import {
   type TileRect,
   type WorldObjectDefinition,
 } from '@containment/shared';
-import { Box3, BoxGeometry, Color, DataTexture, Group, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, NearestFilter, Quaternion, RGBAFormat, RingGeometry, SRGBColorSpace, UnsignedByteType, Vector3, type BufferGeometry, type Material, type Object3D } from 'three';
+import { Box3, BoxGeometry, Color, DataTexture, Group, LinearMipmapLinearFilter, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, NearestFilter, Quaternion, RGBAFormat, RingGeometry, SRGBColorSpace, UnsignedByteType, Vector3, type BufferGeometry, type Material, type Object3D } from 'three';
 import type { ActiveZone } from '../../state/worldState.ts';
 import { buildObjectModel, type AnimatedPart } from '../models/objectModels.ts';
 import { hex } from '../voxel/palette.ts';
@@ -340,8 +340,8 @@ export class ChunkView {
     const texture = new DataTexture(texels.data, texels.width, texels.height, RGBAFormat, UnsignedByteType);
     texture.colorSpace = SRGBColorSpace;
     texture.magFilter = NearestFilter;
-    texture.minFilter = NearestFilter;
-    texture.generateMipmaps = false;
+    texture.minFilter = LinearMipmapLinearFilter;
+    texture.generateMipmaps = true;
     texture.needsUpdate = true;
     this.topTextures.push(texture);
     return texture;
