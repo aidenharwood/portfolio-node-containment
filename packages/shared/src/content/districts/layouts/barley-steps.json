@@ -9,12 +9,12 @@
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 4 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 32, "y": 20, "width": 14, "height": 10 }, "height": 12 },
-    { "kind": "building", "id": "harvest-bunkhouse", "rect": { "x": 33, "y": 21, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "patch", "rect": { "x": 35, "y": 30, "width": 8, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 38, "y": 30, "width": 2, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 38, "y": 31, "width": 11, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 48, "y": 25, "width": 2, "height": 8 }, "tile": "gravel" }
+    { "kind": "rise", "rect": { "x": 29, "y": 30, "width": 14, "height": 10 }, "height": 13 },
+    { "kind": "building", "id": "harvest-bunkhouse", "rect": { "x": 30, "y": 31, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 32, "y": 40, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 35, "y": 40, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 35, "y": 41, "width": 11, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 45, "y": 39, "width": 2, "height": 4 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -22,13 +22,15 @@
     { "room": "harvest-bunkhouse", "name": "Harvest Bunkhouse", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 33, "dy": 46 }
+    "start": { "room": "ground", "dx": 48, "dy": 59 }
   },
   "objects": [
+    { "id": "barley-steps-windpump-0", "object": "windpump", "at": { "room": "ground", "dx": 53, "dy": 21 } },
+    { "id": "barley-steps-burn-barrel-1", "object": "burn-barrel", "at": { "room": "ground", "dx": 53, "dy": 28 } },
     { "id": "barley-steps-burn-barrel-2", "object": "burn-barrel", "at": { "room": "ground", "dx": 31, "dy": 14 } },
     { "id": "barley-steps-street-tree-3", "object": "street-tree", "at": { "room": "ground", "dx": 47, "dy": 41 } },
-    { "id": "barley-steps-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 38, "dy": 52 } },
-    { "id": "barley-steps-lock-gear-5", "object": "lock-gear", "at": { "room": "ground", "dx": 25, "dy": 54 } },
+    { "id": "barley-steps-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 31, "dy": 6 } },
+    { "id": "barley-steps-lock-gear-5", "object": "lock-gear", "at": { "room": "ground", "dx": 38, "dy": 52 } },
     { "id": "harvest-bunkhouse-bed-0", "object": "bed", "at": { "room": "harvest-bunkhouse", "dx": 1, "dy": 0 } },
     { "id": "harvest-bunkhouse-bed-1", "object": "bed", "at": { "room": "harvest-bunkhouse", "dx": 3, "dy": 0 } },
     { "id": "harvest-bunkhouse-bed-2", "object": "bed", "at": { "room": "harvest-bunkhouse", "dx": 5, "dy": 0 } },
@@ -40,34 +42,35 @@
     { "id": "harvest-bunkhouse-bed-8", "object": "bed", "at": { "room": "harvest-bunkhouse", "dx": 9, "dy": 5 } },
     { "id": "harvest-bunkhouse-bed-9", "object": "bed", "at": { "room": "harvest-bunkhouse", "dx": 11, "dy": 5 } },
     { "id": "harvest-bunkhouse-storage-locker-10", "object": "storage-locker", "at": { "room": "harvest-bunkhouse", "dx": 0, "dy": 3 }, "facing": "east" },
-    { "id": "barley-steps-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 54, "dy": 29 } },
-    { "id": "barley-steps-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 34, "dy": 30 }, "facing": "east" },
-    { "id": "barley-steps-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 43, "dy": 30 }, "facing": "west" },
-    { "id": "barley-steps-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 41, "dy": 33 }, "facing": "north" },
-    { "id": "barley-steps-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 50, "dy": 30 }, "facing": "west" }
+    { "id": "barley-steps-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 49, "dy": 29 } },
+    { "id": "barley-steps-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 40 }, "facing": "east" },
+    { "id": "barley-steps-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 40, "dy": 40 }, "facing": "west" },
+    { "id": "barley-steps-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 43 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "barley-steps-windpump-wight-1", "creature": "windpump-wight", "at": { "room": "ground", "dx": 3, "dy": 45 } },
-    { "id": "barley-steps-barn-crawler-2", "creature": "barn-crawler", "at": { "room": "ground", "dx": 42, "dy": 10 } },
-    { "id": "barley-steps-windpump-wight-3", "creature": "windpump-wight", "at": { "room": "ground", "dx": 50, "dy": 51 } },
-    { "id": "barley-steps-barn-crawler-4", "creature": "barn-crawler", "at": { "room": "ground", "dx": 7, "dy": 48 } },
-    { "id": "barley-steps-barn-crawler-6", "creature": "barn-crawler", "at": { "room": "ground", "dx": 9, "dy": 30 } },
-    { "id": "barley-steps-windpump-wight-7", "creature": "windpump-wight", "at": { "room": "ground", "dx": 18, "dy": 54 } },
-    { "id": "barley-steps-barn-crawler-8", "creature": "barn-crawler", "at": { "room": "ground", "dx": 23, "dy": 60 } },
-    { "id": "barley-steps-windpump-wight-9", "creature": "windpump-wight", "at": { "room": "ground", "dx": 12, "dy": 39 } },
-    { "id": "barley-steps-barn-crawler-10", "creature": "barn-crawler", "at": { "room": "ground", "dx": 42, "dy": 60 } },
-    { "id": "barley-steps-windpump-wight-11", "creature": "windpump-wight", "at": { "room": "ground", "dx": 43, "dy": 17 } },
-    { "id": "barley-steps-barn-crawler-12", "creature": "barn-crawler", "at": { "room": "ground", "dx": 3, "dy": 24 } },
-    { "id": "barley-steps-windpump-wight-13", "creature": "windpump-wight", "at": { "room": "ground", "dx": 16, "dy": 12 } },
-    { "id": "barley-steps-barn-crawler-14", "creature": "barn-crawler", "at": { "room": "ground", "dx": 42, "dy": 35 } },
-    { "id": "barley-steps-windpump-wight-15", "creature": "windpump-wight", "at": { "room": "ground", "dx": 48, "dy": 59 } }
+    { "id": "barley-steps-barn-crawler-0", "creature": "barn-crawler", "at": { "room": "ground", "dx": 5, "dy": 18 } },
+    { "id": "barley-steps-windpump-wight-1", "creature": "windpump-wight", "at": { "room": "ground", "dx": 44, "dy": 27 } },
+    { "id": "barley-steps-barn-crawler-2", "creature": "barn-crawler", "at": { "room": "ground", "dx": 3, "dy": 45 } },
+    { "id": "barley-steps-windpump-wight-3", "creature": "windpump-wight", "at": { "room": "ground", "dx": 42, "dy": 10 } },
+    { "id": "barley-steps-barn-crawler-4", "creature": "barn-crawler", "at": { "room": "ground", "dx": 50, "dy": 51 } },
+    { "id": "barley-steps-windpump-wight-5", "creature": "windpump-wight", "at": { "room": "ground", "dx": 7, "dy": 48 } },
+    { "id": "barley-steps-barn-crawler-6", "creature": "barn-crawler", "at": { "room": "ground", "dx": 38, "dy": 26 } },
+    { "id": "barley-steps-windpump-wight-7", "creature": "windpump-wight", "at": { "room": "ground", "dx": 9, "dy": 30 } },
+    { "id": "barley-steps-barn-crawler-8", "creature": "barn-crawler", "at": { "room": "ground", "dx": 18, "dy": 54 } },
+    { "id": "barley-steps-windpump-wight-9", "creature": "windpump-wight", "at": { "room": "ground", "dx": 23, "dy": 60 } },
+    { "id": "barley-steps-barn-crawler-10", "creature": "barn-crawler", "at": { "room": "ground", "dx": 12, "dy": 39 } },
+    { "id": "barley-steps-windpump-wight-11", "creature": "windpump-wight", "at": { "room": "ground", "dx": 8, "dy": 14 } },
+    { "id": "barley-steps-barn-crawler-12", "creature": "barn-crawler", "at": { "room": "ground", "dx": 42, "dy": 60 } },
+    { "id": "barley-steps-windpump-wight-13", "creature": "windpump-wight", "at": { "room": "ground", "dx": 43, "dy": 17 } },
+    { "id": "barley-steps-barn-crawler-14", "creature": "barn-crawler", "at": { "room": "ground", "dx": 3, "dy": 24 } },
+    { "id": "barley-steps-windpump-wight-15", "creature": "windpump-wight", "at": { "room": "ground", "dx": 16, "dy": 12 } }
   ],
   "lights": [],
   "decals": [],
   "setPieces": [
-    { "id": "barley-steps-landmark", "prefab": "landmark-tithe-silo", "at": { "room": "ground", "dx": 51, "dy": 21 }, "facing": "south" }
+    { "id": "barley-steps-landmark", "prefab": "landmark-tithe-silo", "at": { "room": "ground", "dx": 48, "dy": 35 }, "facing": "south" }
   ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },

@@ -3,12 +3,11 @@ import { FIXTURE_CONTENT, FIXTURE_CONTEXT, FIXTURE_LAND, FIXTURE_WILDS, FIXTURE_
 import { describe, test } from 'node:test';
 import { findContentIssues } from '../src/content/contentIntegrity.ts';
 import type { GameContent } from '../src/content/gameContent.ts';
-import { findLandIssues, findLandPlanIssues } from '../src/content/landIntegrity.ts';
+import { findLandIssues, findLandPlanIssues, wardBorders } from '../src/content/landIntegrity.ts';
 import { buildLevelIndex } from '../src/content/levelIndex.ts';
 import { findLevelIssues } from '../src/content/levelIntegrity.ts';
 import { findPlacementIssues } from '../src/content/placementIntegrity.ts';
 import { PREFABS } from '../src/content/prefabs/index.ts';
-import { findSealedWardIssues } from '../src/content/wardIntegrity.ts';
 import { findTerrainSeamIssues, findWorldDesignIssues } from '../src/content/worldDesignIntegrity.ts';
 import type { DistrictDefinition } from '../src/world/district.ts';
 import type { DistrictLayout } from '../src/world/layoutSchema.ts';
@@ -207,19 +206,50 @@ describe('land squares', () => {
     assert.deepEqual(findTerrainSeamIssues(level), []);
   });
 
-  test('the wilds are sealed and their land is whole', () => {
-    assert.deepEqual(findSealedWardIssues(FIXTURE_CONTENT), []);
+  test('the land of the wilds is whole', () => {
     assert.deepEqual(findLandIssues(FIXTURE_CONTENT), []);
   });
 
-  test('a gate without its doors lets one ward into the other', () => {
+  test('a land gate without its doors is reported', () => {
     const content = wildsWith((layout) => (layout.id === 'fx-wild-gate-east' ? { ...layout, objects: layout.objects.filter((object) => object.object !== 'vault-door') } : layout));
-    const issues = [...findSealedWardIssues(content), ...findLandIssues(content)];
-    assert.ok(
-      issues.some((issue) => issue.startsWith('level fx-wilds: wards fx-far and fx-home meet at')),
-      issues.join('\n'),
-    );
+    const issues = findLandIssues(content);
     assert.ok(issues.includes('level fx-wilds: land gate "fx-wall-gate" has no door on its tiles'), issues.join('\n'));
+  });
+
+  test('wards walled apart but for a gate are reported, and wards that meet in the open are not', () => {
+    const walled = (to: number): LandMap =>
+      drawLand({
+        id: 'walled',
+        squareSize: 16,
+        columns: 2,
+        rows: 1,
+        steps: [
+          { kind: 'fill', shape: { kind: 'rect', rect: { x: 1, y: 1, width: 30, height: 14 } }, tile: 'grass' },
+          { kind: 'line', points: [{ x: 16, y: 1 }, { x: 16, y: to }], width: 1, tile: 'brick' },
+          { kind: 'gate', id: 'wall-gate', rect: { x: 16, y: 7, width: 1, height: 2 }, tile: 'door' },
+          { kind: 'ward', shape: { kind: 'rect', rect: { x: 0, y: 0, width: 16, height: 16 } }, ward: 'west' },
+          { kind: 'ward', shape: { kind: 'rect', rect: { x: 16, y: 0, width: 16, height: 16 } }, ward: 'east' },
+        ],
+      });
+    assert.deepEqual(findLandPlanIssues(walled(14)), ['land walled: wards east and west meet in the open at only 2 of the 14 crossings over their border; neighbouring regions join across open ground']);
+    assert.deepEqual(wardBorders(walled(14)), [{ wards: ['east', 'west'], length: 16, shared: 14, open: 2 }]);
+    assert.deepEqual(findLandPlanIssues(walled(3)), []);
+  });
+
+  test('a cliff along the border closes it as a wall does', () => {
+    const terraced = drawLand({
+      id: 'terraced',
+      squareSize: 16,
+      columns: 2,
+      rows: 1,
+      steps: [
+        { kind: 'fill', shape: { kind: 'rect', rect: { x: 1, y: 1, width: 30, height: 14 } }, tile: 'grass' },
+        { kind: 'rise', shape: { kind: 'rect', rect: { x: 16, y: 1, width: 15, height: 14 } }, height: 4 },
+        { kind: 'ward', shape: { kind: 'rect', rect: { x: 0, y: 0, width: 16, height: 16 } }, ward: 'low' },
+        { kind: 'ward', shape: { kind: 'rect', rect: { x: 16, y: 0, width: 16, height: 16 } }, ward: 'high' },
+      ],
+    });
+    assert.deepEqual(wardBorders(terraced), [{ wards: ['high', 'low'], length: 16, shared: 14, open: 0 }]);
   });
 
   test('land a split sibling leaves behind lies in no district', () => {
@@ -294,7 +324,7 @@ describe('land squares', () => {
     );
   });
 
-  test('walkable land at the plan edge, and a gate inside one ward, are reported', () => {
+  test('walkable land at the plan edge is reported, and a gate needs no second ward', () => {
     const edge = drawLand({
       id: 'edge',
       squareSize: 8,
@@ -314,7 +344,7 @@ describe('land squares', () => {
         { kind: 'ward', shape: { kind: 'rect', rect: { x: 0, y: 0, width: 8, height: 8 } }, ward: 'only-ward' },
       ],
     });
-    assert.deepEqual(findLandPlanIssues(inside), ['land inside: gate "lone-gate" does not join two wards']);
+    assert.deepEqual(findLandPlanIssues(inside), []);
   });
 
   test('the shipped land plans are content and are clean', () => {

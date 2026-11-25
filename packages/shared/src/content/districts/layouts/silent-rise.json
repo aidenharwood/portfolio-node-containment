@@ -23,7 +23,7 @@
     { "room": "silent-chapel", "name": "Silent Chapel", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 36, "dy": 41 }
+    "start": { "room": "ground", "dx": 9, "dy": 8 }
   },
   "objects": [
     { "id": "silent-rise-flood-mast-0", "object": "flood-mast", "at": { "room": "ground", "dx": 26, "dy": 33 } },
@@ -56,16 +56,16 @@
     { "id": "silent-rise-glass-stalker-3", "creature": "glass-stalker", "at": { "room": "ground", "dx": 8, "dy": 59 } },
     { "id": "silent-rise-glass-stalker-5", "creature": "glass-stalker", "at": { "room": "ground", "dx": 15, "dy": 12 } },
     { "id": "silent-rise-shard-wisp-6", "creature": "shard-wisp", "at": { "room": "ground", "dx": 8, "dy": 28 } },
-    { "id": "silent-rise-glass-stalker-7", "creature": "glass-stalker", "at": { "room": "ground", "dx": 26, "dy": 8 } },
-    { "id": "silent-rise-shard-wisp-8", "creature": "shard-wisp", "at": { "room": "ground", "dx": 51, "dy": 41 } },
-    { "id": "silent-rise-glass-stalker-9", "creature": "glass-stalker", "at": { "room": "ground", "dx": 32, "dy": 53 } },
-    { "id": "silent-rise-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 13, "dy": 31 } },
-    { "id": "silent-rise-shard-wisp-12", "creature": "shard-wisp", "at": { "room": "ground", "dx": 23, "dy": 22 } },
-    { "id": "silent-rise-glass-stalker-13", "creature": "glass-stalker", "at": { "room": "ground", "dx": 50, "dy": 11 } },
-    { "id": "silent-rise-shard-wisp-14", "creature": "shard-wisp", "at": { "room": "ground", "dx": 30, "dy": 58 } },
-    { "id": "silent-rise-glass-stalker-15", "creature": "glass-stalker", "at": { "room": "ground", "dx": 21, "dy": 56 } },
-    { "id": "silent-rise-shard-wisp-16", "creature": "shard-wisp", "at": { "room": "ground", "dx": 33, "dy": 19 } },
-    { "id": "silent-rise-glass-stalker-17", "creature": "glass-stalker", "at": { "room": "ground", "dx": 9, "dy": 8 } }
+    { "id": "silent-rise-glass-stalker-7", "creature": "glass-stalker", "at": { "room": "ground", "dx": 33, "dy": 3 } },
+    { "id": "silent-rise-shard-wisp-8", "creature": "shard-wisp", "at": { "room": "ground", "dx": 26, "dy": 8 } },
+    { "id": "silent-rise-glass-stalker-9", "creature": "glass-stalker", "at": { "room": "ground", "dx": 51, "dy": 41 } },
+    { "id": "silent-rise-shard-wisp-10", "creature": "shard-wisp", "at": { "room": "ground", "dx": 32, "dy": 53 } },
+    { "id": "silent-rise-shard-wisp-12", "creature": "shard-wisp", "at": { "room": "ground", "dx": 13, "dy": 31 } },
+    { "id": "silent-rise-glass-stalker-13", "creature": "glass-stalker", "at": { "room": "ground", "dx": 23, "dy": 22 } },
+    { "id": "silent-rise-shard-wisp-14", "creature": "shard-wisp", "at": { "room": "ground", "dx": 50, "dy": 11 } },
+    { "id": "silent-rise-glass-stalker-15", "creature": "glass-stalker", "at": { "room": "ground", "dx": 30, "dy": 58 } },
+    { "id": "silent-rise-shard-wisp-16", "creature": "shard-wisp", "at": { "room": "ground", "dx": 21, "dy": 56 } },
+    { "id": "silent-rise-glass-stalker-17", "creature": "glass-stalker", "at": { "room": "ground", "dx": 33, "dy": 19 } }
   ],
   "lights": [],
   "decals": [],

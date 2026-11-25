@@ -1,10 +1,20 @@
 import type { DistrictId, RegionId } from '../ids.ts';
 import { doorTilesOf } from '../world/doors.ts';
-import { CARDINAL_OFFSETS, tileKey, type TilePoint } from '../world/geometry.ts';
+import { tileKey, type TilePoint } from '../world/geometry.ts';
 import type { LandMap } from '../world/landPlan.ts';
 import type { ResolvedLevel } from '../world/levelLayout.ts';
 import { isWalkableTile, TILE_KINDS } from '../world/tiles.ts';
 import type { GameContent } from './gameContent.ts';
+
+export const OPEN_BORDER_SHARE = 0.75;
+export const BORDER_CROSSING_DEPTH = 6;
+
+export interface WardBorder {
+  readonly wards: readonly [RegionId, RegionId];
+  readonly length: number;
+  readonly shared: number;
+  readonly open: number;
+}
 
 const isWalkableLand = (land: LandMap, point: TilePoint): boolean => isWalkableTile(land, point);
 
@@ -18,17 +28,37 @@ function firstWalkableEdge(land: LandMap): TilePoint | undefined {
   return undefined;
 }
 
-function wardsBeside(land: LandMap, tiles: readonly TilePoint[], gateTiles: ReadonlySet<string>): Set<RegionId> {
-  const wards = new Set<RegionId>();
-  for (const tile of tiles) {
-    for (const offset of CARDINAL_OFFSETS) {
-      const point = { x: tile.x + offset.x, y: tile.y + offset.y };
-      if (gateTiles.has(tileKey(point)) || !isWalkableLand(land, point)) continue;
-      const ward = land.wardAt(point);
-      if (ward !== undefined) wards.add(ward);
+function crossing(land: LandMap, from: TilePoint, step: TilePoint): 'open' | 'closed' | undefined {
+  const at = (offset: number): TilePoint => ({ x: from.x + step.x * offset, y: from.y + step.y * offset });
+  if (!isWalkableLand(land, at(-BORDER_CROSSING_DEPTH)) || !isWalkableLand(land, at(BORDER_CROSSING_DEPTH + 1))) return undefined;
+  for (let offset = -BORDER_CROSSING_DEPTH; offset <= BORDER_CROSSING_DEPTH; offset++) {
+    const next = at(offset + 1);
+    if (!isWalkableLand(land, next) || Math.abs(land.heightAt(next) - land.heightAt(at(offset))) > 1) return 'closed';
+  }
+  return 'open';
+}
+
+export function wardBorders(land: LandMap): WardBorder[] {
+  const borders = new Map<string, { wards: readonly [RegionId, RegionId]; length: number; shared: number; open: number }>();
+  for (let y = 0; y < land.height; y++) {
+    for (let x = 0; x < land.width; x++) {
+      const ward = land.wardAt({ x, y });
+      if (ward === undefined) continue;
+      for (const step of [{ x: 1, y: 0 }, { x: 0, y: 1 }]) {
+        const other = land.wardAt({ x: x + step.x, y: y + step.y });
+        if (other === undefined || other === ward) continue;
+        const wards: readonly [RegionId, RegionId] = ward < other ? [ward, other] : [other, ward];
+        const key = wards.join(' ');
+        const border = borders.get(key) ?? { wards, length: 0, shared: 0, open: 0 };
+        const result = crossing(land, { x, y }, step);
+        border.length++;
+        if (result !== undefined) border.shared++;
+        if (result === 'open') border.open++;
+        borders.set(key, border);
+      }
     }
   }
-  return wards;
+  return [...borders.values()];
 }
 
 export function findLandPlanIssues(land: LandMap): string[] {
@@ -36,14 +66,13 @@ export function findLandPlanIssues(land: LandMap): string[] {
   const { id } = land.plan;
   const edge = firstWalkableEdge(land);
   if (edge) issues.push(`land ${id}: walkable land at ${edge.x},${edge.y} meets the edge of the plan`);
-  const gateTiles = new Set(Object.values(land.gates).flatMap((tiles) => tiles.map(tileKey)));
-  for (const [gate, tiles] of Object.entries(land.gates)) {
-    if (wardsBeside(land, tiles, gateTiles).size < 2) issues.push(`land ${id}: gate "${gate}" does not join two wards`);
-  }
   for (const step of land.plan.steps) {
     if (step.kind !== 'gate') continue;
     const lost = land.gates[step.id]?.find((tile) => land.tileAt(tile) !== step.tile);
     if (lost) issues.push(`land ${id}: gate "${step.id}" at ${lost.x},${lost.y} is ${land.tileAt(lost)}, not ${step.tile}; draw over it before the gate, not after`);
+  }
+  for (const border of wardBorders(land)) {
+    if (border.open < border.shared * OPEN_BORDER_SHARE) issues.push(`land ${id}: wards ${border.wards[0]} and ${border.wards[1]} meet in the open at only ${border.open} of the ${border.shared} crossings over their border; neighbouring regions join across open ground`);
   }
   return issues;
 }

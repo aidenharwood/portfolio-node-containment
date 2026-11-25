@@ -11,9 +11,8 @@ import { TILE_KINDS, type TileKindId } from '../../packages/shared/src/world/til
 import { registerFurnishingKit } from '../../packages/shared/src/content/furnishingKit.ts';
 import { CITY_KIT } from '../../packages/shared/src/content/catalog/cityKit.ts';
 import { LANDMARK_KIT } from '../../packages/shared/src/content/catalog/landmarks.ts';
-import { SPAN_KIT, seamLeafOf } from '../../packages/shared/src/content/span/objects.ts';
+import { SPAN_KIT } from '../../packages/shared/src/content/span/objects.ts';
 import { placeAt, PLACES, random, REGIONS, SQUARE, squareTiers, STATION_TRACK_ROW, TERMINAL, WILD_PINS } from './atlas.ts';
-import { GATE_PLANS } from './plan.ts';
 import { BRIDGE_PLANS_FOR_LAND } from './bridges.ts';
 import { PLACE_SPECS, type BuildingSpec, type PlaceSquare } from './places.ts';
 
@@ -395,7 +394,6 @@ function layoutFor(cut: Cut): DistrictLayout {
   const map = parseTileLayout(buildDistrictMap(base));
   const inBuilding = (x: number, y: number): boolean => buildings.some((b) => x >= b.x - 1 && y >= b.y - 1 && x <= b.x + b.w && y <= b.y + b.h);
   const doorTiles = buildings.map((b) => ({ x: b.x + Math.floor((b.w - 2) / 2) + 0.5, y: (b.door ?? 'south') === 'south' ? b.y + b.h : b.y - 1 }));
-  const gateTiles = GATE_PLANS.map((gate) => ({ x: gate.x - cut.column * SQUARE, y: gate.y - cut.row * SQUARE }));
   const walkableAt = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < SQUARE && y < SQUARE && TILE_KINDS[map.tileAt({ x, y })].walkable && map.tileAt({ x, y }) !== 'door';
   const taken: { x: number; y: number; r: number }[] = [];
   const clear = (x: number, y: number, w: number, h: number, ring: number): boolean => {
@@ -403,7 +401,6 @@ function layoutFor(cut: Cut): DistrictLayout {
       if (!walkableAt(x + dx, y + dy) || inBuilding(x + dx, y + dy) || reservedBy(giants, x + dx, y + dy)) return false;
     }
     if (doorTiles.some((door) => Math.abs(door.x - x) < 5 && Math.abs(door.y - y) < 5)) return false;
-    if (gateTiles.some((gate) => Math.abs(gate.x - x) < 9 && Math.abs(gate.y - y) < 9)) return false;
     if (x < 3 || y < 3 || x + w > SQUARE - 3 || y + h > SQUARE - 3) return false;
     return true;
   };
@@ -439,16 +436,6 @@ function layoutFor(cut: Cut): DistrictLayout {
   for (let index = 0; index < propCount; index++) putObject(props[Math.floor(next() * props.length)]!, 6);
   putObject('barricade', 6);
   if (place?.groundSafe || cut.region === 'kestrel-reach') for (let index = 0; index < (place ? 3 : 1); index++) putObject('street-bench', 6, 'south');
-
-  for (const gate of GATE_PLANS) {
-    const gx = gate.x - cut.column * SQUARE;
-    const gy = gate.y - cut.row * SQUARE;
-    if (gx < 0 || gy < 0 || gx >= SQUARE || gy >= SQUARE) continue;
-    const second = gate.vertical ? { dx: gx, dy: gy + 1 } : { dx: gx + 1, dy: gy };
-    const facing = gate.vertical ? 'east' : 'south';
-    objects.push({ id: id + '-' + gate.id + '-leaf-0', object: seamLeafOf(gate.id), at: { room: 'ground', dx: gx, dy: gy }, facing });
-    objects.push({ id: id + '-' + gate.id + '-leaf-1', object: seamLeafOf(gate.id), at: { room: 'ground', ...second }, facing });
-  }
 
   for (const bridge of BRIDGE_PLANS_FOR_LAND) {
     const bx = bridge.x - cut.column * SQUARE;

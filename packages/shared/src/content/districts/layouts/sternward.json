@@ -20,7 +20,7 @@
     { "room": "stern-berths", "name": "Stern Berths", "safe": false }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 8, "dy": 56 }
+    "start": { "room": "ground", "dx": 50, "dy": 38 }
   },
   "objects": [
     { "id": "sternward-parked-car-1", "object": "parked-car", "at": { "room": "ground", "dx": 10, "dy": 25 } },
@@ -65,6 +65,7 @@
     { "id": "sternward-hull-knocker-13", "creature": "hull-knocker", "at": { "room": "ground", "dx": 59, "dy": 8 } },
     { "id": "sternward-rustling-14", "creature": "rustling", "at": { "room": "ground", "dx": 36, "dy": 54 } },
     { "id": "sternward-hull-knocker-15", "creature": "hull-knocker", "at": { "room": "ground", "dx": 56, "dy": 42 } },
+    { "id": "sternward-hull-knocker-17", "creature": "hull-knocker", "at": { "room": "ground", "dx": 8, "dy": 56 } },
     { "id": "stern-berths-rustling-0", "creature": "rustling", "at": { "room": "stern-berths", "dx": 6, "dy": 3 } },
     { "id": "stern-berths-rustling-1", "creature": "rustling", "at": { "room": "stern-berths", "dx": 2, "dy": 3 } }
   ],

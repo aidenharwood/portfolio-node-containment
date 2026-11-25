@@ -22,7 +22,7 @@
     { "room": "hymn-road-waystation", "name": "Hymn Road Waystation", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 56, "dy": 4 }
+    "start": { "room": "ground", "dx": 38, "dy": 11 }
   },
   "objects": [
     { "id": "hymn-road-flood-mast-0", "object": "flood-mast", "at": { "room": "ground", "dx": 48, "dy": 16 } },
@@ -66,7 +66,8 @@
     { "id": "hymn-road-prism-hound-10", "creature": "prism-hound", "at": { "room": "ground", "dx": 31, "dy": 24 } },
     { "id": "hymn-road-glass-stalker-11", "creature": "glass-stalker", "at": { "room": "ground", "dx": 48, "dy": 48 } },
     { "id": "hymn-road-prism-hound-12", "creature": "prism-hound", "at": { "room": "ground", "dx": 22, "dy": 41 } },
-    { "id": "hymn-road-glass-stalker-13", "creature": "glass-stalker", "at": { "room": "ground", "dx": 14, "dy": 44 } }
+    { "id": "hymn-road-glass-stalker-13", "creature": "glass-stalker", "at": { "room": "ground", "dx": 14, "dy": 44 } },
+    { "id": "hymn-road-prism-hound-14", "creature": "prism-hound", "at": { "room": "ground", "dx": 56, "dy": 4 } }
   ],
   "lights": [],
   "decals": [],

@@ -21,7 +21,7 @@
     { "room": "dune-shack", "name": "Dune Shack", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 60, "dy": 40 }
+    "start": { "room": "ground", "dx": 29, "dy": 4 }
   },
   "objects": [
     { "id": "rivet-dunes-utility-pole-0", "object": "utility-pole", "at": { "room": "ground", "dx": 23, "dy": 21 } },
@@ -30,7 +30,7 @@
     { "id": "rivet-dunes-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 44, "dy": 47 } },
     { "id": "rivet-dunes-wreck-plate-5", "object": "wreck-plate", "at": { "room": "ground", "dx": 31, "dy": 13 } },
     { "id": "rivet-dunes-tide-weed-6", "object": "tide-weed", "at": { "room": "ground", "dx": 17, "dy": 42 } },
-    { "id": "rivet-dunes-hull-trace-7", "object": "hull-trace", "at": { "room": "ground", "dx": 23, "dy": 8 } },
+    { "id": "rivet-dunes-hull-trace-7", "object": "hull-trace", "at": { "room": "ground", "dx": 3, "dy": 19 } },
     { "id": "dune-shack-bed-0", "object": "bed", "at": { "room": "dune-shack", "dx": 1, "dy": 0 } },
     { "id": "dune-shack-washer-1", "object": "washer", "at": { "room": "dune-shack", "dx": 4, "dy": 0 }, "facing": "south" },
     { "id": "dune-shack-shelving-2", "object": "shelving", "at": { "room": "dune-shack", "dx": 6, "dy": 0 }, "facing": "south" },
@@ -48,20 +48,21 @@
   ],
   "npcs": [],
   "creatures": [
-    { "id": "rivet-dunes-ballast-crab-0", "creature": "ballast-crab", "at": { "room": "ground", "dx": 20, "dy": 35 } },
-    { "id": "rivet-dunes-ballast-crab-2", "creature": "ballast-crab", "at": { "room": "ground", "dx": 60, "dy": 28 } },
+    { "id": "rivet-dunes-ballast-crab-0", "creature": "ballast-crab", "at": { "room": "ground", "dx": 23, "dy": 8 } },
+    { "id": "rivet-dunes-hull-knocker-1", "creature": "hull-knocker", "at": { "room": "ground", "dx": 20, "dy": 35 } },
     { "id": "rivet-dunes-hull-knocker-3", "creature": "hull-knocker", "at": { "room": "ground", "dx": 50, "dy": 15 } },
-    { "id": "rivet-dunes-ballast-crab-4", "creature": "ballast-crab", "at": { "room": "ground", "dx": 8, "dy": 19 } },
-    { "id": "rivet-dunes-hull-knocker-5", "creature": "hull-knocker", "at": { "room": "ground", "dx": 40, "dy": 4 } },
-    { "id": "rivet-dunes-ballast-crab-6", "creature": "ballast-crab", "at": { "room": "ground", "dx": 50, "dy": 6 } },
-    { "id": "rivet-dunes-hull-knocker-7", "creature": "hull-knocker", "at": { "room": "ground", "dx": 48, "dy": 59 } },
-    { "id": "rivet-dunes-ballast-crab-8", "creature": "ballast-crab", "at": { "room": "ground", "dx": 42, "dy": 10 } },
-    { "id": "rivet-dunes-hull-knocker-9", "creature": "hull-knocker", "at": { "room": "ground", "dx": 45, "dy": 16 } },
-    { "id": "rivet-dunes-ballast-crab-10", "creature": "ballast-crab", "at": { "room": "ground", "dx": 24, "dy": 41 } },
-    { "id": "rivet-dunes-hull-knocker-13", "creature": "hull-knocker", "at": { "room": "ground", "dx": 57, "dy": 35 } },
-    { "id": "rivet-dunes-ballast-crab-14", "creature": "ballast-crab", "at": { "room": "ground", "dx": 56, "dy": 58 } },
-    { "id": "rivet-dunes-hull-knocker-15", "creature": "hull-knocker", "at": { "room": "ground", "dx": 54, "dy": 29 } },
-    { "id": "rivet-dunes-ballast-crab-16", "creature": "ballast-crab", "at": { "room": "ground", "dx": 49, "dy": 20 } }
+    { "id": "rivet-dunes-ballast-crab-4", "creature": "ballast-crab", "at": { "room": "ground", "dx": 40, "dy": 4 } },
+    { "id": "rivet-dunes-hull-knocker-5", "creature": "hull-knocker", "at": { "room": "ground", "dx": 50, "dy": 6 } },
+    { "id": "rivet-dunes-ballast-crab-6", "creature": "ballast-crab", "at": { "room": "ground", "dx": 48, "dy": 59 } },
+    { "id": "rivet-dunes-hull-knocker-7", "creature": "hull-knocker", "at": { "room": "ground", "dx": 42, "dy": 10 } },
+    { "id": "rivet-dunes-ballast-crab-8", "creature": "ballast-crab", "at": { "room": "ground", "dx": 45, "dy": 16 } },
+    { "id": "rivet-dunes-hull-knocker-9", "creature": "hull-knocker", "at": { "room": "ground", "dx": 24, "dy": 41 } },
+    { "id": "rivet-dunes-ballast-crab-12", "creature": "ballast-crab", "at": { "room": "ground", "dx": 57, "dy": 35 } },
+    { "id": "rivet-dunes-hull-knocker-13", "creature": "hull-knocker", "at": { "room": "ground", "dx": 56, "dy": 58 } },
+    { "id": "rivet-dunes-ballast-crab-14", "creature": "ballast-crab", "at": { "room": "ground", "dx": 54, "dy": 29 } },
+    { "id": "rivet-dunes-hull-knocker-15", "creature": "hull-knocker", "at": { "room": "ground", "dx": 49, "dy": 20 } },
+    { "id": "rivet-dunes-ballast-crab-16", "creature": "ballast-crab", "at": { "room": "ground", "dx": 60, "dy": 40 } },
+    { "id": "rivet-dunes-hull-knocker-17", "creature": "hull-knocker", "at": { "room": "ground", "dx": 3, "dy": 8 } }
   ],
   "lights": [],
   "decals": [],
