@@ -82,6 +82,19 @@ const FAILING_LIGHT_COLOR = 0xff8a6a;
 const SCONCE_LIGHT_HEIGHT = 1.45;
 const SCONCE_LIGHT_OFFSET = 0.4;
 const FILL_LIGHT_HEIGHT = 1.6;
+const SCATTER_FADE = { from: 26, to: 38 } as const;
+const SCATTER_MATERIAL = fadeScatterWithDistance(receiveFieldLights(new MeshLambertMaterial({ vertexColors: true })));
+
+function fadeScatterWithDistance(material: MeshLambertMaterial): MeshLambertMaterial {
+  const fieldCompile = material.onBeforeCompile.bind(material);
+  const fieldKey = material.customProgramCacheKey.bind(material);
+  material.onBeforeCompile = (shader, renderer) => {
+    fieldCompile(shader, renderer);
+    shader.fragmentShader = shader.fragmentShader.replace('#include <clipping_planes_fragment>', `if ( smoothstep( ${SCATTER_FADE.from.toFixed(1)}, ${SCATTER_FADE.to.toFixed(1)}, distance( vFieldWorld, cameraPosition ) ) > fieldHash( floor( gl_FragCoord.xy ) ) ) discard;\n#include <clipping_planes_fragment>`);
+  };
+  material.customProgramCacheKey = () => `${fieldKey()}:scatter-fade-${SCATTER_FADE.from}-${SCATTER_FADE.to}`;
+  return material;
+}
 const GLOW_MIN_FACES = 12;
 const GLOW_INTENSITY = 0.45;
 const GLOW_MIN_RADIUS = 1.6;
@@ -272,7 +285,7 @@ export class ChunkView {
       this.steps.push(() => {
         const scatter = buildFloorScatter(layout, strip, (tile) => occupied.has(tileKey(tile)), decals);
         if (scatter.isEmpty) return;
-        const litter = createVoxelObject(scatter.mesh(MODEL_VOXEL_SIZE), { castShadow: false });
+        const litter = createVoxelObject(scatter.mesh(MODEL_VOXEL_SIZE), { castShadow: false, materials: { solid: SCATTER_MATERIAL } });
         litter.name = 'floorScatter';
         this.root.add(litter);
       });
