@@ -17,6 +17,7 @@ import type { ActiveZone } from '../../state/worldState.ts';
 import { chunkSignature, objectChanges, type ChunkSignature } from './chunkSignature.ts';
 import { planWallLighting, type FillLight, type SconceSpot, type WallLighting } from './wallLights.ts';
 import { buildChunkPlaceholder } from './chunkPlaceholder.ts';
+import { ownedLayoutOf } from './chunkStructure.ts';
 import { chunkMesherPool, type ChunkMesherPool } from './chunkMesher.ts';
 import { ChunkView, chunkRegion, type ChunkContents, type IndexedPlacement, type LightSource, type ObjectView, type WallPiece } from './chunkView.ts';
 
@@ -311,7 +312,7 @@ export class LevelScene {
     if (this.placeholders.has(key)) return;
     const region = chunkRegion(coord, this.zone);
     if (!region) return;
-    const group = buildChunkPlaceholder(this.zone.layout, region);
+    const group = buildChunkPlaceholder(ownedLayoutOf(this.zone.definition, this.zone.layout), region);
     if (!group) return;
     this.placeholders.set(key, { coord, group });
     this.root.add(group);
