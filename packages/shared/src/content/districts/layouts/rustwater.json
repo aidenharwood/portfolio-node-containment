@@ -121,7 +121,18 @@
     { "id": "rustwater-street-lamp-7", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 42 }, "facing": "south" },
     { "id": "rustwater-street-lamp-8", "object": "street-lamp", "at": { "room": "ground", "dx": 18, "dy": 42 }, "facing": "south" },
     { "id": "rustwater-street-lamp-9", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 42 }, "facing": "south" },
-    { "id": "rustwater-street-lamp-10", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 42 }, "facing": "south" }
+    { "id": "rustwater-street-lamp-10", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 42 }, "facing": "south" },
+    { "id": "rustwater-w0", "object": "scrap-mound", "at": { "room": "ground", "dx": 3, "dy": 46 }, "facing": "west" },
+    { "id": "rustwater-w1", "object": "dead-tree", "at": { "room": "ground", "dx": 60, "dy": 57 }, "facing": "west" },
+    { "id": "rustwater-w2", "object": "tree-stump", "at": { "room": "ground", "dx": 57, "dy": 60 }, "facing": "north" },
+    { "id": "rustwater-w3", "object": "fallen-log", "at": { "room": "ground", "dx": 59, "dy": 60 }, "facing": "north" },
+    { "id": "rustwater-w4", "object": "tall-grass", "at": { "room": "ground", "dx": 55, "dy": 60 }, "facing": "north" },
+    { "id": "rustwater-w5", "object": "tall-grass", "at": { "room": "ground", "dx": 56, "dy": 59 }, "facing": "north" },
+    { "id": "rustwater-w6", "object": "wrecked-panel", "at": { "room": "ground", "dx": 3, "dy": 34 }, "facing": "west" },
+    { "id": "rustwater-w7", "object": "scrap-mound", "at": { "room": "ground", "dx": 3, "dy": 31 } },
+    { "id": "rustwater-w8", "object": "tyre-heap", "at": { "room": "ground", "dx": 60, "dy": 6 }, "facing": "east" },
+    { "id": "rustwater-w9", "object": "tyre-heap", "at": { "room": "ground", "dx": 58, "dy": 3 }, "facing": "east" },
+    { "id": "rustwater-w10", "object": "tyre-heap", "at": { "room": "ground", "dx": 60, "dy": 3 }, "facing": "north" }
   ],
   "assemblies": [
     { "id": "rustwater-tram-car", "assembly": "tram-car", "at": { "room": "tram-terminal", "dx": 14, "dy": 3 } }

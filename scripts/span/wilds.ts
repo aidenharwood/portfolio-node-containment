@@ -346,7 +346,7 @@ export function buildingSpecOf(poi: WildPoi, region: string, x: number, y: numbe
 const OBJECTS = new Map<string, WorldObjectDefinition>([...CITY_KIT_OBJECTS, ...LANDMARK_OBJECTS, ...TRANSIT_OBJECTS, ...WARD_SPOTS, ...WARD_STATIONS, ...SPAN_KIT.objects, ...WILD_KIT.objects].map((object) => [object.id, object]));
 const footprintOf = (objectId: string): { width: number; height: number } => OBJECTS.get(objectId)?.footprint ?? { width: 1, height: 1 };
 
-const DECOR = new Set(['street-lamp', 'barricade', 'street-bench', 'street-tree', 'bollard', 'flood-mast', 'litter-bin', 'checkpoint-barrier', 'windpump', 'washing-line', 'utility-pole', 'burn-barrel', 'holo-billboard', 'food-stall', 'parked-car', 'steam-vent', 'magnet-crane', 'precursor-pylon', 'ledge-milestone', ...Object.values(NODES_BY_TIER).flat()]);
+const DECOR = new Set(['street-lamp', 'barricade', 'street-bench', 'street-tree', 'broadleaf-tree', 'birch-tree', 'orchard-tree', 'bollard', 'flood-mast', 'litter-bin', 'checkpoint-barrier', 'windpump', 'washing-line', 'utility-pole', 'burn-barrel', 'holo-billboard', 'food-stall', 'parked-car', 'steam-vent', 'magnet-crane', 'precursor-pylon', 'ledge-milestone', ...Object.values(NODES_BY_TIER).flat()]);
 const NODE_LEVEL = new Map<string, number>([...WARD_SPOTS, ...CITY_KIT_OBJECTS].flatMap((object) => object.interactions.flatMap((interaction) => (interaction.gather ? [[object.id, interaction.gather.level] as const] : []))));
 const CREATURE = new Map(SPAN_CREATURES.map((creature) => [creature.id, creature]));
 const LARGE = new Set(['hull-knocker']);

@@ -118,7 +118,19 @@
     { "id": "last-post-street-lamp-8", "object": "street-lamp", "at": { "room": "ground", "dx": 11, "dy": 42 }, "facing": "south" },
     { "id": "last-post-street-lamp-9", "object": "street-lamp", "at": { "room": "ground", "dx": 18, "dy": 42 }, "facing": "south" },
     { "id": "last-post-street-lamp-10", "object": "street-lamp", "at": { "room": "ground", "dx": 27, "dy": 42 }, "facing": "south" },
-    { "id": "last-post-street-lamp-11", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 42 }, "facing": "south" }
+    { "id": "last-post-street-lamp-11", "object": "street-lamp", "at": { "room": "ground", "dx": 34, "dy": 42 }, "facing": "south" },
+    { "id": "last-post-w0", "object": "windbent-pine", "at": { "room": "ground", "dx": 60, "dy": 30 }, "facing": "east" },
+    { "id": "last-post-w1", "object": "windbent-pine", "at": { "room": "ground", "dx": 60, "dy": 27 }, "facing": "east" },
+    { "id": "last-post-w2", "object": "tree-stump", "at": { "room": "ground", "dx": 60, "dy": 25 }, "facing": "east" },
+    { "id": "last-post-w3", "object": "boulder", "at": { "room": "ground", "dx": 3, "dy": 20 }, "facing": "north" },
+    { "id": "last-post-w4", "object": "boulder", "at": { "room": "ground", "dx": 3, "dy": 29 } },
+    { "id": "last-post-w5", "object": "boulder", "at": { "room": "ground", "dx": 3, "dy": 26 }, "facing": "east" },
+    { "id": "last-post-w6", "object": "windbent-pine", "at": { "room": "ground", "dx": 45, "dy": 3 }, "facing": "east" },
+    { "id": "last-post-w7", "object": "windbent-pine", "at": { "room": "ground", "dx": 60, "dy": 16 }, "facing": "east" },
+    { "id": "last-post-w8", "object": "windbent-pine", "at": { "room": "ground", "dx": 60, "dy": 20 }, "facing": "east" },
+    { "id": "last-post-w9", "object": "windbent-pine", "at": { "room": "ground", "dx": 3, "dy": 15 }, "facing": "east" },
+    { "id": "last-post-w10", "object": "windbent-pine", "at": { "room": "ground", "dx": 3, "dy": 17 }, "facing": "east" },
+    { "id": "last-post-w11", "object": "boulder", "at": { "room": "ground", "dx": 3, "dy": 12 }, "facing": "east" }
   ],
   "assemblies": [
     { "id": "last-post-tram-car", "assembly": "tram-car", "at": { "room": "tram-terminal", "dx": 14, "dy": 3 } }

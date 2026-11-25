@@ -71,7 +71,22 @@
     { "id": "site-null-street-lamp-8", "object": "street-lamp", "at": { "room": "ground", "dx": 23, "dy": 58 }, "facing": "north" },
     { "id": "site-null-street-lamp-9", "object": "street-lamp", "at": { "room": "ground", "dx": 5, "dy": 56 }, "facing": "east" },
     { "id": "site-null-street-lamp-10", "object": "street-lamp", "at": { "room": "ground", "dx": 5, "dy": 40 }, "facing": "east" },
-    { "id": "site-null-street-lamp-11", "object": "street-lamp", "at": { "room": "ground", "dx": 5, "dy": 25 }, "facing": "east" }
+    { "id": "site-null-street-lamp-11", "object": "street-lamp", "at": { "room": "ground", "dx": 5, "dy": 25 }, "facing": "east" },
+    { "id": "site-null-w0", "object": "tree-stump", "at": { "room": "ground", "dx": 3, "dy": 53 }, "facing": "east" },
+    { "id": "site-null-w1", "object": "windbent-pine", "at": { "room": "ground", "dx": 3, "dy": 11 }, "facing": "east" },
+    { "id": "site-null-w2", "object": "windbent-pine", "at": { "room": "ground", "dx": 3, "dy": 13 }, "facing": "east" },
+    { "id": "site-null-w3", "object": "windbent-pine", "at": { "room": "ground", "dx": 3, "dy": 9 }, "facing": "east" },
+    { "id": "site-null-w4", "object": "boulder", "at": { "room": "ground", "dx": 3, "dy": 15 }, "facing": "east" },
+    { "id": "site-null-w5", "object": "windbent-pine", "at": { "room": "ground", "dx": 58, "dy": 60 }, "facing": "east" },
+    { "id": "site-null-w6", "object": "boulder", "at": { "room": "ground", "dx": 60, "dy": 48 }, "facing": "west" },
+    { "id": "site-null-w7", "object": "boulder", "at": { "room": "ground", "dx": 60, "dy": 45 }, "facing": "east" },
+    { "id": "site-null-w8", "object": "windbent-pine", "at": { "room": "ground", "dx": 3, "dy": 46 }, "facing": "east" },
+    { "id": "site-null-w9", "object": "boulder", "at": { "room": "ground", "dx": 3, "dy": 48 }, "facing": "east" },
+    { "id": "site-null-w10", "object": "boulder", "at": { "room": "ground", "dx": 60, "dy": 16 }, "facing": "west" },
+    { "id": "site-null-w11", "object": "boulder", "at": { "room": "ground", "dx": 60, "dy": 18 } },
+    { "id": "site-null-w12", "object": "boulder", "at": { "room": "ground", "dx": 13, "dy": 3 } },
+    { "id": "site-null-w13", "object": "boulder", "at": { "room": "ground", "dx": 15, "dy": 3 }, "facing": "west" },
+    { "id": "site-null-w14", "object": "boulder", "at": { "room": "ground", "dx": 11, "dy": 3 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [
