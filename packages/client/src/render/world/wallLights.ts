@@ -1,6 +1,7 @@
 import { isBuildingWall, isOutdoorFloor, TILE_KINDS, type Facing, type ResolvedArea, type TilePoint, type ZoneLight } from '@containment/shared';
 import type { ActiveZone } from '../../state/worldState.ts';
 import { noise3 } from '../voxel/palette.ts';
+import { ownedLayoutOf } from './chunkStructure.ts';
 import { litWindowGlow, type Side } from './levelVoxels.ts';
 
 export interface SconceSpot {
@@ -44,15 +45,20 @@ export interface Mount {
   readonly facing: Facing;
 }
 
+export function indoorsOf(zone: ActiveZone): (point: TilePoint) => boolean {
+  return ownedLayoutOf(zone.definition, zone.layout).interiorAt ?? ((point) => !isOutdoorFloor(zone.layout.tileAt(point)));
+}
+
 export function mountsIn(zone: ActiveZone, area: Pick<ResolvedArea, 'rect' | 'districtId'>, occupied: ReadonlySet<string>): Mount[] {
   const tile = (x: number, y: number) => zone.layout.tileAt({ x, y });
+  const indoors = indoorsOf(zone);
   const owners = zone.definition.layout;
   const { rect } = area;
   const mounts: Mount[] = [];
   for (let y = rect.y; y < rect.y + rect.height; y++) {
     for (let x = rect.x; x < rect.x + rect.width; x++) {
       if (owners.districtAt({ x, y }) !== area.districtId) continue;
-      if (!TILE_KINDS[tile(x, y)].walkable || isOutdoorFloor(tile(x, y)) || tile(x, y) === 'door' || occupied.has(`${x},${y}`)) continue;
+      if (!TILE_KINDS[tile(x, y)].walkable || !indoors({ x, y }) || tile(x, y) === 'door' || occupied.has(`${x},${y}`)) continue;
       if (MOUNT_PREFERENCE.some((facing) => tile(x + FACING_STEP[facing].x, y + FACING_STEP[facing].y) === 'door')) continue;
       const facing = MOUNT_PREFERENCE.find((side) => isBuildingWall(tile(x + FACING_STEP[side].x, y + FACING_STEP[side].y)));
       if (!facing) continue;
@@ -117,6 +123,7 @@ export function planWallLighting(zone: ActiveZone): WallLighting {
 
 function windowSpills(zone: ActiveZone, existing: readonly FillLight[]): FillLight[] {
   const { layout } = zone;
+  const indoors = indoorsOf(zone);
   const spills: FillLight[] = [];
   const crowded = (point: TilePoint) => [...existing, ...spills].some((fill) => Math.hypot(fill.position.x - point.x, fill.position.y - point.y) < WINDOW_SPILL_SPACING);
   for (let ty = 0; ty < layout.height; ty++) {
@@ -126,7 +133,8 @@ function windowSpills(zone: ActiveZone, existing: readonly FillLight[]): FillLig
       for (const side of WINDOW_SIDES) {
         const step = FACING_STEP[side];
         const position = { x: tx + step.x, y: ty + step.y };
-        if (!isOutdoorFloor(layout.tileAt(position)) || layout.tileAt(position) === 'water') continue;
+        const outside = layout.tileAt(position);
+        if (!TILE_KINDS[outside].walkable || outside === 'door' || indoors(position)) continue;
         const glow = litWindowGlow(material, tx, ty, side);
         if (glow === null || crowded(position)) continue;
         spills.push({ position, light: { position, radius: WINDOW_SPILL_RADIUS, intensity: WINDOW_SPILL_INTENSITY, color: `#${glow.toString(16).padStart(6, '0')}` } });

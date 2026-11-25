@@ -111,6 +111,7 @@ const isWallKind = (kind: TileKindId): boolean => TILE_KINDS[kind].structure ===
 
 export interface OwnedLayout extends TileLayout {
   readonly ownerAt?: (point: TilePoint) => string | undefined;
+  readonly interiorAt?: (point: TilePoint) => boolean;
 }
 
 const besideKind = (layout: OwnedLayout, tx: number, ty: number, x: number, y: number): TileKindId => {
@@ -801,9 +802,12 @@ const OUTWARD: Readonly<Record<Side, readonly [number, number]>> = { north: [0, 
 
 const SIDES: readonly Side[] = ['north', 'south', 'west', 'east'];
 
-function facesOutdoors(layout: OwnedLayout, tx: number, ty: number, side: Side): boolean {
+export function facesOutdoors(layout: OwnedLayout, tx: number, ty: number, side: Side): boolean {
   const [dx, dy] = OUTWARD[side];
-  return isOutdoorFloor(besideKind(layout, tx, ty, tx + dx, ty + dy));
+  const beside = { x: tx + dx, y: ty + dy };
+  const kind = besideKind(layout, tx, ty, beside.x, beside.y);
+  if (!layout.interiorAt) return isOutdoorFloor(kind);
+  return kind !== 'void' && kind !== 'door' && !isWallKind(kind) && !layout.interiorAt(beside);
 }
 
 const WINDOW_GLOWS = [FACADE.litWindow, FACADE.litWindow, 0xd8ecff, 0x6ab8ff, 0x4fe3ff, 0xff4fa8];

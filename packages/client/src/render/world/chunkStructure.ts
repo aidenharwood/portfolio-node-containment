@@ -1,4 +1,4 @@
-import { TILE_KINDS, type DecalCell, type ResolvedLevel, type SceneLayout, type TilePoint, type TileRect } from '@containment/shared';
+import { isBuildingWall, TILE_KINDS, TRACK_GAUGE, type DecalCell, type ResolvedLevel, type SceneLayout, type TileLayout, type TilePoint, type TileRect } from '@containment/shared';
 import { Box3, BufferAttribute, BufferGeometry, Color, Sphere, SRGBColorSpace, Vector3 } from 'three';
 import { VOXEL_EMPTY, type VoxelGrid } from '../voxel/voxelKinds.ts';
 import { meshVoxels, type TopSink, type VoxelMeshes } from '../voxel/voxelMesher.ts';
@@ -39,16 +39,97 @@ export interface StructurePlan {
   readonly result: () => ChunkStructure;
 }
 
+const ROOM_REACH = 4096;
+const OUTSIDE = 1;
+const INSIDE = 2;
+const SEALED = 3;
+const ACROSS: readonly (readonly [number, number])[] = [
+  [1, 0],
+  [-1, 0],
+  [0, 1],
+  [0, -1],
+];
+
+export function interiorMaskOf(layout: TileLayout): (point: TilePoint) => boolean {
+  const { width, height } = layout;
+  const state = new Uint8Array(width * height);
+  const wallAt = (x: number, y: number): boolean => isBuildingWall(layout.tileAt({ x, y }));
+  const trackAt = (x: number, y: number): boolean => layout.tileAt({ x, y }) === 'track';
+  const wallBeyond = (x: number, y: number, dx: number, dy: number): { readonly wall: boolean; readonly runs: boolean } => {
+    let cx = x + dx;
+    let cy = y + dy;
+    for (let step = 0; step < TRACK_GAUGE && trackAt(cx, cy); step++) {
+      cx += dx;
+      cy += dy;
+    }
+    return { wall: wallAt(cx, cy), runs: wallAt(cx + dx, cy + dy) };
+  };
+  const crossesWall = (x: number, y: number, dx: number, dy: number): boolean => {
+    if (!trackAt(x - dx, y - dy) || !trackAt(x + dx, y + dy)) return false;
+    const before = wallBeyond(x, y, -dy, -dx);
+    const after = wallBeyond(x, y, dy, dx);
+    return before.wall && after.wall && (before.runs || after.runs);
+  };
+  const seals = (x: number, y: number): boolean => {
+    const kind = layout.tileAt({ x, y });
+    if (isBuildingWall(kind) || kind === 'glass' || kind === 'door') return true;
+    return kind === 'track' && (crossesWall(x, y, 1, 0) || crossesWall(x, y, 0, 1));
+  };
+  const flood = (start: number): void => {
+    const room = [start];
+    state[start] = INSIDE;
+    let open = false;
+    for (let next = 0; next < room.length && !open; next++) {
+      const at = room[next] as number;
+      const x = at % width;
+      const y = (at - x) / width;
+      for (const [dx, dy] of ACROSS) {
+        const nx = x + dx;
+        const ny = y + dy;
+        const index = ny * width + nx;
+        if (nx < 0 || ny < 0 || nx >= width || ny >= height || state[index] === OUTSIDE || room.length > ROOM_REACH) {
+          open = true;
+          break;
+        }
+        if (state[index] !== 0) continue;
+        if (seals(nx, ny)) {
+          state[index] = SEALED;
+          continue;
+        }
+        state[index] = INSIDE;
+        room.push(index);
+      }
+    }
+    if (open) for (const at of room) state[at] = OUTSIDE;
+  };
+  return ({ x, y }) => {
+    if (x < 0 || y < 0 || x >= width || y >= height) return false;
+    const at = y * width + x;
+    if (state[at] === 0) {
+      if (seals(x, y)) state[at] = SEALED;
+      else flood(at);
+    }
+    return state[at] === INSIDE;
+  };
+}
+
+const OWNED = new WeakMap<TileLayout, { readonly definition: ResolvedLevel; readonly owned: OwnedLayout }>();
+
 export function ownedLayoutOf(definition: ResolvedLevel, layout: SceneLayout): OwnedLayout {
   if (!definition.definition.land) return layout;
+  const known = OWNED.get(layout);
+  if (known?.definition === definition) return known.owned;
   const owners = definition.layout;
-  return {
+  const owned: OwnedLayout = {
     width: layout.width,
     height: layout.height,
     tileAt: (point) => layout.tileAt(point),
     heightAt: (point) => layout.heightAt(point),
     ownerAt: (point) => owners.districtAt(point) ?? owners.connectorAt(point),
+    interiorAt: interiorMaskOf(layout),
   };
+  OWNED.set(layout, { definition, owned });
+  return owned;
 }
 
 export function hasStructure(layout: SceneLayout, region: TileRect): boolean {
