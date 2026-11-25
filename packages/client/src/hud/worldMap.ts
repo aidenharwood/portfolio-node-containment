@@ -28,6 +28,8 @@ import type { WorldState } from '../state/worldState.ts';
 import { h, replaceChildren } from '../ui/dom.ts';
 import { isCompactLayout } from '../ui/viewport.ts';
 import { districtLabels, regionLabels, type DistrictLabel, type RegionLabel } from './mapLabels.ts';
+import { readySceneRaster, sceneRasterFor } from '../render/far/farJobs.ts';
+import { rasterLayout } from '../render/far/sceneRaster.ts';
 import { drawPoiIcon, poiLegend } from './poiIcons.ts';
 
 const MAP_PADDING = 24;
@@ -529,7 +531,9 @@ export class WorldMap {
   private tileImage(level: ResolvedLevel, objectives: ReadonlySet<DistrictId>): HTMLCanvasElement {
     const key = `${level.id}|${[...objectives].filter((id) => level.districts.some(({ districtId }) => districtId === id)).sort().join(',')}`;
     if (this.tileCache?.key === key) return this.tileCache.image;
-    const { scene } = level;
+    const raster = readySceneRaster(level);
+    if (!raster) void sceneRasterFor(level).catch(() => undefined);
+    const scene = raster ? { ...rasterLayout(raster), width: level.scene.width, height: level.scene.height } : level.scene;
     const image = h('canvas', {});
     image.width = scene.width;
     image.height = scene.height;
