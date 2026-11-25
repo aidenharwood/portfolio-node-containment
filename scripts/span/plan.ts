@@ -182,6 +182,13 @@ export const isSeamTile = (x: number, y: number): boolean =>
     return Math.abs(across + 0.5 - edge.line) < SEAM_HALF && along >= edge.from - SEAM_HALF && along < edge.to + SEAM_HALF;
   });
 
+export const nearSeam = (x: number, y: number, reach: number): boolean =>
+  SEAM_EDGES.some((edge) => {
+    const across = edge.vertical ? x : y;
+    const along = edge.vertical ? y : x;
+    return Math.abs(across - edge.line) < reach && along >= edge.from - reach && along < edge.to + reach;
+  });
+
 export interface BridgePlan {
   readonly x: number;
   readonly y: number;

@@ -8,7 +8,7 @@ import { valueNoise } from '../../packages/shared/src/world/noise.ts';
 import { codeAt, COLUMNS, HEIGHT, HULL, LAND_ID, landSquares, MASSIF, padOf, placeAt, PLACES, placeById, random, REGIONS, regionAtSquare, regionOfCode, ROWS, SQUARE, WIDTH } from './atlas.ts';
 import { LAYOUT_SOURCES } from '../../packages/shared/src/content/districts/layouts/index.ts';
 import { BRIDGE_PLANS_FOR_LAND, bridgeTiles } from './bridges.ts';
-import { isLandTile, isMassifTile, isSeamTile, nearPad, nearRail, railSegments, seamEdges } from './plan.ts';
+import { isLandTile, isMassifTile, isSeamTile, nearPad, nearRail, nearSeam, railSegments, seamEdges } from './plan.ts';
 import { gradeRail } from './grade.ts';
 import { megastructureTiles } from './megastructures.ts';
 import { buildingSpecOf, WILD_POIS } from './wilds.ts';
@@ -115,7 +115,7 @@ const towers: { x: number; y: number; size: number; tile: TileKindId; height: nu
 for (let y = C.y + 6; y < C.y + C.height - 8; y += 30) {
   for (let x = C.x + 6; x < C.x + C.width - 8; x += 30) {
     if (!inRegion('C')(x + 11, y + 11) || !isLand(x, y) || !isLand(x + 22, y + 22)) continue;
-    if (nearPad(x + 11, y + 11, 18) || nearRail(x + 11, y + 11, 16)) continue;
+    if (nearPad(x + 11, y + 11, 18) || nearRail(x + 11, y + 11, 16) || nearSeam(x + 11, y + 11, 22)) continue;
     const next = random(x * 31 + y);
     const size = 10 + Math.floor(next() * 7);
     towers.push({ x, y, size, tile: next() < 0.5 ? 'cladding' : 'blockwork', height: 9 + Math.floor(next() * 7) });
