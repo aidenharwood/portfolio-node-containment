@@ -5,11 +5,11 @@
   "tier": 11,
   "region": "glass-steppe",
   "condition": "alien",
-  "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
+  "ambience": { "darkness": 0.28, "tint": "#8c86c0", "fog": "#8a82c0", "sky": "#a49ad8", "weather": ["spores"], "haze": 1.05 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 15, "row": 7 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 30, "y": 28, "width": 14, "height": 10 }, "height": 11 },
+    { "kind": "rise", "rect": { "x": 30, "y": 28, "width": 14, "height": 10 }, "height": 12 },
     { "kind": "building", "id": "vigil-dormitory", "rect": { "x": 31, "y": 29, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 33, "y": 38, "width": 8, "height": 2 }, "tile": "gravel" },
     { "kind": "patch", "rect": { "x": 36, "y": 38, "width": 2, "height": 3 }, "tile": "gravel" },

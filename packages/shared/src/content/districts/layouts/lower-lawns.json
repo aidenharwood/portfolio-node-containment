@@ -5,11 +5,11 @@
   "tier": 2,
   "region": "kestrel-reach",
   "condition": "pristine",
-  "ambience": { "darkness": 0.16, "tint": "#e8eef4", "fog": "#c8d8e8", "sky": "#9fc8f0", "weather": ["mist"], "haze": 0.7 },
+  "ambience": { "darkness": 0.18, "tint": "#dfe8f0", "fog": "#b8c6d4", "sky": "#9ab8d4", "weather": ["mist"], "haze": 1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 6, "row": 11 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 19, "y": 26, "width": 10, "height": 8 }, "height": 5 },
+    { "kind": "rise", "rect": { "x": 19, "y": 26, "width": 10, "height": 8 }, "height": 6 },
     { "kind": "building", "id": "gardeners-shed", "rect": { "x": 20, "y": 27, "width": 8, "height": 6 }, "floor": "boards", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 20, "y": 34, "width": 8, "height": 2 }, "tile": "paving" },
     { "kind": "patch", "rect": { "x": 23, "y": 34, "width": 2, "height": 2 }, "tile": "paving" },

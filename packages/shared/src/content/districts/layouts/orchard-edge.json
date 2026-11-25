@@ -5,16 +5,16 @@
   "tier": 3,
   "region": "harrow-terraces",
   "condition": "overgrown",
-  "ambience": { "darkness": 0.2, "tint": "#d8e4d4", "fog": "#c8d8d0", "sky": "#a8d0c8", "weather": ["dust"], "haze": 0.8 },
+  "ambience": { "darkness": 0.22, "tint": "#e8e0cc", "fog": "#c9bfa6", "sky": "#c8bc9c", "weather": ["dust"], "haze": 1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 8 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 29, "y": 29, "width": 14, "height": 10 }, "height": 10 },
-    { "kind": "building", "id": "orchard-edge-checkpoint", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "carpet", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "patch", "rect": { "x": 32, "y": 39, "width": 8, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 35, "y": 39, "width": 2, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 35, "y": 40, "width": 11, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 45, "y": 38, "width": 2, "height": 4 }, "tile": "gravel" }
+    { "kind": "rise", "rect": { "x": 28, "y": 30, "width": 14, "height": 10 }, "height": 11 },
+    { "kind": "building", "id": "orchard-edge-checkpoint", "rect": { "x": 29, "y": 31, "width": 12, "height": 8 }, "floor": "carpet", "wall": "brick", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 31, "y": 40, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 34, "y": 40, "width": 2, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 34, "y": 41, "width": 12, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 45, "y": 39, "width": 2, "height": 4 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -43,17 +43,17 @@
     { "id": "orchard-edge-checkpoint-table-6", "object": "table", "at": { "room": "orchard-edge-checkpoint", "dx": 4, "dy": 3 } },
     { "id": "orchard-edge-checkpoint-chair-7", "object": "chair", "at": { "room": "orchard-edge-checkpoint", "dx": 3, "dy": 2 }, "facing": "south" },
     { "id": "orchard-edge-checkpoint-chair-8", "object": "chair", "at": { "room": "orchard-edge-checkpoint", "dx": 4, "dy": 2 }, "facing": "south" },
-    { "id": "orchard-edge-poi-harrow-tithe-box-0", "object": "harrow-tithe-box", "at": { "room": "ground", "dx": 48, "dy": 28 } },
-    { "id": "orchard-edge-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 39 }, "facing": "east" },
-    { "id": "orchard-edge-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 40, "dy": 39 }, "facing": "west" },
-    { "id": "orchard-edge-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 42 }, "facing": "north" }
+    { "id": "orchard-edge-poi-harrow-tithe-box-0", "object": "harrow-tithe-box", "at": { "room": "ground", "dx": 47, "dy": 43 } },
+    { "id": "orchard-edge-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 30, "dy": 40 }, "facing": "east" },
+    { "id": "orchard-edge-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 39, "dy": 40 }, "facing": "west" },
+    { "id": "orchard-edge-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 37, "dy": 43 }, "facing": "north" },
+    { "id": "orchard-edge-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 41 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
     { "id": "orchard-edge-ditch-leech-0", "creature": "ditch-leech", "at": { "room": "ground", "dx": 53, "dy": 14 } },
     { "id": "orchard-edge-ditch-leech-2", "creature": "ditch-leech", "at": { "room": "ground", "dx": 7, "dy": 23 } },
-    { "id": "orchard-edge-crop-magpie-3", "creature": "crop-magpie", "at": { "room": "ground", "dx": 48, "dy": 43 } },
     { "id": "orchard-edge-crop-magpie-5", "creature": "crop-magpie", "at": { "room": "ground", "dx": 53, "dy": 51 } },
     { "id": "orchard-edge-ditch-leech-6", "creature": "ditch-leech", "at": { "room": "ground", "dx": 8, "dy": 15 } },
     { "id": "orchard-edge-crop-magpie-7", "creature": "crop-magpie", "at": { "room": "ground", "dx": 52, "dy": 23 } },
@@ -68,7 +68,7 @@
   "lights": [],
   "decals": [],
   "setPieces": [
-    { "id": "orchard-edge-landmark", "prefab": "landmark-harvest-gantry", "at": { "room": "ground", "dx": 48, "dy": 34 }, "facing": "south" }
+    { "id": "orchard-edge-landmark", "prefab": "landmark-harvest-gantry", "at": { "room": "ground", "dx": 47, "dy": 35 }, "facing": "south" }
   ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },

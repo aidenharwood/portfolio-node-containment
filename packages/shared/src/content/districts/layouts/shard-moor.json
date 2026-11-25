@@ -5,7 +5,7 @@
   "tier": 11,
   "region": "glass-steppe",
   "condition": "alien",
-  "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
+  "ambience": { "darkness": 0.28, "tint": "#8c86c0", "fog": "#8a82c0", "sky": "#a49ad8", "weather": ["spores"], "haze": 1.05 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 13, "row": 9 },
   "steps": [
@@ -14,8 +14,8 @@
     { "kind": "patch", "rect": { "x": 33, "y": 39, "width": 8, "height": 2 }, "tile": "gravel" },
     { "kind": "patch", "rect": { "x": 36, "y": 39, "width": 2, "height": 2 }, "tile": "gravel" },
     { "kind": "patch", "rect": { "x": 36, "y": 40, "width": 10, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 45, "y": 26, "width": 2, "height": 16 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 40, "y": 25, "width": 7, "height": 2 }, "tile": "gravel" }
+    { "kind": "patch", "rect": { "x": 45, "y": 24, "width": 2, "height": 18 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 40, "y": 23, "width": 7, "height": 2 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -23,7 +23,7 @@
     { "room": "shard-lab", "name": "Shard Lab", "safe": false }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 21, "dy": 10 }
+    "start": { "room": "ground", "dx": 60, "dy": 4 }
   },
   "objects": [
     { "id": "shard-moor-precursor-pylon-0", "object": "precursor-pylon", "at": { "room": "ground", "dx": 27, "dy": 34 } },
@@ -45,7 +45,7 @@
     { "id": "shard-moor-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 39, "dy": 42 }, "facing": "north" },
     { "id": "shard-moor-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 38 }, "facing": "west" },
     { "id": "shard-moor-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 30 }, "facing": "west" },
-    { "id": "shard-moor-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 42, "dy": 27 }, "facing": "north" }
+    { "id": "shard-moor-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 44, "dy": 25 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [],
@@ -55,12 +55,12 @@
     { "id": "shard-moor-red-twin-4", "creature": "red-twin", "at": { "room": "ground", "dx": 9, "dy": 12 } },
     { "id": "shard-moor-shard-wisp-5", "creature": "shard-wisp", "at": { "room": "ground", "dx": 51, "dy": 30 } },
     { "id": "shard-moor-choir-echo-6", "creature": "choir-echo", "at": { "room": "ground", "dx": 27, "dy": 48 } },
-    { "id": "shard-moor-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 8, "dy": 27 } },
-    { "id": "shard-moor-shard-wisp-8", "creature": "shard-wisp", "at": { "room": "ground", "dx": 59, "dy": 28 } },
-    { "id": "shard-moor-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 8, "dy": 34 } },
-    { "id": "shard-moor-shard-wisp-11", "creature": "shard-wisp", "at": { "room": "ground", "dx": 49, "dy": 56 } },
-    { "id": "shard-moor-choir-echo-12", "creature": "choir-echo", "at": { "room": "ground", "dx": 19, "dy": 35 } },
-    { "id": "shard-moor-shard-wisp-14", "creature": "shard-wisp", "at": { "room": "ground", "dx": 45, "dy": 52 } },
+    { "id": "shard-moor-red-twin-7", "creature": "red-twin", "at": { "room": "ground", "dx": 59, "dy": 28 } },
+    { "id": "shard-moor-choir-echo-9", "creature": "choir-echo", "at": { "room": "ground", "dx": 8, "dy": 34 } },
+    { "id": "shard-moor-red-twin-10", "creature": "red-twin", "at": { "room": "ground", "dx": 49, "dy": 56 } },
+    { "id": "shard-moor-shard-wisp-11", "creature": "shard-wisp", "at": { "room": "ground", "dx": 19, "dy": 35 } },
+    { "id": "shard-moor-red-twin-13", "creature": "red-twin", "at": { "room": "ground", "dx": 45, "dy": 52 } },
+    { "id": "shard-moor-choir-echo-15", "creature": "choir-echo", "at": { "room": "ground", "dx": 21, "dy": 10 } },
     { "id": "shard-lab-red-twin-0", "creature": "red-twin", "at": { "room": "shard-lab", "dx": 8, "dy": 5 } }
   ],
   "lights": [],

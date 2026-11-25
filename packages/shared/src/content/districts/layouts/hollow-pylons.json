@@ -5,11 +5,11 @@
   "tier": 11,
   "region": "glass-steppe",
   "condition": "alien",
-  "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
+  "ambience": { "darkness": 0.28, "tint": "#8c86c0", "fog": "#8a82c0", "sky": "#a49ad8", "weather": ["spores"], "haze": 1.05 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 14, "row": 7 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 20, "y": 30, "width": 14, "height": 10 }, "height": 11 },
+    { "kind": "rise", "rect": { "x": 20, "y": 30, "width": 14, "height": 10 }, "height": 13 },
     { "kind": "building", "id": "tuning-station", "rect": { "x": 21, "y": 31, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 23, "y": 40, "width": 8, "height": 2 }, "tile": "gravel" },
     { "kind": "patch", "rect": { "x": 26, "y": 40, "width": 2, "height": 7 }, "tile": "gravel" }

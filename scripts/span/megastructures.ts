@@ -46,4 +46,13 @@ export function megastructureGround(square: Pick<LandSquare, 'column' | 'row'>):
   return { footings, overhead };
 }
 
+export function megastructureTiles(squareOf: (districtId: string) => Pick<LandSquare, 'column' | 'row'> | undefined): TilePoint[][] {
+  return SPAN_MEGASTRUCTURES.map((placement) => {
+    const square = squareOf(placement.at.districtId);
+    if (!square) throw new Error('Megastructure ' + placement.id + ' names district ' + placement.at.districtId + ', which no square holds.');
+    const origin = { x: square.column * SQUARE + placement.at.dx, y: square.row * SQUARE + placement.at.dy };
+    return megastructurePieces(placement.prefab, placement.facing ?? 'south', origin).flatMap((piece) => piece.tiles);
+  });
+}
+
 export const reservedBy = (ground: MegastructureGround, x: number, y: number): boolean => ground.footings.has(x + ',' + y) || ground.overhead.has(x + ',' + y);

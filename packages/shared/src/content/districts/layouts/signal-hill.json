@@ -5,17 +5,17 @@
   "tier": 2,
   "region": "kestrel-reach",
   "condition": "pristine",
-  "ambience": { "darkness": 0.16, "tint": "#e8eef4", "fog": "#c8d8e8", "sky": "#9fc8f0", "weather": ["mist"], "haze": 0.7 },
+  "ambience": { "darkness": 0.18, "tint": "#dfe8f0", "fog": "#b8c6d4", "sky": "#9ab8d4", "weather": ["mist"], "haze": 1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 3, "row": 10 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 29, "y": 28, "width": 14, "height": 10 }, "height": 5 },
+    { "kind": "rise", "rect": { "x": 29, "y": 28, "width": 14, "height": 10 }, "height": 7 },
     { "kind": "building", "id": "relay-hut", "rect": { "x": 30, "y": 29, "width": 12, "height": 8 }, "floor": "concrete", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 32, "y": 38, "width": 8, "height": 2 }, "tile": "paving" },
     { "kind": "patch", "rect": { "x": 35, "y": 38, "width": 2, "height": 2 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 35, "y": 39, "width": 10, "height": 2 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 44, "y": 25, "width": 2, "height": 16 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 38, "y": 24, "width": 8, "height": 2 }, "tile": "paving" }
+    { "kind": "patch", "rect": { "x": 27, "y": 39, "width": 10, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 26, "y": 25, "width": 2, "height": 16 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 26, "y": 24, "width": 9, "height": 2 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -45,10 +45,10 @@
     { "id": "signal-hill-poi-kestrel-survey-locker-0", "object": "kestrel-survey-locker", "at": { "room": "ground", "dx": 42, "dy": 19 } },
     { "id": "signal-hill-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 38 }, "facing": "east" },
     { "id": "signal-hill-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 40, "dy": 38 }, "facing": "west" },
-    { "id": "signal-hill-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 41 }, "facing": "north" },
-    { "id": "signal-hill-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 46, "dy": 37 }, "facing": "west" },
-    { "id": "signal-hill-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 46, "dy": 29 }, "facing": "west" },
-    { "id": "signal-hill-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 41, "dy": 26 }, "facing": "north" }
+    { "id": "signal-hill-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 32, "dy": 41 }, "facing": "north" },
+    { "id": "signal-hill-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 25, "dy": 37 }, "facing": "east" },
+    { "id": "signal-hill-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 25, "dy": 29 }, "facing": "east" },
+    { "id": "signal-hill-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 29, "dy": 26 }, "facing": "north" }
   ],
   "assemblies": [
     { "id": "signal-hill-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 19, "dy": 22 }, "facing": "east", "span": 2 },

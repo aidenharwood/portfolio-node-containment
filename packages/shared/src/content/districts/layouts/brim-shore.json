@@ -5,17 +5,17 @@
   "tier": 2,
   "region": "kestrel-reach",
   "condition": "pristine",
-  "ambience": { "darkness": 0.16, "tint": "#e8eef4", "fog": "#c8d8e8", "sky": "#9fc8f0", "weather": ["mist"], "haze": 0.7 },
+  "ambience": { "darkness": 0.18, "tint": "#dfe8f0", "fog": "#b8c6d4", "sky": "#9ab8d4", "weather": ["mist"], "haze": 1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 4, "row": 12 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 28, "y": 25, "width": 14, "height": 10 }, "height": 7 },
+    { "kind": "rise", "rect": { "x": 28, "y": 25, "width": 14, "height": 10 }, "height": 2 },
     { "kind": "building", "id": "net-loft", "rect": { "x": 29, "y": 26, "width": 12, "height": 8 }, "floor": "concrete", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 31, "y": 35, "width": 8, "height": 2 }, "tile": "paving" },
     { "kind": "patch", "rect": { "x": 34, "y": 35, "width": 2, "height": 2 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 34, "y": 36, "width": 10, "height": 2 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 43, "y": 22, "width": 2, "height": 16 }, "tile": "paving" },
-    { "kind": "patch", "rect": { "x": 37, "y": 21, "width": 8, "height": 2 }, "tile": "paving" }
+    { "kind": "patch", "rect": { "x": 26, "y": 36, "width": 10, "height": 2 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 25, "y": 22, "width": 2, "height": 16 }, "tile": "paving" },
+    { "kind": "patch", "rect": { "x": 25, "y": 21, "width": 9, "height": 2 }, "tile": "paving" }
   ],
   "tiles": [],
   "areas": [
@@ -44,10 +44,9 @@
     { "id": "brim-shore-poi-kestrel-supply-crate-0", "object": "kestrel-supply-crate", "at": { "room": "ground", "dx": 35, "dy": 13 } },
     { "id": "brim-shore-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 30, "dy": 35 }, "facing": "east" },
     { "id": "brim-shore-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 39, "dy": 35 }, "facing": "west" },
-    { "id": "brim-shore-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 37, "dy": 38 }, "facing": "north" },
-    { "id": "brim-shore-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 45, "dy": 34 }, "facing": "west" },
-    { "id": "brim-shore-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 45, "dy": 26 }, "facing": "west" },
-    { "id": "brim-shore-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 40, "dy": 23 }, "facing": "north" }
+    { "id": "brim-shore-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 38 }, "facing": "north" },
+    { "id": "brim-shore-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 24, "dy": 34 }, "facing": "east" },
+    { "id": "brim-shore-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 28, "dy": 20 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [],

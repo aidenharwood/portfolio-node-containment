@@ -42,6 +42,22 @@ export function fractalNoise(seed: number, x: number, y: number, octaves: number
   return weight === 0 ? 0 : total / weight;
 }
 
+export function contrastNoise(seed: number, x: number, y: number, octaves: number, persistence: number, gain: number): number {
+  let total = 0;
+  let weight = 0;
+  let amplitude = 1;
+  let frequency = 1;
+  for (let octave = 0; octave < octaves; octave++) {
+    total += amplitude * valueNoise(octaveSeed(seed, octave), octaveX(x, frequency, octave), octaveY(y, frequency, octave));
+    weight += amplitude;
+    amplitude *= persistence;
+    frequency *= 2;
+  }
+  if (weight === 0) return 0.5;
+  const value = 0.5 + (total / weight - 0.5) * gain;
+  return value < 0 ? 0 : value > 1 ? 1 : value;
+}
+
 interface Axis {
   readonly cell: Int32Array;
   readonly fade: Float64Array;

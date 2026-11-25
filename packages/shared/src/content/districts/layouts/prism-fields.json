@@ -5,11 +5,11 @@
   "tier": 10,
   "region": "glass-steppe",
   "condition": "alien",
-  "ambience": { "darkness": 0.36, "tint": "#3c3a5a", "fog": "#4a4670", "sky": "#7a74b0", "weather": ["spores"], "haze": 1.1 },
+  "ambience": { "darkness": 0.28, "tint": "#8c86c0", "fog": "#8a82c0", "sky": "#a49ad8", "weather": ["spores"], "haze": 1.05 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 14, "row": 4 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 29, "y": 28, "width": 14, "height": 10 }, "height": 9 },
+    { "kind": "rise", "rect": { "x": 29, "y": 28, "width": 14, "height": 10 }, "height": 13 },
     { "kind": "building", "id": "prism-survey-lab", "rect": { "x": 30, "y": 29, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 32, "y": 38, "width": 8, "height": 2 }, "tile": "gravel" },
     { "kind": "patch", "rect": { "x": 35, "y": 38, "width": 2, "height": 2 }, "tile": "gravel" },

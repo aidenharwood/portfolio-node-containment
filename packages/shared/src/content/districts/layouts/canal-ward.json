@@ -5,16 +5,17 @@
   "tier": 7,
   "region": "halcyon",
   "condition": "worn",
-  "ambience": { "darkness": 0.58, "tint": "#3a2448", "fog": "#1e1430", "sky": "#2a1838", "weather": ["rain"], "haze": 1.3 },
+  "ambience": { "darkness": 0.5, "tint": "#4a3a6e", "fog": "#3a2c5c", "sky": "#4a2e66", "weather": ["rain"], "haze": 1.2 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 7, "row": 1 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 30, "y": 27, "width": 10, "height": 8 }, "height": 6 },
+    { "kind": "rise", "rect": { "x": 30, "y": 27, "width": 10, "height": 8 }, "height": 3 },
     { "kind": "building", "id": "lock-keepers-flat", "rect": { "x": 31, "y": 28, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 31, "y": 35, "width": 8, "height": 2 }, "tile": "concrete" },
     { "kind": "patch", "rect": { "x": 34, "y": 35, "width": 2, "height": 2 }, "tile": "concrete" },
-    { "kind": "patch", "rect": { "x": 34, "y": 36, "width": 10, "height": 2 }, "tile": "concrete" },
-    { "kind": "patch", "rect": { "x": 43, "y": 33, "width": 2, "height": 5 }, "tile": "concrete" }
+    { "kind": "patch", "rect": { "x": 34, "y": 36, "width": 8, "height": 2 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 41, "y": 34, "width": 2, "height": 4 }, "tile": "concrete" },
+    { "kind": "patch", "rect": { "x": 41, "y": 33, "width": 4, "height": 2 }, "tile": "concrete" }
   ],
   "tiles": [],
   "areas": [
@@ -22,13 +23,14 @@
     { "room": "lock-keepers-flat", "name": "Lock-keeper’s Flat", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 8, "dy": 57 }
+    "start": { "room": "ground", "dx": 31, "dy": 42 }
   },
   "objects": [
     { "id": "canal-ward-holo-billboard-0", "object": "holo-billboard", "at": { "room": "ground", "dx": 7, "dy": 44 } },
     { "id": "canal-ward-holo-billboard-1", "object": "holo-billboard", "at": { "room": "ground", "dx": 25, "dy": 34 } },
     { "id": "canal-ward-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 5, "dy": 28 } },
     { "id": "canal-ward-crusher-housing-5", "object": "crusher-housing", "at": { "room": "ground", "dx": 6, "dy": 22 } },
+    { "id": "canal-ward-scrap-heap-6", "object": "scrap-heap", "at": { "room": "ground", "dx": 43, "dy": 35 } },
     { "id": "lock-keepers-flat-bed-0", "object": "bed", "at": { "room": "lock-keepers-flat", "dx": 1, "dy": 0 } },
     { "id": "lock-keepers-flat-washer-1", "object": "washer", "at": { "room": "lock-keepers-flat", "dx": 4, "dy": 0 }, "facing": "south" },
     { "id": "lock-keepers-flat-shelving-2", "object": "shelving", "at": { "room": "lock-keepers-flat", "dx": 6, "dy": 0 }, "facing": "south" },
@@ -49,16 +51,15 @@
     { "id": "canal-ward-alley-crawler-2", "creature": "alley-crawler", "at": { "room": "ground", "dx": 57, "dy": 34 } },
     { "id": "canal-ward-ad-wraith-3", "creature": "ad-wraith", "at": { "room": "ground", "dx": 13, "dy": 12 } },
     { "id": "canal-ward-glass-hound-4", "creature": "glass-hound", "at": { "room": "ground", "dx": 52, "dy": 22 } },
-    { "id": "canal-ward-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 25, "dy": 9 } },
-    { "id": "canal-ward-ad-wraith-6", "creature": "ad-wraith", "at": { "room": "ground", "dx": 50, "dy": 13 } },
-    { "id": "canal-ward-glass-hound-7", "creature": "glass-hound", "at": { "room": "ground", "dx": 28, "dy": 54 } },
-    { "id": "canal-ward-alley-crawler-8", "creature": "alley-crawler", "at": { "room": "ground", "dx": 4, "dy": 38 } },
-    { "id": "canal-ward-ad-wraith-9", "creature": "ad-wraith", "at": { "room": "ground", "dx": 36, "dy": 44 } },
-    { "id": "canal-ward-glass-hound-10", "creature": "glass-hound", "at": { "room": "ground", "dx": 6, "dy": 16 } },
-    { "id": "canal-ward-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 41, "dy": 18 } },
-    { "id": "canal-ward-ad-wraith-12", "creature": "ad-wraith", "at": { "room": "ground", "dx": 38, "dy": 54 } },
-    { "id": "canal-ward-glass-hound-13", "creature": "glass-hound", "at": { "room": "ground", "dx": 29, "dy": 18 } },
-    { "id": "canal-ward-alley-crawler-14", "creature": "alley-crawler", "at": { "room": "ground", "dx": 60, "dy": 13 } }
+    { "id": "canal-ward-alley-crawler-5", "creature": "alley-crawler", "at": { "room": "ground", "dx": 50, "dy": 13 } },
+    { "id": "canal-ward-ad-wraith-6", "creature": "ad-wraith", "at": { "room": "ground", "dx": 28, "dy": 54 } },
+    { "id": "canal-ward-glass-hound-7", "creature": "glass-hound", "at": { "room": "ground", "dx": 4, "dy": 38 } },
+    { "id": "canal-ward-alley-crawler-8", "creature": "alley-crawler", "at": { "room": "ground", "dx": 36, "dy": 44 } },
+    { "id": "canal-ward-ad-wraith-9", "creature": "ad-wraith", "at": { "room": "ground", "dx": 6, "dy": 16 } },
+    { "id": "canal-ward-glass-hound-10", "creature": "glass-hound", "at": { "room": "ground", "dx": 41, "dy": 18 } },
+    { "id": "canal-ward-alley-crawler-11", "creature": "alley-crawler", "at": { "room": "ground", "dx": 38, "dy": 54 } },
+    { "id": "canal-ward-ad-wraith-12", "creature": "ad-wraith", "at": { "room": "ground", "dx": 29, "dy": 18 } },
+    { "id": "canal-ward-glass-hound-13", "creature": "glass-hound", "at": { "room": "ground", "dx": 8, "dy": 57 } }
   ],
   "lights": [],
   "decals": [],

@@ -5,16 +5,16 @@
   "tier": 3,
   "region": "harrow-terraces",
   "condition": "overgrown",
-  "ambience": { "darkness": 0.2, "tint": "#d8e4d4", "fog": "#c8d8d0", "sky": "#a8d0c8", "weather": ["dust"], "haze": 0.8 },
+  "ambience": { "darkness": 0.22, "tint": "#e8e0cc", "fog": "#c9bfa6", "sky": "#c8bc9c", "weather": ["dust"], "haze": 1 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 2, "row": 8 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 25, "y": 32, "width": 14, "height": 10 }, "height": 7 },
-    { "kind": "building", "id": "fallow-byre", "rect": { "x": 26, "y": 33, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
-    { "kind": "patch", "rect": { "x": 28, "y": 42, "width": 8, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 31, "y": 42, "width": 2, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 31, "y": 43, "width": 12, "height": 2 }, "tile": "gravel" },
-    { "kind": "patch", "rect": { "x": 42, "y": 39, "width": 2, "height": 6 }, "tile": "gravel" }
+    { "kind": "rise", "rect": { "x": 29, "y": 29, "width": 14, "height": 10 }, "height": 6 },
+    { "kind": "building", "id": "fallow-byre", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "plating", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
+    { "kind": "patch", "rect": { "x": 32, "y": 39, "width": 8, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 35, "y": 39, "width": 2, "height": 3 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 35, "y": 41, "width": 11, "height": 2 }, "tile": "gravel" },
+    { "kind": "patch", "rect": { "x": 45, "y": 38, "width": 2, "height": 5 }, "tile": "gravel" }
   ],
   "tiles": [],
   "areas": [
@@ -31,7 +31,6 @@
     { "id": "fallow-rows-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 51, "dy": 49 } },
     { "id": "fallow-rows-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 17, "dy": 59 } },
     { "id": "fallow-rows-culvert-trace-5", "object": "culvert-trace", "at": { "room": "ground", "dx": 21, "dy": 48 } },
-    { "id": "fallow-rows-cable-drum-6", "object": "cable-drum", "at": { "room": "ground", "dx": 42, "dy": 30 } },
     { "id": "fallow-rows-dredge-spot-7", "object": "dredge-spot", "at": { "room": "ground", "dx": 19, "dy": 12 } },
     { "id": "fallow-byre-secure-cell-0", "object": "secure-cell", "at": { "room": "fallow-byre", "dx": 1, "dy": 1 } },
     { "id": "fallow-byre-secure-cell-1", "object": "secure-cell", "at": { "room": "fallow-byre", "dx": 4, "dy": 1 } },
@@ -39,11 +38,10 @@
     { "id": "fallow-byre-keycard-reader-3", "object": "keycard-reader", "at": { "room": "fallow-byre", "dx": 11, "dy": 0 }, "facing": "south" },
     { "id": "fallow-byre-security-camera-4", "object": "security-camera", "at": { "room": "fallow-byre", "dx": 0, "dy": 0 }, "facing": "south" },
     { "id": "fallow-byre-lab-bench-5", "object": "lab-bench", "at": { "room": "fallow-byre", "dx": 10, "dy": 4 } },
-    { "id": "fallow-rows-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 45, "dy": 29 } },
-    { "id": "fallow-rows-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 27, "dy": 42 }, "facing": "east" },
-    { "id": "fallow-rows-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 36, "dy": 42 }, "facing": "west" },
-    { "id": "fallow-rows-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 34, "dy": 45 }, "facing": "north" },
-    { "id": "fallow-rows-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 44, "dy": 43 }, "facing": "west" }
+    { "id": "fallow-rows-poi-harrow-grain-bin-0", "object": "harrow-grain-bin", "at": { "room": "ground", "dx": 47, "dy": 28 } },
+    { "id": "fallow-rows-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 39 }, "facing": "east" },
+    { "id": "fallow-rows-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 37, "dy": 43 }, "facing": "north" },
+    { "id": "fallow-rows-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 41 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],
@@ -60,13 +58,14 @@
     { "id": "fallow-rows-crop-magpie-13", "creature": "crop-magpie", "at": { "room": "ground", "dx": 30, "dy": 19 } },
     { "id": "fallow-rows-furrow-eel-14", "creature": "furrow-eel", "at": { "room": "ground", "dx": 58, "dy": 56 } },
     { "id": "fallow-rows-crop-magpie-15", "creature": "crop-magpie", "at": { "room": "ground", "dx": 48, "dy": 8 } },
+    { "id": "fallow-rows-furrow-eel-16", "creature": "furrow-eel", "at": { "room": "ground", "dx": 23, "dy": 42 } },
     { "id": "fallow-byre-crop-magpie-0", "creature": "crop-magpie", "at": { "room": "fallow-byre", "dx": 2, "dy": 5 } },
     { "id": "fallow-byre-crop-magpie-1", "creature": "crop-magpie", "at": { "room": "fallow-byre", "dx": 9, "dy": 6 } }
   ],
   "lights": [],
   "decals": [],
   "setPieces": [
-    { "id": "fallow-rows-landmark", "prefab": "landmark-harvest-gantry", "at": { "room": "ground", "dx": 44, "dy": 35 }, "facing": "south" }
+    { "id": "fallow-rows-landmark", "prefab": "landmark-harvest-gantry", "at": { "room": "ground", "dx": 48, "dy": 34 }, "facing": "south" }
   ],
   "dressing": {
     "ground": { "theme": "street", "people": 0 },

@@ -5,7 +5,7 @@
   "tier": 13,
   "region": "the-spindle",
   "condition": "alien",
-  "ambience": { "darkness": 0.62, "tint": "#1a2a3a", "fog": "#0c1824", "sky": "#1a3048", "weather": ["sparks"], "haze": 1.4 },
+  "ambience": { "darkness": 0.45, "tint": "#5a6c88", "fog": "#3c4c66", "sky": "#56688a", "weather": ["sparks"], "haze": 1.25 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 9, "row": 8 },
   "steps": [
@@ -13,8 +13,8 @@
     { "kind": "building", "id": "noise-lab", "rect": { "x": 32, "y": 30, "width": 12, "height": 8 }, "floor": "ceramic", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 37, "y": 39, "width": 2, "height": 4 }, "tile": "plating" },
     { "kind": "patch", "rect": { "x": 37, "y": 42, "width": 12, "height": 2 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 48, "y": 24, "width": 2, "height": 20 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 42, "y": 23, "width": 8, "height": 2 }, "tile": "plating" }
+    { "kind": "patch", "rect": { "x": 48, "y": 26, "width": 2, "height": 18 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 42, "y": 25, "width": 8, "height": 2 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -43,8 +43,7 @@
     { "id": "white-noise-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 44 }, "facing": "north" },
     { "id": "white-noise-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 46, "dy": 44 }, "facing": "north" },
     { "id": "white-noise-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 36 }, "facing": "east" },
-    { "id": "white-noise-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 50, "dy": 28 }, "facing": "west" },
-    { "id": "white-noise-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 45, "dy": 22 }, "facing": "south" }
+    { "id": "white-noise-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 50, "dy": 28 }, "facing": "west" }
   ],
   "assemblies": [],
   "npcs": [],

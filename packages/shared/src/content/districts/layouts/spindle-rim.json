@@ -5,7 +5,7 @@
   "tier": 13,
   "region": "the-spindle",
   "condition": "alien",
-  "ambience": { "darkness": 0.62, "tint": "#1a2a3a", "fog": "#0c1824", "sky": "#1a3048", "weather": ["sparks"], "haze": 1.4 },
+  "ambience": { "darkness": 0.45, "tint": "#5a6c88", "fog": "#3c4c66", "sky": "#56688a", "weather": ["sparks"], "haze": 1.25 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 6, "row": 6 },
   "steps": [
@@ -13,9 +13,9 @@
     { "kind": "building", "id": "rim-bunks", "rect": { "x": 30, "y": 30, "width": 12, "height": 8 }, "floor": "boards", "wall": "wall", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 32, "y": 39, "width": 8, "height": 2 }, "tile": "plating" },
     { "kind": "patch", "rect": { "x": 35, "y": 39, "width": 2, "height": 2 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 35, "y": 40, "width": 10, "height": 2 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 44, "y": 26, "width": 2, "height": 16 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 37, "y": 25, "width": 9, "height": 2 }, "tile": "plating" }
+    { "kind": "patch", "rect": { "x": 27, "y": 40, "width": 10, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 26, "y": 26, "width": 2, "height": 16 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 26, "y": 25, "width": 8, "height": 2 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -45,10 +45,9 @@
     { "id": "rim-bunks-storage-locker-10", "object": "storage-locker", "at": { "room": "rim-bunks", "dx": 0, "dy": 3 }, "facing": "east" },
     { "id": "spindle-rim-poi-spindle-dead-drop-0", "object": "spindle-dead-drop", "at": { "room": "ground", "dx": 41, "dy": 24 } },
     { "id": "spindle-rim-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 39 }, "facing": "east" },
-    { "id": "spindle-rim-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 42 }, "facing": "north" },
-    { "id": "spindle-rim-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 46, "dy": 38 }, "facing": "west" },
-    { "id": "spindle-rim-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 46, "dy": 30 }, "facing": "west" },
-    { "id": "spindle-rim-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 41, "dy": 27 }, "facing": "north" }
+    { "id": "spindle-rim-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 32, "dy": 42 }, "facing": "north" },
+    { "id": "spindle-rim-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 25, "dy": 38 }, "facing": "east" },
+    { "id": "spindle-rim-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 29, "dy": 24 }, "facing": "south" }
   ],
   "assemblies": [],
   "npcs": [

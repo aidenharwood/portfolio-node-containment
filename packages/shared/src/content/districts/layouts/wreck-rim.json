@@ -5,11 +5,11 @@
   "tier": 8,
   "region": "wreckfield",
   "condition": "breached",
-  "ambience": { "darkness": 0.4, "tint": "#4e3e36", "fog": "#3a3430", "sky": "#6a6660", "weather": ["dust", "embers"], "haze": 1.2 },
+  "ambience": { "darkness": 0.32, "tint": "#8a7058", "fog": "#7a6450", "sky": "#a08466", "weather": ["dust", "embers"], "haze": 1.25 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 11, "row": 3 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 29, "y": 30, "width": 10, "height": 8 }, "height": 4 },
+    { "kind": "rise", "rect": { "x": 29, "y": 30, "width": 10, "height": 8 }, "height": 5 },
     { "kind": "building", "id": "rim-shack", "rect": { "x": 30, "y": 31, "width": 8, "height": 6 }, "floor": "boards", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 30, "y": 38, "width": 8, "height": 2 }, "tile": "plating" },
     { "kind": "patch", "rect": { "x": 33, "y": 38, "width": 2, "height": 2 }, "tile": "plating" },

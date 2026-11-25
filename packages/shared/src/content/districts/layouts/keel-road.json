@@ -5,16 +5,16 @@
   "tier": 9,
   "region": "wreckfield",
   "condition": "breached",
-  "ambience": { "darkness": 0.4, "tint": "#4e3e36", "fog": "#3a3430", "sky": "#6a6660", "weather": ["dust", "embers"], "haze": 1.2 },
+  "ambience": { "darkness": 0.32, "tint": "#8a7058", "fog": "#7a6450", "sky": "#a08466", "weather": ["dust", "embers"], "haze": 1.25 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 14, "row": 1 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 28, "y": 29, "width": 14, "height": 10 }, "height": 4 },
+    { "kind": "rise", "rect": { "x": 28, "y": 29, "width": 14, "height": 10 }, "height": 2 },
     { "kind": "building", "id": "keel-road-toll", "rect": { "x": 29, "y": 30, "width": 12, "height": 8 }, "floor": "carpet", "wall": "cladding", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 31, "y": 39, "width": 8, "height": 2 }, "tile": "plating" },
     { "kind": "patch", "rect": { "x": 34, "y": 39, "width": 2, "height": 4 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 34, "y": 42, "width": 11, "height": 2 }, "tile": "plating" },
-    { "kind": "patch", "rect": { "x": 44, "y": 34, "width": 2, "height": 10 }, "tile": "plating" }
+    { "kind": "patch", "rect": { "x": 34, "y": 42, "width": 12, "height": 2 }, "tile": "plating" },
+    { "kind": "patch", "rect": { "x": 45, "y": 34, "width": 2, "height": 10 }, "tile": "plating" }
   ],
   "tiles": [],
   "areas": [
@@ -22,16 +22,16 @@
     { "room": "keel-road-toll", "name": "Keel Road Toll", "safe": true }
   ],
   "anchors": {
-    "start": { "room": "ground", "dx": 14, "dy": 21 }
+    "start": { "room": "ground", "dx": 35, "dy": 41 }
   },
   "objects": [
     { "id": "keel-road-quest-purser-locker", "object": "purser-locker", "at": { "room": "ground", "dx": 41, "dy": 41 } },
-    { "id": "keel-road-burn-barrel-0", "object": "burn-barrel", "at": { "room": "ground", "dx": 33, "dy": 13 } },
-    { "id": "keel-road-burn-barrel-1", "object": "burn-barrel", "at": { "room": "ground", "dx": 30, "dy": 46 } },
-    { "id": "keel-road-utility-pole-2", "object": "utility-pole", "at": { "room": "ground", "dx": 35, "dy": 19 } },
-    { "id": "keel-road-utility-pole-3", "object": "utility-pole", "at": { "room": "ground", "dx": 18, "dy": 9 } },
-    { "id": "keel-road-barricade-4", "object": "barricade", "at": { "room": "ground", "dx": 60, "dy": 52 } },
-    { "id": "keel-road-rivet-seam-6", "object": "rivet-seam", "at": { "room": "ground", "dx": 24, "dy": 13 } },
+    { "id": "keel-road-burn-barrel-0", "object": "burn-barrel", "at": { "room": "ground", "dx": 6, "dy": 30 } },
+    { "id": "keel-road-burn-barrel-1", "object": "burn-barrel", "at": { "room": "ground", "dx": 24, "dy": 35 } },
+    { "id": "keel-road-barricade-2", "object": "barricade", "at": { "room": "ground", "dx": 9, "dy": 60 } },
+    { "id": "keel-road-parked-car-3", "object": "parked-car", "at": { "room": "ground", "dx": 14, "dy": 46 } },
+    { "id": "keel-road-hull-trace-5", "object": "hull-trace", "at": { "room": "ground", "dx": 56, "dy": 46 } },
+    { "id": "keel-road-rivet-seam-6", "object": "rivet-seam", "at": { "room": "ground", "dx": 5, "dy": 55 } },
     { "id": "keel-road-toll-shelving-0", "object": "shelving", "at": { "room": "keel-road-toll", "dx": 1, "dy": 0 }, "facing": "south" },
     { "id": "keel-road-toll-shelving-1", "object": "shelving", "at": { "room": "keel-road-toll", "dx": 2, "dy": 0 }, "facing": "south" },
     { "id": "keel-road-toll-notice-board-2", "object": "notice-board", "at": { "room": "keel-road-toll", "dx": 6, "dy": 0 }, "facing": "south" },
@@ -45,25 +45,23 @@
     { "id": "keel-road-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 30, "dy": 39 }, "facing": "east" },
     { "id": "keel-road-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 39, "dy": 39 }, "facing": "west" },
     { "id": "keel-road-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 35, "dy": 44 }, "facing": "north" },
-    { "id": "keel-road-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 43, "dy": 44 }, "facing": "north" }
+    { "id": "keel-road-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 43, "dy": 44 }, "facing": "north" },
+    { "id": "keel-road-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 44, "dy": 36 }, "facing": "east" }
   ],
   "assemblies": [],
   "npcs": [],
   "creatures": [
-    { "id": "keel-road-bilge-wraith-0", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 20, "dy": 35 } },
-    { "id": "keel-road-hull-knocker-2", "creature": "hull-knocker", "at": { "room": "ground", "dx": 56, "dy": 46 } },
-    { "id": "keel-road-bilge-wraith-3", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 5, "dy": 55 } },
-    { "id": "keel-road-misprint-4", "creature": "misprint", "at": { "room": "ground", "dx": 11, "dy": 12 } },
-    { "id": "keel-road-hull-knocker-5", "creature": "hull-knocker", "at": { "room": "ground", "dx": 14, "dy": 52 } },
-    { "id": "keel-road-bilge-wraith-6", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 5, "dy": 50 } },
-    { "id": "keel-road-misprint-7", "creature": "misprint", "at": { "room": "ground", "dx": 11, "dy": 39 } },
-    { "id": "keel-road-hull-knocker-8", "creature": "hull-knocker", "at": { "room": "ground", "dx": 23, "dy": 52 } },
-    { "id": "keel-road-bilge-wraith-9", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 43, "dy": 19 } },
-    { "id": "keel-road-hull-knocker-11", "creature": "hull-knocker", "at": { "room": "ground", "dx": 33, "dy": 52 } },
-    { "id": "keel-road-bilge-wraith-12", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 16, "dy": 58 } },
-    { "id": "keel-road-misprint-13", "creature": "misprint", "at": { "room": "ground", "dx": 9, "dy": 24 } },
-    { "id": "keel-road-hull-knocker-14", "creature": "hull-knocker", "at": { "room": "ground", "dx": 49, "dy": 14 } },
-    { "id": "keel-road-bilge-wraith-15", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 53, "dy": 54 } }
+    { "id": "keel-road-bilge-wraith-0", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 11, "dy": 39 } },
+    { "id": "keel-road-misprint-1", "creature": "misprint", "at": { "room": "ground", "dx": 30, "dy": 44 } },
+    { "id": "keel-road-hull-knocker-2", "creature": "hull-knocker", "at": { "room": "ground", "dx": 23, "dy": 52 } },
+    { "id": "keel-road-misprint-4", "creature": "misprint", "at": { "room": "ground", "dx": 33, "dy": 52 } },
+    { "id": "keel-road-hull-knocker-5", "creature": "hull-knocker", "at": { "room": "ground", "dx": 16, "dy": 58 } },
+    { "id": "keel-road-bilge-wraith-6", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 9, "dy": 24 } },
+    { "id": "keel-road-misprint-7", "creature": "misprint", "at": { "room": "ground", "dx": 53, "dy": 54 } },
+    { "id": "keel-road-hull-knocker-8", "creature": "hull-knocker", "at": { "room": "ground", "dx": 14, "dy": 21 } },
+    { "id": "keel-road-bilge-wraith-9", "creature": "bilge-wraith", "at": { "room": "ground", "dx": 14, "dy": 28 } },
+    { "id": "keel-road-misprint-10", "creature": "misprint", "at": { "room": "ground", "dx": 19, "dy": 42 } },
+    { "id": "keel-road-hull-knocker-11", "creature": "hull-knocker", "at": { "room": "ground", "dx": 39, "dy": 21 } }
   ],
   "lights": [],
   "decals": [],

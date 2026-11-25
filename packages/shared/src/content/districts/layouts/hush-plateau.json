@@ -5,11 +5,11 @@
   "tier": 13,
   "region": "the-spindle",
   "condition": "alien",
-  "ambience": { "darkness": 0.62, "tint": "#1a2a3a", "fog": "#0c1824", "sky": "#1a3048", "weather": ["sparks"], "haze": 1.4 },
+  "ambience": { "darkness": 0.45, "tint": "#5a6c88", "fog": "#3c4c66", "sky": "#56688a", "weather": ["sparks"], "haze": 1.25 },
   "size": { "width": 64, "height": 64 },
   "square": { "column": 7, "row": 8 },
   "steps": [
-    { "kind": "rise", "rect": { "x": 29, "y": 23, "width": 14, "height": 10 }, "height": 10 },
+    { "kind": "rise", "rect": { "x": 29, "y": 23, "width": 14, "height": 10 }, "height": 11 },
     { "kind": "building", "id": "hush-hall", "rect": { "x": 30, "y": 24, "width": 12, "height": 8 }, "floor": "terrazzo", "wall": "blockwork", "doors": [{ "side": "south", "width": 2 }] },
     { "kind": "patch", "rect": { "x": 32, "y": 33, "width": 8, "height": 2 }, "tile": "plating" },
     { "kind": "patch", "rect": { "x": 35, "y": 33, "width": 2, "height": 2 }, "tile": "plating" },

@@ -31,15 +31,16 @@ export interface RegionSpec {
   readonly relief: readonly [number, number];
   readonly scale: number;
   readonly ground: 'grass' | 'soil' | 'asphalt' | 'gravel' | 'concrete';
+  readonly shore: 'gravel' | 'dirt';
 }
 
 export const REGIONS: readonly RegionSpec[] = [
-  { code: 'K', id: 'kestrel-reach', name: 'Kestrel Reach', tiers: [1, 2], relief: [1, 11], scale: 46, ground: 'grass' },
-  { code: 'H', id: 'harrow-terraces', name: 'Harrow Terraces', tiers: [3, 5], relief: [2, 15], scale: 40, ground: 'grass' },
-  { code: 'C', id: 'halcyon', name: 'Halcyon', tiers: [6, 7], relief: [3, 10], scale: 70, ground: 'asphalt' },
-  { code: 'W', id: 'wreckfield', name: 'the Wreckfield', tiers: [8, 9], relief: [0, 9], scale: 36, ground: 'gravel' },
-  { code: 'G', id: 'glass-steppe', name: 'the Glass Steppe', tiers: [10, 11], relief: [5, 15], scale: 44, ground: 'soil' },
-  { code: 'S', id: 'the-spindle', name: 'the Spindle', tiers: [12, 13], relief: [9, 15], scale: 32, ground: 'concrete' },
+  { code: 'K', id: 'kestrel-reach', name: 'Kestrel Reach', tiers: [1, 2], relief: [1, 12], scale: 46, ground: 'grass', shore: 'gravel' },
+  { code: 'H', id: 'harrow-terraces', name: 'Harrow Terraces', tiers: [3, 5], relief: [2, 13], scale: 40, ground: 'grass', shore: 'gravel' },
+  { code: 'C', id: 'halcyon', name: 'Halcyon', tiers: [6, 7], relief: [3, 10], scale: 70, ground: 'asphalt', shore: 'gravel' },
+  { code: 'W', id: 'wreckfield', name: 'the Wreckfield', tiers: [8, 9], relief: [1, 8], scale: 36, ground: 'gravel', shore: 'dirt' },
+  { code: 'G', id: 'glass-steppe', name: 'the Glass Steppe', tiers: [10, 11], relief: [3, 13], scale: 44, ground: 'soil', shore: 'gravel' },
+  { code: 'S', id: 'the-spindle', name: 'the Spindle', tiers: [12, 13], relief: [10, 13], scale: 32, ground: 'concrete', shore: 'gravel' },
 ];
 
 export const MASSIF = '#';
@@ -102,6 +103,8 @@ export const padOf = (place: PlaceSpec): { readonly x: number; readonly y: numbe
   width: SQUARE - 2 * PAD_INSET,
   height: SQUARE - 2 * PAD_INSET,
 });
+
+export const HULL = { x: 14 * SQUARE + 6, y: 3 * SQUARE + 12, width: 2 * SQUARE + 30, height: 26 };
 
 export const STATION_TRACK_ROW = 52;
 export const TERMINAL = { x: 14, y: 49, width: 36, height: 5, door: 30 };
