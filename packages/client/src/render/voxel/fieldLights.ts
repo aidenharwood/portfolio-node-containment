@@ -26,10 +26,10 @@ const FOG_WIND_Z = 0.09;
 const PUDDLE_RISE = 0.08;
 const WET_DARKEN = 0.15;
 const PUDDLE_DARKEN = 0.2;
-const STREAK_ACROSS = 900;
-const STREAK_ALONG = 30;
+const STREAK_ACROSS = 1600;
+const STREAK_ALONG = 24;
 const STREAK_LIMIT = 8;
-const STREAK_WEIGHT = 0.06;
+const STREAK_WEIGHT = 0.07;
 const MIRROR_STREAK_WEIGHT = 0.04;
 const HORIZON_SHEEN = 0.4;
 
@@ -259,9 +259,9 @@ if ( fieldLightGridEnabled == 1 && fieldCell.x >= 0 && fieldCell.y >= 0 && field
 			fieldIncident.visible = true;
 			fieldScatter += fieldIncident.color;
 			if ( ${wetGate} ) fieldSheen += fieldIncident.color * pow( max( dot( fieldWetNormal, normalize( fieldIncident.direction + geometryViewDir ) ), 0.0 ), 36.0 );
-			float fieldHeight = dot( fieldVector, geometryNormal );
+			float fieldHeight = dot( fieldVector, fieldWetNormal );
 			if ( ${streakGate} && fieldHeight > 0.0 ) {
-				vec3 fieldMirror = normalize( fieldLight.xyz - 2.0 * fieldHeight * geometryNormal ) - fieldEyeRay;
+				vec3 fieldMirror = normalize( fieldLight.xyz - 2.0 * fieldHeight * fieldWetNormal ) - fieldEyeRay;
 				float fieldAcrossOffset = dot( fieldMirror, fieldStreakAcross );
 				float fieldAlongOffset = dot( fieldMirror, fieldStreakAlong );
 				fieldStreak += fieldLightColors[ fieldIndex ] * ( 1.0 - fieldRatio ) * exp( - ${STREAK_ACROSS.toFixed(1)} * fieldAcrossOffset * fieldAcrossOffset - ${STREAK_ALONG.toFixed(1)} * fieldAlongOffset * fieldAlongOffset );

@@ -34,8 +34,9 @@ const FAILING_INTENSITY = 0.95;
 const WINDOW_SPILL_INTENSITY = 0.3;
 const WINDOW_SPILL_RADIUS = 2.2;
 const WINDOW_SPILL_SPACING = 4;
-const NEON_SPILL_INTENSITY = 0.7;
-const NEON_SPILL_RADIUS = 4.5;
+const NEON_SPILL_INTENSITY = 0.55;
+const NEON_SPILL_RADIUS = 3.2;
+const NEON_SPILL_SPACING = 6;
 const NIGHT_SPILL_FROM = 0.4;
 const NIGHT_SPILL_SPAN = 0.2;
 const NIGHT_SPILL_GAIN = 0.8;
@@ -156,13 +157,14 @@ function facadeSpills(zone: ActiveZone, existing: readonly FillLight[]): FillLig
     }
   }
   const spills: FillLight[] = [];
+  const within = (point: TilePoint, spacing: number) => (fill: FillLight) => Math.hypot(fill.position.x - point.x, fill.position.y - point.y) < spacing;
   for (const { color, positions } of runs.values()) {
     const position = positions[Math.floor(positions.length / 2)] as TilePoint;
+    if (existing.some(within(position, NEON_SPILL_SPACING)) || spills.some(within(position, NEON_SPILL_SPACING))) continue;
     spills.push({ position, light: { position, radius: NEON_SPILL_RADIUS, intensity: NEON_SPILL_INTENSITY * nightGain(position), color: hexColor(color) } });
   }
-  const near = (point: TilePoint) => (fill: FillLight) => Math.hypot(fill.position.x - point.x, fill.position.y - point.y) < WINDOW_SPILL_SPACING;
   for (const { position, glow } of windows) {
-    if (existing.some(near(position)) || spills.some(near(position))) continue;
+    if (existing.some(within(position, WINDOW_SPILL_SPACING)) || spills.some(within(position, WINDOW_SPILL_SPACING))) continue;
     spills.push({ position, light: { position, radius: WINDOW_SPILL_RADIUS, intensity: WINDOW_SPILL_INTENSITY * nightGain(position), color: hexColor(glow) } });
   }
   return spills;

@@ -74,7 +74,7 @@ test('roofline neon lights about a third of the runs in saturated colours', () =
   assert.equal(rooflineNeonGlow('brick', 0, 0, 'south'), null);
 });
 
-test('each lit neon run spills one light of its colour onto the street at the foot of its wall', () => {
+test('lit neon runs spill light of their colour onto the street at the foot of their wall, spaced apart', () => {
   const built = zone('cladding');
   const { fills } = planWallLighting(built);
   const expected = new Map<string, string>();
@@ -94,8 +94,11 @@ test('each lit neon run spills one light of its colour onto the street at the fo
     }
   }
   assert.ok(expected.size > 0);
-  const neonFills = fills.filter(({ light }) => [...expected.values()].includes(light.color) && light.radius > 4);
-  assert.equal(neonFills.length, expected.size);
+  const neonFills = fills.filter(({ light }) => [...expected.values()].includes(light.color) && light.radius > 3);
+  assert.ok(neonFills.length > 0 && neonFills.length <= expected.size);
+  neonFills.forEach(({ position }, index) => {
+    for (const other of neonFills.slice(index + 1)) assert.ok(Math.hypot(other.position.x - position.x, other.position.y - position.y) >= 6);
+  });
   for (const { position } of neonFills) {
     assert.equal(builtAt(position), undefined, `${position.x},${position.y}`);
     assert.ok((['north', 'south', 'east', 'west'] as const).some((side) => builtAt({ x: position.x + FACING_STEP[side].x, y: position.y + FACING_STEP[side].y }) === 'brick'));
