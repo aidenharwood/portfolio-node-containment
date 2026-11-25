@@ -161,3 +161,40 @@ test('flat natural ground and paving beside a rise keep their level tops', () =>
     assert.equal(topOf(volume, 2 * R + lx, R + 3) <= STEP_VOXELS + 2, true);
   }
 });
+
+const woodOf = (size: number): OwnedLayout =>
+  layoutOf(Array.from({ length: size }, (_, y) => Array.from({ length: size }, (_, x): TileKindId => (x === 0 || y === 0 || x === size - 1 || y === size - 1 ? 'grass' : 'trees'))));
+
+const layerCount = (volume: ReturnType<typeof buildTileVolume>, tile: TilePoint, vy: number): number => {
+  let count = 0;
+  for (let lz = 0; lz < R; lz++) for (let lx = 0; lx < R; lx++) if (volume.kindAt(tile.x * R + lx, vy, tile.y * R + lz) !== VOXEL_EMPTY) count++;
+  return count;
+};
+
+const canopyTop = (volume: ReturnType<typeof buildTileVolume>, tile: TilePoint): number => {
+  for (let vy = ZONE_VOLUME_HEIGHT - 1; vy >= FLOOR_LAYERS; vy--) if (layerCount(volume, tile, vy) > 0) return vy - FLOOR_LAYERS + 1;
+  return 0;
+};
+
+test('a wood grows to uneven heights, with lower trees in its clearings', () => {
+  const size = 12;
+  const layout = woodOf(size);
+  const volume = buildTileVolume(layout, { x: 0, y: 0, width: size, height: size });
+  const tops: number[] = [];
+  for (let y = 1; y < size - 1; y++) for (let x = 1; x < size - 1; x++) tops.push(canopyTop(volume, { x, y }));
+  assert.ok(new Set(tops).size >= 4, 'canopy heights ' + [...new Set(tops)].join(' '));
+  assert.ok(tops.every((top) => top >= 7 && top <= 16), 'canopy heights ' + tops.join(' '));
+  assert.ok(tops.filter((top) => top >= 12).length >= tops.length * 0.7);
+  assert.ok(tops.some((top) => top < 12));
+});
+
+test('trees on the edge of a wood lift their crowns to show their trunks', () => {
+  const size = 8;
+  const layout = woodOf(size);
+  const volume = buildTileVolume(layout, { x: 0, y: 0, width: size, height: size });
+  for (let index = 1; index < size - 1; index++) {
+    for (const tile of [{ x: index, y: 1 }, { x: index, y: size - 2 }, { x: 1, y: index }, { x: size - 2, y: index }]) {
+      assert.equal(layerCount(volume, tile, FLOOR_LAYERS + 3), 1, 'only the trunk stands at chest height at ' + tile.x + ',' + tile.y);
+    }
+  }
+});

@@ -193,7 +193,7 @@ const orchardTree: Builder = (seed) => {
   const cz = top.z + 1;
   const cy = height + ry * 0.9;
   ellipsoid(model, cx, cy, cz, rx, ry, rx * 0.95, tones, seed + 23, 0.35);
-  if (!blossom) dots(model, cx, cy, cz, rx, ry, rx * 0.95, 9, of(seed, [0xc83a2a, 0xd8b030, 0xc8482a, 0, 0xe07a2a, 0xc83a2a, 0xd8b030]), seed, -0.4, 0.7);
+  if (!blossom) dots(model, cx, cy, cz, rx, ry, rx * 0.95, 7, of(seed, [0xb43a2a, 0xccaa36, 0xb8442a, 0, 0xcc7a30, 0xb43a2a, 0xccaa36]), seed, -0.4, 0.7);
   if (seed === 6) line(model, [3, 0, 2], [cx + 1, height + 1, cz], 0x8a7a5a);
   return parts(model, Math.ceil(cy + ry + 2));
 };
@@ -265,8 +265,8 @@ const bush: Builder = (seed) => {
     const reach = blobs === 1 ? 0 : 1.6;
     ellipsoid(model, Math.cos(angle) * reach, radius * 0.78, Math.sin(angle) * reach, radius - i * 0.3, radius * 0.82 - i * 0.3, radius - i * 0.3, tones, seed * 3 + i, 0.45, 0);
   }
-  const accent = of(seed, [0, 0xc8302a, 0xf0ece0, 0, 0xe8c840, 0, 0xc8302a, 0xf0ece0]);
-  if (accent) dots(model, 0, radius * 0.78, 0, radius, radius * 0.82, radius, 7, accent, seed, 0, 0.8);
+  const accent = of(seed, [0, 0xa8322a, 0xe4e0d4, 0, 0xd4b848, 0, 0xa8322a, 0xe4e0d4]);
+  if (accent) dots(model, 0, radius * 0.78, 0, radius, radius * 0.82, radius, 5, accent, seed, 0.1, 0.8);
   return parts(model, Math.ceil(radius * 1.7 + 1));
 };
 
