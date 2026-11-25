@@ -850,16 +850,24 @@ export function facesOutdoors(layout: OwnedLayout, tx: number, ty: number, side:
   return kind !== 'void' && kind !== 'door' && !isWallKind(kind) && !layout.interiorAt(beside);
 }
 
-const WINDOW_GLOWS = [FACADE.litWindow, FACADE.litWindow, 0xd8ecff, 0x6ab8ff, 0x4fe3ff, 0xff4fa8];
+const WINDOW_GLOWS = [0xffc070, 0xffc070, 0xffc070, 0xffa040, 0xffa040, FACADE.litWindow, FACADE.litWindow, 0xffc070, 0x19d9ff, 0xff2a8a];
 
-const ROOFLINE_NEON = [0x4fe3ff, 0xff4fa8, 0xffb35a, 0xb48cff] as const;
+const ROOFLINE_NEON = [0xff2a8a, 0x19d9ff, 0xffb21a, 0x9a5cff] as const;
+export const NEON_RUN = 6;
+const NEON_SHARE = 0.35;
+const NEON_ROWS = 2;
+
+export function rooflineNeonGlow(material: WallMaterialId, tx: number, ty: number, side: Side): number | null {
+  if (material !== 'cladding' && material !== 'blockwork') return null;
+  const runX = Math.floor(tx / NEON_RUN);
+  const runY = Math.floor(ty / NEON_RUN);
+  if (noise3(runX, runY, SIDE_SALT[side], 311) < 1 - NEON_SHARE) return null;
+  return ROOFLINE_NEON[Math.floor(noise3(runX, runY, SIDE_SALT[side], 313) * ROOFLINE_NEON.length)] ?? ROOFLINE_NEON[0];
+}
 
 function rooflineNeon(material: WallMaterialId, tx: number, ty: number, side: Side, h: number): number | null {
-  if (h !== WALL_LAYERS - 2 || (material !== 'cladding' && material !== 'blockwork')) return null;
-  const runX = Math.floor(tx / 6);
-  const runY = Math.floor(ty / 6);
-  if (noise3(runX, runY, SIDE_SALT[side], 311) < 0.45) return null;
-  return darken(ROOFLINE_NEON[Math.floor(noise3(runX, runY, SIDE_SALT[side], 313) * ROOFLINE_NEON.length)] ?? ROOFLINE_NEON[0], 0.2);
+  if (h < WALL_LAYERS - 1 - NEON_ROWS || h >= WALL_LAYERS - 1) return null;
+  return rooflineNeonGlow(material, tx, ty, side);
 }
 
 export function litWindowGlow(material: WallMaterialId, tx: number, ty: number, side: Side): number | null {

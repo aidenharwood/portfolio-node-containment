@@ -15,7 +15,7 @@ import {
   type TileRect,
   type WorldObjectDefinition,
 } from '@containment/shared';
-import { Box3, BoxGeometry, Color, DataTexture, Group, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, NearestFilter, Quaternion, RGBAFormat, RingGeometry, SRGBColorSpace, UnsignedByteType, Vector3, type BufferGeometry, type Material, type Object3D } from 'three';
+import { Box3, BoxGeometry, Color, DataTexture, Group, LinearMipmapLinearFilter, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, NearestFilter, Quaternion, RGBAFormat, RingGeometry, SRGBColorSpace, UnsignedByteType, Vector3, type BufferGeometry, type Material, type Object3D } from 'three';
 import type { ActiveZone } from '../../state/worldState.ts';
 import { buildObjectModel, type AnimatedPart } from '../models/objectModels.ts';
 import { hex } from '../voxel/palette.ts';
@@ -82,6 +82,19 @@ const FAILING_LIGHT_COLOR = 0xff8a6a;
 const SCONCE_LIGHT_HEIGHT = 1.45;
 const SCONCE_LIGHT_OFFSET = 0.4;
 const FILL_LIGHT_HEIGHT = 1.6;
+const SCATTER_FADE = { from: 26, to: 38 } as const;
+const SCATTER_MATERIAL = fadeScatterWithDistance(receiveFieldLights(new MeshLambertMaterial({ vertexColors: true })));
+
+function fadeScatterWithDistance(material: MeshLambertMaterial): MeshLambertMaterial {
+  const fieldCompile = material.onBeforeCompile.bind(material);
+  const fieldKey = material.customProgramCacheKey.bind(material);
+  material.onBeforeCompile = (shader, renderer) => {
+    fieldCompile(shader, renderer);
+    shader.fragmentShader = shader.fragmentShader.replace('#include <clipping_planes_fragment>', `if ( smoothstep( ${SCATTER_FADE.from.toFixed(1)}, ${SCATTER_FADE.to.toFixed(1)}, distance( vFieldWorld, cameraPosition ) ) > fieldHash( floor( gl_FragCoord.xy ) ) ) discard;\n#include <clipping_planes_fragment>`);
+  };
+  material.customProgramCacheKey = () => `${fieldKey()}:scatter-fade-${SCATTER_FADE.from}-${SCATTER_FADE.to}`;
+  return material;
+}
 const GLOW_MIN_FACES = 12;
 const GLOW_INTENSITY = 0.45;
 const GLOW_MIN_RADIUS = 1.6;
@@ -272,7 +285,7 @@ export class ChunkView {
       this.steps.push(() => {
         const scatter = buildFloorScatter(layout, strip, (tile) => occupied.has(tileKey(tile)), decals);
         if (scatter.isEmpty) return;
-        const litter = createVoxelObject(scatter.mesh(MODEL_VOXEL_SIZE), { castShadow: false });
+        const litter = createVoxelObject(scatter.mesh(MODEL_VOXEL_SIZE), { castShadow: false, materials: { solid: SCATTER_MATERIAL } });
         litter.name = 'floorScatter';
         this.root.add(litter);
       });
@@ -340,8 +353,8 @@ export class ChunkView {
     const texture = new DataTexture(texels.data, texels.width, texels.height, RGBAFormat, UnsignedByteType);
     texture.colorSpace = SRGBColorSpace;
     texture.magFilter = NearestFilter;
-    texture.minFilter = NearestFilter;
-    texture.generateMipmaps = false;
+    texture.minFilter = LinearMipmapLinearFilter;
+    texture.generateMipmaps = true;
     texture.needsUpdate = true;
     this.topTextures.push(texture);
     return texture;
@@ -442,7 +455,7 @@ export class ChunkView {
     const position = local.multiplyScalar(scale).applyAxisAngle(UP, OBJECT_FACING_YAW[placement.facing ?? 'south']).add(new Vector3(origin.x, ground, origin.z));
     if (definition.light) {
       this.lights.push({ position, color: hex(definition.light.color), intensity: definition.light.intensity, radius: definition.light.radius, flicker: definition.light.flicker ?? false, seed });
-      if (definition.light.beam) this.root.add(createLightBeam(position, hex(definition.light.color), definition.light.beam));
+      if (definition.light.beam) this.root.add(createLightBeam(position, hex(definition.light.color), definition.light.beam, ground));
     } else if (glow) {
       this.lights.push({ position, color: glow.color, intensity: GLOW_INTENSITY, radius: Math.min(GLOW_MAX_RADIUS, GLOW_MIN_RADIUS + glow.size * scale * 1.5), flicker: false, seed });
     }

@@ -1,7 +1,7 @@
 import { AdditiveBlending, Color, ConeGeometry, DoubleSide, Mesh, ShaderMaterial, type Vector3 } from 'three';
 
-const BEAM_BASE = 0.1;
-const BEAM_WEATHER = 0.3;
+const BEAM_BASE = 0.05;
+const BEAM_WEATHER = 0.15;
 
 export const BEAM_GEOMETRY = new ConeGeometry(1, 1, 18, 1, true).translate(0, -0.5, 0);
 
@@ -26,9 +26,9 @@ varying vec3 vBeamNormal;
 varying vec3 vBeamView;
 varying float vBeamDepth;
 void main() {
-  float facing = pow( abs( dot( normalize( vBeamNormal ), normalize( vBeamView ) ) ), 1.5 );
+  float facing = pow( abs( dot( normalize( vBeamNormal ), normalize( vBeamView ) ) ), 2.0 );
   float depth = clamp( vBeamDepth, 0.0, 1.0 );
-  float fall = ( 1.0 - 0.6 * depth ) * ( 1.0 - smoothstep( 0.6, 1.0, depth ) );
+  float fall = ( 1.0 - 0.6 * depth ) * ( 1.0 - smoothstep( 0.45, 1.0, depth ) );
   gl_FragColor = vec4( beamColor, beamOpacity * facing * fall );
 }`;
 
@@ -50,10 +50,10 @@ function beamMaterial(color: number): ShaderMaterial {
   return material;
 }
 
-export function createLightBeam(position: Vector3, color: number, spread: number): Mesh {
+export function createLightBeam(position: Vector3, color: number, spread: number, ground: number): Mesh {
   const beam = new Mesh(BEAM_GEOMETRY, beamMaterial(color));
   beam.position.copy(position);
-  beam.scale.set(spread, Math.max(0.5, position.y), spread);
+  beam.scale.set(spread, Math.max(0.5, position.y - ground), spread);
   beam.renderOrder = 2;
   return beam;
 }
