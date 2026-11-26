@@ -11,11 +11,8 @@ import { FarSea } from './farSea.ts';
 import type { FarTileArrays } from './farTerrainMesher.ts';
 import { LandmarkBeacons } from './landmarkBeacons.ts';
 
-export const FAR_HAZE_CAP = 0.006;
 export const FAR_REACHES: Readonly<Record<RenderScale, number>> = { performance: 600, balanced: 900, sharp: 1300, native: 1600 };
 export const farReachFor = (settings: Pick<GameSettings, 'renderScale'>): number => FAR_REACHES[settings.renderScale];
-const AERIAL_FROM = 160;
-const AERIAL_SHARE = 0.95;
 
 export function blendedOf(ambience: ZoneAmbience, into: BlendedAmbience = createBlendedAmbience()): BlendedAmbience {
   into.darkness = ambience.darkness;
@@ -71,7 +68,6 @@ export interface FarFrame {
   readonly camera: Vector3;
   readonly focus: Vector3;
   readonly ambience: BlendedAmbience;
-  readonly background: Color;
   readonly drawn: readonly ChunkCoord[];
   readonly pixelRatio?: number;
 }
@@ -115,7 +111,6 @@ export class FarView {
 
   setReach(reach: number): void {
     this.reach = reach;
-    this.uniforms.aerialRange.value.set(AERIAL_FROM, Math.max(AERIAL_FROM + 1, reach * AERIAL_SHARE));
   }
 
   private accept(build: FarBuild): void {
@@ -143,7 +138,6 @@ export class FarView {
 
   update(frame: FarFrame): void {
     this.uniforms.farFocus.value.copy(frame.focus);
-    this.uniforms.aerialColor.value.copy(frame.background);
     lightColors(lightAmbience(frame.ambience, this.light), this.uniforms.nearSky.value, this.uniforms.nearGround.value, this.uniforms.nearKey.value);
     this.sea.update(frame.camera, this.reach);
     this.beacons?.update(frame.focus, frame.pixelRatio ?? 1);

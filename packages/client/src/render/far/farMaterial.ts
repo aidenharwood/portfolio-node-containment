@@ -1,5 +1,6 @@
 import { CHUNK_SIZE } from '@containment/shared';
-import { Color, DataTexture, NearestFilter, RedFormat, ShaderMaterial, UniformsLib, UniformsUtils, UnsignedByteType, Vector2, Vector3 } from 'three';
+import { Color, DataTexture, NearestFilter, RedFormat, ShaderMaterial, UnsignedByteType, Vector2, Vector3 } from 'three';
+import { AIR_PARS, airUniforms } from '../sky/air.ts';
 import { KEY_LIGHT_OFFSET } from '../voxel/fieldLights.ts';
 
 export const FAR_MOODS = 32;
@@ -33,16 +34,7 @@ bool farMasked( vec2 chunk ) {
 	return texelFetch( farMask, ivec2( texel ), 0 ).r > 0.5;
 }`;
 
-export const AIR_PARS = `uniform vec3 fogColor;
-uniform float fogDensity;
-uniform vec3 farFocus;
-uniform vec2 aerialRange;
-uniform vec3 aerialColor;
-vec3 farAir( vec3 color, vec3 world, float depth ) {
-	float fogFactor = 1.0 - exp( - fogDensity * fogDensity * depth * depth );
-	color = mix( color, fogColor, fogFactor );
-	return mix( color, aerialColor, smoothstep( aerialRange.x, aerialRange.y, distance( world.xz, farFocus.xz ) ) );
-}`;
+export { AIR_PARS };
 
 const LIGHT_PARS = `uniform vec3 nearSky;
 uniform vec3 nearGround;
@@ -64,8 +56,7 @@ const sharedUniforms = (mask: ChunkMask) => ({
   farMaskOrigin: { value: mask.origin },
   farMaskSize: { value: mask.size },
   farFocus: { value: new Vector3() },
-  aerialRange: { value: new Vector2(160, 900) },
-  aerialColor: { value: new Color() },
+  ...airUniforms,
   nearSky: { value: new Color() },
   nearGround: { value: new Color() },
   nearKey: { value: new Color() },
@@ -76,16 +67,12 @@ export type FarUniforms = ReturnType<typeof sharedUniforms>;
 
 export function farTerrainMaterial(): ShaderMaterial {
   return new ShaderMaterial({
-    fog: true,
     vertexColors: true,
-    uniforms: UniformsUtils.merge([
-      UniformsLib.fog,
-      {
-        moodSky: { value: Array.from({ length: FAR_MOODS }, () => new Color()) },
-        moodGround: { value: Array.from({ length: FAR_MOODS }, () => new Color()) },
-        moodKey: { value: Array.from({ length: FAR_MOODS }, () => new Color()) },
-      },
-    ]),
+    uniforms: {
+      moodSky: { value: Array.from({ length: FAR_MOODS }, () => new Color()) },
+      moodGround: { value: Array.from({ length: FAR_MOODS }, () => new Color()) },
+      moodKey: { value: Array.from({ length: FAR_MOODS }, () => new Color()) },
+    },
     vertexShader: `#include <common>
 attribute float mood;
 attribute vec2 chunk;
@@ -114,7 +101,7 @@ varying vec3 vFarLit;
 varying vec3 vFarWorld;
 varying float vFarDepth;
 void main() {
-	gl_FragColor = vec4( farAir( vFarLit, vFarWorld, vFarDepth ), 1.0 );
+	gl_FragColor = vec4( airApply( vFarLit, vFarDepth, 1.0 ), 1.0 );
 	#include <tonemapping_fragment>
 	#include <colorspace_fragment>
 }`,

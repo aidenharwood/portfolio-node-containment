@@ -9,6 +9,7 @@ import { buildFieldLightGrid, clearFieldLights, FIELD_LIGHT_LIMIT, fieldLightFad
 import { lighten } from './voxel/palette.ts';
 import { SkyDome } from './sky/skyDome.ts';
 import { createSkyLook, skyLookFor } from './sky/skyLook.ts';
+import { airShapeFor, createAirShape, setAir, setAirFocus } from './sky/air.ts';
 import { sceneColorOf } from './sky/toneCurve.ts';
 import type { BlendedAmbience } from './world/ambienceBlend.ts';
 import { setBeamWeather } from './world/lightBeams.ts';
@@ -30,7 +31,7 @@ const LIGHT_REASSIGN_SECONDS = 0.25;
 const BASE_EXPOSURE = 1.4;
 const SHARPEN_AMOUNT = 0.15;
 const SHARPEN_MAX_PIXEL_RATIO = 1.5;
-const FOG_DENSITY = 0.018;
+const LEGACY_FOG_SHARE = 0.5;
 const SURVEY_AMBIENT = 4.2;
 const SURVEY_KEY = 1.4;
 const SUN_COLOR = 0xf6f2ff;
@@ -40,7 +41,6 @@ const SKY_BRIGHTNESS_GAIN = 1.2;
 const DUSK_AMBIENT_CUT = 0.72;
 const DUSK_KEY_CUT = 0.55;
 const SKY_SUN_TINT = 0.4;
-const DAYLIGHT_FOG_THINNING = 0.7;
 const LUMINANCE = { r: 0.2126, g: 0.7152, b: 0.0722 } as const;
 const NIGHT_FROM = 0.3;
 const NIGHT_TO = 0.5;
@@ -211,7 +211,7 @@ export class SceneLook {
   private lightLimit = FIELD_LIGHT_LIMIT;
   private readonly hemisphere = new HemisphereLight(0x9fc6d6, 0x05080a, 0.6);
   private readonly keyLight = new DirectionalLight(0xcfe8ff, 0.7);
-  private readonly fog = new FogExp2(0x000000, FOG_DENSITY);
+  private readonly fog = new FogExp2(0x000000, 0);
   private readonly background = new Color();
   private readonly light = createAmbienceLight();
   private readonly finishLook = finishFor(0, 0);
@@ -222,9 +222,10 @@ export class SceneLook {
   private lightTimer = 0;
   private activeFieldLights = 0;
   private survey = false;
-  private readonly fogDensity: number;
   private lastAmbience: BlendedAmbience | null = null;
-  private hazeCap = Infinity;
+  private reach: number | null = null;
+  private readonly air = createAirShape();
+  private readonly hazeColor = new Color();
   private readonly mistColor = new Color();
   private readonly snappedFocus = new Vector3();
   private readonly finish = new ShaderPass(FINISH_SHADER);
@@ -235,7 +236,7 @@ export class SceneLook {
   private time = 0;
   flash = 0;
 
-  constructor(canvas: HTMLCanvasElement, scene: Scene, camera: Camera, fogDensity = FOG_DENSITY) {
+  constructor(canvas: HTMLCanvasElement, scene: Scene, camera: Camera) {
     this.renderer = new WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
     this.renderer.outputColorSpace = SRGBColorSpace;
     this.renderer.toneMapping = ACESFilmicToneMapping;
@@ -247,8 +248,6 @@ export class SceneLook {
     this.keyLight.shadow.mapSize.set(2048, 2048);
     this.keyLight.shadow.normalBias = 0.02;
     this.fitShadow(SHADOW_REACH_MIN);
-    this.fogDensity = fogDensity;
-    this.fog.density = fogDensity;
     scene.fog = this.fog;
     scene.background = this.background;
     scene.add(this.hemisphere, this.keyLight, this.keyLight.target, this.sky.mesh);
@@ -327,20 +326,18 @@ export class SceneLook {
     return needsResize;
   }
 
-  capHaze(limit: number | null): void {
-    this.hazeCap = limit ?? Infinity;
+  reachTo(reach: number | null): void {
+    this.reach = reach;
     if (this.lastAmbience) this.applyAmbience(this.lastAmbience);
   }
 
   setSurvey(on: boolean): void {
     this.survey = on;
-    this.fog.density = on ? 0 : this.fogDensity;
     if (this.lastAmbience) this.applyAmbience(this.lastAmbience);
   }
 
   applyAmbience(ambience: BlendedAmbience): void {
     this.lastAmbience = ambience;
-    this.fog.color.copy(ambience.fog);
     skyLookFor(ambience, nightOf(ambience.darkness), this.skyLook);
     const light = lightAmbience(ambience, this.light);
     this.hemisphere.color.copy(light.sky);
@@ -348,8 +345,8 @@ export class SceneLook {
     this.hemisphere.intensity = light.fill;
     this.keyLight.color.copy(light.key);
     this.keyLight.intensity = light.sun;
-    const skyGlow = Math.min(1, Math.max(ambience.sky.r, ambience.sky.g, ambience.sky.b) * SKY_BRIGHTNESS_GAIN);
-    if (!this.survey) this.fog.density = Math.min(this.hazeCap, this.fogDensity * ambience.haze * (1 - ambience.daylight * skyGlow * DAYLIGHT_FOG_THINNING));
+    airShapeFor(ambience, nightOf(ambience.darkness), this.reach, this.air);
+    this.fog.density = this.survey ? 0 : this.air.density * LEGACY_FOG_SHARE;
     const groundFog = this.survey ? 0 : Math.min(GROUND_FOG_LIMIT, Math.max(0, (ambience.haze - 1) * GROUND_FOG_PER_HAZE + ambience.weather.mist * GROUND_FOG_PER_MIST));
     this.mistColor.copy(ambience.fog).multiplyScalar(MIST_GAIN).lerp(this.flashColor.setRGB(1, 1, 1), MIST_WHITE);
     setBeamWeather(this.survey ? 0 : ambience.haze, ambience.weather.mist, ambience.weather.rain);
@@ -363,6 +360,9 @@ export class SceneLook {
     }
     this.sky.apply(this.skyLook, BASE_EXPOSURE);
     sceneColorOf(this.skyLook.horizon, BASE_EXPOSURE, this.background);
+    sceneColorOf(this.skyLook.haze, BASE_EXPOSURE, this.hazeColor);
+    this.fog.color.copy(this.hazeColor);
+    setAir(this.air, this.hazeColor, this.background, this.survey ? 0 : 1);
     if (this.survey) {
       this.hemisphere.intensity = SURVEY_AMBIENT;
       this.keyLight.intensity = SURVEY_KEY;
@@ -371,6 +371,10 @@ export class SceneLook {
     finishFor(darkness, ambience.daylight, this.finishLook);
     this.bloom.radius = MathUtils.lerp(BLOOM_RADIUS, NIGHT_BLOOM_RADIUS, nightOf(darkness));
     this.applyFinish();
+  }
+
+  followFocus(distance: number): void {
+    setAirFocus(distance);
   }
 
   aimKeyLight(focus: Vector3, distance: number): void {

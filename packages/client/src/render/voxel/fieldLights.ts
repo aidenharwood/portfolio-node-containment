@@ -1,4 +1,5 @@
 import { Color, DataTexture, MathUtils, NearestFilter, RGBAFormat, UnsignedByteType, Vector2, Vector3, Vector4, type Material, type Matrix4, type Texture } from 'three';
+import { receiveAir } from '../sky/air.ts';
 import { STEP_HEIGHT } from '../world/worldScale.ts';
 
 export const FIELD_LIGHT_LIMIT = 96;
@@ -315,8 +316,9 @@ if ( litPeak > ${LIT_KNEE.toFixed(3)} ) {
 }
 #include <fog_fragment>`,
       );
+    receiveAir(shader);
   };
-  material.customProgramCacheKey = () => `field-light-point-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}-lit-${LIT_KNEE}-${LIT_CEILING}-atmosphere-${SKY_MASK_TEXELS}-facing-${FACING_SHADE}-${KEY_FACING.x.toFixed(3)}-${KEY_FACING.y.toFixed(3)}-actor-${actorFill}-volfog${FOG_STEPS}-${FOG_CEILING}-${FOG_THICKNESS}-${FOG_FALLOFF}-puddle4-${surface}-streak-${STREAK_ACROSS}-${STREAK_ALONG}-${STREAK_WEIGHT}`;
+  material.customProgramCacheKey = () => `field-light-point-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}-lit-${LIT_KNEE}-${LIT_CEILING}-atmosphere-${SKY_MASK_TEXELS}-facing-${FACING_SHADE}-${KEY_FACING.x.toFixed(3)}-${KEY_FACING.y.toFixed(3)}-actor-${actorFill}-volfog${FOG_STEPS}-${FOG_CEILING}-${FOG_THICKNESS}-${FOG_FALLOFF}-puddle4-${surface}-streak-${STREAK_ACROSS}-${STREAK_ALONG}-${STREAK_WEIGHT}-air`;
   return material;
 }
 

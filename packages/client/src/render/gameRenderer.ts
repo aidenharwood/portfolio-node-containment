@@ -3,7 +3,7 @@ import { GAME_CONTENT, WEAPON_KIND_INFO, type EntityId, type Facing, type ItemId
 import { Color, CylinderGeometry, Group, MathUtils, Plane, Raycaster, Scene, Vector2, Vector3, MeshBasicMaterial, Mesh, OctahedronGeometry, type Object3D } from 'three';
 import type { ClientEntity, CombatHitEvent, WorldEffectEvent, WorldState } from '../state/worldState.ts';
 import { CameraRig } from './cameraRig.ts';
-import { FAR_HAZE_CAP, FarView, farReachFor } from './far/farView.ts';
+import { FarView, farReachFor } from './far/farView.ts';
 import { CharacterRig } from './models/characterModel.ts';
 import { createCreatureRig } from './models/creatureModels.ts';
 import type { EntityRig } from './models/entityRig.ts';
@@ -185,6 +185,7 @@ export class GameRenderer {
     this.farReach = farReachFor(settings);
     this.cameraRig.setFar(this.farReach);
     this.far?.setReach(this.farReach);
+    this.look.reachTo(this.far ? this.farReach : null);
     if (this.look.applyGraphics(settings)) this.resize();
   }
 
@@ -223,7 +224,7 @@ export class GameRenderer {
       this.far = new FarView(active.definition, active.layout, this.farReach);
       this.scene.add(this.far.root);
     }
-    this.look.capHaze(this.far ? FAR_HAZE_CAP : null);
+    this.look.reachTo(this.far ? this.farReach : null);
     this.look.resetLights();
 
     const start = this.world.selfEntity?.to ?? active.definition.spawn;
@@ -266,8 +267,9 @@ export class GameRenderer {
     const focus = this.cameraRig.focusPoint;
     this.zone.stream({ x: focus.x, y: focus.z });
     this.followAmbience(focus, delta, false);
-    this.far?.update({ camera: this.cameraRig.camera.position, focus, ambience: this.ambience, background: this.scene.background as Color, drawn: this.zone.drawnChunks, pixelRatio: this.look.renderer.getPixelRatio() });
+    this.far?.update({ camera: this.cameraRig.camera.position, focus, ambience: this.ambience, drawn: this.zone.drawnChunks, pixelRatio: this.look.renderer.getPixelRatio() });
     const viewDistance = this.cameraRig.camera.position.distanceTo(focus);
+    this.look.followFocus(viewDistance);
     this.look.aimKeyLight(focus, viewDistance);
     this.look.matchBloomToDistance(viewDistance);
     this.zone.update(time, overlay.objectiveObjectIds, this.world.depletedObjects, this.world.usedObjects, { open: this.world.openDoors, self: this.world.selfEntity?.to ?? null });
