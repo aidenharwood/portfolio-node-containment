@@ -595,7 +595,7 @@ const even = (value: number): boolean => ((value % 2) + 2) % 2 === 0;
 
 const smoothstep = (t: number): number => t * t * (3 - 2 * t);
 
-function smoothNoise(x: number, z: number, scale: number, salt: number): number {
+export function smoothNoise(x: number, z: number, scale: number, salt: number): number {
   const gx = Math.floor(x / scale);
   const gz = Math.floor(z / scale);
   const fx = smoothstep((x - gx * scale) / scale);

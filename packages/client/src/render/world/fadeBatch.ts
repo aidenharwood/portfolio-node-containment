@@ -66,6 +66,7 @@ export class FadeBatch {
   private readonly options: VoxelObjectOptions;
   private readonly topMaterials: TopMaterials | null;
   private readonly faded: boolean[];
+  private readonly hidden: boolean[];
   private readonly fadedGroups: (Group | null)[];
   private readonly layers: LiveLayer[] = [];
   private dirty = false;
@@ -79,6 +80,7 @@ export class FadeBatch {
     this.options = options;
     this.topMaterials = topMaterials;
     this.faded = Array.from({ length: parts.count }, () => false);
+    this.hidden = Array.from({ length: parts.count }, () => false);
     this.fadedGroups = Array.from({ length: parts.count }, () => null);
     const { solid, emissive, glass, tops } = parts.layers;
     for (const layer of [solid, emissive, glass, topMaterials ? tops : null]) {
@@ -130,7 +132,15 @@ export class FadeBatch {
       this.fadedGroups[index] = group;
       this.root.add(group);
     }
-    if (group) group.visible = faded;
+    if (group) group.visible = faded && !this.hidden[index];
+  }
+
+  setHidden(index: number, hidden: boolean): void {
+    if (this.hidden[index] === hidden) return;
+    this.hidden[index] = hidden;
+    this.dirty = true;
+    const group = this.fadedGroups[index];
+    if (group) group.visible = Boolean(this.faded[index]) && !hidden;
   }
 
   flush(): void {
@@ -140,7 +150,7 @@ export class FadeBatch {
       const index = geometry.index!;
       let written = 0;
       ranges.forEach((range, piece) => {
-        if (!range || this.faded[piece]) return;
+        if (!range || this.faded[piece] || this.hidden[piece]) return;
         index.array.set(full.subarray(range.start, range.start + range.count), written);
         written += range.count;
       });

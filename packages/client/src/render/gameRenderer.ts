@@ -271,7 +271,7 @@ export class GameRenderer {
     this.look.aimKeyLight(focus, viewDistance);
     this.look.matchBloomToDistance(viewDistance);
     this.zone.update(time, overlay.objectiveObjectIds, this.world.depletedObjects, this.world.usedObjects, { open: this.world.openDoors, self: this.world.selfEntity?.to ?? null });
-    this.zone.updateCutaway(this.cameraRig.camera.position, focus);
+    this.zone.updateCutaway(this.cameraRig.camera.position, focus, this.world.selfEntity?.to ?? null);
     this.look.updateLights(this.zone.lights, delta, time, focus);
     if (this.skyMask.follow(this.world.zone?.definition, focus.x, focus.z)) setFieldSkyMask(this.skyMask.texture, this.skyMask.originX, this.skyMask.originZ);
     this.weather.update({

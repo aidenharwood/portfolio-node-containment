@@ -63,3 +63,23 @@ test('batch options carry over to the merged and faded meshes', () => {
     assert.equal(mesh.receiveShadow, false);
   }
 });
+
+test('hiding a piece drops its triangles and keeps its faded copy out of sight', () => {
+  const pieces = [block(0), block(4), block(8)];
+  const batch = FadeBatch.of(pieces);
+  const all = drawnTriangles(batch);
+  const perPiece = all.length / 3;
+  batch.setFaded(2, true);
+  batch.setHidden(2, true);
+  batch.setHidden(0, true);
+  batch.flush();
+  assert.deepEqual(drawnTriangles(batch), all.slice(perPiece, perPiece * 2));
+  const faded = meshes(batch.root).filter((mesh) => mesh.material === VOXEL_MATERIALS.fadedSolid);
+  assert.equal(faded.length, 1);
+  assert.equal(faded[0]!.parent!.visible, false);
+  batch.setHidden(2, false);
+  batch.setHidden(0, false);
+  batch.flush();
+  assert.equal(faded[0]!.parent!.visible, true);
+  assert.deepEqual(drawnTriangles(batch), all.slice(0, perPiece * 2));
+});
