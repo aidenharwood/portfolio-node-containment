@@ -1,6 +1,6 @@
 import { BackSide, Color, Mesh, ShaderMaterial, SphereGeometry, Vector2, Vector3 } from 'three';
 import { KEY_LIGHT_OFFSET } from '../voxel/fieldLights.ts';
-import { ARCH_MIN_SINE, ARCH_SHAPE, type SkyLook } from './skyLook.ts';
+import { ARCH_SHAPE, type SkyLook } from './skyLook.ts';
 import { SCENE_OF_DISPLAY } from './toneCurve.ts';
 
 const SUN = new Vector3(...KEY_LIGHT_OFFSET).normalize();
@@ -50,7 +50,7 @@ void main() {
 	color += skySun * ( pow( facing, 12.0 ) * 0.6 + pow( bearing, 3.0 ) * exp( - elevation / 0.15 ) * 0.25 + smoothstep( 0.99945, 0.9997, facing ) * 2.0 );
 	float across = asin( clamp( direction.x, -1.0, 1.0 ) );
 	float offset = abs( across );
-	float halfWidth = ${ARCH_SHAPE.base.toFixed(5)} + ${ARCH_SHAPE.spread.toFixed(5)} / max( rise, ${ARCH_MIN_SINE.toFixed(3)} );
+	float halfWidth = ${ARCH_SHAPE.base.toFixed(5)} + ${ARCH_SHAPE.spread.toFixed(5)} * rise;
 	float body = 1.0 - smoothstep( halfWidth * 0.9, halfWidth, offset );
 	float rim = smoothstep( halfWidth * 0.74, halfWidth * 0.84, offset ) * ( 1.0 - smoothstep( halfWidth * 0.84, halfWidth * 0.94, offset ) );
 	float along = atan( direction.y, abs( direction.z ) + 1e-5 );
@@ -58,7 +58,7 @@ void main() {
 	float seam = 1.0 - smoothstep( 0.0, 0.06, min( panel, 1.0 - panel ) );
 	vec2 cell = vec2( along, across ) / ${LIGHT_CELL.toFixed(4)};
 	float spark = step( 0.95, skyHash( floor( cell ) ) ) * ( 1.0 - smoothstep( 0.1, 0.3, length( fract( cell ) - 0.5 ) ) );
-	float archHaze = smoothstep( 0.0, 0.07, elevation ) * skyShape.z;
+	float archHaze = smoothstep( 0.0, 0.04, elevation ) * skyShape.z;
 	color = mix( color, skyArch * ( 1.0 - 0.18 * seam ) + skyLights * spark * 2.0, body * archHaze );
 	color *= 1.0 - rim * 0.3 * archHaze;
 	vec2 plane = direction.xz / ( rise + 0.1 );

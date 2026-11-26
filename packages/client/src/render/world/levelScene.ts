@@ -71,6 +71,8 @@ function groupByChunk<T>(entries: readonly T[], positionOf: (entry: T) => TilePo
 
 const chunkDistance = (a: ChunkCoord, b: ChunkCoord): number => Math.max(Math.abs(a.cx - b.cx), Math.abs(a.cy - b.cy));
 
+const shipped = (zone: ActiveZone): boolean => GAME_CONTENT.levels.get(zone.definition.id) === zone.definition;
+
 export class LevelScene {
   readonly root = new Group();
   readonly objects = new Map<InstanceId, ObjectView>();
@@ -94,14 +96,15 @@ export class LevelScene {
   private lastFocus: TilePoint | null = null;
   private heading = { x: 0, y: 0 };
   private centre: ChunkCoord | null = null;
-  private readonly mesher: ChunkMesherPool | null;
+  private mesher: ChunkMesherPool | null;
+  private streamed: StreamReach = DEFAULT_REACH;
   private readonly ringMaterial = new MeshBasicMaterial({ color: 0xffb347, transparent: true, opacity: 0.8, blending: AdditiveBlending, depthWrite: false, toneMapped: false, fog: false });
 
-  constructor(zone: ActiveZone, options: { readonly editable?: boolean; readonly content?: GameContent } = {}) {
+  constructor(zone: ActiveZone, options: { readonly editable?: boolean; readonly content?: GameContent; readonly workers?: boolean } = {}) {
     this.zone = zone;
     this.content = options.content;
     this.editable = options.editable ?? false;
-    this.mesher = !this.editable && GAME_CONTENT.levels.get(zone.definition.id) === zone.definition ? chunkMesherPool() : null;
+    this.mesher = (!this.editable || options.workers === true) && shipped(zone) ? chunkMesherPool() : null;
     this.lighting = planWallLighting(zone);
     this.objectsByChunk = groupByChunk(zone.definition.objects.map((placement, index) => ({ placement, index })), ({ placement }) => placement.position);
     this.sconcesByChunk = groupByChunk(this.lighting.sconces, (spot) => spot.floor);
@@ -137,6 +140,7 @@ export class LevelScene {
       }
     }
     this.zone = zone;
+    if (!shipped(zone)) this.mesher = null;
     this.lighting = lighting;
     this.objectsByChunk = groupByChunk(zone.definition.objects.map((placement, index) => ({ placement, index })), ({ placement }) => placement.position);
     this.sconcesByChunk = groupByChunk(lighting.sconces, (spot) => spot.floor);
@@ -190,6 +194,21 @@ export class LevelScene {
     return this.pendingNearby;
   }
 
+  get pendingChunks(): number {
+    const centre = this.centre;
+    if (!centre) return 0;
+    const radius = this.streamed.build;
+    let pending = 0;
+    for (let dy = -radius; dy <= radius; dy++) {
+      for (let dx = -radius; dx <= radius; dx++) {
+        const coord = { cx: centre.cx + dx, cy: centre.cy + dy };
+        const entry = this.chunks.get(chunkKey(coord));
+        if (entry ? !entry.view.ready : chunkRegion(coord, this.zone) !== null) pending++;
+      }
+    }
+    return pending;
+  }
+
   get drawnChunks(): ChunkCoord[] {
     const drawn = new Map<ChunkKey, ChunkCoord>();
     for (const [key, { coord }] of this.placeholders) drawn.set(key, coord);
@@ -210,6 +229,7 @@ export class LevelScene {
     const reach = reachOverride ?? (this.mesher ? WORKER_REACH : DEFAULT_REACH);
     const centre = chunkOf({ x: Math.round(focus.x), y: Math.round(focus.y) });
     this.centre = centre;
+    this.streamed = reach;
     this.followHeading(focus);
     const centreView = this.ensureChunk(centre);
     if (this.mesher && centreView && !centreView.ready && !this.displayed(chunkKey(centre))) this.placeholderFor(centre);

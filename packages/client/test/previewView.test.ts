@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import { type DistrictDefinition } from '@containment/shared';
 import { FIXTURE_CONTENT as GAME_CONTENT, FIXTURE_LAND } from '@containment/shared/fixtures';
 import { landLevel, previewLevel, previewZone, zoneOfLevel } from '../src/editor/previewLevel.ts';
-import { previewReach, previewTarget, streamFocusOf } from '../src/editor/previewView.ts';
+import { previewReach, previewTarget, settleRequested, SettleWatch, streamFocusOf } from '../src/editor/previewView.ts';
 import { groundAt } from '../src/render/world/ground.ts';
 
 const atrium = GAME_CONTENT.districts.get('fx-hub') as DistrictDefinition;
@@ -56,4 +56,26 @@ test('the 3D preview orbits the ground, builds around the camera and leaves the 
   assert.deepEqual(streamFocusOf({ x: 100, z: 100 }, { x: 100, z: 400 }, 24), { x: 100, y: 124 });
   assert.deepEqual(previewReach(8, true), { build: 2, retain: 3 });
   assert.deepEqual(previewReach(5, false), { build: 5, retain: 5 });
+});
+
+test('a settle=1 preview settles only on the second frame of a steady view with every chunk in reach and the far view built', () => {
+  assert.equal(settleRequested('?level=overworld&view=3d&settle=1'), true);
+  assert.equal(settleRequested('?level=overworld&view=3d&settle=0'), false);
+  assert.equal(settleRequested('?level=overworld&view=3d'), false);
+  const watch = new SettleWatch();
+  const built = { view: 'a', pendingChunks: 0, farBuilt: true };
+  assert.equal(watch.check(built), false);
+  assert.equal(watch.moved, true);
+  assert.equal(watch.check(built), true);
+  assert.equal(watch.moved, false);
+  assert.equal(watch.check({ ...built, view: 'b' }), false);
+  assert.equal(watch.moved, true);
+  assert.equal(watch.check({ ...built, view: 'b' }), true);
+  assert.equal(watch.check({ ...built, view: 'b', pendingChunks: 3 }), false);
+  assert.equal(watch.check({ ...built, view: 'b', farBuilt: false }), false);
+  assert.equal(watch.check({ ...built, view: 'b' }), true);
+  watch.reset();
+  assert.equal(watch.moved, true);
+  assert.equal(watch.check({ ...built, view: 'b' }), false);
+  assert.equal(watch.check({ ...built, view: 'b' }), true);
 });
