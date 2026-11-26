@@ -1,4 +1,5 @@
 import { TILE_KIND_IDS, type SceneLayout, type TileKindId, type TilePoint, type TileRect } from '@containment/shared';
+import { centreRise } from '../world/peaks.ts';
 
 export interface SceneRaster {
   readonly x: number;
@@ -7,6 +8,7 @@ export interface SceneRaster {
   readonly height: number;
   readonly kinds: Uint8Array;
   readonly heights: Uint8Array;
+  readonly rises: Uint8Array;
 }
 
 const KIND_INDEX: ReadonlyMap<TileKindId, number> = new Map(TILE_KIND_IDS.map((kind, index) => [kind, index]));
@@ -18,7 +20,7 @@ export const kindOfIndex = (index: number): TileKindId => TILE_KIND_IDS[index] ?
 
 export function createSceneRaster(bounds: TileRect): SceneRaster {
   const size = Math.max(0, bounds.width) * Math.max(0, bounds.height);
-  return { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height, kinds: new Uint8Array(size), heights: new Uint8Array(size) };
+  return { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height, kinds: new Uint8Array(size), heights: new Uint8Array(size), rises: new Uint8Array(size) };
 }
 
 export function rasterizeRows(scene: SceneLayout, raster: SceneRaster, fromRow: number, toRow: number): void {
@@ -32,6 +34,7 @@ export function rasterizeRows(scene: SceneLayout, raster: SceneRaster, fromRow: 
       const kind = scene.tileAt(point);
       raster.kinds[index] = kindIndexOf(kind);
       raster.heights[index] = kind === 'void' ? 0 : scene.heightAt(point);
+      raster.rises[index] = kind === 'rock' ? centreRise(scene, point.x, point.y) : 0;
     }
   }
 }
@@ -69,7 +72,7 @@ export function rasterLayout(raster: SceneRaster): SceneLayout {
   };
 }
 
-export const rasterTransfer = (raster: SceneRaster): Transferable[] => [raster.kinds.buffer, raster.heights.buffer];
+export const rasterTransfer = (raster: SceneRaster): Transferable[] => [raster.kinds.buffer, raster.heights.buffer, raster.rises.buffer];
 
 export interface Plan<T> {
   readonly steps: readonly (() => void)[];

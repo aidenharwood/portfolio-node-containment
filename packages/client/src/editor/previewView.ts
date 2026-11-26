@@ -62,6 +62,7 @@ export class PreviewView {
   private readonly issueGeometry = new PlaneGeometry(1, 1);
   private readonly issueMaterial = new MeshBasicMaterial({ color: 0xff3b3b, transparent: true, opacity: 0.75, depthWrite: false, toneMapped: false });
   private level: LevelScene | null = null;
+  private roofs = true;
   private far: FarView | null = null;
   private nextFar: FarView | null = null;
   private farDue = 0;
@@ -115,6 +116,7 @@ export class PreviewView {
     this.overlay.ground = (x, y) => groundAt(zone.layout, x, y);
     this.actors.show(actorsOf(GAME_CONTENT, zone.definition), this.overlay.ground);
     this.level = new LevelScene(zone, { editable: true });
+    this.level.showRoofs(this.roofs);
     this.scene.add(this.level.root);
     this.far?.dispose();
     this.nextFar?.dispose();
@@ -183,6 +185,11 @@ export class PreviewView {
 
   showActors(on: boolean): void {
     this.actors.setVisible(on);
+  }
+
+  showRoofs(on: boolean): void {
+    this.roofs = on;
+    this.level?.showRoofs(on);
   }
 
   markIssues(tiles: readonly TilePoint[]): void {

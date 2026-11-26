@@ -1,6 +1,6 @@
 import type { DistrictId, LevelId, TilePoint } from '@containment/shared';
 
-export const PLAN_LAYERS = ['tiles', 'rooms', 'objects', 'dressing', 'npcs', 'lights', 'decals', 'land', 'squares', 'issues'] as const;
+export const PLAN_LAYERS = ['tiles', 'rooms', 'objects', 'dressing', 'npcs', 'lights', 'decals', 'land', 'squares', 'issues', 'roofs'] as const;
 export type PlanLayer = (typeof PLAN_LAYERS)[number];
 
 export type ViewMode = 'split' | '2d' | '3d';

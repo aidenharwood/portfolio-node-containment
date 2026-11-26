@@ -683,6 +683,7 @@ function start(root: HTMLElement, services: ViewerServices): void {
     views.dataset.view = state.view;
     for (const [layer, input] of layerInputs) input.checked = state.layers.includes(layer);
     preview3d.showActors(state.layers.includes('npcs'));
+    preview3d.showRoofs(state.layers.includes('roofs'));
     const scope = scopeOf(state);
     const layersKey = state.layers.join(',');
     if (scope !== shownScope || layersKey !== shownLayers) {

@@ -18,6 +18,7 @@ import { chunkSignature, objectChanges, type ChunkSignature } from './chunkSigna
 import { planWallLighting, type FillLight, type SconceSpot, type WallLighting } from './wallLights.ts';
 import { buildChunkPlaceholder } from './chunkPlaceholder.ts';
 import { ownedLayoutOf } from './chunkStructure.ts';
+import { roofPlanOf, segmentHitsBox } from './roofs.ts';
 import { chunkMesherPool, type ChunkMesherPool } from './chunkMesher.ts';
 import { ChunkView, chunkRegion, type ChunkContents, type IndexedPlacement, type LightSource, type ObjectView, type WallPiece } from './chunkView.ts';
 
@@ -33,6 +34,7 @@ const DOOR_OPEN_RANGE = 2.6;
 const doorGroupOf = (view: ObjectView): string => assemblyInstanceOf(view.instanceId) ?? view.instanceId;
 const FADE_RADIUS = 1.4;
 const FADE_REACH = 7;
+const ROOF_FEET = 0.7;
 const DEPLETED_HEIGHT = 0.35;
 export const BUILD_RADIUS = 1;
 const RETAIN_RADIUS = 2;
@@ -85,6 +87,7 @@ export class LevelScene {
   private readonly editable: boolean;
   private readonly content: GameContent | undefined;
   private deferredCentre: ChunkKey | null = null;
+  private roofsShown = true;
   private awaitingPaint = false;
   private pendingNearby = true;
   private readonly placeholders = new Map<ChunkKey, { readonly coord: ChunkCoord; readonly group: Group }>();
@@ -390,7 +393,11 @@ export class LevelScene {
     view.group.position.y += (target - view.group.position.y) * 0.14;
   }
 
-  updateCutaway(camera: Vector3, focus: Vector3): void {
+  showRoofs(on: boolean): void {
+    this.roofsShown = on;
+  }
+
+  updateCutaway(camera: Vector3, focus: Vector3, self: TilePoint | null = { x: Math.round(focus.x), y: Math.round(focus.z) }): void {
     const toCameraX = camera.x - focus.x;
     const toCameraZ = camera.z - focus.z;
     const length = Math.sqrt(toCameraX * toCameraX + toCameraZ * toCameraZ) || 1;
@@ -406,9 +413,23 @@ export class LevelScene {
       piece.faded = shouldFade;
       piece.batch.setFaded(piece.index, shouldFade);
     };
+    const inside = self ? (roofPlanOf(ownedLayoutOf(this.zone.definition, this.zone.layout)).buildingAt(self)?.id ?? null) : null;
+    const feet = { x: focus.x, y: focus.y - ROOF_FEET, z: focus.z };
     for (const view of [...this.readyViews(), ...this.retiring.values()]) {
       for (const wall of view.walls) apply(wall, blocksView(wall.tile, 0));
       for (const fixture of view.fixtures) apply(fixture, blocksView(fixture.tile, 0));
+      for (const roof of view.roofs) {
+        const hidden = !this.roofsShown || roof.building === inside;
+        const faded = !hidden && (segmentHitsBox(camera, focus, roof.box) || segmentHitsBox(camera, feet, roof.box));
+        if (hidden !== roof.hidden) {
+          roof.hidden = hidden;
+          roof.batch.setHidden(roof.index, hidden);
+        }
+        if (faded !== roof.faded) {
+          roof.faded = faded;
+          roof.batch.setFaded(roof.index, faded);
+        }
+      }
       view.applyFades();
     }
   }

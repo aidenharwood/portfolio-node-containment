@@ -34,6 +34,7 @@ import { BEAM_GEOMETRY, createLightBeam } from './lightBeams.ts';
 import { buildFloorScatter } from './floorScatter.ts';
 import { groundAt } from './ground.ts';
 import { BAND_ROWS, bandsOf, hasStructure, ownedLayoutOf, planChunkStructure, STRIP_ROWS, type ChunkStructure, type TopTexels } from './chunkStructure.ts';
+import type { RoofBox } from './roofs.ts';
 import type { StructureJob } from './chunkMesher.ts';
 import { MODEL_VOXEL_SIZE, STEP_HEIGHT } from './worldScale.ts';
 
@@ -51,6 +52,15 @@ export interface WallPiece {
   readonly batch: FadeBatch;
   readonly index: number;
   faded: boolean;
+}
+
+export interface RoofView {
+  readonly building: number;
+  readonly box: RoofBox;
+  readonly batch: FadeBatch;
+  readonly index: number;
+  faded: boolean;
+  hidden: boolean;
 }
 
 export interface ObjectView {
@@ -181,6 +191,7 @@ export class ChunkView {
   readonly root = new Group();
   readonly walls: WallPiece[] = [];
   readonly fixtures: WallPiece[] = [];
+  readonly roofs: RoofView[] = [];
   readonly objects: ObjectView[] = [];
   readonly lights: LightSource[] = [];
   private coolant: LiquidSurface | null = null;
@@ -198,6 +209,7 @@ export class ChunkView {
   private readonly topMaterials: MeshLambertMaterial[] = [];
   private floorTops: MeshLambertMaterial | null = null;
   private wallTops: TopMaterials | null = null;
+  private roofTops: TopMaterials | null = null;
   private nextStep = 0;
   private readonly separateObjects: boolean;
   private readonly objectLights = new Map<InstanceId, LightSource[]>();
@@ -314,6 +326,7 @@ export class ChunkView {
     }
     this.steps.push(() => this.addFloors());
     bandsOf(region).forEach((_, band) => this.steps.push(() => this.addWallBand(band)));
+    this.steps.push(() => this.addRoofs());
     this.steps.push(() => {
       this.structure = null;
       this.coolant = LiquidSurface.build(layout, 'coolant', region);
@@ -331,6 +344,10 @@ export class ChunkView {
       const texture = this.topTexture(structure.wallTops);
       this.wallTops = { material: this.topMaterial(texture, false), fadedMaterial: this.topMaterial(texture, true) };
     }
+    if (structure.roofTops) {
+      const texture = this.topTexture(structure.roofTops);
+      this.roofTops = { material: this.topMaterial(texture, false), fadedMaterial: this.topMaterial(texture, true) };
+    }
     for (const { meshes, tops } of structure.floors) {
       const floor = createVoxelObject(meshes, { castShadow: false });
       if (tops && this.floorTops) {
@@ -347,6 +364,16 @@ export class ChunkView {
   private addWallBand(band: number): void {
     const walls = this.structure?.walls[band];
     if (walls && walls.parts.count > 0) this.addBatch('walls', walls.tiles, new FadeBatch(walls.parts, {}, this.wallTops), this.walls);
+  }
+
+  private addRoofs(): void {
+    const roofs = this.structure?.roofs;
+    if (!roofs || roofs.parts.count === 0) return;
+    const batch = new FadeBatch(roofs.parts, {}, this.roofTops);
+    batch.root.name = 'roofs';
+    this.root.add(batch.root);
+    this.batches.push(batch);
+    roofs.pieces.forEach((piece, index) => this.roofs.push({ building: piece.building, box: piece.box, batch, index, faded: false, hidden: false }));
   }
 
   private topTexture(texels: TopTexels): DataTexture {

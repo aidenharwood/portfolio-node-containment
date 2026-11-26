@@ -1,5 +1,5 @@
 import { CHUNK_SIZE, TILE_KIND_IDS, TILE_KINDS } from '@containment/shared';
-import { STEP_HEIGHT } from '../world/worldScale.ts';
+import { STEP_HEIGHT, ZONE_VOXEL_SIZE } from '../world/worldScale.ts';
 import type { Rgb } from './farPalette.ts';
 import { VOID_KIND, type SceneRaster } from './sceneRaster.ts';
 
@@ -100,7 +100,7 @@ export function coarsenRows(source: FarCellSource, cells: FarCells, fromRow: num
       let walls = 0;
       let sea = 0;
       let walkable = 0;
-      let wallHeight = 0;
+      let wallTop = 0;
       let low = Infinity;
       const x0 = cells.x + column * size;
       const y0 = cells.y + row * size;
@@ -125,7 +125,7 @@ export function coarsenRows(source: FarCellSource, cells: FarCells, fromRow: num
           if (structure === 'wall') {
             walls++;
             wallCounts[kind]!++;
-            wallHeight = Math.max(wallHeight, height);
+            wallTop = Math.max(wallTop, height * STEP_HEIGHT + (raster.rises[index] as number) * ZONE_VOXEL_SIZE);
             for (let channel = 0; channel < 3; channel++) wallColor[channel]! += tile[channel] as number;
           } else {
             walkable++;
@@ -144,14 +144,14 @@ export function coarsenRows(source: FarCellSource, cells: FarCells, fromRow: num
       const counts = wallCell ? wallCounts : walkCounts;
       let kind = 0;
       for (let candidate = 1; candidate < kindCount; candidate++) if ((counts[candidate] as number) > (counts[kind] as number)) kind = candidate;
-      const height = wallCell ? wallHeight : medianOf(walkHeights, walkable);
+      const base = wallCell ? wallTop : medianOf(walkHeights, walkable) * STEP_HEIGHT;
       const sum = wallCell ? wallColor : walkColor;
       const share = wallCell ? walls : walkable;
       for (let channel = 0; channel < 3; channel++) top[channel] = quantize((sum[channel] as number) / share);
       const centreX = x0 + Math.floor(size / 2);
       const centreY = y0 + Math.floor(size / 2);
       source.sideOf(kind, centreX, centreY, top, side);
-      cells.tops[at] = height * STEP_HEIGHT + (source.topOffsets[kind] as number) - FAR_SINK;
+      cells.tops[at] = base + (source.topOffsets[kind] as number) - FAR_SINK;
       for (let channel = 0; channel < 3; channel++) {
         cells.colors[at * 3 + channel] = top[channel] as number;
         cells.sides[at * 3 + channel] = quantize(side[channel] as number);
