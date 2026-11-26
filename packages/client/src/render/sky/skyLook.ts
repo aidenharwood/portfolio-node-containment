@@ -21,7 +21,7 @@ const CLOUD_DAY_LIFT = 0.55;
 const CLOUD_SHADE = 0.8;
 const CLOUD_NIGHT_GLOW = 1.3;
 const ARCH_DAY = 0.2;
-const ARCH_NIGHT = 0.5;
+const ARCH_NIGHT = 0.62;
 const ARCH_DAY_LIFT = 0.45;
 const ARCH_BASE = MathUtils.degToRad(2.45);
 const ARCH_SPREAD = MathUtils.degToRad(0.273);
@@ -30,7 +30,7 @@ const WHITE = new Color(1, 1, 1);
 const AZURE = new Color(0.48, 0.63, 0.79);
 const SUN_WARM = new Color(1, 0.93, 0.82);
 const MOON_COOL = new Color(0.6, 0.68, 0.84);
-const ARCH_NIGHT_COLOR = new Color(0.34, 0.39, 0.52);
+const ARCH_NIGHT_COLOR = new Color(0.42, 0.48, 0.62);
 const CITY_LIGHTS = new Color(1, 0.78, 0.5);
 
 export interface SkyLook {

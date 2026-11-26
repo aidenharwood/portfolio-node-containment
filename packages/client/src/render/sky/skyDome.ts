@@ -56,9 +56,9 @@ void main() {
 	float panel = fract( along / ${PANEL_ANGLE.toFixed(6)} );
 	float seam = 1.0 - smoothstep( 0.0, 0.06, min( panel, 1.0 - panel ) );
 	vec2 cell = vec2( along, across ) / ${LIGHT_CELL.toFixed(4)};
-	float spark = step( 0.9, skyHash( floor( cell ) ) ) * ( 1.0 - smoothstep( 0.1, 0.3, length( fract( cell ) - 0.5 ) ) );
+	float spark = step( 0.95, skyHash( floor( cell ) ) ) * ( 1.0 - smoothstep( 0.1, 0.3, length( fract( cell ) - 0.5 ) ) );
 	float archHaze = smoothstep( 0.0, 0.07, elevation ) * skyShape.z;
-	color = mix( color, skyArch * ( 1.0 - 0.18 * seam ) + skyLights * spark * 1.5, body * archHaze );
+	color = mix( color, skyArch * ( 1.0 - 0.18 * seam ) + skyLights * spark * 2.0, body * archHaze );
 	color *= 1.0 - rim * 0.3 * archHaze;
 	vec2 plane = direction.xz / ( rise + 0.1 );
 	vec2 drift = skyTime * vec2( 0.004, 0.0025 );
