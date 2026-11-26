@@ -5,6 +5,7 @@ import { FIXTURE_CONTENT } from '@containment/shared/fixtures';
 import { Mesh } from 'three';
 import { zoneOfLevel } from '../src/editor/previewLevel.ts';
 import { buildChunkPlaceholder, tileTint } from '../src/render/world/chunkPlaceholder.ts';
+import { chunkRegion } from '../src/render/world/chunkView.ts';
 import { LevelScene } from '../src/render/world/levelScene.ts';
 import { STEP_HEIGHT } from '../src/render/world/worldScale.ts';
 
@@ -37,6 +38,31 @@ test('every chunk queued to build that is not built yet stands in as a placehold
     assert.ok(scene.placeholderChunks.length >= 3, scene.placeholderChunks.join(' '));
     scene.stream(focus, Infinity, { build: 1, retain: 1 });
     assert.deepEqual(scene.placeholderChunks, []);
+    scene.dispose();
+  });
+});
+
+test('the scene counts the chunks in its build reach that are not built yet', () => {
+  withFrames(() => {
+    const scene = new LevelScene(wilds, { content: FIXTURE_CONTENT });
+    assert.equal(scene.pendingChunks, 0);
+    const focus = { x: 48, y: 16 };
+    const centre = chunkOf(focus);
+    const inReach = (radius: number): number => {
+      let count = 0;
+      for (let dy = -radius; dy <= radius; dy++) for (let dx = -radius; dx <= radius; dx++) if (chunkRegion({ cx: centre.cx + dx, cy: centre.cy + dy }, wilds)) count++;
+      return count;
+    };
+    assert.ok(inReach(1) > 1 && inReach(2) > inReach(1));
+    scene.stream(focus, 0, { build: 1, retain: 2 });
+    assert.equal(scene.pendingChunks, inReach(1) - 1);
+    scene.stream(focus, Infinity, { build: 1, retain: 2 });
+    assert.equal(scene.pendingChunks, 0);
+    scene.stream(focus, 0, { build: 2, retain: 2 });
+    assert.equal(scene.pendingChunks, inReach(2) - inReach(1));
+    scene.stream(focus, Infinity, { build: 2, retain: 2 });
+    assert.equal(scene.pendingChunks, 0);
+    assert.equal(scene.builtChunks.length, inReach(2));
     scene.dispose();
   });
 });

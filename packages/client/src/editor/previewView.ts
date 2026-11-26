@@ -1,6 +1,7 @@
 import { CHUNK_SIZE, GAME_CONTENT, type TilePoint } from '@containment/shared';
 import { Group, Mesh, MeshBasicMaterial, MathUtils, PerspectiveCamera, Plane, PlaneGeometry, Raycaster, Scene, Vector2, Vector3 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { landmarksFor } from '../render/far/farJobs.ts';
 import { FarView, farReachFor } from '../render/far/farView.ts';
 import { SceneLook } from '../render/sceneLook.ts';
 import { ActorLayer } from './actorLayer.ts';
@@ -22,6 +23,8 @@ export interface CameraState {
 const GAME_ANGLE = { yaw: 45, pitch: 52 } as const;
 const BASE_DISTANCE = 11;
 const BUILD_BUDGET_MS = 12;
+const SETTLE_SLICE_MS = 250;
+const SETTLE_REDRAW_MS = 15000;
 const NOTHING: ReadonlySet<string> = new Set();
 const MAX_REACH = 8;
 const CLICK_SLOP_PX = 4;
@@ -41,6 +44,30 @@ export function streamFocusOf(target: { readonly x: number; readonly z: number }
 
 export const previewTarget = (zone: ActiveZone | null, focus: TilePoint): Vector3 => new Vector3(focus.x, zone ? groundAt(zone.layout, focus.x, focus.y) : 0, focus.y);
 const FAR_REBUILD_MS = 1500;
+
+export const settleRequested = (search: string): boolean => new URLSearchParams(search).get('settle') === '1';
+
+export interface SettleProgress {
+  readonly view: string;
+  readonly pendingChunks: number;
+  readonly farBuilt: boolean;
+}
+
+export class SettleWatch {
+  private view: string | null = null;
+  moved = true;
+
+  reset(): void {
+    this.view = null;
+    this.moved = true;
+  }
+
+  check(progress: SettleProgress): boolean {
+    this.moved = progress.view !== this.view;
+    this.view = progress.view;
+    return !this.moved && progress.pendingChunks === 0 && progress.farBuilt;
+  }
+}
 
 export interface EditPointer {
   down(tile: TilePoint, event: PointerEvent): boolean;
@@ -80,6 +107,11 @@ export class PreviewView {
   private frameListeners: (() => void)[] = [];
   private queuedZone: (() => ActiveZone) | null = null;
   private hidden: string | null = null;
+  private readonly settle: SettleWatch | null = settleRequested(location.search) ? new SettleWatch() : null;
+  private settled = false;
+  private readonly landmarked = new WeakSet<FarView>();
+  private pumping = 0;
+  private redrawDue = 0;
 
   constructor(container: HTMLElement) {
     this.canvas.style.cssText = 'width:100%;height:100%;display:block';
@@ -105,9 +137,11 @@ export class PreviewView {
       this.tick(now);
     };
     this.frame = requestAnimationFrame(loop);
+    if (this.settle) document.body.dataset.previewSettled = 'false';
   }
 
   show(zone: ActiveZone): void {
+    this.unsettle();
     if (this.level) {
       this.scene.remove(this.level.root);
       this.level.dispose();
@@ -115,7 +149,7 @@ export class PreviewView {
     this.zone = zone;
     this.overlay.ground = (x, y) => groundAt(zone.layout, x, y);
     this.actors.show(actorsOf(GAME_CONTENT, zone.definition), this.overlay.ground);
-    this.level = new LevelScene(zone, { editable: true });
+    this.level = new LevelScene(zone, { editable: true, workers: this.settle !== null });
     this.level.showRoofs(this.roofs);
     this.scene.add(this.level.root);
     this.far?.dispose();
@@ -140,9 +174,11 @@ export class PreviewView {
 
   queueUpdate(zone: () => ActiveZone): void {
     this.queuedZone = zone;
+    this.unsettle();
   }
 
   update(zone: ActiveZone): boolean {
+    this.unsettle();
     const level = this.level;
     if (!level || !level.canPatch(zone)) {
       this.show(zone);
@@ -160,6 +196,12 @@ export class PreviewView {
     if (!zone.definition.definition.land) return null;
     const far = new FarView(zone.definition, zone.layout, VIEW_DISTANCE);
     this.scene.add(far.root);
+    if (this.settle) {
+      const marked = (): void => {
+        this.landmarked.add(far);
+      };
+      void landmarksFor(zone.definition, zone.layout).then(marked, marked);
+    }
     return far;
   }
 
@@ -175,6 +217,7 @@ export class PreviewView {
     this.camera.position.set(target.x + Math.sin(yaw) * horizontal, target.y + Math.sin(pitch) * distance, target.z + Math.cos(yaw) * horizontal);
     this.controls.update();
     this.sampleAmbience();
+    this.unsettle();
   }
 
   gameAngle(): void {
@@ -184,10 +227,12 @@ export class PreviewView {
   }
 
   showActors(on: boolean): void {
+    if (on !== this.actors.root.visible) this.unsettle();
     this.actors.setVisible(on);
   }
 
   showRoofs(on: boolean): void {
+    if (on !== this.roofs) this.unsettle();
     this.roofs = on;
     this.level?.showRoofs(on);
   }
@@ -239,6 +284,7 @@ export class PreviewView {
 
   dispose(): void {
     cancelAnimationFrame(this.frame);
+    window.clearTimeout(this.pumping);
     this.resizeObserver.disconnect();
     this.controls.dispose();
     this.actors.dispose();
@@ -318,6 +364,38 @@ export class PreviewView {
     this.sceneLook.applyAmbience(this.ambience);
   }
 
+  private unsettle(): void {
+    this.settle?.reset();
+    this.markSettled(false);
+  }
+
+  private markSettled(settled: boolean): void {
+    if (!this.settle || settled === this.settled) return;
+    this.settled = settled;
+    document.body.dataset.previewSettled = String(settled);
+  }
+
+  private pump(): void {
+    this.pumping = window.setTimeout(() => {
+      this.pumping = 0;
+      const level = this.level;
+      if (!level || this.canvas.clientWidth === 0) return;
+      level.stream(streamFocusOf(this.controls.target, this.camera.position), SETTLE_SLICE_MS, this.reach);
+      if (level.pendingChunks > 0) this.pump();
+    }, 0);
+  }
+
+  private farBuilt(): boolean {
+    if (this.farDue > 0 || this.nextFar) return false;
+    return !this.far || (this.far.ready && this.landmarked.has(this.far));
+  }
+
+  private viewKey(): string {
+    const { position } = this.camera;
+    const { target } = this.controls;
+    return `${[position.x, position.y, position.z, target.x, target.y, target.z].map((value) => value.toFixed(3)).join(',')} ${this.canvas.width}x${this.canvas.height}`;
+  }
+
   private followFar(now: number, focus: Vector3): void {
     const zone = this.zone;
     const level = this.level;
@@ -357,6 +435,7 @@ export class PreviewView {
     const target = this.controls.target;
     const time = now / 1000;
     this.level.stream(streamFocusOf(target, this.camera.position), BUILD_BUDGET_MS, this.reach);
+    if (this.settle && this.pumping === 0 && this.level.pendingChunks > 0) this.pump();
     this.level.update(time, NOTHING, NOTHING, NOTHING, { open: NOTHING, self: null });
     this.actors.update(time);
     this.level.updateCutaway(this.camera.position, target);
@@ -366,7 +445,12 @@ export class PreviewView {
     this.sceneLook.aimKeyLight(target, viewDistance);
     this.sceneLook.matchBloomToDistance(viewDistance);
     this.sceneLook.updateLights(this.level.lights, delta, time, target);
-    this.sceneLook.render(this.camera, delta);
+    const settled = this.settle?.check({ view: this.viewKey(), pendingChunks: this.level.pendingChunks, farBuilt: this.farBuilt() }) ?? false;
+    if (!this.settle || settled || this.settle.moved || now >= this.redrawDue) {
+      this.sceneLook.render(this.camera, delta);
+      this.redrawDue = now + SETTLE_REDRAW_MS;
+    }
+    this.markSettled(settled);
     for (const listener of this.frameListeners) listener();
   }
 }
