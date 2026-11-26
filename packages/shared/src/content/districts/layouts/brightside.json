@@ -111,8 +111,6 @@
     { "id": "brightside-d62", "object": "ac-unit", "at": { "room": "ground", "dx": 31, "dy": 28 }, "facing": "north" },
     { "id": "brightside-d63", "object": "wall-vent", "at": { "room": "ground", "dx": 39, "dy": 28 }, "facing": "north" },
     { "id": "brightside-d64", "object": "wall-vent", "at": { "room": "ground", "dx": 43, "dy": 31 }, "facing": "east" },
-    { "id": "brightside-d65", "object": "ac-unit", "at": { "room": "ground", "dx": 28, "dy": 30 }, "facing": "west" },
-    { "id": "brightside-d66", "object": "cable-run", "at": { "room": "ground", "dx": 28, "dy": 38 }, "facing": "west" },
     { "id": "brightside-w0", "object": "tall-grass", "at": { "room": "ground", "dx": 49, "dy": 58 }, "facing": "west" },
     { "id": "brightside-w1", "object": "tall-grass", "at": { "room": "ground", "dx": 43, "dy": 56 } },
     { "id": "brightside-w2", "object": "tall-grass", "at": { "room": "ground", "dx": 44, "dy": 57 }, "facing": "north" },

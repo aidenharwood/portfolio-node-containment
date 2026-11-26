@@ -53,7 +53,7 @@
     { "id": "keel-road-d3", "object": "dumpster", "at": { "room": "ground", "dx": 35, "dy": 28 }, "facing": "north" },
     { "id": "keel-road-d4", "object": "wall-vent", "at": { "room": "ground", "dx": 42, "dy": 33 }, "facing": "east" },
     { "id": "keel-road-d5", "object": "dumpster", "at": { "room": "ground", "dx": 42, "dy": 31 }, "facing": "east" },
-    { "id": "keel-road-d6", "object": "ac-unit", "at": { "room": "ground", "dx": 38, "dy": 39 } },
+    { "id": "keel-road-d6", "object": "ac-unit", "at": { "room": "ground", "dx": 27, "dy": 37 }, "facing": "west" },
     { "id": "keel-road-d7", "object": "cargo-container", "at": { "room": "ground", "dx": 46, "dy": 23 }, "facing": "east" },
     { "id": "keel-road-d8", "object": "barricade", "at": { "room": "ground", "dx": 49, "dy": 23 }, "facing": "east" },
     { "id": "keel-road-d9", "object": "trash-bags", "at": { "room": "ground", "dx": 52, "dy": 23 }, "facing": "east" },

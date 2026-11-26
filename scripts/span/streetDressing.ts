@@ -383,7 +383,7 @@ export function dressStreets(layout: DistrictLayout, land: LandMap): DistrictLay
     }
     return depth;
   };
-  const doorSide = (front: Front): boolean => front.tiles.some((tile) => doors.some((door) => Math.abs(door.x - tile.x) + Math.abs(door.y - tile.y) <= 1));
+  const doorSide = (front: Front): boolean => front.tiles.some((tile) => doors.some((door) => Math.max(Math.abs(door.x - tile.x), Math.abs(door.y - tile.y)) <= 1));
 
   const dressFacade = (front: Front, choices: readonly { readonly objects: readonly string[]; readonly weight: number; readonly run?: number }[], density: number): void => {
     const step = along(front);

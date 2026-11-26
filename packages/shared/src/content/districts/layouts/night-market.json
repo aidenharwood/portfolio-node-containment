@@ -116,7 +116,7 @@
     { "id": "night-market-d60", "object": "ac-unit", "at": { "room": "ground", "dx": 36, "dy": 27 }, "facing": "north" },
     { "id": "night-market-d61", "object": "wall-vent", "at": { "room": "ground", "dx": 42, "dy": 33 }, "facing": "east" },
     { "id": "night-market-d62", "object": "ac-unit", "at": { "room": "ground", "dx": 42, "dy": 36 }, "facing": "east" },
-    { "id": "night-market-d63", "object": "ac-unit", "at": { "room": "ground", "dx": 32, "dy": 38 } },
+    { "id": "night-market-d63", "object": "ac-unit", "at": { "room": "ground", "dx": 27, "dy": 32 }, "facing": "west" },
     { "id": "night-market-w0", "object": "rubble-heap", "at": { "room": "ground", "dx": 58, "dy": 36 }, "facing": "west" },
     { "id": "night-market-w1", "object": "rubble-heap", "at": { "room": "ground", "dx": 60, "dy": 42 }, "facing": "west" },
     { "id": "night-market-w2", "object": "rubble-heap", "at": { "room": "ground", "dx": 59, "dy": 40 } },
