@@ -59,6 +59,7 @@ test('a dark district glows at the horizon above its ground and fades to a near-
   assert.ok(displayLuma(look.zenith) * 255 < 20);
   assert.ok(look.spread < lookOf(KESTREL).spread);
   assert.ok(look.lights.r > 0 && look.archShow > lookOf(KESTREL).archShow);
+  assert.ok(look.archShow >= 0.85, `arch opacity ${look.archShow}`);
   assert.ok(look.horizon.b > look.horizon.g);
 });
 
@@ -69,13 +70,14 @@ test('an enclosed level has no sun, clouds, arch or city lights', () => {
   assert.ok(displayLuma(look.zenith) <= displayLuma(look.horizon));
 });
 
-test('the ring arch is widest where it rises from the horizon and narrows overhead', () => {
-  assert.ok(Math.abs(MathUtils.radToDeg(ringHalfWidth(0)) - 7) < 0.3);
-  assert.ok(Math.abs(MathUtils.radToDeg(ringHalfWidth(MathUtils.degToRad(30))) - 3) < 0.2);
-  let last = Infinity;
-  for (let degrees = 4; degrees <= 90; degrees += 2) {
+test('the ring arch rises from the horizon as a narrow band that widens a little overhead and never flares', () => {
+  const horizon = MathUtils.radToDeg(ringHalfWidth(0));
+  assert.ok(horizon > 1.8 && horizon < 2.6, `half-width at the horizon ${horizon}`);
+  let last = 0;
+  for (let degrees = 0; degrees <= 90; degrees += 2) {
     const width = ringHalfWidth(MathUtils.degToRad(degrees));
-    assert.ok(width < last);
+    assert.ok(width >= last, `${degrees} degrees`);
     last = width;
   }
+  assert.ok(last / ringHalfWidth(0) < 1.5);
 });
