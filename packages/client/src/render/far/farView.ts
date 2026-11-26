@@ -56,6 +56,7 @@ export function farGeometry(tile: FarTileArrays): BufferGeometry {
   geometry.setAttribute('color', new BufferAttribute(tile.colors, 3, true));
   geometry.setAttribute('mood', new BufferAttribute(tile.moods, 1));
   geometry.setAttribute('chunk', new BufferAttribute(tile.chunks, 2));
+  geometry.setAttribute('facade', new BufferAttribute(tile.facades, 4));
   geometry.setIndex(new BufferAttribute(tile.indices, 1));
   const min = new Vector3(...tile.min);
   const max = new Vector3(...tile.max);
