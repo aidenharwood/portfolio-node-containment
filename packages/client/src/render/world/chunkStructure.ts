@@ -8,6 +8,7 @@ import { createTileVolume, drawnTopAt, groundBottomAt, groundTopAt, landPaletteA
 import type { LandPalette } from './landPalette.ts';
 import { peakFieldOf, type PeakField } from './peaks.ts';
 import { paintRoof, roofPlanOf, type RoofBox } from './roofs.ts';
+import { joinMeshes, towerShellAt } from './towerMassing.ts';
 import { FLOOR_LAYERS, TILE_RESOLUTION, ZONE_MESH_ORIGIN, ZONE_VOLUME_HEIGHT, ZONE_VOXEL_SIZE } from './worldScale.ts';
 
 export const STRIP_ROWS = 2;
@@ -441,7 +442,9 @@ export function planChunkStructure(layout: OwnedLayout, decals: DecalMap, region
           max: [(tx + 1) * R, drawnTopAt(layout, tx, ty) + ZONE_VOLUME_HEIGHT, (ty + 1) * R] as const,
         };
         const rock = kind === 'rock' ? (rocks ??= rockColumnsOf(volume, layout, layout.regionAt ? peakFieldOf(layout) : null)) : null;
-        const meshes = rock ? meshVoxels(rock.source, bounds, { ...meshOptions, topSink: wallTops.sink }, rock.shell(tx, ty, base, groundBottom)) : meshVoxels(volume, bounds, { ...meshOptions, topSink: wallTops.sink });
+        const painted = rock ? meshVoxels(rock.source, bounds, { ...meshOptions, topSink: wallTops.sink }, rock.shell(tx, ty, base, groundBottom)) : meshVoxels(volume, bounds, { ...meshOptions, topSink: wallTops.sink });
+        const shell = rock ? null : towerShellAt(layout, tx, ty);
+        const meshes = shell ? joinMeshes(painted, shell) : painted;
         const column = (tx - region.x) * R;
         const row = (ty - region.y) * R;
         const top = wallTops.geometry(column, column + R, row, row + R);
