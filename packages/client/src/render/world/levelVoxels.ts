@@ -1002,6 +1002,8 @@ const MASSING_RISE = 2 * STEP_VOXELS;
 export const MASSING_HEADROOM = 16;
 export const STOREY = 8;
 export const GROUND_FLOOR = 12;
+const DARK_STOREYS = 0.16;
+const LIT_FADE = 0.05;
 
 export type Massing = 'tower' | 'hull';
 
@@ -1078,7 +1080,7 @@ export function towerFace(material: WallMaterialId, side: Side, along: number, v
   if (row === 5) return { color: TOWER.sill };
   if (((along % 4) + 4) % 4 === 0) return { color: TOWER.mullion, recessed: true };
   const pane = Math.floor(along / 4);
-  const share = 0.15 + 0.6 * noise3(storey, block, salt, 733);
+  const share = noise3(storey, block, salt, 731) < DARK_STOREYS ? 0 : (0.15 + 0.6 * noise3(storey, block, salt, 733)) / (1 + LIT_FADE * Math.max(0, -storey));
   if (noise3(pane, storey, block + salt, 739) >= share) return { color: TOWER.glass, recessed: true };
   const glow = TOWER_WINDOWS[Math.floor(noise3(pane, storey, block + salt, 743) * TOWER_WINDOWS.length)] ?? FACADE.litWindow;
   return { color: glow, kind: VOXEL_EMISSIVE, recessed: true };
