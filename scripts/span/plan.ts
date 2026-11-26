@@ -1,56 +1,7 @@
 import { valueNoise } from '../../packages/shared/src/world/noise.ts';
-import { codeAt, COLUMNS, DROP, HEIGHT, HULL, MASSIF, PLACES, padOf, RAIL, regionAtSquare, ROWS, SEA, SEAMS, SEAM_HALF, SQUARE, WIDTH, type RailPoint } from './atlas.ts';
-
-const hash = (x: number, y: number, seed: number): number => {
-  let h = Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(seed, 2147483647);
-  h = Math.imul(h ^ (h >>> 13), 1274126177);
-  h ^= h >>> 16;
-  return (h >>> 0) / 4294967296;
-};
-
-const fade = (t: number): number => t * t * (3 - 2 * t);
-
-export function smooth(x: number, y: number, seed: number, scale: number): number {
-  let total = 0;
-  let weight = 0;
-  let amplitude = 1;
-  let frequency = 1 / scale;
-  for (let octave = 0; octave < 3; octave++) {
-    const fx = x * frequency;
-    const fy = y * frequency;
-    const ix = Math.floor(fx);
-    const iy = Math.floor(fy);
-    const tx = fade(fx - ix);
-    const ty = fade(fy - iy);
-    const s = seed + octave * 97;
-    const top = hash(ix, iy, s) * (1 - tx) + hash(ix + 1, iy, s) * tx;
-    const bottom = hash(ix, iy + 1, s) * (1 - tx) + hash(ix + 1, iy + 1, s) * tx;
-    total += amplitude * (top * (1 - ty) + bottom * ty);
-    weight += amplitude;
-    amplitude /= 2;
-    frequency *= 2;
-  }
-  return total / weight;
-}
+import { codeAt, COLUMNS, DROP, HEIGHT, HULL, PLACES, padOf, RAIL, regionAtSquare, ROWS, SEA, SEAMS, SEAM_HALF, SQUARE, WIDTH, type RailPoint } from './atlas.ts';
 
 export const isLandCode = (code: string): boolean => code !== SEA && code !== DROP;
-
-export function distanceToCode(x: number, y: number, matches: (code: string) => boolean, reach: number): number {
-  const column = Math.floor(x / SQUARE);
-  const row = Math.floor(y / SQUARE);
-  let best = Infinity;
-  for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
-    const c = column + dc;
-    const r = row + dr;
-    if (!matches(codeAt(c, r)) && !(c < 0 || r < 0 || c >= COLUMNS || r >= ROWS ? matches(SEA) : false)) continue;
-    const left = c * SQUARE;
-    const top = r * SQUARE;
-    const dx = Math.max(left - x, 0, x - (left + SQUARE - 1));
-    const dy = Math.max(top - y, 0, y - (top + SQUARE - 1));
-    best = Math.min(best, Math.max(dx, dy));
-  }
-  return Math.min(best, reach);
-}
 
 export const nearPad = (x: number, y: number, margin: number): boolean =>
   PLACES.some((place) => {
@@ -106,15 +57,6 @@ export function isLandTile(x: number, y: number): boolean {
   if (nearPad(x, y, 4)) return true;
   const toSea = seaDistance(x, y);
   return toSea > COAST_MAX || toSea > coastInset(x, y);
-}
-
-export function isMassifTile(x: number, y: number): boolean {
-  const code = codeAt(Math.floor(x / SQUARE), Math.floor(y / SQUARE));
-  if (code === MASSIF) return true;
-  if (!isLandCode(code)) return false;
-  if (nearPad(x, y, 6) || nearRail(x, y, 5)) return false;
-  const toMassif = distanceToCode(x, y, (other) => other === MASSIF, 20);
-  return toMassif < 1 + 11 * smooth(x, y, 23, 14);
 }
 
 export interface Segment {

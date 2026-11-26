@@ -2,9 +2,10 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { GAME_CONTENT, isBuildingWall, isOutdoorFloor, LAND_GROUND_ROOM, TILE_KINDS, type ResolvedLevel, type TileKindId, type TilePoint, type TileRect } from '@containment/shared';
 import { interiorMaskOf, ownedLayoutOf } from '../src/render/world/chunkStructure.ts';
-import { buildTileVolume, facesOutdoors, massingAt, tileBase, type OwnedLayout, type Side } from '../src/render/world/levelVoxels.ts';
+import { buildTileVolume, createTileVolume, facesOutdoors, massingAt, tileBase, type OwnedLayout, type Side } from '../src/render/world/levelVoxels.ts';
+import { towerBlockAt, towerShellAt, towerTopAt } from '../src/render/world/towerMassing.ts';
 import { WALL_PALETTE } from '../src/render/world/wallPalette.ts';
-import { FLOOR_LAYERS, TILE_RESOLUTION, WALL_LAYERS } from '../src/render/world/worldScale.ts';
+import { FLOOR_LAYERS, STEP_VOXELS, TILE_RESOLUTION, WALL_LAYERS, ZONE_MESH_ORIGIN, ZONE_VOLUME_HEIGHT, ZONE_VOXEL_SIZE } from '../src/render/world/worldScale.ts';
 import { VOXEL_EMISSIVE, VOXEL_EMPTY } from '../src/render/voxel/voxelKinds.ts';
 
 const R = TILE_RESOLUTION;
@@ -155,7 +156,7 @@ test('the interior mask covers building rooms and tram halls but not pads, yards
   assert.equal(inside({ x: 4, y: 14 }), false);
 });
 
-test('a Halcyon tower block stands in lit and dark storeys with clutter on its roof', () => {
+test('a Halcyon tower block stands in lit and dark storeys and rises past its chunk volume in setbacks with clutter on its roof', () => {
   const region = { x: 553, y: 72, width: 18, height: 18 };
   const volume = buildTileVolume(owned, region);
   let towerTiles = 0;
@@ -173,16 +174,41 @@ test('a Halcyon tower block stands in lit and dark storeys with clutter on its r
     }
   }
   assert.ok(lit.size >= 3, [...lit].join(','));
-  let clutter = 0;
-  for (let y = region.y; y < region.y + region.height; y++) {
-    for (let x = region.x; x < region.x + region.width; x++) {
-      if (massingAt(owned, x, y) !== 'tower') continue;
-      const top = tileBase(owned, x, y) + FLOOR_LAYERS + WALL_LAYERS;
-      for (let vz = y * R; vz < (y + 1) * R; vz++) for (let vx = x * R; vx < (x + 1) * R; vx++) if (volume.kindAt(vx, top + 1, vz) !== VOXEL_EMPTY) clutter++;
+  const block = towerBlockAt(owned, tx, ty);
+  assert.ok(block);
+  assert.ok(block.tiers.length >= 2);
+  for (let index = 1; index < block.tiers.length; index++) {
+    const lower = block.tiers[index - 1]!;
+    const upper = block.tiers[index]!;
+    assert.equal(upper.from, lower.to);
+    assert.ok(upper.rect.x > lower.rect.x && upper.rect.x + upper.rect.width < lower.rect.x + lower.rect.width);
+  }
+  const roof = block.tiers[block.tiers.length - 1]!.to;
+  assert.equal(towerTopAt(owned, block.rect.x + Math.floor(block.rect.width / 2), block.rect.y + Math.floor(block.rect.height / 2)), roof);
+  assert.ok((roof - block.street) * ZONE_VOXEL_SIZE >= 15, String(roof - block.street));
+  assert.ok(volume.height < roof - FLOOR_LAYERS - WALL_LAYERS);
+  let glowing = 0;
+  let highest = -Infinity;
+  for (let y = block.rect.y; y < block.rect.y + block.rect.height; y++) {
+    for (let x = block.rect.x; x < block.rect.x + block.rect.width; x++) {
+      const shell = towerShellAt(owned, x, y);
+      assert.ok(shell, x + ',' + y);
+      glowing += shell.emissive?.getAttribute('position').count ?? 0;
+      highest = Math.max(highest, shell.solid?.boundingBox?.max.y ?? -Infinity);
     }
   }
-  assert.ok(clutter > 30, String(clutter));
+  assert.ok(glowing > 100, String(glowing));
+  assert.ok(highest > ZONE_MESH_ORIGIN[1] + (roof + 4) * ZONE_VOXEL_SIZE, String(highest));
   assert.ok(base > 0);
+});
+
+test('tower shells keep every Halcyon chunk volume within the top step', () => {
+  for (let cy = 2; cy < 9; cy++) {
+    for (let cx = 2; cx < 21; cx++) {
+      const region = { x: cx * 32, y: cy * 32, width: 32, height: 32 };
+      assert.ok(createTileVolume(region, owned).height <= ZONE_VOLUME_HEIGHT + 15 * STEP_VOXELS, cx + ',' + cy);
+    }
+  }
 });
 
 test('the Meridian hull is drawn as a beached ship with portholes and a deck rail', () => {

@@ -1322,6 +1322,48 @@ const precursorNeedle: Builder = () => {
   return parts(model, 161, [{ model: halo, animate: blink(0.6) }]);
 };
 
+export const SPINDLE_HEIGHT_VOXELS = 481;
+export const SPINDLE_CROWN = 440;
+export const SPINDLE_COLLARS: readonly number[] = [96, 192, 288, 384];
+const SPINDLE_FOOT = 4;
+
+export const spindleRadius = (y: number): number => {
+  const along = Math.min(1, Math.max(0, (y - SPINDLE_FOOT) / (SPINDLE_CROWN - SPINDLE_FOOT)));
+  return 2.4 + 8 * (1 - along) ** 2;
+};
+
+const spindleNeedle: Builder = () => {
+  const glass = 0x141820;
+  const seam = 0x7fd8ff;
+  const plating = 0x2a2f38;
+  const core = 0xd8f4ff;
+  const model = cylinder(new VoxelModel(), 0, 0, 12, 0, 2, grain(0x20242c, 0.03));
+  shellRing(model, 11.5, 1, 3, darken(seam, 0.4), VOXEL_EMISSIVE);
+  for (let y = 3; y <= SPINDLE_CROWN; y++) {
+    const radius = spindleRadius(y);
+    const reach = Math.ceil(radius);
+    for (let x = -reach; x <= reach; x++) {
+      for (let z = -reach; z <= reach; z++) {
+        const d = Math.hypot(x + 0.5, z + 0.5);
+        if (d > radius) continue;
+        if (d < radius - 1.5) model.set(x, y, z, glass);
+        else if (((Math.atan2(z + 0.5, x + 0.5) / (Math.PI * 2) + 1) * 3 + y / 72) % 1 < 0.07) model.set(x, y, z, darken(seam, 0.1), VOXEL_EMISSIVE);
+        else model.set(x, y, z, jitter(glass, 0.06, noise3(x, y, z, 137)));
+      }
+    }
+  }
+  for (const y of SPINDLE_COLLARS) {
+    const radius = spindleRadius(y) + 1.2;
+    for (let lift = 0; lift < 3; lift++) shellRing(model, radius, 2, y + lift, lift === 1 ? seam : plating, lift === 1 ? VOXEL_EMISSIVE : undefined);
+  }
+  cylinder(model, 0, 0, 3.6, SPINDLE_CROWN - 2, SPINDLE_CROWN, plating);
+  cylinder(model, 0, 0, 1.6, SPINDLE_CROWN + 1, 472, core, VOXEL_EMISSIVE);
+  cylinder(model, 0, 0, 0.8, 473, SPINDLE_HEIGHT_VOXELS - 1, core, VOXEL_EMISSIVE);
+  const halo = new VoxelModel();
+  for (const y of [448, 460]) shellRing(halo, 4.4, 1, y, seam, VOXEL_EMISSIVE);
+  return parts(model, SPINDLE_HEIGHT_VOXELS, [{ model: halo, animate: blink(0.6) }]);
+};
+
 export const CITY_BUILDERS: Readonly<Record<CityModel, Builder>> = {
   streetLamp,
   pathLight,
@@ -1396,4 +1438,5 @@ export const CITY_BUILDERS: Readonly<Record<CityModel, Builder>> = {
   divingBell,
   lighthouse,
   precursorNeedle,
+  spindleNeedle,
 };

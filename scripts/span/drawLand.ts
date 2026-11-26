@@ -8,13 +8,14 @@ import { valueNoise } from '../../packages/shared/src/world/noise.ts';
 import { codeAt, COLUMNS, HEIGHT, HULL, LAND_ID, landSquares, MASSIF, padOf, placeAt, PLACES, placeById, random, REGIONS, regionAtSquare, regionOfCode, ROWS, SQUARE, WIDTH } from './atlas.ts';
 import { LAYOUT_SOURCES } from '../../packages/shared/src/content/districts/layouts/index.ts';
 import { BRIDGE_PLANS_FOR_LAND, bridgeTiles } from './bridges.ts';
-import { isLandTile, isMassifTile, isSeamTile, nearPad, nearRail, nearSeam, railSegments, seamEdges } from './plan.ts';
+import { isLandTile, isSeamTile, nearPad, nearRail, nearSeam, railSegments, seamEdges } from './plan.ts';
+import { LEDGE_LEVELS, massifLevels, massifMask, screeMask } from './massif.ts';
 import { gradeRail } from './grade.ts';
 import { megastructureTiles } from './megastructures.ts';
 import { buildingSpecOf, WILD_POIS } from './wilds.ts';
 import { QUEST_PLACEMENTS } from './extras/quests.ts';
 import { distanceField, riverReach, shapeRelief, type Lake } from './relief.ts';
-import { maskPolygon } from './trace.ts';
+import { joinLoops, maskLoops, maskPolygon, smoothLoop } from './trace.ts';
 
 const OUT = process.env.SPAN_LAND_OUT ?? new URL('../../packages/shared/src/content/land/the-span.json', import.meta.url);
 
@@ -33,6 +34,11 @@ const ground = (shape: LandShape, tile: TileKindId, height: number): void => {
 const line = (points: readonly TilePoint[], width: number, tile: TileKindId): void => void steps.push({ kind: 'line', points: points.map((point) => ({ x: Math.round(point.x), y: Math.round(point.y) })), width, tile });
 const masked = (inside: (x: number, y: number) => boolean): LandShape | undefined => {
   const points = maskPolygon(WIDTH, HEIGHT, inside);
+  return points.length >= 3 ? polygon(points) : undefined;
+};
+const SMOOTHING = 1.2;
+const smoothed = (inside: (x: number, y: number) => boolean): LandShape | undefined => {
+  const points = joinLoops(maskLoops(WIDTH, HEIGHT, inside).map((loop) => smoothLoop(loop, SMOOTHING)));
   return points.length >= 3 ? polygon(points) : undefined;
 };
 const lineDrawn = (points: readonly TilePoint[], width: number): ((x: number, y: number) => boolean) => {
@@ -54,7 +60,7 @@ function blobs(seed: number, area: TileRect, count: number, minR: number, maxR: 
     const x = area.x + r + next() * (area.width - 2 * r);
     const y = area.y + r + next() * (area.height - 2 * r);
     if (!keepClear(x, y, r + 3) || nearRail(x, y, r + 3)) continue;
-    if (!isLandTile(Math.round(x), Math.round(y)) || isMassifTile(Math.round(x), Math.round(y))) continue;
+    if (!isLandTile(Math.round(x), Math.round(y)) || isMassif(Math.round(x), Math.round(y))) continue;
     if (!keep(x, y, r)) continue;
     if (placed.some((other) => Math.hypot(other.x - x, other.y - y) < other.r + r + spacing)) continue;
     placed.push({ x, y, r });
@@ -85,9 +91,6 @@ const landTiles = new Uint8Array(WIDTH * HEIGHT);
 for (let y = 0; y < HEIGHT; y++) for (let x = 0; x < WIDTH; x++) landTiles[y * WIDTH + x] = isLandTile(x, y) ? 1 : 0;
 const isLand = (x: number, y: number): boolean => landTiles[y * WIDTH + x] === 1;
 
-const massifTiles = new Uint8Array(WIDTH * HEIGHT);
-for (let y = 0; y < HEIGHT; y++) for (let x = 0; x < WIDTH; x++) massifTiles[y * WIDTH + x] = isMassifTile(x, y) ? 1 : 0;
-
 const spill: TilePoint[] = [
   { x: 4 * SQUARE + 56, y: 7 * SQUARE + 24 },
   { x: 4 * SQUARE + 24, y: 8 * SQUARE + 4 },
@@ -98,6 +101,10 @@ const spill: TilePoint[] = [
   { x: 1 * SQUARE + 52, y: 11 * SQUARE + 20 },
   { x: 1 * SQUARE + 30, y: 12 * SQUARE + 10 },
 ];
+const SPILL_CLEAR = 6;
+const massifTiles = massifMask((x, y) => riverReach(spill, x, y).distance < SPILL_CLEAR);
+const isMassif = (x: number, y: number): boolean => massifTiles[y * WIDTH + x] === 1;
+
 const SPILL_HEAD = 7;
 const spillLength = spill.slice(1).reduce((total, point, index) => total + Math.hypot(point.x - spill[index]!.x, point.y - spill[index]!.y), 0);
 const spillLevel = (along: number): number => Math.max(0, Math.round(SPILL_HEAD * (1 - along / spillLength)));
@@ -289,6 +296,17 @@ blobs(33, K, 4, 2, 4, 'water', 10, () => true, lowestUnder);
 blobs(63, G, 12, 2, 5, 'water', 7, () => true, lowestUnder);
 blobs(73, S, 10, 2, 4, 'coolant', 7, () => true, lowestUnder);
 
+const SCREE_SHORE = 3;
+const SCREE_UNDER: ReadonlySet<TileKindId> = new Set<TileKindId>(['grass', 'soil', 'dirt', 'gravel', 'trees', 'concrete', 'asphalt']);
+const siteNear = (x: number, y: number): boolean => sites.some((site) => x >= site.x - 3 && y >= site.y - 3 && x < site.x + site.width + 3 && y < site.y + site.height + 3);
+const sloped = drawLand({ id: LAND_ID, squareSize: SQUARE, columns: COLUMNS, rows: ROWS, steps: [...steps] });
+const screes = screeMask(
+  distanceField(WIDTH, HEIGHT, massifTiles),
+  (x, y) => isLand(x, y) && !isMassif(x, y) && shaped.coast[y * WIDTH + x]! > SCREE_SHORE && regionOfCode(codeAt(Math.floor(x / SQUARE), Math.floor(y / SQUARE))) !== undefined && SCREE_UNDER.has(sloped.tileAt({ x, y })) && !nearPad(x, y, 4) && !nearRail(x, y, 4) && !nearSeam(x, y, 4) && !siteNear(x, y) && !blocked[y * WIDTH + x],
+);
+const screeShape = smoothed((x, y) => screes[y * WIDTH + x] === 1);
+if (screeShape) fill(screeShape, 'gravel');
+
 steps.push({ kind: 'soften', shape: box(0, 0, WIDTH, HEIGHT) } as LandStep);
 
 blobs(74, S, 9, 2, 4, 'rock', 6, () => true, 15);
@@ -300,8 +318,23 @@ ground(box(HULL.x, HULL.y, HULL.width, HULL.height), 'cladding', 9);
 ground(box(HULL.x + 8, HULL.y + 4, HULL.width - 16, HULL.height - 8), 'cladding', 11);
 ground(octagon(HULL.x + HULL.width + 4, HULL.y + HULL.height / 2, 10, 10), 'cladding', 10);
 
-const massifRock = masked((x, y) => isMassifTile(x, y));
-if (massifRock) ground(massifRock, 'rock', 15);
+const massifRock = masked(isMassif);
+if (massifRock) fill(massifRock, 'rock');
+const settled = drawLand({ id: LAND_ID, squareSize: SQUARE, columns: COLUMNS, rows: ROWS, steps: [...steps] });
+const ledges = massifLevels(massifTiles, (x, y) => settled.heightAt({ x, y }));
+const LEDGE_EDGE = 1;
+const ledgeLevels = [...new Set(ledges.levels)].filter((value) => value > 0).sort((a, b) => a - b);
+const ledgeAt = (x: number, y: number): number => (isMassif(x, y) ? ledges.levels[y * WIDTH + x]! : 0);
+const inner = (x: number, y: number): boolean => ledges.depth[y * WIDTH + x]! > LEDGE_EDGE;
+const onLedge = (x: number, y: number): boolean => LEDGE_LEVELS.includes(ledgeAt(x, y));
+for (const level of LEDGE_LEVELS) {
+  const shape = smoothed((x, y) => inner(x, y) && ledgeAt(x, y) >= level);
+  if (shape) rise(shape, level);
+}
+for (const level of ledgeLevels) {
+  const shape = masked((x, y) => isMassif(x, y) && (!inner(x, y) || !onLedge(x, y)) && ledgeAt(x, y) === level);
+  if (shape) rise(shape, level);
+}
 
 layRail();
 

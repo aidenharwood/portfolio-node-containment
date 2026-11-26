@@ -154,7 +154,11 @@
     { "id": "shining-downs-w102", "object": "glass-crystals", "at": { "room": "ground", "dx": 5, "dy": 20 } },
     { "id": "shining-downs-w103", "object": "fused-shards", "at": { "room": "ground", "dx": 6, "dy": 21 } },
     { "id": "shining-downs-w104", "object": "fused-shards", "at": { "room": "ground", "dx": 6, "dy": 20 }, "facing": "north" },
-    { "id": "shining-downs-w105", "object": "fused-shards", "at": { "room": "ground", "dx": 7, "dy": 20 }, "facing": "west" }
+    { "id": "shining-downs-w105", "object": "fused-shards", "at": { "room": "ground", "dx": 7, "dy": 20 }, "facing": "west" },
+    { "id": "shining-downs-w106", "object": "ruin-wall", "at": { "room": "ground", "dx": 53, "dy": 42 } },
+    { "id": "shining-downs-w107", "object": "fused-shards", "at": { "room": "ground", "dx": 54, "dy": 41 }, "facing": "east" },
+    { "id": "shining-downs-w108", "object": "fused-shards", "at": { "room": "ground", "dx": 52, "dy": 41 }, "facing": "north" },
+    { "id": "shining-downs-w109", "object": "fused-shards", "at": { "room": "ground", "dx": 51, "dy": 42 }, "facing": "east" }
   ],
   "assemblies": [
     { "id": "shining-downs-bridge-0", "assembly": "bridge", "at": { "room": "ground", "dx": 39, "dy": 22 }, "facing": "east", "span": 2 },
