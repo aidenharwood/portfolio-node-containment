@@ -262,7 +262,7 @@ export class GameRenderer {
     } else {
       this.selfRing.visible = false;
     }
-    this.cameraRig.update(delta);
+    this.cameraRig.update(delta, this.groundOfTile);
 
     const focus = this.cameraRig.focusPoint;
     this.zone.stream({ x: focus.x, y: focus.z });
