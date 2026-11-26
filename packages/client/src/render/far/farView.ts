@@ -7,6 +7,7 @@ import type { FarBuild } from './farBuild.ts';
 import { farBuildFor, landmarksFor } from './farJobs.ts';
 import { createChunkMask, createFarUniforms, FAR_MOODS, farTerrainMaterial, shareFarUniforms, type ChunkMask, type FarUniforms } from './farMaterial.ts';
 import type { Landmark } from './farLandmarks.ts';
+import { FarProps } from './farProps.ts';
 import { FarSea } from './farSea.ts';
 import type { FarTileArrays } from './farTerrainMesher.ts';
 import { LandmarkBeacons } from './landmarkBeacons.ts';
@@ -80,6 +81,7 @@ export class FarView {
   private readonly meshes: Mesh[] = [];
   private readonly sea: FarSea;
   private beacons: LandmarkBeacons | null = null;
+  private props: FarProps | null = null;
   private reach = 0;
   private readonly light = createAmbienceLight();
   private maskKey = '';
@@ -116,9 +118,9 @@ export class FarView {
   private accept(build: FarBuild): void {
     if (this.disposed) return;
     const light = createAmbienceLight();
-    const moodSky = this.terrain.uniforms['moodSky']!.value as Color[];
-    const moodGround = this.terrain.uniforms['moodGround']!.value as Color[];
-    const moodKey = this.terrain.uniforms['moodKey']!.value as Color[];
+    const moodSky = this.uniforms.moodSky.value;
+    const moodGround = this.uniforms.moodGround.value;
+    const moodKey = this.uniforms.moodKey.value;
     build.moods.slice(0, FAR_MOODS).forEach((ambience, index) => lightColors(lightAmbience(blendedOf(ambience), light), moodSky[index]!, moodGround[index]!, moodKey[index]!));
     for (const tile of build.tiles) {
       const mesh = new Mesh(farGeometry(tile), this.terrain);
@@ -127,6 +129,8 @@ export class FarView {
       this.meshes.push(mesh);
       this.root.add(mesh);
     }
+    this.props = new FarProps(build.props, this.uniforms);
+    for (const mesh of this.props.meshes) this.root.add(mesh);
     this.built = true;
   }
 
@@ -157,6 +161,7 @@ export class FarView {
     this.terrain.dispose();
     this.sea.dispose();
     this.beacons?.dispose();
+    this.props?.dispose();
     this.mask.texture.dispose();
   }
 }

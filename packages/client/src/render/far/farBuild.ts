@@ -1,7 +1,8 @@
-import { TILE_KIND_IDS, type RegionId, type ResolvedLevel, type TileKindId, type TilePoint, type ZoneAmbience } from '@containment/shared';
+import { GAME_CONTENT, TILE_KIND_IDS, type GameContent, type ObjectPlacement, type RegionId, type ResolvedLevel, type TileKindId, type TilePoint, type WorldObjectDefinition, type WorldObjectId, type ZoneAmbience } from '@containment/shared';
 import { SLOPED } from '../world/ground.ts';
 import { STEP_HEIGHT } from '../world/worldScale.ts';
 import { farSideColor, farTileColor, farTopOffset } from './farPalette.ts';
+import { farPropModels, farPropTransfer, MODEL_VARIANTS, placeFarProps, propSilhouette, type FarPropBatch } from './farProps.ts';
 import { coarsenRows, createFarCells, farSectors, farTileTransfer, meshFarSector, type FarCellSize, type FarTileArrays } from './farTerrainMesher.ts';
 import { kindOfIndex, VOID_KIND, type Plan, type SceneRaster } from './sceneRaster.ts';
 
@@ -15,16 +16,19 @@ export interface FarBuild {
   readonly cell: FarCellSize;
   readonly tiles: readonly FarTileArrays[];
   readonly moods: readonly ZoneAmbience[];
+  readonly props: readonly FarPropBatch[];
 }
 
 export interface FarLevel {
   ambienceAt(point: TilePoint): ZoneAmbience;
   regionAt(point: TilePoint): RegionId | undefined;
+  readonly objects: readonly ObjectPlacement[];
+  readonly worldObjects: ReadonlyMap<WorldObjectId, WorldObjectDefinition>;
 }
 
-export function farLevelOf(level: ResolvedLevel): FarLevel {
+export function farLevelOf(level: ResolvedLevel, content: GameContent = GAME_CONTENT): FarLevel {
   const land = level.definition.land;
-  return { ambienceAt: (point) => level.ambienceAt(point), regionAt: (point) => land?.wardAt(point) };
+  return { ambienceAt: (point) => level.ambienceAt(point), regionAt: (point) => land?.wardAt(point), objects: level.objects, worldObjects: content.worldObjects };
 }
 
 export const moodKeyOf = (ambience: ZoneAmbience): string => `${ambience.darkness}|${ambience.tint}|${ambience.fog}|${ambience.sky ?? ''}|${ambience.haze ?? 1}`;
@@ -69,13 +73,23 @@ export function planFarBuild(level: FarLevel, raster: SceneRaster, cell: FarCell
   const tiles: FarTileArrays[] = [];
   const steps: (() => void)[] = [];
   for (let row = 0; row < cells.rows; row += CELL_ROWS_PER_STEP) steps.push(() => coarsenRows(source, cells, row, row + CELL_ROWS_PER_STEP));
+  let props: FarPropBatch[] = [];
+  const propSource = { objects: level.objects, worldObjects: level.worldObjects, moodAt: source.moodAt };
+  for (const model of farPropModels(propSource)) {
+    steps.push(() => {
+      for (let seed = 0; seed < MODEL_VARIANTS; seed++) propSilhouette(model, seed);
+    });
+  }
+  steps.push(() => {
+    props = placeFarProps(propSource, raster, cells);
+  });
   for (const sector of farSectors(cells, FAR_SECTOR_TILES)) {
     steps.push(() => {
       const tile = meshFarSector(cells, sector);
       if (tile.indices.length > 0) tiles.push(tile);
     });
   }
-  return { steps, result: () => ({ cell, tiles, moods }) };
+  return { steps, result: () => ({ cell, tiles, moods, props }) };
 }
 
-export const farBuildTransfer = (build: FarBuild): ArrayBuffer[] => build.tiles.flatMap(farTileTransfer);
+export const farBuildTransfer = (build: FarBuild): ArrayBuffer[] => [...build.tiles.flatMap(farTileTransfer), ...build.props.flatMap(farPropTransfer)];

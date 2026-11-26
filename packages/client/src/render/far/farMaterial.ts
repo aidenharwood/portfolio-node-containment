@@ -56,7 +56,7 @@ export const EMISSIVE_PARS = `vec3 farEmissive( vec3 glow ) {
 }
 const float FAR_EMISSIVE_FOG = ${EMISSIVE_FOG.toFixed(3)};`;
 
-const LIGHT_PARS = `uniform vec3 nearSky;
+export const LIGHT_PARS = `uniform vec3 nearSky;
 uniform vec3 nearGround;
 uniform vec3 nearKey;
 uniform vec2 moodRange;
@@ -76,6 +76,9 @@ const sharedUniforms = (mask: ChunkMask) => ({
   nearGround: { value: new Color() },
   nearKey: { value: new Color() },
   moodRange: { value: new Vector2(160, 320) },
+  moodSky: { value: Array.from({ length: FAR_MOODS }, () => new Color()) },
+  moodGround: { value: Array.from({ length: FAR_MOODS }, () => new Color()) },
+  moodKey: { value: Array.from({ length: FAR_MOODS }, () => new Color()) },
 });
 
 export type FarUniforms = ReturnType<typeof sharedUniforms>;
@@ -83,11 +86,6 @@ export type FarUniforms = ReturnType<typeof sharedUniforms>;
 export function farTerrainMaterial(): ShaderMaterial {
   return new ShaderMaterial({
     vertexColors: true,
-    uniforms: {
-      moodSky: { value: Array.from({ length: FAR_MOODS }, () => new Color()) },
-      moodGround: { value: Array.from({ length: FAR_MOODS }, () => new Color()) },
-      moodKey: { value: Array.from({ length: FAR_MOODS }, () => new Color()) },
-    },
     vertexShader: `#include <common>
 attribute float mood;
 attribute vec2 chunk;
