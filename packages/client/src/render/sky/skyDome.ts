@@ -8,6 +8,7 @@ const SUN_FLAT = new Vector2(SUN.x, SUN.z).normalize();
 const SEGMENTS = { width: 48, height: 24 } as const;
 const PANEL_ANGLE = 1 / 38;
 const LIGHT_CELL = 0.006;
+const SKY_ORDER = 1000;
 
 const vec3 = (vector: Vector3): string => `vec3( ${vector.x.toFixed(5)}, ${vector.y.toFixed(5)}, ${vector.z.toFixed(5)} )`;
 
@@ -99,7 +100,7 @@ export class SkyDome {
     this.mesh.name = 'skyDome';
     this.mesh.frustumCulled = false;
     this.mesh.matrixAutoUpdate = false;
-    this.mesh.renderOrder = -1000;
+    this.mesh.renderOrder = SKY_ORDER;
   }
 
   apply(look: SkyLook, exposure: number): void {
