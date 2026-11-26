@@ -91,6 +91,7 @@ export type WorldObjectModel =
   | 'divingBell'
   | 'lighthouse'
   | 'precursorNeedle'
+  | 'spindleNeedle'
   | 'precursorPylon'
   | 'glassBell'
   | 'tramNoseLeft'

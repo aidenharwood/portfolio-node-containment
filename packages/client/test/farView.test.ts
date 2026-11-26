@@ -2,14 +2,15 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { chunkKey, chunkOf, GAME_CONTENT } from '@containment/shared';
 import { FIXTURE_CONTENT } from '@containment/shared/fixtures';
-import { Color, Mesh, Vector3 } from 'three';
+import { Box3, Color, Mesh, Vector3 } from 'three';
 import { zoneOfLevel } from '../src/editor/previewLevel.ts';
 import { blendedOf, chunkMaskBounds, FarView, lightColors, writeChunkMask } from '../src/render/far/farView.ts';
 import { createChunkMask, createFarUniforms } from '../src/render/far/farMaterial.ts';
 import { planLandmarks, type Landmark } from '../src/render/far/farLandmarks.ts';
 import { FAR_SEA_LEVEL, FarSea, seaRadiance } from '../src/render/far/farSea.ts';
 import { FAR_SINK } from '../src/render/far/farTerrainMesher.ts';
-import { beaconPixels, LandmarkBeacons } from '../src/render/far/landmarkBeacons.ts';
+import { beaconPixels, LandmarkBeacons, NEEDLE_FROM } from '../src/render/far/landmarkBeacons.ts';
+import { SPINDLE_CROWN, SPINDLE_HEIGHT_VOXELS, spindleRadius } from '../src/render/models/cityModels.ts';
 import { runPlan } from '../src/render/far/sceneRaster.ts';
 import { createAmbienceLight, lightAmbience } from '../src/render/sceneLook.ts';
 import { createBlendedAmbience } from '../src/render/world/ambienceBlend.ts';
@@ -121,5 +122,34 @@ test('the tallest landmarks, the Spindle among them, get beacons that grow with 
   assert.ok(beaconPixels(1000) <= 30);
   const beacons = new LandmarkBeacons(landmarks);
   assert.equal(beacons.points.geometry.getAttribute('size').count, landmarks.length);
+  beacons.dispose();
+});
+
+test('the Spindle is a needle whose tip stands about eighty units up, drawn in the far view inside its own outline', () => {
+  const overworld = GAME_CONTENT.levels.get('overworld');
+  assert.ok(overworld);
+  const landmarks = runPlan(planLandmarks(overworld, GAME_CONTENT, overworld.scene));
+  const needles = landmarks.filter((landmark) => landmark.height >= NEEDLE_FROM);
+  assert.equal(needles.length, 1);
+  const spindle = needles[0] as Landmark;
+  const placement = overworld.objects.find((object) => object.objectId === 'spindle-light');
+  assert.ok(placement);
+  assert.ok(Math.abs(spindle.x - placement.position.x) < 3 && Math.abs(spindle.z - placement.position.y) < 3);
+  assert.ok(spindle.y >= 78 && spindle.y <= 100, String(spindle.y));
+  assert.ok(landmarks.every((landmark) => landmark === spindle || landmark.y < spindle.y / 2));
+  const beacons = new LandmarkBeacons(landmarks);
+  assert.ok(beacons.needles);
+  assert.equal(beacons.needles.parent, beacons.points);
+  const positions = beacons.needles.geometry.getAttribute('position');
+  const box = new Box3().setFromBufferAttribute(positions as never);
+  assert.ok(box.max.y < spindle.y && box.max.y > spindle.y - 3, String(box.max.y));
+  const unit = spindle.height / SPINDLE_HEIGHT_VOXELS;
+  const foot = spindle.y - spindle.height;
+  for (let index = 0; index < positions.count; index++) {
+    const voxel = Math.round((positions.getY(index) - foot) / unit);
+    const reach = Math.hypot(positions.getX(index) - spindle.x, positions.getZ(index) - spindle.z) / unit;
+    const outline = voxel > SPINDLE_CROWN ? 1.4 : spindleRadius(voxel) - 0.71;
+    assert.ok(reach < outline, `${voxel}: ${reach} over ${outline}`);
+  }
   beacons.dispose();
 });
