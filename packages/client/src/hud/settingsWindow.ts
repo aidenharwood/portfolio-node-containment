@@ -20,6 +20,8 @@ import {
   UI_SCALE_MAX,
   UI_SCALE_MIN,
   UI_SCALE_STEP,
+  VIEW_DISTANCE_LABELS,
+  VIEW_DISTANCES,
   WEATHER_LABELS,
   WEATHER_LEVELS,
   type GameSettings,
@@ -151,6 +153,7 @@ export class SettingsWindow {
     const customButton = preset.element.lastElementChild;
     if (customButton instanceof HTMLButtonElement) customButton.disabled = true;
     const renderScale = choiceRow('Resolution', RENDER_SCALES, RENDER_SCALE_LABELS, (value) => store.update({ renderScale: value }));
+    const viewDistance = choiceRow('View distance', VIEW_DISTANCES, VIEW_DISTANCE_LABELS, (value) => store.update({ viewDistance: value }));
     const antialiasing = choiceRow('Anti-aliasing', ANTIALIASING_MODES, ANTIALIASING_LABELS, (value) => store.update({ antialiasing: value }));
     const frameCap = choiceRow('Frame rate', FRAME_CAPS, FRAME_CAP_LABELS, (value) => store.update({ frameCap: value }));
     const shadows = choiceRow('Shadows', SHADOW_QUALITIES, SHADOW_LABELS, (value) => store.update({ shadows: value }));
@@ -180,6 +183,7 @@ export class SettingsWindow {
         ),
         group('Display',
           row('Resolution', 'How many pixels the 3D view draws. Native is sharpest; Performance is fastest.', renderScale.element, true),
+          row('View distance', 'How far the land runs before it fades into the sky. Extreme reaches furthest but costs the most.', viewDistance.element, true),
           row('Anti-aliasing', 'Smooths jagged block edges. Auto picks a level from your resolution.', antialiasing.element, true),
           row('Frame rate', 'Caps how often the view redraws to save power and heat.', frameCap.element, true),
         ),
@@ -217,6 +221,7 @@ export class SettingsWindow {
     this.unsubscribe = store.subscribe((settings: GameSettings) => {
       preset.sync(presetOf(settings));
       renderScale.sync(settings.renderScale);
+      viewDistance.sync(settings.viewDistance);
       antialiasing.sync(settings.antialiasing);
       frameCap.sync(settings.frameCap);
       shadows.sync(settings.shadows);

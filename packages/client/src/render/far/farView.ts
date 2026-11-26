@@ -1,6 +1,6 @@
 import { CHUNK_SIZE, type ChunkCoord, type ResolvedLevel, type SceneLayout, type ZoneAmbience } from '@containment/shared';
 import { BufferAttribute, BufferGeometry, Color, Group, Mesh, Sphere, Vector3, type ShaderMaterial } from 'three';
-import type { GameSettings, RenderScale } from '../../state/gameSettings.ts';
+import { viewReachFor, type GameSettings } from '../../state/gameSettings.ts';
 import { createAmbienceLight, lightAmbience, type AmbienceLight } from '../sceneLook.ts';
 import { createBlendedAmbience, type BlendedAmbience } from '../world/ambienceBlend.ts';
 import type { FarBuild } from './farBuild.ts';
@@ -11,8 +11,7 @@ import { FarSea } from './farSea.ts';
 import type { FarTileArrays } from './farTerrainMesher.ts';
 import { LandmarkBeacons } from './landmarkBeacons.ts';
 
-export const FAR_REACHES: Readonly<Record<RenderScale, number>> = { performance: 600, balanced: 900, sharp: 1300, native: 1600 };
-export const farReachFor = (settings: Pick<GameSettings, 'renderScale'>): number => FAR_REACHES[settings.renderScale];
+export const farReachFor = (settings: Pick<GameSettings, 'viewDistance'>): number => viewReachFor(settings.viewDistance);
 
 export function blendedOf(ambience: ZoneAmbience, into: BlendedAmbience = createBlendedAmbience()): BlendedAmbience {
   into.darkness = ambience.darkness;

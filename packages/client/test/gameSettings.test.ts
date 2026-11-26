@@ -11,6 +11,8 @@ import {
   presetOf,
   samplesFor,
   shadowMapSizeFor,
+  VIEW_DISTANCES,
+  viewReachFor,
 } from '../src/state/gameSettings.ts';
 
 test('stored settings fall back to defaults for anything missing or malformed', () => {
@@ -69,6 +71,20 @@ test('presets are recognised until any graphics option departs from them', () =>
   assert.equal(presetOf({ ...DEFAULT_SETTINGS, ...PRESET_SETTINGS.low }), 'low');
   assert.equal(presetOf({ ...DEFAULT_SETTINGS, grain: false }), 'custom');
   assert.equal(presetOf({ ...DEFAULT_SETTINGS, brightness: 1.2, fpsCounter: true }), 'high');
+});
+
+test('each preset reaches further, and older settings keep the reach their resolution gave them', () => {
+  assert.deepEqual(
+    (['low', 'medium', 'high', 'ultra'] as const).map((preset) => PRESET_SETTINGS[preset].viewDistance),
+    VIEW_DISTANCES,
+  );
+  assert.deepEqual(VIEW_DISTANCES.map(viewReachFor), [600, 900, 1300, 1600]);
+  assert.equal(DEFAULT_SETTINGS.viewDistance, 'vast');
+  assert.equal(normalizeSettings({ viewDistance: 'extreme' }).viewDistance, 'extreme');
+  assert.equal(normalizeSettings({ viewDistance: 'endless' }).viewDistance, 'vast');
+  assert.equal(normalizeSettings({ renderScale: 'native' }).viewDistance, 'extreme');
+  assert.equal(normalizeSettings({ renderScale: 'performance', viewDistance: 'vast' }).viewDistance, 'vast');
+  assert.equal(presetOf({ ...DEFAULT_SETTINGS, viewDistance: 'near' }), 'custom');
 });
 
 test('frame caps turn into a minimum interval between frames', () => {
