@@ -15,6 +15,8 @@ const NEON_RUN = 6;
 const NEON_SHARE = 0.35;
 const NEON_ROWS = 2;
 const LIT_SHARE = 0.4;
+const DARK_STOREYS = 0.16;
+const LIT_FADE = 0.05;
 
 export const SIDE_SALT: Readonly<Record<Side, number>> = { north: 1, south: 2, east: 3, west: 4 };
 
@@ -25,7 +27,6 @@ export const TOWER_FACE = {
   sill: 0x767b7e,
   mullion: 0x23292e,
   glass: 0x131a21,
-  glassBlue: 0x1b2833,
 } as const;
 
 export const WALL_FACE = {
@@ -76,16 +77,13 @@ export const facadeStyleOf = (kind: TileKindId): number => (isBuildingWall(kind)
 export const materialOfStyle = (style: number): WallMaterialId | null => WALL_MATERIALS[style - 1] ?? null;
 export const towerBlock = (tx: number, ty: number): number => (Math.floor(tx / BLOCK_TILES) * 31 + Math.floor(ty / BLOCK_TILES) * 17) % 997;
 
-function towerSpandrel(material: WallMaterialId, along: number, vy: number): FacadeVoxel {
-  const palette = WALL_PALETTE[material];
-  if (material === 'cladding') return solid(wrap(along, 2) === 0 ? palette.joint : palette.body);
-  if (material === 'blockwork') return solid(vy % 3 === 0 || (along + (Math.floor(vy / 3) % 2) * 2) % 4 === 0 ? palette.joint : palette.body);
-  return solid(palette.body);
+export function towerShare(storey: number, block: number, salt: number): number {
+  if (noise3(storey, block, salt, 731) < DARK_STOREYS) return 0;
+  return (0.15 + 0.6 * noise3(storey, block, salt, 733)) / (1 + LIT_FADE * Math.max(0, -storey));
 }
 
 export function towerFacade(material: WallMaterialId, side: Side, along: number, vy: number, street: number, top: number, block: number): FacadeVoxel {
   const salt = SIDE_SALT[side];
-  if (vy >= top) return solid(WALL_PALETTE[material].cap);
   const above = vy - street - FLOOR_LAYERS;
   if (above < 2) return solid(TOWER_FACE.plinth);
   if (above < FACADE_GROUND_FLOOR) {
@@ -99,15 +97,13 @@ export function towerFacade(material: WallMaterialId, side: Side, along: number,
   }
   const level = top - 1 - vy;
   const storey = Math.floor(level / FACADE_STOREY);
-  const row = level % FACADE_STOREY;
-  if (row === 0 || row >= 6) return towerSpandrel(material, along, vy);
+  const row = level - storey * FACADE_STOREY;
+  if (row === 0 || row >= 6) return solid(WALL_PALETTE[material].body);
   if (row === 5) return solid(TOWER_FACE.sill);
   if (wrap(along, FACADE_PANE) === 0) return solid(TOWER_FACE.mullion);
   const pane = Math.floor(along / FACADE_PANE);
-  const share = 0.15 + 0.6 * noise3(storey, block, salt, 733);
-  if (noise3(pane, storey, block + salt, 739) >= share) return solid(row === 1 ? TOWER_FACE.glassBlue : TOWER_FACE.glass);
-  const glow = pick(TOWER_GLOWS, noise3(pane, storey, block + salt, 743));
-  return glowing(row === 1 ? dim(glow, 0.3) : glow);
+  if (noise3(pane, storey, block + salt, 739) >= towerShare(storey, block, salt)) return solid(TOWER_FACE.glass);
+  return glowing(pick(TOWER_GLOWS, noise3(pane, storey, block + salt, 743)));
 }
 
 export function windowGlow(material: WallMaterialId, tx: number, ty: number, side: Side): number | null {
@@ -178,7 +174,6 @@ const vec3 TOWER_FASCIA = ${linear(TOWER_FACE.fascia)};
 const vec3 TOWER_SILL = ${linear(TOWER_FACE.sill)};
 const vec3 TOWER_MULLION = ${linear(TOWER_FACE.mullion)};
 const vec3 TOWER_GLASS = ${linear(TOWER_FACE.glass)};
-const vec3 TOWER_GLASS_BLUE = ${linear(TOWER_FACE.glassBlue)};
 const vec3 WALL_DARK_WINDOW = ${linear(WALL_FACE.darkWindow)};
 const vec3 WALL_SILL = ${linear(WALL_FACE.sill)};
 const vec3 WALL_SLIT = ${linear(WALL_FACE.slit)};
@@ -210,18 +205,14 @@ FacadeLook facadeSolid( vec3 color ) {
 FacadeLook facadeGlowing( vec3 color ) {
 	return FacadeLook( vec3( 0.0 ), color, 1.0 );
 }
-vec3 towerSpandrel( int material, int along, int vy ) {
-	if ( material == 3 ) return facadeWrap( along, 2 ) == 0 ? FACADE_JOINT[ 3 ] : FACADE_BODY[ 3 ];
-	if ( material == 2 ) return facadeWrap( vy, 3 ) == 0 || facadeWrap( along + facadeWrap( vy / 3, 2 ) * 2, 4 ) == 0 ? FACADE_JOINT[ 2 ] : FACADE_BODY[ 2 ];
-	return FACADE_BODY[ material ];
+float towerShare( int storey, int block, int salt ) {
+	if ( facadeNoise( storey, block, salt, 731 ) < ${DARK_STOREYS.toFixed(2)} ) return 0.0;
+	return ( 0.15 + 0.6 * facadeNoise( storey, block, salt, 733 ) ) / ( 1.0 + ${LIT_FADE.toFixed(3)} * float( max( 0, - storey ) ) );
 }
-vec3 towerSpandrelMean( int material ) {
-	if ( material == 3 ) return 0.5 * ( FACADE_JOINT[ 3 ] + FACADE_BODY[ 3 ] );
-	if ( material == 2 ) return mix( FACADE_BODY[ 2 ], FACADE_JOINT[ 2 ], 0.5 );
-	return FACADE_BODY[ material ];
+int towerStorey( int level ) {
+	return int( floor( float( level ) / ${FACADE_STOREY}.0 ) );
 }
 FacadeLook towerVoxel( int material, int salt, int along, int vy, int street, int top, int block ) {
-	if ( vy >= top ) return facadeSolid( FACADE_CAP[ material ] );
 	int above = vy - street;
 	if ( above < 2 ) return facadeSolid( TOWER_PLINTH );
 	if ( above < ${FACADE_GROUND_FLOOR} ) {
@@ -237,16 +228,14 @@ FacadeLook towerVoxel( int material, int salt, int along, int vy, int street, in
 		return facadeGlowing( above == ${FACADE_GROUND_FLOOR - 3} ? TOWER_GLOWS_DIM[ glow ] : TOWER_GLOWS[ glow ] );
 	}
 	int level = top - 1 - vy;
-	int storey = level / ${FACADE_STOREY};
+	int storey = towerStorey( level );
 	int row = level - storey * ${FACADE_STOREY};
-	if ( row == 0 || row >= 6 ) return facadeSolid( towerSpandrel( material, along, vy ) );
+	if ( row == 0 || row >= 6 ) return facadeSolid( FACADE_BODY[ material ] );
 	if ( row == 5 ) return facadeSolid( TOWER_SILL );
 	if ( facadeWrap( along, ${FACADE_PANE} ) == 0 ) return facadeSolid( TOWER_MULLION );
 	int pane = along / ${FACADE_PANE};
-	float share = 0.15 + 0.6 * facadeNoise( storey, block, salt, 733 );
-	if ( facadeNoise( pane, storey, block + salt, 739 ) >= share ) return facadeSolid( row == 1 ? TOWER_GLASS_BLUE : TOWER_GLASS );
-	int glow = facadePick( facadeNoise( pane, storey, block + salt, 743 ), ${TOWER_GLOWS.length} );
-	return facadeGlowing( row == 1 ? TOWER_GLOWS_DIM[ glow ] : TOWER_GLOWS[ glow ] );
+	if ( facadeNoise( pane, storey, block + salt, 739 ) >= towerShare( storey, block, salt ) ) return facadeSolid( TOWER_GLASS );
+	return facadeGlowing( TOWER_GLOWS[ facadePick( facadeNoise( pane, storey, block + salt, 743 ), ${TOWER_GLOWS.length} ) ] );
 }
 FacadeLook towerShopCell( int material, float lit, vec3 glow, float sign, vec3 signGlow ) {
 	vec3 body = ( 2.0 * 8.0 * TOWER_PLINTH + 7.0 * TOWER_SILL + 8.0 * TOWER_MULLION + 49.0 * ( 1.0 - lit ) * TOWER_SHOP + 16.0 * ( 1.0 - sign ) * TOWER_FASCIA ) / max( 1.0, 16.0 + 7.0 + 8.0 + 49.0 * ( 1.0 - lit ) + 16.0 * ( 1.0 - sign ) );
@@ -255,13 +244,10 @@ FacadeLook towerShopCell( int material, float lit, vec3 glow, float sign, vec3 s
 	return FacadeLook( body, light, cover );
 }
 FacadeLook towerStoreyCell( int material, float lit, vec3 glow ) {
-	vec3 spandrel = towerSpandrelMean( material );
-	vec3 glass = 0.25 * TOWER_GLASS_BLUE + 0.75 * TOWER_GLASS;
-	vec3 body = ( 12.0 * spandrel + 4.0 * TOWER_SILL + 4.0 * TOWER_MULLION + 12.0 * ( 1.0 - lit ) * glass ) / ( 20.0 + 12.0 * ( 1.0 - lit ) );
+	vec3 body = ( 12.0 * FACADE_BODY[ material ] + 4.0 * TOWER_SILL + 4.0 * TOWER_MULLION + 12.0 * ( 1.0 - lit ) * TOWER_GLASS ) / ( 20.0 + 12.0 * ( 1.0 - lit ) );
 	return FacadeLook( body, glow, 12.0 * lit / 32.0 );
 }
 FacadeLook towerCell( int material, int salt, int along, int vy, int street, int top, int block ) {
-	if ( vy >= top ) return facadeSolid( FACADE_CAP[ material ] );
 	int above = vy - street;
 	if ( above < ${FACADE_GROUND_FLOOR} ) {
 		int bay = along / ${R};
@@ -271,19 +257,14 @@ FacadeLook towerCell( int material, int salt, int along, int vy, int street, int
 		vec3 shop = ( TOWER_GLOWS_DIM[ glow ] + 6.0 * TOWER_GLOWS[ glow ] ) / 7.0;
 		return towerShopCell( material, lit, shop, sign, TOWER_SIGNS[ facadePick( facadeNoise( bay, block, salt, 721 ), ${TOWER_SIGNS.length} ) ] );
 	}
-	int level = top - 1 - vy;
-	int storey = level / ${FACADE_STOREY};
+	int storey = towerStorey( top - 1 - vy );
 	int pane = along / ${FACADE_PANE};
-	float share = 0.15 + 0.6 * facadeNoise( storey, block, salt, 733 );
-	float lit = facadeNoise( pane, storey, block + salt, 739 ) >= share ? 0.0 : 1.0;
-	int glow = facadePick( facadeNoise( pane, storey, block + salt, 743 ), ${TOWER_GLOWS.length} );
-	return towerStoreyCell( material, lit, 0.25 * TOWER_GLOWS_DIM[ glow ] + 0.75 * TOWER_GLOWS[ glow ] );
+	float lit = facadeNoise( pane, storey, block + salt, 739 ) >= towerShare( storey, block, salt ) ? 0.0 : 1.0;
+	return towerStoreyCell( material, lit, TOWER_GLOWS[ facadePick( facadeNoise( pane, storey, block + salt, 743 ), ${TOWER_GLOWS.length} ) ] );
 }
 FacadeLook towerMean( int material, int salt, int vy, int street, int top, int block ) {
-	if ( vy >= top ) return facadeSolid( FACADE_CAP[ material ] );
 	if ( vy - street < ${FACADE_GROUND_FLOOR} ) return towerShopCell( material, 0.5, TOWER_GLOW_MEAN, 0.3, TOWER_SIGN_MEAN );
-	int storey = ( top - 1 - vy ) / ${FACADE_STOREY};
-	return towerStoreyCell( material, 0.15 + 0.6 * facadeNoise( storey, block, salt, 733 ), TOWER_GLOW_MEAN * 0.92 );
+	return towerStoreyCell( material, towerShare( towerStorey( top - 1 - vy ), block, salt ), TOWER_GLOW_MEAN );
 }
 vec3 wallBody( int material, int h, int u ) {
 	if ( material == 0 ) {

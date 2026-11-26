@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import { type TileKindId, type WallMaterialId } from '@containment/shared';
 import { rooflineGlow, towerBlock, towerFacade, wallFacade, windowGlow, type FacadeVoxel } from '../src/render/far/facadePattern.ts';
 import { buildChunkPlaceholder } from '../src/render/world/chunkPlaceholder.ts';
-import { buildTileVolume, litWindowGlow, rooflineNeonGlow, type OwnedLayout, type Side } from '../src/render/world/levelVoxels.ts';
+import { buildTileVolume, litWindowGlow, rooflineNeonGlow, towerFace, type OwnedLayout, type Side } from '../src/render/world/levelVoxels.ts';
 import { TILE_RESOLUTION } from '../src/render/world/worldScale.ts';
 import { VOXEL_EMISSIVE, VOXEL_EMPTY } from '../src/render/voxel/voxelKinds.ts';
 import type { DenseVolume } from '../src/render/voxel/denseVolume.ts';
@@ -100,6 +100,28 @@ for (const material of ['cladding', 'brick', 'wall'] as const) {
     assert.ok(features > 40);
   });
 }
+
+test('the tower facade mirror matches the near tower face all the way up a tall shell', () => {
+  let lit = 0;
+  let compared = 0;
+  for (const material of ['cladding', 'blockwork', 'brick', 'wall'] as const) {
+    for (const side of ['north', 'south', 'east', 'west'] as const) {
+      for (const [street, top, block] of [[8, 41, 523], [20, 57, 17], [4, 37, 996]] as const) {
+        for (let along = 296; along < 336; along++) {
+          for (let vy = street; vy < top + 280; vy += 3) {
+            const near = towerFace(material, side, along, vy, street, top, block);
+            const mirror = towerFacade(material, side, along, vy, street, top, block);
+            assert.equal(mirror.color, near.color, `${material} ${side} at along ${along}, height ${vy}`);
+            assert.equal(mirror.emissive, near.kind === VOXEL_EMISSIVE);
+            compared++;
+            if (mirror.emissive) lit++;
+          }
+        }
+      }
+    }
+  }
+  assert.ok(lit > compared * 0.04 && lit < compared * 0.4, `${lit} of ${compared} lit`);
+});
 
 test('the window and roofline glows agree with the near painter everywhere', () => {
   for (const material of ['cladding', 'blockwork', 'brick', 'wall'] as const) {
