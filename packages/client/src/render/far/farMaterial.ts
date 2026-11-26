@@ -1,7 +1,7 @@
 import { CHUNK_SIZE } from '@containment/shared';
 import { Color, DataTexture, NearestFilter, RedFormat, ShaderMaterial, UnsignedByteType, Vector2, Vector3 } from 'three';
 import { AIR_PARS, airUniforms } from '../sky/air.ts';
-import { KEY_LIGHT_OFFSET } from '../voxel/fieldLights.ts';
+import { FIELD_GRID_REACH, KEY_LIGHT_OFFSET } from '../voxel/fieldLights.ts';
 import { TILE_RESOLUTION } from '../world/worldScale.ts';
 import { FACADE_GLSL } from './facadePattern.ts';
 
@@ -79,6 +79,10 @@ const sharedUniforms = (mask: ChunkMask) => ({
   moodSky: { value: Array.from({ length: FAR_MOODS }, () => new Color()) },
   moodGround: { value: Array.from({ length: FAR_MOODS }, () => new Color()) },
   moodKey: { value: Array.from({ length: FAR_MOODS }, () => new Color()) },
+  moodNight: { value: Array.from({ length: FAR_MOODS }, () => 0) },
+  nearNight: { value: 0 },
+  farLightEdge: { value: FIELD_GRID_REACH },
+  farLightGrid: { value: FIELD_GRID_REACH },
 });
 
 export type FarUniforms = ReturnType<typeof sharedUniforms>;

@@ -1,12 +1,13 @@
 import { CHUNK_SIZE, type ChunkCoord, type ResolvedLevel, type SceneLayout, type ZoneAmbience } from '@containment/shared';
 import { BufferAttribute, BufferGeometry, Color, Group, Mesh, Sphere, Vector3, type ShaderMaterial } from 'three';
 import { viewReachFor, type GameSettings } from '../../state/gameSettings.ts';
-import { createAmbienceLight, lightAmbience, type AmbienceLight } from '../sceneLook.ts';
+import { createAmbienceLight, lightAmbience, nightOf, type AmbienceLight } from '../sceneLook.ts';
 import { createBlendedAmbience, type BlendedAmbience } from '../world/ambienceBlend.ts';
 import type { FarBuild } from './farBuild.ts';
 import { farBuildFor, landmarksFor } from './farJobs.ts';
 import { createChunkMask, createFarUniforms, FAR_MOODS, farTerrainMaterial, shareFarUniforms, type ChunkMask, type FarUniforms } from './farMaterial.ts';
 import type { Landmark } from './farLandmarks.ts';
+import { FAR_LIGHT_EDGE_LIMIT, FarLights } from './farLights.ts';
 import { FarProps } from './farProps.ts';
 import { FarSea } from './farSea.ts';
 import type { FarTileArrays } from './farTerrainMesher.ts';
@@ -71,6 +72,7 @@ export interface FarFrame {
   readonly ambience: BlendedAmbience;
   readonly drawn: readonly ChunkCoord[];
   readonly pixelRatio?: number;
+  readonly lightEdge?: number;
 }
 
 export class FarView {
@@ -82,6 +84,7 @@ export class FarView {
   private readonly sea: FarSea;
   private beacons: LandmarkBeacons | null = null;
   private props: FarProps | null = null;
+  private lights: FarLights | null = null;
   private reach = 0;
   private readonly light = createAmbienceLight();
   private maskKey = '';
@@ -129,8 +132,13 @@ export class FarView {
       this.meshes.push(mesh);
       this.root.add(mesh);
     }
+    build.moods.slice(0, FAR_MOODS).forEach((ambience, index) => {
+      this.uniforms.moodNight.value[index] = nightOf(ambience.darkness);
+    });
     this.props = new FarProps(build.props, this.uniforms);
     for (const mesh of this.props.meshes) this.root.add(mesh);
+    this.lights = new FarLights(build.lights, this.uniforms);
+    this.root.add(this.lights.pools, this.lights.heads);
     this.built = true;
   }
 
@@ -142,6 +150,8 @@ export class FarView {
 
   update(frame: FarFrame): void {
     this.uniforms.farFocus.value.copy(frame.focus);
+    this.uniforms.farLightEdge.value = Math.min(frame.lightEdge ?? Infinity, FAR_LIGHT_EDGE_LIMIT);
+    this.uniforms.nearNight.value = nightOf(frame.ambience.darkness);
     lightColors(lightAmbience(frame.ambience, this.light), this.uniforms.nearSky.value, this.uniforms.nearGround.value, this.uniforms.nearKey.value);
     this.sea.update(frame.camera, this.reach);
     this.beacons?.update(frame.focus, frame.pixelRatio ?? 1);
@@ -162,6 +172,7 @@ export class FarView {
     this.sea.dispose();
     this.beacons?.dispose();
     this.props?.dispose();
+    this.lights?.dispose();
     this.mask.texture.dispose();
   }
 }

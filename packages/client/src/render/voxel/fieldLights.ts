@@ -7,6 +7,7 @@ const GRID_CELL = 2;
 const GRID_CELLS = 64;
 const CELL_TEXELS = 4;
 export const FIELD_LIGHTS_PER_CELL = CELL_TEXELS * 4;
+export const FIELD_GRID_REACH = (GRID_CELLS * GRID_CELL) / 2;
 const EMPTY_SLOT = 255;
 const LIT_KNEE = 0.5;
 const LIT_CEILING = 0.85;
