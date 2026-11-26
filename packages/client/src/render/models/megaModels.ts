@@ -132,10 +132,32 @@ const siphonPipe = (): ObjectModelParts => {
   return parts(model, PIPE_Y + PIPE_RADIUS + 10);
 };
 
-const rustPaint: Paint = (x, y, z) => {
-  const wear = noise3(x, y, z, 47);
-  return wear > 0.9 ? MEGA.bareSteel : wear > 0.7 ? MEGA.rustBright : jitter(wear < 0.2 ? MEGA.rustDark : MEGA.rust, 0.05, noise3(x, y, z, 53));
-};
+const fade = (t: number): number => t * t * (3 - 2 * t);
+
+function smoothNoise3(x: number, y: number, z: number, scale: number, salt: number): number {
+  const gx = Math.floor(x / scale);
+  const gy = Math.floor(y / scale);
+  const gz = Math.floor(z / scale);
+  const fx = fade(x / scale - gx);
+  const fy = fade(y / scale - gy);
+  const fz = fade(z / scale - gz);
+  let total = 0;
+  for (let corner = 0; corner < 8; corner++) {
+    const dx = corner & 1;
+    const dy = (corner >> 1) & 1;
+    const dz = (corner >> 2) & 1;
+    total += noise3(gx + dx, gy + dy, gz + dz, salt) * (dx ? fx : 1 - fx) * (dy ? fy : 1 - fy) * (dz ? fz : 1 - fz);
+  }
+  return total;
+}
+
+export function rustToneAt(x: number, y: number, z: number): number {
+  const wear = smoothNoise3(x, y * 0.4, z, 12, 47);
+  if (wear > 0.8) return MEGA.bareSteel;
+  return wear > 0.64 ? MEGA.rustBright : wear < 0.38 ? MEGA.rustDark : MEGA.rust;
+}
+
+const rustPaint: Paint = (x, y, z) => jitter(rustToneAt(x, y, z), 0.02, noise3(x, y, z, 53));
 
 const ribFoot = (): ObjectModelParts => {
   const model = new VoxelModel().fill(-6, -DROP, -5, 5, 4, 4, rustPaint);
