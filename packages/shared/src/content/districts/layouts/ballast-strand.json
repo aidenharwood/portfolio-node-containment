@@ -42,6 +42,8 @@
     { "id": "ballast-strand-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 27, "dy": 50 }, "facing": "east" },
     { "id": "ballast-strand-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 36, "dy": 50 }, "facing": "west" },
     { "id": "ballast-strand-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 34, "dy": 53 }, "facing": "north" },
+    { "id": "ballast-strand-d0", "object": "cargo-container", "at": { "room": "ground", "dx": 20, "dy": 48 }, "facing": "east" },
+    { "id": "ballast-strand-d1", "object": "barricade", "at": { "room": "ground", "dx": 23, "dy": 48 }, "facing": "east" },
     { "id": "ballast-strand-w0", "object": "scrap-mound", "at": { "room": "ground", "dx": 37, "dy": 36 }, "facing": "east" },
     { "id": "ballast-strand-w1", "object": "scrap-mound", "at": { "room": "ground", "dx": 53, "dy": 24 } },
     { "id": "ballast-strand-w2", "object": "scrap-mound", "at": { "room": "ground", "dx": 55, "dy": 26 }, "facing": "north" },
@@ -106,7 +108,9 @@
     { "id": "ballast-hold-bilge-wraith-1", "creature": "bilge-wraith", "at": { "room": "ballast-hold", "dx": 9, "dy": 6 } }
   ],
   "lights": [],
-  "decals": [],
+  "decals": [
+    { "kind": "stencil", "pattern": "border", "at": { "room": "ground", "dx": 30, "dy": 50 }, "width": 4, "height": 2 }
+  ],
   "setPieces": [
     { "id": "ballast-strand-landmark", "prefab": "landmark-crater-light", "at": { "room": "ground", "dx": 44, "dy": 45 }, "facing": "south" }
   ],

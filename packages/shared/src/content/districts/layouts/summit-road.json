@@ -117,7 +117,9 @@
     { "id": "summit-toll-null-echo-1", "creature": "null-echo", "at": { "room": "summit-toll", "dx": 2, "dy": 5 } }
   ],
   "lights": [],
-  "decals": [],
+  "decals": [
+    { "kind": "stencil", "pattern": "border", "at": { "room": "ground", "dx": 36, "dy": 40 }, "width": 4, "height": 2 }
+  ],
   "setPieces": [
     { "id": "summit-road-landmark", "prefab": "landmark-antenna-mast", "at": { "room": "ground", "dx": 39, "dy": 24 }, "facing": "south" }
   ],

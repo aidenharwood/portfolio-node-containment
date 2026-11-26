@@ -49,6 +49,7 @@
     { "id": "drill-field-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 46, "dy": 44 }, "facing": "west" },
     { "id": "drill-field-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 44, "dy": 47 }, "facing": "north" },
     { "id": "drill-field-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 50, "dy": 44 }, "facing": "east" },
+    { "id": "drill-field-d0", "object": "class-placard", "at": { "room": "ground", "dx": 39, "dy": 44 } },
     { "id": "drill-field-w0", "object": "broadleaf-tree", "at": { "room": "ground", "dx": 14, "dy": 16 } },
     { "id": "drill-field-w1", "object": "tall-grass", "at": { "room": "ground", "dx": 12, "dy": 17 }, "facing": "west" },
     { "id": "drill-field-w2", "object": "wildflowers", "at": { "room": "ground", "dx": 13, "dy": 17 } },

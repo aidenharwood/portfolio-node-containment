@@ -47,6 +47,7 @@
     { "id": "null-approach-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 24, "dy": 38 }, "facing": "east" },
     { "id": "null-approach-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 24, "dy": 30 }, "facing": "east" },
     { "id": "null-approach-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 27, "dy": 26 }, "facing": "north" },
+    { "id": "null-approach-d0", "object": "warning-sign", "at": { "room": "ground", "dx": 32, "dy": 39 } },
     { "id": "null-approach-w0", "object": "windbent-pine", "at": { "room": "ground", "dx": 53, "dy": 31 }, "facing": "east" },
     { "id": "null-approach-w1", "object": "windbent-pine", "at": { "room": "ground", "dx": 51, "dy": 29 }, "facing": "east" },
     { "id": "null-approach-w2", "object": "windbent-pine", "at": { "room": "ground", "dx": 56, "dy": 29 }, "facing": "east" },
@@ -132,7 +133,9 @@
     { "id": "approach-post-null-echo-1", "creature": "null-echo", "at": { "room": "approach-post", "dx": 2, "dy": 5 } }
   ],
   "lights": [],
-  "decals": [],
+  "decals": [
+    { "kind": "stencil", "pattern": "border", "at": { "room": "ground", "dx": 33, "dy": 39 }, "width": 4, "height": 2 }
+  ],
   "setPieces": [
     { "id": "null-approach-landmark", "prefab": "landmark-spindle-rim-light", "at": { "room": "ground", "dx": 34, "dy": 22 }, "facing": "south" }
   ],

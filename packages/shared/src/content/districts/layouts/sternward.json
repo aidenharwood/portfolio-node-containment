@@ -44,6 +44,8 @@
     { "id": "sternward-poi-wreck-salvage-cage-0", "object": "wreck-salvage-cage", "at": { "room": "ground", "dx": 22, "dy": 47 } },
     { "id": "sternward-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 21, "dy": 40 }, "facing": "east" },
     { "id": "sternward-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 30, "dy": 40 }, "facing": "west" },
+    { "id": "sternward-d0", "object": "cargo-container", "at": { "room": "ground", "dx": 52, "dy": 50 }, "facing": "east" },
+    { "id": "sternward-d1", "object": "containment-crate", "at": { "room": "ground", "dx": 55, "dy": 50 }, "facing": "east" },
     { "id": "sternward-w0", "object": "scrap-mound", "at": { "room": "ground", "dx": 15, "dy": 33 }, "facing": "west" },
     { "id": "sternward-w1", "object": "wrecked-panel", "at": { "room": "ground", "dx": 49, "dy": 8 } },
     { "id": "sternward-w2", "object": "wrecked-panel", "at": { "room": "ground", "dx": 47, "dy": 7 }, "facing": "west" },

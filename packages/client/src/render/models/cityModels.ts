@@ -7,9 +7,12 @@ import type { AnimatedPart, ObjectModelParts } from './objectModels.ts';
 import type { MegaModel } from './megaModels.ts';
 import type { NatureModel } from './natureModels.ts';
 import type { TransitModel } from './transitModels.ts';
+import type { StreetModel } from './streetModels.ts';
+import type { ContainmentModel } from './containmentModels.ts';
+import { glyphInterior, glyphOutline, SYMBOLS, textCells, textWidth, type Glyph } from './glyphs.ts';
 import { MODEL_VOXEL_SIZE } from '../world/worldScale.ts';
 
-type CityModel = Exclude<WorldObjectModel, 'placeholder' | TransitModel | MegaModel | NatureModel>;
+type CityModel = Exclude<WorldObjectModel, 'placeholder' | TransitModel | MegaModel | NatureModel | StreetModel | ContainmentModel>;
 type Builder = (seed: number) => ObjectModelParts;
 
 export const CITY = {
@@ -42,13 +45,13 @@ export const CITY = {
 
 export const NEON = [0xff4fa8, 0x4fe3ff, 0xb6ff4f, 0xffb35a] as const;
 
-const grain = (color: number, amount = 0.03, salt = 0): Paint => (x, y, z) => jitter(color, amount, noise3(x, y, z, salt));
+export const grain = (color: number, amount = 0.03, salt = 0): Paint => (x, y, z) => jitter(color, amount, noise3(x, y, z, salt));
 
-const pick = <T>(options: readonly T[], seed: number, salt = 0): T => options[Math.floor(noise3(seed, salt, 11, 17) * options.length) % options.length] as T;
+export const pick = <T>(options: readonly T[], seed: number, salt = 0): T => options[Math.floor(noise3(seed, salt, 11, 17) * options.length) % options.length] as T;
 
-const parts = (base: VoxelModel, heightVoxels: number, animated: AnimatedPart[] = []): ObjectModelParts => ({ base, animated, heightVoxels });
+export const parts = (base: VoxelModel, heightVoxels: number, animated: AnimatedPart[] = []): ObjectModelParts => ({ base, animated, heightVoxels });
 
-function cylinder(model: VoxelModel, cx: number, cz: number, radius: number, y0: number, y1: number, paint: Paint, kind?: VoxelKind): VoxelModel {
+export function cylinder(model: VoxelModel, cx: number, cz: number, radius: number, y0: number, y1: number, paint: Paint, kind?: VoxelKind): VoxelModel {
   const reach = Math.ceil(radius);
   for (let x = cx - reach; x <= cx + reach; x++) {
     for (let z = cz - reach; z <= cz + reach; z++) {
@@ -74,7 +77,7 @@ function blob(model: VoxelModel, cx: number, cy: number, cz: number, radius: num
   return model;
 }
 
-function ringAt(model: VoxelModel, cx: number, cz: number, radius: number, thickness: number, y: number, color: number, kind?: VoxelKind): VoxelModel {
+export function ringAt(model: VoxelModel, cx: number, cz: number, radius: number, thickness: number, y: number, color: number, kind?: VoxelKind): VoxelModel {
   const reach = Math.ceil(radius);
   for (let x = cx - reach; x <= cx + reach; x++) {
     for (let z = cz - reach; z <= cz + reach; z++) {
@@ -85,11 +88,11 @@ function ringAt(model: VoxelModel, cx: number, cz: number, radius: number, thick
   return model;
 }
 
-const blink = (rate: number, phase = 0) => (part: Object3D, time: number, seed: number) => {
+export const blink = (rate: number, phase = 0) => (part: Object3D, time: number, seed: number) => {
   part.visible = Math.sin(time * rate + phase + seed) > -0.3;
 };
 
-const spin = (rate: number) => (part: Object3D, time: number, seed: number) => {
+export const spin = (rate: number) => (part: Object3D, time: number, seed: number) => {
   part.rotation.y = time * rate + seed;
 };
 
@@ -101,49 +104,87 @@ const turn = (pivotX: number, pivotY: number, rate: number) => (part: Object3D, 
   part.position.set(x - (x * Math.cos(angle) - y * Math.sin(angle)), y - (x * Math.sin(angle) + y * Math.cos(angle)), 0);
 };
 
-const flicker = (part: Object3D, time: number, seed: number) => {
+export const flicker = (part: Object3D, time: number, seed: number) => {
   const beat = Math.floor(time * 9 + seed * 3);
   part.visible = noise3(beat, seed, 0, 41) > 0.05;
 };
 
-const streetLamp: Builder = () => {
+const streetLamp: Builder = (seed) => {
+  const style = seed % 4;
+  const top = style === 3 ? 46 : 40;
+  const reach = style === 2 ? 7 : 4;
   const model = new VoxelModel()
     .fill(-2, 0, -2, 1, 1, 1, grain(CITY.darkSteel, 0.02))
     .fill(-2, 2, -2, 1, 2, 1, lighten(CITY.darkSteel, 0.25))
-    .fill(-1, 3, -1, 0, 40, 0, grain(CITY.graphite, 0.015))
+    .fill(-1, 3, -1, 0, top, 0, grain(CITY.graphite, 0.015))
     .fill(-1, 6, 1, 0, 9, 1, CITY.band)
-    .fill(-1, 22, 1, 0, 34, 1, CITY.cyan)
-    .fill(-1, 38, 1, 0, 40, 2, CITY.graphite)
-    .fill(-1, 40, 3, 0, 41, 6, CITY.graphite)
-    .fill(-2, 39, 7, 1, 41, 12, CITY.graphite)
-    .fill(-2, 38, 7, 1, 38, 12, CITY.led, VOXEL_EMISSIVE)
-    .fill(-2, 39, 13, 1, 40, 13, CITY.cyan, VOXEL_EMISSIVE);
-  return parts(model, 42);
+    .fill(-1, 22, 1, 0, 34, 1, CITY.cyan);
+  const head = (dir: 1 | -1): void => {
+    const z = (value: number): number => value * dir;
+    model.fill(-1, top - 2, z(1), 0, top, z(2), CITY.graphite);
+    model.fill(-1, top, z(3), 0, top + 1, z(2 + reach), CITY.graphite);
+    model.fill(-2, top - 1, z(3 + reach), 1, top + 1, z(8 + reach), CITY.graphite);
+    model.fill(-2, top - 2, z(3 + reach), 1, top - 2, z(8 + reach), CITY.led, VOXEL_EMISSIVE);
+    model.fill(-2, top - 1, z(9 + reach), 1, top, z(9 + reach), CITY.cyan, VOXEL_EMISSIVE);
+  };
+  head(1);
+  if (style === 1) head(-1);
+  if (seed >= 4) model.fill(-3, 0, -3, 2, 0, 2, darken(CITY.darkSteel, 0.2));
+  return parts(model, top + 2);
 };
 
-const pathLight: Builder = () => {
-  const model = new VoxelModel()
-    .fill(-2, 0, -2, 1, 1, 1, grain(CITY.darkSteel, 0.02))
-    .fill(-1, 2, -1, 0, 11, 0, grain(CITY.graphite, 0.015))
-    .fill(-2, 12, -2, 1, 13, 1, CITY.led, VOXEL_EMISSIVE)
-    .fill(-2, 14, -2, 1, 14, 1, CITY.graphite)
-    .fill(-1, 5, 1, 0, 6, 1, CITY.band);
-  return parts(model, 15);
+const pathLight: Builder = (seed) => {
+  const style = seed % 4;
+  const model = new VoxelModel().fill(-2, 0, -2, 1, 1, 1, grain(CITY.darkSteel, 0.02));
+  if (style === 3) {
+    model.fill(-3, 2, -1, -3, 13, 0, grain(CITY.graphite, 0.015)).fill(2, 2, -1, 2, 13, 0, grain(CITY.graphite, 0.015));
+    model.fill(-2, 10, -1, 1, 11, 0, CITY.led, VOXEL_EMISSIVE).fill(-3, 14, -1, 2, 14, 0, CITY.graphite).fill(-3, 5, -1, -3, 6, 0, CITY.band);
+    return parts(model, 15);
+  }
+  const top = style === 1 ? 15 : 11;
+  model.fill(-1, 2, -1, 0, top, 0, grain(CITY.graphite, 0.015)).fill(-1, 5, 1, 0, 6, 1, CITY.band);
+  model.fill(-2, top + 1, -2, 1, top + 2, 1, CITY.led, VOXEL_EMISSIVE);
+  if (style === 2) model.fill(-3, top + 3, -3, 2, top + 3, 2, CITY.graphite).fill(-2, top + 4, -2, 1, top + 4, 1, CITY.graphite);
+  else model.fill(-2, top + 3, -2, 1, top + 3, 1, CITY.graphite);
+  return parts(model, top + (style === 2 ? 5 : 4));
 };
 
-const bollard: Builder = () => {
-  const model = cylinder(new VoxelModel(), 0, 0, 2.2, 0, 8, grain(CITY.darkSteel, 0.02));
-  cylinder(model, 0, 0, 2.2, 6, 7, CITY.amber);
-  cylinder(model, 0, 0, 1.6, 9, 9, lighten(CITY.darkSteel, 0.2));
-  return parts(model, 10);
-};
-
-const streetBench: Builder = () => {
+const bollard: Builder = (seed) => {
+  const style = seed % 4;
   const model = new VoxelModel();
-  for (const x of [-6, 5]) model.fill(x, 0, -3, x, 6, 2, CITY.iron).fill(x, 7, -4, x, 14, -4, CITY.iron);
-  model.fill(-7, 6, -3, 6, 6, 3, (_x, _y, z) => (z % 2 === 0 ? CITY.composite : darken(CITY.composite, 0.2)));
-  model.fill(-7, 9, -5, 6, 13, -5, (_x, y) => (y % 2 === 0 ? CITY.composite : null));
-  model.fill(-6, 5, 3, 5, 5, 3, darken(0x4fe3ff, 0.45), VOXEL_EMISSIVE);
+  if (style === 1) {
+    model.fill(-2, 0, -2, 1, 8, 1, grain(CITY.darkSteel, 0.02)).fill(-2, 6, -2, 1, 7, 1, CITY.amber).fill(-2, 9, -2, 1, 9, 1, lighten(CITY.darkSteel, 0.2));
+    return parts(model, 10);
+  }
+  if (style === 2) {
+    cylinder(model, 0, 0, 2.6, 0, 3, grain(CITY.darkSteel, 0.02));
+    cylinder(model, 0, 0, 2, 4, 4, CITY.amber);
+    cylinder(model, 0, 0, 1.4, 5, 5, lighten(CITY.darkSteel, 0.2));
+    return parts(model, 6);
+  }
+  const top = style === 3 ? 11 : 8;
+  cylinder(model, 0, 0, style === 3 ? 1.6 : 2.2, 0, top, grain(CITY.darkSteel, 0.02));
+  cylinder(model, 0, 0, style === 3 ? 1.6 : 2.2, top - 2, top - 1, CITY.amber);
+  cylinder(model, 0, 0, 1.6, top + 1, top + 1, lighten(CITY.darkSteel, 0.2));
+  return parts(model, top + 2);
+};
+
+const streetBench: Builder = (seed) => {
+  const style = seed % 4;
+  const model = new VoxelModel();
+  const right = style === 3 ? 2 : 6;
+  for (const x of [-6, style === 3 ? 1 : 5]) model.fill(x, 0, -3, x, 6, 2, CITY.iron);
+  model.fill(-7, 6, -3, right, 6, 3, (_x, _y, z) => (z % 2 === 0 ? CITY.composite : darken(CITY.composite, 0.2)));
+  if (style !== 1) {
+    for (const x of [-6, style === 3 ? 1 : 5]) model.fill(x, 7, -4, x, 14, -4, CITY.iron);
+    model.fill(-7, 9, -5, right, 13, -5, (_x, y) => (y % 2 === 0 ? CITY.composite : null));
+  }
+  if (style === 2) for (const x of [-7, 6]) model.fill(x, 7, -3, x, 9, 2, CITY.iron).fill(x, 10, -3, x, 10, 2, CITY.composite);
+  if (style === 3) {
+    model.fill(3, 0, -4, 7, 7, 3, grain(CITY.concrete, 0.02)).fill(4, 8, -3, 6, 8, 2, CITY.soil);
+    model.fill(4, 9, -2, 6, 12, 1, CITY.leaf).fill(5, 13, -1, 5, 14, 0, CITY.leafLight);
+  }
+  model.fill(-6, 5, 3, right - 1, 5, 3, darken(0x4fe3ff, 0.45), VOXEL_EMISSIVE);
   return parts(model, 15);
 };
 
@@ -251,7 +292,7 @@ const foodStall: Builder = (seed) => {
   return parts(model, 34, [{ model: steam, animate: rise(1.2, 0.35) }]);
 };
 
-function rise(rate: number, reach: number) {
+export function rise(rate: number, reach: number) {
   return (part: Object3D, time: number, seed: number) => {
     const phase = (time * rate + seed * 0.13) % 1;
     part.position.y = phase * reach;
@@ -281,39 +322,68 @@ const steamVent: Builder = () => {
   return parts(model, 1, [{ model: steam, animate: rise(0.7, 0.6) }]);
 };
 
+interface SignDesign {
+  readonly word?: string;
+  readonly symbol?: string;
+}
+
+const NEON_DESIGNS: readonly SignDesign[] = [{ word: 'BAR' }, { symbol: 'cup' }, { word: 'EAT' }, { symbol: 'bowl' }, { word: 'OPEN' }, { symbol: 'heart' }, { word: '24H' }, { symbol: 'eye' }];
+const SIGN_TRIM = [0xf4f0ff, 0xffb35a, 0xf4f0ff, 0x4fe3ff] as const;
+
 const neonSignOf = (glow: number): Builder => (seed) => {
-  const model = new VoxelModel().fill(-7, 17, -8, 6, 26, -7, CITY.ink);
-  model.fill(-7, 17, -6, 6, 17, -6, darken(glow, 0.5)).fill(-7, 26, -6, 6, 26, -6, darken(glow, 0.5));
-  const letters = new VoxelModel();
-  for (let column = 0; column < 4; column++) {
-    for (let row = 0; row < 3; row++) {
-      for (let cell = 0; cell < 2; cell++) {
-        if (noise3(seed, column * 7 + row, cell, 61) < 0.35) continue;
-        const x = -6 + column * 3 + cell;
-        const y = 19 + row * 2;
-        letters.fill(x, y, -6, x, y + 1, -6, glow, VOXEL_EMISSIVE);
-      }
-    }
+  const design = NEON_DESIGNS[seed % NEON_DESIGNS.length] as SignDesign;
+  const trim = SIGN_TRIM[seed % SIGN_TRIM.length] as number;
+  const model = new VoxelModel();
+  const lit = new VoxelModel();
+  if (design.word) {
+    const width = textWidth(design.word);
+    const left = -Math.floor(width / 2);
+    const right = left + width - 1;
+    model.fill(left - 2, 17, -8, right + 2, 27, -7, CITY.ink);
+    for (let x = left - 2; x <= right + 2; x++) for (const y of [17, 27]) lit.set(x, y, -6, darken(trim, 0.2), VOXEL_EMISSIVE);
+    for (let y = 18; y <= 26; y++) for (const x of [left - 2, right + 2]) lit.set(x, y, -6, darken(trim, 0.2), VOXEL_EMISSIVE);
+    for (const cell of textCells(design.word)) lit.set(left + cell.x, 20 + cell.y, -6, glow, VOXEL_EMISSIVE);
+  } else {
+    const glyph = SYMBOLS[design.symbol ?? 'heart'] as Glyph;
+    const width = Math.max(...glyph.map((row) => row.length));
+    model.fill(-1, 15, -8, 0, 16, -6, CITY.iron).fill(-6, 15, -6, 5, 15, -6, CITY.iron);
+    const at = (cell: { x: number; y: number }, dx: number, dy: number): [number, number] => [-width + cell.x * 2 + dx, 17 + cell.y * 2 + dy];
+    for (const cell of glyphOutline(glyph)) for (let dy = 0; dy < 2; dy++) for (let dx = 0; dx < 2; dx++) lit.set(...at(cell, dx, dy), -6, glow, VOXEL_EMISSIVE);
+    for (const cell of glyphInterior(glyph)) for (let dy = 0; dy < 2; dy++) for (let dx = 0; dx < 2; dx++) model.set(...at(cell, dx, dy), -7, darken(glow, 0.7));
   }
-  return parts(model, 27, [{ model: letters, animate: flicker }]);
+  return parts(model, 30, [{ model: lit, animate: flicker }]);
 };
 
 const neonSign = neonSignOf(0xff4fa8);
 const neonSignCyan = neonSignOf(0x4fe3ff);
 const neonSignAcid = neonSignOf(0xb6ff4f);
 
-const floodMast: Builder = () => {
+const floodMast: Builder = (seed) => {
+  const style = seed % 4;
+  const top = style === 3 ? 33 : 43;
   const model = new VoxelModel().fill(-3, 0, -3, 2, 2, 2, grain(CITY.concrete));
-  model.fill(-1, 3, -1, 0, 43, 0, grain(CITY.panel, 0.015)).fill(-1, 18, -1, 0, 21, 0, CITY.band).fill(-1, 30, -1, 0, 31, 0, CITY.band);
-  model.fill(-6, 42, -1, 5, 43, 0, CITY.iron);
-  for (const x of [-6, 2]) {
-    model.fill(x, 38, -2, x + 3, 42, 2, CITY.darkSteel).fill(x, 38, 3, x + 3, 42, 3, 0xe8f4ff, VOXEL_EMISSIVE).fill(x, 37, -1, x + 3, 37, 2, 0xcfe8ff, VOXEL_EMISSIVE);
+  model.fill(-1, 3, -1, 0, top, 0, grain(CITY.panel, 0.015)).fill(-1, 18, -1, 0, 21, 0, CITY.band);
+  if (top > 33) model.fill(-1, 30, -1, 0, 31, 0, CITY.band);
+  const lamp = (x: number, z: number, facing: 1 | -1): void => {
+    model.fill(x, top - 5, z - 2, x + 3, top - 1, z + 2, CITY.darkSteel);
+    model.fill(x, top - 5, z + 3 * facing, x + 3, top - 1, z + 3 * facing, 0xe8f4ff, VOXEL_EMISSIVE).fill(x, top - 6, z - 1, x + 3, top - 6, z + 2 * facing, 0xcfe8ff, VOXEL_EMISSIVE);
+  };
+  if (style === 1) {
+    model.fill(-3, top - 1, -1, 2, top, 0, CITY.iron);
+    lamp(-2, 0, 1);
+  } else {
+    model.fill(-6, top - 1, -1, 5, top, 0, CITY.iron);
+    for (const x of [-6, 2]) lamp(x, 0, 1);
+    if (style === 2) {
+      model.fill(-6, top - 8, -1, 5, top - 7, 0, CITY.iron);
+      for (const x of [-6, 2]) model.fill(x, top - 12, -2, x + 3, top - 8, 2, CITY.darkSteel).fill(x, top - 12, -3, x + 3, top - 8, -3, 0xe8f4ff, VOXEL_EMISSIVE);
+    }
   }
-  const beacon = new VoxelModel().fill(-1, 44, -1, 0, 45, 0, CITY.red, VOXEL_EMISSIVE);
-  return parts(model, 46, [{ model: beacon, animate: blink(2) }]);
+  const beacon = new VoxelModel().fill(-1, top + 1, -1, 0, top + 2, 0, CITY.red, VOXEL_EMISSIVE);
+  return parts(model, top + 3, [{ model: beacon, animate: blink(2) }]);
 };
 
-const holoFrame = (index: number, count: number, period: number) => (part: Object3D, time: number, seed: number) => {
+export const holoFrame = (index: number, count: number, period: number) => (part: Object3D, time: number, seed: number) => {
   const clock = time / period + seed * 0.37;
   const showing = Math.floor(clock) % count === index;
   const settling = clock - Math.floor(clock) < 0.06;
@@ -510,7 +580,8 @@ const onTowerFaces = (model: VoxelModel, u: number, y: number, color: number, ki
 
 const READOUTS = [0x4fe3ff, 0xffb35a, 0xff4fa8] as const;
 
-const clockTower: Builder = () => {
+const clockTower: Builder = (seed) => {
+  const ring = pick([darken(0x4fe3ff, 0.1), darken(0xffb35a, 0.1), darken(0x4fe3ff, 0.1)], seed);
   const model = new VoxelModel().fill(-14, 0, -14, 13, 3, 13, grain(CITY.concrete));
   model.fill(-10, 4, -10, 9, 58, 9, (x, y, z) => (y % 9 === 4 || ((x === -10 || x === 9) && (z === -10 || z === 9)) ? CITY.panelJoint : jitter(CITY.panel, 0.015, noise3(x, y, z, 5))));
   model.fill(-10, 4, -10, 9, 6, 9, grain(CITY.darkSteel, 0.02));
@@ -519,22 +590,33 @@ const clockTower: Builder = () => {
     for (let y = 41; y <= 56; y++) {
       const d = Math.hypot(u + 0.5, y - 48.5);
       if (d > 7.6) continue;
-      if (d >= 6.6) onTowerFaces(model, u, y, darken(0x4fe3ff, 0.1), VOXEL_EMISSIVE);
+      if (d >= 6.6) onTowerFaces(model, u, y, ring, VOXEL_EMISSIVE);
       else onTowerFaces(model, u, y, CITY.ink);
     }
   }
   READOUTS.forEach((color, row) => {
     for (let u = -4; u <= 3; u++) if ((u + 4) % 3 !== 2) onTowerFaces(model, u, 51 - row * 3, color, VOXEL_EMISSIVE);
   });
-  for (let step = 0; step < 4; step++) {
-    const lo = -9 + step * 2;
-    const hi = 8 - step * 2;
-    model.fill(lo, 59 + step * 2, lo, hi, 60 + step * 2, hi, grain(CITY.darkSteel, 0.02));
+  const crown = seed % 4;
+  let peak = 76;
+  if (crown === 0) {
+    for (let step = 0; step < 4; step++) model.fill(-9 + step * 2, 59 + step * 2, -9 + step * 2, 8 - step * 2, 60 + step * 2, 8 - step * 2, grain(CITY.darkSteel, 0.02));
+    model.fill(-1, 67, -1, 0, 76, 0, CITY.iron);
+  } else if (crown === 1) {
+    model.fill(-10, 59, -10, 9, 59, 9, grain(CITY.darkSteel, 0.02)).fill(-10, 60, -10, 9, 61, 9, (x, _y, z) => (x === -10 || x === 9 || z === -10 || z === 9 ? CITY.iron : null));
+    model.fill(-6, 60, -6, -5, 70, -5, CITY.iron).fill(4, 60, 3, 5, 66, 4, CITY.iron).fill(-7, 66, -7, -4, 66, -4, CITY.steel);
+    peak = 70;
+  } else if (crown === 2) {
+    for (const [x, z] of [[-8, -8], [7, -8], [-8, 7], [7, 7]] as const) model.fill(x, 59, z, x, 68, z, CITY.darkSteel);
+    model.fill(-9, 69, -9, 8, 70, 8, grain(CITY.darkSteel, 0.02)).fill(-3, 61, -3, 2, 66, 2, 0xffe2a8, VOXEL_GLASS);
+    model.fill(-1, 71, -1, 0, 76, 0, CITY.iron);
+  } else {
+    for (let y = 59; y <= 70; y++) cylinder(model, 0, 0, Math.max(1, 9 - ((y - 59) * (y - 59)) / 16), y, y, grain(CITY.panel, 0.015));
+    model.fill(-1, 71, -1, 0, 76, 0, CITY.iron);
   }
-  model.fill(-1, 67, -1, 0, 76, 0, CITY.iron);
   model.fill(-4, 4, 10, 3, 13, 10, CITY.steel).fill(-3, 4, 10, 2, 12, 10, CITY.darkSteel).fill(-1, 4, 10, -1, 12, 10, CITY.ink).set(3, 9, 11, CITY.green, VOXEL_EMISSIVE);
-  const beacon = new VoxelModel().fill(-1, 77, -1, 0, 77, 0, CITY.red, VOXEL_EMISSIVE);
-  return parts(model, 78, [{ model: beacon, animate: blink(2) }]);
+  const beacon = new VoxelModel().fill(-1, peak + 1, -1, 0, peak + 1, 0, CITY.red, VOXEL_EMISSIVE);
+  return parts(model, peak + 2, [{ model: beacon, animate: blink(2) }]);
 };
 
 const washingLine: Builder = (seed) => {
@@ -596,34 +678,40 @@ const marketStall: Builder = (seed) => {
   return parts(model, 32, [{ model: tags, animate: flicker }]);
 };
 
-const headframe: Builder = () => {
-  const steel = 0x3a4a52;
+const headframe: Builder = (seed) => {
+  const steel = pick([0x3a4a52, 0x4a4e52, 0x3e4a44], seed);
+  const top = seed % 2 === 0 ? 80 : 70;
   const model = new VoxelModel().fill(-15, 0, -15, 14, 2, 14, grain(CITY.concrete));
   for (const x of [-12, 11]) for (const z of [-12, 11]) {
-    for (let y = 3; y <= 80; y++) {
+    for (let y = 3; y <= top; y++) {
       const lean = Math.floor((y - 3) / 11);
       const px = x < 0 ? x + lean : x - lean;
       const pz = z < 0 ? z + lean : z - lean;
       model.fill(px, y, pz, px + (x < 0 ? 1 : -1), y, pz + (z < 0 ? 1 : -1), steel);
     }
   }
-  for (let y = 14; y <= 74; y += 15) {
+  for (let y = 14; y <= top - 6; y += 15) {
     const inset = Math.floor((y - 3) / 11);
     const lo = -12 + inset;
     const hi = 11 - inset;
     model.fill(lo, y, lo, hi, y, lo, steel).fill(lo, y, hi, hi, y, hi, steel).fill(lo, y, lo, lo, y, hi, steel).fill(hi, y, lo, hi, y, hi, steel);
   }
-  model.fill(-6, 80, -6, 5, 81, 5, CITY.band);
-  for (let a = 0; a < 48; a++) {
-    const angle = (a / 48) * Math.PI * 2;
-    const y = Math.round(88 + Math.sin(angle) * 7);
-    const z = Math.round(Math.cos(angle) * 7);
-    model.set(-1, y, z, CITY.darkSteel).set(0, y, z, CITY.darkSteel);
+  model.fill(-6, top, -6, 5, top + 1, 5, CITY.band);
+  const twin = seed % 4 >= 2;
+  const radius = twin ? 6 : 7;
+  for (const wx of twin ? [-5, 4] : [-1]) {
+    for (let a = 0; a < 48; a++) {
+      const angle = (a / 48) * Math.PI * 2;
+      const y = Math.round(top + 8 + Math.sin(angle) * radius);
+      const z = Math.round(Math.cos(angle) * radius);
+      model.set(wx, y, z, CITY.darkSteel).set(wx + 1, y, z, CITY.darkSteel);
+    }
+    model.fill(wx, top + 2, 0, wx + 1, top + 8, 0, CITY.darkSteel);
   }
-  model.fill(-1, 82, 0, 0, 88, 0, CITY.darkSteel);
-  model.fill(-1, 96, -1, 0, 96, 0, CITY.red, VOXEL_EMISSIVE);
-  model.fill(-14, 3, 14, 13, 8, 14, (x) => (Math.floor((x + 14) / 3) % 2 === 0 ? CITY.amber : CITY.ink));
-  return parts(model, 97);
+  if (seed % 3 === 1) model.fill(-5, top + 2, -6, 4, top + 7, -2, grain(CITY.panel, 0.015)).fill(-5, top + 4, -1, 4, top + 5, -1, 0x4fe3ff, VOXEL_EMISSIVE);
+  model.fill(-1, top + 9 + radius, -1, 0, top + 9 + radius, 0, CITY.red, VOXEL_EMISSIVE);
+  if (seed % 3 !== 2) model.fill(-14, 3, 14, 13, 8, 14, (x) => (Math.floor((x + 14) / 3) % 2 === 0 ? CITY.amber : CITY.ink));
+  return parts(model, top + 10 + radius);
 };
 
 const mooringPost: Builder = () => {
@@ -666,16 +754,21 @@ const washer: Builder = (seed) => {
   return parts(model, 15);
 };
 
-const chimney: Builder = () => {
+const chimney: Builder = (seed) => {
   const plate = darken(CITY.steel, 0.12);
+  const height = seed % 3 === 0 ? 92 : seed % 3 === 1 ? 78 : 104;
+  const radius = seed % 2 === 0 ? 5.2 : 4.4;
   const model = new VoxelModel().fill(-7, 0, -7, 6, 4, 6, grain(CITY.concrete));
-  cylinder(model, 0, 0, 5.2, 5, 92, (x, y, z) => (y % 12 === 0 ? darken(plate, 0.3) : (x * 3 + z + y * 5) % 11 === 0 ? lighten(plate, 0.15) : jitter(plate, 0.04, noise3(x, y, z, 3))));
-  for (const y of [20, 21, 44, 45, 68, 69, 87, 88, 89, 90]) shellRing(model, 6.2, 1.2, y, CITY.darkSteel);
-  cylinder(model, 0, 0, 3.6, 92, 92, CITY.ink);
-  for (let y = 8; y <= 84; y += 3) model.fill(-1, y, 5, 0, y, 5, CITY.iron);
-  model.fill(-3, 30, 5, 2, 33, 5, (x) => (x % 2 === 0 ? CITY.amber : CITY.ink));
-  const strobe = new VoxelModel().set(-1, 91, 5, CITY.red, VOXEL_EMISSIVE).set(0, 91, -6, CITY.red, VOXEL_EMISSIVE).set(5, 91, 0, CITY.red, VOXEL_EMISSIVE).set(-6, 91, -1, CITY.red, VOXEL_EMISSIVE);
-  return parts(model, 93, [{ model: strobe, animate: blink(2.2) }]);
+  cylinder(model, 0, 0, radius, 5, height, (x, y, z) => (y % 12 === 0 ? darken(plate, 0.3) : (x * 3 + z + y * 5) % 11 === 0 ? lighten(plate, 0.15) : jitter(plate, 0.04, noise3(x, y, z, 3))));
+  for (const y of [20, 21, 44, 45, 68, 69]) if (y < height - 6) shellRing(model, radius + 1, 1.2, y, CITY.darkSteel);
+  const flared = seed % 4 >= 2;
+  for (let y = height - 5; y <= height - 2; y++) shellRing(model, radius + 1 + (flared ? (y - height + 5) * 0.6 : 0), 1.2, y, CITY.darkSteel);
+  cylinder(model, 0, 0, radius - 1.6, height, height, CITY.ink);
+  for (let y = 8; y <= height - 8; y += 3) model.fill(-1, y, Math.round(radius), 0, y, Math.round(radius), CITY.iron);
+  model.fill(-3, 30, Math.round(radius), 2, 33, Math.round(radius), (x) => (x % 2 === 0 ? CITY.amber : CITY.ink));
+  const r = Math.round(radius);
+  const strobe = new VoxelModel().set(-1, height - 1, r, CITY.red, VOXEL_EMISSIVE).set(0, height - 1, -r - 1, CITY.red, VOXEL_EMISSIVE).set(r, height - 1, 0, CITY.red, VOXEL_EMISSIVE).set(-r - 1, height - 1, -1, CITY.red, VOXEL_EMISSIVE);
+  return parts(model, height + 1, [{ model: strobe, animate: blink(2.2) }]);
 };
 
 const scrapHeap: Builder = (seed) => {
@@ -693,17 +786,26 @@ const scrapHeap: Builder = (seed) => {
   return parts(model, 22);
 };
 
-const magnetCrane: Builder = () => {
-  const yellow = 0xd8a03a;
+const magnetCrane: Builder = (seed) => {
+  const yellow = pick([0xd8a03a, 0xd86a2a, 0x8a9a9e], seed);
+  const mast = seed % 2 === 0 ? 70 : 60;
+  const reach = seed % 4 < 2 ? 30 : 22;
+  const back = seed % 3 === 2 ? -30 : -40;
   const model = new VoxelModel().fill(-14, 0, -14, 13, 6, 13, grain(CITY.darkSteel, 0.03));
   model.fill(-10, 7, -10, 9, 18, 9, grain(yellow, 0.03)).fill(-8, 12, 10, 7, 16, 10, CITY.glass, VOXEL_GLASS);
-  model.fill(-3, 19, -3, 2, 70, 2, (x, y) => ((y + x) % 6 < 3 ? yellow : darken(yellow, 0.3)));
-  model.fill(-2, 66, -40, 1, 70, 30, (_x, y, z) => ((z + y) % 6 < 3 ? yellow : darken(yellow, 0.3)));
-  model.fill(-4, 60, -40, 3, 66, -34, CITY.concrete);
-  model.fill(0, 40, 27, 0, 65, 27, CITY.iron);
-  cylinder(model, 0, 27, 6, 34, 39, CITY.darkSteel);
-  model.fill(-1, 72, -1, 0, 72, 0, CITY.red, VOXEL_EMISSIVE);
-  return parts(model, 73);
+  model.fill(-3, 19, -3, 2, mast, 2, (x, y) => ((y + x) % 6 < 3 ? yellow : darken(yellow, 0.3)));
+  model.fill(-2, mast - 4, back, 1, mast, reach, (_x, y, z) => ((z + y) % 6 < 3 ? yellow : darken(yellow, 0.3)));
+  model.fill(-4, mast - 10, back, 3, mast - 4, back + 6, CITY.concrete);
+  if (seed % 3 === 1) {
+    model.fill(-1, mast + 1, -1, 0, mast + 8, 0, CITY.iron);
+    for (let z = back + 2; z <= reach - 2; z++) model.set(0, mast + 8 - Math.round((Math.abs(z) * 7) / Math.max(-back, reach)), z, CITY.iron);
+  }
+  const hook = mast - 36 - (seed % 4) * 4;
+  model.fill(0, hook + 6, reach - 3, 0, mast - 5, reach - 3, CITY.iron);
+  if (seed % 4 === 3) model.fill(-4, hook, reach - 7, 3, hook + 5, reach + 1, grain(0x6a4a3a, 0.04)).fill(-4, hook + 5, reach - 7, 3, hook + 5, reach + 1, lighten(0x6a4a3a, 0.1));
+  else cylinder(model, 0, reach - 3, 6, hook, hook + 5, CITY.darkSteel);
+  model.fill(-1, mast + 2, -1, 0, mast + 2, 0, CITY.red, VOXEL_EMISSIVE);
+  return parts(model, mast + 3 + (seed % 3 === 1 ? 6 : 0));
 };
 
 const beachedHull: Builder = (seed) => {
@@ -760,28 +862,56 @@ const labBench: Builder = (seed) => {
 };
 
 const barricade: Builder = (seed) => {
+  const style = seed % 4;
   const model = new VoxelModel();
-  for (let i = 0; i < 9; i++) {
-    const x = -8 + Math.floor(noise3(seed, i, 0, 5) * 12);
-    const y = Math.floor(i / 3) * 4;
-    const tone = pick([CITY.composite, CITY.compositeDark, 0x5d666c, 0x8a5a3a], seed, i);
-    model.fill(x, y, -3 + (i % 3), x + 5, y + 3, 1 + (i % 3), grain(tone, 0.05, i));
+  if (style === 0) {
+    const sand = pick([0x8a7a5a, 0x7a6e52, 0x6a6a4e], seed);
+    for (let row = 0; row < 3; row++) {
+      const offset = row % 2 === 0 ? 0 : 2;
+      for (let x = -7 + offset; x <= 3; x += 4) {
+        model.fill(x, row * 3, -3 + row, x + 3, row * 3 + 2, 1 + row - (row === 2 ? 1 : 0), row === 2 ? lighten(sand, 0.08) : sand);
+        model.set(x, row * 3 + 2, -3 + row, darken(sand, 0.2)).set(x + 3, row * 3 + 2, -3 + row, darken(sand, 0.2));
+      }
+    }
+    return parts(model, 10);
   }
+  if (style === 1) {
+    model.fill(-7, 0, -2, 4, 11, -1, grain(0x6a5a46, 0.03)).fill(-7, 5, -1, 4, 5, -1, darken(0x6a5a46, 0.25));
+    model.fill(-7, 0, 0, -6, 6, 0, CITY.iron).fill(3, 0, 0, 4, 6, 0, CITY.iron);
+    model.fill(1, 0, 1, 6, 5, 5, grain(0x8a5a3a, 0.04)).fill(1, 5, 1, 6, 5, 5, lighten(0x8a5a3a, 0.1));
+    model.fill(-5, 0, 2, -2, 0, 6, CITY.composite);
+    return parts(model, 12);
+  }
+  if (style === 2) {
+    model.fill(-7, 0, -3, 6, 6, 2, grain(CITY.concrete, 0.02));
+    model.fill(-7, 7, -2, 6, 13, -2, (x) => (x % 3 === 0 ? darken(0x6a7076, 0.2) : 0x6a7076));
+    model.fill(-6, 7, -1, -6, 12, -1, CITY.iron).fill(5, 7, -1, 5, 12, -1, CITY.iron);
+    model.fill(-7, 4, 3, 6, 4, 3, (x) => (Math.floor((x + 7) / 2) % 2 === 0 ? CITY.amber : CITY.ink));
+    return parts(model, 14);
+  }
+  const tone = pick([CITY.composite, 0x8a5a3a, 0x5d666c], seed);
+  model.fill(-7, 0, -4, -1, 6, 2, grain(tone, 0.03)).fill(0, 0, -3, 6, 4, 3, grain(darken(tone, 0.15), 0.03)).fill(-5, 7, -3, 0, 11, 1, grain(lighten(tone, 0.1), 0.03));
   model.fill(-7, 12, 0, 6, 13, 0, (x) => (Math.floor((x + 7) / 3) % 2 === 0 ? CITY.amber : CITY.ink));
   return parts(model, 14);
 };
 
 const scrapPile: Builder = (seed) => {
   const metals = [0x6a4a3a, 0x5d666c, 0x8a5a3a, 0x3a4a52];
+  const base = metals[seed % metals.length] as number;
+  const long = seed % 2 === 1;
   const model = new VoxelModel();
-  for (let i = 0; i < 9; i++) {
-    const x = Math.floor((noise3(seed, i, 0, 9) - 0.5) * 10);
-    const z = Math.floor((noise3(seed, i, 1, 9) - 0.5) * 10);
-    const y = Math.max(0, 4 - Math.floor(Math.hypot(x, z) * 0.6));
-    model.fill(x, y, z, x + 2 + (i % 3), y + 1 + (i % 2), z + 2, grain(metals[i % metals.length] as number, 0.06, i));
+  for (let x = -7; x <= 6; x++) for (let z = -6; z <= 5; z++) {
+    const reach = Math.hypot((x + 0.5) / (long ? 1 : 0.8), (z + 0.5) / (long ? 0.7 : 0.8));
+    const height = Math.round(6 - reach * 0.9 - noise3(x >> 2, 0, z >> 2, seed + 9) * 2);
+    if (height >= 0) model.fill(x, 0, z, x, height, z, (_x, y) => (y === height ? lighten(base, 0.08) : base));
   }
-  model.fill(-1, 6, -1, 1, 7, 0, CITY.amber);
-  return parts(model, 8);
+  const style = seed % 4;
+  if (style === 0 || style === 2) model.fill(-6, 3, 0, 4, 4, 0, CITY.steel).fill(4, 4, 0, 6, 6, 0, CITY.steel);
+  if (style === 1 || style === 2) cylinder(model, 2, -2, 1.6, 4, 10, darken(CITY.steel, 0.2));
+  if (style === 3) model.fill(-3, 5, -3, 2, 9, -3, 0x6a7076).fill(-3, 4, -2, 2, 4, -2, darken(0x6a7076, 0.3));
+  if (seed >= 4) for (let a = 0; a < 16; a++) model.set(Math.round(-4 + Math.cos(a / 2.5) * 3), Math.round(6 + Math.sin(a / 2.5) * 3), 2, CITY.rubber);
+  model.fill(-1, 7, -1, 1, 7, 0, CITY.amber);
+  return parts(model, 13);
 };
 
 const dredgeWinch: Builder = () => {
@@ -884,10 +1014,21 @@ const cat: Builder = () => {
   return parts(model, 8);
 };
 
-const hatch: Builder = () => {
-  const model = new VoxelModel().fill(-6, 0, -6, 5, 1, 5, grain(CITY.concrete));
+const hatch: Builder = (seed) => {
+  const style = seed % 4;
+  const model = new VoxelModel();
+  if (style === 1) {
+    cylinder(model, 0, 0, 6, 0, 1, grain(CITY.concrete));
+    cylinder(model, 0, 0, 4.4, 2, 2, CITY.darkSteel);
+    ringAt(model, 0, 0, 2.6, 1, 3, CITY.steel);
+    model.fill(-1, 3, -1, 0, 4, 0, CITY.iron);
+    return parts(model, 5);
+  }
+  model.fill(-6, 0, -6, 5, 1, 5, grain(CITY.concrete));
+  if (style === 2) model.fill(-6, 1, -6, 5, 1, 5, (x, _y, z) => (Math.max(Math.abs(x + 0.5), Math.abs(z + 0.5)) > 4.5 ? (Math.floor((x + z + 12) / 2) % 2 === 0 ? CITY.amber : CITY.ink) : null));
   model.fill(-4, 2, -4, 3, 2, 3, (x, _y, z) => ((x + z) % 2 === 0 ? CITY.iron : CITY.darkSteel));
-  model.fill(-4, 3, -1, -3, 3, 0, CITY.steel).fill(2, 3, -1, 3, 3, 0, CITY.steel);
+  if (style === 3) model.fill(-4, 3, -4, 3, 3, -4, CITY.steel).fill(-1, 2, -4, 0, 2, 3, CITY.ink).fill(-4, 3, 2, -3, 3, 2, CITY.steel).fill(2, 3, 2, 3, 3, 2, CITY.steel);
+  else model.fill(-4, 3, -1, -3, 3, 0, CITY.steel).fill(2, 3, -1, 3, 3, 0, CITY.steel);
   return parts(model, 4);
 };
 
@@ -902,7 +1043,7 @@ const sluiceValve: Builder = () => {
   return parts(model, 14);
 };
 
-function shellRing(model: VoxelModel, radius: number, thickness: number, y: number, paint: Paint, kind?: VoxelKind, keep: (angle: number) => boolean = () => true): void {
+export function shellRing(model: VoxelModel, radius: number, thickness: number, y: number, paint: Paint, kind?: VoxelKind, keep: (angle: number) => boolean = () => true): void {
   const reach = Math.ceil(radius);
   for (let x = -reach; x <= reach; x++) {
     for (let z = -reach; z <= reach; z++) {
@@ -924,48 +1065,62 @@ const gateLeaf: Builder = () => {
   return parts(model, 48);
 };
 
-const gantryCrane: Builder = () => {
-  const yellow = grain(0xd8a03a, 0.04);
+const gantryCrane: Builder = (seed) => {
+  const tone = pick([0xd8a03a, 0xd86a2a, 0x5e8a9a], seed);
+  const yellow = grain(tone, 0.04);
+  const beam = seed % 2 === 0 ? 44 : 62;
+  const trolley = ((seed % 4) - 1.5) * 8;
   const model = new VoxelModel();
   for (const x of [-23, 19]) {
     model.fill(x, 0, -23, x + 3, 2, 22, grain(CITY.concrete));
     for (const z of [-21, 17]) model.fill(x, 3, z, x + 3, 98, z + 3, yellow);
-    model.fill(x, 44, -21, x + 3, 47, 20, yellow);
+    model.fill(x, beam, -21, x + 3, beam + 3, 20, yellow);
+    if (seed % 3 === 2) for (let y = 6; y < beam - 2; y++) model.set(x + 1, y, Math.round(-21 + ((y - 6) / (beam - 8)) * 40), tone);
   }
   model.fill(-23, 99, -22, 22, 105, -17, yellow).fill(-23, 99, 16, 22, 105, 21, yellow);
-  model.fill(-7, 106, -22, 6, 114, 21, grain(0x8a4a2a, 0.05));
-  model.fill(-5, 108, 22, 4, 112, 22, CITY.glass, VOXEL_GLASS);
-  model.fill(-1, 44, -1, 0, 105, 0, CITY.iron);
-  model.fill(-4, 36, -3, 3, 43, 2, CITY.darkSteel);
-  model.fill(-1, 115, -1, 0, 116, 0, CITY.red, VOXEL_EMISSIVE);
+  const tx = Math.round(trolley);
+  model.fill(tx - 7, 106, -22, tx + 6, 114, 21, grain(0x8a4a2a, 0.05));
+  model.fill(tx - 5, 108, 22, tx + 4, 112, 22, CITY.glass, VOXEL_GLASS);
+  const hook = beam - 8;
+  model.fill(tx - 1, hook + 8, -1, tx, 105, 0, CITY.iron);
+  model.fill(tx - 4, hook, -3, tx + 3, hook + 7, 2, CITY.darkSteel);
+  model.fill(tx - 1, 115, -1, tx, 116, 0, CITY.red, VOXEL_EMISSIVE);
   return parts(model, 117);
 };
 
-const windpump: Builder = () => {
+const windpump: Builder = (seed) => {
   const shell = CITY.panel;
+  const height = seed % 2 === 0 ? 77 : 67;
+  const blades = seed % 4 < 2 ? 3 : 4;
+  const hubY = height + 4;
   const model = new VoxelModel().fill(-14, 0, -14, 13, 2, 13, grain(CITY.concrete));
-  for (let y = 3; y <= 77; y++) cylinder(model, 0, 0, 3.6 - (y / 77) * 1.4, y, y, (x, yy, z) => (yy % 16 === 0 ? CITY.panelJoint : jitter(shell, 0.015, noise3(x, yy, z, 71))));
+  for (let y = 3; y <= height; y++) cylinder(model, 0, 0, 3.6 - (y / height) * 1.4, y, y, (x, yy, z) => (yy % 16 === 0 ? CITY.panelJoint : jitter(shell, 0.015, noise3(x, yy, z, 71))));
   for (const y of [12, 13]) shellRing(model, 3.7, 1, y, CITY.band);
   model.fill(-1, 3, 3, 0, 9, 3, CITY.darkSteel);
-  model.fill(-3, 78, -6, 2, 84, 5, grain(shell, 0.015)).fill(-3, 78, -6, 2, 78, 5, CITY.panelJoint).fill(-3, 81, -6, 2, 81, -6, CITY.band);
+  model.fill(-3, height + 1, -6, 2, height + 7, 5, grain(shell, 0.015)).fill(-3, height + 1, -6, 2, height + 1, 5, CITY.panelJoint).fill(-3, height + 4, -6, 2, height + 4, -6, CITY.band);
+  if (seed % 3 !== 0) model.fill(-1, height + 2, -14, 0, height + 10, -7, (_x, y, z) => (y - height - 2 <= (z + 14) * 1.2 ? (z === -14 ? CITY.band : shell) : null));
+  if (seed % 3 === 2) {
+    cylinder(model, 9, 9, 4, 3, 14, grain(0x6a7076, 0.02));
+    for (const [x, z] of [[6, 6], [11, 6], [6, 11], [11, 11]] as const) model.fill(x, 0, z, x, 2, z, CITY.iron);
+  }
   const hub = new VoxelModel();
   for (let z = 6; z <= 8; z++) {
-    for (let x = -2; x <= 2; x++) for (let y = 79; y <= 83; y++) if (Math.hypot(x, y - 81) <= 2.4 - (z - 6) * 0.6) hub.set(x, y, z, z === 8 ? CITY.panelJoint : shell);
+    for (let x = -2; x <= 2; x++) for (let y = hubY - 2; y <= hubY + 2; y++) if (Math.hypot(x, y - hubY) <= 2.4 - (z - 6) * 0.6) hub.set(x, y, z, z === 8 ? CITY.panelJoint : shell);
   }
-  for (let blade = 0; blade < 3; blade++) {
-    const angle = Math.PI / 2 + (blade / 3) * Math.PI * 2;
+  for (let blade = 0; blade < blades; blade++) {
+    const angle = Math.PI / 2 + (blade / blades) * Math.PI * 2;
     for (let r = 2; r <= 26; r++) {
       const width = r < 6 ? 1.4 : Math.max(0.5, 1.6 - r * 0.04);
       for (let w = -width; w <= width; w += 0.5) {
         const x = Math.round(Math.cos(angle) * r - Math.sin(angle) * w);
-        const y = 81 + Math.round(Math.sin(angle) * r + Math.cos(angle) * w);
+        const y = hubY + Math.round(Math.sin(angle) * r + Math.cos(angle) * w);
         hub.set(x, y, 7, r > 23 ? CITY.red : shell);
       }
     }
   }
-  const strobe = new VoxelModel().fill(-1, 85, 0, 0, 85, 1, CITY.red, VOXEL_EMISSIVE);
-  return parts(model, 108, [
-    { model: hub, animate: turn(0.5, 81.5, 0.8) },
+  const strobe = new VoxelModel().fill(-1, height + 8, 0, 0, height + 8, 1, CITY.red, VOXEL_EMISSIVE);
+  return parts(model, height + 31, [
+    { model: hub, animate: turn(0.5, hubY + 0.5, 0.8) },
     { model: strobe, animate: blink(1.4) },
   ]);
 };
@@ -1076,21 +1231,25 @@ const glassBell: Builder = () => {
   return parts(model, 133, [{ model: resonator, animate: blink(0.8) }]);
 };
 
-const coolingTower: Builder = () => {
+const coolingTower: Builder = (seed) => {
   const model = new VoxelModel();
-  for (let y = 0; y <= 92; y++) {
-    const t = y / 92;
-    const radius = 15 + (8 * (t - 0.68) ** 2) / 0.46;
-    const stain = (x: number, yy: number, z: number) => jitter(yy > 80 ? darken(CITY.concrete, 0.25) : noise3(x, 0, z, 41) > 0.85 ? darken(CITY.concrete, 0.18) : CITY.concrete, 0.03, noise3(x, yy, z, 43));
+  const height = seed % 3 === 0 ? 92 : seed % 3 === 1 ? 80 : 100;
+  const waist = seed % 2 === 0 ? 15 : 13;
+  const banded = seed % 4 >= 2;
+  for (let y = 0; y <= height; y++) {
+    const t = y / height;
+    const radius = waist + (8 * (t - 0.68) ** 2) / 0.46;
+    const band = banded && (y > height - 14 && y < height - 9);
+    const stain = (x: number, yy: number, z: number) => (band ? (Math.floor(Math.atan2(z, x) * 4) % 2 === 0 ? CITY.red : CITY.panel) : jitter(yy > height - 12 ? darken(CITY.concrete, 0.25) : noise3(x, 0, z, 41) > 0.85 ? darken(CITY.concrete, 0.18) : CITY.concrete, 0.03, noise3(x, yy, z, 43)));
     shellRing(model, radius, 2, y, stain, undefined, (angle) => y > 5 || Math.floor(((angle + Math.PI) / (Math.PI * 2)) * 24) % 2 === 0);
   }
   for (let i = 0; i < 70; i++) {
     const x = Math.floor((noise3(i, 1, 0, 47) - 0.5) * 22);
     const z = Math.floor((noise3(i, 2, 0, 47) - 0.5) * 22);
-    const y = 93 + Math.floor(noise3(i, 3, 0, 47) * 22);
+    const y = height + 1 + Math.floor(noise3(i, 3, 0, 47) * 22);
     model.fill(x, y, z, x + 2, y + 2, z + 2, 0xd8dce0, VOXEL_GLASS);
   }
-  return parts(model, 116);
+  return parts(model, height + 24);
 };
 
 const divingBell: Builder = () => {

@@ -4,6 +4,7 @@ import type { FurnishingProfile } from '../furnishingCatalogue.ts';
 import type { FurnishingKit } from '../furnishingKit.ts';
 import { prefab, type Prefab } from '../prefabs/types.ts';
 import { landmark, LANDMARK_HOMES, prop } from '../catalog/landmarks.ts';
+import { SPAN_CONTAINMENT_PROPS, SPAN_STREET_PROPS } from './kits.ts';
 
 const tall = { mount: 'free', homes: LANDMARK_HOMES } as const;
 
@@ -121,7 +122,7 @@ export const SPAN_WILD_PROPS: readonly WorldObjectDefinition[] = [
 ];
 
 export const SPAN_KIT: FurnishingKit = {
-  objects: [...SPAN_LANDMARKS, ...SPAN_WILD_PROPS],
+  objects: [...SPAN_LANDMARKS, ...SPAN_WILD_PROPS, ...SPAN_STREET_PROPS, ...SPAN_CONTAINMENT_PROPS],
   prefabs: SPAN_LANDMARK_PREFABS,
   signatures: {},
 };

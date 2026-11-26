@@ -194,7 +194,9 @@
     { "id": "old-seed-store-seed-mite-1", "creature": "seed-mite", "at": { "room": "old-seed-store", "dx": 9, "dy": 6 } }
   ],
   "lights": [],
-  "decals": [],
+  "decals": [
+    { "kind": "stencil", "pattern": "border", "at": { "room": "ground", "dx": 34, "dy": 38 }, "width": 4, "height": 2 }
+  ],
   "setPieces": [
     { "id": "top-terrace-landmark", "prefab": "landmark-harvest-gantry", "at": { "room": "ground", "dx": 35, "dy": 46 }, "facing": "south" }
   ],

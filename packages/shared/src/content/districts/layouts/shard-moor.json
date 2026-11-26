@@ -46,6 +46,7 @@
     { "id": "shard-moor-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 38 }, "facing": "west" },
     { "id": "shard-moor-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 30 }, "facing": "west" },
     { "id": "shard-moor-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 44, "dy": 25 }, "facing": "north" },
+    { "id": "shard-moor-d0", "object": "warning-sign", "at": { "room": "ground", "dx": 34, "dy": 39 } },
     { "id": "shard-moor-w0", "object": "obsidian-outcrop", "at": { "room": "ground", "dx": 21, "dy": 49 }, "facing": "west" },
     { "id": "shard-moor-w1", "object": "obsidian-outcrop", "at": { "room": "ground", "dx": 17, "dy": 51 }, "facing": "east" },
     { "id": "shard-moor-w2", "object": "fused-shards", "at": { "room": "ground", "dx": 23, "dy": 51 }, "facing": "east" },

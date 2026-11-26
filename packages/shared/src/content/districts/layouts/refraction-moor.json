@@ -44,6 +44,7 @@
     { "id": "refraction-moor-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 40, "dy": 38 }, "facing": "west" },
     { "id": "refraction-moor-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 41 }, "facing": "north" },
     { "id": "refraction-moor-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 38 }, "facing": "west" },
+    { "id": "refraction-moor-d0", "object": "warning-sign", "at": { "room": "ground", "dx": 33, "dy": 38 } },
     { "id": "refraction-moor-w0", "object": "glass-crystals", "at": { "room": "ground", "dx": 25, "dy": 24 }, "facing": "west" },
     { "id": "refraction-moor-w1", "object": "glass-crystals", "at": { "room": "ground", "dx": 28, "dy": 25 }, "facing": "east" },
     { "id": "refraction-moor-w2", "object": "glass-crystals", "at": { "room": "ground", "dx": 31, "dy": 21 }, "facing": "west" },
@@ -181,7 +182,9 @@
     { "id": "moor-cells-prism-hound-1", "creature": "prism-hound", "at": { "room": "moor-cells", "dx": 9, "dy": 6 } }
   ],
   "lights": [],
-  "decals": [],
+  "decals": [
+    { "kind": "stencil", "pattern": "border", "at": { "room": "ground", "dx": 34, "dy": 38 }, "width": 4, "height": 2 }
+  ],
   "setPieces": [
     { "id": "refraction-moor-landmark", "prefab": "landmark-glass-spire", "at": { "room": "ground", "dx": 48, "dy": 32 }, "facing": "south" }
   ],

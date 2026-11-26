@@ -50,3 +50,29 @@ test('tint replaces the kind colour', () => {
   const rug: FloorDecal = { kind: 'rug', rect: { x: 0, y: 0, width: 1, height: 1 }, tint: '#102030' };
   assert.equal(sample([rug], 5, 5)?.color, 0x102030);
 });
+
+
+test('a lane line runs thin and dashed down the middle of its strip', () => {
+  const line: FloorDecal = { kind: 'lane-line', rect: { x: 0, y: 0, width: 2, height: 8 } };
+  assert.ok(sample([line], 7, 3) !== null || sample([line], 8, 3) !== null);
+  assert.equal(sample([line], 3, 3), null);
+  assert.equal(sample([line], 12, 3), null);
+  assert.equal(sample([line], 7, 20), null);
+  assert.equal(sample([line], 8, 20), null);
+});
+
+test('a water stain darkens its middle and fades out before the corners', () => {
+  const stain: FloorDecal = { kind: 'water-stain', rect: { x: 0, y: 0, width: 3, height: 2 } };
+  assert.ok((sample([stain], 12, 8)?.color ?? BASE) < BASE);
+  assert.equal(sample([stain], 0, 0), null);
+});
+
+test('floor stencils paint a shape and leave bare floor round it', () => {
+  for (const pattern of ['solid', 'border', 'compass', 'stripe', 'checker'] as const) {
+    const stencil: FloorDecal = { kind: 'stencil', rect: { x: 0, y: 0, width: 4, height: 2 }, pattern };
+    let painted = 0;
+    for (let vz = 0; vz < 16; vz++) for (let vx = 0; vx < 32; vx++) if (sample([stencil], vx, vz)) painted++;
+    assert.ok(painted > 20, pattern + ' paints almost nothing');
+    assert.ok(painted < 32 * 16 * 0.6, pattern + ' paints the whole strip');
+  }
+});

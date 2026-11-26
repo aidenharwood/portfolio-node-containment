@@ -41,6 +41,7 @@
     { "id": "plating-road-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 40, "dy": 39 }, "facing": "west" },
     { "id": "plating-road-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 42 }, "facing": "north" },
     { "id": "plating-road-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 39 }, "facing": "west" },
+    { "id": "plating-road-d0", "object": "warning-sign", "at": { "room": "ground", "dx": 33, "dy": 39 } },
     { "id": "plating-road-w0", "object": "fallen-log", "at": { "room": "ground", "dx": 41, "dy": 23 } },
     { "id": "plating-road-w1", "object": "tree-stump", "at": { "room": "ground", "dx": 38, "dy": 21 }, "facing": "north" },
     { "id": "plating-road-w2", "object": "windbent-pine", "at": { "room": "ground", "dx": 58, "dy": 56 }, "facing": "east" },
@@ -129,7 +130,9 @@
     { "id": "plating-cells-null-echo-1", "creature": "null-echo", "at": { "room": "plating-cells", "dx": 9, "dy": 6 } }
   ],
   "lights": [],
-  "decals": [],
+  "decals": [
+    { "kind": "stencil", "pattern": "border", "at": { "room": "ground", "dx": 34, "dy": 39 }, "width": 4, "height": 2 }
+  ],
   "setPieces": [
     { "id": "plating-road-landmark", "prefab": "landmark-null-chimney", "at": { "room": "ground", "dx": 48, "dy": 34 }, "facing": "south" }
   ],

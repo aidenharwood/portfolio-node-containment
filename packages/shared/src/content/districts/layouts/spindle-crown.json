@@ -45,6 +45,7 @@
     { "id": "spindle-crown-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 24, "dy": 37 }, "facing": "east" },
     { "id": "spindle-crown-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 24, "dy": 29 }, "facing": "east" },
     { "id": "spindle-crown-path-light-5", "object": "path-light", "at": { "room": "ground", "dx": 28, "dy": 26 }, "facing": "north" },
+    { "id": "spindle-crown-d0", "object": "class-placard", "at": { "room": "ground", "dx": 32, "dy": 38 } },
     { "id": "spindle-crown-w0", "object": "windbent-pine", "at": { "room": "ground", "dx": 23, "dy": 10 }, "facing": "east" },
     { "id": "spindle-crown-w1", "object": "windbent-pine", "at": { "room": "ground", "dx": 27, "dy": 11 }, "facing": "east" },
     { "id": "spindle-crown-w2", "object": "windbent-pine", "at": { "room": "ground", "dx": 21, "dy": 10 }, "facing": "east" },

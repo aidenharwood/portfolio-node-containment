@@ -13,7 +13,9 @@ export type FloorDecalKind =
   | 'water-stain'
   | 'salt-crust'
   | 'alien-vein'
-  | 'cracks';
+  | 'cracks'
+  | 'lane-line'
+  | 'stencil';
 
 export type FloorDecalPattern = 'solid' | 'border' | 'checker' | 'compass' | 'stripe';
 

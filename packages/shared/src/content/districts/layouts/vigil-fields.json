@@ -48,6 +48,7 @@
     { "id": "vigil-fields-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 41, "dy": 38 }, "facing": "west" },
     { "id": "vigil-fields-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 42 }, "facing": "north" },
     { "id": "vigil-fields-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 48, "dy": 40 }, "facing": "west" },
+    { "id": "vigil-fields-d0", "object": "class-placard", "at": { "room": "ground", "dx": 34, "dy": 38 } },
     { "id": "vigil-fields-w0", "object": "fused-shards", "at": { "room": "ground", "dx": 28, "dy": 51 }, "facing": "west" },
     { "id": "vigil-fields-w1", "object": "fused-shards", "at": { "room": "ground", "dx": 27, "dy": 47 }, "facing": "east" },
     { "id": "vigil-fields-w2", "object": "fused-shards", "at": { "room": "ground", "dx": 28, "dy": 47 }, "facing": "west" },

@@ -41,6 +41,7 @@
     { "id": "the-lens-poi-steppe-reliquary-0", "object": "steppe-reliquary", "at": { "room": "ground", "dx": 32, "dy": 46 } },
     { "id": "the-lens-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 21, "dy": 38 }, "facing": "east" },
     { "id": "the-lens-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 30, "dy": 38 }, "facing": "west" },
+    { "id": "the-lens-d0", "object": "warning-sign", "at": { "room": "ground", "dx": 23, "dy": 38 } },
     { "id": "the-lens-w0", "object": "fused-shards", "at": { "room": "ground", "dx": 30, "dy": 22 } },
     { "id": "the-lens-w1", "object": "fused-shards", "at": { "room": "ground", "dx": 25, "dy": 26 }, "facing": "north" },
     { "id": "the-lens-w2", "object": "fused-shards", "at": { "room": "ground", "dx": 28, "dy": 20 }, "facing": "east" },

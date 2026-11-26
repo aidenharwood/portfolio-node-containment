@@ -46,6 +46,7 @@
     { "id": "barley-steps-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 40 }, "facing": "east" },
     { "id": "barley-steps-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 40, "dy": 40 }, "facing": "west" },
     { "id": "barley-steps-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 43 }, "facing": "north" },
+    { "id": "barley-steps-d0", "object": "warning-sign", "at": { "room": "ground", "dx": 33, "dy": 40 } },
     { "id": "barley-steps-w0", "object": "field-wall", "at": { "room": "ground", "dx": 40, "dy": 5 } },
     { "id": "barley-steps-w1", "object": "field-wall", "at": { "room": "ground", "dx": 41, "dy": 5 } },
     { "id": "barley-steps-w2", "object": "field-wall", "at": { "room": "ground", "dx": 42, "dy": 5 } },

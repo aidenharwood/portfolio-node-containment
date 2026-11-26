@@ -182,7 +182,9 @@
     { "id": "downs-barracks-glass-stalker-1", "creature": "glass-stalker", "at": { "room": "downs-barracks", "dx": 2, "dy": 3 } }
   ],
   "lights": [],
-  "decals": [],
+  "decals": [
+    { "kind": "stencil", "pattern": "border", "at": { "room": "ground", "dx": 27, "dy": 42 }, "width": 4, "height": 2 }
+  ],
   "setPieces": [
     { "id": "shining-downs-landmark", "prefab": "landmark-steppe-mast", "at": { "room": "ground", "dx": 29, "dy": 25 }, "facing": "south" }
   ],

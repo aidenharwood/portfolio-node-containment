@@ -139,7 +139,9 @@
     { "id": "pickers-barracks-seed-mite-1", "creature": "seed-mite", "at": { "room": "pickers-barracks", "dx": 2, "dy": 3 } }
   ],
   "lights": [],
-  "decals": [],
+  "decals": [
+    { "kind": "stencil", "pattern": "border", "at": { "room": "ground", "dx": 34, "dy": 38 }, "width": 4, "height": 2 }
+  ],
   "setPieces": [
     { "id": "bramble-steps-landmark", "prefab": "landmark-terrace-windpump", "at": { "room": "ground", "dx": 35, "dy": 21 }, "facing": "south" }
   ],

@@ -117,7 +117,9 @@
     { "id": "axle-bunks-cell-breaker-1", "creature": "cell-breaker", "at": { "room": "axle-bunks", "dx": 2, "dy": 3 } }
   ],
   "lights": [],
-  "decals": [],
+  "decals": [
+    { "kind": "stencil", "pattern": "border", "at": { "room": "ground", "dx": 34, "dy": 40 }, "width": 4, "height": 2 }
+  ],
   "setPieces": [
     { "id": "axle-flats-landmark", "prefab": "landmark-terminus-headframe", "at": { "room": "ground", "dx": 48, "dy": 33 }, "facing": "south" }
   ],

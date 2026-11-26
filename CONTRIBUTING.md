@@ -25,6 +25,7 @@
 | Look at or edit a district or level | `npm run plan -- <district> [room]`, or `npm run dev`, open `/editor.html` and press Edit |
 | Dress rooms with props and crowds | `setPieces` and `objects` in the district's layout file, following the Placement rules in `WORLD_DESIGN.md`; props in `shared/src/content/prefabs/*.ts`, `clutterObjects.ts`, `furnitureObjects.ts`, `ambientNpcs.ts` (models in `client/src/render/models/clutterModels.ts` and `furnitureModels.ts`) |
 | Grow trees, rocks, ruins and flora in the wilds | `WILD_GROWTH` in `scripts/span/wildGrowth.ts` (stands per region), the props in `SPAN_WILD_PROPS` (`shared/src/content/span/objects.ts`), their models in `client/src/render/models/natureModels.ts`; then re-run `node scripts/span/cutSquares.ts` |
+| Dress streets, façades and Site compounds | `scripts/span/streetDressing.ts` (what goes where), the props in `SPAN_STREET_PROPS` and `SPAN_CONTAINMENT_PROPS` (`shared/src/content/span/kits.ts`), their models in `client/src/render/models/streetModels.ts` and `containmentModels.ts`, floor paint in `client/src/render/world/floorDecals.ts`; then re-run `node scripts/span/cutSquares.ts` |
 | Say how a prop stands and where it belongs | `FURNISHING_PROFILES` and `ROOM_SIGNATURES` in `shared/src/content/furnishingCatalogue.ts` |
 | Place districts or add a connector | `shared/src/content/levels/*.ts`                    |
 | Add a recipe, material or resource node | `shared/src/content/{recipes,craftingItems,craftingObjects}.ts` |
