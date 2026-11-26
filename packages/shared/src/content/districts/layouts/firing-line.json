@@ -48,6 +48,7 @@
     { "id": "firing-line-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 55 }, "facing": "east" },
     { "id": "firing-line-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 40, "dy": 55 }, "facing": "west" },
     { "id": "firing-line-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 58 }, "facing": "north" },
+    { "id": "firing-line-d0", "object": "class-placard", "at": { "room": "ground", "dx": 33, "dy": 55 } },
     { "id": "firing-line-w0", "object": "broadleaf-tree", "at": { "room": "ground", "dx": 6, "dy": 25 } },
     { "id": "firing-line-w1", "object": "broadleaf-tree", "at": { "room": "ground", "dx": 6, "dy": 23 }, "facing": "west" },
     { "id": "firing-line-w2", "object": "broadleaf-tree", "at": { "room": "ground", "dx": 9, "dy": 21 }, "facing": "west" },

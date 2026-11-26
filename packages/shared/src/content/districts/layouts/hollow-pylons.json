@@ -40,6 +40,7 @@
     { "id": "hollow-pylons-poi-steppe-reliquary-0", "object": "steppe-reliquary", "at": { "room": "ground", "dx": 30, "dy": 56 } },
     { "id": "hollow-pylons-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 22, "dy": 40 }, "facing": "east" },
     { "id": "hollow-pylons-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 40 }, "facing": "west" },
+    { "id": "hollow-pylons-d0", "object": "warning-sign", "at": { "room": "ground", "dx": 24, "dy": 40 } },
     { "id": "hollow-pylons-w0", "object": "glass-crystals", "at": { "room": "ground", "dx": 17, "dy": 4 }, "facing": "west" },
     { "id": "hollow-pylons-w1", "object": "glass-crystals", "at": { "room": "ground", "dx": 14, "dy": 5 }, "facing": "east" },
     { "id": "hollow-pylons-w2", "object": "glass-crystals", "at": { "room": "ground", "dx": 13, "dy": 7 } },

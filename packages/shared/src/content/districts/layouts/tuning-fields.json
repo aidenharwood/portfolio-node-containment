@@ -176,7 +176,9 @@
     { "id": "tuning-field-lab-choir-echo-0", "creature": "choir-echo", "at": { "room": "tuning-field-lab", "dx": 8, "dy": 5 } }
   ],
   "lights": [],
-  "decals": [],
+  "decals": [
+    { "kind": "stencil", "pattern": "border", "at": { "room": "ground", "dx": 34, "dy": 38 }, "width": 4, "height": 2 }
+  ],
   "setPieces": [
     { "id": "tuning-fields-landmark", "prefab": "landmark-tuning-pylon", "at": { "room": "ground", "dx": 37, "dy": 22 }, "facing": "south" }
   ],

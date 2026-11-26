@@ -34,6 +34,7 @@ import { safeNodes } from './safeNodes.ts';
 import { lightStreets } from './streetLights.ts';
 import { knowSquares, megastructureGround, reservedBy } from './megastructures.ts';
 import { growWild } from './wildGrowth.ts';
+import { dressStreets } from './streetDressing.ts';
 
 registerFurnishingKit(CITY_KIT);
 registerFurnishingKit(LANDMARK_KIT);
@@ -529,7 +530,7 @@ function buildDistrictMap(layout: DistrictLayout): readonly string[] {
 for (const file of readdirSync(OUT)) if (file.endsWith('.json')) unlinkSync(join(OUT, file));
 const written: { id: string; kind: 'square' | 'below' }[] = [];
 for (const cut of all) {
-  const layout = growWild(lightStreets(withQuestPlacements(dressSquare(cut)), land), land);
+  const layout = growWild(dressStreets(lightStreets(withQuestPlacements(dressSquare(cut)), land), land), land);
   writeFileSync(join(OUT, layout.id + '.json'), printLayout(layout));
   written.push({ id: layout.id, kind: 'square' });
 }

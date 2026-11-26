@@ -44,6 +44,7 @@
     { "id": "echo-plain-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 41 }, "facing": "north" },
     { "id": "echo-plain-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 24, "dy": 37 }, "facing": "east" },
     { "id": "echo-plain-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 24, "dy": 29 }, "facing": "east" },
+    { "id": "echo-plain-d0", "object": "warning-sign", "at": { "room": "ground", "dx": 32, "dy": 38 } },
     { "id": "echo-plain-w0", "object": "fused-shards", "at": { "room": "ground", "dx": 39, "dy": 21 }, "facing": "east" },
     { "id": "echo-plain-w1", "object": "fused-shards", "at": { "room": "ground", "dx": 46, "dy": 21 }, "facing": "east" },
     { "id": "echo-plain-w2", "object": "fused-shards", "at": { "room": "ground", "dx": 44, "dy": 23 }, "facing": "west" },
@@ -151,7 +152,9 @@
     { "id": "echo-cells-red-twin-1", "creature": "red-twin", "at": { "room": "echo-cells", "dx": 9, "dy": 6 } }
   ],
   "lights": [],
-  "decals": [],
+  "decals": [
+    { "kind": "stencil", "pattern": "border", "at": { "room": "ground", "dx": 33, "dy": 38 }, "width": 4, "height": 2 }
+  ],
   "setPieces": [
     { "id": "echo-plain-landmark", "prefab": "landmark-cantor-bell", "at": { "room": "ground", "dx": 32, "dy": 21 }, "facing": "south" }
   ],

@@ -44,6 +44,7 @@
     { "id": "seed-fields-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 39 }, "facing": "east" },
     { "id": "seed-fields-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 40, "dy": 39 }, "facing": "west" },
     { "id": "seed-fields-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 42 }, "facing": "north" },
+    { "id": "seed-fields-d0", "object": "class-placard", "at": { "room": "ground", "dx": 33, "dy": 39 } },
     { "id": "seed-fields-w0", "object": "field-wall", "at": { "room": "ground", "dx": 25, "dy": 3 } },
     { "id": "seed-fields-w1", "object": "field-wall", "at": { "room": "ground", "dx": 26, "dy": 3 } },
     { "id": "seed-fields-w2", "object": "field-wall", "at": { "room": "ground", "dx": 27, "dy": 3 } },

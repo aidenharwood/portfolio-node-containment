@@ -44,6 +44,10 @@
     { "id": "reactor-scar-path-light-0", "object": "path-light", "at": { "room": "ground", "dx": 31, "dy": 38 }, "facing": "east" },
     { "id": "reactor-scar-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 37, "dy": 42 }, "facing": "north" },
     { "id": "reactor-scar-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 45, "dy": 39 }, "facing": "south" },
+    { "id": "reactor-scar-d0", "object": "class-placard", "at": { "room": "ground", "dx": 33, "dy": 38 } },
+    { "id": "reactor-scar-d1", "object": "cargo-container", "at": { "room": "ground", "dx": 41, "dy": 20 }, "facing": "east" },
+    { "id": "reactor-scar-d2", "object": "barricade", "at": { "room": "ground", "dx": 44, "dy": 20 }, "facing": "east" },
+    { "id": "reactor-scar-d3", "object": "trash-bags", "at": { "room": "ground", "dx": 47, "dy": 20 }, "facing": "east" },
     { "id": "reactor-scar-w0", "object": "scrap-mound", "at": { "room": "ground", "dx": 26, "dy": 24 } },
     { "id": "reactor-scar-w1", "object": "scrap-mound", "at": { "room": "ground", "dx": 26, "dy": 21 }, "facing": "west" },
     { "id": "reactor-scar-w2", "object": "tyre-heap", "at": { "room": "ground", "dx": 28, "dy": 22 } },
@@ -165,9 +169,12 @@
     { "id": "reactor-scar-w118", "object": "tall-grass", "at": { "room": "ground", "dx": 5, "dy": 57 }, "facing": "east" },
     { "id": "reactor-scar-w119", "object": "tyre-heap", "at": { "room": "ground", "dx": 52, "dy": 40 }, "facing": "west" },
     { "id": "reactor-scar-w120", "object": "tyre-heap", "at": { "room": "ground", "dx": 50, "dy": 39 } },
-    { "id": "reactor-scar-w121", "object": "tyre-heap", "at": { "room": "ground", "dx": 46, "dy": 19 }, "facing": "east" },
-    { "id": "reactor-scar-w122", "object": "tyre-heap", "at": { "room": "ground", "dx": 49, "dy": 17 }, "facing": "west" },
-    { "id": "reactor-scar-w123", "object": "tyre-heap", "at": { "room": "ground", "dx": 48, "dy": 19 }, "facing": "west" }
+    { "id": "reactor-scar-w121", "object": "dead-tree", "at": { "room": "ground", "dx": 14, "dy": 45 }, "facing": "east" },
+    { "id": "reactor-scar-w122", "object": "dead-tree", "at": { "room": "ground", "dx": 16, "dy": 46 }, "facing": "west" },
+    { "id": "reactor-scar-w123", "object": "dead-tree", "at": { "room": "ground", "dx": 14, "dy": 48 }, "facing": "west" },
+    { "id": "reactor-scar-w124", "object": "tree-stump", "at": { "room": "ground", "dx": 15, "dy": 43 } },
+    { "id": "reactor-scar-w125", "object": "tree-stump", "at": { "room": "ground", "dx": 12, "dy": 44 }, "facing": "north" },
+    { "id": "reactor-scar-w126", "object": "tall-grass", "at": { "room": "ground", "dx": 16, "dy": 48 }, "facing": "north" }
   ],
   "assemblies": [],
   "npcs": [

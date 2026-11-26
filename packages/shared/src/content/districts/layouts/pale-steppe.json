@@ -47,6 +47,7 @@
     { "id": "pale-steppe-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 38, "dy": 43 }, "facing": "north" },
     { "id": "pale-steppe-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 46, "dy": 39 }, "facing": "west" },
     { "id": "pale-steppe-path-light-4", "object": "path-light", "at": { "room": "ground", "dx": 46, "dy": 31 }, "facing": "west" },
+    { "id": "pale-steppe-d0", "object": "class-placard", "at": { "room": "ground", "dx": 33, "dy": 40 } },
     { "id": "pale-steppe-w0", "object": "glass-crystals", "at": { "room": "ground", "dx": 55, "dy": 52 }, "facing": "east" },
     { "id": "pale-steppe-w1", "object": "glass-crystals", "at": { "room": "ground", "dx": 55, "dy": 56 }, "facing": "north" },
     { "id": "pale-steppe-w2", "object": "glass-crystals", "at": { "room": "ground", "dx": 58, "dy": 53 } },
@@ -192,7 +193,9 @@
     { "id": "pale-barracks-choir-echo-1", "creature": "choir-echo", "at": { "room": "pale-barracks", "dx": 2, "dy": 3 } }
   ],
   "lights": [],
-  "decals": [],
+  "decals": [
+    { "kind": "stencil", "pattern": "border", "at": { "room": "ground", "dx": 34, "dy": 40 }, "width": 4, "height": 2 }
+  ],
   "setPieces": [
     { "id": "pale-steppe-landmark", "prefab": "landmark-steppe-mast", "at": { "room": "ground", "dx": 38, "dy": 24 }, "facing": "south" }
   ],

@@ -130,7 +130,9 @@
     { "id": "needle-cells-null-echo-1", "creature": "null-echo", "at": { "room": "needle-cells", "dx": 9, "dy": 6 } }
   ],
   "lights": [],
-  "decals": [],
+  "decals": [
+    { "kind": "stencil", "pattern": "border", "at": { "room": "ground", "dx": 34, "dy": 39 }, "width": 4, "height": 2 }
+  ],
   "setPieces": [
     { "id": "needle-foot-landmark", "prefab": "landmark-crown-needle", "at": { "room": "ground", "dx": 48, "dy": 37 }, "facing": "south" }
   ],

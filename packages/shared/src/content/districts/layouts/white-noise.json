@@ -44,6 +44,7 @@
     { "id": "white-noise-path-light-1", "object": "path-light", "at": { "room": "ground", "dx": 46, "dy": 44 }, "facing": "north" },
     { "id": "white-noise-path-light-2", "object": "path-light", "at": { "room": "ground", "dx": 47, "dy": 36 }, "facing": "east" },
     { "id": "white-noise-path-light-3", "object": "path-light", "at": { "room": "ground", "dx": 50, "dy": 28 }, "facing": "west" },
+    { "id": "white-noise-d0", "object": "class-placard", "at": { "room": "ground", "dx": 35, "dy": 39 } },
     { "id": "white-noise-w0", "object": "windbent-pine", "at": { "room": "ground", "dx": 24, "dy": 12 }, "facing": "east" },
     { "id": "white-noise-w1", "object": "windbent-pine", "at": { "room": "ground", "dx": 22, "dy": 14 }, "facing": "east" },
     { "id": "white-noise-w2", "object": "boulder", "at": { "room": "ground", "dx": 22, "dy": 17 }, "facing": "east" },
