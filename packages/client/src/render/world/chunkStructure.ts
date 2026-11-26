@@ -1,9 +1,12 @@
 import { isBuildingWall, TILE_KINDS, TRACK_GAUGE, type DecalCell, type ResolvedLevel, type SceneLayout, type TileLayout, type TilePoint, type TileRect } from '@containment/shared';
 import { Box3, BufferAttribute, BufferGeometry, Color, Sphere, SRGBColorSpace, Vector3 } from 'three';
-import { VOXEL_EMPTY, type VoxelGrid } from '../voxel/voxelKinds.ts';
+import { VOXEL_EMPTY, VOXEL_SOLID, type VoxelGrid, type VoxelSource } from '../voxel/voxelKinds.ts';
+import type { DenseVolume } from '../voxel/denseVolume.ts';
 import { meshVoxels, type TopSink, type VoxelMeshes } from '../voxel/voxelMesher.ts';
 import { mergeBatch, type BatchLayer, type BatchLayerName, type BatchParts } from './fadeBatch.ts';
-import { createTileVolume, drawnTopAt, groundBottomAt, groundTopAt, paintTileRows, regionTop, tileBase, type OwnedLayout } from './levelVoxels.ts';
+import { createTileVolume, drawnTopAt, groundBottomAt, groundTopAt, landPaletteAt, paintTileRows, regionTop, rockFace, tileBase, type OwnedLayout } from './levelVoxels.ts';
+import type { LandPalette } from './landPalette.ts';
+import { peakFieldOf, type PeakField } from './peaks.ts';
 import { paintRoof, roofPlanOf, type RoofBox } from './roofs.ts';
 import { FLOOR_LAYERS, TILE_RESOLUTION, ZONE_MESH_ORIGIN, ZONE_VOLUME_HEIGHT, ZONE_VOXEL_SIZE } from './worldScale.ts';
 
@@ -290,6 +293,79 @@ function topGeometry(levels: Int16Array, width: number, fromColumn: number, toCo
   return geometry;
 }
 
+interface RockColumns {
+  readonly source: VoxelSource;
+  shell(tx: number, ty: number, base: number, groundBottom: (tx: number, ty: number) => number): number[];
+}
+
+function rockColumnsOf(volume: DenseVolume, layout: OwnedLayout, peaks: PeakField | null): RockColumns {
+  const R = TILE_RESOLUTION;
+  const { width, depth, originX, originZ, kinds } = volume;
+  const crests = new Int16Array(width * depth).fill(-1);
+  const tops = new Int16Array(width * depth).fill(-1);
+  for (let lz = 0; lz < depth; lz++) {
+    for (let lx = 0; lx < width; lx++) {
+      const vx = originX + lx;
+      const vz = originZ + lz;
+      if (layout.tileAt({ x: Math.floor(vx / R), y: Math.floor(vz / R) }) !== 'rock') continue;
+      let y = volume.height - 1;
+      while (y >= 0 && kinds[(y * depth + lz) * width + lx] === VOXEL_EMPTY) y--;
+      crests[lz * width + lx] = y;
+      tops[lz * width + lx] = y < 0 ? -1 : y + (peaks ? peaks.columnRise(vx, vz) : 0);
+    }
+  }
+  const at = (vx: number, vz: number): number => {
+    const lx = vx - originX;
+    const lz = vz - originZ;
+    return lx < 0 || lz < 0 || lx >= width || lz >= depth ? -1 : lz * width + lx;
+  };
+  const lands = new Map<number, LandPalette>();
+  const landOf = (vx: number, vz: number): LandPalette => {
+    const tx = Math.floor(vx / R);
+    const ty = Math.floor(vz / R);
+    const key = ty * layout.width + tx;
+    const known = lands.get(key);
+    if (known) return known;
+    const land = landPaletteAt(layout, tx, ty);
+    lands.set(key, land);
+    return land;
+  };
+  const source: VoxelSource = {
+    kindAt: (x, y, z) => {
+      const kind = volume.kindAt(x, y, z);
+      if (kind !== VOXEL_EMPTY) return kind;
+      const index = at(x, z);
+      return index >= 0 && y > (crests[index] as number) && y <= (tops[index] as number) ? VOXEL_SOLID : VOXEL_EMPTY;
+    },
+    colorAt: (x, y, z) => {
+      if (volume.kindAt(x, y, z) !== VOXEL_EMPTY) return volume.colorAt(x, y, z);
+      return rockFace(x, y, z, landOf(x, z), peaks !== null && y === tops[at(x, z)] && peaks.isLedge(x, z));
+    },
+  };
+  return {
+    source,
+    shell: (tx, ty, base, groundBottom) => {
+      const cells: number[] = [];
+      const floor = base + FLOOR_LAYERS;
+      const solidTop = (vx: number, vz: number): number => {
+        const index = at(vx, vz);
+        if (index < 0) return -1;
+        const top = tops[index] as number;
+        return top >= 0 ? top : groundBottom(Math.floor(vx / R), Math.floor(vz / R)) - 1;
+      };
+      for (let vz = ty * R; vz < (ty + 1) * R; vz++) {
+        for (let vx = tx * R; vx < (tx + 1) * R; vx++) {
+          const top = tops[at(vx, vz)] ?? -1;
+          if (top < floor) continue;
+          const low = Math.min(solidTop(vx - 1, vz), solidTop(vx + 1, vz), solidTop(vx, vz - 1), solidTop(vx, vz + 1));
+          for (let y = Math.max(floor, Math.min(top, low + 1)); y <= top; y++) cells.push(vx, y, vz);
+        }
+      }
+      return cells;
+    },
+  };
+}
+
 export function planChunkStructure(layout: OwnedLayout, decals: DecalMap, region: TileRect): StructurePlan {
   const volume = createTileVolume(region, layout);
   const meshOptions = { voxelSize: ZONE_VOXEL_SIZE, origin: ZONE_MESH_ORIGIN };
@@ -349,6 +425,8 @@ export function planChunkStructure(layout: OwnedLayout, decals: DecalMap, region
     });
   }
   const collected = bandsOf(region).map(() => ({ tiles: [] as TilePoint[], pieces: [] as VoxelMeshes[], tops: [] as (BufferGeometry | null)[] }));
+  let rocks: RockColumns | null = null;
+  const groundBottom = (tx: number, ty: number): number => bottoms[(ty - region.y + 1) * span + tx - region.x + 1] ?? 0;
   const walls: WallBand[] = [];
   const firstBand = Math.floor(region.y / BAND_ROWS);
   for (let ty = region.y; ty < lastRow; ty++) {
@@ -362,7 +440,8 @@ export function planChunkStructure(layout: OwnedLayout, decals: DecalMap, region
           min: [tx * R, base + FLOOR_LAYERS, ty * R] as const,
           max: [(tx + 1) * R, drawnTopAt(layout, tx, ty) + ZONE_VOLUME_HEIGHT, (ty + 1) * R] as const,
         };
-        const meshes = meshVoxels(volume, bounds, { ...meshOptions, topSink: wallTops.sink });
+        const rock = kind === 'rock' ? (rocks ??= rockColumnsOf(volume, layout, layout.regionAt ? peakFieldOf(layout) : null)) : null;
+        const meshes = rock ? meshVoxels(rock.source, bounds, { ...meshOptions, topSink: wallTops.sink }, rock.shell(tx, ty, base, groundBottom)) : meshVoxels(volume, bounds, { ...meshOptions, topSink: wallTops.sink });
         const column = (tx - region.x) * R;
         const row = (ty - region.y) * R;
         const top = wallTops.geometry(column, column + R, row, row + R);

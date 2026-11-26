@@ -185,13 +185,22 @@ const AROUND: readonly (readonly [number, number])[] = [
 
 const SOD: ReadonlySet<TileKindId> = new Set<TileKindId>(['grass', 'dirt', 'soil', 'gravel', 'trees', 'water', 'coolant', 'track']);
 
+const STRATUM = 3;
+
 function rockColor(vx: number, vy: number, vz: number, land: LandPalette): number {
-  const strata = smoothNoise(vx + vy * 3, vz - vy * 2, 4, 103);
-  const color = strata > 0.5 ? mix(land.rock, land.rockLight, ramp(0.55, 0.8, strata)) : mix(land.rock, land.rockDark, ramp(0.45, 0.2, strata));
-  return jitter(color, 0.02, noise3(vx, vy, vz, 109));
+  const band = Math.floor((vy + smoothNoise(vx, vz, 48, 103) * 6) / STRATUM);
+  const pick = noise3(band, 0, 0, 107);
+  const tone = pick < 0.3 ? mix(land.rock, land.rockDark, 0.7) : pick > 0.72 ? mix(land.rock, land.rockLight, 0.7) : land.rock;
+  return jitter(tone, 0.015, noise3(vx, vy, vz, 109));
 }
 
-const mossy = (color: number, vx: number, vz: number, land: LandPalette): number => mix(color, land.moss, Math.min(0.85, ramp(0.6, 0.78, smoothNoise(vx, vz, 6, 131)) * land.mossiness * 1.4));
+export const rockFace = (vx: number, vy: number, vz: number, land: LandPalette, ledge: boolean): number => (ledge ? mossy(rockColor(vx, vy, vz, land), vx, vz, land) : rockColor(vx, vy, vz, land));
+
+export const landPaletteAt = (layout: OwnedLayout, tx: number, ty: number): LandPalette => dominantLand(landSpotOf(layout.regionAt, tx, ty));
+
+export const rockCrest = (vx: number, vz: number, outer: boolean): number => WALL_LAYERS - 1 - 2 * Math.floor(smoothNoise(vx, vz, 9, 101) * 4) - (outer ? 1 : 0);
+
+const mossy = (color: number, vx: number, vz: number, land: LandPalette): number => mix(color, land.moss, Math.min(0.85, ramp(0.6, 0.78, smoothNoise(vx, vz, 12, 131)) * land.mossiness * 1.4));
 
 function earthColor(kind: TileKindId, vx: number, vy: number, vz: number, depth: number, land: LandPalette): number {
   if (kind === 'cliff' || kind === 'rock') return rockColor(vx, vy, vz, land);
@@ -1299,7 +1308,7 @@ function paintRock(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: num
       const vx = tx * R + lx;
       const vz = ty * R + lz;
       const outer = outerSide(lx, lz, open);
-      const crest = WALL_LAYERS - 1 - Math.floor(smoothNoise(vx, vz, 5, 101) * 7) - (outer ? 1 : 0);
+      const crest = rockCrest(vx, vz, outer !== null);
       for (let h = 0; h <= crest; h++) {
         const vy = FLOOR_LAYERS + h;
         const color = rockColor(vx, vy, vz, land);
