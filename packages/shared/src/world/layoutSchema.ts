@@ -12,7 +12,7 @@ type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
 const FACINGS = ['north', 'east', 'south', 'west'] as const;
 const SHAPES = ['rect', 'octagon', 'round'] as const;
 const CONDITIONS = ['pristine', 'worn', 'breached', 'overgrown', 'flooded', 'alien', 'uncanny'] as const;
-const DECAL_KINDS = ['inlay', 'mosaic', 'rug', 'runner', 'lane-paint', 'hazard-paint', 'wear', 'scorch', 'moss', 'water-stain', 'salt-crust', 'alien-vein', 'cracks'] as const;
+const DECAL_KINDS = ['inlay', 'mosaic', 'rug', 'runner', 'lane-paint', 'hazard-paint', 'wear', 'scorch', 'moss', 'water-stain', 'salt-crust', 'alien-vein', 'cracks', 'lane-line', 'stencil'] as const;
 const DECAL_PATTERNS = ['solid', 'border', 'checker', 'compass', 'stripe'] as const;
 
 const LAYOUT_ENUMS_MATCH: readonly true[] = [

@@ -146,7 +146,19 @@ export type WorldObjectModel =
   | 'cableRun'
   | 'streetStall'
   | 'trashBags'
-  | 'parkedBike';
+  | 'parkedBike'
+  | 'blastFrameLeft'
+  | 'blastFrameRight'
+  | 'classPlacard'
+  | 'warningSign'
+  | 'sentryTower'
+  | 'jerseyBarrier'
+  | 'razorWire'
+  | 'sirenBeacon'
+  | 'deconTent'
+  | 'containmentCrate'
+  | 'cordonPost'
+  | 'cargoContainer';
 
 export interface ObjectInteraction {
   readonly verb: string;

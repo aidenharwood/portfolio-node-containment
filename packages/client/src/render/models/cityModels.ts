@@ -8,10 +8,11 @@ import type { MegaModel } from './megaModels.ts';
 import type { NatureModel } from './natureModels.ts';
 import type { TransitModel } from './transitModels.ts';
 import type { StreetModel } from './streetModels.ts';
+import type { ContainmentModel } from './containmentModels.ts';
 import { glyphInterior, glyphOutline, SYMBOLS, textCells, textWidth, type Glyph } from './glyphs.ts';
 import { MODEL_VOXEL_SIZE } from '../world/worldScale.ts';
 
-type CityModel = Exclude<WorldObjectModel, 'placeholder' | TransitModel | MegaModel | NatureModel | StreetModel>;
+type CityModel = Exclude<WorldObjectModel, 'placeholder' | TransitModel | MegaModel | NatureModel | StreetModel | ContainmentModel>;
 type Builder = (seed: number) => ObjectModelParts;
 
 export const CITY = {

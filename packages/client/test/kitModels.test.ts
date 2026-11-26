@@ -1,17 +1,18 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { GAME_CONTENT, type WorldObjectModel } from '@containment/shared';
+import { CONTAINMENT_BUILDERS } from '../src/render/models/containmentModels.ts';
 import { STREET_BUILDERS } from '../src/render/models/streetModels.ts';
 import { columnCells, columnHeight, glyphInterior, glyphOutline, KANA, LETTERS, SYMBOLS, textCells, textWidth } from '../src/render/models/glyphs.ts';
 import type { ObjectModelParts } from '../src/render/models/objectModels.ts';
 
-const BUILDERS: Readonly<Record<string, (seed: number) => ObjectModelParts>> = { ...STREET_BUILDERS };
+const BUILDERS: Readonly<Record<string, (seed: number) => ObjectModelParts>> = { ...STREET_BUILDERS, ...CONTAINMENT_BUILDERS };
 const MODELS = Object.keys(BUILDERS) as WorldObjectModel[];
 const VARIANTS = 8;
 const variants = (model: WorldObjectModel) => Array.from({ length: VARIANTS }, (_, seed) => (BUILDERS[model] as (seed: number) => ObjectModelParts)(seed));
 const mountOf = (model: WorldObjectModel) => [...GAME_CONTENT.worldObjects.values()].find((object) => object.model === model)?.furnishing?.mount;
 
-test('every street piece is a placeable object', () => {
+test('every street and containment piece is a placeable object', () => {
   for (const model of MODELS) assert.ok(mountOf(model), model + ' has no object with a furnishing profile');
 });
 
@@ -38,6 +39,10 @@ test('wall pieces hang against the wall behind their tile and reach no further b
     if (mountOf(model) !== 'wall') continue;
     for (const [seed, parts] of variants(model).entries()) {
       const bounds = parts.base.bounds!;
+      if (model === 'razorWire') {
+        assert.ok(bounds.min[2] >= -20 && bounds.max[2] <= -11, 'razor wire variant ' + seed + ' does not sit on the fence line');
+        continue;
+      }
       assert.equal(bounds.min[2], -8, model + ' variant ' + seed + ' does not touch its wall');
     }
   }
