@@ -91,14 +91,14 @@ interface FaceRun {
   readonly voxel: FacadeVoxel;
 }
 
-const runKey = (runs: readonly FaceRun[]): string => runs.map(({ from, to, voxel }) => `${from}-${to}:${voxel.color}:${voxel.emissive ? 1 : 0}`).join('|');
+const sameRuns = (a: readonly FaceRun[], b: readonly FaceRun[]): boolean => a.length === b.length && a.every((run, at) => run.from === b[at]?.from && run.to === b[at]?.to && run.voxel === b[at]?.voxel);
 
 function rowRuns(along: number, voxelAt: (along: number) => FacadeVoxel | null): FaceRun[] {
   const runs: FaceRun[] = [];
   let open: { from: number; voxel: FacadeVoxel } | null = null;
   for (let step = 0; step <= R; step++) {
     const voxel = step < R ? voxelAt(along + step) : null;
-    if (open && (!voxel || voxel.color !== open.voxel.color || voxel.emissive !== open.voxel.emissive)) {
+    if (open && voxel !== open.voxel) {
       runs.push({ from: along + open.from, to: along + step, voxel: open.voxel });
       open = null;
     }
@@ -123,7 +123,7 @@ function faceQuad(sink: QuadSink, side: Side, tx: number, ty: number, from: numb
 
 function paintFace(sinks: FacadeSinks, side: Side, tx: number, ty: number, low: number, high: number, voxelAt: (along: number, vy: number) => FacadeVoxel | null): void {
   const along = (side === 'north' || side === 'south' ? tx : ty) * R;
-  let pending: { readonly from: number; readonly runs: FaceRun[]; readonly key: string } | null = null;
+  let pending: { readonly from: number; readonly runs: FaceRun[] } | null = null;
   const flush = (to: number): void => {
     if (!pending) return;
     for (const run of pending.runs) faceQuad(run.voxel.emissive ? sinks.glow : sinks.solid, side, tx, ty, run.from, run.to, pending.from, to, run.voxel.color);
@@ -131,10 +131,9 @@ function paintFace(sinks: FacadeSinks, side: Side, tx: number, ty: number, low: 
   };
   for (let vy = low; vy < high; vy++) {
     const runs = rowRuns(along, (at) => voxelAt(at, vy));
-    const key = runKey(runs);
-    if (pending && pending.key === key) continue;
+    if (pending && sameRuns(pending.runs, runs)) continue;
     flush(vy);
-    pending = { from: vy, runs, key };
+    pending = { from: vy, runs };
   }
   flush(high);
 }

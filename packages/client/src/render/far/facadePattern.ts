@@ -46,8 +46,29 @@ export interface FacadeVoxel {
   readonly emissive: boolean;
 }
 
-const solid = (color: number): FacadeVoxel => ({ color, emissive: false });
-const glowing = (color: number): FacadeVoxel => ({ color, emissive: true });
+const VOXELS = new Map<number, FacadeVoxel>();
+const DIMMED = new Map<number, number>();
+
+function voxelOf(color: number, emissive: boolean): FacadeVoxel {
+  const key = emissive ? -1 - color : color;
+  const known = VOXELS.get(key);
+  if (known) return known;
+  const voxel = { color, emissive };
+  VOXELS.set(key, voxel);
+  return voxel;
+}
+
+function dim(color: number, amount: number): number {
+  const key = color * 100 + Math.round(amount * 100);
+  const known = DIMMED.get(key);
+  if (known !== undefined) return known;
+  const dimmed = darken(color, amount);
+  DIMMED.set(key, dimmed);
+  return dimmed;
+}
+
+const solid = (color: number): FacadeVoxel => voxelOf(color, false);
+const glowing = (color: number): FacadeVoxel => voxelOf(color, true);
 const wrap = (value: number, size: number): number => ((value % size) + size) % size;
 const pick = <T>(list: readonly T[], value: number): T => list[Math.floor(value * list.length)] ?? (list[0] as T);
 
@@ -74,7 +95,7 @@ export function towerFacade(material: WallMaterialId, side: Side, along: number,
     if (above === 2) return solid(TOWER_FACE.sill);
     if (noise3(bay, block, salt, 727) < 0.5) return solid(TOWER_FACE.shop);
     const glow = pick(TOWER_GLOWS, noise3(bay, block, salt, 729));
-    return glowing(above === FACADE_GROUND_FLOOR - 3 ? darken(glow, 0.3) : glow);
+    return glowing(above === FACADE_GROUND_FLOOR - 3 ? dim(glow, 0.3) : glow);
   }
   const level = top - 1 - vy;
   const storey = Math.floor(level / FACADE_STOREY);
@@ -86,7 +107,7 @@ export function towerFacade(material: WallMaterialId, side: Side, along: number,
   const share = 0.15 + 0.6 * noise3(storey, block, salt, 733);
   if (noise3(pane, storey, block + salt, 739) >= share) return solid(row === 1 ? TOWER_FACE.glassBlue : TOWER_FACE.glass);
   const glow = pick(TOWER_GLOWS, noise3(pane, storey, block + salt, 743));
-  return glowing(row === 1 ? darken(glow, 0.3) : glow);
+  return glowing(row === 1 ? dim(glow, 0.3) : glow);
 }
 
 export function windowGlow(material: WallMaterialId, tx: number, ty: number, side: Side): number | null {
@@ -110,10 +131,10 @@ export function wallFacade(material: WallMaterialId, tx: number, ty: number, sid
     } else {
       if (h === 5 && u >= 1 && u <= 6) return solid(WALL_FACE.sill);
       if (h >= 6 && h <= 11 && u >= 2 && u <= 5) {
-        if (u === 2 || u === 5 || h === 11) return solid(darken(WALL_PALETTE[material].joint, 0.3));
+        if (u === 2 || u === 5 || h === 11) return solid(dim(WALL_PALETTE[material].joint, 0.3));
         const glow = windowGlow(material, tx, ty, side);
         if (glow === null) return solid(WALL_FACE.darkWindow);
-        return glowing(h === 8 ? darken(glow, 0.35) : glow);
+        return glowing(h === 8 ? dim(glow, 0.35) : glow);
       }
     }
   }
