@@ -40,13 +40,13 @@ test('after dark the fill and key give way to lamps, neon and white-hot cores, a
   const halcyon = lightAmbience(ambience(0.5, '#4a3a6e', '#4a2e66'));
   const fill = halcyon.fill * luminanceOf(halcyon.sky);
   assert.ok(fill >= NIGHT_READABLE_FILL && fill < READABLE_FILL, `fill ${fill}`);
-  assert.deepEqual(nightLookFor(0.18), { lightGain: 1, reachGain: 1, mistGain: 1, hotCore: 0 });
+  assert.deepEqual(nightLookFor(0.18), { mistGain: 1, hotCore: 0 });
   const night = nightLookFor(0.5);
-  assert.ok(night.lightGain > 1.3 && night.reachGain > 1.1 && night.mistGain < 0.6 && night.hotCore > 0.7);
+  assert.ok(night.mistGain < 0.6 && night.hotCore > 0.7);
   let last = nightLookFor(0);
   for (let darkness = 0.05; darkness <= 1; darkness += 0.05) {
     const next = nightLookFor(darkness);
-    assert.ok(next.lightGain >= last.lightGain && next.hotCore >= last.hotCore && next.mistGain <= last.mistGain);
+    assert.ok(next.hotCore >= last.hotCore && next.mistGain <= last.mistGain);
     last = next;
   }
 });

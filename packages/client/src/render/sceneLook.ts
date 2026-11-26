@@ -27,8 +27,6 @@ const AMBIENT_GROUND_LIFT = 0.32;
 const NIGHT_FILL_CUT = 0.23;
 const NIGHT_KEY_CUT = 0.25;
 const NIGHT_MIST_CUT = 0.45;
-const NIGHT_LIGHT_GAIN = 0.45;
-const NIGHT_REACH_GAIN = 0.15;
 const NIGHT_HOT_CORE = 0.75;
 const HOT_FROM = 1.3;
 const HOT_TO = 2.6;
@@ -163,8 +161,6 @@ export interface FinishLook {
 }
 
 export interface NightLook {
-  lightGain: number;
-  reachGain: number;
   mistGain: number;
   hotCore: number;
 }
@@ -212,10 +208,8 @@ export function finishFor(darkness: number, daylight: number, into: FinishLook =
   return into;
 }
 
-export function nightLookFor(darkness: number, into: NightLook = { lightGain: 1, reachGain: 1, mistGain: 1, hotCore: 0 }): NightLook {
+export function nightLookFor(darkness: number, into: NightLook = { mistGain: 1, hotCore: 0 }): NightLook {
   const night = nightOf(darkness);
-  into.lightGain = 1 + NIGHT_LIGHT_GAIN * night;
-  into.reachGain = 1 + NIGHT_REACH_GAIN * night;
   into.mistGain = 1 - NIGHT_MIST_CUT * night;
   into.hotCore = NIGHT_HOT_CORE * night;
   return into;
@@ -460,14 +454,14 @@ export class SceneLook {
     const { lights: field, edge } = this.assignedLights;
     const strength = (source: LightSource) => {
       const flicker = source.flicker ? 0.78 + 0.22 * (Math.sin(time * 7.3 + source.seed) * 0.5 + Math.sin(time * 17.1 + source.seed * 3) * 0.5) : 1;
-      return source.intensity * LIGHT_INTENSITY_SCALE * this.nightLook.lightGain * flicker * fieldLightFade(Math.sqrt(source.position.distanceToSquared(focus)), edge);
+      return source.intensity * LIGHT_INTENSITY_SCALE * flicker * fieldLightFade(Math.sqrt(source.position.distanceToSquared(focus)), edge);
     };
     this.activeFieldLights = field.length;
     field.forEach((source, index) => {
       const target = this.fieldLights[index]!;
       target.position.copy(source.position);
       target.color.setHex(source.color).multiplyScalar(strength(source));
-      target.reach = source.radius * LIGHT_REACH * this.nightLook.reachGain;
+      target.reach = source.radius * LIGHT_REACH;
     });
     if (reassigned) buildFieldLightGrid(this.fieldLights.slice(0, field.length), focus);
   }
