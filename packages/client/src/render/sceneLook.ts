@@ -24,6 +24,14 @@ const AMBIENT_FLOOR = 0.6;
 const AMBIENT_SKY_LIFT = 0.74;
 const AMBIENT_SKY_LIFT_PER_DARKNESS = 0.3;
 const AMBIENT_GROUND_LIFT = 0.32;
+const NIGHT_FILL_CUT = 0.23;
+const NIGHT_KEY_CUT = 0.25;
+const NIGHT_MIST_CUT = 0.45;
+const NIGHT_LIGHT_GAIN = 0.45;
+const NIGHT_REACH_GAIN = 0.15;
+const NIGHT_HOT_CORE = 0.75;
+const HOT_FROM = 1.3;
+const HOT_TO = 2.6;
 const KEY_BASE = 1;
 const KEY_DARKNESS_WEIGHT = 0.7;
 const KEY_FLOOR = 0.35;
@@ -154,6 +162,13 @@ export interface FinishLook {
   vignette: number;
 }
 
+export interface NightLook {
+  lightGain: number;
+  reachGain: number;
+  mistGain: number;
+  hotCore: number;
+}
+
 export interface ShadowFrame {
   readonly standoff: number;
   readonly far: number;
@@ -174,8 +189,9 @@ export function lightAmbience(ambience: BlendedAmbience, into: AmbienceLight = c
   const tint = ambience.tint.getHex();
   into.sky.setHex(lighten(tint, AMBIENT_SKY_LIFT - ambience.darkness * AMBIENT_SKY_LIFT_PER_DARKNESS));
   into.ground.setHex(lighten(tint, AMBIENT_GROUND_LIFT));
-  into.fill = Math.max((AMBIENT_BASE - ambience.darkness * AMBIENT_DARKNESS_WEIGHT) * (1 - dusk * DUSK_AMBIENT_CUT), AMBIENT_FLOOR / luminanceOf(into.sky));
-  into.sun = Math.max(KEY_FLOOR, (KEY_BASE - ambience.darkness * KEY_DARKNESS_WEIGHT) * (1 + ambience.daylight * SUN_BOOST * skyBrightness) * (1 - dusk * DUSK_KEY_CUT));
+  const night = nightOf(ambience.darkness);
+  into.fill = Math.max((AMBIENT_BASE - ambience.darkness * AMBIENT_DARKNESS_WEIGHT) * (1 - dusk * DUSK_AMBIENT_CUT), AMBIENT_FLOOR / luminanceOf(into.sky)) * (1 - NIGHT_FILL_CUT * night);
+  into.sun = Math.max(KEY_FLOOR, (KEY_BASE - ambience.darkness * KEY_DARKNESS_WEIGHT) * (1 + ambience.daylight * SUN_BOOST * skyBrightness) * (1 - dusk * DUSK_KEY_CUT) * (1 - NIGHT_KEY_CUT * night));
   const peak = Math.max(ambience.sky.r, ambience.sky.g, ambience.sky.b);
   if (peak > 0) skyHue.copy(ambience.sky).multiplyScalar(1 / peak);
   else skyHue.setRGB(1, 1, 1);
@@ -193,6 +209,15 @@ export function finishFor(darkness: number, daylight: number, into: FinishLook =
   into.curve = GRADE_CURVE * (1 - night);
   into.toe = NIGHT_TOE * night;
   into.vignette = MathUtils.lerp(DAY_VIGNETTE, NIGHT_VIGNETTE, night);
+  return into;
+}
+
+export function nightLookFor(darkness: number, into: NightLook = { lightGain: 1, reachGain: 1, mistGain: 1, hotCore: 0 }): NightLook {
+  const night = nightOf(darkness);
+  into.lightGain = 1 + NIGHT_LIGHT_GAIN * night;
+  into.reachGain = 1 + NIGHT_REACH_GAIN * night;
+  into.mistGain = 1 - NIGHT_MIST_CUT * night;
+  into.hotCore = NIGHT_HOT_CORE * night;
   return into;
 }
 
@@ -215,6 +240,9 @@ export class SceneLook {
   private readonly background = new Color();
   private readonly light = createAmbienceLight();
   private readonly finishLook = finishFor(0, 0);
+  private readonly nightLook = nightLookFor(0);
+  private readonly output = new OutputPass();
+  private readonly hotCore = { value: 0 };
   private shadowHalf = 0;
   private shadowStandoff = 0;
   private assignedLights: LightAssignment<LightSource> = NO_LIGHTS;
@@ -255,7 +283,11 @@ export class SceneLook {
     this.composer = new EffectComposer(this.renderer, new WebGLRenderTarget(1, 1, { type: HalfFloatType, samples: 4 }));
     this.composer.addPass(new RenderPass(scene, camera));
     this.composer.addPass(this.bloom);
-    this.composer.addPass(new OutputPass());
+    Object.assign(this.output.uniforms, { hotCore: this.hotCore });
+    this.output.material.fragmentShader = this.output.material.fragmentShader
+      .replace('uniform sampler2D tDiffuse;', 'uniform sampler2D tDiffuse;\nuniform float hotCore;')
+      .replace('gl_FragColor = texture2D( tDiffuse, vUv );', `gl_FragColor = texture2D( tDiffuse, vUv );\nfloat hotPeak = max( max( gl_FragColor.r, gl_FragColor.g ), gl_FragColor.b );\ngl_FragColor.rgb = mix( gl_FragColor.rgb, vec3( hotPeak ), smoothstep( ${HOT_FROM.toFixed(2)}, ${HOT_TO.toFixed(2)}, hotPeak ) * hotCore );`);
+    this.composer.addPass(this.output);
     this.composer.addPass(this.finish);
     const highPass = this.bloom.materialHighPassFilter;
     highPass.uniforms['smoothWidth']!.value = BLOOM_KNEE;
@@ -348,7 +380,9 @@ export class SceneLook {
     airShapeFor(ambience, nightOf(ambience.darkness), this.reach, this.air);
     this.fog.density = this.survey ? 0 : this.air.density * LEGACY_FOG_SHARE;
     const groundFog = this.survey ? 0 : Math.min(GROUND_FOG_LIMIT, Math.max(0, (ambience.haze - 1) * GROUND_FOG_PER_HAZE + ambience.weather.mist * GROUND_FOG_PER_MIST));
-    this.mistColor.copy(ambience.fog).multiplyScalar(MIST_GAIN).lerp(this.flashColor.setRGB(1, 1, 1), MIST_WHITE);
+    nightLookFor(this.survey ? 0 : ambience.darkness, this.nightLook);
+    this.hotCore.value = this.nightLook.hotCore;
+    this.mistColor.copy(ambience.fog).multiplyScalar(MIST_GAIN * this.nightLook.mistGain).lerp(this.flashColor.setRGB(1, 1, 1), MIST_WHITE);
     setBeamWeather(this.survey ? 0 : ambience.haze, ambience.weather.mist, ambience.weather.rain);
     setFieldAtmosphere({ groundFog, mistColor: this.mistColor, wetness: ambience.weather.rain + DRIZZLE_WETNESS * ambience.weather.drizzle });
     if (this.flash > 0 && !this.survey) {
@@ -426,14 +460,14 @@ export class SceneLook {
     const { lights: field, edge } = this.assignedLights;
     const strength = (source: LightSource) => {
       const flicker = source.flicker ? 0.78 + 0.22 * (Math.sin(time * 7.3 + source.seed) * 0.5 + Math.sin(time * 17.1 + source.seed * 3) * 0.5) : 1;
-      return source.intensity * LIGHT_INTENSITY_SCALE * flicker * fieldLightFade(Math.sqrt(source.position.distanceToSquared(focus)), edge);
+      return source.intensity * LIGHT_INTENSITY_SCALE * this.nightLook.lightGain * flicker * fieldLightFade(Math.sqrt(source.position.distanceToSquared(focus)), edge);
     };
     this.activeFieldLights = field.length;
     field.forEach((source, index) => {
       const target = this.fieldLights[index]!;
       target.position.copy(source.position);
       target.color.setHex(source.color).multiplyScalar(strength(source));
-      target.reach = source.radius * LIGHT_REACH;
+      target.reach = source.radius * LIGHT_REACH * this.nightLook.reachGain;
     });
     if (reassigned) buildFieldLightGrid(this.fieldLights.slice(0, field.length), focus);
   }
