@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { GAME_CONTENT, type WorldObjectModel } from '@containment/shared';
+import { CITY_BUILDERS } from '../src/render/models/cityModels.ts';
 import { CONTAINMENT_BUILDERS } from '../src/render/models/containmentModels.ts';
 import { STREET_BUILDERS } from '../src/render/models/streetModels.ts';
 import { columnCells, columnHeight, glyphInterior, glyphOutline, KANA, LETTERS, SYMBOLS, textCells, textWidth } from '../src/render/models/glyphs.ts';
@@ -69,4 +70,12 @@ test('a symbol splits into a lit outline and a filled interior', () => {
     assert.ok(outline.length > 0, name);
   }
   assert.ok(glyphInterior(SYMBOLS.heart!).length > 0);
+});
+
+test('the most placed street pieces and landmarks vary in shape with their placement seed', () => {
+  const varied = ['streetLamp', 'pathLight', 'bollard', 'streetBench', 'floodMast', 'hatch', 'barricade', 'scrapPile', 'magnetCrane', 'windpump', 'headframe', 'clockTower', 'coolingTower', 'chimney', 'gantryCrane'] as const;
+  for (const model of varied) {
+    const shapes = new Set(Array.from({ length: VARIANTS }, (_, seed) => CITY_BUILDERS[model](seed)).map((parts) => [parts.base, ...parts.animated.map((part) => part.model)].map((each) => each.occupied().sort().join(' ')).join('|')));
+    assert.ok(shapes.size >= 3, model + ' has only ' + shapes.size + ' silhouettes across ' + VARIANTS + ' variants');
+  }
 });
