@@ -2,9 +2,10 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { GAME_CONTENT, isBuildingWall, isOutdoorFloor, LAND_GROUND_ROOM, TILE_KINDS, type ResolvedLevel, type TileKindId, type TilePoint, type TileRect } from '@containment/shared';
 import { interiorMaskOf, ownedLayoutOf } from '../src/render/world/chunkStructure.ts';
-import { buildTileVolume, facesOutdoors, tileBase, type OwnedLayout, type Side } from '../src/render/world/levelVoxels.ts';
+import { buildTileVolume, facesOutdoors, massingAt, tileBase, type OwnedLayout, type Side } from '../src/render/world/levelVoxels.ts';
 import { WALL_PALETTE } from '../src/render/world/wallPalette.ts';
-import { FLOOR_LAYERS, TILE_RESOLUTION } from '../src/render/world/worldScale.ts';
+import { FLOOR_LAYERS, TILE_RESOLUTION, WALL_LAYERS } from '../src/render/world/worldScale.ts';
+import { VOXEL_EMISSIVE, VOXEL_EMPTY } from '../src/render/voxel/voxelKinds.ts';
 
 const R = TILE_RESOLUTION;
 const overworld = GAME_CONTENT.levels.get('overworld') as ResolvedLevel;
@@ -152,4 +153,34 @@ test('the interior mask covers building rooms and tram halls but not pads, yards
   assert.equal(inside({ x: 4, y: 9 }), false);
   assert.equal(inside({ x: 16, y: 9 }), false);
   assert.equal(inside({ x: 4, y: 14 }), false);
+});
+
+test('a Halcyon tower block stands in lit and dark storeys with clutter on its roof', () => {
+  const region = { x: 553, y: 72, width: 18, height: 18 };
+  const volume = buildTileVolume(owned, region);
+  let towerTiles = 0;
+  for (let ty = region.y; ty < region.y + region.height; ty++) for (let tx = region.x; tx < region.x + region.width; tx++) if (massingAt(owned, tx, ty) === 'tower') towerTiles++;
+  assert.ok(towerTiles >= 200, String(towerTiles));
+  for (const rect of buildings.slice(0, 20)) for (const wall of ringOf(rect)) assert.equal(massingAt(owned, wall.x, wall.y), null);
+  const tx = 561;
+  const ty = 88;
+  assert.equal(massingAt(owned, tx, ty), 'tower');
+  const base = tileBase(owned, tx, ty);
+  const lit = new Set<number>();
+  for (let vy = 0; vy < volume.height; vy++) {
+    for (let vx = 554 * R; vx < 569 * R; vx++) {
+      for (const lz of [R - 1, R - 2]) if (volume.kindAt(vx, vy, ty * R + lz) === VOXEL_EMISSIVE) lit.add(Math.floor(vy / 8));
+    }
+  }
+  assert.ok(lit.size >= 3, [...lit].join(','));
+  let clutter = 0;
+  for (let y = region.y; y < region.y + region.height; y++) {
+    for (let x = region.x; x < region.x + region.width; x++) {
+      if (massingAt(owned, x, y) !== 'tower') continue;
+      const top = tileBase(owned, x, y) + FLOOR_LAYERS + WALL_LAYERS;
+      for (let vz = y * R; vz < (y + 1) * R; vz++) for (let vx = x * R; vx < (x + 1) * R; vx++) if (volume.kindAt(vx, top + 1, vz) !== VOXEL_EMPTY) clutter++;
+    }
+  }
+  assert.ok(clutter > 30, String(clutter));
+  assert.ok(base > 0);
 });

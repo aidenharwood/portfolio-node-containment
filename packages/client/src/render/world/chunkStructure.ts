@@ -3,7 +3,7 @@ import { Box3, BufferAttribute, BufferGeometry, Color, Sphere, SRGBColorSpace, V
 import { VOXEL_EMPTY, type VoxelGrid } from '../voxel/voxelKinds.ts';
 import { meshVoxels, type TopSink, type VoxelMeshes } from '../voxel/voxelMesher.ts';
 import { mergeBatch, type BatchLayer, type BatchLayerName, type BatchParts } from './fadeBatch.ts';
-import { createTileVolume, groundBottomAt, groundTopAt, paintTileRows, regionTop, tileBase, type OwnedLayout } from './levelVoxels.ts';
+import { createTileVolume, drawnTopAt, groundBottomAt, groundTopAt, paintTileRows, regionTop, tileBase, type OwnedLayout } from './levelVoxels.ts';
 import { paintRoof, roofPlanOf, type RoofBox } from './roofs.ts';
 import { FLOOR_LAYERS, TILE_RESOLUTION, ZONE_MESH_ORIGIN, ZONE_VOLUME_HEIGHT, ZONE_VOXEL_SIZE } from './worldScale.ts';
 
@@ -360,7 +360,7 @@ export function planChunkStructure(layout: OwnedLayout, decals: DecalMap, region
         const base = tileBase(layout, tx, ty);
         const bounds = {
           min: [tx * R, base + FLOOR_LAYERS, ty * R] as const,
-          max: [(tx + 1) * R, base + ZONE_VOLUME_HEIGHT, (ty + 1) * R] as const,
+          max: [(tx + 1) * R, drawnTopAt(layout, tx, ty) + ZONE_VOLUME_HEIGHT, (ty + 1) * R] as const,
         };
         const meshes = meshVoxels(volume, bounds, { ...meshOptions, topSink: wallTops.sink });
         const column = (tx - region.x) * R;

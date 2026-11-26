@@ -3,6 +3,7 @@ import { DenseVolume } from '../voxel/denseVolume.ts';
 import { darken, jitter, mix, noise3 } from '../voxel/palette.ts';
 import { VOXEL_EMISSIVE, VOXEL_SOLID, type VoxelKind } from '../voxel/voxelKinds.ts';
 import { smoothNoise, tileBase, type OwnedLayout } from './levelVoxels.ts';
+import { airUnit, aerial, vent, waterTank } from './rooftopProps.ts';
 import { HAZARD, WALL_PALETTE } from './wallPalette.ts';
 import { FLOOR_LAYERS, TILE_RESOLUTION, WALL_LAYERS } from './worldScale.ts';
 
@@ -153,7 +154,6 @@ export interface RoofVolume {
 const ROOF = {
   panel: 0xc6c9c3,
   panelSeam: 0xa9ada8,
-  vent: 0x8c9397,
   ventSlot: 0x2b3034,
   mast: 0x4d565c,
   beacon: 0xff3b24,
@@ -164,11 +164,6 @@ const ROOF = {
   unit: 0xa0a6a9,
   unitDark: 0x7d8487,
   fan: 0x202528,
-  tank: 0x4d6470,
-  tankBand: 0x3f535d,
-  tankCap: 0x5f7b87,
-  aerial: 0x7a848a,
-  aerialTip: 0xff3030,
   tar: 0x2e3133,
   tarPatch: 0x242628,
   curb: 0x7b7f83,
@@ -239,6 +234,8 @@ class RoofCanvas {
     this.volume.set(vx, y - this.floor, vz, color, kind);
   }
 
+  readonly put = (vx: number, y: number, vz: number, color: number, kind: VoxelKind = VOXEL_SOLID): void => this.set(vx, y, vz, color, kind);
+
   columns(paint: (vx: number, vz: number) => void): void {
     for (let vz = this.z0; vz < this.z1; vz++) {
       for (let vx = this.x0; vx < this.x1; vx++) if (this.covered(vx, vz)) paint(vx, vz);
@@ -288,14 +285,6 @@ function slab(roof: RoofCanvas, deck: (vx: number, vz: number) => number, rim: (
   });
 }
 
-function aerial(roof: RoofCanvas, x: number, z: number, height: number, lit: boolean): void {
-  const base = roof.eaves + 1;
-  roof.box(x - 1, z - 1, 3, 3, base, 1, () => ROOF.mast);
-  roof.box(x, z, 1, 1, base + 1, height - 1, () => ROOF.aerial);
-  roof.box(x - 2, z, 5, 1, base + Math.floor(height * 0.65), 1, () => ROOF.aerial);
-  roof.set(x, base + height, z, lit ? ROOF.aerialTip : ROOF.aerial, lit ? VOXEL_EMISSIVE : VOXEL_SOLID);
-}
-
 function directorateRoof(roof: RoofCanvas): void {
   const hazard = (vx: number, vz: number): number => (even(Math.floor((vx + vz) / 2)) ? HAZARD.yellow : HAZARD.black);
   slab(roof, (vx, vz) => ((vx - roof.x0) % R === 0 || (vz - roof.z0) % R === 0 ? ROOF.panelSeam : ROOF.panel), hazard, 2);
@@ -308,10 +297,7 @@ function directorateRoof(roof: RoofCanvas): void {
     for (const dx of [0, 5]) roof.box(plant.x + dx, plant.z + 1, 2, 2, base + 4, 1, () => ROOF.fan);
   }
   const vents = roof.count(2);
-  for (const spot of spots.slice(next, next + vents)) {
-    roof.box(spot.x, spot.z, 6, 4, base, 2, () => ROOF.vent);
-    roof.box(spot.x, spot.z, 6, 4, base + 2, 1, (vx, vy, vz) => (even(vz - spot.z) ? ROOF.vent : ROOF.ventSlot));
-  }
+  for (const spot of spots.slice(next, next + vents)) vent(roof.put, spot.x, spot.z, base);
   const corner = roof.hash(2) < 0.5;
   const mastX = corner ? roof.x1 - 5 : roof.x0 + 4;
   roof.box(mastX - 1, roof.z0 + 3, 3, 3, base, 1, () => ROOF.mast);
@@ -335,26 +321,15 @@ function claddingRoof(roof: RoofCanvas): void {
   const spots = roof.spots(467);
   const units = roof.count(1);
   let next = 0;
-  for (const spot of spots.slice(next, next + units)) {
-    roof.box(spot.x, spot.z, 5, 4, base, 3, (vx, vy, vz) => (vz === spot.z + 3 ? ROOF.unitDark : ROOF.unit));
-    roof.box(spot.x + 1, spot.z + 1, 3, 2, base + 3, 1, (vx) => (vx === spot.x + 2 ? ROOF.fan : ROOF.unitDark));
-  }
+  for (const spot of spots.slice(next, next + units)) airUnit(roof.put, spot.x, spot.z, base);
   next += units;
   const tank = spots[next];
   if (tank && roof.hash(4) > 0.35) {
     next++;
-    for (const [dx, dz] of [[0, 0], [5, 0], [0, 5], [5, 5]] as const) roof.box(tank.x + dx, tank.z + dz, 1, 1, base, 2, () => ROOF.mast);
-    const cx = tank.x + 2.5;
-    const cz = tank.z + 2.5;
-    for (let vz = tank.z - 1; vz <= tank.z + 6; vz++) {
-      for (let vx = tank.x - 1; vx <= tank.x + 6; vx++) {
-        if ((vx - cx) ** 2 + (vz - cz) ** 2 > 13) continue;
-        for (let h = 0; h < 6; h++) roof.set(vx, base + 2 + h, vz, h === 5 ? ROOF.tankCap : h === 2 ? ROOF.tankBand : ROOF.tank);
-      }
-    }
+    waterTank(roof.put, tank.x, tank.z, base);
   }
   const aerials = 1 + Math.floor(roof.hash(5) * 2);
-  for (const spot of spots.slice(next, next + aerials)) aerial(roof, spot.x + 2, spot.z + 2, 9 + Math.floor(noise3(spot.x, spot.z, 0, 471) * 5), noise3(spot.z, spot.x, 0, 473) > 0.4);
+  for (const spot of spots.slice(next, next + aerials)) aerial(roof.put, spot.x + 2, spot.z + 2, base, 9 + Math.floor(noise3(spot.x, spot.z, 0, 471) * 5), noise3(spot.z, spot.x, 0, 473) > 0.4);
 }
 
 function blockworkRoof(roof: RoofCanvas): void {
