@@ -6,6 +6,7 @@ import { VoxelModel } from '../voxel/voxelModel.ts';
 import { CITY_BUILDERS } from './cityModels.ts';
 import { MEGA_BUILDERS } from './megaModels.ts';
 import { NATURE_BUILDERS } from './natureModels.ts';
+import { STREET_BUILDERS } from './streetModels.ts';
 import { TRANSIT_BUILDERS } from './transitModels.ts';
 
 export interface AnimatedPart {
@@ -31,6 +32,6 @@ const placeholder: ObjectBuilder = () => {
   return { base: model, animated: [], heightVoxels: PLACEHOLDER_HEIGHT + 1 };
 };
 
-const BUILDERS: Readonly<Record<WorldObjectModel, ObjectBuilder>> = { placeholder, ...CITY_BUILDERS, ...TRANSIT_BUILDERS, ...MEGA_BUILDERS, ...NATURE_BUILDERS };
+const BUILDERS: Readonly<Record<WorldObjectModel, ObjectBuilder>> = { placeholder, ...CITY_BUILDERS, ...TRANSIT_BUILDERS, ...MEGA_BUILDERS, ...NATURE_BUILDERS, ...STREET_BUILDERS };
 
 export const buildObjectModel = (model: WorldObjectModel, seed: number): ObjectModelParts => BUILDERS[model](seed);

@@ -7,9 +7,11 @@ import type { AnimatedPart, ObjectModelParts } from './objectModels.ts';
 import type { MegaModel } from './megaModels.ts';
 import type { NatureModel } from './natureModels.ts';
 import type { TransitModel } from './transitModels.ts';
+import type { StreetModel } from './streetModels.ts';
+import { glyphInterior, glyphOutline, SYMBOLS, textCells, textWidth, type Glyph } from './glyphs.ts';
 import { MODEL_VOXEL_SIZE } from '../world/worldScale.ts';
 
-type CityModel = Exclude<WorldObjectModel, 'placeholder' | TransitModel | MegaModel | NatureModel>;
+type CityModel = Exclude<WorldObjectModel, 'placeholder' | TransitModel | MegaModel | NatureModel | StreetModel>;
 type Builder = (seed: number) => ObjectModelParts;
 
 export const CITY = {
@@ -42,13 +44,13 @@ export const CITY = {
 
 export const NEON = [0xff4fa8, 0x4fe3ff, 0xb6ff4f, 0xffb35a] as const;
 
-const grain = (color: number, amount = 0.03, salt = 0): Paint => (x, y, z) => jitter(color, amount, noise3(x, y, z, salt));
+export const grain = (color: number, amount = 0.03, salt = 0): Paint => (x, y, z) => jitter(color, amount, noise3(x, y, z, salt));
 
-const pick = <T>(options: readonly T[], seed: number, salt = 0): T => options[Math.floor(noise3(seed, salt, 11, 17) * options.length) % options.length] as T;
+export const pick = <T>(options: readonly T[], seed: number, salt = 0): T => options[Math.floor(noise3(seed, salt, 11, 17) * options.length) % options.length] as T;
 
-const parts = (base: VoxelModel, heightVoxels: number, animated: AnimatedPart[] = []): ObjectModelParts => ({ base, animated, heightVoxels });
+export const parts = (base: VoxelModel, heightVoxels: number, animated: AnimatedPart[] = []): ObjectModelParts => ({ base, animated, heightVoxels });
 
-function cylinder(model: VoxelModel, cx: number, cz: number, radius: number, y0: number, y1: number, paint: Paint, kind?: VoxelKind): VoxelModel {
+export function cylinder(model: VoxelModel, cx: number, cz: number, radius: number, y0: number, y1: number, paint: Paint, kind?: VoxelKind): VoxelModel {
   const reach = Math.ceil(radius);
   for (let x = cx - reach; x <= cx + reach; x++) {
     for (let z = cz - reach; z <= cz + reach; z++) {
@@ -74,7 +76,7 @@ function blob(model: VoxelModel, cx: number, cy: number, cz: number, radius: num
   return model;
 }
 
-function ringAt(model: VoxelModel, cx: number, cz: number, radius: number, thickness: number, y: number, color: number, kind?: VoxelKind): VoxelModel {
+export function ringAt(model: VoxelModel, cx: number, cz: number, radius: number, thickness: number, y: number, color: number, kind?: VoxelKind): VoxelModel {
   const reach = Math.ceil(radius);
   for (let x = cx - reach; x <= cx + reach; x++) {
     for (let z = cz - reach; z <= cz + reach; z++) {
@@ -85,11 +87,11 @@ function ringAt(model: VoxelModel, cx: number, cz: number, radius: number, thick
   return model;
 }
 
-const blink = (rate: number, phase = 0) => (part: Object3D, time: number, seed: number) => {
+export const blink = (rate: number, phase = 0) => (part: Object3D, time: number, seed: number) => {
   part.visible = Math.sin(time * rate + phase + seed) > -0.3;
 };
 
-const spin = (rate: number) => (part: Object3D, time: number, seed: number) => {
+export const spin = (rate: number) => (part: Object3D, time: number, seed: number) => {
   part.rotation.y = time * rate + seed;
 };
 
@@ -101,7 +103,7 @@ const turn = (pivotX: number, pivotY: number, rate: number) => (part: Object3D, 
   part.position.set(x - (x * Math.cos(angle) - y * Math.sin(angle)), y - (x * Math.sin(angle) + y * Math.cos(angle)), 0);
 };
 
-const flicker = (part: Object3D, time: number, seed: number) => {
+export const flicker = (part: Object3D, time: number, seed: number) => {
   const beat = Math.floor(time * 9 + seed * 3);
   part.visible = noise3(beat, seed, 0, 41) > 0.05;
 };
@@ -251,7 +253,7 @@ const foodStall: Builder = (seed) => {
   return parts(model, 34, [{ model: steam, animate: rise(1.2, 0.35) }]);
 };
 
-function rise(rate: number, reach: number) {
+export function rise(rate: number, reach: number) {
   return (part: Object3D, time: number, seed: number) => {
     const phase = (time * rate + seed * 0.13) % 1;
     part.position.y = phase * reach;
@@ -281,21 +283,36 @@ const steamVent: Builder = () => {
   return parts(model, 1, [{ model: steam, animate: rise(0.7, 0.6) }]);
 };
 
+interface SignDesign {
+  readonly word?: string;
+  readonly symbol?: string;
+}
+
+const NEON_DESIGNS: readonly SignDesign[] = [{ word: 'BAR' }, { symbol: 'cup' }, { word: 'EAT' }, { symbol: 'bowl' }, { word: 'OPEN' }, { symbol: 'heart' }, { word: '24H' }, { symbol: 'eye' }];
+const SIGN_TRIM = [0xf4f0ff, 0xffb35a, 0xf4f0ff, 0x4fe3ff] as const;
+
 const neonSignOf = (glow: number): Builder => (seed) => {
-  const model = new VoxelModel().fill(-7, 17, -8, 6, 26, -7, CITY.ink);
-  model.fill(-7, 17, -6, 6, 17, -6, darken(glow, 0.5)).fill(-7, 26, -6, 6, 26, -6, darken(glow, 0.5));
-  const letters = new VoxelModel();
-  for (let column = 0; column < 4; column++) {
-    for (let row = 0; row < 3; row++) {
-      for (let cell = 0; cell < 2; cell++) {
-        if (noise3(seed, column * 7 + row, cell, 61) < 0.35) continue;
-        const x = -6 + column * 3 + cell;
-        const y = 19 + row * 2;
-        letters.fill(x, y, -6, x, y + 1, -6, glow, VOXEL_EMISSIVE);
-      }
-    }
+  const design = NEON_DESIGNS[seed % NEON_DESIGNS.length] as SignDesign;
+  const trim = SIGN_TRIM[seed % SIGN_TRIM.length] as number;
+  const model = new VoxelModel();
+  const lit = new VoxelModel();
+  if (design.word) {
+    const width = textWidth(design.word);
+    const left = -Math.floor(width / 2);
+    const right = left + width - 1;
+    model.fill(left - 2, 17, -8, right + 2, 27, -7, CITY.ink);
+    for (let x = left - 2; x <= right + 2; x++) for (const y of [17, 27]) lit.set(x, y, -6, darken(trim, 0.2), VOXEL_EMISSIVE);
+    for (let y = 18; y <= 26; y++) for (const x of [left - 2, right + 2]) lit.set(x, y, -6, darken(trim, 0.2), VOXEL_EMISSIVE);
+    for (const cell of textCells(design.word)) lit.set(left + cell.x, 20 + cell.y, -6, glow, VOXEL_EMISSIVE);
+  } else {
+    const glyph = SYMBOLS[design.symbol ?? 'heart'] as Glyph;
+    const width = Math.max(...glyph.map((row) => row.length));
+    model.fill(-1, 15, -8, 0, 16, -6, CITY.iron).fill(-6, 15, -6, 5, 15, -6, CITY.iron);
+    const at = (cell: { x: number; y: number }, dx: number, dy: number): [number, number] => [-width + cell.x * 2 + dx, 17 + cell.y * 2 + dy];
+    for (const cell of glyphOutline(glyph)) for (let dy = 0; dy < 2; dy++) for (let dx = 0; dx < 2; dx++) lit.set(...at(cell, dx, dy), -6, glow, VOXEL_EMISSIVE);
+    for (const cell of glyphInterior(glyph)) for (let dy = 0; dy < 2; dy++) for (let dx = 0; dx < 2; dx++) model.set(...at(cell, dx, dy), -7, darken(glow, 0.7));
   }
-  return parts(model, 27, [{ model: letters, animate: flicker }]);
+  return parts(model, 30, [{ model: lit, animate: flicker }]);
 };
 
 const neonSign = neonSignOf(0xff4fa8);
@@ -313,7 +330,7 @@ const floodMast: Builder = () => {
   return parts(model, 46, [{ model: beacon, animate: blink(2) }]);
 };
 
-const holoFrame = (index: number, count: number, period: number) => (part: Object3D, time: number, seed: number) => {
+export const holoFrame = (index: number, count: number, period: number) => (part: Object3D, time: number, seed: number) => {
   const clock = time / period + seed * 0.37;
   const showing = Math.floor(clock) % count === index;
   const settling = clock - Math.floor(clock) < 0.06;
@@ -902,7 +919,7 @@ const sluiceValve: Builder = () => {
   return parts(model, 14);
 };
 
-function shellRing(model: VoxelModel, radius: number, thickness: number, y: number, paint: Paint, kind?: VoxelKind, keep: (angle: number) => boolean = () => true): void {
+export function shellRing(model: VoxelModel, radius: number, thickness: number, y: number, paint: Paint, kind?: VoxelKind, keep: (angle: number) => boolean = () => true): void {
   const reach = Math.ceil(radius);
   for (let x = -reach; x <= reach; x++) {
     for (let z = -reach; z <= reach; z++) {

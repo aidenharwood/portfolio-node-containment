@@ -137,7 +137,16 @@ export type WorldObjectModel =
   | 'treeStump'
   | 'fallenLog'
   | 'wildflowers'
-  | 'tallGrass';
+  | 'tallGrass'
+  | 'bladeSign'
+  | 'acUnit'
+  | 'wallVent'
+  | 'rollShutter'
+  | 'holoPanel'
+  | 'cableRun'
+  | 'streetStall'
+  | 'trashBags'
+  | 'parkedBike';
 
 export interface ObjectInteraction {
   readonly verb: string;
