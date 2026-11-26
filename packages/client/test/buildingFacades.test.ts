@@ -184,3 +184,20 @@ test('a Halcyon tower block stands in lit and dark storeys with clutter on its r
   assert.ok(clutter > 30, String(clutter));
   assert.ok(base > 0);
 });
+
+test('the Meridian hull is drawn as a beached ship with portholes and a deck rail', () => {
+  const region = { x: 940, y: 222, width: 24, height: 10 };
+  const volume = buildTileVolume(owned, region);
+  const ty = 229;
+  assert.equal(massingAt(owned, 950, ty), 'hull');
+  assert.equal(massingAt(owned, 950, 233), null);
+  const top = tileBase(owned, 950, ty) + FLOOR_LAYERS + WALL_LAYERS - 1;
+  let ports = 0;
+  let railed = 0;
+  for (let vx = 941 * R; vx < 963 * R; vx++) {
+    for (let vy = top - 9; vy <= top - 4; vy++) for (const lz of [R - 1, R - 2]) if (volume.kindAt(vx, vy, ty * R + lz) === VOXEL_EMISSIVE || volume.colorAt(vx, vy, ty * R + lz) === 0x10171e) ports++;
+    if (volume.kindAt(vx, top + 3, ty * R + R - 1) !== VOXEL_EMPTY) railed++;
+  }
+  assert.ok(ports > 20, String(ports));
+  assert.equal(railed, 22 * R);
+});

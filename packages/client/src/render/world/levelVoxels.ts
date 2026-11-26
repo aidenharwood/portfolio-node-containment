@@ -153,6 +153,7 @@ export function paintTileRows(volume: DenseVolume, layout: OwnedLayout, region: 
       canvas.lift = base;
       const massing = isBuildingWall(kind) ? massingAt(layout, tx, ty) : null;
       if (massing === 'tower' && isBuildingWall(kind)) paintTower(volume, layout, tx, ty, kind, base);
+      else if (massing === 'hull') paintHull(volume, layout, tx, ty, base);
       else if (isBuildingWall(kind)) paintWall(canvas, layout, tx, ty, kind);
       else if (kind === 'rock') paintRock(canvas, layout, tx, ty, palette);
       else if (kind === 'cliff') paintCliff(canvas, layout, tx, ty, palette);
@@ -164,7 +165,7 @@ export function paintTileRows(volume: DenseVolume, layout: OwnedLayout, region: 
       else if (kind === 'door') paintDoorway(canvas, layout, tx, ty, land);
       else paintFloor(canvas, kind, tx, ty, 'x', land, decals?.get(tileKey({ x: tx, y: ty })), seamsOf(layout, kind, tx, ty), blendNeighborsOf(layout, kind, tx, ty), wallsBeside(layout, tx, ty), kerbsOf(layout, kind, tx, ty));
       if (LAND.has(kind)) shadeLand(canvas, layout, kind, tx, ty, land);
-      if (base > 0 && kind !== 'track' && massing !== 'tower') paintEarth(volume, layout, kind, tx, ty, base, palette);
+      if (base > 0 && kind !== 'track' && !massing) paintEarth(volume, layout, kind, tx, ty, base, palette);
       if (SLOPED.has(kind)) slopeLand(volume, layout, tx, ty, base);
     }
   }
@@ -1153,6 +1154,128 @@ function paintTower(volume: DenseVolume, layout: OwnedLayout, tx: number, ty: nu
     }
   }
   if (sides.size === 0) paintTowerClutter(volume, tx, ty, top);
+}
+
+const HULL = {
+  bottom: 0x58291f,
+  bootTop: 0x1a1c1e,
+  side: 0x2d3942,
+  seam: 0x212930,
+  rivet: 0x58646c,
+  sheer: 0xa8a497,
+  gunwale: 0x3c4850,
+  rim: 0x7f796b,
+  port: 0x10171e,
+  portLit: 0xffc27a,
+  rust: 0x7a4a2a,
+  deck: 0x39423d,
+  deckSeam: 0x2a312e,
+  rail: 0xb9b4a6,
+  house: 0xb5b1a4,
+  houseBand: 0x2d3942,
+  houseWindow: 0x182129,
+  cowl: 0xb9b4a6,
+  cowlMouth: 0x14191d,
+} as const;
+
+const PORTHOLE_PITCH = 8;
+const WATERLINE = 20;
+const STREAK_WIDTH = 3;
+
+function hullStreak(side: Side, along: number, fromTop: number): number {
+  const band = Math.floor(along / STREAK_WIDTH);
+  if (noise3(band, SIDE_SALT[side], 0, 811) < 0.55) return 0;
+  const start = 3 + Math.floor(noise3(band, SIDE_SALT[side], 1, 813) * 6);
+  const length = 8 + Math.floor(noise3(band, SIDE_SALT[side], 2, 817) * 14);
+  if (fromTop < start || fromTop > start + length) return 0;
+  return (1 - (fromTop - start) / length) * (0.35 + 0.3 * noise3(band, SIDE_SALT[side], 3, 819));
+}
+
+function hullPlate(side: Side, along: number, vy: number, street: number, top: number): FaceVoxel {
+  const fromTop = top - vy;
+  if (fromTop === 0) return { color: HULL.gunwale };
+  if (fromTop === 2) return { color: HULL.sheer };
+  const above = vy - street - FLOOR_LAYERS;
+  const port = ((along % PORTHOLE_PITCH) + PORTHOLE_PITCH) % PORTHOLE_PITCH;
+  if (fromTop >= 5 && fromTop <= 8 && port >= 2 && port <= 5 && above > 10) {
+    const rim = fromTop === 5 || fromTop === 8 ? port === 3 || port === 4 : port === 2 || port === 5;
+    if (rim) return { color: HULL.rim };
+    if ((fromTop === 5 || fromTop === 8) && (port === 2 || port === 5)) return { color: HULL.side };
+    const lit = noise3(Math.floor(along / PORTHOLE_PITCH), SIDE_SALT[side], 0, 823) < 0.3;
+    return lit ? { color: fromTop === 6 ? HULL.portLit : darken(HULL.portLit, 0.25), kind: VOXEL_EMISSIVE, recessed: true } : { color: HULL.port, recessed: true };
+  }
+  const plate = fromTop >= WATERLINE + 2 ? HULL.bottom : fromTop >= WATERLINE ? HULL.bootTop : HULL.side;
+  const seam = fromTop % 4 === 3 && fromTop < WATERLINE;
+  const base = seam ? (even(along) ? HULL.rivet : HULL.seam) : plate;
+  return { color: mix(base, HULL.rust, hullStreak(side, along, fromTop)) };
+}
+
+function houseWall(side: Side, along: number, vy: number, top: number): FaceVoxel {
+  const fromTop = top - vy;
+  if (fromTop === 0) return { color: HULL.gunwale };
+  if (fromTop === 1) return { color: HULL.houseBand };
+  const bay = ((along % 6) + 6) % 6;
+  if (fromTop >= 3 && fromTop <= 4 && bay >= 1 && bay <= 3) {
+    const lit = noise3(Math.floor(along / 6), SIDE_SALT[side], 0, 829) < 0.3;
+    return lit ? { color: HULL.portLit, kind: VOXEL_EMISSIVE, recessed: true } : { color: HULL.houseWindow, recessed: true };
+  }
+  return { color: mix(HULL.house, HULL.rust, hullStreak(side, along, fromTop) * 0.7) };
+}
+
+function paintHull(volume: DenseVolume, layout: OwnedLayout, tx: number, ty: number, base: number): void {
+  const open = openTowerSides(layout, tx, ty, base);
+  const sides = new Set(open.keys());
+  let bottom = base;
+  for (const [dx, dy] of AROUND) {
+    const beside = layout.tileAt({ x: tx + dx, y: ty + dy });
+    bottom = Math.min(bottom, beside === 'void' ? 0 : tileBase(layout, tx + dx, ty + dy));
+  }
+  const top = base + FLOOR_LAYERS + WALL_LAYERS - 1;
+  for (let lz = 0; lz < R; lz++) {
+    for (let lx = 0; lx < R; lx++) {
+      const vx = tx * R + lx;
+      const vz = ty * R + lz;
+      const patch = ramp(0.66, 0.86, smoothNoise(vx, vz * 2, 14, 831)) * 0.35;
+      const deck = mix(vx % R === 0 || vz % 4 === 0 ? HULL.deckSeam : HULL.deck, HULL.rust, patch);
+      for (let vy = bottom; vy < top; vy++) volume.set(vx, vy, vz, vy === top - 1 ? deck : HULL.side);
+    }
+  }
+  for (let lz = 0; lz < R; lz++) {
+    for (let lx = 0; lx < R; lx++) {
+      const outer = outerSide(lx, lz, sides);
+      if (!outer) continue;
+      const vx = tx * R + lx;
+      const vz = ty * R + lz;
+      const [dx, dy] = OUTWARD[outer.side];
+      const house = isBuildingWall(layout.tileAt({ x: tx + dx, y: ty + dy }));
+      const street = open.get(outer.side) ?? base;
+      const along = outer.side === 'north' || outer.side === 'south' ? vx : vz;
+      for (let vy = bottom; vy <= top; vy++) {
+        const face = house ? houseWall(outer.side, along, vy, top) : hullPlate(outer.side, along, vy, street, top);
+        if (!face.recessed) {
+          volume.set(vx, vy, vz, face.color, face.kind ?? VOXEL_SOLID);
+          continue;
+        }
+        const [ix, iz] = inwardStep(outer.side);
+        volume.clear(vx, vy, vz);
+        volume.set(vx + ix, vy, vz + iz, face.color, face.kind ?? VOXEL_SOLID);
+      }
+      const post = ((along % 4) + 4) % 4 === 0;
+      if (post) volume.set(vx, top + 1, vz, HULL.rail);
+      if (post) volume.set(vx, top + 2, vz, HULL.rail);
+      volume.set(vx, top + 3, vz, HULL.rail);
+    }
+  }
+  if (sides.size > 0) return;
+  const pick = noise3(tx, ty, 0, 837);
+  const put: VoxelPut = (vx, vy, vz, color, kind) => volume.set(vx, vy, vz, color, kind);
+  if (pick < 0.06) {
+    fillBox(put, tx * R + 3, ty * R + 3, 2, 2, top, 4, () => HULL.cowl);
+    fillBox(put, tx * R + 2, ty * R + 2, 4, 3, top + 4, 2, (vx, vy, vz) => (vz === ty * R + 4 && vy === top + 4 && vx > tx * R + 2 && vx < tx * R + 5 ? HULL.cowlMouth : HULL.cowl));
+  } else if (pick < 0.1) {
+    fillBox(put, tx * R + 2, ty * R + 3, 1, 1, top, 2, () => HULL.gunwale);
+    fillBox(put, tx * R + 5, ty * R + 3, 1, 1, top, 2, () => HULL.gunwale);
+  }
 }
 
 const isOutdoorGround = (kind: TileKindId): boolean => kind !== 'water' && isOutdoorFloor(kind);
