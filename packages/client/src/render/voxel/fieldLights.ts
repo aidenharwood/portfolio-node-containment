@@ -1,4 +1,5 @@
 import { Color, DataTexture, MathUtils, NearestFilter, RGBAFormat, UnsignedByteType, Vector2, Vector3, Vector4, type Material, type Matrix4, type Texture } from 'three';
+import { receiveAir } from '../sky/air.ts';
 import { STEP_HEIGHT } from '../world/worldScale.ts';
 
 export const FIELD_LIGHT_LIMIT = 96;
@@ -32,6 +33,7 @@ const STREAK_LIMIT = 8;
 const STREAK_WEIGHT = 0.07;
 const MIRROR_STREAK_WEIGHT = 0.04;
 const HORIZON_SHEEN = 0.4;
+const MIST_SCATTER = 0.03;
 
 export type FieldSurface = 'ground' | 'mirror';
 
@@ -311,12 +313,13 @@ if ( litPeak > ${LIT_KNEE.toFixed(3)} ) {
 		fogDepth += fieldFogDensity( vFieldWorld + fogEye * fogStep * ( float( fogIndex ) + fogJitter ) );
 	}
 	float fieldLow = ( 1.0 - exp( - fogDepth * fogStep * fieldGroundFog * FIELD_FOG_THICKNESS ) ) * FIELD_FOG_OPACITY;
-	gl_FragColor.rgb = mix( gl_FragColor.rgb, fieldMistColor + fieldScatter * 0.012, fieldLow );
+	gl_FragColor.rgb = mix( gl_FragColor.rgb, fieldMistColor + fieldScatter * ${MIST_SCATTER.toFixed(3)}, fieldLow );
 }
 #include <fog_fragment>`,
       );
+    receiveAir(shader);
   };
-  material.customProgramCacheKey = () => `field-light-point-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}-lit-${LIT_KNEE}-${LIT_CEILING}-atmosphere-${SKY_MASK_TEXELS}-facing-${FACING_SHADE}-${KEY_FACING.x.toFixed(3)}-${KEY_FACING.y.toFixed(3)}-actor-${actorFill}-volfog${FOG_STEPS}-${FOG_CEILING}-${FOG_THICKNESS}-${FOG_FALLOFF}-puddle4-${surface}-streak-${STREAK_ACROSS}-${STREAK_ALONG}-${STREAK_WEIGHT}`;
+  material.customProgramCacheKey = () => `field-light-point-${FIELD_LIGHT_LIMIT}-${GRID_CELLS}-lit-${LIT_KNEE}-${LIT_CEILING}-atmosphere-${SKY_MASK_TEXELS}-facing-${FACING_SHADE}-${KEY_FACING.x.toFixed(3)}-${KEY_FACING.y.toFixed(3)}-actor-${actorFill}-volfog${FOG_STEPS}-${FOG_CEILING}-${FOG_THICKNESS}-${FOG_FALLOFF}-puddle4-${surface}-streak-${STREAK_ACROSS}-${STREAK_ALONG}-${STREAK_WEIGHT}-air-scatter-${MIST_SCATTER}`;
   return material;
 }
 

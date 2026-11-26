@@ -1,4 +1,5 @@
-import { Color, Group, Mesh, MeshBasicMaterial, MeshLambertMaterial, ShaderChunk, type Material } from 'three';
+import { Color, Group, Mesh, MeshBasicMaterial, MeshLambertMaterial, type Material } from 'three';
+import { receiveAir } from '../sky/air.ts';
 import { receiveFieldLights } from './fieldLights.ts';
 import type { VoxelMeshes } from './voxelMesher.ts';
 
@@ -14,10 +15,10 @@ diffuseColor.rgb *= 1.0 + ${(EMISSIVE_CHROMA_GAIN / EMISSIVE_GAIN).toFixed(4)} *
 
 function thinFog(material: MeshBasicMaterial, chromaGain = false): MeshBasicMaterial {
   material.onBeforeCompile = (shader) => {
-    shader.fragmentShader = shader.fragmentShader.replace('#include <fog_fragment>', ShaderChunk.fog_fragment.replace('fogColor, fogFactor )', `fogColor, fogFactor * ${EMISSIVE_FOG.toFixed(2)} )`));
+    receiveAir(shader, EMISSIVE_FOG);
     if (chromaGain) shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', CHROMA_GAIN_FRAGMENT);
   };
-  material.customProgramCacheKey = () => `thin-fog-${EMISSIVE_FOG}${chromaGain ? `-chroma-${EMISSIVE_CHROMA_GAIN}` : ''}`;
+  material.customProgramCacheKey = () => `air-${EMISSIVE_FOG}${chromaGain ? `-chroma-${EMISSIVE_CHROMA_GAIN}` : ''}`;
   return material;
 }
 

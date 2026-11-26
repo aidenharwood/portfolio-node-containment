@@ -1,5 +1,5 @@
 import { CHUNK_SIZE } from '@containment/shared';
-import { Color, Mesh, PlaneGeometry, ShaderMaterial, UniformsLib, UniformsUtils, type Vector3 } from 'three';
+import { Color, Mesh, PlaneGeometry, ShaderMaterial, type Vector3 } from 'three';
 import { KEY_LIGHT_OFFSET } from '../voxel/fieldLights.ts';
 import { WATER_PALETTE } from '../world/liquidSurface.ts';
 import { AIR_PARS, MASK_PARS, shareFarUniforms, type FarUniforms } from './farMaterial.ts';
@@ -13,11 +13,10 @@ const LIT_CEILING = 0.85;
 
 function farSeaMaterial(): ShaderMaterial {
   return new ShaderMaterial({
-    fog: true,
     polygonOffset: true,
     polygonOffsetFactor: 2,
     polygonOffsetUnits: 2,
-    uniforms: UniformsUtils.merge([UniformsLib.fog, { seaColor: { value: new Color() } }]),
+    uniforms: { seaColor: { value: new Color() } },
     vertexShader: `varying vec3 vFarWorld;
 varying float vFarDepth;
 void main() {
@@ -34,7 +33,7 @@ varying vec3 vFarWorld;
 varying float vFarDepth;
 void main() {
 	if ( farMasked( floor( ( vFarWorld.xz + 0.5 ) / ${CHUNK_SIZE.toFixed(1)} ) ) ) discard;
-	gl_FragColor = vec4( farAir( seaColor, vFarWorld, vFarDepth ), 1.0 );
+	gl_FragColor = vec4( airApply( seaColor, vFarDepth, 1.0 ), 1.0 );
 	#include <tonemapping_fragment>
 	#include <colorspace_fragment>
 }`,

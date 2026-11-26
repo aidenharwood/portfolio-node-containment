@@ -16,6 +16,9 @@ export type GlowLevel = (typeof GLOW_LEVELS)[number];
 export const WEATHER_LEVELS = ['off', 'reduced', 'full'] as const;
 export type WeatherLevel = (typeof WEATHER_LEVELS)[number];
 
+export const VIEW_DISTANCES = ['near', 'far', 'vast', 'extreme'] as const;
+export type ViewDistance = (typeof VIEW_DISTANCES)[number];
+
 export const FRAME_CAPS = ['uncapped', '60', '30'] as const;
 export type FrameCap = (typeof FRAME_CAPS)[number];
 
@@ -33,6 +36,7 @@ export const BRIGHTNESS_STEP = 0.05;
 
 export interface GameSettings {
   readonly renderScale: RenderScale;
+  readonly viewDistance: ViewDistance;
   readonly antialiasing: AntialiasingMode;
   readonly shadows: ShadowQuality;
   readonly lights: DetailLevel;
@@ -50,13 +54,13 @@ export interface GameSettings {
   readonly uiScale: number;
 }
 
-type PresetSettings = Pick<GameSettings, 'renderScale' | 'antialiasing' | 'shadows' | 'lights' | 'glow' | 'weather' | 'particles' | 'grading' | 'vignette' | 'grain' | 'sharpen'>;
+type PresetSettings = Pick<GameSettings, 'renderScale' | 'viewDistance' | 'antialiasing' | 'shadows' | 'lights' | 'glow' | 'weather' | 'particles' | 'grading' | 'vignette' | 'grain' | 'sharpen'>;
 
 export const PRESET_SETTINGS: Readonly<Record<GraphicsPreset, PresetSettings>> = {
-  low: { renderScale: 'performance', antialiasing: 'off', shadows: 'off', lights: 'low', glow: 'off', weather: 'reduced', particles: 'low', grading: false, vignette: false, grain: false, sharpen: false },
-  medium: { renderScale: 'balanced', antialiasing: '2x', shadows: 'low', lights: 'medium', glow: 'subtle', weather: 'reduced', particles: 'medium', grading: true, vignette: true, grain: false, sharpen: true },
-  high: { renderScale: 'sharp', antialiasing: 'auto', shadows: 'high', lights: 'high', glow: 'full', weather: 'full', particles: 'high', grading: true, vignette: true, grain: true, sharpen: true },
-  ultra: { renderScale: 'native', antialiasing: '4x', shadows: 'ultra', lights: 'high', glow: 'full', weather: 'full', particles: 'high', grading: true, vignette: true, grain: true, sharpen: true },
+  low: { renderScale: 'performance', viewDistance: 'near', antialiasing: 'off', shadows: 'off', lights: 'low', glow: 'off', weather: 'reduced', particles: 'low', grading: false, vignette: false, grain: false, sharpen: false },
+  medium: { renderScale: 'balanced', viewDistance: 'far', antialiasing: '2x', shadows: 'low', lights: 'medium', glow: 'subtle', weather: 'reduced', particles: 'medium', grading: true, vignette: true, grain: false, sharpen: true },
+  high: { renderScale: 'sharp', viewDistance: 'vast', antialiasing: 'auto', shadows: 'high', lights: 'high', glow: 'full', weather: 'full', particles: 'high', grading: true, vignette: true, grain: true, sharpen: true },
+  ultra: { renderScale: 'native', viewDistance: 'extreme', antialiasing: '4x', shadows: 'ultra', lights: 'high', glow: 'full', weather: 'full', particles: 'high', grading: true, vignette: true, grain: true, sharpen: true },
 };
 
 const PRESET_KEYS = Object.keys(PRESET_SETTINGS.high) as readonly (keyof PresetSettings)[];
@@ -84,6 +88,18 @@ export const RENDER_SCALE_LABELS: Readonly<Record<RenderScale, string>> = {
   sharp: 'Sharp',
   native: 'Native',
 };
+
+export const VIEW_DISTANCE_LABELS: Readonly<Record<ViewDistance, string>> = {
+  near: 'Near',
+  far: 'Far',
+  vast: 'Vast',
+  extreme: 'Extreme',
+};
+
+const VIEW_REACHES: Readonly<Record<ViewDistance, number>> = { near: 600, far: 900, vast: 1300, extreme: 1600 };
+const VIEW_DISTANCE_OF_SCALE: Readonly<Record<RenderScale, ViewDistance>> = { performance: 'near', balanced: 'far', sharp: 'vast', native: 'extreme' };
+
+export const viewReachFor = (distance: ViewDistance): number => VIEW_REACHES[distance];
 
 export const ANTIALIASING_LABELS: Readonly<Record<AntialiasingMode, string>> = {
   off: 'Off',
@@ -206,6 +222,7 @@ export function normalizeSettings(raw: unknown): GameSettings {
   const post = (value: unknown, fallback: boolean): boolean => flag(value, leanPost ? false : fallback);
   return {
     renderScale: oneOf(RENDER_SCALES, source.renderScale, DEFAULT_SETTINGS.renderScale),
+    viewDistance: oneOf(VIEW_DISTANCES, source.viewDistance, VIEW_DISTANCE_OF_SCALE[oneOf(RENDER_SCALES, source.renderScale, DEFAULT_SETTINGS.renderScale)]),
     antialiasing: oneOf(ANTIALIASING_MODES, source.antialiasing, DEFAULT_SETTINGS.antialiasing),
     shadows: oneOf(SHADOW_QUALITIES, source.shadows, DEFAULT_SETTINGS.shadows),
     lights: oneOf(DETAIL_LEVELS, source.lights, DEFAULT_SETTINGS.lights),

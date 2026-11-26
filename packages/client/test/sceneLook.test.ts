@@ -2,10 +2,11 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { Vector3 } from 'three';
 import { createBlendedAmbience, type BlendedAmbience } from '../src/render/world/ambienceBlend.ts';
-import { finishFor, lightAmbience, luminanceOf, nightOf, shadowFrameFor } from '../src/render/sceneLook.ts';
+import { finishFor, lightAmbience, luminanceOf, nightLookFor, nightOf, shadowFrameFor } from '../src/render/sceneLook.ts';
 import { KEY_LIGHT_OFFSET } from '../src/render/voxel/fieldLights.ts';
 
 const READABLE_FILL = 0.6;
+const NIGHT_READABLE_FILL = 0.45;
 const SHADOW_NEAR = 0.5;
 
 const ambience = (darkness: number, tint: string, sky: string | null): BlendedAmbience => {
@@ -28,10 +29,25 @@ test('a dark district keeps a readable fill whatever its tint and sky colour', (
     for (const tint of ['#3a2448', '#1a2a3a', '#101010', '#401010', '#4e3e36']) {
       for (const sky of ['#2a1838', '#1a3048', '#000000', '#6a6660', '#300000', null]) {
         const light = lightAmbience(ambience(darkness, tint, sky));
-        assert.ok(light.fill * luminanceOf(light.sky) >= READABLE_FILL - 1e-9, `fill under ${tint} and ${sky} at darkness ${darkness}`);
+        assert.ok(light.fill * luminanceOf(light.sky) >= NIGHT_READABLE_FILL - 1e-9, `fill under ${tint} and ${sky} at darkness ${darkness}`);
         assert.ok(light.sun >= 0.35 - 1e-9, `key under ${tint} and ${sky} at darkness ${darkness}`);
       }
     }
+  }
+});
+
+test('after dark the fill and key give way to lamps, neon and white-hot cores, and daylight is untouched', () => {
+  const halcyon = lightAmbience(ambience(0.5, '#4a3a6e', '#4a2e66'));
+  const fill = halcyon.fill * luminanceOf(halcyon.sky);
+  assert.ok(fill >= NIGHT_READABLE_FILL && fill < READABLE_FILL, `fill ${fill}`);
+  assert.deepEqual(nightLookFor(0.18), { mistGain: 1, hotCore: 0 });
+  const night = nightLookFor(0.5);
+  assert.ok(night.mistGain < 0.6 && night.hotCore > 0.7);
+  let last = nightLookFor(0);
+  for (let darkness = 0.05; darkness <= 1; darkness += 0.05) {
+    const next = nightLookFor(darkness);
+    assert.ok(next.hotCore >= last.hotCore && next.mistGain <= last.mistGain);
+    last = next;
   }
 });
 

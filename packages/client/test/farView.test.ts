@@ -84,7 +84,7 @@ test('the far view builds the whole land once, follows the near scene, and frees
   const drawn = scene.drawnChunks;
   assert.deepEqual(new Set(drawn.map(chunkKey)), new Set([...scene.builtChunks, ...scene.placeholderChunks]));
   assert.ok(drawn.some((coord) => chunkKey(coord) === chunkKey(chunkOf(focus))));
-  far.update({ camera: new Vector3(48, 10, 30), focus: new Vector3(48, 0, 16), ambience: createBlendedAmbience(), background: new Color(0.3, 0.4, 0.5), drawn });
+  far.update({ camera: new Vector3(48, 10, 30), focus: new Vector3(48, 0, 16), ambience: createBlendedAmbience(), drawn });
   let disposed = 0;
   for (const mesh of meshes) mesh.geometry.addEventListener('dispose', () => disposed++);
   far.dispose();

@@ -1,4 +1,4 @@
-import { ACESFilmicToneMapping, Color, CustomBlending, DirectionalLight, FogExp2, HalfFloatType, HemisphereLight, MathUtils, OneFactor, PCFSoftShadowMap, SRGBColorSpace, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget, ZeroFactor, type Camera, type Scene } from 'three';
+import { ACESFilmicToneMapping, Color, CustomBlending, DirectionalLight, FogExp2, HalfFloatType, HemisphereLight, LinearSRGBColorSpace, MathUtils, OneFactor, PCFSoftShadowMap, SRGBColorSpace, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget, ZeroFactor, type Camera, type Scene } from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
@@ -7,6 +7,10 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { assignLights, type LightAssignment } from './lightAssignment.ts';
 import { buildFieldLightGrid, clearFieldLights, FIELD_LIGHT_LIMIT, fieldLightFade, KEY_LIGHT_OFFSET, setFieldAtmosphere, setFieldLights, setFieldTime, type FieldLight } from './voxel/fieldLights.ts';
 import { lighten } from './voxel/palette.ts';
+import { SkyDome } from './sky/skyDome.ts';
+import { createSkyLook, skyLookFor } from './sky/skyLook.ts';
+import { airShapeFor, createAirShape, setAir, setAirFocus } from './sky/air.ts';
+import { sceneColorOf } from './sky/toneCurve.ts';
 import type { BlendedAmbience } from './world/ambienceBlend.ts';
 import { setBeamWeather } from './world/lightBeams.ts';
 import type { LightSource } from './world/levelScene.ts';
@@ -20,6 +24,12 @@ const AMBIENT_FLOOR = 0.6;
 const AMBIENT_SKY_LIFT = 0.74;
 const AMBIENT_SKY_LIFT_PER_DARKNESS = 0.3;
 const AMBIENT_GROUND_LIFT = 0.32;
+const NIGHT_FILL_CUT = 0.23;
+const NIGHT_KEY_CUT = 0.25;
+const NIGHT_MIST_CUT = 0.45;
+const NIGHT_HOT_CORE = 0.75;
+const HOT_FROM = 1.3;
+const HOT_TO = 2.6;
 const KEY_BASE = 1;
 const KEY_DARKNESS_WEIGHT = 0.7;
 const KEY_FLOOR = 0.35;
@@ -27,7 +37,7 @@ const LIGHT_REASSIGN_SECONDS = 0.25;
 const BASE_EXPOSURE = 1.4;
 const SHARPEN_AMOUNT = 0.15;
 const SHARPEN_MAX_PIXEL_RATIO = 1.5;
-const FOG_DENSITY = 0.018;
+const LEGACY_FOG_SHARE = 0.5;
 const SURVEY_AMBIENT = 4.2;
 const SURVEY_KEY = 1.4;
 const SUN_COLOR = 0xf6f2ff;
@@ -37,8 +47,6 @@ const SKY_BRIGHTNESS_GAIN = 1.2;
 const DUSK_AMBIENT_CUT = 0.72;
 const DUSK_KEY_CUT = 0.55;
 const SKY_SUN_TINT = 0.4;
-const DAYLIGHT_FOG_THINNING = 0.7;
-const VOID_SKY_MIX = 0.7;
 const LUMINANCE = { r: 0.2126, g: 0.7152, b: 0.0722 } as const;
 const NIGHT_FROM = 0.3;
 const NIGHT_TO = 0.5;
@@ -152,6 +160,11 @@ export interface FinishLook {
   vignette: number;
 }
 
+export interface NightLook {
+  mistGain: number;
+  hotCore: number;
+}
+
 export interface ShadowFrame {
   readonly standoff: number;
   readonly far: number;
@@ -172,8 +185,9 @@ export function lightAmbience(ambience: BlendedAmbience, into: AmbienceLight = c
   const tint = ambience.tint.getHex();
   into.sky.setHex(lighten(tint, AMBIENT_SKY_LIFT - ambience.darkness * AMBIENT_SKY_LIFT_PER_DARKNESS));
   into.ground.setHex(lighten(tint, AMBIENT_GROUND_LIFT));
-  into.fill = Math.max((AMBIENT_BASE - ambience.darkness * AMBIENT_DARKNESS_WEIGHT) * (1 - dusk * DUSK_AMBIENT_CUT), AMBIENT_FLOOR / luminanceOf(into.sky));
-  into.sun = Math.max(KEY_FLOOR, (KEY_BASE - ambience.darkness * KEY_DARKNESS_WEIGHT) * (1 + ambience.daylight * SUN_BOOST * skyBrightness) * (1 - dusk * DUSK_KEY_CUT));
+  const night = nightOf(ambience.darkness);
+  into.fill = Math.max((AMBIENT_BASE - ambience.darkness * AMBIENT_DARKNESS_WEIGHT) * (1 - dusk * DUSK_AMBIENT_CUT), AMBIENT_FLOOR / luminanceOf(into.sky)) * (1 - NIGHT_FILL_CUT * night);
+  into.sun = Math.max(KEY_FLOOR, (KEY_BASE - ambience.darkness * KEY_DARKNESS_WEIGHT) * (1 + ambience.daylight * SUN_BOOST * skyBrightness) * (1 - dusk * DUSK_KEY_CUT) * (1 - NIGHT_KEY_CUT * night));
   const peak = Math.max(ambience.sky.r, ambience.sky.g, ambience.sky.b);
   if (peak > 0) skyHue.copy(ambience.sky).multiplyScalar(1 / peak);
   else skyHue.setRGB(1, 1, 1);
@@ -194,6 +208,13 @@ export function finishFor(darkness: number, daylight: number, into: FinishLook =
   return into;
 }
 
+export function nightLookFor(darkness: number, into: NightLook = { mistGain: 1, hotCore: 0 }): NightLook {
+  const night = nightOf(darkness);
+  into.mistGain = 1 - NIGHT_MIST_CUT * night;
+  into.hotCore = NIGHT_HOT_CORE * night;
+  return into;
+}
+
 export function shadowFrameFor(half: number): ShadowFrame {
   const standoff = half * LIGHT_SLANT + SHADOW_CASTER_REACH;
   return { standoff, far: 2 * standoff };
@@ -209,10 +230,13 @@ export class SceneLook {
   private lightLimit = FIELD_LIGHT_LIMIT;
   private readonly hemisphere = new HemisphereLight(0x9fc6d6, 0x05080a, 0.6);
   private readonly keyLight = new DirectionalLight(0xcfe8ff, 0.7);
-  private readonly fog = new FogExp2(0x000000, FOG_DENSITY);
+  private readonly fog = new FogExp2(0x000000, 0);
   private readonly background = new Color();
   private readonly light = createAmbienceLight();
   private readonly finishLook = finishFor(0, 0);
+  private readonly nightLook = nightLookFor(0);
+  private readonly output = new OutputPass();
+  private readonly hotCore = { value: 0 };
   private shadowHalf = 0;
   private shadowStandoff = 0;
   private assignedLights: LightAssignment<LightSource> = NO_LIGHTS;
@@ -220,17 +244,21 @@ export class SceneLook {
   private lightTimer = 0;
   private activeFieldLights = 0;
   private survey = false;
-  private readonly fogDensity: number;
   private lastAmbience: BlendedAmbience | null = null;
-  private hazeCap = Infinity;
+  private reach: number | null = null;
+  private readonly air = createAirShape();
+  private readonly hazeColor = new Color();
   private readonly mistColor = new Color();
   private readonly snappedFocus = new Vector3();
   private readonly finish = new ShaderPass(FINISH_SHADER);
   private readonly flashColor = new Color(FLASH_SKY);
+  private readonly flashShown = new Color();
+  private readonly sky = new SkyDome();
+  private readonly skyLook = createSkyLook();
   private time = 0;
   flash = 0;
 
-  constructor(canvas: HTMLCanvasElement, scene: Scene, camera: Camera, fogDensity = FOG_DENSITY) {
+  constructor(canvas: HTMLCanvasElement, scene: Scene, camera: Camera) {
     this.renderer = new WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
     this.renderer.outputColorSpace = SRGBColorSpace;
     this.renderer.toneMapping = ACESFilmicToneMapping;
@@ -242,16 +270,18 @@ export class SceneLook {
     this.keyLight.shadow.mapSize.set(2048, 2048);
     this.keyLight.shadow.normalBias = 0.02;
     this.fitShadow(SHADOW_REACH_MIN);
-    this.fogDensity = fogDensity;
-    this.fog.density = fogDensity;
     scene.fog = this.fog;
     scene.background = this.background;
-    scene.add(this.hemisphere, this.keyLight, this.keyLight.target);
+    scene.add(this.hemisphere, this.keyLight, this.keyLight.target, this.sky.mesh);
 
     this.composer = new EffectComposer(this.renderer, new WebGLRenderTarget(1, 1, { type: HalfFloatType, samples: 4 }));
     this.composer.addPass(new RenderPass(scene, camera));
     this.composer.addPass(this.bloom);
-    this.composer.addPass(new OutputPass());
+    Object.assign(this.output.uniforms, { hotCore: this.hotCore });
+    this.output.material.fragmentShader = this.output.material.fragmentShader
+      .replace('uniform sampler2D tDiffuse;', 'uniform sampler2D tDiffuse;\nuniform float hotCore;')
+      .replace('gl_FragColor = texture2D( tDiffuse, vUv );', `gl_FragColor = texture2D( tDiffuse, vUv );\nfloat hotPeak = max( max( gl_FragColor.r, gl_FragColor.g ), gl_FragColor.b );\ngl_FragColor.rgb = mix( gl_FragColor.rgb, vec3( hotPeak ), smoothstep( ${HOT_FROM.toFixed(2)}, ${HOT_TO.toFixed(2)}, hotPeak ) * hotCore );`);
+    this.composer.addPass(this.output);
     this.composer.addPass(this.finish);
     const highPass = this.bloom.materialHighPassFilter;
     highPass.uniforms['smoothWidth']!.value = BLOOM_KNEE;
@@ -322,38 +352,45 @@ export class SceneLook {
     return needsResize;
   }
 
-  capHaze(limit: number | null): void {
-    this.hazeCap = limit ?? Infinity;
+  reachTo(reach: number | null): void {
+    this.reach = reach;
     if (this.lastAmbience) this.applyAmbience(this.lastAmbience);
   }
 
   setSurvey(on: boolean): void {
     this.survey = on;
-    this.fog.density = on ? 0 : this.fogDensity;
     if (this.lastAmbience) this.applyAmbience(this.lastAmbience);
   }
 
   applyAmbience(ambience: BlendedAmbience): void {
     this.lastAmbience = ambience;
-    this.fog.color.copy(ambience.fog);
-    this.background.copy(ambience.fog).multiplyScalar(0.55).lerp(ambience.sky, ambience.daylight * VOID_SKY_MIX);
+    skyLookFor(ambience, nightOf(ambience.darkness), this.skyLook);
     const light = lightAmbience(ambience, this.light);
     this.hemisphere.color.copy(light.sky);
     this.hemisphere.groundColor.copy(light.ground);
     this.hemisphere.intensity = light.fill;
     this.keyLight.color.copy(light.key);
     this.keyLight.intensity = light.sun;
-    const skyGlow = Math.min(1, Math.max(ambience.sky.r, ambience.sky.g, ambience.sky.b) * SKY_BRIGHTNESS_GAIN);
-    if (!this.survey) this.fog.density = Math.min(this.hazeCap, this.fogDensity * ambience.haze * (1 - ambience.daylight * skyGlow * DAYLIGHT_FOG_THINNING));
+    airShapeFor(ambience, nightOf(ambience.darkness), this.reach, this.air);
+    this.fog.density = this.survey ? 0 : this.air.density * LEGACY_FOG_SHARE;
     const groundFog = this.survey ? 0 : Math.min(GROUND_FOG_LIMIT, Math.max(0, (ambience.haze - 1) * GROUND_FOG_PER_HAZE + ambience.weather.mist * GROUND_FOG_PER_MIST));
-    this.mistColor.copy(ambience.fog).multiplyScalar(MIST_GAIN).lerp(this.flashColor.setRGB(1, 1, 1), MIST_WHITE);
+    nightLookFor(this.survey ? 0 : ambience.darkness, this.nightLook);
+    this.hotCore.value = this.nightLook.hotCore;
+    this.mistColor.copy(ambience.fog).multiplyScalar(MIST_GAIN * this.nightLook.mistGain).lerp(this.flashColor.setRGB(1, 1, 1), MIST_WHITE);
     setBeamWeather(this.survey ? 0 : ambience.haze, ambience.weather.mist, ambience.weather.rain);
     setFieldAtmosphere({ groundFog, mistColor: this.mistColor, wetness: ambience.weather.rain + DRIZZLE_WETNESS * ambience.weather.drizzle });
     if (this.flash > 0 && !this.survey) {
       this.hemisphere.intensity += this.flash * FLASH_AMBIENT;
       this.keyLight.intensity += this.flash * FLASH_KEY;
-      this.background.lerp(this.flashColor.setHex(FLASH_SKY), this.flash * FLASH_SKY_MIX);
+      this.flashShown.setHex(FLASH_SKY, LinearSRGBColorSpace);
+      this.skyLook.horizon.lerp(this.flashShown, this.flash * FLASH_SKY_MIX);
+      this.skyLook.zenith.lerp(this.flashShown, this.flash * FLASH_SKY_MIX);
     }
+    this.sky.apply(this.skyLook, BASE_EXPOSURE);
+    sceneColorOf(this.skyLook.horizon, BASE_EXPOSURE, this.background);
+    sceneColorOf(this.skyLook.haze, BASE_EXPOSURE, this.hazeColor);
+    this.fog.color.copy(this.hazeColor);
+    setAir(this.air, this.hazeColor, this.background, this.survey ? 0 : 1);
     if (this.survey) {
       this.hemisphere.intensity = SURVEY_AMBIENT;
       this.keyLight.intensity = SURVEY_KEY;
@@ -362,6 +399,10 @@ export class SceneLook {
     finishFor(darkness, ambience.daylight, this.finishLook);
     this.bloom.radius = MathUtils.lerp(BLOOM_RADIUS, NIGHT_BLOOM_RADIUS, nightOf(darkness));
     this.applyFinish();
+  }
+
+  followFocus(distance: number): void {
+    setAirFocus(distance);
   }
 
   aimKeyLight(focus: Vector3, distance: number): void {
@@ -428,6 +469,7 @@ export class SceneLook {
   render(camera: Camera, delta: number): void {
     this.time += delta;
     this.finish.uniforms.time!.value = this.time;
+    this.sky.setTime(this.time);
     setFieldTime(this.time);
     camera.updateMatrixWorld();
     setFieldLights(this.fieldLights.slice(0, this.activeFieldLights), camera.matrixWorldInverse);
@@ -440,6 +482,7 @@ export class SceneLook {
   }
 
   dispose(): void {
+    this.sky.dispose();
     this.composer.dispose();
     this.renderer.dispose();
   }

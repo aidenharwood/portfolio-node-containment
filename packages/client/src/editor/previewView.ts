@@ -1,7 +1,7 @@
 import { CHUNK_SIZE, GAME_CONTENT, type TilePoint } from '@containment/shared';
-import { Group, Mesh, MeshBasicMaterial, MathUtils, PerspectiveCamera, Plane, PlaneGeometry, Raycaster, Scene, Vector2, Vector3, type Color } from 'three';
+import { Group, Mesh, MeshBasicMaterial, MathUtils, PerspectiveCamera, Plane, PlaneGeometry, Raycaster, Scene, Vector2, Vector3 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { FAR_HAZE_CAP, FarView } from '../render/far/farView.ts';
+import { FarView, farReachFor } from '../render/far/farView.ts';
 import { SceneLook } from '../render/sceneLook.ts';
 import { ActorLayer } from './actorLayer.ts';
 import { EditOverlay } from './editOverlay.ts';
@@ -9,6 +9,7 @@ import { actorsOf } from './actorSpecs.ts';
 import { createBlendedAmbience, sampleAmbience } from '../render/world/ambienceBlend.ts';
 import { LevelScene, type StreamReach } from '../render/world/levelScene.ts';
 import { groundAt, rayGround } from '../render/world/ground.ts';
+import { DEFAULT_SETTINGS } from '../state/gameSettings.ts';
 import type { ActiveZone } from '../state/worldState.ts';
 
 export interface CameraState {
@@ -20,13 +21,12 @@ export interface CameraState {
 
 const GAME_ANGLE = { yaw: 45, pitch: 52 } as const;
 const BASE_DISTANCE = 11;
-const PREVIEW_FOG = 0.006;
 const BUILD_BUDGET_MS = 12;
 const NOTHING: ReadonlySet<string> = new Set();
 const MAX_REACH = 8;
 const CLICK_SLOP_PX = 4;
 const GROUND = new Plane(new Vector3(0, 1, 0), 0);
-const VIEW_DISTANCE = 2000;
+const VIEW_DISTANCE = farReachFor(DEFAULT_SETTINGS);
 const FAR_REACH: StreamReach = { build: 2, retain: 3 };
 const STREAM_LEAD = 24;
 
@@ -83,7 +83,7 @@ export class PreviewView {
   constructor(container: HTMLElement) {
     this.canvas.style.cssText = 'width:100%;height:100%;display:block';
     container.append(this.canvas);
-    this.sceneLook = new SceneLook(this.canvas, this.scene, this.camera, PREVIEW_FOG);
+    this.sceneLook = new SceneLook(this.canvas, this.scene, this.camera);
     this.scene.add(this.issueMarkers, this.actors.root, this.overlay.root);
     this.listenForEdits(container);
     this.controls = new OrbitControls(this.camera, this.canvas);
@@ -121,7 +121,7 @@ export class PreviewView {
     this.nextFar = null;
     this.farDue = 0;
     this.far = this.startFar(zone);
-    this.sceneLook.capHaze(this.far ? FAR_HAZE_CAP : null);
+    this.sceneLook.reachTo(this.far ? VIEW_DISTANCE : null);
     this.sceneLook.resetLights();
     const span = Math.min(MAX_REACH, Math.ceil(Math.max(zone.layout.width, zone.layout.height) / CHUNK_SIZE) + 1);
     this.reach = previewReach(span, this.far !== null);
@@ -325,7 +325,7 @@ export class PreviewView {
       this.far = this.nextFar;
       this.nextFar = null;
     }
-    const frame = { camera: this.camera.position, focus, ambience: this.ambience, background: this.scene.background as Color, drawn: level.drawnChunks, pixelRatio: this.sceneLook.renderer.getPixelRatio() };
+    const frame = { camera: this.camera.position, focus, ambience: this.ambience, drawn: level.drawnChunks, pixelRatio: this.sceneLook.renderer.getPixelRatio() };
     this.far?.update(frame);
     this.nextFar?.update(frame);
   }
@@ -355,6 +355,7 @@ export class PreviewView {
     this.level.updateCutaway(this.camera.position, target);
     this.followFar(now, target);
     const viewDistance = this.camera.position.distanceTo(target);
+    this.sceneLook.followFocus(viewDistance);
     this.sceneLook.aimKeyLight(target, viewDistance);
     this.sceneLook.matchBloomToDistance(viewDistance);
     this.sceneLook.updateLights(this.level.lights, delta, time, target);
