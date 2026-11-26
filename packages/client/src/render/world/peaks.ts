@@ -3,11 +3,11 @@ import { noise3 } from '../voxel/palette.ts';
 import { TILE_RESOLUTION } from './worldScale.ts';
 
 const R = TILE_RESOLUTION;
-export const PEAK_MAX = 56;
-const REACH_FROM = 2;
+export const PEAK_MAX = 64;
 const REACH_TO = 10;
+const RELIEF_FROM = 3;
+const RELIEF_FULL = 9;
 const RIDGE_FROM = 0.4;
-const DISTANCE_CAP = 16;
 const LEDGE = 8;
 const LEDGE_SHARE = 0.4;
 const DIAGONAL = Math.SQRT2;
@@ -40,11 +40,53 @@ export function ridgeAt(tx: number, ty: number): number {
 
 const isMountain = (kind: TileKindId): boolean => kind === 'rock';
 
-function distancesOf(layout: TileLayout): Float32Array {
+const SIDES = [[0, -1], [1, 0], [0, 1], [-1, 0]] as const;
+
+interface Reach {
+  readonly distance: Float32Array;
+  readonly foot: Float32Array;
+}
+
+function footOf(layout: TileLayout, mountain: Uint8Array): Float32Array {
+  const { width, height } = layout;
+  const foot = new Float32Array(width * height).fill(-1);
+  const queue = new Int32Array(width * height);
+  let tail = 0;
+  const inside = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < width && y < height;
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const at = y * width + x;
+      if (!mountain[at]) continue;
+      let highest = -1;
+      for (const [dx, dy] of SIDES) if (inside(x + dx, y + dy) && !mountain[at + dy * width + dx]) highest = Math.max(highest, layout.heightAt({ x: x + dx, y: y + dy }));
+      if (highest < 0) continue;
+      foot[at] = highest;
+      queue[tail++] = at;
+    }
+  }
+  for (let head = 0; head < tail; head++) {
+    const at = queue[head] as number;
+    const x = at % width;
+    const y = (at - x) / width;
+    for (const [dx, dy] of SIDES) {
+      const near = at + dy * width + dx;
+      if (!inside(x + dx, y + dy) || !mountain[near] || (foot[near] as number) >= 0) continue;
+      foot[near] = foot[at] as number;
+      queue[tail++] = near;
+    }
+  }
+  return foot;
+}
+
+function reachOf(layout: TileLayout): Reach {
   const { width, height } = layout;
   const distance = new Float32Array(width * height);
+  const mountain = new Uint8Array(width * height);
   for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) distance[y * width + x] = isMountain(layout.tileAt({ x, y })) ? DISTANCE_CAP : 0;
+    for (let x = 0; x < width; x++) {
+      mountain[y * width + x] = isMountain(layout.tileAt({ x, y })) ? 1 : 0;
+      distance[y * width + x] = mountain[y * width + x] ? Infinity : 0;
+    }
   }
   const relax = (at: number, from: number, step: number): void => {
     const through = (distance[from] as number) + step;
@@ -74,14 +116,15 @@ function distancesOf(layout: TileLayout): Float32Array {
       }
     }
   }
-  return distance;
+  return { distance, foot: footOf(layout, mountain) };
 }
 
-export function peakRise(distance: number, ridge: number): number {
-  if (distance <= REACH_FROM) return 0;
-  const reach = smooth(Math.min(1, (distance - REACH_FROM) / (REACH_TO - REACH_FROM)));
+export function peakRise(distance: number, ridge: number, relief = RELIEF_FULL): number {
+  if (distance <= 0) return 0;
+  const reach = smooth(Math.min(1, distance / REACH_TO));
   const crest = Math.max(0, (ridge - RIDGE_FROM) / (1 - RIDGE_FROM));
-  return PEAK_MAX * reach * crest ** 1.2;
+  const lift = smooth(Math.min(1, Math.max(0, (relief - RELIEF_FROM) / (RELIEF_FULL - RELIEF_FROM))));
+  return PEAK_MAX * reach * lift * crest ** 1.2;
 }
 
 function terraced(rise: number): number {
@@ -99,13 +142,13 @@ export function peakFieldOf(layout: TileLayout): PeakField {
   let rises: Float32Array | null = null;
   const risesOf = (): Float32Array => {
     if (rises) return rises;
-    const distance = distancesOf(layout);
+    const { distance, foot } = reachOf(layout);
     const built = new Float32Array(width * height);
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         const at = y * width + x;
         const reach = distance[at] as number;
-        if (reach > REACH_FROM) built[at] = peakRise(reach, ridgeAt(x, y));
+        if (reach > 0) built[at] = peakRise(reach, ridgeAt(x, y), layout.heightAt({ x, y }) - Math.max(0, foot[at] as number));
       }
     }
     rises = built;
