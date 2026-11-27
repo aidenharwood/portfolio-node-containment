@@ -1,9 +1,12 @@
-import { TILE_KIND_IDS, type RegionId, type ResolvedLevel, type TileKindId, type TilePoint, type ZoneAmbience } from '@containment/shared';
+import { GAME_CONTENT, TILE_KIND_IDS, type GameContent, type ObjectPlacement, type RegionId, type ResolvedLevel, type TileKindId, type TilePoint, type WorldObjectDefinition, type WorldObjectId, type ZoneAmbience } from '@containment/shared';
 import { SLOPED } from '../world/ground.ts';
 import { STEP_HEIGHT } from '../world/worldScale.ts';
 import { farSideColor, farTileColor, farTopOffset } from './farPalette.ts';
+import { emptyFarLights, farGlowOf, farLightModels, farLightTransfer, placeFarLights, type FarLightBatch } from './farLights.ts';
+import { farPropModels, farPropTransfer, MODEL_VARIANTS, placeFarProps, propSilhouette, type FarPropBatch } from './farProps.ts';
+import { ownedLayoutOf } from '../world/chunkStructure.ts';
 import { coarsenRows, createFarCells, farSectors, farTileTransfer, meshFarSector, type FarCellSize, type FarTileArrays } from './farTerrainMesher.ts';
-import { kindOfIndex, VOID_KIND, type Plan, type SceneRaster } from './sceneRaster.ts';
+import { kindOfIndex, rasterIndexAt, VOID_KIND, type Plan, type SceneRaster } from './sceneRaster.ts';
 
 export const FAR_SECTOR_TILES = 256;
 export const FAR_MOOD_LIMIT = 32;
@@ -15,16 +18,22 @@ export interface FarBuild {
   readonly cell: FarCellSize;
   readonly tiles: readonly FarTileArrays[];
   readonly moods: readonly ZoneAmbience[];
+  readonly props: readonly FarPropBatch[];
+  readonly lights: FarLightBatch;
 }
 
 export interface FarLevel {
   ambienceAt(point: TilePoint): ZoneAmbience;
   regionAt(point: TilePoint): RegionId | undefined;
+  readonly objects: readonly ObjectPlacement[];
+  readonly worldObjects: ReadonlyMap<WorldObjectId, WorldObjectDefinition>;
+  indoorsAt(point: TilePoint): boolean;
 }
 
-export function farLevelOf(level: ResolvedLevel): FarLevel {
+export function farLevelOf(level: ResolvedLevel, content: GameContent = GAME_CONTENT): FarLevel {
   const land = level.definition.land;
-  return { ambienceAt: (point) => level.ambienceAt(point), regionAt: (point) => land?.wardAt(point) };
+  const indoors = land ? ownedLayoutOf(level, level.scene).interiorAt : undefined;
+  return { ambienceAt: (point) => level.ambienceAt(point), regionAt: (point) => land?.wardAt(point), objects: level.objects, worldObjects: content.worldObjects, indoorsAt: (point) => indoors?.(point) ?? false };
 }
 
 export const moodKeyOf = (ambience: ZoneAmbience): string => `${ambience.darkness}|${ambience.tint}|${ambience.fog}|${ambience.sky ?? ''}|${ambience.haze ?? 1}`;
@@ -69,13 +78,39 @@ export function planFarBuild(level: FarLevel, raster: SceneRaster, cell: FarCell
   const tiles: FarTileArrays[] = [];
   const steps: (() => void)[] = [];
   for (let row = 0; row < cells.rows; row += CELL_ROWS_PER_STEP) steps.push(() => coarsenRows(source, cells, row, row + CELL_ROWS_PER_STEP));
+  let props: FarPropBatch[] = [];
+  const propSource = { objects: level.objects, worldObjects: level.worldObjects, moodAt: source.moodAt };
+  for (const model of farPropModels(propSource)) {
+    steps.push(() => {
+      for (let seed = 0; seed < MODEL_VARIANTS; seed++) propSilhouette(model, seed);
+    });
+  }
+  steps.push(() => {
+    props = placeFarProps(propSource, raster, cells);
+  });
+  let lights = emptyFarLights();
+  const lightSource = {
+    objects: level.objects,
+    worldObjects: level.worldObjects,
+    indoorsAt: (at: TilePoint) => level.indoorsAt(at),
+    moodAt: source.moodAt,
+    groundColorAt: (tx: number, ty: number, out: [number, number, number]) => {
+      const index = rasterIndexAt(raster, tx, ty);
+      if (index < 0) out.fill(0);
+      else source.colorOf(raster.kinds[index] as number, tx, ty, out);
+    },
+  };
+  for (const model of farLightModels(lightSource)) steps.push(() => void farGlowOf(model));
+  steps.push(() => {
+    lights = placeFarLights(lightSource, raster);
+  });
   for (const sector of farSectors(cells, FAR_SECTOR_TILES)) {
     steps.push(() => {
       const tile = meshFarSector(cells, sector);
       if (tile.indices.length > 0) tiles.push(tile);
     });
   }
-  return { steps, result: () => ({ cell, tiles, moods }) };
+  return { steps, result: () => ({ cell, tiles, moods, props, lights }) };
 }
 
-export const farBuildTransfer = (build: FarBuild): ArrayBuffer[] => build.tiles.flatMap(farTileTransfer);
+export const farBuildTransfer = (build: FarBuild): ArrayBuffer[] => [...build.tiles.flatMap(farTileTransfer), ...build.props.flatMap(farPropTransfer), ...farLightTransfer(build.lights)];

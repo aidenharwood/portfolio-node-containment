@@ -1,5 +1,6 @@
 import { CHUNK_SIZE, TILE_KIND_IDS, TILE_KINDS } from '@containment/shared';
-import { STEP_HEIGHT, ZONE_VOXEL_SIZE } from '../world/worldScale.ts';
+import { FLOOR_LAYERS, STEP_HEIGHT, TILE_RESOLUTION, ZONE_VOXEL_SIZE } from '../world/worldScale.ts';
+import { facadeStyleOf } from './facadePattern.ts';
 import type { Rgb } from './farPalette.ts';
 import { VOID_KIND, type SceneRaster } from './sceneRaster.ts';
 
@@ -14,6 +15,8 @@ const EDGE_EPSILON = 1e-4;
 const COLOR_LEVELS = 1023;
 const MAX_HEIGHT_STEPS = 32;
 const STRUCTURE = TILE_KIND_IDS.map((kind) => TILE_KINDS[kind].structure);
+const FACADE_STYLES = TILE_KIND_IDS.map(facadeStyleOf);
+const NO_FACADE = [0, 0, 0, 0] as const;
 
 export interface FarCells {
   readonly cell: FarCellSize;
@@ -26,6 +29,7 @@ export interface FarCells {
   readonly colors: Float32Array;
   readonly sides: Float32Array;
   readonly moods: Uint8Array;
+  readonly styles: Uint8Array;
 }
 
 export interface FarCellSource {
@@ -50,6 +54,7 @@ export interface FarTileArrays {
   readonly colors: Uint16Array;
   readonly moods: Uint8Array;
   readonly chunks: Int16Array;
+  readonly facades: Uint8Array;
   readonly indices: Uint32Array;
   readonly min: readonly [number, number, number];
   readonly max: readonly [number, number, number];
@@ -72,6 +77,7 @@ export function createFarCells(raster: SceneRaster, cell: FarCellSize): FarCells
     colors: new Float32Array(count * 3),
     sides: new Float32Array(count * 3),
     moods: new Uint8Array(count),
+    styles: new Uint8Array(count),
   };
 }
 
@@ -137,6 +143,7 @@ export function coarsenRows(source: FarCellSource, cells: FarCells, fromRow: num
       }
       const at = row * cells.columns + column;
       cells.tops[at] = Number.NaN;
+      cells.styles[at] = 0;
       cells.lows[at] = tiles === 0 ? FAR_SEA_FLOOR : low;
       if (tiles === 0) continue;
       const wallCell = walls > 0 && walls >= tiles * WALL_SHARE;
@@ -157,6 +164,7 @@ export function coarsenRows(source: FarCellSource, cells: FarCells, fromRow: num
         cells.sides[at * 3 + channel] = quantize(side[channel] as number);
       }
       cells.moods[at] = source.moodAt(centreX, centreY);
+      cells.styles[at] = wallCell ? (FACADE_STYLES[kind] as number) : 0;
     }
   }
 }
@@ -201,11 +209,12 @@ class QuadWriter {
   private readonly colors: number[] = [];
   private readonly moods: number[] = [];
   private readonly chunks: number[] = [];
+  private readonly facades: number[] = [];
   private readonly indices: number[] = [];
   private readonly min: [number, number, number] = [Infinity, Infinity, Infinity];
   private readonly max: [number, number, number] = [-Infinity, -Infinity, -Infinity];
 
-  quad(corners: readonly [Corner, Corner, Corner, Corner], normal: readonly [number, number, number], color: ArrayLike<number>, offset: number, footShade: number, mood: number, chunkX: number, chunkY: number, feet: readonly boolean[]): void {
+  quad(corners: readonly [Corner, Corner, Corner, Corner], normal: readonly [number, number, number], color: ArrayLike<number>, offset: number, footShade: number, mood: number, chunkX: number, chunkY: number, feet: readonly boolean[], facade: readonly number[] = NO_FACADE): void {
     const start = this.positions.length / 3;
     corners.forEach((corner, index) => {
       this.positions.push(corner[0], corner[1], corner[2]);
@@ -218,6 +227,7 @@ class QuadWriter {
       for (let channel = 0; channel < 3; channel++) this.colors.push(Math.round(Math.min(1, (color[offset + channel] as number) * shade) * 65535));
       this.moods.push(mood);
       this.chunks.push(chunkX, chunkY);
+      this.facades.push(facade[0] as number, facade[1] as number, facade[2] as number, facade[3] as number);
     });
     this.indices.push(start, start + 1, start + 2, start, start + 2, start + 3);
   }
@@ -230,6 +240,7 @@ class QuadWriter {
       colors: new Uint16Array(this.colors),
       moods: new Uint8Array(this.moods),
       chunks: new Int16Array(this.chunks),
+      facades: new Uint8Array(this.facades),
       indices: new Uint32Array(this.indices),
       min: empty ? [0, 0, 0] : [...this.min],
       max: empty ? [0, 0, 0] : [...this.max],
@@ -251,6 +262,8 @@ const sameTop = (cells: FarCells, a: number, b: number): boolean =>
   cells.tops[a] === cells.tops[b] && cells.moods[a] === cells.moods[b] && cells.colors[a * 3] === cells.colors[b * 3] && cells.colors[a * 3 + 1] === cells.colors[b * 3 + 1] && cells.colors[a * 3 + 2] === cells.colors[b * 3 + 2];
 
 export const chunkOfTile = (tile: number): number => Math.floor(tile / CHUNK_SIZE);
+
+export const facadeVoxel = (top: number): number => Math.max(0, Math.min(250, Math.round((top + FAR_SINK) * TILE_RESOLUTION)));
 
 export function meshFarSector(cells: FarCells, rect: FarRect): FarTileArrays {
   const writer = new QuadWriter();
@@ -291,11 +304,13 @@ export function meshFarSector(cells: FarCells, rect: FarRect): FarTileArrays {
         const az = north + side.a[1] * size;
         const bx = west + side.b[0] * size;
         const bz = north + side.b[1] * size;
-        writer.quad([[ax, below, az], [ax, top, az], [bx, top, bz], [bx, below, bz]], side.normal, cells.sides, at * 3, SIDE_FOOT, cells.moods[at] as number, chunkOfColumn(column), chunkOfRow(row), FEET);
+        const style = cells.styles[at] as number;
+        const facade = style === 0 ? NO_FACADE : [style, facadeVoxel(top) + 1, facadeVoxel(neighbour) + FLOOR_LAYERS, 0];
+        writer.quad([[ax, below, az], [ax, top, az], [bx, top, bz], [bx, below, bz]], side.normal, cells.sides, at * 3, SIDE_FOOT, cells.moods[at] as number, chunkOfColumn(column), chunkOfRow(row), FEET, facade);
       }
     }
   }
   return writer.arrays();
 }
 
-export const farTileTransfer = (tile: FarTileArrays): ArrayBuffer[] => [tile.positions.buffer, tile.normals.buffer, tile.colors.buffer, tile.moods.buffer, tile.chunks.buffer, tile.indices.buffer] as ArrayBuffer[];
+export const farTileTransfer = (tile: FarTileArrays): ArrayBuffer[] => [tile.positions.buffer, tile.normals.buffer, tile.colors.buffer, tile.moods.buffer, tile.chunks.buffer, tile.facades.buffer, tile.indices.buffer] as ArrayBuffer[];

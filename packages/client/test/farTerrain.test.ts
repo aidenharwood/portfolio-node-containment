@@ -42,6 +42,7 @@ interface Quad {
   readonly min: readonly [number, number, number];
   readonly max: readonly [number, number, number];
   readonly chunk: readonly [number, number];
+  readonly facade: readonly number[];
 }
 
 function quadsOf(tile: FarTileArrays): Quad[] {
@@ -55,7 +56,7 @@ function quadsOf(tile: FarTileArrays): Quad[] {
         max[axis] = Math.max(max[axis] as number, tile.positions[corner * 3 + axis] as number);
       }
     }
-    quads.push({ normal: [tile.normals[start * 3] as number, tile.normals[start * 3 + 1] as number, tile.normals[start * 3 + 2] as number], min, max, chunk: [tile.chunks[start * 2] as number, tile.chunks[start * 2 + 1] as number] });
+    quads.push({ normal: [tile.normals[start * 3] as number, tile.normals[start * 3 + 1] as number, tile.normals[start * 3 + 2] as number], min, max, chunk: [tile.chunks[start * 2] as number, tile.chunks[start * 2 + 1] as number], facade: [...tile.facades.subarray(start * 4, start * 4 + 4)] });
   }
   return quads;
 }
@@ -89,6 +90,14 @@ test('a cell that is at least three eighths wall keeps the wall height, so tower
   const tower = tops(quads).find((quad) => quad.min[0] < 0 && quad.min[2] < 0 && quad.max[0] <= 3.5);
   assert.ok(tower);
   assert.ok(close(tower.min[1], 6 * STEP_HEIGHT - FAR_SINK));
+});
+
+test('building sides carry their facade material, top and street level for the window pattern, and nothing else does', () => {
+  const quads = meshAll(syntheticRaster(32, 32, (x, y) => (x >= 8 && x < 16 && y >= 8 && y < 16 ? ['cladding', 6] : x >= 24 ? ['rock', 4] : ['asphalt', 2])));
+  const sides = quads.filter((quad) => quad.normal[1] === 0 && quad.min[0] >= 7.4 && quad.max[0] <= 15.6 && quad.min[2] >= 7.4 && quad.max[2] <= 15.6);
+  assert.ok(sides.length >= 8);
+  for (const side of sides) assert.deepEqual(side.facade, [4, 6 * 4 + 1, 2 * 4 + 2, 0]);
+  for (const quad of quads) if (!sides.includes(quad)) assert.deepEqual(quad.facade, [0, 0, 0, 0]);
 });
 
 test('sea at step zero is left to the sea plane, and land beside it drops to the sea floor', () => {

@@ -439,6 +439,10 @@ export class SceneLook {
     this.bloom.strength = MathUtils.clamp(BLOOM_STRENGTH * scale, BLOOM_STRENGTH_RANGE.minimum, BLOOM_STRENGTH_RANGE.maximum) * night * this.glowStrength;
   }
 
+  get lightEdge(): number {
+    return this.assignedLights.edge;
+  }
+
   resetLights(): void {
     this.assignedLights = NO_LIGHTS;
     this.lightTimer = 0;

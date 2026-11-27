@@ -267,7 +267,7 @@ export class GameRenderer {
     const focus = this.cameraRig.focusPoint;
     this.zone.stream({ x: focus.x, y: focus.z });
     this.followAmbience(focus, delta, false);
-    this.far?.update({ camera: this.cameraRig.camera.position, focus, ambience: this.ambience, drawn: this.zone.drawnChunks, pixelRatio: this.look.renderer.getPixelRatio() });
+    this.far?.update({ camera: this.cameraRig.camera.position, focus, ambience: this.ambience, drawn: this.zone.drawnChunks, pixelRatio: this.look.renderer.getPixelRatio(), lightEdge: this.look.lightEdge });
     const viewDistance = this.cameraRig.camera.position.distanceTo(focus);
     this.look.followFocus(viewDistance);
     this.look.aimKeyLight(focus, viewDistance);
