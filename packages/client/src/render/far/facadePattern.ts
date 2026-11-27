@@ -1,7 +1,8 @@
 import { isBuildingWall, WALL_MATERIALS, type TileKindId, type WallMaterialId } from '@containment/shared';
 import { Color } from 'three';
 import { darken, noise3 } from '../voxel/palette.ts';
-import type { Side } from '../world/levelVoxels.ts';
+import type { OwnedLayout, Side } from '../world/levelVoxels.ts';
+import { towerBlockAt } from '../world/towerMassing.ts';
 import { FACADE_BAND, WALL_PALETTE } from '../world/wallPalette.ts';
 import { FLOOR_LAYERS, STEP_VOXELS, TILE_RESOLUTION, WALL_LAYERS } from '../world/worldScale.ts';
 
@@ -17,6 +18,7 @@ const NEON_ROWS = 2;
 const LIT_SHARE = 0.4;
 const DARK_STOREYS = 0.16;
 const LIT_FADE = 0.05;
+const FAR_CROWN_DROP = 2;
 
 export const SIDE_SALT: Readonly<Record<Side, number>> = { north: 1, south: 2, east: 3, west: 4 };
 
@@ -104,6 +106,34 @@ export function towerFacade(material: WallMaterialId, side: Side, along: number,
   const pane = Math.floor(along / FACADE_PANE);
   if (noise3(pane, storey, block + salt, 739) >= towerShare(storey, block, salt)) return solid(TOWER_FACE.glass);
   return glowing(pick(TOWER_GLOWS, noise3(pane, storey, block + salt, 743)));
+}
+
+export interface TowerSpot {
+  readonly top: number;
+  readonly street: number;
+  readonly roof: number;
+  readonly crown: number;
+}
+
+export function towerSpotAt(layout: OwnedLayout, tx: number, ty: number): TowerSpot | null {
+  const block = towerBlockAt(layout, tx, ty);
+  if (!block) return null;
+  let roof = block.top;
+  let last = false;
+  block.tiers.forEach((tier, index) => {
+    const { rect } = tier;
+    if (tx < rect.x || ty < rect.y || tx >= rect.x + rect.width || ty >= rect.y + rect.height) return;
+    roof = tier.to;
+    last = index === block.tiers.length - 1;
+  });
+  const crown = last && block.neon !== null ? TOWER_SIGNS.indexOf(block.neon as (typeof TOWER_SIGNS)[number]) + 1 : 0;
+  return { top: block.top, street: block.street, roof, crown };
+}
+
+export function towerPaneGlow(pane: number, storey: number, block: number, side: Side): number | null {
+  const salt = SIDE_SALT[side];
+  if (noise3(pane, storey, block + salt, 739) >= towerShare(storey, block, salt)) return null;
+  return pick(TOWER_GLOWS, noise3(pane, storey, block + salt, 743));
 }
 
 export function windowGlow(material: WallMaterialId, tx: number, ty: number, side: Side): number | null {
@@ -331,8 +361,9 @@ FacadeLook facadeBlend( FacadeLook a, FacadeLook b, float t ) {
 	vec3 glow = mix( a.glow * a.cover, b.glow * b.cover, t ) / max( 1e-4, cover );
 	return FacadeLook( body, glow, cover );
 }
-FacadeLook facadeLook( int style, vec3 world, vec3 normal, float topVoxel, float streetVoxel, float blur ) {
-	int material = style - 1;
+FacadeLook facadeLook( int packed, vec3 world, vec3 normal, float topVoxel, float streetVoxel, float storeys, float blur ) {
+	int material = facadeWrap( packed, 8 ) - 1;
+	int crown = packed / 8;
 	bool across = abs( normal.z ) > abs( normal.x );
 	int salt = across ? ( normal.z > 0.0 ? 2 : 1 ) : ( normal.x > 0.0 ? 3 : 4 );
 	vec2 inward = floor( world.xz + 0.5 - normal.xz * 0.5 );
@@ -346,7 +377,10 @@ FacadeLook facadeLook( int style, vec3 world, vec3 normal, float topVoxel, float
 	int street = int( streetVoxel + 0.5 );
 	float near = smoothstep( 0.55, 1.35, blur );
 	float far = smoothstep( 2.5, 6.0, blur );
-	if ( top - ${FLOOR_LAYERS + WALL_LAYERS - 1} - ( street - ${FLOOR_LAYERS} ) >= ${FACADE_MASSING_RISE} ) {
+	int roof = top + int( storeys + 0.5 ) * ${FACADE_STOREY};
+	if ( storeys > 0.5 || top - ${FLOOR_LAYERS + WALL_LAYERS - 1} - ( street - ${FLOOR_LAYERS} ) >= ${FACADE_MASSING_RISE} ) {
+		if ( vy >= roof ) return facadeSolid( FACADE_CAP[ material ] );
+		if ( crown > 0 && vy >= roof - ${FAR_CROWN_DROP} ) return facadeGlowing( TOWER_SIGNS[ min( crown - 1, ${TOWER_SIGNS.length - 1} ) ] );
 		int block = facadeWrap( ( tx / ${BLOCK_TILES} ) * 31 + ( ty / ${BLOCK_TILES} ) * 17, 997 );
 		FacadeLook look = towerCell( material, salt, along, vy, street, top, block );
 		if ( near < 1.0 ) look = facadeBlend( towerVoxel( material, salt, along, vy, street, top, block ), look, near );

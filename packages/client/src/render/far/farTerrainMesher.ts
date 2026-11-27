@@ -1,6 +1,6 @@
 import { CHUNK_SIZE, TILE_KIND_IDS, TILE_KINDS } from '@containment/shared';
-import { FLOOR_LAYERS, STEP_HEIGHT, TILE_RESOLUTION, ZONE_VOXEL_SIZE } from '../world/worldScale.ts';
-import { facadeStyleOf } from './facadePattern.ts';
+import { FLOOR_LAYERS, STEP_HEIGHT, TILE_RESOLUTION, WALL_LAYERS, ZONE_VOXEL_SIZE } from '../world/worldScale.ts';
+import { facadeStyleOf, type TowerSpot } from './facadePattern.ts';
 import type { Rgb } from './farPalette.ts';
 import { VOID_KIND, type SceneRaster } from './sceneRaster.ts';
 
@@ -30,6 +30,7 @@ export interface FarCells {
   readonly sides: Float32Array;
   readonly moods: Uint8Array;
   readonly styles: Uint8Array;
+  readonly towers: Uint8Array;
 }
 
 export interface FarCellSource {
@@ -39,6 +40,7 @@ export interface FarCellSource {
   colorOf(kind: number, tx: number, ty: number, out: Rgb): void;
   sideOf(kind: number, tx: number, ty: number, top: Readonly<Rgb>, out: Rgb): void;
   moodAt(tx: number, ty: number): number;
+  towerAt?(tx: number, ty: number): TowerSpot | null;
 }
 
 export interface FarRect {
@@ -78,6 +80,7 @@ export function createFarCells(raster: SceneRaster, cell: FarCellSize): FarCells
     sides: new Float32Array(count * 3),
     moods: new Uint8Array(count),
     styles: new Uint8Array(count),
+    towers: new Uint8Array(count * 4),
   };
 }
 
@@ -107,6 +110,7 @@ export function coarsenRows(source: FarCellSource, cells: FarCells, fromRow: num
       let sea = 0;
       let walkable = 0;
       let wallTop = 0;
+      let tower: TowerSpot | null = null;
       let low = Infinity;
       const x0 = cells.x + column * size;
       const y0 = cells.y + row * size;
@@ -131,7 +135,12 @@ export function coarsenRows(source: FarCellSource, cells: FarCells, fromRow: num
           if (structure === 'wall') {
             walls++;
             wallCounts[kind]!++;
-            wallTop = Math.max(wallTop, height * STEP_HEIGHT + (raster.rises[index] as number) * ZONE_VOXEL_SIZE);
+            const spot = FACADE_STYLES[kind] && source.towerAt ? source.towerAt(x0 + dx, y0 + dy) : null;
+            const tileTop = spot ? (spot.roof - FLOOR_LAYERS - WALL_LAYERS + 1) * ZONE_VOXEL_SIZE : height * STEP_HEIGHT + (raster.rises[index] as number) * ZONE_VOXEL_SIZE;
+            if (tileTop > wallTop) {
+              wallTop = tileTop;
+              tower = spot;
+            }
             for (let channel = 0; channel < 3; channel++) wallColor[channel]! += tile[channel] as number;
           } else {
             walkable++;
@@ -144,6 +153,7 @@ export function coarsenRows(source: FarCellSource, cells: FarCells, fromRow: num
       const at = row * cells.columns + column;
       cells.tops[at] = Number.NaN;
       cells.styles[at] = 0;
+      cells.towers.fill(0, at * 4, at * 4 + 4);
       cells.lows[at] = tiles === 0 ? FAR_SEA_FLOOR : low;
       if (tiles === 0) continue;
       const wallCell = walls > 0 && walls >= tiles * WALL_SHARE;
@@ -165,6 +175,7 @@ export function coarsenRows(source: FarCellSource, cells: FarCells, fromRow: num
       }
       cells.moods[at] = source.moodAt(centreX, centreY);
       cells.styles[at] = wallCell ? (FACADE_STYLES[kind] as number) : 0;
+      if (wallCell && tower) cells.towers.set([tower.top, tower.street + FLOOR_LAYERS, (tower.roof - tower.top) / TILE_RESOLUTION, tower.crown], at * 4);
     }
   }
 }
@@ -305,7 +316,8 @@ export function meshFarSector(cells: FarCells, rect: FarRect): FarTileArrays {
         const bx = west + side.b[0] * size;
         const bz = north + side.b[1] * size;
         const style = cells.styles[at] as number;
-        const facade = style === 0 ? NO_FACADE : [style, facadeVoxel(top) + 1, facadeVoxel(neighbour) + FLOOR_LAYERS, 0];
+        const storeys = cells.towers[at * 4 + 2] as number;
+        const facade = style === 0 ? NO_FACADE : storeys > 0 ? [style + 8 * (cells.towers[at * 4 + 3] as number), cells.towers[at * 4] as number, cells.towers[at * 4 + 1] as number, storeys] : [style, facadeVoxel(top) + 1, facadeVoxel(neighbour) + FLOOR_LAYERS, 0];
         writer.quad([[ax, below, az], [ax, top, az], [bx, top, bz], [bx, below, bz]], side.normal, cells.sides, at * 3, SIDE_FOOT, cells.moods[at] as number, chunkOfColumn(column), chunkOfRow(row), FEET, facade);
       }
     }

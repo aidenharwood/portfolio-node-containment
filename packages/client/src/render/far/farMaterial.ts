@@ -134,7 +134,7 @@ void main() {
 	vec3 color = airApply( vFarLit, vFarDepth, 1.0 );
 	if ( vFarFacade.x > 0.5 ) {
 		float blur = ${TILE_RESOLUTION.toFixed(1)} * max( max( fwidth( vFarWorld.x ), fwidth( vFarWorld.z ) ), fwidth( vFarWorld.y ) );
-		FacadeLook look = facadeLook( int( vFarFacade.x + 0.5 ), vFarWorld, normalize( vFarNormal ), vFarFacade.y, vFarFacade.z, blur );
+		FacadeLook look = facadeLook( int( vFarFacade.x + 0.5 ), vFarWorld, normalize( vFarNormal ), vFarFacade.y, vFarFacade.z, vFarFacade.w, blur );
 		color = mix( airApply( farKnee( look.body * vFarRadiance ), vFarDepth, 1.0 ), airApply( farEmissive( look.glow ), vFarDepth, FAR_EMISSIVE_FOG ), look.cover );
 	}
 	gl_FragColor = vec4( color, 1.0 );

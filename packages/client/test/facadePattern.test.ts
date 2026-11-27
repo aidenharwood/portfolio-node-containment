@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { type TileKindId, type WallMaterialId } from '@containment/shared';
-import { rooflineGlow, towerBlock, towerFacade, wallFacade, windowGlow, type FacadeVoxel } from '../src/render/far/facadePattern.ts';
+import { rooflineGlow, towerBlock, towerFacade, towerSpotAt, wallFacade, windowGlow, type FacadeVoxel } from '../src/render/far/facadePattern.ts';
 import { buildChunkPlaceholder } from '../src/render/world/chunkPlaceholder.ts';
 import { buildTileVolume, litWindowGlow, rooflineNeonGlow, towerFace, type OwnedLayout, type Side } from '../src/render/world/levelVoxels.ts';
 import { TILE_RESOLUTION } from '../src/render/world/worldScale.ts';
@@ -25,13 +25,21 @@ function towerLayout(material: WallMaterialId): OwnedLayout {
   };
 }
 
-function rowLayout(material: WallMaterialId): OwnedLayout {
+function rowLayout(material: WallMaterialId, side: Side = 'south'): OwnedLayout {
+  const across = side === 'north' || side === 'south';
+  const outside = side === 'south' || side === 'east' ? 1 : -1;
   return {
     width: 16,
-    height: 10,
-    tileAt: ({ x, y }): TileKindId => (x < 0 || y < 0 || x >= 16 || y >= 10 ? 'void' : y === 4 && x >= 2 && x < 14 ? material : y < 4 ? 'concrete' : 'asphalt'),
+    height: 16,
+    tileAt: ({ x, y }): TileKindId => {
+      if (x < 0 || y < 0 || x >= 16 || y >= 16) return 'void';
+      const line = across ? y : x;
+      const run = across ? x : y;
+      if (line === 4 && run >= 2 && run < 14) return material;
+      return (line - 4) * outside > 0 ? 'asphalt' : 'concrete';
+    },
     heightAt: () => STREET,
-    interiorAt: ({ y }) => y < 4,
+    interiorAt: ({ x, y }) => ((across ? y : x) - 4) * outside < 0,
   };
 }
 
@@ -83,21 +91,32 @@ for (const material of ['cladding', 'blockwork', 'brick'] as const) {
 }
 
 for (const material of ['cladding', 'brick', 'wall'] as const) {
-  test(`the wall facade mirror matches the painted windows, neon and bands of a ${material} building`, () => {
-    const volume = buildTileVolume(rowLayout(material), { x: 2, y: 4, width: 12, height: 1 });
+  test(`the wall facade mirror matches the painted windows, neon and bands of a ${material} building on every side`, () => {
     const floor = STREET * 4 + 2;
-    let features = 0;
-    for (let tx = 3; tx < 13; tx++) {
-      for (let lx = 0; lx < R; lx++) {
-        for (let h = 2; h < 15; h++) {
-          const mirror = wallFacade(material, tx, 4, 'south', h, lx);
-          if (!mirror) continue;
-          features++;
-          assert.deepEqual(paintedAt(volume, 'south', tx * R + lx, floor + h, 4 * R + R - 1), mirror, `tile ${tx} at u ${lx}, h ${h}`);
+    for (const side of ['north', 'south', 'east', 'west'] as const) {
+      const across = side === 'north' || side === 'south';
+      const volume = buildTileVolume(rowLayout(material, side), across ? { x: 2, y: 4, width: 12, height: 1 } : { x: 4, y: 2, width: 1, height: 12 });
+      const plane = 4 * R + (side === 'south' || side === 'east' ? R - 1 : 0);
+      let features = 0;
+      let glowing = 0;
+      for (let run = 3; run < 13; run++) {
+        const [tx, ty] = across ? [run, 4] : [4, run];
+        for (let step = 0; step < R; step++) {
+          const u = side === 'south' || side === 'west' ? step : R - 1 - step;
+          for (let h = 2; h < 15; h++) {
+            const mirror = wallFacade(material, tx, ty, side, h, u);
+            if (!mirror) continue;
+            features++;
+            if (mirror.emissive) glowing++;
+            const along = run * R + step;
+            const painted = across ? paintedAt(volume, side, along, floor + h, plane) : paintedAt(volume, side, plane, floor + h, along);
+            assert.deepEqual(painted, mirror, `${side} face of ${tx},${ty} at u ${u}, h ${h}`);
+          }
         }
       }
+      assert.ok(features > 40, `${side} has facade features`);
+      assert.ok(glowing > 0, `${side} windows glow`);
     }
-    assert.ok(features > 40);
   });
 }
 
@@ -142,7 +161,20 @@ test('chunk placeholders light the windows of towers and buildings', () => {
   const lit = layer(tower, 'emissive');
   assert.ok(lit, 'a tower placeholder has an emissive layer');
   assert.ok(lit.geometry.getIndex()!.count >= 6 * 20, 'with many lit panes');
-  const row = buildChunkPlaceholder(rowLayout('brick'), { x: 0, y: 0, width: 16, height: 10 });
+  const spot = towerSpotAt(towerLayout('cladding'), 6, 6);
+  assert.ok(spot && spot.roof > spot.top + 8 * 10, 'the synthetic block is a tall tower');
+  const roofY = (spot.roof + 1 - 2) / TILE_RESOLUTION;
+  const solid = layer(tower, 'solid');
+  assert.ok(solid);
+  const heights = solid.geometry.getAttribute('position');
+  let highest = -Infinity;
+  for (let at = 0; at < heights.count; at++) highest = Math.max(highest, heights.getY(at));
+  assert.ok(Math.abs(highest - roofY) < 1e-4, `the placeholder stands as tall as the tower (${highest} vs ${roofY})`);
+  const glows = lit.geometry.getAttribute('position');
+  let lifted = 0;
+  for (let at = 0; at < glows.count; at++) if (glows.getY(at) > (spot.top + 8) / TILE_RESOLUTION) lifted++;
+  assert.ok(lifted > 40, 'lit panes run up the shell above the old block');
+  const row = buildChunkPlaceholder(rowLayout('brick'), { x: 0, y: 0, width: 16, height: 16 });
   assert.ok(layer(row, 'emissive'), 'a lit building placeholder has an emissive layer');
   const plain = buildChunkPlaceholder({ width: 8, height: 8, tileAt: () => 'grass', heightAt: () => 1 }, { x: 0, y: 0, width: 8, height: 8 });
   assert.equal(layer(plain, 'emissive'), null);
