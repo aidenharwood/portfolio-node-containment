@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { type TileKindId, type WallMaterialId } from '@containment/shared';
-import { rooflineGlow, towerBlock, towerFacade, wallFacade, windowGlow, type FacadeVoxel } from '../src/render/far/facadePattern.ts';
+import { rooflineGlow, towerBlock, towerFacade, towerSpotAt, wallFacade, windowGlow, type FacadeVoxel } from '../src/render/far/facadePattern.ts';
 import { buildChunkPlaceholder } from '../src/render/world/chunkPlaceholder.ts';
 import { buildTileVolume, litWindowGlow, rooflineNeonGlow, towerFace, type OwnedLayout, type Side } from '../src/render/world/levelVoxels.ts';
 import { TILE_RESOLUTION } from '../src/render/world/worldScale.ts';
@@ -142,6 +142,19 @@ test('chunk placeholders light the windows of towers and buildings', () => {
   const lit = layer(tower, 'emissive');
   assert.ok(lit, 'a tower placeholder has an emissive layer');
   assert.ok(lit.geometry.getIndex()!.count >= 6 * 20, 'with many lit panes');
+  const spot = towerSpotAt(towerLayout('cladding'), 6, 6);
+  assert.ok(spot && spot.roof > spot.top + 8 * 10, 'the synthetic block is a tall tower');
+  const roofY = (spot.roof + 1 - 2) / TILE_RESOLUTION;
+  const solid = layer(tower, 'solid');
+  assert.ok(solid);
+  const heights = solid.geometry.getAttribute('position');
+  let highest = -Infinity;
+  for (let at = 0; at < heights.count; at++) highest = Math.max(highest, heights.getY(at));
+  assert.ok(Math.abs(highest - roofY) < 1e-4, `the placeholder stands as tall as the tower (${highest} vs ${roofY})`);
+  const glows = lit.geometry.getAttribute('position');
+  let lifted = 0;
+  for (let at = 0; at < glows.count; at++) if (glows.getY(at) > (spot.top + 8) / TILE_RESOLUTION) lifted++;
+  assert.ok(lifted > 40, 'lit panes run up the shell above the old block');
   const row = buildChunkPlaceholder(rowLayout('brick'), { x: 0, y: 0, width: 16, height: 10 });
   assert.ok(layer(row, 'emissive'), 'a lit building placeholder has an emissive layer');
   const plain = buildChunkPlaceholder({ width: 8, height: 8, tileAt: () => 'grass', heightAt: () => 1 }, { x: 0, y: 0, width: 8, height: 8 });

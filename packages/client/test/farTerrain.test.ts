@@ -100,6 +100,22 @@ test('building sides carry their facade material, top and street level for the w
   for (const quad of quads) if (!sides.includes(quad)) assert.deepEqual(quad.facade, [0, 0, 0, 0]);
 });
 
+test('a tower cell rises to its shell top and carries the tower facade reference, storeys and crown', () => {
+  const raster = syntheticRaster(32, 32, (x, y) => (x >= 8 && x < 16 && y >= 8 && y < 16 ? ['cladding', 6] : ['asphalt', 2]));
+  const cells = createFarCells(raster, 4);
+  const spot = { top: 6 * 4 + 17, street: 2 * 4, roof: 6 * 4 + 17 + 8 * 20, crown: 3 };
+  coarsenRows({ ...plainSource(raster), towerAt: (x, y) => (x >= 8 && x < 12 && y >= 8 && y < 12 ? spot : null) }, cells, 0, cells.rows);
+  const quads = quadsOf(meshFarSector(cells, { column: 0, row: 0, columns: cells.columns, rows: cells.rows }));
+  const tower = tops(quads).find((quad) => close(quad.min[0], 7.5) && close(quad.min[2], 7.5));
+  assert.ok(tower);
+  assert.ok(close(tower.min[1], (spot.roof - 17) / 8 - FAR_SINK), `tower top ${tower.min[1]}`);
+  const sides = quads.filter((quad) => quad.normal[1] === 0 && close(quad.max[1], tower.min[1]));
+  assert.ok(sides.length >= 2);
+  for (const side of sides) assert.deepEqual(side.facade, [4 + 8 * 3, spot.top, spot.street + 2, 20]);
+  const low = tops(quads).find((quad) => close(quad.min[2], 11.5) && quad.min[0] <= 11.5 && quad.max[0] >= 15.5);
+  assert.ok(low && close(low.min[1], 6 * STEP_HEIGHT - FAR_SINK), 'a block cell with no shell keeps the painted height');
+});
+
 test('sea at step zero is left to the sea plane, and land beside it drops to the sea floor', () => {
   const quads = meshAll(syntheticRaster(32, 32, (x) => (x < 16 ? ['water', 0] : ['grass', 0])));
   assert.ok(tops(quads).every((quad) => quad.min[0] >= 15.5 - 1e-3));

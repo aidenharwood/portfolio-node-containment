@@ -1,6 +1,7 @@
 import { GAME_CONTENT, TILE_KIND_IDS, type GameContent, type ObjectPlacement, type RegionId, type ResolvedLevel, type TileKindId, type TilePoint, type WorldObjectDefinition, type WorldObjectId, type ZoneAmbience } from '@containment/shared';
 import { SLOPED } from '../world/ground.ts';
 import { STEP_HEIGHT } from '../world/worldScale.ts';
+import { towerSpotAt, type TowerSpot } from './facadePattern.ts';
 import { farSideColor, farTileColor, farTopOffset } from './farPalette.ts';
 import { emptyFarLights, farGlowOf, farLightModels, farLightTransfer, placeFarLights, type FarLightBatch } from './farLights.ts';
 import { farPropModels, farPropTransfer, MODEL_VARIANTS, placeFarProps, propSilhouette, type FarPropBatch } from './farProps.ts';
@@ -28,12 +29,21 @@ export interface FarLevel {
   readonly objects: readonly ObjectPlacement[];
   readonly worldObjects: ReadonlyMap<WorldObjectId, WorldObjectDefinition>;
   indoorsAt(point: TilePoint): boolean;
+  towerAt(point: TilePoint): TowerSpot | null;
 }
 
 export function farLevelOf(level: ResolvedLevel, content: GameContent = GAME_CONTENT): FarLevel {
   const land = level.definition.land;
-  const indoors = land ? ownedLayoutOf(level, level.scene).interiorAt : undefined;
-  return { ambienceAt: (point) => level.ambienceAt(point), regionAt: (point) => land?.wardAt(point), objects: level.objects, worldObjects: content.worldObjects, indoorsAt: (point) => indoors?.(point) ?? false };
+  const owned = land ? ownedLayoutOf(level, level.scene) : null;
+  const indoors = owned?.interiorAt;
+  return {
+    ambienceAt: (point) => level.ambienceAt(point),
+    regionAt: (point) => land?.wardAt(point),
+    objects: level.objects,
+    worldObjects: content.worldObjects,
+    indoorsAt: (point) => indoors?.(point) ?? false,
+    towerAt: (point) => (owned ? towerSpotAt(owned, point.x, point.y) : null),
+  };
 }
 
 export const moodKeyOf = (ambience: ZoneAmbience): string => `${ambience.darkness}|${ambience.tint}|${ambience.fog}|${ambience.sky ?? ''}|${ambience.haze ?? 1}`;
@@ -61,6 +71,11 @@ export function planFarBuild(level: FarLevel, raster: SceneRaster, cell: FarCell
     slack,
     colorOf: (kind: number, tx: number, ty: number, out: [number, number, number]) => void farTileColor(kindOfIndex(kind), regionAt(tx, ty), tx, ty, out),
     sideOf: (kind: number, tx: number, ty: number, top: Readonly<[number, number, number]>, out: [number, number, number]) => void farSideColor(kindOfIndex(kind), regionAt(tx, ty), top, out),
+    towerAt: (tx: number, ty: number): TowerSpot | null => {
+      point.x = tx;
+      point.y = ty;
+      return level.towerAt(point);
+    },
     moodAt: (tx: number, ty: number): number => {
       point.x = tx;
       point.y = ty;

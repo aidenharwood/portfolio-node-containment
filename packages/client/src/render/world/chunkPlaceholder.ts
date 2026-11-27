@@ -1,9 +1,9 @@
 import { isBuildingWall, type RegionId, type TileKindId, type TileRect, type WallMaterialId } from '@containment/shared';
 import { BufferAttribute, BufferGeometry, Color, type Group } from 'three';
-import { towerBlock, towerFacade, wallFacade, type FacadeVoxel } from '../far/facadePattern.ts';
+import { FACADE_GROUND_FLOOR, FACADE_PANE, FACADE_STOREY, TOWER_FACE, TOWER_SIGNS, towerBlock, towerFacade, towerPaneGlow, towerSpotAt, wallFacade, type FacadeVoxel, type TowerSpot } from '../far/facadePattern.ts';
 import { createVoxelObject } from '../voxel/voxelMaterials.ts';
 import { VOXEL_EMPTY } from '../voxel/voxelKinds.ts';
-import { buildTileVolume, facesOutdoors, massingAt, tileBase, type OwnedLayout, type Side } from './levelVoxels.ts';
+import { buildTileVolume, facesOutdoors, massingAt, tileBase, TOWER, type OwnedLayout, type Side } from './levelVoxels.ts';
 import { WALL_PALETTE } from './wallPalette.ts';
 import { FLOOR_LAYERS, TILE_RESOLUTION, WALL_LAYERS, ZONE_VOLUME_HEIGHT, ZONE_VOXEL_SIZE } from './worldScale.ts';
 
@@ -148,8 +148,54 @@ const isFeature = (material: WallMaterialId, voxel: FacadeVoxel): boolean => {
   return voxel.emissive || (voxel.color !== palette.body && voxel.color !== palette.joint && voxel.color !== palette.cap);
 };
 
-function paintFacades(sinks: FacadeSinks, layout: OwnedLayout, tx: number, ty: number, material: WallMaterialId): Set<Side> {
+const isShellFeature = (voxel: FacadeVoxel): boolean => voxel.emissive || (voxel.color !== TOWER_FACE.glass && voxel.color !== TOWER_FACE.mullion && voxel.color !== TOWER_FACE.shop);
+
+function paintShell(sinks: FacadeSinks, side: Side, tx: number, ty: number, material: WallMaterialId, spot: TowerSpot, low: number): void {
+  const { top, street, roof } = spot;
+  const block = towerBlock(tx, ty);
+  const first = (side === 'north' || side === 'south' ? tx : ty) * R;
+  const storeys = street + FLOOR_LAYERS + FACADE_GROUND_FLOOR;
+  const from = Math.max(low, street + FLOOR_LAYERS);
+  if (from < storeys) {
+    paintFace(sinks, side, tx, ty, from, Math.min(storeys, roof), (along, vy) => {
+      const voxel = towerFacade(material, side, along, vy, street, top, block);
+      return isShellFeature(voxel) ? voxel : null;
+    });
+  }
+  const start = Math.max(from, storeys);
+  const band = (sink: QuadSink, lowRow: number, highRow: number, color: number, near = first, far = first + R): void => {
+    const bottom = Math.max(lowRow, start);
+    const ceiling = Math.min(highRow, roof);
+    if (bottom < ceiling) faceQuad(sink, side, tx, ty, near, far, bottom, ceiling, color);
+  };
+  const highest = Math.floor((top - roof) / FACADE_STOREY);
+  const lowest = Math.floor((top - 1 - start) / FACADE_STOREY);
+  for (let storey = highest; storey <= lowest + 1; storey++) {
+    const head = top - 1 - storey * FACADE_STOREY;
+    band(sinks.solid, head, head + 3, WALL_PALETTE[material].body);
+    if (storey > lowest) continue;
+    for (let pane = first / FACADE_PANE; pane < (first + R) / FACADE_PANE; pane++) {
+      const glow = towerPaneGlow(pane, storey, block, side);
+      if (glow !== null) band(sinks.glow, head - 4, head, glow, pane * FACADE_PANE + 1, (pane + 1) * FACADE_PANE);
+    }
+  }
+  if (spot.crown > 0) band(sinks.glow, roof - 1, roof, TOWER_SIGNS[spot.crown - 1] ?? TOWER_SIGNS[0]);
+  if (roof >= low) faceQuad(sinks.solid, side, tx, ty, first, first + R, roof, roof + 1, WALL_PALETTE[material].cap);
+}
+
+function paintFacades(sinks: FacadeSinks, layout: OwnedLayout, tx: number, ty: number, material: WallMaterialId, spot: TowerSpot | null, floorOf: (tx: number, ty: number) => number): Set<Side> {
   const painted = new Set<Side>();
+  if (spot) {
+    const roofFloor = spot.roof + 1;
+    for (const side of FACE_SIDES) {
+      const [dx, dy] = OUTWARD[side];
+      const low = floorOf(tx + dx, ty + dy);
+      if (low >= roofFloor) continue;
+      painted.add(side);
+      paintShell(sinks, side, tx, ty, material, spot, low);
+    }
+    return painted;
+  }
   const massing = massingAt(layout, tx, ty);
   if (massing === 'hull') return painted;
   const base = tileBase(layout, tx, ty);
@@ -185,11 +231,26 @@ function paintFacades(sinks: FacadeSinks, layout: OwnedLayout, tx: number, ty: n
 export function buildChunkPlaceholder(layout: OwnedLayout, region: TileRect): Group | null {
   const solid = new QuadSink();
   const sinks: FacadeSinks = { solid, glow: new QuadSink() };
-  const topOf = (tx: number, ty: number): number | null => {
-    const kind = layout.tileAt({ x: tx, y: ty });
-    if (kind === 'void') return null;
-    return (tileBase(layout, tx, ty) + tileTint(kind, layout.regionAt?.({ x: tx, y: ty })).rise - FLOOR_LAYERS) * ZONE_VOXEL_SIZE;
+  const spots = new Map<number, TowerSpot | null>();
+  const spotOf = (tx: number, ty: number): TowerSpot | null => {
+    const key = ty * layout.width + tx;
+    const known = spots.get(key);
+    if (known !== undefined) return known;
+    const spot = isBuildingWall(layout.tileAt({ x: tx, y: ty })) ? towerSpotAt(layout, tx, ty) : null;
+    spots.set(key, spot);
+    return spot;
   };
+  const floorOf = (tx: number, ty: number): number => {
+    const kind = layout.tileAt({ x: tx, y: ty });
+    if (kind === 'void') return 0;
+    const spot = spotOf(tx, ty);
+    return spot ? spot.roof + 1 : tileBase(layout, tx, ty) + tileTint(kind, layout.regionAt?.({ x: tx, y: ty })).rise;
+  };
+  const topOf = (tx: number, ty: number): number | null => (layout.tileAt({ x: tx, y: ty }) === 'void' ? null : (floorOf(tx, ty) - FLOOR_LAYERS) * ZONE_VOXEL_SIZE);
+  const deck = scratch.setHex(TOWER.deck);
+  const deckTint: Tint = { red: deck.r, green: deck.g, blue: deck.b, rise: 0 };
+  const glass = scratch.setHex(TOWER_FACE.glass);
+  const glassTint: Tint = { red: glass.r, green: glass.g, blue: glass.b, rise: 0 };
   const quad = (corners: readonly Corner[], normal: Corner, tint: Tint, shade: number): void => solid.quad(corners, normal, tint.red * shade, tint.green * shade, tint.blue * shade);
   for (let ty = region.y; ty < region.y + region.height; ty++) {
     for (let tx = region.x; tx < region.x + region.width; tx++) {
@@ -197,14 +258,15 @@ export function buildChunkPlaceholder(layout: OwnedLayout, region: TileRect): Gr
       if (top === null) continue;
       const kind = layout.tileAt({ x: tx, y: ty });
       const tint = tileTint(kind, layout.regionAt?.({ x: tx, y: ty }));
-      const facades = isBuildingWall(kind) ? paintFacades(sinks, layout, tx, ty, kind) : null;
-      const face = isBuildingWall(kind) ? scratch.setHex(WALL_PALETTE[kind].body) : null;
-      const faceTint: Tint | null = face ? { red: face.r, green: face.g, blue: face.b, rise: tint.rise } : null;
+      const spot = spotOf(tx, ty);
+      const facades = isBuildingWall(kind) ? paintFacades(sinks, layout, tx, ty, kind, spot, floorOf) : null;
+      const face = isBuildingWall(kind) && !spot ? scratch.setHex(WALL_PALETTE[kind].body) : null;
+      const faceTint: Tint | null = spot ? glassTint : face ? { red: face.r, green: face.g, blue: face.b, rise: tint.rise } : null;
       const west = tx - 0.5;
       const east = tx + 0.5;
       const north = ty - 0.5;
       const south = ty + 0.5;
-      quad([[west, top, north], [west, top, south], [east, top, south], [east, top, north]], [0, 1, 0], tint, 1);
+      quad([[west, top, north], [west, top, south], [east, top, south], [east, top, north]], [0, 1, 0], spot ? deckTint : tint, 1);
       const sides: readonly [Side, number, number, readonly [readonly [number, number], readonly [number, number]], Corner][] = [
         ['east', tx + 1, ty, [[east, north], [east, south]], [1, 0, 0]],
         ['west', tx - 1, ty, [[west, south], [west, north]], [-1, 0, 0]],
