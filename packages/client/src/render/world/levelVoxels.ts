@@ -950,6 +950,7 @@ function paintWall(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: num
   const palette = WALL_PALETTE[material];
   const outdoors = new Set([...open].filter((side) => facesOutdoors(layout, tx, ty, side)));
   const jambs = doorSides(layout, tx, ty);
+  const recesses: number[] = [];
   for (let lz = 0; lz < R; lz++) {
     for (let lx = 0; lx < R; lx++) {
       const vx = tx * R + lx;
@@ -990,10 +991,16 @@ function paintWall(volume: VoxelCanvas, layout: OwnedLayout, tx: number, ty: num
           continue;
         }
         const [ix, iz] = inwardStep(outer.side);
-        volume.clear(vx, vy, vz);
-        volume.set(vx + ix, vy, vz + iz, face.color, face.kind ?? VOXEL_SOLID);
+        recesses.push(vx, vy, vz, ix, iz, face.color, face.kind ?? VOXEL_SOLID);
       }
     }
+  }
+  for (let at = 0; at < recesses.length; at += 7) {
+    const vx = recesses[at] as number;
+    const vy = recesses[at + 1] as number;
+    const vz = recesses[at + 2] as number;
+    volume.clear(vx, vy, vz);
+    volume.set(vx + (recesses[at + 3] as number), vy, vz + (recesses[at + 4] as number), recesses[at + 5] as number, recesses[at + 6] as VoxelKind);
   }
   for (const side of tunnelSides(layout, tx, ty)) paintTunnel(volume, side, tx, ty);
 }
